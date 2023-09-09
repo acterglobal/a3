@@ -17,11 +17,14 @@ class SettingsMenu extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentRoute = ref.watch(currentRoutingLocation);
     final size = MediaQuery.of(context).size;
-    bool isSelected(Routes route) {
-      debugPrint(
-        '${route.route} $currentRoute, ${currentRoute == route.route}',
+    Color? colorSelected(Routes route) => currentRoute == route.route
+        ? AppTheme.brandColorScheme.secondary
+        : null;
+
+    TextStyle titleStylesSelected(Routes route) {
+      return TextStyle(
+        color: colorSelected(route),
       );
-      return currentRoute == route.route;
     }
 
     final shouldGoNotNamed = isDesktop || size.width > 770;
@@ -40,9 +43,18 @@ class SettingsMenu extends ConsumerWidget {
             title: const Text('Account'),
             tiles: <SettingsTile>[
               SettingsTile.navigation(
-                title: const Text('Sessions'),
-                description: const Text('Your active device sessions'),
-                leading: const Icon(Atlas.key_monitor_thin),
+                title: Text(
+                  'Sessions',
+                  style: titleStylesSelected(Routes.settingSessions),
+                ),
+                description: Text(
+                  'Your active device sessions',
+                  style: titleStylesSelected(Routes.settingSessions),
+                ),
+                leading: Icon(
+                  Atlas.key_monitor_thin,
+                  color: colorSelected(Routes.settingSessions),
+                ),
                 onPressed: (context) {
                   shouldGoNotNamed
                       ? context.goNamed(Routes.settingSessions.name)
@@ -50,9 +62,18 @@ class SettingsMenu extends ConsumerWidget {
                 },
               ),
               SettingsTile.navigation(
-                title: const Text('Blocked Users'),
-                description: const Text('Users you blocked'),
-                leading: const Icon(Atlas.users_thin),
+                title: Text(
+                  'Blocked Users',
+                  style: titleStylesSelected(Routes.settingSessions),
+                ),
+                description: Text(
+                  'Users you blocked',
+                  style: titleStylesSelected(Routes.settingSessions),
+                ),
+                leading: Icon(
+                  Atlas.users_thin,
+                  color: colorSelected(Routes.settingSessions),
+                ),
                 onPressed: (context) {
                   shouldGoNotNamed
                       ? context.goNamed(Routes.settingSessions.name)
@@ -65,9 +86,18 @@ class SettingsMenu extends ConsumerWidget {
             title: const Text('Acter App'),
             tiles: <SettingsTile>[
               SettingsTile.navigation(
-                title: const Text('Labs'),
-                description: const Text('Experimental Acter features'),
-                leading: const Icon(Atlas.lab_appliance_thin),
+                title: Text(
+                  'Labs',
+                  style: titleStylesSelected(Routes.settingsLabs),
+                ),
+                description: Text(
+                  'Experimental Acter features',
+                  style: titleStylesSelected(Routes.settingsLabs),
+                ),
+                leading: Icon(
+                  Atlas.lab_appliance_thin,
+                  color: colorSelected(Routes.settingsLabs),
+                ),
                 onPressed: (context) {
                   shouldGoNotNamed
                       ? context.goNamed(Routes.settingsLabs.name)
@@ -75,8 +105,11 @@ class SettingsMenu extends ConsumerWidget {
                 },
               ),
               SettingsTile(
-                title: const Text('Info'),
-                leading: const Icon(Atlas.info_circle_thin),
+                title: Text('Info', style: titleStylesSelected(Routes.info)),
+                leading: Icon(
+                  Atlas.info_circle_thin,
+                  color: colorSelected(Routes.info),
+                ),
                 onPressed: (context) {
                   shouldGoNotNamed
                       ? context.goNamed(Routes.info.name)
@@ -90,7 +123,6 @@ class SettingsMenu extends ConsumerWidget {
               'Danger Zone',
               style: TextStyle(
                 color: AppTheme.brandColorScheme.error,
-                backgroundColor: AppTheme.brandColorScheme.onError,
               ),
             ),
             tiles: <SettingsTile>[
