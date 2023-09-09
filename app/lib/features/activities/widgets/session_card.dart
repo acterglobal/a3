@@ -35,15 +35,15 @@ class SessionCard extends ConsumerWidget {
     }
     fields.add(deviceRecord.deviceId().toString());
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 1),
+      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 15),
       child: ListTile(
         leading: isVerified
             ? Icon(
-                Icons.verified_rounded,
+                Atlas.check_shield_thin,
                 color: Theme.of(context).colorScheme.success,
               )
             : Icon(
-                Icons.question_mark_rounded,
+                Atlas.xmark_shield_thin,
                 color: Theme.of(context).colorScheme.error,
               ),
         title: Text(deviceRecord.displayName() ?? ''),
@@ -101,7 +101,8 @@ class SessionCard extends ConsumerWidget {
           content: Wrap(
             children: [
               const Text(
-                  'Please provide your user password to confirm you want to end that session.',),
+                'Please provide your user password to confirm you want to end that session.',
+              ),
               TextField(
                 controller: passwordController,
                 obscureText: true,
