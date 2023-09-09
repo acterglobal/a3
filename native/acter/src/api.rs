@@ -45,7 +45,7 @@ mod typing;
 mod utils;
 mod verification;
 
-pub use account::Account;
+pub use account::{Account, EmailTokenResponse};
 pub use acter_core::{
     events::{news::NewsContent, Colorize, ObjRef, RefDetails, UtcDateTime},
     models::{ActerModel, Color as EfkColor, Tag, TextMessageContent},

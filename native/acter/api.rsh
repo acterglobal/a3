@@ -1595,7 +1595,15 @@ object Account {
 
     /// Requests token via email and add email address to third party identifier.
     /// If password is not enough complex, homeserver may reject this request.
-    fn request_token_via_email(email_address: string, password: string) -> Future<Result<bool>>;
+    fn request_token_via_email(email_address: string, password: string) -> Future<Result<EmailTokenResponse>>;
+
+    /// Submit token to finish password reset via email
+    fn submit_token_from_email(submit_url: string, session_id: string, password: string, token: string) -> Future<Result<bool>>;
+}
+
+object EmailTokenResponse {
+    fn session_id() -> string;
+    fn submit_url() -> Option<string>;
 }
 
 object SyncState {

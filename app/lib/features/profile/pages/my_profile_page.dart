@@ -14,69 +14,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class ChangeDisplayName extends StatefulWidget {
-  final AccountProfile account;
-
-  const ChangeDisplayName({
-    Key? key,
-    required this.account,
-  }) : super(key: key);
-
-  @override
-  State<ChangeDisplayName> createState() => _ChangeDisplayNameState();
-}
-
-class _ChangeDisplayNameState extends State<ChangeDisplayName> {
-  final TextEditingController newName = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  @override
-  void initState() {
-    super.initState();
-    newName.text = widget.account.profile.displayName ?? '';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Change your display name'),
-      content: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(5),
-              child: TextFormField(controller: newName),
-            ),
-          ],
-        ),
-      ),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () => Navigator.pop(context, null),
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: onSubmit,
-          child: const Text('Submit'),
-        ),
-      ],
-    );
-  }
-
-  void onSubmit() {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-    if (widget.account.profile.displayName != newName.text) {
-      Navigator.pop(context, newName.text);
-    } else {
-      Navigator.pop(context, null);
-    }
-  }
-}
-
 class EmailPassword {
   String emailAddress;
   String password;
@@ -84,19 +21,19 @@ class EmailPassword {
   EmailPassword(this.emailAddress, this.password);
 }
 
-class ChangeEmailPassword extends StatefulWidget {
+class RequestTokenViaEmail extends StatefulWidget {
   final AccountProfile account;
 
-  const ChangeEmailPassword({
+  const RequestTokenViaEmail({
     Key? key,
     required this.account,
   }) : super(key: key);
 
   @override
-  State<ChangeEmailPassword> createState() => _ChangeEmailPasswordState();
+  State<RequestTokenViaEmail> createState() => _RequestTokenViaEmailState();
 }
 
-class _ChangeEmailPasswordState extends State<ChangeEmailPassword> {
+class _RequestTokenViaEmailState extends State<RequestTokenViaEmail> {
   final TextEditingController newEmail = TextEditingController();
   final TextEditingController newPassword = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -110,7 +47,7 @@ class _ChangeEmailPasswordState extends State<ChangeEmailPassword> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Change your password via email address'),
+      title: const Text('Reset your token via email address'),
       content: Form(
         key: _formKey,
         child: Column(
@@ -151,17 +88,44 @@ class _ChangeEmailPasswordState extends State<ChangeEmailPassword> {
 }
 
 class MyProfile extends ConsumerWidget {
-  const MyProfile({super.key});
+  String? submitUrl;
+  String? sessionId;
+  String? password;
+
+  MyProfile({super.key});
 
   Future<void> updateDisplayName(
     AccountProfile profile,
     BuildContext context,
     WidgetRef ref,
   ) async {
+    final TextEditingController newName = TextEditingController();
+    newName.text = profile.profile.displayName ?? '';
+
     final newText = await showDialog<String>(
       context: context,
-      builder: (BuildContext context) => ChangeDisplayName(account: profile),
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Change your display name'),
+        content: TextField(controller: newName),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              if (profile.profile.displayName != newName.text) {
+                Navigator.pop(context, newName.text);
+              } else {
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('Submit'),
+          ),
+        ],
+      ),
     );
+
     if (newText != null && context.mounted) {
       showAdaptiveDialog(
         context: context,
@@ -206,29 +170,90 @@ class MyProfile extends ConsumerWidget {
     }
   }
 
-  Future<void> updateEmailAddress(
+  Future<void> requestTokenViaEmail(
     AccountProfile profile,
     BuildContext context,
     WidgetRef ref,
   ) async {
     final newValue = await showDialog<EmailPassword>(
       context: context,
-      builder: (BuildContext context) => ChangeEmailPassword(account: profile),
+      builder: (BuildContext context) => RequestTokenViaEmail(account: profile),
     );
     if (newValue != null && context.mounted) {
       showAdaptiveDialog(
         context: context,
         builder: (context) => DefaultDialog(
           title: Text(
-            'Updating Email Address',
+            'Requesting token via email',
             style: Theme.of(context).textTheme.titleSmall,
           ),
           isLoader: true,
         ),
       );
-      await profile.account.requestTokenViaEmail(
+      final response = await profile.account.requestTokenViaEmail(
         newValue.emailAddress,
         newValue.password,
+      );
+      submitUrl = response.submitUrl();
+      sessionId = response.sessionId();
+      password = newValue.password;
+      ref.invalidate(accountProfileProvider);
+
+      if (!context.mounted) {
+        return;
+      }
+      Navigator.of(context, rootNavigator: true).pop();
+      customMsgSnackbar(
+        context,
+        'Requested token via email. When you get email for confirmation, Please submit token from email to finish this process.',
+      );
+    }
+  }
+
+  Future<void> submitTokenFromEmail(
+    AccountProfile profile,
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    if (submitUrl == null) {
+      return;
+    }
+    final TextEditingController newToken = TextEditingController();
+
+    final newText = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Enter the token from confirmation email'),
+        content: TextField(controller: newToken),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, newToken.text),
+            child: const Text('Submit'),
+          ),
+        ],
+      ),
+    );
+
+    if (newText != null && context.mounted) {
+      showAdaptiveDialog(
+        context: context,
+        builder: (context) => DefaultDialog(
+          title: Text(
+            'Confirming token from email',
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          isLoader: true,
+        ),
+      );
+      await profile.account.submitTokenFromEmail(
+        submitUrl!,
+        sessionId!,
+        password!,
+        newText,
       );
       ref.invalidate(accountProfileProvider);
 
@@ -236,7 +261,10 @@ class MyProfile extends ConsumerWidget {
         return;
       }
       Navigator.of(context, rootNavigator: true).pop();
-      customMsgSnackbar(context, 'Display Name update submitted');
+      customMsgSnackbar(
+        context,
+        'Confirmed token via email. Password reset without login was finished.',
+      );
     }
   }
 
@@ -348,9 +376,16 @@ class MyProfile extends ConsumerWidget {
                           Text(data.emailAddress ?? ''),
                           IconButton(
                             iconSize: 14,
-                            icon: const Icon(Atlas.pencil_edit_thin),
+                            icon: const Icon(Atlas.lock_keyhole_thin),
                             onPressed: () async {
-                              await updateEmailAddress(data, context, ref);
+                              await requestTokenViaEmail(data, context, ref);
+                            },
+                          ),
+                          IconButton(
+                            iconSize: 14,
+                            icon: const Icon(Atlas.check_circle_thin),
+                            onPressed: () async {
+                              await submitTokenFromEmail(data, context, ref);
                             },
                           ),
                         ],
