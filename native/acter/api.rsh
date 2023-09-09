@@ -1566,6 +1566,9 @@ object Member {
     //fn can(permission: MemberPermission) -> bool;
     fn can_string(permission: string) -> bool;
 
+    /// whether the user is being ignored
+    fn is_ignored() -> bool;
+
     /// add this member to ignore list
     fn ignore() -> Future<Result<bool>>;
 

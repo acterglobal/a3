@@ -18457,6 +18457,16 @@ class Api {
         int,
         int,
       )>();
+  late final _memberIsIgnoredPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__Member_is_ignored");
+
+  late final _memberIsIgnored = _memberIsIgnoredPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _memberIgnorePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -39565,6 +39575,18 @@ class Member {
     final tmp7 = tmp5;
     final tmp6 = tmp7 > 0;
     return tmp6;
+  }
+
+  /// whether the user is being ignored
+  bool isIgnored() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._memberIsIgnored(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
   }
 
   /// add this member to ignore list
