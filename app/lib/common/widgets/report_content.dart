@@ -67,11 +67,11 @@ class ReportContentWidget extends ConsumerWidget {
               return CheckboxListTile(
                 controlAffinity: ListTileControlAffinity.leading,
                 title: Text(
-                  'Ignore User (optional)',
+                  'Block User (optional)',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 subtitle: Text(
-                  'Mark to hide all current and future content from this user',
+                  'Mark to hide all current and future content from this user and block them from contacting you',
                   style: Theme.of(context).textTheme.labelMedium!.copyWith(
                         color: Theme.of(context).colorScheme.neutral5,
                       ),
