@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +11,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 
 class ChangePowerLevel extends StatefulWidget {
   final Member member;
@@ -182,6 +184,201 @@ class MemberListEntry extends ConsumerWidget {
     this.myMembership,
   });
 
+  Future<void> blockUser(BuildContext context) async {
+    final userId = member.userId().toString();
+    await showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          title: Text('Block $userId'),
+          content: RichText(
+            textAlign: TextAlign.left,
+            text: TextSpan(
+              text: 'You are about to block $userId. ',
+              style: const TextStyle(color: Colors.white, fontSize: 24),
+              children: const <TextSpan>[
+                TextSpan(
+                  text:
+                      "Once blocked you won't see their messages anymore and it will block their attempt to contact you directly. ",
+                ),
+                TextSpan(text: 'Continue?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => context.pop(),
+              child: const Text('No'),
+            ),
+            TextButton(
+              onPressed: () async {
+                showAdaptiveDialog(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (context) => DefaultDialog(
+                    title: Text(
+                      'Blocking User',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    isLoader: true,
+                  ),
+                );
+                try {
+                  await member.ignore();
+                  if (!context.mounted) {
+                    return;
+                  }
+                  context.pop();
+
+                  showAdaptiveDialog(
+                    context: context,
+                    builder: (context) => DefaultDialog(
+                      title: Text(
+                        'User blocked. It might takes a bit before the UI reflects this update.',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      actions: <Widget>[
+                        DefaultButton(
+                          onPressed: () {
+                            // close both dialogs
+                            context.pop();
+                            context.pop();
+                          },
+                          title: 'Okay',
+                        ),
+                      ],
+                    ),
+                  );
+                } catch (err) {
+                  if (!context.mounted) {
+                    return;
+                  }
+                  showAdaptiveDialog(
+                    context: context,
+                    builder: (context) => DefaultDialog(
+                      title: Text(
+                        'Block user failed: \n $err"',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      actions: <Widget>[
+                        DefaultButton(
+                          onPressed: () {
+                            // close both dialogs
+                            context.pop();
+                            context.pop();
+                          },
+                          title: 'Okay',
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
+              child: const Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> unblockUser(BuildContext context) async {
+    final userId = member.userId().toString();
+    await showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          title: Text('Unblock $userId'),
+          content: RichText(
+            textAlign: TextAlign.left,
+            text: TextSpan(
+              text: 'You are about to unblock $userId.',
+              style: const TextStyle(color: Colors.white, fontSize: 24),
+              children: const <TextSpan>[
+                TextSpan(
+                  text: 'This will allow them to contact you again',
+                ),
+                TextSpan(text: 'Continue?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => context.pop(),
+              child: const Text('No'),
+            ),
+            TextButton(
+              onPressed: () async {
+                showAdaptiveDialog(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (context) => DefaultDialog(
+                    title: Text(
+                      'Unblocking User',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    isLoader: true,
+                  ),
+                );
+                try {
+                  await member.unignore();
+                  if (!context.mounted) {
+                    return;
+                  }
+                  context.pop();
+
+                  showAdaptiveDialog(
+                    context: context,
+                    builder: (context) => DefaultDialog(
+                      title: Text(
+                        'User unblocked. It might takes a bit before the UI reflects this update.',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      actions: <Widget>[
+                        DefaultButton(
+                          onPressed: () {
+                            // close both dialogs
+                            context.pop();
+                            context.pop();
+                          },
+                          title: 'Okay',
+                        ),
+                      ],
+                    ),
+                  );
+                } catch (err) {
+                  if (!context.mounted) {
+                    return;
+                  }
+                  showAdaptiveDialog(
+                    context: context,
+                    builder: (context) => DefaultDialog(
+                      title: Text(
+                        'Unblock user failed: \n $err"',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      actions: <Widget>[
+                        DefaultButton(
+                          onPressed: () {
+                            // close both dialogs
+                            context.pop();
+                            context.pop();
+                          },
+                          title: 'Okay',
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
+              child: const Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> changePowerLevel(BuildContext context, WidgetRef ref) async {
     final newPowerlevel = await showDialog<int?>(
       context: context,
@@ -240,6 +437,26 @@ class MemberListEntry extends ConsumerWidget {
       ),
     );
 
+    if (member.isIgnored()) {
+      submenu.add(
+        PopupMenuItem(
+          onTap: () async {
+            await unblockUser(context);
+          },
+          child: const Text('Unblock User'),
+        ),
+      );
+    } else {
+      submenu.add(
+        PopupMenuItem(
+          onTap: () async {
+            await blockUser(context);
+          },
+          child: const Text('Block User'),
+        ),
+      );
+    }
+
     if (myMembership != null) {
       submenu.add(const PopupMenuDivider());
       if (myMembership!.canString('CanUpdatePowerLevels')) {
@@ -295,6 +512,14 @@ class MemberListEntry extends ConsumerWidget {
     final profile = ref.watch(memberProfileProvider(member));
     final memberStatus = member.membershipStatusStr();
     final List<Widget> trailing = [];
+    if (member.isIgnored()) {
+      trailing.add(
+        const Tooltip(
+          message: "You have blocked this user, you can't see their messages",
+          child: Icon(Atlas.block_thin),
+        ),
+      );
+    }
     if (memberStatus == 'Admin') {
       trailing.add(
         const Tooltip(
