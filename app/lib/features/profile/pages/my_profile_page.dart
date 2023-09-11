@@ -6,6 +6,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EmailPassword {
   String emailAddress;
@@ -87,12 +89,12 @@ class _RequestTokenViaEmailState extends State<RequestTokenViaEmail> {
   }
 }
 
-class MyProfile extends ConsumerWidget {
-  String? submitUrl;
-  String? sessionId;
-  String? password;
+const submitUrlKey = 'PASSWORD_RESET_SUBMIT_URL';
+const sessionIdKey = 'PASSWORD_RESET_SESSION_ID';
+const passphraseKey = 'PASSWORD_RESET_PASSPHRASE';
 
-  MyProfile({super.key});
+class MyProfile extends ConsumerWidget {
+  const MyProfile({super.key});
 
   Future<void> updateDisplayName(
     AccountProfile profile,
@@ -194,9 +196,13 @@ class MyProfile extends ConsumerWidget {
         newValue.emailAddress,
         newValue.password,
       );
-      submitUrl = response.submitUrl();
-      sessionId = response.sessionId();
-      password = newValue.password;
+      SharedPreferences pref = await sharedPrefs();
+      final submitUrl = response.submitUrl();
+      if (submitUrl != null) {
+        pref.setString(submitUrlKey, submitUrl);
+      }
+      pref.setString(sessionIdKey, response.sessionId());
+      pref.setString(passphraseKey, newValue.password);
       ref.invalidate(accountProfileProvider);
 
       if (!context.mounted) {
@@ -205,7 +211,7 @@ class MyProfile extends ConsumerWidget {
       Navigator.of(context, rootNavigator: true).pop();
       customMsgSnackbar(
         context,
-        'Requested token via email. When you get email for confirmation, Please submit token from email to finish this process.',
+        'Requested token via email. If you get email for confirmation, please submit token from email to finish this process.',
       );
     }
   }
@@ -215,11 +221,18 @@ class MyProfile extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
+    SharedPreferences pref = await sharedPrefs();
+    final submitUrl = pref.getString(submitUrlKey);
     if (submitUrl == null) {
       return;
     }
+    final sessionId = pref.getString(sessionIdKey);
+    final passphrase = pref.getString(passphraseKey);
     final TextEditingController newToken = TextEditingController();
 
+    if (!context.mounted) {
+      return;
+    }
     final newText = await showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -250,9 +263,9 @@ class MyProfile extends ConsumerWidget {
         ),
       );
       await profile.account.submitTokenFromEmail(
-        submitUrl!,
+        submitUrl,
         sessionId!,
-        password!,
+        passphrase!,
         newText,
       );
       ref.invalidate(accountProfileProvider);
@@ -395,7 +408,7 @@ class MyProfile extends ConsumerWidget {
                         icon: const Icon(Atlas.construction_tools_thin),
                         onPressed: () =>
                             context.pushNamed(Routes.settings.name),
-                        label: const Text('Settings'),
+                        label: const Text('App Settings'),
                       ),
                       const SizedBox(height: 10),
                       OutlinedButton.icon(
