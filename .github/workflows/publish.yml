@@ -254,10 +254,11 @@ jobs:
             --dart-define RAGESHAKE_APP_VERSION="${{ needs.tags.outputs.tag }}/${{ matrix.name }}"
         working-directory: ./app
 
-      - name: Sign Acter.app
-        if: matrix.target == 'macos'
-        working-directory: ${{ matrix.artifact_path }}
-        run: codesign --deep --force --verbose --sign "${{ secrets.MAC_SIGNING_IDENTIY}}" Acter.app
+      # ignore codesign
+      # - name: Sign Acter.app
+      #   if: matrix.target == 'macos'
+      #   working-directory: ${{ matrix.artifact_path }}
+      #   run: codesign --deep --force --verbose --sign "${{ secrets.MAC_SIGNING_IDENTIY}}" Acter.app
 
       # Important! Cleanup: remove the certificate and provisioning profile from the runner!
       - name: Clean up keychain and provisioning profile
