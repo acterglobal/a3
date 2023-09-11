@@ -16,107 +16,127 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
       return AlertDialog(
         title: Text('Deactivate Account',
             style: TextStyle(
-                color: AppTheme.brandColorScheme.error, fontSize: 32,),),
+                color: AppTheme.brandColorScheme.error, fontSize: 18,),),
         content: SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 650),
-            child: Wrap(
-              children: [
-                Text(
-                  'Careful: You are about to permanently deactivate your account ',
+          child: Wrap(
+            children: [
+              Text(
+                'Careful: You are about to permanently deactivate your account ',
+                style: TextStyle(
+                  color: AppTheme.brandColorScheme.error,
+                  fontSize: 24,
+                ),
+              ),
+              const Text('If you proceed: \n  \n'
+                  '- All your personal data will be removed from your homeserver, including display name and avatar \n'
+                  '- All your sessions will be closed immediately, no other device will be able to continue their sessions \n'
+                  '- You will leave all rooms, chats, spaces and DMs that you are in \n'
+                  '- You will not be able to reactivate your account \n'
+                  '- You will no longer be able to log in \n'
+                  '- No one will be able to reuse your username (MXID), including you: this username will remain unavailable indefinitely \n'
+                  '- You will be removed from the identity server, if you provided any information to be found through that (e.g. email or phone number) \n'
+                  '- All local data, including any encryption keys, will be permanently deleted from this device \n'
+                  '- Your old messages will still be visible to people who received them, just like emails you sent in the past. \n'
+                  '\n You will not be able to reverse any of this. This is a permanent and irrevocable action.'),
+              Padding(
+                padding: const EdgeInsets.only(top: 10, bottom: 10),
+                child: Text(
+                  'Please provide your user password to confirm you want to deactivate your account.',
                   style: TextStyle(
                     color: AppTheme.brandColorScheme.error,
-                    fontSize: 24,
+                    fontSize: 16,
                   ),
                 ),
-                const Text('If you proceed: \n  \n'
-                    '- All your personal data will be removed from your homeserver, including display name and avatar \n'
-                    '- All your sessions will be closed immediately, no other device will be able to continue their sessions \n'
-                    '- You will leave all rooms, chats, spaces and DMs that you are in \n'
-                    '- You will not be able to reactivate your account \n'
-                    '- You will no longer be able to log in \n'
-                    '- No one will be able to reuse your username (MXID), including you: this username will remain unavailable indefinitely \n'
-                    '- You will be removed from the identity server, if you provided any information to be found through that (e.g. email or phone number) \n'
-                    '- All local data, including any encryption keys, will be permanently deleted from this device \n'
-                    '- Your old messages will still be visible to people who received them, just like emails you sent in the past. \n'
-                    '\n You will not be able to reverse any of this. This is a permanent and irrevocable action.'),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10, bottom: 10),
-                  child: Text(
-                    'Please provide your user password to confirm you want to deactivate your account.',
-                    style: TextStyle(
-                      color: AppTheme.brandColorScheme.error,
-                      fontSize: 24,
-                    ),
-                  ),
+              ),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 250),
+                child: TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(hintText: 'Password'),
                 ),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 250),
-                  child: TextField(
-                    controller: passwordController,
-                    obscureText: true,
-                    decoration: const InputDecoration(hintText: 'Password'),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
         actions: <Widget>[
-          TextButton(
-            onPressed: () => ctx.pop(),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              popUpDialog(
-                context: context,
-                title: Text(
-                  'Deactivating your account',
-                  style: Theme.of(context).textTheme.titleSmall,
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey),),
+                  child: TextButton(
+                            onPressed: () => ctx.pop(),
+                            child: const Text('Cancel', style: TextStyle(color: Colors.white,fontSize: 17),),
+                          ),
                 ),
-                isLoader: true,
-              );
-              final sdk = await ref.read(sdkProvider.future);
-              try {
-                if (!await sdk.deactivateAndDestroyCurrentClient(
-                  passwordController.text,
-                )) {
-                  throw 'Deactivation and removing all local data failed';
-                }
-                // ignore: use_build_context_synchronously
-                if (!context.mounted) {
-                  return;
-                }
-                // remove pop up
-                Navigator.of(context, rootNavigator: true).pop();
-                // remove ourselves
-                Navigator.of(context, rootNavigator: true).pop();
-                context.goNamed(Routes.main.name);
-              } catch (err) {
-                // We are doing as expected, but the lints triggers.
-                // ignore: use_build_context_synchronously
-                if (!context.mounted) {
-                  return;
-                }
-                Navigator.of(context, rootNavigator: true).pop();
-
-                popUpDialog(
-                  context: context,
-                  title: Text(
-                    'Deactivating failed: \n $err"',
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  isLoader: false,
-                  btnText: 'Close',
-                  onPressedBtn: () {
+              ),
+              const SizedBox(width: 10),
+           Expanded(
+             child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.red,
+                  border: Border.all(color: Colors.red),
+                  borderRadius: BorderRadius.circular(8),),
+               child: TextButton(
+                onPressed: () async {
+                  popUpDialog(
+                    context: context,
+                    title: Text(
+                      'Deactivating your account',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    isLoader: true,
+                  );
+                  final sdk = await ref.read(sdkProvider.future);
+                  try {
+                    if (!await sdk.deactivateAndDestroyCurrentClient(
+                      passwordController.text,
+                    )) {
+                      throw 'Deactivation and removing all local data failed';
+                    }
+                    // ignore: use_build_context_synchronously
+                    if (!context.mounted) {
+                      return;
+                    }
+                    // remove pop up
                     Navigator.of(context, rootNavigator: true).pop();
-                  },
-                );
-              }
-            },
-            child: const Text('Deactivate'),
+                    // remove ourselves
+                    Navigator.of(context, rootNavigator: true).pop();
+                    context.goNamed(Routes.main.name);
+                  } catch (err) {
+                    // We are doing as expected, but the lints triggers.
+                    // ignore: use_build_context_synchronously
+                    if (!context.mounted) {
+                      return;
+                    }
+                    Navigator.of(context, rootNavigator: true).pop();
+                        
+                    popUpDialog(
+                      context: context,
+                      title: Text(
+                        'Deactivating failed: \n $err"',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      isLoader: false,
+                      btnText: 'Close',
+                      onPressedBtn: () {
+                        Navigator.of(context, rootNavigator: true).pop();
+                      },
+                    );
+                  }
+                },
+                child: const Text('Deactivate', style: TextStyle(color: Colors.white,fontSize: 17),),
+                       ),
+             ),
+           ),
+
+            ],
           ),
+          
+         
         ],
       );
     },

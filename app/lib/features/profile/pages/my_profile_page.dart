@@ -5,9 +5,9 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/profile/widgets/profile_item_tile.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -148,12 +148,7 @@ class MyProfile extends ConsumerWidget {
         return Scaffold(
           appBar: AppBar(
             title: const Text('My profile'),
-            actions: const [
-              Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('Edit',style: TextStyle(color: Color(0xffFF8E00)),),
-              )
-            ],
+            
           ),
           body: SingleChildScrollView(
             child: Column(
@@ -198,30 +193,41 @@ class MyProfile extends ConsumerWidget {
                           ),
                         ),
                       ),
-                      Text(
-                        data.profile.displayName ?? '',
-                        style: Theme.of(context).textTheme.titleMedium,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(data.profile.displayName ?? ''),
+                          IconButton(
+                            iconSize: 14,
+                            icon: const Icon(Atlas.pencil_edit_thin),
+                            onPressed: () async {
+                              await updateDisplayName(
+                                data,
+                                context,
+                                ref,
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                      Text(
-                        userId,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 15),
-                      Container(
-                        margin: const EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF122D46),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child:   const Column(
-                          children: [
-                             ProfileTile(icon: Atlas.bell_reminder,title: 'Notifications',),
-                             Divider(indent: 40,endIndent: 10,),
-                             ProfileTile(icon: Atlas.link,title: 'Linked Devices',),
-
-
-                          ],
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(userId),
+                          IconButton(
+                            iconSize: 14,
+                            icon: const Icon(Atlas.pages),
+                            onPressed: () async {
+                              Clipboard.setData(
+                                ClipboardData(text: userId),
+                              );
+                              customMsgSnackbar(
+                                context,
+                                'Username copied to clipboard',
+                              );
+                            },
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 5),
                         Container(
@@ -230,62 +236,71 @@ class MyProfile extends ConsumerWidget {
                           color: const Color(0xFF122D46),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child:   const Column(
+                        child:    Column(
                           children: [
-                             ProfileTile(icon: Atlas.check_shield,title: 'Privacy & Security',),
-                             Divider(indent: 40,endIndent: 10,),
-                             ProfileTile(icon: Atlas.gear,title: 'Settings',),
+                             ProfileItemTile(icon: Atlas.check_shield,title: 'Linked Devices',onPressed: () =>
+                            context.pushNamed(Routes.settingSessions.name),color: Colors.white,),
+                            const Divider(indent: 40,endIndent: 10,),
+                             ProfileItemTile(icon: Atlas.gear,title: 'Settings',onPressed: () =>
+                            context.pushNamed(Routes.settings.name),color: Colors.white,),
                           ],
                         ),
                       ),
                     const SizedBox(height: 5),
+
+                    //Not implemented yet 
+                    Visibility(
+                      visible: false,
+                      child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF122D46),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child:    Column(
+                            children: [
+                               ProfileItemTile(icon: Atlas.bell_reminder,title: 'Notifications',onPressed: () =>
+                              context.pushNamed(Routes.settingSessions.name),color: Colors.white,),
+                              const Divider(indent: 40,endIndent: 10,),
+                               ProfileItemTile(icon: Icons.star_border_outlined,title: 'Rate us',onPressed: () =>
+                              context.pushNamed(Routes.settings.name),color: Colors.white,),
+                            ],
+                          ),
+                        ),
+                    ),
+                    const SizedBox(height: 5),
+                    Container(
+                      alignment: Alignment.topLeft,
+                      child: const Text('Danger Zone',style: TextStyle(color: Colors.red)),
+                    ),
                     Container(
                         margin: const EdgeInsets.symmetric(vertical: 10),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF122D46),
                           borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: AppTheme.brandColorScheme.onError),
                         ),
-                        child:   const Column(
+                        child:    Column(
                           children: [
-                             ProfileTile(icon: Atlas.star,title: 'Rate us',),
+                             ProfileItemTile(icon: Atlas.exit,title: 'Logout',onPressed: () =>
+                            logoutConfirmationDialog(context, ref),color: Colors.red,),
+                          ],
+                        ),
+                      ),
+                    Container(
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: AppTheme.brandColorScheme.onError),
+                        ),
+                        child:    Column(
+                          children: [
+                             ProfileItemTile(icon: Atlas.trash_can_thin,title: 'Deactivate account',onPressed: () =>
+                            deactivationConfirmationDialog(context, ref),color: Colors.red,),
                           ],
                         ),
                       ),
 
-                      OutlinedButton.icon(
-                        icon: const Icon(Atlas.construction_tools_thin),
-                        onPressed: () =>
-                            context.pushNamed(Routes.settings.name),
-                        label: const Text('App Settings'),
-                      ),
-                      const SizedBox(height: 10),
-                      OutlinedButton.icon(
-                        icon: const Icon(Atlas.laptop_screen_thin),
-                        onPressed: () =>
-                            context.pushNamed(Routes.settingSessions.name),
-                        label: const Text('Sessions'),
-                      ),
-                      const SizedBox(height: 30),
-                      OutlinedButton.icon(
-                        icon: const Icon(Atlas.exit_thin),
-                        onPressed: () => logoutConfirmationDialog(context, ref),
-                        label: const Text('Logout'),
-                      ),
-                      const SizedBox(height: 45),
-                      OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppTheme.brandColorScheme.error,
-                          backgroundColor: AppTheme.brandColorScheme.onError,
-                          side: BorderSide(
-                            width: 1,
-                            color: AppTheme.brandColorScheme.error,
-                          ),
-                        ),
-                        icon: const Icon(Atlas.trash_can_thin),
-                        onPressed: () =>
-                            deactivationConfirmationDialog(context, ref),
-                        label: const Text('Deactivate account'),
-                      ),
+                     
                     ],
                     
                   ),
@@ -302,33 +317,4 @@ class MyProfile extends ConsumerWidget {
   }
 }
 
-class ProfileTile extends StatelessWidget {
 
-   const ProfileTile({
-    super.key, required this.icon, required this.title,
-  });
-
- final IconData icon;
- final String title;
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-               Icon(icon),
-               const SizedBox(width: 10,),
-          Text(title),
-            ],
-          ),
-          const Icon(Icons.arrow_forward_ios,size: 19,),
-        ],
-      ),
-    );
-  }
-}
