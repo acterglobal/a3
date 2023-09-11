@@ -425,15 +425,32 @@ jobs:
         with:
           name: Windows
 
-      - name: Setup MS Store Developer CLI
-        uses: microsoft/setup-msstore-cli@v1
-
-      - name: Configure MS Store credentials
-        run: msstore reconfigure --tenantId ${{ secrets.AZURE_AD_TENANT_ID }} --clientId ${{ secrets.AZURE_AD_CLIENT_ID }} --clientSecret ${{ secrets.AZURE_AD_CLIENT_SECRET }} --sellerId ${{ secrets.MS_STORE_SELLER_ID }}
-
-      - name: MS Store Publish
-        run: msstore publish -v "app/build/windows/runner/Release/*.msix"
-
+      - name: setup storebroker
+        run: |
+          Install-Module StoreBroker -Force
+          Import-Module StoreBroker
+      # do the submission
+      - name: submit to MSStore via StoreBroker
+        run: |
+            # prepare te package
+            Move-Item -Path \.app\build\windows\runner\Release\*.msix acter.msix
+            Compress-Archive -Path *.msix acter.zip
+            # login with the StoreBroker
+            $password = ConvertTo-SecureString "${{ secrets.AZURE_AD_CLIENT_SECRET }}" -AsPlainText -Force
+            $cred = New-Object System.Management.Automation.PSCredential ("${{ secrets.AZURE_AD_CLIENT_ID }}", $password)
+            Set-StoreBrokerAuthentication -TenantId ${{ secrets.AZURE_AD_TENANT_ID }} -Credential $cred
+            # create the submission and add new package
+            $sub = New-ApplicationSubmission -AppId ${{ secrets.MS_STORE_APP_ID }} -Force
+            $sub.applicationPackages | ForEach-Object { $_.fileStatus = "PendingDelete" }
+            $pkg = $sub.applicationPackages[0].PSObject.Copy()
+            $pkg.fileName = "acter.msix"
+            $pkg.fileStatus = "PendingUpload"
+            $pkg.PSObject.Properties.Remove("version")
+            $pkg.PSObject.Properties.Remove("id")
+            $sub.applicationPackages += $pkg
+            Set-ApplicationSubmission -AppId ${{ secrets.MS_STORE_APP_ID }} -UpdatedSubmission $sub
+            Set-SubmissionPackage -PackagePath 'acter.zip' -UploadUrl ($sub.fileUploadUrl)
+            Complete-ApplicationSubmission -AppId ${{ secrets.MS_STORE_APP_ID }} -SubmissionId ($sub.id)
 
   google-play-store:
     runs-on: ubuntu-latest
