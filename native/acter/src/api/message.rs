@@ -1101,11 +1101,11 @@ impl RoomMessage {
         };
         let mut text_desc = TextDesc::new(fallback, None);
         match event.content.msgtype {
-            MessageType::Text(content) => {
-                if let Some(formatted) = &content.formatted {
-                    if formatted.format == MessageFormat::Html {
-                        text_desc.set_formatted_body(Some(formatted.body.clone()));
-                    }
+            MessageType::Audio(content) => {
+                if let Some(info) = &content.info {
+                    let audio_desc =
+                        AudioDesc::new(content.body.clone(), content.source.clone(), *info.clone());
+                    event_item.set_audio_desc(audio_desc);
                 }
             }
             MessageType::Emote(content) => {
@@ -1115,32 +1115,18 @@ impl RoomMessage {
                     }
                 }
             }
-            MessageType::Image(content) => {
-                if let Some(info) = &content.info {
-                    let image_desc =
-                        ImageDesc::new(content.body.clone(), content.source.clone(), *info.clone());
-                    event_item.set_image_desc(image_desc);
-                }
-            }
-            MessageType::Audio(content) => {
-                if let Some(info) = &content.info {
-                    let audio_desc =
-                        AudioDesc::new(content.body.clone(), content.source.clone(), *info.clone());
-                    event_item.set_audio_desc(audio_desc);
-                }
-            }
-            MessageType::Video(content) => {
-                if let Some(info) = &content.info {
-                    let video_desc =
-                        VideoDesc::new(content.body.clone(), content.source.clone(), *info.clone());
-                    event_item.set_video_desc(video_desc);
-                }
-            }
             MessageType::File(content) => {
                 if let Some(info) = &content.info {
                     let file_desc =
                         FileDesc::new(content.body.clone(), content.source.clone(), *info.clone());
                     event_item.set_file_desc(file_desc);
+                }
+            }
+            MessageType::Image(content) => {
+                if let Some(info) = &content.info {
+                    let image_desc =
+                        ImageDesc::new(content.body.clone(), content.source.clone(), *info.clone());
+                    event_item.set_image_desc(image_desc);
                 }
             }
             MessageType::Location(content) => {
@@ -1154,6 +1140,20 @@ impl RoomMessage {
                         location_desc.set_thumbnail_info(*thumbnail_info.clone());
                     }
                     event_item.set_location_desc(location_desc);
+                }
+            }
+            MessageType::Text(content) => {
+                if let Some(formatted) = &content.formatted {
+                    if formatted.format == MessageFormat::Html {
+                        text_desc.set_formatted_body(Some(formatted.body.clone()));
+                    }
+                }
+            }
+            MessageType::Video(content) => {
+                if let Some(info) = &content.info {
+                    let video_desc =
+                        VideoDesc::new(content.body.clone(), content.source.clone(), *info.clone());
+                    event_item.set_video_desc(video_desc);
                 }
             }
             _ => {}
@@ -1189,11 +1189,11 @@ impl RoomMessage {
         };
         let mut text_desc = TextDesc::new(fallback, None);
         match event.content.msgtype {
-            MessageType::Text(content) => {
-                if let Some(formatted) = &content.formatted {
-                    if formatted.format == MessageFormat::Html {
-                        text_desc.set_formatted_body(Some(formatted.body.clone()));
-                    }
+            MessageType::Audio(content) => {
+                if let Some(info) = &content.info {
+                    let audio_desc =
+                        AudioDesc::new(content.body.clone(), content.source.clone(), *info.clone());
+                    event_item.set_audio_desc(audio_desc);
                 }
             }
             MessageType::Emote(content) => {
@@ -1203,27 +1203,6 @@ impl RoomMessage {
                     }
                 }
             }
-            MessageType::Image(content) => {
-                if let Some(info) = &content.info {
-                    let image_desc =
-                        ImageDesc::new(content.body.clone(), content.source.clone(), *info.clone());
-                    event_item.set_image_desc(image_desc);
-                }
-            }
-            MessageType::Audio(content) => {
-                if let Some(info) = &content.info {
-                    let audio_desc =
-                        AudioDesc::new(content.body.clone(), content.source.clone(), *info.clone());
-                    event_item.set_audio_desc(audio_desc);
-                }
-            }
-            MessageType::Video(content) => {
-                if let Some(info) = &content.info {
-                    let video_desc =
-                        VideoDesc::new(content.body.clone(), content.source.clone(), *info.clone());
-                    event_item.set_video_desc(video_desc);
-                }
-            }
             MessageType::File(content) => {
                 if let Some(info) = &content.info {
                     let file_desc =
@@ -1231,11 +1210,38 @@ impl RoomMessage {
                     event_item.set_file_desc(file_desc);
                 }
             }
+            MessageType::Image(content) => {
+                if let Some(info) = &content.info {
+                    let image_desc =
+                        ImageDesc::new(content.body.clone(), content.source.clone(), *info.clone());
+                    event_item.set_image_desc(image_desc);
+                }
+            }
             MessageType::Location(content) => {
                 if let Some(info) = &content.info {
-                    let location_desc =
+                    let mut location_desc =
                         LocationDesc::new(content.body.clone(), content.geo_uri.clone());
+                    if let Some(thumbnail_source) = &info.thumbnail_source {
+                        location_desc.set_thumbnail_source(thumbnail_source.clone());
+                    }
+                    if let Some(thumbnail_info) = &info.thumbnail_info {
+                        location_desc.set_thumbnail_info(*thumbnail_info.clone());
+                    }
                     event_item.set_location_desc(location_desc);
+                }
+            }
+            MessageType::Text(content) => {
+                if let Some(formatted) = &content.formatted {
+                    if formatted.format == MessageFormat::Html {
+                        text_desc.set_formatted_body(Some(formatted.body.clone()));
+                    }
+                }
+            }
+            MessageType::Video(content) => {
+                if let Some(info) = &content.info {
+                    let video_desc =
+                        VideoDesc::new(content.body.clone(), content.source.clone(), *info.clone());
+                    event_item.set_video_desc(video_desc);
                 }
             }
             _ => {}
