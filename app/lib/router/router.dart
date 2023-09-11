@@ -390,7 +390,7 @@ List<RouteBase> makeRoutes(Ref ref) {
           pageBuilder: (context, state) {
             return NoTransitionPage(
               key: state.pageKey,
-              child: MyProfile(),
+              child: const MyProfile(),
             );
           },
         ),
