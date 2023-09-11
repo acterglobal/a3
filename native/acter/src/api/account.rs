@@ -3,8 +3,8 @@ use matrix_sdk::{
     media::MediaFormat,
     reqwest::{ClientBuilder, StatusCode},
     ruma::{
-        events::ignored_user_list::IgnoredUserListEventContent,
-        thirdparty::Medium, uint, ClientSecret, OwnedMxcUri, OwnedSessionId, OwnedUserId, SessionId,
+        events::ignored_user_list::IgnoredUserListEventContent, thirdparty::Medium, uint,
+        ClientSecret, OwnedMxcUri, OwnedSessionId, OwnedUserId, SessionId,
     },
     Account as SdkAccount,
 };
