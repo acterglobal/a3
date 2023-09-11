@@ -395,7 +395,7 @@ class MyProfile extends ConsumerWidget {
                         icon: const Icon(Atlas.construction_tools_thin),
                         onPressed: () =>
                             context.pushNamed(Routes.settings.name),
-                        label: const Text('App Settings'),
+                        label: const Text('Settings'),
                       ),
                       const SizedBox(height: 10),
                       OutlinedButton.icon(

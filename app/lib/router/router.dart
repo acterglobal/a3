@@ -1,22 +1,19 @@
-import 'package:acter/common/widgets/dialog_page.dart';
-import 'package:acter/common/widgets/side_sheet_page.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/dialog_page.dart';
+import 'package:acter/common/widgets/side_sheet_page.dart';
 import 'package:acter/features/activities/pages/activities_page.dart';
-import 'package:acter/features/activities/pages/sessions_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/dialogs/create_chat_sheet.dart';
 import 'package:acter/features/chat/pages/chat_page.dart';
-import 'package:acter/features/chat/pages/room_profile_page.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
+import 'package:acter/features/chat/pages/room_profile_page.dart';
 import 'package:acter/features/events/dialogs/create_event_sheet.dart';
 import 'package:acter/features/events/dialogs/edit_event_sheet.dart';
 import 'package:acter/features/events/pages/event_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
-import 'package:acter/features/pins/dialogs/edit_pin_sheet.dart';
-import 'package:acter/features/space/pages/members_page.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 import 'package:acter/features/news/pages/simple_post.dart';
 import 'package:acter/features/onboarding/pages/intro_page.dart';
@@ -25,19 +22,23 @@ import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/start_page.dart';
 import 'package:acter/features/pins/dialogs/create_pin_sheet.dart';
+import 'package:acter/features/pins/dialogs/edit_pin_sheet.dart';
 import 'package:acter/features/pins/pages/pin_page.dart';
 import 'package:acter/features/pins/pages/pins_page.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/search/pages/search.dart';
+import 'package:acter/features/settings/pages/blocked_users.dart';
 import 'package:acter/features/settings/pages/index_page.dart';
 import 'package:acter/features/settings/pages/info_page.dart';
 import 'package:acter/features/settings/pages/labs_page.dart';
 import 'package:acter/features/settings/pages/licenses_page.dart';
+import 'package:acter/features/settings/pages/sessions_page.dart';
 import 'package:acter/features/space/dialogs/edit_space_sheet.dart';
 import 'package:acter/features/space/dialogs/invite_to_space_dialog.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/pages/events_page.dart';
+import 'package:acter/features/space/pages/members_page.dart';
 import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/pins_page.dart';
 import 'package:acter/features/space/pages/related_spaces_page.dart';
@@ -389,7 +390,7 @@ List<RouteBase> makeRoutes(Ref ref) {
           pageBuilder: (context, state) {
             return NoTransitionPage(
               key: state.pageKey,
-              child: const MyProfile(),
+              child: MyProfile(),
             );
           },
         ),
@@ -414,6 +415,18 @@ List<RouteBase> makeRoutes(Ref ref) {
             return NoTransitionPage(
               key: state.pageKey,
               child: const SessionsPage(),
+            );
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: shellNavKey,
+          name: Routes.blockedUsers.name,
+          path: Routes.blockedUsers.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: const BlockedUsersPage(),
             );
           },
         ),
