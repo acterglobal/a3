@@ -434,7 +434,7 @@ jobs:
         run: |
             # prepare te package
             Move-Item -Path .\app\build\windows\runner\Release\*.msix acter.msix
-            Compress-Archive -Path *.msix acter.zip
+            Compress-Archive -Path acter.msix acter.zip
             # login with the StoreBroker
             $password = ConvertTo-SecureString "${{ secrets.AZURE_AD_CLIENT_SECRET }}" -AsPlainText -Force
             $cred = New-Object System.Management.Automation.PSCredential ("${{ secrets.AZURE_AD_CLIENT_ID }}", $password)
