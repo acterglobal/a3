@@ -20,7 +20,6 @@ enum Routes {
   updates('/updates'),
   search('/search'),
   activities('/activities'),
-  settingSessions('/settings/sessions'),
   tasks('/tasks'),
 
   // --- chat
@@ -59,6 +58,8 @@ enum Routes {
   // -- settings
   settings('/settings'),
   settingsLabs('/settings/labs'),
+  settingSessions('/settings/sessions'),
+  blockedUsers('/settings/blockedUsers'),
   info('/info'),
   licenses('/info/licenses'),
 

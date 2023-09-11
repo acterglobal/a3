@@ -22,7 +22,7 @@ class SettingsLabsPage extends ConsumerWidget {
     return WithSidebar(
       sidebar: const SettingsMenu(),
       child: Scaffold(
-        appBar: AppBar(title: const Text('App Labs')),
+        appBar: AppBar(title: const Text('Acter Labs')),
         body: SettingsList(
           sections: [
             SettingsSection(

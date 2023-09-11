@@ -5,7 +5,8 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/activities/pages/activities_page.dart';
-import 'package:acter/features/activities/pages/sessions_page.dart';
+import 'package:acter/features/settings/pages/blocked_users.dart';
+import 'package:acter/features/settings/pages/sessions_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/dialogs/create_chat_sheet.dart';
 import 'package:acter/features/chat/pages/chat_select_page.dart';
@@ -421,6 +422,18 @@ List<RouteBase> makeRoutes(Ref ref) {
             return NoTransitionPage(
               key: state.pageKey,
               child: const SessionsPage(),
+            );
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: shellNavKey,
+          name: Routes.blockedUsers.name,
+          path: Routes.blockedUsers.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: const BlockedUsersPage(),
             );
           },
         ),
