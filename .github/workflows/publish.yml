@@ -116,7 +116,7 @@ jobs:
             flutter_build_args: "build windows --split-debug-info=debug_symbols"
             rename_file: acter.msix
             artifact_prefix: acter-windows
-            rename_suffix: .msix
+            rename_suffix: msix
             artifact_path: app/build/windows/runner/Release/
             zip_files: false
             with_debug_symbols: true
@@ -433,8 +433,8 @@ jobs:
       - name: submit to MSStore via StoreBroker
         run: |
             # prepare te package
-            Move-Item -Path .\app\build\windows\runner\Release\*.msix acter.msix
-            Compress-Archive -Path acter.msix acter.zip
+            Move-Item -Path .\build\windows\runner\Release\acter-windows-${{ needs.tags.outputs.tag }}.msix
+            Compress-Archive -Path acter-windows-${{ needs.tags.outputs.tag }}.msix acter.zip
             # login with the StoreBroker
             $password = ConvertTo-SecureString "${{ secrets.AZURE_AD_CLIENT_SECRET }}" -AsPlainText -Force
             $cred = New-Object System.Management.Automation.PSCredential ("${{ secrets.AZURE_AD_CLIENT_ID }}", $password)
@@ -443,7 +443,7 @@ jobs:
             $sub = New-ApplicationSubmission -AppId ${{ secrets.MS_STORE_APP_ID }} -Force
             $sub.applicationPackages | ForEach-Object { $_.fileStatus = "PendingDelete" }
             $pkg = $sub.applicationPackages[0].PSObject.Copy()
-            $pkg.fileName = "acter.msix"
+            $pkg.fileName = "acter-windows-${{ needs.tags.outputs.tag }}.msix"
             $pkg.fileStatus = "PendingUpload"
             $pkg.PSObject.Properties.Remove("version")
             $pkg.PSObject.Properties.Remove("id")
