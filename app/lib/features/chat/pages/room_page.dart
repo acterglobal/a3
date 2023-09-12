@@ -215,6 +215,12 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
             BuildContext context,
             types.Message message,
           ) async {
+            if (message is types.CustomMessage) {
+              if (message.metadata!.containsKey('eventType') &&
+                  message.metadata!['eventType'] == 'm.room.redaction') {
+                return;
+              }
+            }
             final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
             if (ref.read(chatInputProvider(roomId)).showReplyView) {
               inputNotifier.toggleReplyView(false);

@@ -129,7 +129,9 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                           ),
                           actions: <Widget>[
                             DefaultButton(
-                              onPressed: () => context.pop(),
+                              onPressed: () =>
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pop(),
                               title: 'No',
                               isOutlined: true,
                             ),
@@ -141,13 +143,15 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                     chatInputNotifier.emojiRowVisible(false);
                                     chatInputNotifier.setCurrentMessageId(null);
                                     if (context.mounted) {
-                                      context.pop();
+                                      Navigator.of(context, rootNavigator: true)
+                                          .pop();
                                     }
                                   } catch (e) {
                                     if (!context.mounted) {
                                       return;
                                     }
-                                    context.pop();
+                                    Navigator.of(context, rootNavigator: true)
+                                        .pop();
                                     customMsgSnackbar(
                                       context,
                                       e.toString(),

@@ -142,15 +142,15 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'PushBack':
         RoomMessage m = timelineEvent.value()!;
         final message = _parseMessage(m);
-        insertMessage(0, message);
+        final newList = messagesCopy();
+        newList.add(message);
+        setMessages(newList);
         postProcessing.add(PostProcessItem(m, message));
         break;
       case 'PushFront':
         RoomMessage m = timelineEvent.value()!;
         final message = _parseMessage(m);
-        final newList = messagesCopy();
-        newList.add(message);
-        setMessages(newList);
+        insertMessage(0, message);
         postProcessing.add(PostProcessItem(m, message));
         break;
       case 'PopBack':
