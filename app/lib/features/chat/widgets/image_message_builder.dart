@@ -19,7 +19,7 @@ class ImageMessageBuilder extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ImageMessageBuilderState createState() => _ImageMessageBuilderState();
+  State<ImageMessageBuilder> createState() => _ImageMessageBuilderState();
 }
 
 class _ImageMessageBuilderState extends State<ImageMessageBuilder> {
@@ -28,6 +28,7 @@ class _ImageMessageBuilderState extends State<ImageMessageBuilder> {
   @override
   void initState() {
     super.initState();
+    loadImage();
   }
 
   Future<void> loadImage() async {
