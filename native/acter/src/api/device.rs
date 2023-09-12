@@ -3,11 +3,7 @@ use futures::{
     channel::mpsc::{channel, Receiver, Sender},
     stream::StreamExt,
 };
-use matrix_sdk::{
-    ruma::device_id,
-    sync::SyncResponse,
-    Client as SdkClient,
-};
+use matrix_sdk::{ruma::device_id, sync::SyncResponse, Client as SdkClient};
 use std::{
     sync::Arc,
     time::{Duration, SystemTime, UNIX_EPOCH},
