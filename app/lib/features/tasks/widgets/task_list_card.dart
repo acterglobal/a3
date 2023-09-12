@@ -54,14 +54,22 @@ final tasksProvider =
   return TasksNotifier();
 });
 
-class TaskListCard extends ConsumerWidget {
+class TaskListCard extends ConsumerStatefulWidget {
   final TaskList taskList;
   final bool showSpace;
   const TaskListCard({Key? key, required this.taskList, this.showSpace = true})
       : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _TaskListCardState();
+}
+
+class _TaskListCardState extends ConsumerState<TaskListCard> {
+  bool showInlineAddTask = false;
+  @override
+  Widget build(BuildContext context) {
+    final taskList = widget.taskList;
+
     final tasks = ref.watch(tasksProvider(taskList));
     final spaceId = taskList.spaceIdStr();
 
@@ -76,7 +84,7 @@ class TaskListCard extends ConsumerWidget {
                 title: Text(
                   taskList.name(),
                 ),
-                subtitle: showSpace
+                subtitle: widget.showSpace
                     ? Padding(
                         padding: const EdgeInsets.only(top: 4),
                         child: Wrap(
@@ -108,23 +116,31 @@ class TaskListCard extends ConsumerWidget {
                   for (final task in overview.openTasks) {
                     children.add(TaskEntry(task: task));
                   }
-                  children.add(
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 8,
+                  if (showInlineAddTask) {
+                    children.add(
+                      const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 8,
+                        ),
+                        child: Text('Inline Task Adding'),
                       ),
-                      child: OutlinedButton(
-                        onPressed: () => {
-                          customMsgSnackbar(
-                            context,
-                            'Inline task creation not yet implemented',
-                          ),
-                        },
-                        child: const Text('Add Task'),
+                    );
+                  } else {
+                    children.add(
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 8,
+                        ),
+                        child: OutlinedButton(
+                          onPressed: () =>
+                              {setState(() => showInlineAddTask = true)},
+                          child: const Text('Add Task'),
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  }
 
                   for (final task in overview.doneTasks) {
                     children.add(TaskEntry(task: task));

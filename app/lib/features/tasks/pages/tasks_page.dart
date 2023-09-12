@@ -25,15 +25,15 @@ class TasksPage extends ConsumerWidget {
             title: 'Tasks',
             sectionColor: Theme.of(context).colorScheme.tasksBG,
             actions: [
-              IconButton(
-                icon: const Icon(Atlas.funnel_sort_thin),
-                onPressed: () {
-                  customMsgSnackbar(
-                    context,
-                    'Task filters not yet implemented',
-                  );
-                },
-              ),
+              // IconButton(
+              //   icon: const Icon(Atlas.funnel_sort_thin),
+              //   onPressed: () {
+              //     customMsgSnackbar(
+              //       context,
+              //       'Task filters not yet implemented',
+              //     );
+              //   },
+              // ),
               IconButton(
                 icon: const Icon(Atlas.plus_circle),
                 onPressed: () {
