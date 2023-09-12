@@ -1,8 +1,8 @@
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
@@ -110,8 +110,7 @@ class _CreateTaskListSheetConsumerState
         ElevatedButton(
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
-              popUpDialog(
-                context: context,
+              DefaultDialog(
                 title: Text(
                   'Posting TaskList',
                   style: Theme.of(context).textTheme.titleSmall,

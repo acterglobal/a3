@@ -1,7 +1,7 @@
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
@@ -47,6 +47,10 @@ class _EditPinSheetConsumerState extends ConsumerState<EditPinSheet> {
 
   @override
   Widget build(BuildContext context) {
+    bool hasLinkOrText() {
+      return _urlController.text.isNotEmpty || _textController.text.isNotEmpty;
+    }
+
     return SideSheet(
       header: 'Edit Pin',
       addActions: true,
@@ -92,19 +96,13 @@ class _EditPinSheetConsumerState extends ConsumerState<EditPinSheet> {
                     borderRadius: BorderRadius.circular(5),
                   ),
                 ),
-                validator: (value) => (value != null && value.isNotEmpty)
-                    ? null
-                    : _textController.text.isEmpty
-                        ? 'Text or URL must be given'
-                        : null,
+                validator: (value) =>
+                    hasLinkOrText() ? null : 'Text or URL must be given',
                 controller: _urlController,
               ),
               MdEditorWithPreview(
-                validator: (value) => (value != null && value.isNotEmpty)
-                    ? null
-                    : _urlController.text.isEmpty
-                        ? 'Text or URL must be given'
-                        : null,
+                validator: (value) =>
+                    hasLinkOrText() ? null : 'Text or URL must be given',
                 controller: _textController,
               ),
             ],
@@ -129,13 +127,16 @@ class _EditPinSheetConsumerState extends ConsumerState<EditPinSheet> {
         ElevatedButton(
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
-              popUpDialog(
+              showAdaptiveDialog(
+                barrierDismissible: false,
                 context: context,
-                title: Text(
-                  'Saving Pin update',
-                  style: Theme.of(context).textTheme.titleSmall,
+                builder: (context) => DefaultDialog(
+                  title: Text(
+                    'Saving Pin update',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  isLoader: true,
                 ),
-                isLoader: true,
               );
               try {
                 final pin = await ref.read(

@@ -1,47 +1,50 @@
 import 'package:acter/features/chat/models/chat_list_state/chat_list_state.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Convo;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChatListNotifier extends StateNotifier<ChatListState> {
   final Ref ref;
   final AsyncValue<List<Convo>> asyncChats;
-  ChatListNotifier({required this.ref, required this.asyncChats})
-      : super(const ChatListState.initial()) {
+
+  ChatListNotifier({
+    required this.ref,
+    required this.asyncChats,
+  }) : super(const ChatListState.initial()) {
     _loadUp();
   }
 
-  void _loadUp() async {
+  Future<void> _loadUp() async {
     state = asyncChats.when(
-      data: (rooms) => ChatListState.data(chats: [...rooms]),
+      data: (convos) => ChatListState.data(chats: [...convos]),
       error: (e, s) => ChatListState.error(e.toString()),
       loading: () => const ChatListState.loading(),
     );
   }
 
-  void searchRoom(String data) async {
-    List<Convo> temp = [];
-    if (data.isNotEmpty) {
-      for (var element in asyncChats.requireValue) {
-        final name = await element
+  Future<void> searchRoom(String? data) async {
+    List<Convo> convos = [];
+    if (data != null && data.isNotEmpty) {
+      for (var convo in asyncChats.requireValue) {
+        final name = await convo
                 .getProfile()
                 .getDisplayName()
                 .then((value) => value.text()) ??
-            element.getRoomIdStr();
+            convo.getRoomIdStr();
         if (name.toLowerCase().contains(data.toLowerCase())) {
-          temp.add(element);
+          convos.add(convo);
         }
       }
-      state = ChatListState.data(chats: temp);
+      state = ChatListState.data(chats: convos);
     } else {
-      temp = asyncChats.requireValue;
-      state = ChatListState.data(chats: temp);
+      convos = asyncChats.requireValue;
+      state = ChatListState.data(chats: convos);
     }
   }
 
   void moveItem(int from, int to) {
-    final temp = asyncChats.requireValue;
-    temp.removeAt(from);
-    temp.insert(to, temp[from]);
-    state = ChatListState.data(chats: temp);
+    final convos = asyncChats.requireValue;
+    final convo = convos.removeAt(from);
+    convos.insert(to, convo);
+    state = ChatListState.data(chats: convos);
   }
 }

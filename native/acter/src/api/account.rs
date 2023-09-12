@@ -1,16 +1,17 @@
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use matrix_sdk::{
     media::MediaFormat,
     ruma::{OwnedMxcUri, OwnedUserId},
     Account as SdkAccount,
 };
-use std::{ops::Deref, path::PathBuf};
+use std::{ops::Deref, path::PathBuf, str::FromStr};
 
 use super::{
     api::FfiBuffer,
     common::{OptionBuffer, OptionString},
     RUNTIME,
 };
+use matrix_sdk::ruma::events::ignored_user_list::IgnoredUserListEventContent;
 
 #[derive(Clone, Debug)]
 pub struct Account {
@@ -79,6 +80,47 @@ impl Account {
                 let data = std::fs::read(path).context("File should be read")?;
                 let new_url = account.upload_avatar(&content_type, data).await?;
                 Ok(new_url)
+            })
+            .await?
+    }
+
+    pub async fn ignore_user(&self, user_id: String) -> Result<bool> {
+        let user_id = OwnedUserId::from_str(&user_id)?;
+        let account = self.account.clone();
+
+        RUNTIME
+            .spawn(async move {
+                account.ignore_user(&user_id).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn unignore_user(&self, user_id: String) -> Result<bool> {
+        let user_id = OwnedUserId::from_str(&user_id)?;
+        let account = self.account.clone();
+
+        RUNTIME
+            .spawn(async move {
+                account.unignore_user(&user_id).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn ignored_users(&self) -> Result<Vec<OwnedUserId>> {
+        let account = self.account.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let maybe_content = account
+                    .account_data::<IgnoredUserListEventContent>()
+                    .await?;
+                let Some(raw_content) = maybe_content  else {
+                bail!("No ignored Users found");
+            };
+                let content = raw_content.deserialize()?;
+                Ok(content.ignored_users.keys().map(Clone::clone).collect())
             })
             .await?
     }

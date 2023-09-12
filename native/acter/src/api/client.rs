@@ -145,7 +145,7 @@ pub(crate) async fn devide_spaces_from_convos(
                 if inner.is_space() {
                     spaces.push(Space::new(client.clone(), inner));
                 } else {
-                    convos.push(Convo::new(inner));
+                    convos.push(Convo::new(client.convo_controller.clone(), inner));
                 }
 
                 (spaces, convos, client)
@@ -427,7 +427,7 @@ impl Client {
         server_names: Vec<String>,
     ) -> Result<Room> {
         let alias = OwnedRoomOrAliasId::try_from(room_id_or_alias)?;
-        let server_names: Vec<OwnedServerName> = server_names
+        let server_names = server_names
             .into_iter()
             .map(OwnedServerName::try_from)
             .collect::<Result<Vec<OwnedServerName>, ruma::IdParseError>>()?;

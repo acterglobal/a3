@@ -377,6 +377,37 @@ class ActerSdk {
     return _clients;
   }
 
+  Future<bool> deactivateAndDestroyCurrentClient(
+    String password,
+  ) async {
+    final client = currentClient;
+    if (client == null) {
+      return false;
+    }
+
+    final userId = client.userId().toString();
+
+    // take it out of the loop
+    if (_index >= 0 && _index < _clients.length) {
+      _clients.removeAt(_index);
+      _index = _index > 0 ? _index - 1 : 0;
+    }
+    try {
+      if (!await client.deactivate(password)) {
+        throw 'Deactivating the client failed';
+      }
+    } catch (e) {
+      // reset the client locally
+      _clients.add(client);
+      _index = clients.length - 1;
+      rethrow;
+    }
+    await _persistSessions();
+    String appDocPath = await appDir();
+
+    return await _api.destroyLocalData(appDocPath, userId, defaultServerName);
+  }
+
   ffi.CreateConvoSettingsBuilder newConvoSettingsBuilder() {
     return _api.newConvoSettingsBuilder();
   }

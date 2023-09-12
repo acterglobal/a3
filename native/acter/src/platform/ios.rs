@@ -6,6 +6,9 @@ use std::sync::{Arc, Mutex};
 
 use super::native;
 
+pub async fn destroy_local_data(base_path: String, home_dir: String) -> Result<bool> {
+    native::destroy_local_data(base_path, home_dir).await
+}
 // this includes macos, because macos and ios is very much alike in logging
 
 #[cfg(target_os = "ios")]

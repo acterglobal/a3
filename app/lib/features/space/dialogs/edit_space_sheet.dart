@@ -1,10 +1,11 @@
 import 'dart:io';
 
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -225,20 +226,30 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
               return;
             }
             if (!havePermission) {
-              popUpDialog(
+              showAdaptiveDialog(
                 context: context,
-                title: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Icon(
-                    Atlas.block_prohibited,
-                    size: 28,
-                    color: Theme.of(context).colorScheme.onError,
+                builder: (context) => DefaultDialog(
+                  title: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Atlas.block_prohibited,
+                      size: 28,
+                      color: Theme.of(context).colorScheme.onError,
+                    ),
                   ),
+                  subtitle: const Text('Cannot edit space with no permissions'),
+                  actions: <Widget>[
+                    DefaultButton(
+                      onPressed: () => context.pop(),
+                      title: 'Okay',
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                          Theme.of(context).colorScheme.success,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                subtitle: const Text('Cannot edit space with no permissions'),
-                btn2Text: 'Okay',
-                onPressedBtn2: () => context.pop(),
-                btn2Color: Theme.of(context).colorScheme.success,
               );
               return;
             }
@@ -330,13 +341,16 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
   // update space handler
   Future<RoomId> _handleUpdateSpace(BuildContext context) async {
-    popUpDialog(
+    showAdaptiveDialog(
+      barrierDismissible: false,
       context: context,
-      title: Text(
-        'Updating Space',
-        style: Theme.of(context).textTheme.titleSmall,
+      builder: (context) => DefaultDialog(
+        title: Text(
+          'Updating Space',
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        isLoader: true,
       ),
-      isLoader: true,
     );
 
     final space = await ref.read(spaceProvider(widget.spaceId!).future);

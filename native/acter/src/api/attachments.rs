@@ -12,7 +12,8 @@ use matrix_sdk::{
         events::room::{
             message::{
                 AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-                ImageMessageEventContent, VideoInfo, VideoMessageEventContent,
+                ImageMessageEventContent, LocationMessageEventContent, VideoInfo,
+                VideoMessageEventContent,
             },
             ImageInfo,
         },
@@ -24,7 +25,7 @@ use tokio::sync::broadcast::Receiver;
 use tokio_stream::Stream;
 
 use super::{api::FfiBuffer, client::Client, RUNTIME};
-use crate::{AudioDesc, FileDesc, ImageDesc, VideoDesc};
+use crate::{AudioDesc, FileDesc, ImageDesc, LocationDesc, VideoDesc};
 
 impl Client {
     pub async fn wait_for_attachment(
@@ -134,6 +135,14 @@ impl Attachment {
         // any variable in self can't be called directly in spawn
         let content = self.inner.content().file().context("Not a file")?;
         self.client.source_binary(content.source).await
+    }
+
+    pub fn location_desc(&self) -> Option<LocationDesc> {
+        self.inner.content().location().and_then(|content| {
+            content
+                .info
+                .map(|info| LocationDesc::new(content.body, content.geo_uri))
+        })
     }
 }
 

@@ -74,7 +74,6 @@ class _DashboardState extends ConsumerState<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
     final client = ref.watch(clientProvider)!;
     final provider = ref.watch(featuresProvider);
     bool isActive(f) => provider.isActive(f);
@@ -144,7 +143,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                       margin: const EdgeInsets.all(8),
                       child: InkWell(
                         onTap: () => context.pushNamed(Routes.myProfile.name),
-                        child: const UserAvatarWidget(),
+                        child: const UserAvatarWidget(size: 20),
                       ),
                     ),
                   ),
