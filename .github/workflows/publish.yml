@@ -435,10 +435,12 @@ jobs:
             # prepare te package
             Move-Item -Path .\build\windows\runner\Release\acter-windows-${{ needs.tags.outputs.tag }}.msix
             Compress-Archive -Path acter-windows-${{ needs.tags.outputs.tag }}.msix acter.zip
+            Write-Debug "Done compressing. Logging in"
             # login with the StoreBroker
             $password = ConvertTo-SecureString "${{ secrets.AZURE_AD_CLIENT_SECRET }}" -AsPlainText -Force
             $cred = New-Object System.Management.Automation.PSCredential ("${{ secrets.AZURE_AD_CLIENT_ID }}", $password)
             Set-StoreBrokerAuthentication -TenantId ${{ secrets.AZURE_AD_TENANT_ID }} -Credential $cred
+            Write-Debug "Logged in. Preparing submission"
             # create the submission and add new package
             $sub = New-ApplicationSubmission -AppId ${{ secrets.MS_STORE_APP_ID }} -Force
             $sub.applicationPackages | ForEach-Object { $_.fileStatus = "PendingDelete" }
@@ -448,9 +450,13 @@ jobs:
             $pkg.PSObject.Properties.Remove("version")
             $pkg.PSObject.Properties.Remove("id")
             $sub.applicationPackages += $pkg
+            Write-Debug "Setting Submission ID"
             Set-ApplicationSubmission -AppId ${{ secrets.MS_STORE_APP_ID }} -UpdatedSubmission $sub
+            Write-Debug "Setting Submission Package"
             Set-SubmissionPackage -PackagePath 'acter.zip' -UploadUrl ($sub.fileUploadUrl)
+            Write-Debug "Completing submission"
             Complete-ApplicationSubmission -AppId ${{ secrets.MS_STORE_APP_ID }} -SubmissionId ($sub.id)
+            Write-Debug "Submitted successfully"
 
   google-play-store:
     runs-on: ubuntu-latest
