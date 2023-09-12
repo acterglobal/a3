@@ -38,7 +38,7 @@ class CalendarEventPage extends ConsumerWidget {
             child: const Row(
               children: <Widget>[
                 Icon(Atlas.pencil_edit_thin),
-                Spacer(),
+                SizedBox(width: 10),
                 Text('Edit Event'),
               ],
             ),
@@ -72,7 +72,7 @@ class CalendarEventPage extends ConsumerWidget {
                   Atlas.trash_can_thin,
                   color: Theme.of(context).colorScheme.error,
                 ),
-                const Spacer(),
+                const SizedBox(width: 10),
                 const Text('Redact Event'),
               ],
             ),
@@ -100,7 +100,7 @@ class CalendarEventPage extends ConsumerWidget {
                 Atlas.warning_thin,
                 color: Theme.of(context).colorScheme.error,
               ),
-              const Spacer(),
+              const SizedBox(width: 10),
               const Text('Report Event'),
             ],
           ),
