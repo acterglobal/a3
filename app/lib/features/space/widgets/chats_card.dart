@@ -43,7 +43,7 @@ class ChatsCard extends ConsumerWidget {
                         onTap: () => context.pushNamed(
                           Routes.chatroom.name,
                           pathParameters: {
-                            'roomId': chats[index].getRoomIdStr()
+                            'roomId': chats[index].getRoomIdStr(),
                           },
                         ),
                       ),

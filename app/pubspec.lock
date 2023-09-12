@@ -65,14 +65,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.12"
-  auto_animated_list:
-    dependency: "direct main"
-    description:
-      name: auto_animated_list
-      sha256: "474bb32c0da0956ab5083e78c87f23c77907bcac66140698e83f28b2a1b4b665"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.4"
   awesome_notifications:
     dependency: "direct main"
     description:
@@ -747,6 +739,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.1"
+  great_list_view:
+    dependency: "direct main"
+    description:
+      name: great_list_view
+      sha256: "4e528745d65c95d731b7c90af620822895233943ff531ad7a5d2b5a43e187b12"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.3"
   highlight:
     dependency: transitive
     description:
@@ -1742,6 +1742,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.7"
+  worker_manager:
+    dependency: transitive
+    description:
+      name: worker_manager
+      sha256: "42501e49ee0acad9eeda562984e3dcfe6fe3d26f2d8dc410bd76308a86447eb5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.3"
   xdg_directories:
     dependency: transitive
     description:

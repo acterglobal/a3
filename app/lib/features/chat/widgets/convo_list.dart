@@ -4,15 +4,27 @@ import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:auto_animated_list/auto_animated_list.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class ConvosList extends ConsumerWidget {
+class ConvosList extends ConsumerStatefulWidget {
   final Function(String)? onSelected;
   const ConvosList({this.onSelected, super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConvosList> createState() => _ConvosListConsumerState();
+}
+
+class _ConvosListConsumerState extends ConsumerState<ConvosList> {
+  final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
+  List<Convo> rooms = [];
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final chats = ref.watch(chatsProvider);
     final searchValue = ref.watch(chatSearchValueProvider);
     if (searchValue != null && searchValue.isNotEmpty) {
       return ref.watch(searchedChatsProvider).when(
@@ -25,11 +37,9 @@ class ConvosList extends ConsumerWidget {
               }
               return renderList(context, chats);
             },
-            loading: () => Center(
+            loading: () => const Center(
               heightFactor: 10,
-              child: Text(
-                '${AppLocalizations.of(context)!.loadingConvo}...',
-              ),
+              child: CircularProgressIndicator(),
             ),
             error: (e, s) => Center(
               heightFactor: 10,
@@ -39,8 +49,6 @@ class ConvosList extends ConsumerWidget {
             ),
           );
     }
-
-    final chats = ref.watch(chatsProvider);
 
     if (chats.isEmpty) {
       return Center(
@@ -54,19 +62,20 @@ class ConvosList extends ConsumerWidget {
   }
 
   Widget renderList(BuildContext context, List<Convo> chats) {
-    return AutoAnimatedList<Convo>(
-      items: chats,
-      itemBuilder: (context, item, index, animation) => SizeFadeTransition(
-        sizeFraction: 0.7,
-        animation: animation,
+    return AnimatedList(
+      key: listKey,
+      physics: const NeverScrollableScrollPhysics(),
+      initialItemCount: chats.length,
+      shrinkWrap: true,
+      itemBuilder: (context, index, animation) => SizeTransition(
+        sizeFactor: animation,
         child: ConvoCard(
-          room: item,
-          onTap: () =>
-              onSelected != null ? onSelected!(item.getRoomIdStr()) : null,
+          room: chats[index],
+          onTap: () => widget.onSelected != null
+              ? widget.onSelected!(chats[index].getRoomIdStr())
+              : null,
         ),
       ),
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
     );
   }
 }

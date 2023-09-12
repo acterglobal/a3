@@ -95,7 +95,8 @@ class SelectedChatIdNotifier extends Notifier<String?> {
 
 final selectedChatIdProvider =
     NotifierProvider<SelectedChatIdNotifier, String?>(
-        () => SelectedChatIdNotifier(),);
+  () => SelectedChatIdNotifier(),
+);
 
 final currentConvoProvider = FutureProvider<Convo?>((ref) async {
   final roomId = ref.watch(selectedChatIdProvider);

@@ -57,7 +57,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
           children: <Widget>[
             ListTile(
               onTap: onTap,
-              selected: roomId == ref.read(selectedChatIdProvider),
+              selected: roomId == ref.watch(selectedChatIdProvider),
               selectedTileColor: Theme.of(context).colorScheme.primaryContainer,
               onFocusChange: onFocusChange,
               onLongPress: onLongPress,
