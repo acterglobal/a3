@@ -4,11 +4,7 @@ use futures::{
     stream::StreamExt,
 };
 use matrix_sdk::{
-    encryption::identities::Device,
-    ruma::{
-        device_id, events::key::verification::VerificationMethod, MilliSecondsSinceUnixEpoch,
-        OwnedDeviceId, OwnedUserId,
-    },
+    ruma::device_id,
     sync::SyncResponse,
     Client as SdkClient,
 };
@@ -31,6 +27,10 @@ impl DeviceChangedEvent {
         DeviceChangedEvent {
             client: client.clone(),
         }
+    }
+
+    pub(crate) fn client(&self) -> SdkClient {
+        self.client.clone()
     }
 
     pub async fn device_records(&self, verified: bool) -> Result<Vec<DeviceRecord>> {
@@ -89,88 +89,6 @@ impl DeviceChangedEvent {
                     }
                 }
                 Ok(sessions)
-            })
-            .await?
-    }
-
-    pub async fn request_verification_to_user(&self) -> Result<bool> {
-        let client = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let user_id = client
-                    .user_id()
-                    .context("guest user cannot request verification")?;
-                let user = client
-                    .encryption()
-                    .get_user_identity(user_id)
-                    .await?
-                    .context("alice should get user identity")?;
-                user.request_verification().await?;
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn request_verification_to_device(&self, dev_id: String) -> Result<bool> {
-        let client = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let user_id = client
-                    .user_id()
-                    .context("guest user cannot request verification")?;
-                let dev = client
-                    .encryption()
-                    .get_device(user_id, device_id!(dev_id.as_str()))
-                    .await?
-                    .context("alice should get device")?;
-                dev.request_verification_with_methods(vec![VerificationMethod::SasV1])
-                    .await?;
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn request_verification_to_user_with_methods(
-        &self,
-        methods: &mut Vec<String>,
-    ) -> Result<bool> {
-        let client = self.client.clone();
-        let values = (*methods).iter().map(|e| e.as_str().into()).collect();
-        RUNTIME
-            .spawn(async move {
-                let user_id = client
-                    .user_id()
-                    .context("guest user cannot request verification")?;
-                let user = client
-                    .encryption()
-                    .get_user_identity(user_id)
-                    .await?
-                    .context("alice should get user identity")?;
-                user.request_verification_with_methods(values).await?;
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn request_verification_to_device_with_methods(
-        &self,
-        dev_id: String,
-        methods: &mut Vec<String>,
-    ) -> Result<bool> {
-        let client = self.client.clone();
-        let values = (*methods).iter().map(|e| e.as_str().into()).collect();
-        RUNTIME
-            .spawn(async move {
-                let user_id = client
-                    .user_id()
-                    .context("guest user cannot request verification")?;
-                let dev = client
-                    .encryption()
-                    .get_device(user_id, device_id!(dev_id.as_str()))
-                    .await?
-                    .context("alice should get device")?;
-                dev.request_verification_with_methods(values).await?;
-                Ok(true)
             })
             .await?
     }
