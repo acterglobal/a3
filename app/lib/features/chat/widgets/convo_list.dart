@@ -55,18 +55,15 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
   }
 
   Widget renderList(BuildContext context, List<Convo> chats) {
-    return AnimatedList(
+    return ListView.builder(
+      itemCount: chats.length,
       physics: const NeverScrollableScrollPhysics(),
-      initialItemCount: chats.length,
       shrinkWrap: true,
-      itemBuilder: (context, index, animation) => SizeTransition(
-        sizeFactor: animation,
-        child: ConvoCard(
-          room: chats[index],
-          onTap: () => widget.onSelected != null
-              ? widget.onSelected!(chats[index].getRoomIdStr())
-              : null,
-        ),
+      itemBuilder: (context, index) => ConvoCard(
+        room: chats[index],
+        onTap: () => widget.onSelected != null
+            ? widget.onSelected!(chats[index].getRoomIdStr())
+            : null,
       ),
     );
   }

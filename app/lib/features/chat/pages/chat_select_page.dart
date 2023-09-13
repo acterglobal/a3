@@ -1,3 +1,4 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -6,9 +7,12 @@ class ChatSelectPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return const SizedBox(
-      child: Center(
-        child: Text('Select any room to see see it'),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: AppTheme.primaryGradient,
+      ),
+      child: const Center(
+        child: Text('Select any room to see it'),
       ),
     );
   }
