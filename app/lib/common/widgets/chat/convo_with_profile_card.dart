@@ -55,29 +55,32 @@ class ConvoWithProfileCard extends ConsumerWidget {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            ListTile(
-              onTap: onTap,
-              selected: roomId == ref.watch(selectedChatIdProvider),
-              selectedTileColor: Theme.of(context).colorScheme.primaryContainer,
-              onFocusChange: onFocusChange,
-              onLongPress: onLongPress,
-              leading: showParent
-                  ? SpaceParentBadge(
-                      spaceId: roomId,
-                      badgeSize: 20,
-                      child: avatar,
-                    )
-                  : avatar,
-              title: Text(
-                profile.displayName ?? roomId,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(fontWeight: FontWeight.w700),
-                overflow: TextOverflow.ellipsis,
+            Material(
+              color: Colors.transparent,
+              child: ListTile(
+                onTap: onTap,
+                selected: roomId == ref.watch(selectedChatIdProvider),
+                selectedTileColor: Theme.of(context).colorScheme.onPrimary,
+                onFocusChange: onFocusChange,
+                onLongPress: onLongPress,
+                leading: showParent
+                    ? SpaceParentBadge(
+                        spaceId: roomId,
+                        badgeSize: 20,
+                        child: avatar,
+                      )
+                    : avatar,
+                title: Text(
+                  profile.displayName ?? roomId,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium!
+                      .copyWith(fontWeight: FontWeight.w700),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: constraints.maxWidth < 300 ? null : subtitle,
+                trailing: constraints.maxWidth < 300 ? null : trailing,
               ),
-              subtitle: constraints.maxWidth < 300 ? null : subtitle,
-              trailing: constraints.maxWidth < 300 ? null : trailing,
             ),
             constraints.maxWidth < 300
                 ? const SizedBox.shrink()

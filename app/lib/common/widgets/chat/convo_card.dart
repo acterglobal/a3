@@ -2,7 +2,6 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -96,19 +95,6 @@ class _SubtitleWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final typingEvent = ref.watch(typingProvider);
-    if (typingEvent.isNotEmpty) {
-      debugPrint('$typingEvent');
-      if (typingEvent['roomId'] == room.getRoomIdStr()) {
-        return Container(
-          margin: const EdgeInsets.symmetric(vertical: 10),
-          child: Text(
-            getUserPlural(typingEvent['typingUsers']),
-            style: Theme.of(context).textTheme.labelLarge,
-          ),
-        );
-      }
-    }
     RoomEventItem? eventItem = latestMessage.eventItem();
     if (eventItem == null) {
       return const SizedBox.shrink();

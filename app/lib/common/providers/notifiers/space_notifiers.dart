@@ -67,7 +67,11 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
     _sub = _listener.listen(
       (e) async {
         debugPrint('seen update $arg');
-        state = await AsyncValue.guard(() => _getSpace());
+        Future.microtask(
+          () async => {
+            state = await AsyncValue.guard(() => _getSpace()),
+          },
+        );
       },
       onError: (e, stack) {
         debugPrint('stream errored: $e : $stack');

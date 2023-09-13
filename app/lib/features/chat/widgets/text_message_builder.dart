@@ -105,28 +105,8 @@ class _TextMessageBuilderConsumerState
   }
 
   void onPreviewDataFetched(types.PreviewData previewData) {
-    if (widget.message.previewData == null) {
-      handlePreviewDataFetched(widget.message, previewData);
-    }
-  }
-
-  // preview message link
-  void handlePreviewDataFetched(
-    types.TextMessage message,
-    types.PreviewData previewData,
-  ) {
-    final messages = ref.read(chatStateProvider(widget.convo)).messages;
-    final index = messages.indexWhere((x) => x.id == message.id);
-    if (index != -1) {
-      final updatedMessage = (messages[index] as types.TextMessage).copyWith(
-        previewData: previewData,
-      );
-      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-        final messagesNotifier =
-            ref.read(chatStateProvider(widget.convo).notifier);
-        messagesNotifier.replaceMessage(index, updatedMessage);
-      });
-    }
+    final chatRoomState = ref.read(chatStateProvider(widget.convo).notifier);
+    chatRoomState.handlePreviewDataFetched(widget.message, previewData);
   }
 }
 
@@ -163,6 +143,7 @@ class _TextWidget extends ConsumerWidget {
               maxLines: isReply ? 3 : null,
             )
           : Html(
+              backgroundColor: Colors.transparent,
               data: message.text,
               shrinkToFit: true,
               defaultTextStyle: Theme.of(context).textTheme.bodySmall!.copyWith(

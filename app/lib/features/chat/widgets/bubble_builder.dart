@@ -55,13 +55,13 @@ class BubbleBuilder extends ConsumerWidget {
                 : () {
                     if (chatInputState.currentMessageId != null) {
                       chatInputNotifier.emojiRowVisible(false);
-                      // chatInputNotifier.currentMessageId = null;
+
                       chatInputNotifier.toggleReplyView(true);
-                      // chatInputNotifier.repliedToMessage = message;
+                      chatInputNotifier.setRepliedToMessage(message);
                       chatInputNotifier.setReplyWidget(child);
                     } else {
                       chatInputNotifier.toggleReplyView(true);
-                      // chatInputNotifier.repliedToMessage = message;
+                      chatInputNotifier.setRepliedToMessage(message);
                       chatInputNotifier.setReplyWidget(child);
                     }
                   },
@@ -70,13 +70,13 @@ class BubbleBuilder extends ConsumerWidget {
                 : () {
                     if (chatInputState.emojiRowVisible) {
                       chatInputNotifier.emojiRowVisible(false);
-                      // chatInputNotifier.currentMessageId = null;
-                      // chatInputNotifier.repliedToMessage = message;
+
+                      chatInputNotifier.setRepliedToMessage(message);
                       chatInputNotifier.toggleReplyView(true);
                       chatInputNotifier.setReplyWidget(child);
                     } else {
                       chatInputNotifier.toggleReplyView(true);
-                      // chatInputNotifier.repliedToMessage = message;
+                      chatInputNotifier.setRepliedToMessage(message);
                       chatInputNotifier.setReplyWidget(child);
                     }
                   },
@@ -118,15 +118,19 @@ class _ChatBubble extends ConsumerWidget {
       crossAxisAlignment:
           isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
-        _EmojiRow(
-            roomId: roomId, onEmojiTap: sendEmojiReaction, message: message,),
+        EmojiRow(
+          roomId: roomId,
+          onEmojiTap: sendEmojiReaction,
+          message: message,
+        ),
         const SizedBox(height: 4),
         enlargeEmoji
             ? child
             : Bubble(
                 color: isAuthor
-                    ? Theme.of(context).colorScheme.inversePrimary
-                    : Theme.of(context).colorScheme.onPrimary,
+                    ? Theme.of(context).colorScheme.primaryContainer
+                    : Theme.of(context).colorScheme.neutral2,
+                borderColor: Colors.transparent,
                 style: BubbleStyle(
                   margin: nextMessageInGroup
                       ? const BubbleEdges.symmetric(horizontal: 2)
@@ -150,10 +154,12 @@ class _ChatBubble extends ConsumerWidget {
                         children: <Widget>[
                           Container(
                             decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .neutral
-                                  .withOpacity(0.3),
+                              color: isAuthor
+                                  ? Theme.of(context).colorScheme.onPrimary
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .neutral
+                                      .withOpacity(0.3),
                               borderRadius: BorderRadius.circular(22),
                             ),
                             child: Column(
@@ -240,7 +246,11 @@ class _ChatBubble extends ConsumerWidget {
 
   // send emoji reaction to message event
   Future<void> sendEmojiReaction(String eventId, String emoji) async {
-    await convo.sendReaction(eventId, emoji);
+    try {
+      await convo.sendReaction(eventId, emoji);
+    } catch (e) {
+      debugPrint('$e');
+    }
   }
 }
 
@@ -316,7 +326,7 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
                       const EdgeInsets.symmetric(vertical: 1, horizontal: 2),
                   backgroundColor: sentByMe
                       ? AppTheme.theme.colorScheme.inversePrimary
-                      : null,
+                      : Colors.transparent,
                   labelPadding: const EdgeInsets.only(left: 2, right: 1),
                   avatar: Text(
                     key,
@@ -446,41 +456,6 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
         setState(() => reactionTabs.clear());
       }
     });
-  }
-}
-
-class _EmojiRow extends ConsumerWidget {
-  final types.Message message;
-  final String roomId;
-  final Function(String messageId, String value) onEmojiTap;
-
-  const _EmojiRow(
-      {required this.roomId, required this.onEmojiTap, required this.message,});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(clientProvider);
-    final myId = client!.userId().toString();
-    final isAuthor = (myId == message.author.id);
-
-    final chatInputState = ref.watch(chatInputProvider(roomId));
-    return Visibility(
-      visible: message.id == chatInputState.currentMessageId,
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 238, maxHeight: 42),
-        padding: const EdgeInsets.all(8),
-        margin: !isAuthor
-            ? const EdgeInsets.only(bottom: 8, left: 8)
-            : const EdgeInsets.only(bottom: 8, right: 8),
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(20)),
-          color: Theme.of(context).colorScheme.neutral2,
-        ),
-        child: EmojiRow(
-          onEmojiTap: (String value) => onEmojiTap(message.id, value),
-        ),
-      ),
-    );
   }
 }
 

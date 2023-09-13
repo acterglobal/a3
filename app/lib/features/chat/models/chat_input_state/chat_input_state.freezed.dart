@@ -23,9 +23,9 @@ mixin _$ChatInputState {
   bool get emojiRowVisible => throw _privateConstructorUsedError;
   bool get emojiPickerVisible => throw _privateConstructorUsedError;
   bool get attachmentVisible => throw _privateConstructorUsedError;
-  List<File> get fileList => throw _privateConstructorUsedError;
   String? get currentMessageId => throw _privateConstructorUsedError;
   types.Message? get repliedToMessage => throw _privateConstructorUsedError;
+  List<Map<String, String>> get mentions => throw _privateConstructorUsedError;
   Map<String, String> get mentionReplacements =>
       throw _privateConstructorUsedError;
 
@@ -48,9 +48,9 @@ abstract class $ChatInputStateCopyWith<$Res> {
       bool emojiRowVisible,
       bool emojiPickerVisible,
       bool attachmentVisible,
-      List<File> fileList,
       String? currentMessageId,
       types.Message? repliedToMessage,
+      List<Map<String, String>> mentions,
       Map<String, String> mentionReplacements});
 }
 
@@ -74,9 +74,9 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
     Object? emojiRowVisible = null,
     Object? emojiPickerVisible = null,
     Object? attachmentVisible = null,
-    Object? fileList = null,
     Object? currentMessageId = freezed,
     Object? repliedToMessage = freezed,
+    Object? mentions = null,
     Object? mentionReplacements = null,
   }) {
     return _then(_value.copyWith(
@@ -108,10 +108,6 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
           ? _value.attachmentVisible
           : attachmentVisible // ignore: cast_nullable_to_non_nullable
               as bool,
-      fileList: null == fileList
-          ? _value.fileList
-          : fileList // ignore: cast_nullable_to_non_nullable
-              as List<File>,
       currentMessageId: freezed == currentMessageId
           ? _value.currentMessageId
           : currentMessageId // ignore: cast_nullable_to_non_nullable
@@ -120,6 +116,10 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
           ? _value.repliedToMessage
           : repliedToMessage // ignore: cast_nullable_to_non_nullable
               as types.Message?,
+      mentions: null == mentions
+          ? _value.mentions
+          : mentions // ignore: cast_nullable_to_non_nullable
+              as List<Map<String, String>>,
       mentionReplacements: null == mentionReplacements
           ? _value.mentionReplacements
           : mentionReplacements // ignore: cast_nullable_to_non_nullable
@@ -144,9 +144,9 @@ abstract class _$$_ChatInputStateCopyWith<$Res>
       bool emojiRowVisible,
       bool emojiPickerVisible,
       bool attachmentVisible,
-      List<File> fileList,
       String? currentMessageId,
       types.Message? repliedToMessage,
+      List<Map<String, String>> mentions,
       Map<String, String> mentionReplacements});
 }
 
@@ -168,9 +168,9 @@ class __$$_ChatInputStateCopyWithImpl<$Res>
     Object? emojiRowVisible = null,
     Object? emojiPickerVisible = null,
     Object? attachmentVisible = null,
-    Object? fileList = null,
     Object? currentMessageId = freezed,
     Object? repliedToMessage = freezed,
+    Object? mentions = null,
     Object? mentionReplacements = null,
   }) {
     return _then(_$_ChatInputState(
@@ -202,10 +202,6 @@ class __$$_ChatInputStateCopyWithImpl<$Res>
           ? _value.attachmentVisible
           : attachmentVisible // ignore: cast_nullable_to_non_nullable
               as bool,
-      fileList: null == fileList
-          ? _value._fileList
-          : fileList // ignore: cast_nullable_to_non_nullable
-              as List<File>,
       currentMessageId: freezed == currentMessageId
           ? _value.currentMessageId
           : currentMessageId // ignore: cast_nullable_to_non_nullable
@@ -214,6 +210,10 @@ class __$$_ChatInputStateCopyWithImpl<$Res>
           ? _value.repliedToMessage
           : repliedToMessage // ignore: cast_nullable_to_non_nullable
               as types.Message?,
+      mentions: null == mentions
+          ? _value._mentions
+          : mentions // ignore: cast_nullable_to_non_nullable
+              as List<Map<String, String>>,
       mentionReplacements: null == mentionReplacements
           ? _value._mentionReplacements
           : mentionReplacements // ignore: cast_nullable_to_non_nullable
@@ -233,11 +233,11 @@ class _$_ChatInputState implements _ChatInputState {
       this.emojiRowVisible = false,
       this.emojiPickerVisible = false,
       this.attachmentVisible = false,
-      final List<File> fileList = const [],
       this.currentMessageId = null,
       this.repliedToMessage = null,
+      final List<Map<String, String>> mentions = const [],
       final Map<String, String> mentionReplacements = const {}})
-      : _fileList = fileList,
+      : _mentions = mentions,
         _mentionReplacements = mentionReplacements;
 
   @override
@@ -261,21 +261,21 @@ class _$_ChatInputState implements _ChatInputState {
   @override
   @JsonKey()
   final bool attachmentVisible;
-  final List<File> _fileList;
-  @override
-  @JsonKey()
-  List<File> get fileList {
-    if (_fileList is EqualUnmodifiableListView) return _fileList;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_fileList);
-  }
-
   @override
   @JsonKey()
   final String? currentMessageId;
   @override
   @JsonKey()
   final types.Message? repliedToMessage;
+  final List<Map<String, String>> _mentions;
+  @override
+  @JsonKey()
+  List<Map<String, String>> get mentions {
+    if (_mentions is EqualUnmodifiableListView) return _mentions;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_mentions);
+  }
+
   final Map<String, String> _mentionReplacements;
   @override
   @JsonKey()
@@ -288,7 +288,7 @@ class _$_ChatInputState implements _ChatInputState {
 
   @override
   String toString() {
-    return 'ChatInputState(showReplyView: $showReplyView, replyWidget: $replyWidget, allowEdit: $allowEdit, sendBtnVisible: $sendBtnVisible, emojiRowVisible: $emojiRowVisible, emojiPickerVisible: $emojiPickerVisible, attachmentVisible: $attachmentVisible, fileList: $fileList, currentMessageId: $currentMessageId, repliedToMessage: $repliedToMessage, mentionReplacements: $mentionReplacements)';
+    return 'ChatInputState(showReplyView: $showReplyView, replyWidget: $replyWidget, allowEdit: $allowEdit, sendBtnVisible: $sendBtnVisible, emojiRowVisible: $emojiRowVisible, emojiPickerVisible: $emojiPickerVisible, attachmentVisible: $attachmentVisible, currentMessageId: $currentMessageId, repliedToMessage: $repliedToMessage, mentions: $mentions, mentionReplacements: $mentionReplacements)';
   }
 
   @override
@@ -310,11 +310,11 @@ class _$_ChatInputState implements _ChatInputState {
                 other.emojiPickerVisible == emojiPickerVisible) &&
             (identical(other.attachmentVisible, attachmentVisible) ||
                 other.attachmentVisible == attachmentVisible) &&
-            const DeepCollectionEquality().equals(other._fileList, _fileList) &&
             (identical(other.currentMessageId, currentMessageId) ||
                 other.currentMessageId == currentMessageId) &&
             (identical(other.repliedToMessage, repliedToMessage) ||
                 other.repliedToMessage == repliedToMessage) &&
+            const DeepCollectionEquality().equals(other._mentions, _mentions) &&
             const DeepCollectionEquality()
                 .equals(other._mentionReplacements, _mentionReplacements));
   }
@@ -329,9 +329,9 @@ class _$_ChatInputState implements _ChatInputState {
       emojiRowVisible,
       emojiPickerVisible,
       attachmentVisible,
-      const DeepCollectionEquality().hash(_fileList),
       currentMessageId,
       repliedToMessage,
+      const DeepCollectionEquality().hash(_mentions),
       const DeepCollectionEquality().hash(_mentionReplacements));
 
   @JsonKey(ignore: true)
@@ -350,9 +350,9 @@ abstract class _ChatInputState implements ChatInputState {
       final bool emojiRowVisible,
       final bool emojiPickerVisible,
       final bool attachmentVisible,
-      final List<File> fileList,
       final String? currentMessageId,
       final types.Message? repliedToMessage,
+      final List<Map<String, String>> mentions,
       final Map<String, String> mentionReplacements}) = _$_ChatInputState;
 
   @override
@@ -370,11 +370,11 @@ abstract class _ChatInputState implements ChatInputState {
   @override
   bool get attachmentVisible;
   @override
-  List<File> get fileList;
-  @override
   String? get currentMessageId;
   @override
   types.Message? get repliedToMessage;
+  @override
+  List<Map<String, String>> get mentions;
   @override
   Map<String, String> get mentionReplacements;
   @override

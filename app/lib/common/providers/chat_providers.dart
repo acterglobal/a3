@@ -110,7 +110,7 @@ final currentConvoProvider = FutureProvider<Convo?>((ref) async {
 // TODO: improve this to be reusable for space and chat members alike.
 final memberProfileByIdProvider =
     FutureProvider.family<ProfileData, String>((ref, userId) async {
-  final member = await ref.watch(memberProvider(userId).future);
+  final member = await ref.read(memberProvider(userId).future);
   if (member == null) {
     throw 'Member not found';
   }
@@ -127,7 +127,7 @@ final memberProfileProvider =
 
 final memberProvider =
     FutureProvider.family<Member?, String>((ref, userId) async {
-  final convo = await ref.watch(currentConvoProvider.future);
+  final convo = await ref.read(currentConvoProvider.future);
   if (convo == null) {
     throw 'No chat selected';
   }

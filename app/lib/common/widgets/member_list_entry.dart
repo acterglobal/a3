@@ -545,59 +545,57 @@ class MemberListEntry extends ConsumerWidget {
     if (myMembership != null) {
       trailing.add(submenu(context, ref));
     }
-    return Card(
-      child: ListTile(
-        leading: profile.when(
-          data: (data) => ActerAvatar(
-            mode: DisplayMode.User,
+    return ListTile(
+      leading: profile.when(
+        data: (data) => ActerAvatar(
+          mode: DisplayMode.User,
+          uniqueId: userId,
+          size: data.hasAvatar() ? 18 : 36,
+          avatar: data.getAvatarImage(),
+          displayName: data.displayName,
+        ),
+        loading: () => ActerAvatar(
+          mode: DisplayMode.User,
+          uniqueId: userId,
+          size: 36,
+        ),
+        error: (e, t) {
+          debugPrint('loading avatar failed: $e');
+          return ActerAvatar(
             uniqueId: userId,
-            size: data.hasAvatar() ? 18 : 36,
-            avatar: data.getAvatarImage(),
-            displayName: data.displayName,
-          ),
-          loading: () => ActerAvatar(
+            displayName: userId,
             mode: DisplayMode.User,
-            uniqueId: userId,
             size: 36,
-          ),
-          error: (e, t) {
-            debugPrint('loading avatar failed: $e');
-            return ActerAvatar(
-              uniqueId: userId,
-              displayName: userId,
-              mode: DisplayMode.User,
-              size: 36,
-            );
-          },
-        ),
-        title: profile.when(
-          data: (data) => Text(
-            data.displayName ?? userId,
-            style: Theme.of(context).textTheme.bodyMedium,
-            overflow: TextOverflow.ellipsis,
-          ),
-          loading: () => Text(
-            userId,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          error: (e, s) {
-            debugPrint('loading Profile failed $e');
-            return const SizedBox.shrink();
-          },
-        ),
-        subtitle: Text(
-          userId,
-          style: Theme.of(context)
-              .textTheme
-              .labelLarge!
-              .copyWith(color: Theme.of(context).colorScheme.neutral5),
+          );
+        },
+      ),
+      title: profile.when(
+        data: (data) => Text(
+          data.displayName ?? userId,
+          style: Theme.of(context).textTheme.bodyMedium,
           overflow: TextOverflow.ellipsis,
         ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: trailing,
+        loading: () => Text(
+          userId,
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
+        error: (e, s) {
+          debugPrint('loading Profile failed $e');
+          return const SizedBox.shrink();
+        },
+      ),
+      subtitle: Text(
+        userId,
+        style: Theme.of(context)
+            .textTheme
+            .labelLarge!
+            .copyWith(color: Theme.of(context).colorScheme.neutral5),
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: trailing,
       ),
     );
   }

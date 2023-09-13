@@ -104,6 +104,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // parses `RoomMessage` event to `types.Message` and updates messages list
   Future<void> _handleDiff(TimelineDiff timelineEvent) async {
+    debugPrint('DiffRx: ${timelineEvent.action()}');
     List<PostProcessItem> postProcessing = [];
     switch (timelineEvent.action()) {
       case 'Append':
@@ -203,18 +204,19 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   Future<void> _fetchMentionRecords() async {
     final activeMembers =
         await ref.read(chatMembersProvider(convo.getRoomIdStr()).future);
-    List<Map<String, dynamic>> mentionRecords = [];
-    final mentionListNotifier = ref.read(mentionListProvider.notifier);
+    List<Map<String, String>> mentionRecords = [];
+    final mentionListNotifier =
+        ref.read(chatInputProvider(convo.getRoomIdStr()).notifier);
     for (int i = 0; i < activeMembers.length; i++) {
       String userId = activeMembers[i].userId().toString();
       final profile = activeMembers[i].getProfile();
-      Map<String, dynamic> record = {};
+      Map<String, String> record = {};
       final userName = (await profile.getDisplayName()).text();
-      record['display'] = userName ?? simplifyUserId(userId);
+      record['display'] = userName ?? simplifyUserId(userId)!;
       record['link'] = userId;
       mentionRecords.add(record);
       if (i % 3 == 0 || i == activeMembers.length - 1) {
-        mentionListNotifier.update((state) => mentionRecords);
+        mentionListNotifier.setMentions(mentionRecords);
       }
     }
   }
@@ -803,6 +805,23 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   Future<void> handleEndReached() async {
     if (state.hasMore) {
       await loadMore();
+    }
+  }
+
+  // preview message link
+  void handlePreviewDataFetched(
+    types.TextMessage message,
+    types.PreviewData previewData,
+  ) {
+    final messages = state.messages;
+    final index = messages.indexWhere((x) => x.id == message.id);
+    if (index != -1) {
+      final updatedMessage = (messages[index] as types.TextMessage).copyWith(
+        previewData: previewData,
+      );
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+        replaceMessage(index, updatedMessage);
+      });
     }
   }
 }

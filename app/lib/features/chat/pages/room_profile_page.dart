@@ -65,171 +65,174 @@ class RoomProfilePage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.neutral,
       extendBodyBehindAppBar: true,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            backgroundColor: Theme.of(context).colorScheme.neutral,
-            leading: Visibility(
-              visible: location == Routes.chat.route,
-              replacement: IconButton(
-                onPressed: () => context.pop(),
-                icon: const Icon(Icons.chevron_left),
+      body: Container(
+        decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              backgroundColor: Colors.transparent,
+              leading: Visibility(
+                visible: location == Routes.chat.route,
+                replacement: IconButton(
+                  onPressed: () => context.pop(),
+                  icon: const Icon(Icons.chevron_left),
+                ),
+                child: IconButton(
+                  onPressed: () => ref
+                      .read(showFullSplitView.notifier)
+                      .update((state) => false),
+                  icon: const Icon(Atlas.xmark_circle_thin),
+                ),
               ),
-              child: IconButton(
-                onPressed: () => ref
-                    .read(showFullSplitView.notifier)
-                    .update((state) => false),
-                icon: const Icon(Atlas.xmark_circle_thin),
-              ),
-            ),
-            elevation: 0.0,
-            actions: <Widget>[
-              PopupMenuButton<int>(
-                icon: const Icon(Atlas.dots_vertical, size: 22),
-                color: Colors.transparent,
-                itemBuilder: (context) => [
-                  PopupMenuItem<int>(
-                    value: 0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Leave Room'),
-                        const SizedBox(width: 50),
-                        Icon(
-                          Icons.exit_to_app_outlined,
-                          color: Theme.of(context).colorScheme.errorContainer,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SliverToBoxAdapter(
-            child: Column(
-              children: [
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      top: 38,
-                      bottom: 12,
-                    ),
-                    child: SpaceParentBadge(
-                      badgeSize: 20,
-                      spaceId: roomId,
-                      child: convoProfile.when(
-                        data: (profile) => ActerAvatar(
-                          mode: DisplayMode.GroupChat,
-                          uniqueId: roomId,
-                          displayName: profile.displayName ?? roomId,
-                          avatar: profile.getAvatarImage(),
-                          size: 75,
-                        ),
-                        error: (err, stackTrace) {
-                          debugPrint('Some error occured $err');
-                          return ActerAvatar(
-                            mode: DisplayMode.GroupChat,
-                            uniqueId: roomId,
-                            displayName: roomId,
-                            size: 75,
-                          );
-                        },
-                        loading: () => const CircularProgressIndicator(),
+              elevation: 0.0,
+              actions: <Widget>[
+                PopupMenuButton<int>(
+                  icon: const Icon(Atlas.dots_vertical, size: 22),
+                  color: Colors.transparent,
+                  itemBuilder: (context) => [
+                    PopupMenuItem<int>(
+                      value: 0,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Leave Room'),
+                          const SizedBox(width: 50),
+                          Icon(
+                            Icons.exit_to_app_outlined,
+                            color: Theme.of(context).colorScheme.errorContainer,
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ),
-                convoProfile.when(
-                  data: (profile) => Text(
-                    profile.displayName ?? roomId,
-                    softWrap: true,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  error: (err, stackTrace) {
-                    debugPrint('Some error occured $err');
-                    return Text(
-                      roomId,
-                      overflow: TextOverflow.clip,
-                      style: Theme.of(context).textTheme.titleSmall,
-                    );
-                  },
-                  loading: () => const CircularProgressIndicator(),
+                  ],
                 ),
               ],
             ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.all(8.0),
-            sliver: SliverToBoxAdapter(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+            SliverToBoxAdapter(
+              child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(
-                      roomId,
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            color: Theme.of(context).colorScheme.neutral5,
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 38,
+                        bottom: 12,
+                      ),
+                      child: SpaceParentBadge(
+                        badgeSize: 20,
+                        spaceId: roomId,
+                        child: convoProfile.when(
+                          data: (profile) => ActerAvatar(
+                            mode: DisplayMode.GroupChat,
+                            uniqueId: roomId,
+                            displayName: profile.displayName ?? roomId,
+                            avatar: profile.getAvatarImage(),
+                            size: 75,
                           ),
-                      softWrap: true,
+                          error: (err, stackTrace) {
+                            debugPrint('Some error occured $err');
+                            return ActerAvatar(
+                              mode: DisplayMode.GroupChat,
+                              uniqueId: roomId,
+                              displayName: roomId,
+                              size: 75,
+                            );
+                          },
+                          loading: () => const CircularProgressIndicator(),
+                        ),
+                      ),
                     ),
                   ),
-                  IconButton(
-                    iconSize: 14,
-                    icon: Icon(
-                      Atlas.pages_thin,
-                      color: Theme.of(context).colorScheme.neutral5,
+                  convoProfile.when(
+                    data: (profile) => Text(
+                      profile.displayName ?? roomId,
+                      softWrap: true,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    onPressed: () async {
-                      Clipboard.setData(
-                        ClipboardData(
-                          text: roomId,
-                        ),
-                      );
-                      customMsgSnackbar(
-                        context,
-                        'Room ID copied to clipboard',
+                    error: (err, stackTrace) {
+                      debugPrint('Some error occured $err');
+                      return Text(
+                        roomId,
+                        overflow: TextOverflow.clip,
+                        style: Theme.of(context).textTheme.titleSmall,
                       );
                     },
+                    loading: () => const CircularProgressIndicator(),
                   ),
                 ],
               ),
             ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.all(8.0),
-            sliver: SliverToBoxAdapter(
-              child: convo.when(
-                data: (data) => Center(
-                  child: Text(
-                    data.topic() ?? '',
-                    style: Theme.of(context).textTheme.bodySmall,
-                    softWrap: true,
-                    textAlign: TextAlign.center,
-                  ),
+            SliverPadding(
+              padding: const EdgeInsets.all(8.0),
+              sliver: SliverToBoxAdapter(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(
+                        roomId,
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              color: Theme.of(context).colorScheme.neutral5,
+                            ),
+                        softWrap: true,
+                      ),
+                    ),
+                    IconButton(
+                      iconSize: 14,
+                      icon: Icon(
+                        Atlas.pages_thin,
+                        color: Theme.of(context).colorScheme.neutral5,
+                      ),
+                      onPressed: () async {
+                        Clipboard.setData(
+                          ClipboardData(
+                            text: roomId,
+                          ),
+                        );
+                        customMsgSnackbar(
+                          context,
+                          'Room ID copied to clipboard',
+                        );
+                      },
+                    ),
+                  ],
                 ),
-                loading: () => const Text('loading...'),
-                error: (e, s) => Text('Error: $e'),
               ),
             ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.all(8.0),
-            sliver: SliverToBoxAdapter(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: topMenu,
+            SliverPadding(
+              padding: const EdgeInsets.all(8.0),
+              sliver: SliverToBoxAdapter(
+                child: convo.when(
+                  data: (data) => Center(
+                    child: Text(
+                      data.topic() ?? '',
+                      style: Theme.of(context).textTheme.bodySmall,
+                      softWrap: true,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  loading: () => const Text('loading...'),
+                  error: (e, s) => Text('Error: $e'),
+                ),
               ),
             ),
-          ),
-          convo.when(
-            data: (data) => MemberList(convo: data),
-            loading: () => const Text('loading...'),
-            error: (e, s) => Text('Error: $e'),
-          ),
-        ],
+            SliverPadding(
+              padding: const EdgeInsets.all(8.0),
+              sliver: SliverToBoxAdapter(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: topMenu,
+                ),
+              ),
+            ),
+            convo.when(
+              data: (data) => MemberList(convo: data),
+              loading: () => const Text('loading...'),
+              error: (e, s) => Text('Error: $e'),
+            ),
+          ],
+        ),
       ),
     );
   }

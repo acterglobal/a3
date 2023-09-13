@@ -15,13 +15,6 @@ class ConvosList extends ConsumerStatefulWidget {
 }
 
 class _ConvosListConsumerState extends ConsumerState<ConvosList> {
-  final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
-  List<Convo> rooms = [];
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final chats = ref.watch(chatsProvider);
@@ -63,7 +56,6 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
 
   Widget renderList(BuildContext context, List<Convo> chats) {
     return AnimatedList(
-      key: listKey,
       physics: const NeverScrollableScrollPhysics(),
       initialItemCount: chats.length,
       shrinkWrap: true,

@@ -5,22 +5,11 @@ import 'package:acter/features/chat/providers/notifiers/chat_input_notifier.dart
 import 'package:acter/features/chat/providers/notifiers/chat_room_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-final typingProvider = StateProvider<Map<String, dynamic>>((ref) => {});
 
 final chatInputProvider =
     StateNotifierProvider.family<ChatInputNotifier, ChatInputState, String>(
   (ref, roomId) => ChatInputNotifier(),
-);
-
-// chat room mention list
-final mentionListProvider =
-    StateProvider<List<Map<String, dynamic>>>((ref) => []);
-
-final mentionKeyProvider = StateProvider<GlobalKey<FlutterMentionsState>>(
-  (ref) => GlobalKey<FlutterMentionsState>(),
 );
 
 final chatInputFocusProvider = StateProvider<FocusNode>((ref) => FocusNode());

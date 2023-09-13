@@ -22,7 +22,9 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, Convo> {
     _listener = client.subscribeStream(convoId);
     _sub = _listener.listen(
       (e) async {
-        state = await AsyncValue.guard(() => client.convo(convoId));
+        Future.microtask(() async {
+          state = await AsyncValue.guard(() => client.convo(convoId));
+        });
       },
       onError: (e, stack) {
         debugPrint('stream errored: $e : $stack');

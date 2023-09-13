@@ -16,7 +16,9 @@ class AsyncNewsListNotifier extends AutoDisposeAsyncNotifier<List<NewsEntry>> {
     _listener = client.subscribeStream('news');
     _poller = _listener.listen((e) async {
       debugPrint(' --- - - ----------------- new subscribe received');
-      state = await AsyncValue.guard(() => _fetchNews());
+      Future.microtask(() async {
+        state = await AsyncValue.guard(() => _fetchNews());
+      });
     });
     ref.onDispose(() => _poller.cancel());
     return await _fetchNews();
