@@ -34,6 +34,14 @@ git = "https://github.com/ruma/ruma"
 rev = "5fde57460aaa71e16ac68f79376843089f9c3dfc"
 features = ["client-api-c", "compat-user-id"]
 
+[workspace.dependencies.ruma-macros]
+git = "https://github.com/ruma/ruma"
+rev = "5fde57460aaa71e16ac68f79376843089f9c3dfc"
+
+[workspace.dependencies.ruma-common]
+git = "https://github.com/ruma/ruma"
+rev = "5fde57460aaa71e16ac68f79376843089f9c3dfc"
+
 [workspace.dependencies]
 strum = { version = "0.24.1", features = ["derive"] }
 

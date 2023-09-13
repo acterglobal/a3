@@ -351,7 +351,7 @@ impl Space {
             let has_chunks = !chunk.is_empty();
 
             for msg in chunk {
-                let model = match AnyActerModel::from_raw_tlevent(&msg.event) {
+                let model = match AnyActerModel::try_from(&msg.event) {
                     Ok(model) => model,
                     Err(m) => {
                         if let Ok(state_key) = msg.event.get_field::<String>("state_key") {
