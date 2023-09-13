@@ -27,6 +27,7 @@ use matrix_sdk::ruma::{
 pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
 pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
+use ruma_common::events::{room::redaction::RoomRedactionEventContent, UnsignedRoomRedactionEvent};
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
 pub use tasks::{Task, TaskList, TaskListUpdate, TaskStats, TaskUpdate};
@@ -124,6 +125,98 @@ pub trait ActerModel: Debug {
         error!(?self, ?model, "Transition has not been implemented");
         Ok(false)
     }
+    /// The execution to run when this model is found.
+    async fn redact(
+        &self,
+        store: &Store,
+        redaction_model: RedactedActerModel,
+    ) -> crate::Result<Vec<String>> {
+        trace!(event_id=?redaction_model.event_id(), ?redaction_model, "handling");
+        let Some(belongs_to) = self.belongs_to() else {
+            let event_id = redaction_model.event_id();
+            trace!(?event_id, "saving simple model");
+            return store.save(redaction_model.into()).await
+        };
+        let model: AnyActerModel = redaction_model.into();
+        trace!(event_id=?model.event_id(), ?belongs_to, "transitioning tree");
+        let mut models = transition_tree(store, belongs_to, &model).await?;
+        models.push(model);
+        store.save_many(models).await
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct RedactionContent {
+    /// Data specific to the event type.
+    pub content: RoomRedactionEventContent,
+
+    /// The globally unique event identifier for the user who sent the event.
+    pub event_id: OwnedEventId,
+
+    /// The fully-qualified ID of the user who sent this event.
+    pub sender: OwnedUserId,
+
+    /// Timestamp in milliseconds on originating homeserver when this event was sent.
+    pub origin_server_ts: MilliSecondsSinceUnixEpoch,
+}
+
+impl From<UnsignedRoomRedactionEvent> for RedactionContent {
+    fn from(value: UnsignedRoomRedactionEvent) -> Self {
+        let UnsignedRoomRedactionEvent {
+            content,
+            event_id,
+            sender,
+            origin_server_ts,
+            ..
+        } = value;
+        RedactionContent {
+            content,
+            event_id,
+            sender,
+            origin_server_ts,
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct RedactedActerModel {
+    orig_type: String,
+    indizes: Vec<String>,
+    meta: EventMeta,
+    content: RedactionContent,
+}
+
+impl RedactedActerModel {
+    pub fn new(
+        orig_type: String,
+        orig_indizes: Vec<String>,
+        meta: EventMeta,
+        content: UnsignedRoomRedactionEvent,
+    ) -> Self {
+        RedactedActerModel {
+            meta,
+            orig_type,
+            content: content.into(),
+            indizes: orig_indizes
+                .into_iter()
+                .map(|s| format!("{s}::redacted"))
+                .collect(),
+        }
+    }
+}
+
+impl ActerModel for RedactedActerModel {
+    fn indizes(&self) -> Vec<String> {
+        self.indizes.clone()
+    }
+
+    fn event_id(&self) -> &EventId {
+        &self.meta.event_id
+    }
+
+    async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
+        default_model_execute(store, self.into()).await
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -144,6 +237,8 @@ pub struct EventMeta {
 #[enum_dispatch]
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum AnyActerModel {
+    RedactedActerModel,
+
     // -- Calendar
     CalendarEvent,
     CalendarEventUpdate,
@@ -184,7 +279,12 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::CalendarEvent(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
                     model_type: CalendarEventEventContent::TYPE.to_owned(),
-                    event_id: r.event_id,
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
                     reason: r.unsigned.redacted_because,
                 }),
             },
@@ -192,7 +292,12 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::CalendarEventUpdate(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
                     model_type: CalendarEventUpdateEventContent::TYPE.to_owned(),
-                    event_id: r.event_id,
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
                     reason: r.unsigned.redacted_because,
                 }),
             },
@@ -200,7 +305,12 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::Pin(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
                     model_type: PinEventContent::TYPE.to_owned(),
-                    event_id: r.event_id,
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
                     reason: r.unsigned.redacted_because,
                 }),
             },
@@ -208,7 +318,12 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::PinUpdate(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
                     model_type: PinUpdateEventContent::TYPE.to_owned(),
-                    event_id: r.event_id,
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
                     reason: r.unsigned.redacted_because,
                 }),
             },
@@ -216,7 +331,12 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::NewsEntry(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
                     model_type: NewsEntryEventContent::TYPE.to_owned(),
-                    event_id: r.event_id,
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
                     reason: r.unsigned.redacted_because,
                 }),
             },
@@ -224,7 +344,12 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::NewsEntryUpdate(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
                     model_type: NewsEntryUpdateEventContent::TYPE.to_owned(),
-                    event_id: r.event_id,
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
                     reason: r.unsigned.redacted_because,
                 }),
             },
@@ -232,7 +357,12 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::TaskList(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
                     model_type: TaskListEventContent::TYPE.to_owned(),
-                    event_id: r.event_id,
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
                     reason: r.unsigned.redacted_because,
                 }),
             },
@@ -240,7 +370,12 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::TaskListUpdate(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
                     model_type: TaskListUpdateEventContent::TYPE.to_owned(),
-                    event_id: r.event_id,
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
                     reason: r.unsigned.redacted_because,
                 }),
             },
@@ -248,7 +383,12 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::Task(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
                     model_type: TaskEventContent::TYPE.to_owned(),
-                    event_id: r.event_id,
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
                     reason: r.unsigned.redacted_because,
                 }),
             },
@@ -256,7 +396,12 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::TaskUpdate(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
                     model_type: TaskUpdateEventContent::TYPE.to_owned(),
-                    event_id: r.event_id,
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
                     reason: r.unsigned.redacted_because,
                 }),
             },
@@ -264,7 +409,12 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::Comment(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
                     model_type: CommentEventContent::TYPE.to_owned(),
-                    event_id: r.event_id,
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
                     reason: r.unsigned.redacted_because,
                 }),
             },
@@ -272,7 +422,12 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::CommentUpdate(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
                     model_type: CommentUpdateEventContent::TYPE.to_owned(),
-                    event_id: r.event_id,
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
                     reason: r.unsigned.redacted_because,
                 }),
             },
@@ -280,7 +435,12 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::Attachment(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
                     model_type: AttachmentEventContent::TYPE.to_owned(),
-                    event_id: r.event_id,
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
                     reason: r.unsigned.redacted_because,
                 }),
             },
@@ -288,7 +448,12 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::AttachmentUpdate(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
                     model_type: AttachmentUpdateEventContent::TYPE.to_owned(),
-                    event_id: r.event_id,
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
                     reason: r.unsigned.redacted_because,
                 }),
             },
@@ -296,7 +461,12 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::Rsvp(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
                     model_type: RsvpEventContent::TYPE.to_owned(),
-                    event_id: r.event_id,
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
                     reason: r.unsigned.redacted_because,
                 }),
             },
@@ -307,12 +477,16 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
 impl TryFrom<&Raw<AnyTimelineEvent>> for AnyActerModel {
     type Error = Error;
     fn try_from(raw: &Raw<AnyTimelineEvent>) -> Result<Self, Self::Error> {
-        let Ok(Some(model_type)) = raw.get_field("type") else {
+        let Ok(Some(model_type)) = raw.get_field::<String>("type") else {
             return Err(Error::UnknownModel(None));
         };
 
+        if !model_type.starts_with("global.acter") || model_type == "global.acter.app_settings" {
+            return Err(Error::UnknownModel(Some(model_type)));
+        }
+
         Self::try_from(raw.deserialize_as::<AnyActerEvent>().map_err(|error| {
-            error!(?error, ?raw, "parsing acter event failed");
+            trace!(?error, ?raw, "parsing acter event failed");
             Error::FailedToParse {
                 model_type: model_type,
                 msg: error.to_string(),
@@ -324,12 +498,16 @@ impl TryFrom<&Raw<AnyTimelineEvent>> for AnyActerModel {
 impl TryFrom<&Raw<AnySyncTimelineEvent>> for AnyActerModel {
     type Error = Error;
     fn try_from(raw: &Raw<AnySyncTimelineEvent>) -> Result<Self, Self::Error> {
-        let Ok(Some(model_type)) = raw.get_field("type") else {
+        let Ok(Some(model_type)) = raw.get_field::<String>("type") else {
             return Err(Error::UnknownModel(None));
         };
 
+        if !model_type.starts_with("global.acter") || model_type == "global.acter.app_settings" {
+            return Err(Error::UnknownModel(Some(model_type)));
+        }
+
         Self::try_from(raw.deserialize_as::<AnyActerEvent>().map_err(|error| {
-            error!(?error, ?raw, "parsing acter event failed");
+            trace!(?error, ?raw, "parsing acter event failed");
             Error::FailedToParse {
                 model_type: model_type,
                 msg: error.to_string(),
@@ -431,7 +609,7 @@ mod tests {
                 acter_ev_result,
                 Err(Error::ModelRedacted {
                     ref model_type,
-                    ref event_id,
+                    meta: EventMeta { ref event_id, .. },
                     ..
                 })
             ),
@@ -501,7 +679,7 @@ mod tests {
                 acter_ev_result,
                 Err(Error::ModelRedacted {
                     ref model_type,
-                    ref event_id,
+                    meta: EventMeta { ref event_id, .. },
                     ..
                 })
             ),
