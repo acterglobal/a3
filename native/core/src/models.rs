@@ -378,7 +378,9 @@ impl AnyActerModel {
             )),
 
             _ => {
-                if model_type.starts_with("global.acter.") {
+                if model_type.starts_with("global.acter.")
+                    && model_type != "global.acter.app_settings"
+                {
                     error!(?raw, "{model_type} not implemented");
                 }
 
