@@ -781,10 +781,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     final data = await convo.audioBinary(eventId);
     int index = messages.indexWhere((x) => x.id == eventId);
     if (index != -1) {
-      final metadata = messages[index].metadata ?? {};
+      final metadata = {...messages[index].metadata ?? {}};
       metadata['base64'] = base64Encode(data.asTypedList());
-      messages[index] = messages[index].copyWith(metadata: metadata);
-      replaceMessage(index, messages[index]);
+      final message = messages[index].copyWith(metadata: metadata);
+      replaceMessage(index, message);
     }
   }
 
@@ -794,10 +794,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     final data = await convo.videoBinary(eventId);
     int index = messages.indexWhere((x) => x.id == eventId);
     if (index != -1) {
-      final metadata = messages[index].metadata ?? {};
+      final metadata = {...messages[index].metadata ?? {}};
       metadata['base64'] = base64Encode(data.asTypedList());
-      messages[index] = messages[index].copyWith(metadata: metadata);
-      replaceMessage(index, messages[index]);
+      final message = messages[index].copyWith(metadata: metadata);
+      replaceMessage(index, message);
     }
   }
 
