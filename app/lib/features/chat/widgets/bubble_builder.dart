@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -39,11 +38,11 @@ class BubbleBuilder extends ConsumerWidget {
     final chatInputState = ref.watch(chatInputProvider);
     final chatInputNotifier = ref.watch(chatInputProvider.notifier);
     final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
-    String msgType = '';
+    String eventType = '';
     if (message.metadata!.containsKey('eventType')) {
-      msgType = message.metadata?['eventType'];
+      eventType = message.metadata?['eventType'];
     }
-    bool isMemberEvent = msgType == 'm.room.member';
+    bool isMemberEvent = eventType == 'm.room.member';
 
     return isMemberEvent
         ? child
@@ -187,7 +186,7 @@ class _ChatBubble extends ConsumerWidget {
     Widget? child,
   ) {
     final authorId = message.repliedMessage!.author.id;
-    final replyProfile = ref.watch(memberProfileProvider(authorId));
+    final replyProfile = ref.watch(chatMemberProfileProvider(authorId));
     return Row(
       children: [
         replyProfile.when(

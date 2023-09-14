@@ -1,10 +1,11 @@
-import 'package:acter/common/dialogs/dialog_page.dart';
-import 'package:acter/common/dialogs/side_sheet_page.dart';
+import 'package:acter/common/widgets/dialog_page.dart';
+import 'package:acter/common/widgets/side_sheet_page.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/activities/pages/activities_page.dart';
-import 'package:acter/features/activities/pages/sessions_page.dart';
+import 'package:acter/features/settings/pages/blocked_users.dart';
+import 'package:acter/features/settings/pages/sessions_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/dialogs/create_chat_sheet.dart';
 import 'package:acter/features/chat/pages/chat_page.dart';
@@ -13,7 +14,6 @@ import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/events/dialogs/create_event_sheet.dart';
 import 'package:acter/features/events/dialogs/edit_event_sheet.dart';
 import 'package:acter/features/events/pages/event_page.dart';
-import 'package:acter/features/gallery/pages/gallery_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/pins/dialogs/edit_pin_sheet.dart';
@@ -123,10 +123,6 @@ List<RouteBase> makeRoutes(Ref ref) {
       name: Routes.authRegister.name,
       path: Routes.authRegister.route,
       builder: (context, state) => const RegisterPage(),
-    ),
-    GoRoute(
-      path: '/gallery',
-      builder: (context, state) => const GalleryPage(),
     ),
     GoRoute(
       parentNavigatorKey: rootNavKey,
@@ -387,10 +383,6 @@ List<RouteBase> makeRoutes(Ref ref) {
       },
       routes: <RouteBase>[
         GoRoute(
-          path: '/gallery',
-          builder: (context, state) => const GalleryPage(),
-        ),
-        GoRoute(
           parentNavigatorKey: shellNavKey,
           name: Routes.myProfile.name,
           path: Routes.myProfile.route,
@@ -423,6 +415,18 @@ List<RouteBase> makeRoutes(Ref ref) {
             return NoTransitionPage(
               key: state.pageKey,
               child: const SessionsPage(),
+            );
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: shellNavKey,
+          name: Routes.blockedUsers.name,
+          path: Routes.blockedUsers.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: const BlockedUsersPage(),
             );
           },
         ),

@@ -110,7 +110,7 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Stack(
       alignment: Alignment.bottomCenter,
-      children: [
+      children: <Widget>[
         Text(widget.likeCount, style: widget.style),
         AnimatedBuilder(
           animation: controller,

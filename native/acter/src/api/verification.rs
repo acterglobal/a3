@@ -32,7 +32,7 @@ use std::{
 use tokio::sync::Mutex;
 use tracing::{error, info};
 
-use super::{client::Client, common::DeviceRecord, RUNTIME};
+use super::{client::Client, common::DeviceRecord, device::DeviceChangedEvent, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct VerificationEvent {
@@ -1287,5 +1287,89 @@ impl Client {
     pub fn session_manager(&self) -> SessionManager {
         let client = self.core.client().clone();
         SessionManager { client }
+    }
+}
+
+impl DeviceChangedEvent {
+    pub async fn request_verification_to_user(&self) -> Result<bool> {
+        let client = self.client();
+        RUNTIME
+            .spawn(async move {
+                let user_id = client
+                    .user_id()
+                    .context("guest user cannot request verification")?;
+                let user = client
+                    .encryption()
+                    .get_user_identity(user_id)
+                    .await?
+                    .context("alice should get user identity")?;
+                user.request_verification().await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn request_verification_to_device(&self, dev_id: String) -> Result<bool> {
+        let client = self.client();
+        RUNTIME
+            .spawn(async move {
+                let user_id = client
+                    .user_id()
+                    .context("guest user cannot request verification")?;
+                let dev = client
+                    .encryption()
+                    .get_device(user_id, device_id!(dev_id.as_str()))
+                    .await?
+                    .context("alice should get device")?;
+                dev.request_verification_with_methods(vec![VerificationMethod::SasV1])
+                    .await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn request_verification_to_user_with_methods(
+        &self,
+        methods: &mut Vec<String>,
+    ) -> Result<bool> {
+        let client = self.client();
+        let values = (*methods).iter().map(|e| e.as_str().into()).collect();
+        RUNTIME
+            .spawn(async move {
+                let user_id = client
+                    .user_id()
+                    .context("guest user cannot request verification")?;
+                let user = client
+                    .encryption()
+                    .get_user_identity(user_id)
+                    .await?
+                    .context("alice should get user identity")?;
+                user.request_verification_with_methods(values).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn request_verification_to_device_with_methods(
+        &self,
+        dev_id: String,
+        methods: &mut Vec<String>,
+    ) -> Result<bool> {
+        let client = self.client();
+        let values = (*methods).iter().map(|e| e.as_str().into()).collect();
+        RUNTIME
+            .spawn(async move {
+                let user_id = client
+                    .user_id()
+                    .context("guest user cannot request verification")?;
+                let dev = client
+                    .encryption()
+                    .get_device(user_id, device_id!(dev_id.as_str()))
+                    .await?
+                    .context("alice should get device")?;
+                dev.request_verification_with_methods(values).await?;
+                Ok(true)
+            })
+            .await?
     }
 }

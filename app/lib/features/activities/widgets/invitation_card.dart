@@ -1,6 +1,6 @@
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
 // import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -62,13 +62,15 @@ class InvitationCard extends ConsumerWidget {
                   // Accept Invitation Button
                   ElevatedButton(
                     onPressed: () async {
-                      popUpDialog(
+                      showAdaptiveDialog(
                         context: context,
-                        title: Text(
-                          'Joining',
-                          style: Theme.of(context).textTheme.titleSmall,
+                        builder: (context) => DefaultDialog(
+                          title: Text(
+                            'Joining',
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          isLoader: true,
                         ),
-                        isLoader: true,
                       );
                       if (await invitation.accept() != true) {
                         if (context.mounted) {
