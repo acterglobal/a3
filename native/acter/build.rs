@@ -60,7 +60,8 @@ fn setup_x86_64_android_workaround() {
     // FIXME: hack to ensure that sqlite compiles correctly for android x86_64bit emulator versions
     //        see https://github.com/rusqlite/rusqlite/issues/1380#issuecomment-1689765485
     let target_os = std::env::var("CARGO_CFG_TARGET_OS").expect("CARGO_CFG_TARGET_OS not set");
-    let target_arch = std::env::var("CARGO_CFG_TARGET_ARCH").expect("CARGO_CFG_TARGET_ARCH not set");
+    let target_arch =
+        std::env::var("CARGO_CFG_TARGET_ARCH").expect("CARGO_CFG_TARGET_ARCH not set");
     if target_arch == "x86_64" && target_os == "android" {
         let android_ndk_home = std::env::var("ANDROID_NDK_HOME").expect("ANDROID_NDK_HOME not set");
         let build_os = match std::env::consts::OS {
