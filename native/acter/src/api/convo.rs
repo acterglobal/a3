@@ -38,8 +38,9 @@ use std::{
     ops::Deref,
     path::PathBuf,
     sync::{Arc, RwLock as StdRwLock},
+    thread::JoinHandle,
 };
-use tracing::{error, info};
+use tracing::{error, info, trace, warn};
 
 use crate::TimelineStream;
 
@@ -47,19 +48,21 @@ use super::{
     client::Client,
     message::{sync_event_to_message, RoomMessage},
     receipt::ReceiptRecord,
-    room::Room,
+    room::{self, Room},
     utils::{remap_for_diff, ApiVectorDiff},
     RUNTIME,
 };
 
 pub type ConvoDiff = ApiVectorDiff<Convo>;
+type LatestMsgLock = Arc<StdRwLock<Option<RoomMessage>>>;
 
 #[derive(Clone, Debug)]
 pub struct Convo {
     client: Client,
     inner: Room,
-    latest_message_ts: Arc<StdRwLock<Option<u64>>>,
+    latest_message: LatestMsgLock,
     timeline: Arc<Timeline>,
+    timeline_listener: Arc<matrix_sdk::executor::JoinHandle<()>>,
 }
 
 impl PartialEq for Convo {
@@ -85,65 +88,105 @@ impl Ord for Convo {
 }
 
 fn latest_message_storage_key(room_id: &RoomId) -> String {
-    format!("{room_id}::latest_message_ts")
+    format!("{room_id}::latest_message")
+}
+
+async fn set_latest_msg(
+    client: &Client,
+    room_id: &RoomId,
+    lock: &LatestMsgLock,
+    new_msg: RoomMessage,
+) {
+    let key = latest_message_storage_key(room_id);
+    {
+        let Ok(mut msg_lock) = lock.write() else {
+            error!(?room_id, "Locking latest message for update failed. poisoned.");
+            return;
+        };
+
+        if let Some(prev) = msg_lock.deref() {
+            if prev.event_id() == new_msg.event_id() {
+                trace!("Nothing to update, room message stayed the same");
+                return;
+            }
+        }
+        trace!(?room_id, "Setting latest message");
+        *msg_lock = Some(new_msg);
+    }
+
+    // FIXME: also put this into cache
+    client.executor().notify(vec![key]);
 }
 
 impl Convo {
     pub(crate) async fn new(client: Client, inner: Room) -> Self {
         let timeline = Arc::new(inner.room.timeline().await);
-        let latest_message_ts: Option<u64> = client
-            .store()
-            .get_raw::<u64>(&latest_message_storage_key(inner.room_id()))
-            .await
-            .ok();
+        // let latest_message_content: Option<u64> = client
+        //     .store()
+        //     .get_raw::<u64>(&latest_message_storage_key(inner.room_id()))
+        //     .await
+        //     .ok();
+
+        let latest_message: LatestMsgLock = Default::default();
+
+        let latest_msg_room = inner.clone();
+        let latest_msg_client = client.clone();
+        let last_msg_tl = timeline.clone();
+        let last_msg_lock_tl = latest_message.clone();
+
+        let listener = RUNTIME.spawn(async move {
+            let (current, mut incoming) = last_msg_tl.subscribe().await;
+            let mut event_found = false;
+            for msg in current.into_iter().rev() {
+                if msg.as_event().is_some() {
+                    let full_event = RoomMessage::from((msg, latest_msg_room.room.clone()));
+                    set_latest_msg(
+                        &latest_msg_client,
+                        latest_msg_room.room_id(),
+                        &last_msg_lock_tl,
+                        full_event,
+                    )
+                    .await;
+                    event_found = true;
+                    break;
+                }
+            }
+            while let Some(ev) = incoming.next().await {
+                let Some(msg) = last_msg_tl.latest_event().await else { continue };
+                let full_event = RoomMessage::from((msg, latest_msg_room.room.clone()));
+                set_latest_msg(
+                    &latest_msg_client,
+                    latest_msg_room.room_id(),
+                    &last_msg_lock_tl,
+                    full_event,
+                )
+                .await;
+            }
+            warn!(room_id=?latest_msg_room.room_id(), "Timeline stopped")
+        });
 
         Convo {
             inner,
             client,
-            latest_message_ts: Arc::new(StdRwLock::new(latest_message_ts)),
+            latest_message,
             timeline,
+            timeline_listener: Arc::new(listener),
         }
-    }
-
-    pub(crate) async fn update_latest_msg_ts(&self) {
-        let new_val = if let Some(e) = self
-            .latest_message()
-            .await
-            .map(|e| e.event_item())
-            .ok()
-            .flatten()
-        {
-            match self.latest_message_ts.write() {
-                Err(e) => {
-                    error!(?e, room_id=?self.room_id(), "Updating latest msg ts failed");
-                    return;
-                }
-                Ok(mut i) => {
-                    *i = Some(e.origin_server_ts());
-                    e.origin_server_ts()
-                }
-            }
-        } else {
-            0
-        };
-        self.client
-            .store()
-            .set_raw(&latest_message_storage_key(self.inner.room_id()), &new_val)
-            .await
-            .ok();
     }
 
     pub(crate) fn update_room(self, room: Room) -> Self {
         let Convo {
             client,
-            latest_message_ts,
+            latest_message,
             timeline,
+            timeline_listener,
             ..
         } = self;
         Convo {
             client,
             timeline,
-            latest_message_ts,
+            latest_message,
+            timeline_listener,
             inner: room,
         }
     }
@@ -156,19 +199,17 @@ impl Convo {
     }
 
     pub fn latest_message_ts(&self) -> u64 {
-        self.latest_message_ts
+        self.latest_message
             .read()
-            .map(|a| a.unwrap_or_default())
+            .map(|a| a.as_ref().map(|r| r.origin_server_ts()))
             .ok()
+            .flatten()
+            .flatten()
             .unwrap_or_default()
     }
 
-    pub async fn latest_message(&self) -> Result<RoomMessage> {
-        self.timeline
-            .latest_event()
-            .await
-            .map(|event| RoomMessage::from_timeline_event_item(&event, self.inner.room.clone()))
-            .context("No latest message found")
+    pub fn latest_message(&self) -> Option<RoomMessage> {
+        self.latest_message.read().map(|i| i.clone()).ok().flatten()
     }
 
     pub fn get_room_id(&self) -> OwnedRoomId {

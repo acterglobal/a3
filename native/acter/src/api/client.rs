@@ -552,7 +552,7 @@ impl Client {
                 } else {
                     if let Some(chat_idx) = chats.iter().position(|s| s.room_id() == r_id) {
                         let chat = chats.remove(chat_idx).update_room(inner);
-                        chat.update_latest_msg_ts().await;
+                        // chat.update_latest_msg_ts().await;
                         insert_to_chat(&mut chats, chat);
                     } else {
                         insert_to_chat(&mut chats, Convo::new(self.clone(), inner).await);

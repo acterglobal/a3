@@ -51,29 +51,21 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
         showParent: widget.showParent,
         profile: profile,
         onTap: widget.onTap,
-        subtitle: latestMsg.when(
-          data: (latestMsg) => latestMsg != null
-              ? _SubtitleWidget(
-                  room: widget.room,
-                  latestMessage: latestMsg,
-                )
-              : const SizedBox.shrink(),
-          error: (e, s) => Text('Error: $e'),
-          loading: () => const SizedBox.shrink(),
-        ),
-        trailing: latestMsg.when(
-          data: (latestMsg) => latestMsg != null
-              ? _TrailingWidget(
-                  // controller: receiptController,
-                  room: widget.room,
-                  latestMessage: latestMsg,
-                  activeMembers: activeMembers,
-                  userId: client!.userId().toString(),
-                )
-              : const SizedBox.shrink(),
-          error: (e, s) => Text('Error: $e'),
-          loading: () => const SizedBox.shrink(),
-        ),
+        subtitle: latestMsg != null
+            ? _SubtitleWidget(
+                room: widget.room,
+                latestMessage: latestMsg,
+              )
+            : const SizedBox.shrink(),
+        trailing: latestMsg != null
+            ? _TrailingWidget(
+                // controller: receiptController,
+                room: widget.room,
+                latestMessage: latestMsg,
+                activeMembers: activeMembers,
+                userId: client!.userId().toString(),
+              )
+            : const SizedBox.shrink(),
       ),
       error: (error, stackTrace) => const Text('Failed to load Conversation'),
       loading: () => const CircularProgressIndicator(),

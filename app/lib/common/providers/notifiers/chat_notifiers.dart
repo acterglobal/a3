@@ -42,6 +42,39 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, Convo> {
   }
 }
 
+class LatestMsgNotifier extends StateNotifier<RoomMessage?> {
+  final Ref ref;
+  final Convo convo;
+  late Stream<bool> _listener;
+  late StreamSubscription<bool> _sub;
+  LatestMsgNotifier(this.ref, this.convo) : super(null) {
+    final convoId = convo.getRoomId().toString();
+    state = convo.latestMessage();
+    final client = ref.watch(clientProvider)!;
+    _listener = client.subscribeStream('$convoId::latest_message');
+    _sub = _listener.listen(
+      (e) {
+        debugPrint(
+          'received new latest message call for ${convo.getRoomIdStr()}',
+        );
+        state = convo.latestMessage();
+      },
+      onError: (e, stack) {
+        debugPrint('stream errored: $e : $stack');
+      },
+      onDone: () {
+        debugPrint('stream ended');
+      },
+    );
+    ref.onDispose(onDispose);
+  }
+
+  void onDispose() {
+    debugPrint('disposing latest msg listener for ${convo.getRoomIdStr()}');
+    _sub.cancel();
+  }
+}
+
 class ChatRoomsListNotifier extends StateNotifier<List<Convo>> {
   final Ref ref;
   final Client client;

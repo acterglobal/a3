@@ -1,5 +1,5 @@
 import 'package:acter/common/models/profile_data.dart';
-import 'package:acter/common/providers/notifiers/chat_notifier.dart';
+import 'package:acter/common/providers/notifiers/chat_notifiers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -30,18 +30,9 @@ final chatProfileDataProvider =
 });
 
 final latestMessageProvider =
-    FutureProvider.autoDispose.family<RoomMessage?, Convo>((ref, convo) async {
-  final chat = await ref.watch(convoProvider(convo).future);
-  if (chat == null) {
-    throw 'Chat not accessible';
-  }
-  try {
-    return await chat.latestMessage();
-  } catch (e) {
-    // FIXME: ugly workaround as we can't have an option inside a future at the moment
-    //        on the FFI-side
-    return null;
-  }
+    StateNotifierProvider.family<LatestMsgNotifier, RoomMessage?, Convo>(
+        (ref, convo) {
+  return LatestMsgNotifier(ref, convo);
 });
 
 final chatProfileDataProviderById =

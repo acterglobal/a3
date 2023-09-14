@@ -15,7 +15,7 @@ use std::sync::Arc;
 use tracing::{error, info};
 
 use super::{
-    message::{timeline_item_to_message, RoomMessage},
+    message::RoomMessage,
     utils::{remap_for_diff, ApiVectorDiff},
     RUNTIME,
 };
@@ -39,9 +39,9 @@ impl TimelineStream {
 
         async_stream::stream! {
             let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
-            yield TimelineDiff::current_items(timeline_items.clone().into_iter().map(|x| timeline_item_to_message(x, room.clone())).collect());
+            yield TimelineDiff::current_items(timeline_items.clone().into_iter().map(|x| RoomMessage::from((x, room.clone()))).collect());
 
-            let mut remap = timeline_stream.map(|diff| remap_for_diff(diff, |x| timeline_item_to_message(x, room.clone())));
+            let mut remap = timeline_stream.map(|diff| remap_for_diff(diff, |x| RoomMessage::from((x, room.clone()))));
 
             while let Some(d) = remap.next().await {
                 yield d
