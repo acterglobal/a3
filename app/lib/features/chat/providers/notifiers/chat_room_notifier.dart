@@ -76,10 +76,21 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     state = state.copyWith(messages: newState);
   }
 
-  void replaceMessage(int index, types.Message m) {
+  void replaceMessageAt(int index, types.Message m) {
     final newState = messagesCopy();
     newState[index] = m;
     state = state.copyWith(messages: newState);
+  }
+
+  void replaceMessage(types.Message m) {
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      final messages = messagesCopy();
+      int index = messages.indexWhere((x) => x.id == m.id);
+      if (index != -1) {
+        messages[index] = m;
+        state = state.copyWith(messages: messages);
+      }
+    });
   }
 
   void removeMessage(int idx) {
@@ -125,7 +136,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         RoomMessage m = timelineEvent.value()!;
         final index = timelineEvent.index()!;
         final message = _parseMessage(m);
-        replaceMessage(index, message);
+        replaceMessageAt(index, message);
         postProcessing.add(PostProcessItem(m, message));
         break;
 
@@ -380,7 +391,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     int index = messages.indexWhere((x) => x.id == replyId);
     if (index != -1 && repliedTo != null) {
       replaceMessage(
-        index,
         messages[index].copyWith(repliedMessage: repliedTo),
       );
     }
@@ -784,11 +794,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       final metadata = {...messages[index].metadata ?? {}};
       metadata['base64'] = base64Encode(data.asTypedList());
       final message = messages[index].copyWith(metadata: metadata);
-      replaceMessage(index, message);
+      replaceMessage(message);
     }
   }
 
-  // fetch video conent for message
+  // fetch video content for message
   Future<void> _fetchVideoBinary(String eventId) async {
     final messages = state.messages;
     final data = await convo.videoBinary(eventId);
@@ -797,7 +807,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       final metadata = {...messages[index].metadata ?? {}};
       metadata['base64'] = base64Encode(data.asTypedList());
       final message = messages[index].copyWith(metadata: metadata);
-      replaceMessage(index, message);
+      replaceMessage(message);
     }
   }
 
@@ -819,9 +829,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       final updatedMessage = (messages[index] as types.TextMessage).copyWith(
         previewData: previewData,
       );
-      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-        replaceMessage(index, updatedMessage);
-      });
+      replaceMessage(updatedMessage);
     }
   }
 }
