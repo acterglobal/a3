@@ -48,6 +48,7 @@ use matrix_sdk::{
     },
     Client as SdkClient,
 };
+use ruma::OwnedRoomOrAliasId;
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, thread::JoinHandle};
 use tokio::sync::broadcast::Receiver;
@@ -847,8 +848,40 @@ impl Client {
             .map(Clone::clone)
     }
 
+    pub async fn space_by_alias_typed(&self, room_alias: OwnedRoomAliasId) -> Result<Space> {
+        let space = self
+            .spaces
+            .read()
+            .await
+            .iter()
+            .find(|s| {
+                if let Some(con_alias) = s.canonical_alias() {
+                    if con_alias == room_alias {
+                        return true;
+                    }
+                }
+                for alt_alias in s.alt_aliases() {
+                    if alt_alias == room_alias {
+                        return true;
+                    }
+                }
+                false
+            })
+            .map(Clone::clone);
+        match space {
+            Some(space) => Ok(space),
+            None => {
+                let room_id = self.resolve_room_alias(room_alias).await?;
+                self.space_typed(&room_id).await.context("Space not found")
+            }
+        }
+    }
+
     pub async fn space(&self, room_id_or_alias: String) -> Result<Space> {
-        let room_id = self.resolve_room_id_or_alias(room_id_or_alias).await?;
+        if let Ok(room_alias) = OwnedRoomAliasId::try_from(room_id_or_alias.as_str()) {
+            return self.space_by_alias_typed(room_alias).await;
+        }
+        let room_id = OwnedRoomId::try_from(room_id_or_alias)?;
         self.space_typed(&room_id).await.context("Space not found")
     }
 }

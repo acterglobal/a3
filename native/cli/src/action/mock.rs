@@ -133,10 +133,9 @@ impl<'a> Mock<'a> {
         })
     }
 
-    async fn team(&mut self) -> [Client; 8] {
+    async fn team(&mut self) -> [Client; 7] {
         [
             self.client("sisko".to_owned()).await.unwrap(),
-            self.client("sisko1".to_owned()).await.unwrap(),
             self.client("kyra".to_owned()).await.unwrap(),
             self.client("worf".to_owned()).await.unwrap(),
             self.client("bashir".to_owned()).await.unwrap(),

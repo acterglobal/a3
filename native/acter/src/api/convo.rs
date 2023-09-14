@@ -34,6 +34,7 @@ use matrix_sdk_ui::{
     timeline::{EventTimelineItem, PaginationOptions, RoomExt, TimelineItem},
     Timeline,
 };
+use ruma::OwnedRoomAliasId;
 use std::{
     ops::Deref,
     path::PathBuf,
@@ -419,10 +420,41 @@ impl Client {
             .await?;
         Ok(Convo::new(self.clone(), room).await)
     }
+    pub async fn convo_by_alias_typed(&self, room_alias: OwnedRoomAliasId) -> Result<Convo> {
+        let convo = self
+            .convos
+            .read()
+            .await
+            .iter()
+            .find(|s| {
+                if let Some(con_alias) = s.canonical_alias() {
+                    if con_alias == room_alias {
+                        return true;
+                    }
+                }
+                for alt_alias in s.alt_aliases() {
+                    if alt_alias == room_alias {
+                        return true;
+                    }
+                }
+                false
+            })
+            .map(Clone::clone);
+        match convo {
+            Some(convo) => Ok(convo),
+            None => {
+                let room_id = self.resolve_room_alias(room_alias).await?;
+                self.convo_typed(&room_id).await.context("Convo not found")
+            }
+        }
+    }
 
     pub async fn convo(&self, room_id_or_alias: String) -> Result<Convo> {
-        let room_id = self.resolve_room_id_or_alias(room_id_or_alias).await?;
-        self.convo_typed(&room_id).await.context("Chat not found")
+        if let Ok(room_alias) = OwnedRoomAliasId::try_from(room_id_or_alias.as_str()) {
+            return self.convo_by_alias_typed(room_alias).await;
+        }
+        let room_id = OwnedRoomId::try_from(room_id_or_alias)?;
+        self.convo_typed(&room_id).await.context("Convo not found")
     }
 
     pub async fn convo_typed(&self, room_id: &OwnedRoomId) -> Option<Convo> {

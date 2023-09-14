@@ -575,22 +575,11 @@ impl Client {
         self.executor().notify(update_keys);
     }
 
-    pub async fn resolve_room_id_or_alias(&self, room_id_or_alias: String) -> Result<OwnedRoomId> {
-        Ok(match OwnedRoomId::try_from(room_id_or_alias.clone()) {
-            Ok(room_id) => room_id,
-            Err(e) => {
-                if let Ok(alias_id) = OwnedRoomAliasId::try_from(room_id_or_alias) {
-                    let me = self.clone();
-                    RUNTIME
-                        .spawn(async move {
-                            anyhow::Ok(me.resolve_room_alias(&alias_id).await?.room_id)
-                        })
-                        .await??
-                } else {
-                    bail!("Neither roomId nor alias provided");
-                }
-            }
-        })
+    pub async fn resolve_room_alias(&self, alias_id: OwnedRoomAliasId) -> Result<OwnedRoomId> {
+        let client = self.core.client().clone();
+        Ok(RUNTIME
+            .spawn(async move { anyhow::Ok(client.resolve_room_alias(&alias_id).await?.room_id) })
+            .await??)
     }
 
     pub fn store(&self) -> &Store {
