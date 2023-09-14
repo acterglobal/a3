@@ -1982,6 +1982,13 @@ impl RoomMessage {
         self.event_item.as_ref().map(|e| e.event_id.clone())
     }
 
+    pub(crate) fn event_type(&self) -> String {
+        self.event_item
+            .as_ref()
+            .map(|e| e.event_type())
+            .unwrap_or_else(|| "virtual".to_owned()) // if we can't find it, it is because we are a virtual event
+    }
+
     pub(crate) fn origin_server_ts(&self) -> Option<u64> {
         self.event_item.as_ref().map(|e| e.origin_server_ts())
     }

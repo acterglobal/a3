@@ -31,7 +31,7 @@ use matrix_sdk::{
     Client as SdkClient, RoomMemberships,
 };
 use matrix_sdk_ui::{
-    timeline::{EventTimelineItem, RoomExt, TimelineItem},
+    timeline::{EventTimelineItem, PaginationOptions, RoomExt, TimelineItem},
     Timeline,
 };
 use std::{
@@ -76,14 +76,15 @@ impl Eq for Convo {}
 
 impl PartialOrd for Convo {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.latest_message_ts()
-            .partial_cmp(&other.latest_message_ts())
+        other
+            .latest_message_ts()
+            .partial_cmp(&self.latest_message_ts())
     }
 }
 
 impl Ord for Convo {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.latest_message_ts().cmp(&other.latest_message_ts())
+        other.latest_message_ts().cmp(&self.latest_message_ts())
     }
 }
 
@@ -105,29 +106,30 @@ async fn set_latest_msg(
         };
 
         if let Some(prev) = msg_lock.deref() {
-            if prev.event_id() == new_msg.event_id() {
+            if prev.event_id() == new_msg.event_id() && new_msg.event_type() == prev.event_type() {
                 trace!("Nothing to update, room message stayed the same");
                 return;
             }
         }
         trace!(?room_id, "Setting latest message");
-        *msg_lock = Some(new_msg);
+        *msg_lock = Some(new_msg.clone());
     }
 
-    // FIXME: also put this into cache
+    client.store().set_raw(&key, &new_msg).await;
     client.executor().notify(vec![key]);
 }
 
 impl Convo {
     pub(crate) async fn new(client: Client, inner: Room) -> Self {
         let timeline = Arc::new(inner.room.timeline().await);
-        // let latest_message_content: Option<u64> = client
-        //     .store()
-        //     .get_raw::<u64>(&latest_message_storage_key(inner.room_id()))
-        //     .await
-        //     .ok();
+        let latest_message_content: Option<RoomMessage> = client
+            .store()
+            .get_raw(&latest_message_storage_key(inner.room_id()))
+            .await
+            .ok();
 
-        let latest_message: LatestMsgLock = Default::default();
+        let has_latest_msg = latest_message_content.is_some();
+        let latest_message: LatestMsgLock = Arc::new(StdRwLock::new(latest_message_content));
 
         let latest_msg_room = inner.clone();
         let latest_msg_client = client.clone();
@@ -149,6 +151,15 @@ impl Convo {
                     .await;
                     event_found = true;
                     break;
+                }
+            }
+            if (!event_found && !has_latest_msg) {
+                // let's trigger a backpagination in hope that helps us...
+                if let Err(error) = last_msg_tl
+                    .paginate_backwards(PaginationOptions::until_num_items(20, 10))
+                    .await
+                {
+                    error!(?error, room_id=?latest_msg_room.room_id(), "backpagination failed");
                 }
             }
             while let Some(ev) = incoming.next().await {
