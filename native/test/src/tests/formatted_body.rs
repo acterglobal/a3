@@ -82,7 +82,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
         .await
         .context("chat not found")?;
 
-    if let Some(msg) = convo.latest_message().await {
+    if let Some(msg) = convo.latest_message() {
         if let Some(event_item) = msg.event_item() {
             if let Some(text_desc) = event_item.text_desc() {
                 if let Some(formatted) = text_desc.formatted_body() {
