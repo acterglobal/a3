@@ -81,13 +81,13 @@ impl Eq for Space {}
 
 impl PartialOrd for Space {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.room_id().partial_cmp(&other.room_id())
+        self.room_id().partial_cmp(other.room_id())
     }
 }
 
 impl Ord for Space {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.room_id().cmp(&other.room_id())
+        self.room_id().cmp(other.room_id())
     }
 }
 
