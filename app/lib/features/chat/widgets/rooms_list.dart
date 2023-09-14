@@ -29,83 +29,101 @@ class RoomsListWidget extends ConsumerWidget {
     final searchNotifier = ref.watch(_searchToggleProvider.notifier);
     return SafeArea(
       child: Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
-          child: PageStorage(
-            bucket: bucketGlobal,
+        extendBodyBehindAppBar: true,
+        body: PageStorage(
+          bucket: bucketGlobal,
+          child: Container(
+            decoration: const BoxDecoration(
+              gradient: AppTheme.primaryGradient,
+            ),
             child: CustomScrollView(
               key: const PageStorageKey<String>('convo-list'),
               physics: const BouncingScrollPhysics(),
               slivers: [
-                SliverAppBar(
-                  backgroundColor: Colors.transparent,
-                  automaticallyImplyLeading: false,
-                  pinned: false,
-                  snap: false,
-                  floating: true,
-                  flexibleSpace: showSearch
-                      ? Padding(
-                          padding: const EdgeInsets.only(
-                            top: 5,
-                            bottom: 6,
-                            left: 10,
-                            right: 5,
-                          ),
-                          child: TextFormField(
-                            autofocus: true,
-                            onChanged: (value) => ref
-                                .read(chatSearchValueProvider.notifier)
-                                .update((state) => value),
-                            cursorColor:
-                                Theme.of(context).colorScheme.tertiary2,
-                            decoration: InputDecoration(
-                              hintStyle: const TextStyle(color: Colors.white),
-                              suffixIcon: GestureDetector(
-                                onTap: () {
-                                  searchNotifier.update((state) => false);
-                                  ref
-                                      .read(chatSearchValueProvider.notifier)
-                                      .state = null;
-                                },
-                                child: const Icon(
-                                  Icons.close,
-                                  color: Colors.white,
+                SliverLayoutBuilder(
+                  builder: (context, constraints) {
+                    final scrolled = constraints.scrollOffset > 0;
+                    return SliverAppBar(
+                      backgroundColor: scrolled
+                          ? Theme.of(context).colorScheme.background
+                          : Colors.transparent,
+                      automaticallyImplyLeading: false,
+                      floating: true,
+                      elevation: 0,
+                      flexibleSpace: showSearch
+                          ? Container(
+                              padding: const EdgeInsets.only(
+                                left: 5,
+                                top: 6,
+                                bottom: 10,
+                                right: 5,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.background,
+                                gradient: AppTheme.primaryGradient,
+                              ),
+                              child: TextFormField(
+                                autofocus: true,
+                                onChanged: (value) => ref
+                                    .read(chatSearchValueProvider.notifier)
+                                    .update((state) => value),
+                                cursorColor:
+                                    Theme.of(context).colorScheme.tertiary2,
+                                decoration: InputDecoration(
+                                  hintStyle:
+                                      const TextStyle(color: Colors.white),
+                                  suffixIcon: GestureDetector(
+                                    onTap: () {
+                                      searchNotifier.update((state) => false);
+                                      ref
+                                          .read(
+                                              chatSearchValueProvider.notifier)
+                                          .state = null;
+                                    },
+                                    child: const Icon(
+                                      Icons.close,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  contentPadding: const EdgeInsets.only(
+                                    left: 12,
+                                    bottom: 2,
+                                    top: 2,
+                                  ),
                                 ),
                               ),
-                              contentPadding: const EdgeInsets.only(
-                                left: 12,
-                                bottom: 2,
-                                top: 2,
+                            )
+                          : Padding(
+                              padding: const EdgeInsets.all(15),
+                              child: Text(
+                                AppLocalizations.of(context)!.chat,
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall,
                               ),
                             ),
-                          ),
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.all(15),
-                          child: Text(
-                            AppLocalizations.of(context)!.chat,
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
-                        ),
-                  actions: showSearch
-                      ? []
-                      : [
-                          IconButton(
-                            onPressed: () {
-                              searchNotifier.update((state) => !state);
-                            },
-                            padding: const EdgeInsets.only(right: 10, left: 5),
-                            icon: const Icon(Atlas.magnifying_glass),
-                          ),
-                          IconButton(
-                            onPressed: () =>
-                                context.pushNamed(Routes.createChat.name),
-                            padding: const EdgeInsets.only(right: 10, left: 10),
-                            icon: const Icon(
-                              Atlas.plus_circle_thin,
-                            ),
-                          ),
-                        ],
+                      actions: showSearch
+                          ? []
+                          : [
+                              IconButton(
+                                onPressed: () {
+                                  searchNotifier.update((state) => !state);
+                                },
+                                padding:
+                                    const EdgeInsets.only(right: 10, left: 5),
+                                icon: const Icon(Atlas.magnifying_glass),
+                              ),
+                              IconButton(
+                                onPressed: () =>
+                                    context.pushNamed(Routes.createChat.name),
+                                padding:
+                                    const EdgeInsets.only(right: 10, left: 10),
+                                icon: const Icon(
+                                  Atlas.plus_circle_thin,
+                                ),
+                              ),
+                            ],
+                    );
+                  },
                 ),
                 SliverToBoxAdapter(
                   child: client.isGuest()
