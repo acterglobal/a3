@@ -51,16 +51,12 @@ class RoomsListWidget extends ConsumerWidget {
                       floating: true,
                       elevation: 0,
                       flexibleSpace: showSearch
-                          ? Container(
+                          ? Padding(
                               padding: const EdgeInsets.only(
                                 left: 5,
                                 top: 6,
                                 bottom: 10,
                                 right: 5,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.background,
-                                gradient: AppTheme.primaryGradient,
                               ),
                               child: TextFormField(
                                 autofocus: true,
@@ -77,7 +73,8 @@ class RoomsListWidget extends ConsumerWidget {
                                       searchNotifier.update((state) => false);
                                       ref
                                           .read(
-                                              chatSearchValueProvider.notifier)
+                                            chatSearchValueProvider.notifier,
+                                          )
                                           .state = null;
                                     },
                                     child: const Icon(
