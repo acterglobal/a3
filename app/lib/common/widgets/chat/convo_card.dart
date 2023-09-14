@@ -320,11 +320,10 @@ class _SubtitleWidget extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Text(
-                  '${simplifyUserId(sender)}: ',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall!
-                      .copyWith(fontWeight: FontWeight.w700),
+                  '${simplifyUserId(sender)} ',
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        fontStyle: FontStyle.italic,
+                      ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -337,6 +336,7 @@ class _SubtitleWidget extends ConsumerWidget {
                 maxLines: 1,
                 defaultTextStyle: const TextStyle(
                   overflow: TextOverflow.ellipsis,
+                  fontStyle: FontStyle.italic,
                   fontSize: 14,
                 ),
                 onLinkTap: (url) => {},
