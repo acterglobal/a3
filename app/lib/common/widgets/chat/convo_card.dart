@@ -2,6 +2,7 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
+import 'package:acter/common/widgets/chat/loading_convo_card.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -67,8 +68,13 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
               )
             : const SizedBox.shrink(),
       ),
-      error: (error, stackTrace) => const Text('Failed to load Conversation'),
-      loading: () => const CircularProgressIndicator(),
+      error: (error, stackTrace) => LoadingConvoCard(
+        roomId: roomId,
+        subtitle: const Text('Failed to load Conversation'),
+      ),
+      loading: () => LoadingConvoCard(
+        roomId: roomId,
+      ),
     );
   }
 
