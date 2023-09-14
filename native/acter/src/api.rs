@@ -49,7 +49,8 @@ mod verification;
 pub use account::{Account, EmailTokenResponse};
 pub use acter_core::{
     events::{
-        news::NewsContent, password_reset::{PasswordResetViaEmail, PasswordResetViaPhone},
+        news::NewsContent,
+        password_reset::{PasswordResetViaEmail, PasswordResetViaPhone},
         Colorize, ObjRef, RefDetails, UtcDateTime,
     },
     models::{ActerModel, Color as EfkColor, Tag, TextMessageContent},

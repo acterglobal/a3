@@ -1,4 +1,6 @@
-use acter_core::events::password_reset::{PasswordResetContent, PasswordResetViaEmail, PasswordResetViaPhone};
+use acter_core::events::password_reset::{
+    PasswordResetContent, PasswordResetViaEmail, PasswordResetViaPhone,
+};
 use anyhow::{Context, Result};
 use std::ops::Deref;
 
