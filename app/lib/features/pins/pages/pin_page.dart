@@ -6,7 +6,6 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/report_content.dart';
-import 'package:acter/common/widgets/spaces/has_space_permission.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';

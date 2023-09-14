@@ -488,7 +488,7 @@ impl TryFrom<&Raw<AnyTimelineEvent>> for AnyActerModel {
         Self::try_from(raw.deserialize_as::<AnyActerEvent>().map_err(|error| {
             trace!(?error, ?raw, "parsing acter event failed");
             Error::FailedToParse {
-                model_type: model_type,
+                model_type,
                 msg: error.to_string(),
             }
         })?)
@@ -509,7 +509,7 @@ impl TryFrom<&Raw<AnySyncTimelineEvent>> for AnyActerModel {
         Self::try_from(raw.deserialize_as::<AnyActerEvent>().map_err(|error| {
             trace!(?error, ?raw, "parsing acter event failed");
             Error::FailedToParse {
-                model_type: model_type,
+                model_type,
                 msg: error.to_string(),
             }
         })?)
