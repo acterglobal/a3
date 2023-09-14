@@ -1611,6 +1611,32 @@ object Account {
 
     /// Submit token to finish password reset via email
     fn submit_token_from_email(submit_url: string, session_id: string, password: string, token: string) -> Future<Result<bool>>;
+
+    /// save intermediate info of password reset via email to account data
+    fn set_password_reset_via_email(submit_url: Option<string>, session_id: string, passphrase: string) -> Future<Result<bool>>;
+
+    /// save intermediate info of password reset via phone to account data
+    fn set_password_reset_via_phone(submit_url: Option<string>, session_id: string, passphrase: string) -> Future<Result<bool>>;
+
+    /// get intermediate info of password reset (via email and phone) from account data
+    fn get_password_reset() -> Future<Result<PasswordReset>>;
+}
+
+object PasswordReset {
+    fn via_email() -> Option<PasswordResetViaEmail>;
+    fn via_phone() -> Option<PasswordResetViaPhone>;
+}
+
+object PasswordResetViaEmail {
+    fn submit_url() -> Option<string>;
+    fn session_id() -> string;
+    fn passphrase() -> string;
+}
+
+object PasswordResetViaPhone {
+    fn submit_url() -> Option<string>;
+    fn session_id() -> string;
+    fn passphrase() -> string;
 }
 
 object EmailTokenResponse {

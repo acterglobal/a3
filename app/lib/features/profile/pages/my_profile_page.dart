@@ -6,7 +6,6 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +13,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class EmailPassword {
   String emailAddress;
@@ -196,13 +194,11 @@ class MyProfile extends ConsumerWidget {
         newValue.emailAddress,
         newValue.password,
       );
-      SharedPreferences pref = await sharedPrefs();
-      final submitUrl = response.submitUrl();
-      if (submitUrl != null) {
-        pref.setString(submitUrlKey, submitUrl);
-      }
-      pref.setString(sessionIdKey, response.sessionId());
-      pref.setString(passphraseKey, newValue.password);
+      await profile.account.setPasswordResetViaEmail(
+        response.submitUrl(),
+        response.sessionId(),
+        newValue.password,
+      );
       ref.invalidate(accountProfileProvider);
 
       if (!context.mounted) {
@@ -221,13 +217,17 @@ class MyProfile extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
-    SharedPreferences pref = await sharedPrefs();
-    final submitUrl = pref.getString(submitUrlKey);
+    final passwordReset = await profile.account.getPasswordReset();
+    final viaEmail = passwordReset.viaEmail();
+    if (viaEmail == null) {
+      return;
+    }
+    final submitUrl = viaEmail.submitUrl();
     if (submitUrl == null) {
       return;
     }
-    final sessionId = pref.getString(sessionIdKey);
-    final passphrase = pref.getString(passphraseKey);
+    final sessionId = viaEmail.sessionId();
+    final passphrase = viaEmail.passphrase();
     final TextEditingController newToken = TextEditingController();
 
     if (!context.mounted) {
@@ -264,8 +264,8 @@ class MyProfile extends ConsumerWidget {
       );
       await profile.account.submitTokenFromEmail(
         submitUrl,
-        sessionId!,
-        passphrase!,
+        sessionId,
+        passphrase,
         newText,
       );
       ref.invalidate(accountProfileProvider);
