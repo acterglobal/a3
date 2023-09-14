@@ -1,13 +1,5 @@
-use acter_core::events::password_reset::PasswordResetContent;
-pub use acter_core::events::password_reset::{PasswordResetViaEmail, PasswordResetViaPhone};
+use acter_core::events::password_reset::{PasswordResetContent, PasswordResetViaEmail, PasswordResetViaPhone};
 use anyhow::{Context, Result};
-use matrix_sdk::{
-    deserialized_responses::SyncOrStrippedState,
-    ruma::{
-        events::{StaticEventContent, SyncStateEvent},
-        Int,
-    },
-};
 use std::ops::Deref;
 
 use super::{account::Account, RUNTIME};
