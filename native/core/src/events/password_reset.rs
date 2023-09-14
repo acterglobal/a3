@@ -10,7 +10,11 @@ pub struct PasswordResetViaEmail {
 
 impl PasswordResetViaEmail {
     pub fn new(submit_url: Option<String>, session_id: String, passphrase: String) -> Self {
-        PasswordResetViaEmail { submit_url, session_id, passphrase }
+        PasswordResetViaEmail {
+            submit_url,
+            session_id,
+            passphrase,
+        }
     }
 
     pub fn submit_url(&self) -> Option<String> {
@@ -35,7 +39,11 @@ pub struct PasswordResetViaPhone {
 
 impl PasswordResetViaPhone {
     pub fn new(submit_url: Option<String>, session_id: String, passphrase: String) -> Self {
-        PasswordResetViaPhone { submit_url, session_id, passphrase }
+        PasswordResetViaPhone {
+            submit_url,
+            session_id,
+            passphrase,
+        }
     }
 
     pub fn submit_url(&self) -> Option<String> {
