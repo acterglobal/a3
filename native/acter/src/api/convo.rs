@@ -220,6 +220,19 @@ impl Convo {
         self.room_id().to_string()
     }
 
+    pub fn is_dm(&self) -> bool {
+        !self.inner.room.direct_targets().is_empty()
+    }
+
+    pub fn dm_users(&self) -> Vec<String> {
+        self.inner
+            .room
+            .direct_targets()
+            .iter()
+            .map(|f| f.to_string())
+            .collect()
+    }
+
     pub async fn user_receipts(&self) -> Result<Vec<ReceiptRecord>> {
         let room = self.room.clone();
         RUNTIME

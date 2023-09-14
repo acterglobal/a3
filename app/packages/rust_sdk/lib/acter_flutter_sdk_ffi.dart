@@ -14935,6 +14935,26 @@ class Api {
       _ConvoRoomTypeReturn Function(
         int,
       )>();
+  late final _convoIsDmPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__Convo_is_dm");
+
+  late final _convoIsDm = _convoIsDmPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _convoDmUsersPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Convo_dm_users");
+
+  late final _convoDmUsers = _convoDmUsersPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _convoInviteUserPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -32877,6 +32897,34 @@ class Convo {
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
       _api.__deallocate(tmp3_0, tmp5 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// is this a direct message
+  bool isDm() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoIsDm(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// the list of users ids if this is a direct message
+  FfiListFfiString dmUsers() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoDmUsers(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
     return tmp2;
   }
 

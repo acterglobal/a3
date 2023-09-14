@@ -15,18 +15,19 @@ final convoProvider =
 // Chat Providers
 final chatProfileDataProvider =
     FutureProvider.family<ProfileData, Convo>((ref, convo) async {
+  // this ensure we are staying up to dates on updates to convo
   final chat = await ref.watch(convoProvider(convo).future);
   if (chat == null) {
     throw 'Chat not accessible';
   }
-  // FIXME: how to get informed about updates!?!
   final profile = chat.getProfile();
   final displayName = await profile.getDisplayName();
+  final isDm = chat.isDm();
   if (!profile.hasAvatar()) {
-    return ProfileData(displayName.text(), null);
+    return ProfileData(displayName.text(), null, isDm: isDm);
   }
   final avatar = await profile.getThumbnail(48, 48);
-  return ProfileData(displayName.text(), avatar.data());
+  return ProfileData(displayName.text(), avatar.data(), isDm: isDm);
 });
 
 final latestMessageProvider =

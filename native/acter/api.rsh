@@ -819,6 +819,12 @@ object Convo {
     /// get the user status on this room
     fn room_type() -> string;
 
+    /// is this a direct message
+    fn is_dm() -> bool;
+
+    /// the list of users ids if this is a direct message
+    fn dm_users() -> Vec<string>;
+
     /// invite the new user to this room
     fn invite_user(user_id: string) -> Future<Result<bool>>;
 

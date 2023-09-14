@@ -44,7 +44,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final avatar = ActerAvatar(
       uniqueId: roomId,
-      mode: DisplayMode.GroupChat,
+      mode: profile.isDm ? DisplayMode.DM : DisplayMode.GroupChat,
       displayName: profile.displayName ?? roomId,
       avatar: profile.getAvatarImage(),
       size: 36,
@@ -63,7 +63,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
                 selectedTileColor: Theme.of(context).colorScheme.onPrimary,
                 onFocusChange: onFocusChange,
                 onLongPress: onLongPress,
-                leading: showParent
+                leading: (!profile.isDm && showParent)
                     ? SpaceParentBadge(
                         spaceId: roomId,
                         badgeSize: 20,
