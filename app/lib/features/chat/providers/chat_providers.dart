@@ -44,3 +44,10 @@ final searchedChatsProvider = FutureProvider<List<Convo>>((ref) async {
 
 // for desktop only
 final showFullSplitView = StateProvider<bool>((ref) => false);
+
+// get status of room encryption
+final isRoomEncryptedProvider =
+    FutureProvider.family<bool, String>((ref, roomId) async {
+  final convo = await ref.watch(chatProvider(roomId).future);
+  return await convo.isEncrypted();
+});

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
@@ -42,13 +41,13 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   @override
   void initState() {
     super.initState();
-    getRoomEncryptionStatus();
+    getEncryptionStatus();
   }
 
-  void getRoomEncryptionStatus() async {
-    bool res = await widget.convo.isEncrypted();
-    setState(() async {
-      isEncrypted = res;
+  void getEncryptionStatus() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      isEncrypted = await ref
+          .read(isRoomEncryptedProvider(widget.convo.getRoomIdStr()).future);
     });
   }
 
@@ -609,8 +608,8 @@ class _FileWidget extends ConsumerWidget {
 
 class _TextInputWidget extends ConsumerWidget {
   final Convo convo;
-  final bool isEncrypted;
   final Function() onSendButtonPressed;
+  final bool isEncrypted;
   const _TextInputWidget({
     required this.convo,
     required this.onSendButtonPressed,
