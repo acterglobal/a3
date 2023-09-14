@@ -5,7 +5,7 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use derive_builder::Builder;
-use eyeball_im::{ObservableVector, VectorSubscriber};
+use eyeball_im::{ObservableVector, Vector, VectorSubscriber};
 use futures::{
     future::join_all,
     pin_mut,
@@ -471,12 +471,14 @@ impl Client {
 
     async fn load_from_cache(&self) {
         let (spaces, chats) = self.get_spaces_and_chats(None).await;
-        self.spaces.write().await.append(
-            spaces
-                .into_iter()
-                .map(|r| Space::new(self.clone(), r))
-                .collect(),
-        );
+        // FIXME for a lack of a better system, we just sort by room-id
+        let mut space_types: Vector<Space> = spaces
+            .into_iter()
+            .map(|r| Space::new(self.clone(), r))
+            .collect();
+        space_types.sort();
+
+        self.spaces.write().await.append(space_types);
         let mut values = join_all(chats.into_iter().map(|r| Convo::new(self.clone(), r))).await;
         values.sort();
         self.convos.write().await.append(values.into());
