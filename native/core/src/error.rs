@@ -1,4 +1,6 @@
-use matrix_sdk::{Error as MatrixError, HttpError};
+use matrix_sdk::{ruma::events::UnsignedRoomRedactionEvent, Error as MatrixError, HttpError};
+
+use crate::models::EventMeta;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -31,6 +33,13 @@ pub enum Error {
 
     #[error("Failed to parse {model_type}: {msg}")]
     FailedToParse { model_type: String, msg: String },
+
+    #[error("Model {meta:?} ({model_type}): {reason:?}")]
+    ModelRedacted {
+        model_type: String,
+        meta: EventMeta,
+        reason: UnsignedRoomRedactionEvent,
+    },
 
     #[error("{0}")]
     Custom(String),

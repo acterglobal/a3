@@ -878,6 +878,10 @@ object Convo {
     /// reason - The reason for the event being reported (optional).
     fn report_content(event_id: string, score: Option<i32>, reason: Option<string>) -> Future<Result<bool>>;
 
+    /// redact an event from this room
+    /// reason - The reason for the event being reported (optional).
+    fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<bool>>;
+
     fn is_joined() -> bool;
 }
 
@@ -1553,6 +1557,9 @@ object Space {
     /// reason - The reason for the event being reported (optional).
     fn report_content(event_id: string, score: Option<i32>, reason: Option<string>) -> Future<Result<bool>>;
 
+    /// redact an event from this room
+    /// reason - The reason for the event being reported (optional).
+    fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<bool>>;
 }
 
 enum MembershipStatus {

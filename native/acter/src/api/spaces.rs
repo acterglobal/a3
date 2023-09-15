@@ -382,8 +382,31 @@ impl Space {
             let has_chunks = !chunk.is_empty();
 
             for msg in chunk {
-                let model = match AnyActerModel::from_raw_tlevent(&msg.event) {
-                    Ok(model) => model,
+                match AnyActerModel::try_from(&msg.event) {
+                    Ok(model) => {
+                        trace!(?room_id, user_id=?client.user_id(), ?model, "handling timeline event");
+                        if let Err(e) = self.client.executor().handle(model).await {
+                            error!("Failure handling event: {:}", e);
+                        }
+                    }
+                    Err(Error::ModelRedacted {
+                        model_type,
+                        meta,
+                        reason,
+                    }) => {
+                        trace!(?room_id, user_id=?client.user_id(), model_type, ?meta.event_id, "redacted event");
+                        if let Err(e) = self
+                            .client
+                            .executor()
+                            .redact(model_type, meta, reason)
+                            .await
+                        {
+                            error!("Failure redacting {:}", e);
+                        }
+                    }
+                    Err(Error::UnknownModel(inner)) => {
+                        trace!(?room_id, user_id=?client.user_id(), ?inner, "ignoring event");
+                    }
                     Err(m) => {
                         if let Ok(state_key) = msg.event.get_field::<String>("state_key") {
                             trace!(state_key=?state_key, "ignoring state event");
@@ -391,20 +414,8 @@ impl Space {
                         } else {
                             error!(event=?msg.event, "Model didn't parse {:}", m);
                         }
-                        continue;
                     }
                 };
-                // match event {
-                //     MessageLikeEvent::Original(o) => {
-                trace!(?room_id, user_id=?client.user_id(), ?model, "handling timeline event");
-                if let Err(e) = self.client.executor().handle(model).await {
-                    error!("Failure handling event: {:}", e);
-                }
-                //     }
-                //     MessageLikeEvent::Redacted(r) => {
-                //         trace!(redaction = ?r, "redaction ignored");
-                //     }
-                // }
             }
 
             // Todo: Do we want to do something with the states, too?

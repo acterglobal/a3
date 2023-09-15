@@ -44,6 +44,12 @@ workspace = true
 default-features = false
 features = ["rustls-tls", "markdown"]
 
+[dependencies.ruma-macros]
+workspace = true
+
+[dependencies.ruma-common]
+workspace = true
+
 [dev-dependencies]
 anyhow = "1.0.69"
 env_logger = "0.10.0"
