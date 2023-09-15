@@ -1,0 +1,1 @@
+- Added support for redacting content (Pins, News Updates, Events) to allow users to clean up the Space
