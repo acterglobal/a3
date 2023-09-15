@@ -115,7 +115,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // parses `RoomMessage` event to `types.Message` and updates messages list
   Future<void> _handleDiff(TimelineDiff timelineEvent) async {
-    debugPrint('DiffRx: ${timelineEvent.action()}');
     List<PostProcessItem> postProcessing = [];
     switch (timelineEvent.action()) {
       case 'Append':
