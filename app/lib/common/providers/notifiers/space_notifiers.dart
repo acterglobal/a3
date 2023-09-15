@@ -52,11 +52,7 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
 
   Future<Space?> _getSpace() async {
     final client = ref.read(clientProvider)!;
-    try {
-      return await client.space(arg);
-    } catch (e) {
-      return null;
-    }
+    return await client.space(arg);
   }
 
   @override

@@ -444,17 +444,24 @@ impl Client {
             Some(convo) => Ok(convo),
             None => {
                 let room_id = self.resolve_room_alias(room_alias).await?;
-                self.convo_typed(&room_id).await.context("Convo not found")
+                self.convo_typed(&room_id)
+                    .await
+                    .context("Convo with alias {room_alias} ({room_id}) not found")
             }
         }
     }
 
     pub async fn convo(&self, room_id_or_alias: String) -> Result<Convo> {
-        if let Ok(room_alias) = OwnedRoomAliasId::try_from(room_id_or_alias.as_str()) {
+        // parsing roomid also works for room alias for some reason, so make sure to attempt to
+        // parse the roomId type first!
+        let Ok(room_id) = OwnedRoomId::try_from(room_id_or_alias.as_str())  else {
+            let room_alias = OwnedRoomAliasId::try_from(room_id_or_alias)?;
+            println!("asking for room alias: {room_alias}");
             return self.convo_by_alias_typed(room_alias).await;
-        }
-        let room_id = OwnedRoomId::try_from(room_id_or_alias)?;
-        self.convo_typed(&room_id).await.context("Convo not found")
+        };
+        self.convo_typed(&room_id)
+            .await
+            .context("Convo {room_id} not found")
     }
 
     pub async fn convo_typed(&self, room_id: &OwnedRoomId) -> Option<Convo> {
