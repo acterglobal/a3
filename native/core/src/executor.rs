@@ -1,12 +1,13 @@
 use dashmap::{mapref::entry::Entry, DashMap};
+use ruma_common::events::UnsignedRoomRedactionEvent;
 use std::sync::Arc;
 use tokio::sync::broadcast::{channel, Receiver, Sender};
 use tracing::{error, trace, trace_span};
 
 use crate::{
-    models::{ActerModel, AnyActerModel},
+    models::{ActerModel, AnyActerModel, EventMeta, RedactedActerModel},
     store::Store,
-    Result,
+    Error, Result,
 };
 
 #[derive(Clone, Debug)]
@@ -94,6 +95,32 @@ impl Executor {
         trace!(?event_id, ?model, "handle");
         self.notify(model.execute(&self.store).await?);
         trace!(?event_id, "handling done");
+        Ok(())
+    }
+
+    pub async fn redact(
+        &self,
+        model_type: String,
+        event_meta: EventMeta,
+        reason: UnsignedRoomRedactionEvent,
+    ) -> Result<()> {
+        match self.store.get(event_meta.event_id.as_str()).await {
+            Ok(model) => {
+                let redacted = RedactedActerModel::new(
+                    model_type.to_owned(),
+                    model.indizes(),
+                    event_meta,
+                    reason,
+                );
+                self.notify(model.redact(&self.store, redacted).await?);
+            }
+            Err(Error::ModelNotFound) => {
+                let redacted =
+                    RedactedActerModel::new(model_type.to_owned(), vec![], event_meta, reason);
+                self.notify(redacted.execute(&self.store).await?);
+            }
+            Err(error) => return Err(error),
+        }
         Ok(())
     }
 }

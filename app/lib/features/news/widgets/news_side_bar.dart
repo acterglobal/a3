@@ -3,8 +3,10 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
+import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
@@ -25,10 +27,8 @@ class NewsSideBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = news.roomId().toString();
-    final senderId = news.sender().toString();
     final userId = ref.watch(clientProvider)!.userId().toString();
-    final isAuthor = senderId == userId;
-    final space = ref.watch(briefSpaceItemProvider(roomId));
+    final space = ref.watch(briefSpaceItemWithMembershipProvider(roomId));
     final bgColor = convertColor(
       news.colors()?.background(),
       Theme.of(context).colorScheme.neutral6,
@@ -37,7 +37,6 @@ class NewsSideBar extends ConsumerWidget {
       news.colors()?.color(),
       Theme.of(context).colorScheme.neutral6,
     );
-    final TextStyle? actionLabelStyle = Theme.of(context).textTheme.labelLarge;
     final TextStyle style = Theme.of(context).textTheme.bodyLarge!.copyWith(
       fontSize: 13,
       color: fgColor,
@@ -45,30 +44,6 @@ class NewsSideBar extends ConsumerWidget {
         Shadow(color: bgColor, offset: const Offset(2, 2), blurRadius: 5),
       ],
     );
-    final List<PopupMenuEntry> submenu = isDesktop && !isAuthor
-        ? [
-            PopupMenuItem(
-              onTap: () => showAdaptiveDialog(
-                context: context,
-                builder: (context) => ReportContentWidget(
-                  title: 'Report this post',
-                  description:
-                      'Report this post to your homeserver administrator. Please note that adminstrator would\'t be able to read or view any files, if space is encrypted.',
-                  eventId: news.eventId().toString(),
-                  senderId: senderId,
-                  roomId: roomId,
-                  isSpace: true,
-                ),
-              ),
-              child: Text(
-                'Report this post',
-                style: actionLabelStyle!.copyWith(
-                  color: Theme.of(context).colorScheme.error,
-                ),
-              ),
-            ),
-          ]
-        : [];
 
     return Column(
       children: <Widget>[
@@ -80,45 +55,31 @@ class NewsSideBar extends ConsumerWidget {
           index: index,
         ),
         const SizedBox(height: 10),
-        isDesktop
-            ? PopupMenuButton(
-                itemBuilder: (context) {
-                  return submenu;
-                },
-                child: _SideBarItem(
-                  icon: const Icon(Atlas.dots_horizontal_thin),
-                  label: '',
-                  style: style,
-                ),
-              )
-            : InkWell(
-                onTap: () => showModalBottomSheet(
-                  context: context,
-                  builder: (context) => DefaultBottomSheet(
-                    content: _BottomSheetAction(
-                      onPress: () => showAdaptiveDialog(
-                        context: context,
-                        builder: (context) => ReportContentWidget(
-                          title: 'Report this post',
-                          eventId: news.eventId().toString(),
-                          description:
-                              'Report this post to your homeserver administrator. Please note that adminstrator would\'t be able to read or view any files, if space is encrypted.',
-                          senderId: senderId,
-                          roomId: roomId,
-                          isSpace: true,
-                        ),
-                      ),
-                      actionLabel: 'Report',
-                      actionLabelStyle: actionLabelStyle,
-                    ),
-                  ),
-                ),
-                child: _SideBarItem(
-                  icon: const Icon(Atlas.dots_horizontal_thin),
-                  label: '',
-                  style: style,
+        space.maybeWhen(
+          data: (space) => InkWell(
+            onTap: () => showModalBottomSheet(
+              context: context,
+              builder: (context) => DefaultBottomSheet(
+                content: ActionBox(
+                  news: news,
+                  userId: userId,
+                  roomId: roomId,
+                  membership: space.membership!,
                 ),
               ),
+            ),
+            child: _SideBarItem(
+              icon: const Icon(Atlas.dots_horizontal_thin),
+              label: '',
+              style: style,
+            ),
+          ),
+          orElse: () => _SideBarItem(
+            icon: const Icon(Atlas.dots_horizontal_thin),
+            label: '',
+            style: style,
+          ),
+        ),
         const SizedBox(height: 10),
         InkWell(
           onTap: () {
@@ -131,7 +92,7 @@ class NewsSideBar extends ConsumerWidget {
             data: (space) => ActerAvatar(
               uniqueId: roomId,
               mode: DisplayMode.Space,
-              displayName: space!.spaceProfileData.displayName,
+              displayName: space.spaceProfileData.displayName,
               avatar: space.spaceProfileData.getAvatarImage(),
               size: 42,
             ),
@@ -175,33 +136,75 @@ class _SideBarItem extends StatelessWidget {
   }
 }
 
-class _BottomSheetAction extends ConsumerWidget {
-  final String actionLabel;
-  final void Function()? onPress;
-  final TextStyle? actionLabelStyle;
-  const _BottomSheetAction({
-    required this.actionLabel,
-    required this.onPress,
-    this.actionLabelStyle,
+class ActionBox extends ConsumerWidget {
+  final String userId;
+  final ffi.NewsEntry news;
+  final String roomId;
+  final ffi.Member membership;
+  const ActionBox({
+    super.key,
+    required this.news,
+    required this.userId,
+    required this.roomId,
+    required this.membership,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: <Widget>[
-        GestureDetector(
-          onTap: () => onPress,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              actionLabel,
-              style: actionLabelStyle,
+    final senderId = news.sender().toString();
+
+    final isAuthor = senderId == userId;
+
+    List<Widget> actions = [const Text('Actions'), const Divider()];
+    if (!isAuthor) {
+      actions.add(
+        TextButton.icon(
+          onPressed: () => showAdaptiveDialog(
+            context: context,
+            builder: (context) => ReportContentWidget(
+              title: 'Report this post',
+              eventId: news.eventId().toString(),
+              description:
+                  'Report this post to your homeserver administrator. Please note that administrator would\'t be able to read or view any files in encrypted spaces.',
+              senderId: senderId,
+              roomId: roomId,
+              isSpace: true,
             ),
           ),
+          icon: const Icon(Atlas.exclamation_chat_thin),
+          label: const Text('Report this'),
         ),
-        const Divider(),
-      ],
+      );
+    }
+
+    if (!isAuthor || membership.canString('CanRedact')) {
+      actions.add(
+        TextButton.icon(
+          onPressed: () => showAdaptiveDialog(
+            context: context,
+            builder: (context) => RedactContentWidget(
+              title: 'Redact this post',
+              eventId: news.eventId().toString(),
+              onSuccess: () {
+                ref.invalidate(newsListProvider);
+                if (context.mounted) {
+                  context.pop();
+                }
+              },
+              senderId: senderId,
+              roomId: roomId,
+              isSpace: true,
+            ),
+          ),
+          icon: const Icon(Atlas.trash_thin),
+          label: const Text('Redact'),
+        ),
+      );
+    }
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: actions,
     );
   }
 }
