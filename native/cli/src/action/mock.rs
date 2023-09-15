@@ -6,6 +6,7 @@ use acter::{
 use acter_core::models::ActerModel;
 use anyhow::{bail, Context, Result};
 use clap::{crate_version, Parser, Subcommand};
+use futures::StreamExt;
 use matrix_sdk::{
     ruma::{api::client::room::Visibility, OwnedUserId},
     HttpError,
@@ -272,11 +273,13 @@ impl<'a> Mock<'a> {
     pub async fn accept_invitations(&mut self) -> Result<()> {
         for member in self.everyone().await.iter() {
             info!("Accepting invites for {:}", member.user_id()?);
-            member.sync_once(Default::default()).await?;
+            let mut sync_stream = Box::pin(member.sync_stream(Default::default()).await);
+            sync_stream.next().await;
             for invited in member.invited_rooms().iter() {
-                info!("accepting {:#?}", invited);
+                info!(" - accepting {:?}", invited.room_id());
                 invited.accept_invitation().await?;
             }
+            sync_stream.next().await;
         }
         info!("Done accepting invites");
 
@@ -303,10 +306,6 @@ impl<'a> Mock<'a> {
         //sisko.sync_once(Default::default()).await?;
         let syncer = odo.start_sync();
         syncer.await_has_synced_history().await?;
-        for s in odo.spaces().await? {
-            trace!("{}", s.room_id());
-        }
-        trace!("spaces for tasks for odo");
 
         let task_lists = odo.task_lists().await?;
         let alias = self.local_alias("#ops");

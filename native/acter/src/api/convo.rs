@@ -34,7 +34,7 @@ use matrix_sdk_ui::{
     timeline::{EventTimelineItem, PaginationOptions, RoomExt, TimelineItem},
     Timeline,
 };
-use ruma::OwnedRoomAliasId;
+use ruma::{OwnedRoomAliasId, OwnedRoomOrAliasId};
 use std::{
     ops::Deref,
     path::PathBuf,
@@ -443,25 +443,27 @@ impl Client {
         match convo {
             Some(convo) => Ok(convo),
             None => {
-                let room_id = self.resolve_room_alias(room_alias).await?;
-                self.convo_typed(&room_id)
-                    .await
-                    .context("Convo with alias {room_alias} ({room_id}) not found")
+                let room_id = self.resolve_room_alias(room_alias.clone()).await?;
+                self.convo_typed(&room_id).await.context(format!(
+                    "Convo with alias {room_alias} ({room_id}) not found"
+                ))
             }
         }
     }
 
     pub async fn convo(&self, room_id_or_alias: String) -> Result<Convo> {
-        // parsing roomid also works for room alias for some reason, so make sure to attempt to
-        // parse the roomId type first!
-        let Ok(room_id) = OwnedRoomId::try_from(room_id_or_alias.as_str())  else {
-            let room_alias = OwnedRoomAliasId::try_from(room_id_or_alias)?;
-            println!("asking for room alias: {room_alias}");
-            return self.convo_by_alias_typed(room_alias).await;
-        };
-        self.convo_typed(&room_id)
-            .await
-            .context("Convo {room_id} not found")
+        let either = OwnedRoomOrAliasId::try_from(room_id_or_alias.as_str())?;
+        if either.is_room_id() {
+            let room_id = OwnedRoomId::try_from(either.as_str())?;
+            self.convo_typed(&room_id)
+                .await
+                .context(format!("Convo {room_id} not found"))
+        } else if either.is_room_alias_id() {
+            let room_alias = OwnedRoomAliasId::try_from(either.as_str())?;
+            self.convo_by_alias_typed(room_alias).await
+        } else {
+            bail!("{room_id_or_alias} isn't a valid room id or alias...");
+        }
     }
 
     pub async fn convo_typed(&self, room_id: &OwnedRoomId) -> Option<Convo> {
