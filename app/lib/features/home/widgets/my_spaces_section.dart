@@ -37,30 +37,32 @@ class MySpacesSection extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: subspaces.length,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return SpaceCard(space: subspaces[index]);
-                },
-              ),
-              subspaces.length != spaces.length
-                  ? Padding(
-                      padding: const EdgeInsets.only(left: 30, top: 8),
-                      child: OutlinedButton(
-                        onPressed: () {
-                          context.pushNamed(Routes.spaces.name);
-                        },
-                        child: Text('see all my ${spaces.length} spaces'),
-                      ),
-                    )
-                  : const Text(''),
-            ],
-          ),
+          spaces.isEmpty
+              ? const _NoSpacesWidget()
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: subspaces.length,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return SpaceCard(space: subspaces[index]);
+                      },
+                    ),
+                    subspaces.length != spaces.length
+                        ? Padding(
+                            padding: const EdgeInsets.only(left: 30, top: 8),
+                            child: OutlinedButton(
+                              onPressed: () {
+                                context.pushNamed(Routes.spaces.name);
+                              },
+                              child: Text('see all my ${spaces.length} spaces'),
+                            ),
+                          )
+                        : const Text(''),
+                  ],
+                ),
         ],
       ),
     );
@@ -99,7 +101,7 @@ class _NoSpacesWidget extends ConsumerWidget {
                     ),
               ),
               TextSpan(
-                text: 'a space, to start organising and collaborating',
+                text: 'a space, to start organizing and collaborating',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
