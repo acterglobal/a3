@@ -561,9 +561,9 @@ impl Client {
 
     pub async fn resolve_room_alias(&self, alias_id: OwnedRoomAliasId) -> Result<OwnedRoomId> {
         let client = self.core.client().clone();
-        Ok(RUNTIME
+        RUNTIME
             .spawn(async move { anyhow::Ok(client.resolve_room_alias(&alias_id).await?.room_id) })
-            .await??)
+            .await?
     }
 
     pub fn store(&self) -> &Store {
