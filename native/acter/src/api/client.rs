@@ -418,12 +418,9 @@ impl Client {
 }
 
 // helper methods for managing spaces and chats
-fn remove_from(target: &mut RwLockWriteGuard<ObservableVector<Space>>, r_id: &OwnedRoomId) -> bool {
+fn remove_from(target: &mut RwLockWriteGuard<ObservableVector<Space>>, r_id: &OwnedRoomId) {
     if let Some(idx) = target.iter().position(|s| s.room_id() == r_id) {
         target.remove(idx);
-        true
-    } else {
-        false
     }
 }
 
@@ -512,25 +509,20 @@ impl Client {
     async fn refresh_rooms(&self, changed_rooms: Vec<&OwnedRoomId>) {
         let update_keys = {
             let mut updated: Vec<String> = vec![];
-            let mut trigger_spaces_key = false;
 
             let mut chats = self.convos.write().await;
             let mut spaces = self.spaces.write().await;
 
             for r_id in changed_rooms {
                 let Some(room) = self.core.client().get_room(r_id) else {
-                    if remove_from(&mut spaces, r_id) {
-                        trigger_spaces_key = true;
-                    }
+                    remove_from(&mut spaces, r_id);
                     remove_from_chat(&mut chats, r_id);
                     continue
                 };
 
                 if matches!(room, SdkRoom::Left(_)) {
                     // remove rooms we aren't in anymore
-                    if remove_from(&mut spaces, r_id) {
-                        trigger_spaces_key = true;
-                    }
+                    remove_from(&mut spaces, r_id);
                     remove_from_chat(&mut chats, r_id);
                     updated.push(r_id.to_string());
                     continue;
@@ -543,9 +535,6 @@ impl Client {
                         let space = spaces.remove(space_idx).update_room(inner);
                         spaces.insert(space_idx, space);
                     } else {
-                        // not found yet, we need to trigger the `SPACES` key
-                        // and add it
-                        trigger_spaces_key = true;
                         spaces.push_front(Space::new(self.clone(), inner))
                     }
                     // also clear from convos if it was in there...
@@ -560,16 +549,11 @@ impl Client {
                         insert_to_chat(&mut chats, Convo::new(self.clone(), inner).await);
                     }
                     // also clear from convos if it was in there...
-                    if remove_from(&mut spaces, r_id) {
-                        trigger_spaces_key = true;
-                    }
+                    remove_from(&mut spaces, r_id);
                     updated.push(r_id.to_string());
                 }
             }
 
-            if trigger_spaces_key {
-                updated.push("SPACES".to_owned());
-            }
             updated
         };
         self.executor().notify(update_keys);
@@ -919,7 +903,7 @@ impl Client {
         self.executor().subscribe(key)
     }
 
-    pub(crate) async fn wait_for(
+    pub async fn wait_for(
         &self,
         key: String,
         timeout: Option<Box<Duration>>,

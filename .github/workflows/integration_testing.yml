@@ -45,7 +45,7 @@ jobs:
       - uses: taiki-e/install-action@nextest
 
       - name: Initialize e2ee mock data
-        run: cargo run -p acter-cli -- mock
+        run: cargo run -p acter-cli -- --log=acter::api::client=trace,acter_cli=trace mock
         env:
           DEFAULT_HOMESERVER_NAME: "localhost"
           DEFAULT_HOMESERVER_URL: "http://localhost:8118"
@@ -116,7 +116,7 @@ jobs:
             allow_guest_access: true
 
       - name: Initialize e2ee mock data
-        run: cargo run -p acter-cli -- mock
+        run: cargo run -p acter-cli -- --log=acter::api::client=trace,acter_cli=trace mock
         env:
           DEFAULT_HOMESERVER_NAME: "localhost"
           DEFAULT_HOMESERVER_URL: "http://localhost:8118"
@@ -208,7 +208,7 @@ jobs:
             allow_guest_access: true
 
       - name: Initialize e2ee mock data
-        run: cargo run -p acter-cli -- mock
+        run: cargo run -p acter-cli -- --log=acter::api::client=trace,acter_cli=trace mock
         env:
           DEFAULT_HOMESERVER_NAME: "localhost"
           DEFAULT_HOMESERVER_URL: "http://localhost:8118"
@@ -299,7 +299,7 @@ jobs:
             allow_guest_access: true
 
       - name: Initialize e2ee mock data
-        run: cargo run -p acter-cli -- mock
+        run: cargo run -p acter-cli -- --log=acter::api::client=trace,acter_cli=trace mock
         env:
           DEFAULT_HOMESERVER_NAME: "localhost"
           DEFAULT_HOMESERVER_URL: "http://localhost:8118"

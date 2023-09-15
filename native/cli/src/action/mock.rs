@@ -274,7 +274,7 @@ impl<'a> Mock<'a> {
             info!("Accepting invites for {:}", member.user_id()?);
             member.sync_once(Default::default()).await?;
             for invited in member.invited_rooms().iter() {
-                trace!("accepting {:#?}", invited);
+                info!("accepting {:#?}", invited);
                 invited.accept_invitation().await?;
             }
         }
@@ -303,6 +303,10 @@ impl<'a> Mock<'a> {
         //sisko.sync_once(Default::default()).await?;
         let syncer = odo.start_sync();
         syncer.await_has_synced_history().await?;
+        for s in odo.spaces().await? {
+            trace!("{}", s.room_id());
+        }
+        trace!("spaces for tasks for odo");
 
         let task_lists = odo.task_lists().await?;
         let alias = self.local_alias("#ops");
@@ -319,7 +323,7 @@ impl<'a> Mock<'a> {
                 let cloned_odo = cloned_odo.clone();
                 let alias = alias.clone();
                 async move {
-                    println!("tasks get_space {alias}");
+                    info!("tasks get_space {alias}");
                     let space = cloned_odo.space(alias).await?;
                     Ok(Some(space))
                 }
