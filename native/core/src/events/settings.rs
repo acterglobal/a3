@@ -27,10 +27,33 @@ impl SimpleSettingWithTurnOff {
     }
 }
 
+// TasksSettings
+#[derive(Clone, Debug, Deserialize, Serialize, Builder)]
+pub struct TasksSettings {
+    // Tasks are off by default until the lab flag is removed
+    active: bool,
+}
+
+impl Default for TasksSettings {
+    fn default() -> Self {
+        TasksSettings { active: false }
+    }
+}
+
+impl TasksSettings {
+    pub fn active(&self) -> bool {
+        self.active
+    }
+    pub fn updater(&self) -> TasksSettingsBuilder {
+        TasksSettingsBuilder::default()
+            .active(self.active)
+            .to_owned()
+    }
+}
+
 pub type NewsSettings = SimpleSettingWithTurnOff;
 pub type PinsSettings = SimpleSettingWithTurnOff;
 pub type EventsSettings = SimpleSettingWithTurnOff;
-pub type TasksSettings = SimpleSettingWithTurnOff;
 
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Default)]
 #[ruma_event(type = "global.acter.app_settings", kind = State, state_key_type = EmptyStateKey)]

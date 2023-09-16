@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 pub use acter_core::events::settings::{
     ActerAppSettingsContent, EventsSettings, NewsSettings, PinsSettings, SimpleSettingWithTurnOff,
-    SimpleSettingWithTurnOffBuilder, TasksSettings,
+    SimpleSettingWithTurnOffBuilder, TasksSettings, TasksSettingsBuilder,
 };
 
 use acter_core::events::{
@@ -48,7 +48,7 @@ impl ActerAppSettingsBuilder {
     pub fn events(&mut self, value: Option<Box<SimpleSettingWithTurnOff>>) {
         self.inner.events(value.map(|i| *i));
     }
-    pub fn tasks(&mut self, value: Option<Box<SimpleSettingWithTurnOff>>) {
+    pub fn tasks(&mut self, value: Option<Box<TasksSettings>>) {
         self.inner.tasks(value.map(|i| *i));
     }
 }

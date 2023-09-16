@@ -266,7 +266,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                 title: const Text('Tasks'),
                 enabled: canEdit,
                 description: const Text(
-                  'Tasks & ToDoLists',
+                  'ToDo-Lists & Tasks',
                 ),
                 initialValue: tasks.active(),
                 onToggle: (newVal) async {
@@ -295,7 +295,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       enabled: canEdit,
                       title: const Text('TaskList PowerLevel'),
                       description: const Text(
-                        'Minimum power level required to manage task lists',
+                        'Minimum power level required to create & manage task lists',
                       ),
                       trailing: taskListCurrentPw != null
                           ? Text(pwTextTL)

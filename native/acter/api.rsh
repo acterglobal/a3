@@ -1348,6 +1348,11 @@ object SimpleSettingWithTurnOffBuilder {
     fn build() -> Result<SimpleSettingWithTurnOff>;
 }
 
+
+object TasksSettingsBuilder {
+    fn active(active: bool);
+    fn build() -> Result<TasksSettings>;
+}
 object NewsSettings {
     fn active() -> bool;
     fn updater() -> SimpleSettingWithTurnOffBuilder;
@@ -1355,7 +1360,7 @@ object NewsSettings {
 
 object TasksSettings {
     fn active() -> bool;
-    fn updater() -> SimpleSettingWithTurnOffBuilder;
+    fn updater() -> TasksSettingsBuilder;
 }
 
 object EventsSettings {
@@ -1380,7 +1385,7 @@ object ActerAppSettingsBuilder {
     fn news(news: Option<SimpleSettingWithTurnOff>);
     fn pins(pins: Option<SimpleSettingWithTurnOff>);
     fn events(events: Option<SimpleSettingWithTurnOff>);
-    fn tasks(tasks: Option<SimpleSettingWithTurnOff>);
+    fn tasks(tasks: Option<TasksSettings>);
 }
 
 object Space {
