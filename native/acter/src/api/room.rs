@@ -2437,6 +2437,22 @@ impl Room {
             })
             .await?
     }
+
+    pub async fn redact_content(&self, event_id: String, reason: Option<String>) -> Result<bool> {
+        let event_id = EventId::parse(event_id)?;
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't redact content in a room we are not in")
+        };
+
+        RUNTIME
+            .spawn(async move {
+                room.redact(&event_id, reason.as_deref(), None).await?;
+                Ok(true)
+            })
+            .await?
+    }
 }
 
 impl Deref for Room {

@@ -87,6 +87,8 @@ dependencies = [
  "matrix-sdk-base",
  "mime_guess",
  "minijinja",
+ "ruma-common",
+ "ruma-macros",
  "serde",
  "serde_json",
  "serde_repr",
