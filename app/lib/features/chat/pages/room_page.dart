@@ -161,7 +161,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
             gradient: AppTheme.primaryGradient,
           ),
           child: Chat(
-            customBottomWidget: CustomChatInput(convo: convo),
+            customBottomWidget: CustomChatInput(key: Key(roomId), convo: convo),
             textMessageBuilder: (
               types.TextMessage m, {
               required int messageWidth,
