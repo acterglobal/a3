@@ -1,4 +1,5 @@
-import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/render_html.dart';
@@ -8,6 +9,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:go_router/go_router.dart';
+
+final notificationSpaceDataProvider = FutureProvider.autoDispose
+    .family<ProfileData, ffi.Notification>((ref, notification) async {
+  final space = await notification.space();
+  final profile = await ref.watch(spaceProfileDataProvider(space).future);
+  return profile;
+});
+
+final notificationChatDataProvider = FutureProvider.autoDispose
+    .family<ProfileData, ffi.Notification>((ref, notification) async {
+  final convo = await notification.convo();
+  final profile = await ref.watch(chatProfileDataProvider(convo).future);
+  return profile;
+});
 
 class NotificationCard extends ConsumerWidget {
   final ffi.Notification notification;
@@ -22,10 +37,10 @@ class NotificationCard extends ConsumerWidget {
     final brief = extractBrief(notification);
     if (notification.hasRoom()) {
       if (notification.isActerSpace()) {
-        final space = notification.space()!;
         avatar = Consumer(
           builder: (context, ref, child) {
-            final spaceProfile = ref.watch(spaceProfileDataProvider(space));
+            final spaceProfile =
+                ref.watch(notificationSpaceDataProvider(notification));
             return InkWell(
               onTap: () => context.goNamed(
                 Routes.space.name,
@@ -57,7 +72,8 @@ class NotificationCard extends ConsumerWidget {
         );
         room = Consumer(
           builder: (ctx, ref, child) {
-            final spaceProfile = ref.watch(spaceProfileDataProvider(space));
+            final spaceProfile =
+                ref.watch(notificationSpaceDataProvider(notification));
             return spaceProfile.when(
               data: (value) => Text(value.displayName ?? roomId),
               error: (error, stackTrace) =>
@@ -67,15 +83,14 @@ class NotificationCard extends ConsumerWidget {
           },
         );
       } else {
-        final convo = notification.convo()!;
         avatar = Consumer(
           builder: (ctx, ref, child) {
-            final profile = ref.watch(chatProfileDataProvider(convo));
+            final profile =
+                ref.watch(notificationChatDataProvider(notification));
             return InkWell(
               onTap: () => ctx.goNamed(
                 Routes.chatroom.name,
                 pathParameters: {'roomId': roomId},
-                extra: convo,
               ),
               child: profile.when(
                 data: (profile) => ActerAvatar(
@@ -103,7 +118,8 @@ class NotificationCard extends ConsumerWidget {
         );
         room = Consumer(
           builder: (ctx, ref, child) {
-            final profile = ref.watch(chatProfileDataProvider(convo));
+            final profile =
+                ref.watch(notificationChatDataProvider(notification));
             return profile.when(
               data: (value) => Text(value.displayName ?? roomId),
               error: (error, stackTrace) =>

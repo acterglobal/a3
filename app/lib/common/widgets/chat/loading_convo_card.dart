@@ -1,13 +1,11 @@
-import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ConvoWithProfileCard extends ConsumerWidget {
+class LoadingConvoCard extends ConsumerWidget {
   final String roomId;
-  final ProfileData profile;
   final Widget? subtitle;
   final Widget? trailing;
 
@@ -28,10 +26,9 @@ class ConvoWithProfileCard extends ConsumerWidget {
   ///
   final bool showParent;
 
-  const ConvoWithProfileCard({
+  const LoadingConvoCard({
     super.key,
     required this.roomId,
-    required this.profile,
     this.onTap,
     this.onLongPress,
     this.onFocusChange,
@@ -44,9 +41,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final avatar = ActerAvatar(
       uniqueId: roomId,
-      mode: profile.isDm ? DisplayMode.DM : DisplayMode.GroupChat,
-      displayName: profile.displayName ?? roomId,
-      avatar: profile.getAvatarImage(),
+      mode: DisplayMode.GroupChat,
       size: 36,
     );
 
@@ -63,7 +58,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
                 selectedTileColor: Theme.of(context).colorScheme.onPrimary,
                 onFocusChange: onFocusChange,
                 onLongPress: onLongPress,
-                leading: (!profile.isDm && showParent)
+                leading: showParent
                     ? SpaceParentBadge(
                         spaceId: roomId,
                         badgeSize: 20,
@@ -71,7 +66,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
                       )
                     : avatar,
                 title: Text(
-                  profile.displayName ?? roomId,
+                  '',
                   style: Theme.of(context)
                       .textTheme
                       .bodyMedium!

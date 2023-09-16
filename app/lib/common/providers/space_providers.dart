@@ -1,12 +1,12 @@
 import 'dart:core';
 
 import 'package:acter/common/models/profile_data.dart';
-import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/common/providers/notifiers/space_profile_notifier.dart';
+import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:logging/logging.dart';
 
 final log = Logger('SpaceProviders');
@@ -17,10 +17,15 @@ final spaceProfileDataProvider = AsyncNotifierProvider.family<
   () => AsyncSpaceProfileDataNotifier(),
 );
 
-/// Provider a list of the users Space(s), keeps up to date with underlying client
-final spacesProvider = AsyncNotifierProvider<AsyncSpacesNotifier, List<Space>>(
-  () => AsyncSpacesNotifier(),
-);
+/// Provider the list of all spaces, keeps up to date with the order and the underlying client
+final spacesProvider =
+    StateNotifierProvider<SpaceListNotifier, List<Space>>((ref) {
+  final client = ref.watch(clientProvider);
+  if (client == null) {
+    throw 'No client found';
+  }
+  return SpaceListNotifier(ref: ref, client: client);
+});
 
 /// Map a spaceId to the space, keeps up to date with underlying client
 /// throws is the space isn't found.
@@ -154,7 +159,7 @@ class SpaceRelationsOverview {
 /// Whether the user has at least one space, where they have the requested permission
 final hasSpaceWithPermissionProvider =
     FutureProvider.family.autoDispose<bool, String>((ref, permission) async {
-  final spaces = await ref.watch(spacesProvider.future);
+  final spaces = ref.watch(spacesProvider);
   for (final element in spaces) {
     final membership = await element.getMyMembership();
     if (membership.canString(permission)) {
@@ -170,7 +175,7 @@ final hasSpaceWithPermissionProvider =
 /// Stays up to date with underlying client info
 final briefSpaceItemsProviderWithMembership =
     FutureProvider.autoDispose<List<SpaceItem>>((ref) async {
-  final spaces = await ref.watch(spacesProvider.future);
+  final spaces = ref.watch(spacesProvider);
   List<SpaceItem> items = [];
   for (final element in spaces) {
     final profileData =
@@ -222,7 +227,7 @@ final briefSpaceItemWithMembershipProvider =
 /// client info.
 final spaceItemsProvider =
     FutureProvider.autoDispose<List<SpaceItem>>((ref) async {
-  final spaces = await ref.watch(spacesProvider.future);
+  final spaces = ref.watch(spacesProvider);
   List<SpaceItem> items = [];
   for (final element in spaces) {
     final profileData = await ref.watch(

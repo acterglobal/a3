@@ -1,55 +1,94 @@
 import 'dart:io';
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
+import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/common/widgets/report_content.dart';
-import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:mime/mime.dart';
 
-class CustomChatInput extends ConsumerWidget {
-  const CustomChatInput({Key? key}) : super(key: key);
+final mentionKey = GlobalKey<FlutterMentionsState>();
+
+class CustomChatInput extends ConsumerStatefulWidget {
+  final Convo convo;
+  const CustomChatInput({required this.convo, super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final chatInputNotifier = ref.watch(chatInputProvider.notifier);
-    final chatInputState = ref.watch(chatInputProvider);
-    final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
-    final repliedToMessage =
-        ref.watch(chatRoomProvider.notifier).repliedToMessage;
-    final isAuthor = ref.watch(chatRoomProvider.notifier).isAuthor();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _CustomChatInputState();
+}
+
+class _CustomChatInputState extends ConsumerState<CustomChatInput> {
+  bool isEncrypted = false;
+  @override
+  void initState() {
+    super.initState();
+    getEncryptionStatus();
+  }
+
+  void getEncryptionStatus() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      isEncrypted = await ref
+          .read(isRoomEncryptedProvider(widget.convo.getRoomIdStr()).future);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final userId = ref.watch(clientProvider)!.userId().toString();
+    final roomId = widget.convo.getRoomIdStr();
+    final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
+    final chatInputState = ref.watch(chatInputProvider(roomId));
+    final chatState = ref.watch(chatStateProvider(widget.convo));
+    final repliedToMessage = chatInputState.repliedToMessage;
+    final currentMessageId = chatInputState.currentMessageId;
     final showReplyView = ref.watch(
-      chatInputProvider.select((ci) => ci.showReplyView),
+      chatInputProvider(roomId).select((ci) => ci.showReplyView),
     );
 
+    bool isAuthor() {
+      if (currentMessageId != null) {
+        final messages = chatState.messages;
+        int index = messages.indexWhere((x) => x.id == currentMessageId);
+        if (index != -1) {
+          return userId == messages[index].author.id;
+        }
+      }
+      return false;
+    }
+
     void handleEmojiSelected(Category? category, Emoji emoji) {
-      final mentionState = ref.read(mentionKeyProvider).currentState!;
+      final mentionState = mentionKey.currentState!;
       mentionState.controller!.text += emoji.emoji;
-      ref.read(chatInputProvider.notifier).showSendBtn(true);
+      ref.read(chatInputProvider(roomId).notifier).showSendBtn(true);
     }
 
     void handleBackspacePressed() {
-      final mentionState = ref.read(mentionKeyProvider).currentState!;
-      final newValue =
-          mentionState.controller!.text.characters.skipLast(1).string;
-      mentionState.controller!.text = newValue;
+      final newValue = mentionKey.currentState!.controller!.text.characters
+          .skipLast(1)
+          .string;
+      mentionKey.currentState!.controller!.text = newValue;
       if (newValue.isEmpty) {
-        ref.read(chatInputProvider.notifier).showSendBtn(false);
+        ref.read(chatInputProvider(roomId).notifier).showSendBtn(false);
       }
     }
 
@@ -57,162 +96,32 @@ class CustomChatInput extends ConsumerWidget {
       children: [
         Visibility(
           visible: showReplyView,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(
-                top: 12.0,
-                left: 16.0,
-                right: 16.0,
+          child: FrostEffect(
+            widgetWidth: size.width,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(6),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  repliedToMessage != null
-                      ? Consumer(builder: replyBuilder)
-                      : const SizedBox.shrink(),
-                  if (repliedToMessage != null &&
-                      chatInputState.replyWidget != null)
-                    _ReplyContentWidget(
-                      msg: repliedToMessage,
-                      messageWidget: chatInputState.replyWidget,
-                    ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Visibility(
-          visible: !chatInputState.emojiRowVisible,
-          replacement: Container(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            color: Theme.of(context).colorScheme.onPrimary,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                InkWell(
-                  onTap: () {
-                    if (isAuthor) {
-                      showAdaptiveDialog(
-                        context: context,
-                        builder: (context) => DefaultDialog(
-                          title: const Text(
-                            'Are you sure you want to delete this message? This action cannot be undone.',
-                          ),
-                          actions: <Widget>[
-                            DefaultButton(
-                              onPressed: () => context.pop(),
-                              title: 'No',
-                              isOutlined: true,
-                            ),
-                            DefaultButton(
-                              onPressed: () async {
-                                final messageId = ref
-                                    .read(chatRoomProvider.notifier)
-                                    .currentMessageId;
-                                if (messageId != null) {
-                                  try {
-                                    await chatRoomNotifier
-                                        .redactRoomMessage(messageId);
-                                    chatInputNotifier.emojiRowVisible(false);
-                                    chatRoomNotifier.currentMessageId = null;
-                                    if (context.mounted) {
-                                      context.pop();
-                                    }
-                                  } catch (e) {
-                                    if (!context.mounted) {
-                                      return;
-                                    }
-                                    context.pop();
-                                    customMsgSnackbar(
-                                      context,
-                                      e.toString(),
-                                    );
-                                  }
-                                } else {
-                                  debugPrint(messageId);
-                                }
-                              },
-                              title: 'Yes',
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.onError,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    } else {
-                      final messageId = chatRoomNotifier.currentMessageId;
-                      final message = ref
-                          .read(messagesProvider)
-                          .firstWhere((element) => element.id == messageId);
-                      showAdaptiveDialog(
-                        context: context,
-                        builder: (context) => ReportContentWidget(
-                          title: 'Report this message',
-                          description:
-                              'Report this message to your homeserver administrator. Please note that adminstrator wouldn\'t be able to read or view any files, if room is encrypted',
-                          senderId: message.author.id,
-                          roomId:
-                              ref.read(currentConvoProvider)!.getRoomIdStr(),
-                          eventId: messageId!,
-                        ),
-                      );
-                    }
-                  },
-                  child: Text(
-                    isAuthor ? 'Delete' : 'Report',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.errorContainer,
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () => customMsgSnackbar(
-                    context,
-                    'More options not implemented yet',
-                  ),
-                  child: const Text(
-                    'More',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 15),
-            color: Theme.of(context).colorScheme.onPrimary,
-            child: Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    const UserAvatarWidget(size: 20),
-                    const Flexible(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: _TextInputWidget(),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: InkWell(
-                        onTap: () => handleAttachment(ref, context),
-                        child: const Icon(Atlas.paperclip_attachment),
-                      ),
-                    ),
-                    if (chatInputState.sendBtnVisible)
-                      InkWell(
-                        onTap: () => onSendButtonPressed(ref),
-                        child: const Icon(Atlas.paper_airplane),
+                padding: const EdgeInsets.only(
+                  top: 12.0,
+                  left: 16.0,
+                  right: 16.0,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    repliedToMessage != null
+                        ? Consumer(builder: replyBuilder)
+                        : const SizedBox.shrink(),
+                    if (repliedToMessage != null &&
+                        chatInputState.replyWidget != null)
+                      _ReplyContentWidget(
+                        convo: widget.convo,
+                        msg: repliedToMessage,
+                        messageWidget: chatInputState.replyWidget!,
                       ),
                   ],
                 ),
@@ -221,7 +130,169 @@ class CustomChatInput extends ConsumerWidget {
           ),
         ),
         Visibility(
-          visible: ref.watch(chatInputProvider).emojiPickerVisible,
+          visible: !chatInputState.emojiRowVisible,
+          replacement: FrostEffect(
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  InkWell(
+                    onTap: () {
+                      if (isAuthor()) {
+                        showAdaptiveDialog(
+                          context: context,
+                          builder: (context) => DefaultDialog(
+                            title: const Text(
+                              'Are you sure you want to delete this message? This action cannot be undone.',
+                            ),
+                            actions: <Widget>[
+                              DefaultButton(
+                                onPressed: () => Navigator.of(
+                                  context,
+                                  rootNavigator: true,
+                                ).pop(),
+                                title: 'No',
+                                isOutlined: true,
+                              ),
+                              DefaultButton(
+                                onPressed: () async {
+                                  if (currentMessageId != null) {
+                                    try {
+                                      redactRoomMessage(currentMessageId);
+                                      chatInputNotifier.emojiRowVisible(false);
+                                      chatInputNotifier
+                                          .setCurrentMessageId(null);
+                                      if (context.mounted) {
+                                        Navigator.of(
+                                          context,
+                                          rootNavigator: true,
+                                        ).pop();
+                                      }
+                                    } catch (e) {
+                                      if (!context.mounted) {
+                                        return;
+                                      }
+                                      Navigator.of(
+                                        context,
+                                        rootNavigator: true,
+                                      ).pop();
+                                      customMsgSnackbar(
+                                        context,
+                                        e.toString(),
+                                      );
+                                    }
+                                  } else {
+                                    debugPrint(currentMessageId);
+                                  }
+                                },
+                                title: 'Yes',
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.onError,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      } else {
+                        final message = ref
+                            .read(chatStateProvider(widget.convo))
+                            .messages
+                            .firstWhere(
+                              (element) => element.id == currentMessageId,
+                            );
+                        showAdaptiveDialog(
+                          context: context,
+                          builder: (context) => ReportContentWidget(
+                            title: 'Report this message',
+                            description:
+                                'Report this message to your homeserver administrator. Please note that adminstrator wouldn\'t be able to read or view any files, if room is encrypted',
+                            senderId: message.author.id,
+                            roomId: roomId,
+                            eventId: currentMessageId!,
+                          ),
+                        );
+                      }
+                    },
+                    child: Text(
+                      isAuthor() ? 'Delete' : 'Report',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () => customMsgSnackbar(
+                      context,
+                      'More options not implemented yet',
+                    ),
+                    child: const Text(
+                      'More',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          child: FrostEffect(
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: InkWell(
+                        onTap: () => handleAttachment(ref, context),
+                        child: const Icon(
+                          Atlas.paperclip_attachment_thin,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: _TextInputWidget(
+                          convo: widget.convo,
+                          onSendButtonPressed: onSendButtonPressed,
+                          isEncrypted: isEncrypted,
+                        ),
+                      ),
+                    ),
+                    if (chatInputState.sendBtnVisible)
+                      InkWell(
+                        onTap: () => onSendButtonPressed(),
+                        child: CircleAvatar(
+                          radius: 18,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          child: Icon(
+                            Icons.send,
+                            size: 20,
+                            color: Theme.of(context).colorScheme.neutral2,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        Visibility(
+          visible: ref.watch(chatInputProvider(roomId)).emojiPickerVisible,
           child: EmojiPickerWidget(
             size: Size(
               MediaQuery.of(context).size.width,
@@ -235,68 +306,160 @@ class CustomChatInput extends ConsumerWidget {
     );
   }
 
+// delete message event
+  Future<void> redactRoomMessage(String eventId) async {
+    await widget.convo.redactMessage(eventId, '', null);
+  }
+
+  // file selection
+  Future<List<File>?> handleFileSelection(BuildContext context) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.any,
+      allowMultiple: true,
+    );
+    if (result != null) {
+      return result.paths.map((path) => File(path!)).toList();
+    }
+    return null;
+  }
+
   void handleAttachment(WidgetRef ref, BuildContext ctx) async {
-    var chatRoomNotifier = ref.read(chatRoomProvider.notifier);
-    await chatRoomNotifier.handleFileSelection(ctx);
+    var selectedFiles = await handleFileSelection(ctx);
+
     if (ctx.mounted) {
-      var selectionList = chatRoomNotifier.fileList;
-      String fileName = selectionList.first.path.split('/').last;
-      final mimeType = lookupMimeType(selectionList.first.path);
-      showAdaptiveDialog(
-        context: ctx,
-        builder: (ctx) => DefaultDialog(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Upload Files (${selectionList.length})',
-                  style: Theme.of(ctx).textTheme.titleSmall,
+      if (selectedFiles != null && selectedFiles.isNotEmpty) {
+        String fileName = selectedFiles.first.path.split('/').last;
+        final mimeType = lookupMimeType(selectedFiles.first.path);
+        showAdaptiveDialog(
+          context: ctx,
+          builder: (ctx) => DefaultDialog(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Upload Files (${selectedFiles.length})',
+                    style: Theme.of(ctx).textTheme.titleSmall,
+                  ),
+                ),
+              ],
+            ),
+            subtitle: Visibility(
+              visible: selectedFiles.length <= 5,
+              child: _FileWidget(mimeType, selectedFiles.first),
+            ),
+            description: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(fileName, style: Theme.of(ctx).textTheme.bodySmall),
+            ),
+            actions: <Widget>[
+              DefaultButton(
+                onPressed: () =>
+                    Navigator.of(context, rootNavigator: true).pop(),
+                title: 'Cancel',
+                isOutlined: true,
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(
+                    color: Theme.of(ctx).colorScheme.errorContainer,
+                  ),
+                ),
+              ),
+              DefaultButton(
+                onPressed: () async {
+                  Navigator.of(context, rootNavigator: true).pop();
+                  await handleFileUpload(selectedFiles);
+                },
+                title: 'Upload',
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(ctx).colorScheme.success,
                 ),
               ),
             ],
           ),
-          subtitle: Visibility(
-            visible: selectionList.length <= 5,
-            child: _FileWidget(mimeType, selectionList.first),
-          ),
-          description: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(fileName, style: Theme.of(ctx).textTheme.bodySmall),
-          ),
-          actions: <Widget>[
-            DefaultButton(
-              onPressed: () => ctx.pop(),
-              title: 'Cancel',
-              isOutlined: true,
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(
-                  color: Theme.of(ctx).colorScheme.errorContainer,
-                ),
-              ),
-            ),
-            DefaultButton(
-              onPressed: () async {
-                ctx.pop();
-                await chatRoomNotifier.handleFileUpload();
-              },
-              title: 'Upload',
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(ctx).colorScheme.success,
-              ),
-            ),
-          ],
-        ),
-      );
+        );
+      }
+    }
+  }
+
+  Future<void> handleFileUpload(List<File> files) async {
+    final roomId = widget.convo.getRoomIdStr();
+    final chatInputState = ref.read(chatInputProvider(roomId));
+    final chatInputNotifier = ref.read(chatInputProvider(roomId).notifier);
+    final convo = widget.convo;
+
+    try {
+      for (File file in files) {
+        String fileName = file.path.split('/').last;
+        String? mimeType = lookupMimeType(file.path);
+
+        if (mimeType!.startsWith('image/')) {
+          var bytes = file.readAsBytesSync();
+          var image = await decodeImageFromList(bytes);
+          if (chatInputState.repliedToMessage != null) {
+            await convo.sendImageReply(
+              file.path,
+              fileName,
+              mimeType,
+              file.lengthSync(),
+              image.width,
+              image.height,
+              chatInputState.repliedToMessage!.id,
+              null,
+            );
+
+            chatInputNotifier.setRepliedToMessage(null);
+            chatInputNotifier.toggleReplyView(false);
+            chatInputNotifier.setReplyWidget(null);
+          } else {
+            await convo.sendImageMessage(
+              file.path,
+              fileName,
+              mimeType,
+              file.lengthSync(),
+              image.height,
+              image.width,
+              null,
+            );
+          }
+        } else if (mimeType.startsWith('/audio')) {
+          if (chatInputState.repliedToMessage != null) {
+          } else {}
+        } else if (mimeType.startsWith('/video')) {
+        } else {
+          if (chatInputState.repliedToMessage != null) {
+            await convo.sendFileReply(
+              file.path,
+              fileName,
+              mimeType,
+              file.lengthSync(),
+              chatInputState.repliedToMessage!.id,
+              null,
+            );
+            chatInputNotifier.setRepliedToMessage(null);
+            chatInputNotifier.toggleReplyView(false);
+            chatInputNotifier.setReplyWidget(null);
+          } else {
+            await convo.sendFileMessage(
+              file.path,
+              fileName,
+              mimeType,
+              file.lengthSync(),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('error occurred: $e');
     }
   }
 
   Widget replyBuilder(BuildContext context, WidgetRef ref, Widget? child) {
-    final roomNotifier = ref.watch(chatRoomProvider.notifier);
-    final authorId = roomNotifier.repliedToMessage!.author.id;
-    final replyProfile = ref.watch(chatMemberProfileProvider(authorId));
-    final inputNotifier = ref.watch(chatInputProvider.notifier);
+    final roomId = widget.convo.getRoomIdStr();
+    final chatInputState = ref.watch(chatInputProvider(roomId));
+    final authorId = chatInputState.repliedToMessage!.author.id;
+    final replyProfile = ref.watch(memberProfileByIdProvider(authorId));
+    final inputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     return Row(
       children: [
         replyProfile.when(
@@ -340,24 +503,60 @@ class CustomChatInput extends ConsumerWidget {
       ],
     );
   }
-}
 
-Future<void> onSendButtonPressed(WidgetRef ref) async {
-  final inputNotifier = ref.read(chatInputProvider.notifier);
-  final roomNotifier = ref.read(chatRoomProvider.notifier);
-  final mentionState = ref.read(mentionKeyProvider).currentState!;
-  final markDownProvider = ref.read(messageMarkDownProvider);
-  final markDownNotifier = ref.read(messageMarkDownProvider.notifier);
+  Future<void> onSendButtonPressed() async {
+    final roomId = widget.convo.getRoomIdStr();
+    final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
+    final mentionReplacements =
+        ref.read(chatInputProvider(roomId)).mentionReplacements;
+    final mentionState = mentionKey.currentState!;
 
-  inputNotifier.showSendBtn(false);
-  String markdownText = mentionState.controller!.text;
-  int messageLength = markdownText.length;
-  markDownProvider.forEach((key, value) {
-    markdownText = markdownText.replaceAll(key, value);
-  });
-  await roomNotifier.handleSendPressed(markdownText, messageLength);
-  markDownNotifier.update((state) => {});
-  mentionState.controller!.clear();
+    inputNotifier.prepareSending();
+    String markdownText = mentionState.controller!.text;
+    int messageLength = markdownText.length;
+
+    mentionReplacements.forEach((key, value) {
+      markdownText = markdownText.replaceAll(key, value);
+    });
+
+    try {
+      await handleSendPressed(markdownText, messageLength);
+      inputNotifier.messageSent();
+      mentionState.controller!.clear();
+    } catch (e) {
+      if (context.mounted) {
+        customMsgSnackbar(context, 'Error sending message: $e');
+      }
+      inputNotifier.sendingFailed();
+    }
+  }
+
+  // // push messages in convo
+  Future<void> handleSendPressed(
+    String markdownMessage,
+    int messageLength,
+  ) async {
+    final convo = widget.convo;
+    final roomId = widget.convo.getRoomIdStr();
+    final chatInputState = ref.watch(chatInputProvider(roomId));
+    final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
+    // image or video is sent automatically
+    // user will click "send" button explicitly for text only
+    await convo.typingNotice(false);
+    if (chatInputState.repliedToMessage != null) {
+      await convo.sendTextReply(
+        markdownMessage,
+        chatInputState.repliedToMessage!.id,
+        null,
+      );
+      chatInputNotifier.setRepliedToMessage(null);
+      final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
+      inputNotifier.toggleReplyView(false);
+      inputNotifier.setReplyWidget(null);
+    } else {
+      await convo.sendFormattedMessage(markdownMessage);
+    }
+  }
 }
 
 class _FileWidget extends ConsumerWidget {
@@ -407,32 +606,36 @@ class _FileWidget extends ConsumerWidget {
   }
 }
 
-class _TextInputWidget extends ConsumerStatefulWidget {
-  const _TextInputWidget();
+class _TextInputWidget extends ConsumerWidget {
+  final Convo convo;
+  final Function() onSendButtonPressed;
+  final bool isEncrypted;
+  const _TextInputWidget({
+    required this.convo,
+    required this.onSendButtonPressed,
+    this.isEncrypted = false,
+  });
 
   @override
-  ConsumerState<_TextInputWidget> createState() =>
-      _TextInputWidgetConsumerState();
-}
-
-class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
-  @override
-  Widget build(BuildContext context) {
-    final mentionList = ref.watch(mentionListProvider);
-    final mentionKey = ref.watch(mentionKeyProvider);
-    final chatInputNotifier = ref.watch(chatInputProvider.notifier);
-    final chatRoomNotifier = ref.watch(chatRoomProvider.notifier);
-    final chatInputState = ref.watch(chatInputProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final roomId = convo.getRoomIdStr();
+    final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
+    final chatInputState = ref.watch(chatInputProvider(roomId));
     final width = MediaQuery.of(context).size.width;
     return FlutterMentions(
       key: mentionKey,
       suggestionPosition: SuggestionPosition.Top,
       suggestionListWidth: width >= 770 ? width * 0.6 : width * 0.8,
       onMentionAdd: (Map<String, dynamic> roomMember) {
-        _handleMentionAdd(roomMember, ref);
+        String authorId = roomMember['link'];
+        String displayName = roomMember['display'] ?? authorId;
+
+        ref
+            .read(chatInputProvider(roomId).notifier)
+            .addMention(displayName, authorId);
       },
       suggestionListDecoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.neutral2,
+        color: Theme.of(context).colorScheme.onSecondary,
         borderRadius: BorderRadius.circular(6),
       ),
       onChanged: (String value) async {
@@ -442,14 +645,19 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         }
         if (value.isNotEmpty) {
           chatInputNotifier.showSendBtn(true);
-          await chatRoomNotifier.typingNotice(true);
+          Future.delayed(const Duration(milliseconds: 500), () async {
+            await typingNotice(true);
+          });
         } else {
           chatInputNotifier.showSendBtn(false);
-          await chatRoomNotifier.typingNotice(false);
+          Future.delayed(const Duration(milliseconds: 500), () async {
+            await typingNotice(false);
+          });
         }
       },
       textInputAction: TextInputAction.send,
-      onSubmitted: (value) => onSendButtonPressed(ref),
+      enabled: chatInputState.allowEdit,
+      onSubmitted: (value) => onSendButtonPressed(),
       style: Theme.of(context).textTheme.bodySmall,
       cursorColor: Theme.of(context).colorScheme.tertiary,
       maxLines: 6,
@@ -457,7 +665,13 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
       focusNode: ref.watch(chatInputFocusProvider),
       decoration: InputDecoration(
         isCollapsed: true,
-        fillColor: Theme.of(context).colorScheme.primaryContainer,
+        prefixIcon: isEncrypted
+            ? Icon(
+                Icons.shield,
+                size: 18,
+                color: Theme.of(context).colorScheme.primary,
+              )
+            : null,
         suffixIcon: InkWell(
           onTap: () => chatInputState.emojiPickerVisible
               ? chatInputNotifier.emojiPickerVisible(false)
@@ -466,14 +680,34 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(width: 0, style: BorderStyle.none),
+          borderSide: BorderSide(
+            width: 0.5,
+            style: BorderStyle.solid,
+            color: Theme.of(context).colorScheme.secondary,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(width: 0, style: BorderStyle.none),
+          borderSide: BorderSide(
+            width: 0.5,
+            style: BorderStyle.solid,
+            color: Theme.of(context).colorScheme.secondary,
+          ),
         ),
-        filled: true,
-        hintText: AppLocalizations.of(context)!.newMessage,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: BorderSide(
+            width: 0.5,
+            style: BorderStyle.solid,
+            color: Theme.of(context).colorScheme.secondary,
+          ),
+        ),
+        hintText: isEncrypted
+            ? 'New Encrypted Message '
+            : AppLocalizations.of(context)!.newMessage,
+        hintStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
+              color: Theme.of(context).colorScheme.secondary,
+            ),
         contentPadding: const EdgeInsets.all(15),
         hintMaxLines: 1,
       ),
@@ -488,8 +722,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
               ..strokeJoin = StrokeJoin.round
               ..style = PaintingStyle.stroke,
           ),
-          data: mentionList,
-          matchAll: true,
+          data: chatInputState.mentions,
           suggestionBuilder: (Map<String, dynamic> roomMember) {
             final authorId = roomMember['link'];
             final title = roomMember['display'] ?? authorId;
@@ -517,23 +750,22 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
     );
   }
 
-  void _handleMentionAdd(Map<String, dynamic> roomMember, WidgetRef ref) {
-    String authorId = roomMember['link'];
-    String displayName = roomMember['display'] ?? authorId;
-    ref.read(messageMarkDownProvider).addAll({
-      '@$displayName': '[$displayName](https://matrix.to/#/$authorId)',
-    });
+  // send typing event from client
+  Future<bool> typingNotice(bool typing) async {
+    return await convo.typingNotice(typing);
   }
 }
 
 class _ReplyContentWidget extends StatelessWidget {
   const _ReplyContentWidget({
+    required this.convo,
     required this.msg,
     required this.messageWidget,
   });
 
-  final Message? msg;
-  final Widget? messageWidget;
+  final Convo convo;
+  final Message msg;
+  final Widget messageWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -542,6 +774,7 @@ class _ReplyContentWidget extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: ImageMessageBuilder(
+          convo: convo,
           message: imageMsg,
           messageWidth: imageMsg.size.toInt(),
           isReplyContent: true,
@@ -563,6 +796,6 @@ class _ReplyContentWidget extends StatelessWidget {
         ),
       );
     }
-    return messageWidget ?? const SizedBox.shrink();
+    return messageWidget;
   }
 }

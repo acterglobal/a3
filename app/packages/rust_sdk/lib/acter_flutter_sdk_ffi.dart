@@ -2416,53 +2416,6 @@ class Api {
     return tmp7;
   }
 
-  RoomMessage? __timelineStreamNextFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _timelineStreamNextFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_RoomMessage");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = RoomMessage._(this, tmp13_1);
-    return tmp7;
-  }
-
   bool? __timelineStreamPaginateBackwardsFuturePoll(
     int boxed,
     int postCobject,
@@ -7866,6 +7819,100 @@ class Api {
     return tmp7;
   }
 
+  Space? __notificationSpaceFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _notificationSpaceFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Space");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = Space._(this, tmp13_1);
+    return tmp7;
+  }
+
+  Convo? __notificationConvoFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _notificationConvoFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Convo");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = Convo._(this, tmp13_1);
+    return tmp7;
+  }
+
   FfiListNotification? __notificationListResultNotificationsFuturePoll(
     int boxed,
     int postCobject,
@@ -8114,54 +8161,6 @@ class Api {
     return tmp7;
   }
 
-  FfiListConvo? __clientConvosFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _clientConvosFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListConvo");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiListConvo._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
   FfiListSpace? __clientSpacesFuturePoll(
     int boxed,
     int postCobject,
@@ -8351,7 +8350,7 @@ class Api {
     return tmp7;
   }
 
-  Space? __clientGetSpaceFuturePoll(
+  Space? __clientSpaceFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -8365,7 +8364,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _clientGetSpaceFuturePoll(
+    final tmp6 = _clientSpaceFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -10872,7 +10871,7 @@ class Api {
     return;
   }
 
-  TimelineDiff? __timelineStreamDiffRxStreamPoll(
+  TimelineDiff? __timelineStreamDiffStreamStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -10890,7 +10889,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _timelineStreamDiffRxStreamPoll(
+    final tmp8 = _timelineStreamDiffStreamStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -11058,7 +11057,7 @@ class Api {
     return tmp9;
   }
 
-  FfiListConvo? __clientConvosRxStreamPoll(
+  ConvoDiff? __clientConvosStreamStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -11076,7 +11075,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _clientConvosRxStreamPoll(
+    final tmp8 = _clientConvosStreamStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -11088,10 +11087,45 @@ class Api {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_FfiListConvo");
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_ConvoDiff");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp12 = FfiListConvo._(this, tmp11_1);
-    final tmp9 = tmp12;
+    final tmp9 = ConvoDiff._(this, tmp11_1);
+    return tmp9;
+  }
+
+  SpaceDiff? __clientSpacesStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _clientSpacesStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_SpaceDiff");
+    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
+    final tmp9 = SpaceDiff._(this, tmp11_1);
     return tmp9;
   }
 
@@ -14101,26 +14135,97 @@ class Api {
       _TimelineDiffValueReturn Function(
         int,
       )>();
-  late final _timelineStreamDiffRxPtr = _lookup<
+  late final _convoDiffActionPtr = _lookup<
+      ffi.NativeFunction<
+          _ConvoDiffActionReturn Function(
+            ffi.Int64,
+          )>>("__ConvoDiff_action");
+
+  late final _convoDiffAction = _convoDiffActionPtr.asFunction<
+      _ConvoDiffActionReturn Function(
+        int,
+      )>();
+  late final _convoDiffValuesPtr = _lookup<
+      ffi.NativeFunction<
+          _ConvoDiffValuesReturn Function(
+            ffi.Int64,
+          )>>("__ConvoDiff_values");
+
+  late final _convoDiffValues = _convoDiffValuesPtr.asFunction<
+      _ConvoDiffValuesReturn Function(
+        int,
+      )>();
+  late final _convoDiffIndexPtr = _lookup<
+      ffi.NativeFunction<
+          _ConvoDiffIndexReturn Function(
+            ffi.Int64,
+          )>>("__ConvoDiff_index");
+
+  late final _convoDiffIndex = _convoDiffIndexPtr.asFunction<
+      _ConvoDiffIndexReturn Function(
+        int,
+      )>();
+  late final _convoDiffValuePtr = _lookup<
+      ffi.NativeFunction<
+          _ConvoDiffValueReturn Function(
+            ffi.Int64,
+          )>>("__ConvoDiff_value");
+
+  late final _convoDiffValue = _convoDiffValuePtr.asFunction<
+      _ConvoDiffValueReturn Function(
+        int,
+      )>();
+  late final _spaceDiffActionPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceDiffActionReturn Function(
+            ffi.Int64,
+          )>>("__SpaceDiff_action");
+
+  late final _spaceDiffAction = _spaceDiffActionPtr.asFunction<
+      _SpaceDiffActionReturn Function(
+        int,
+      )>();
+  late final _spaceDiffValuesPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceDiffValuesReturn Function(
+            ffi.Int64,
+          )>>("__SpaceDiff_values");
+
+  late final _spaceDiffValues = _spaceDiffValuesPtr.asFunction<
+      _SpaceDiffValuesReturn Function(
+        int,
+      )>();
+  late final _spaceDiffIndexPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceDiffIndexReturn Function(
+            ffi.Int64,
+          )>>("__SpaceDiff_index");
+
+  late final _spaceDiffIndex = _spaceDiffIndexPtr.asFunction<
+      _SpaceDiffIndexReturn Function(
+        int,
+      )>();
+  late final _spaceDiffValuePtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceDiffValueReturn Function(
+            ffi.Int64,
+          )>>("__SpaceDiff_value");
+
+  late final _spaceDiffValue = _spaceDiffValuePtr.asFunction<
+      _SpaceDiffValueReturn Function(
+        int,
+      )>();
+  late final _timelineStreamDiffStreamPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__TimelineStream_diff_rx");
+          )>>("__TimelineStream_diff_stream");
 
-  late final _timelineStreamDiffRx = _timelineStreamDiffRxPtr.asFunction<
-      int Function(
-        int,
-      )>();
-  late final _timelineStreamNextPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__TimelineStream_next");
-
-  late final _timelineStreamNext = _timelineStreamNextPtr.asFunction<
-      int Function(
-        int,
-      )>();
+  late final _timelineStreamDiffStream =
+      _timelineStreamDiffStreamPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _timelineStreamPaginateBackwardsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -14280,6 +14385,16 @@ class Api {
 
   late final _convoLatestMessage = _convoLatestMessagePtr.asFunction<
       _ConvoLatestMessageReturn Function(
+        int,
+      )>();
+  late final _convoLatestMessageTsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+            ffi.Int64,
+          )>>("__Convo_latest_message_ts");
+
+  late final _convoLatestMessageTs = _convoLatestMessageTsPtr.asFunction<
+      int Function(
         int,
       )>();
   late final _convoGetMyMembershipPtr = _lookup<
@@ -14906,6 +15021,26 @@ class Api {
 
   late final _convoRoomType = _convoRoomTypePtr.asFunction<
       _ConvoRoomTypeReturn Function(
+        int,
+      )>();
+  late final _convoIsDmPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__Convo_is_dm");
+
+  late final _convoIsDm = _convoIsDmPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _convoDmUsersPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Convo_dm_users");
+
+  late final _convoDmUsers = _convoDmUsersPtr.asFunction<
+      int Function(
         int,
       )>();
   late final _convoInviteUserPtr = _lookup<
@@ -19100,12 +19235,12 @@ class Api {
           )>();
   late final _notificationSpacePtr = _lookup<
       ffi.NativeFunction<
-          _NotificationSpaceReturn Function(
+          ffi.Int64 Function(
             ffi.Int64,
           )>>("__Notification_space");
 
   late final _notificationSpace = _notificationSpacePtr.asFunction<
-      _NotificationSpaceReturn Function(
+      int Function(
         int,
       )>();
   late final _notificationRoomMessagePtr = _lookup<
@@ -19120,12 +19255,12 @@ class Api {
       )>();
   late final _notificationConvoPtr = _lookup<
       ffi.NativeFunction<
-          _NotificationConvoReturn Function(
+          ffi.Int64 Function(
             ffi.Int64,
           )>>("__Notification_convo");
 
   late final _notificationConvo = _notificationConvoPtr.asFunction<
-      _NotificationConvoReturn Function(
+      int Function(
         int,
       )>();
   late final _notificationListResultNextBatchPtr = _lookup<
@@ -19541,23 +19676,13 @@ class Api {
         int,
         int,
       )>();
-  late final _clientConvosPtr = _lookup<
+  late final _clientConvosStreamPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__Client_convos");
+          )>>("__Client_convos_stream");
 
-  late final _clientConvos = _clientConvosPtr.asFunction<
-      int Function(
-        int,
-      )>();
-  late final _clientConvosRxPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__Client_convos_rx");
-
-  late final _clientConvosRx = _clientConvosRxPtr.asFunction<
+  late final _clientConvosStream = _clientConvosStreamPtr.asFunction<
       int Function(
         int,
       )>();
@@ -19568,6 +19693,16 @@ class Api {
           )>>("__Client_spaces");
 
   late final _clientSpaces = _clientSpacesPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _clientSpacesStreamPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Client_spaces_stream");
+
+  late final _clientSpacesStream = _clientSpacesStreamPtr.asFunction<
       int Function(
         int,
       )>();
@@ -19653,16 +19788,16 @@ class Api {
         int,
         int,
       )>();
-  late final _clientGetSpacePtr = _lookup<
+  late final _clientSpacePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__Client_get_space");
+          )>>("__Client_space");
 
-  late final _clientGetSpace = _clientGetSpacePtr.asFunction<
+  late final _clientSpace = _clientSpacePtr.asFunction<
       int Function(
         int,
         int,
@@ -21140,21 +21275,6 @@ class Api {
         int,
         int,
       )>();
-  late final _timelineStreamNextFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TimelineStreamNextFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__TimelineStream_next_future_poll");
-
-  late final _timelineStreamNextFuturePoll =
-      _timelineStreamNextFuturePollPtr.asFunction<
-          _TimelineStreamNextFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
   late final _timelineStreamPaginateBackwardsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _TimelineStreamPaginateBackwardsFuturePollReturn Function(
@@ -22865,6 +22985,36 @@ class Api {
             int,
             int,
           )>();
+  late final _notificationSpaceFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationSpaceFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Notification_space_future_poll");
+
+  late final _notificationSpaceFuturePoll =
+      _notificationSpaceFuturePollPtr.asFunction<
+          _NotificationSpaceFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _notificationConvoFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationConvoFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Notification_convo_future_poll");
+
+  late final _notificationConvoFuturePoll =
+      _notificationConvoFuturePollPtr.asFunction<
+          _NotificationConvoFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _notificationListResultNotificationsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _NotificationListResultNotificationsFuturePollReturn Function(
@@ -22939,20 +23089,6 @@ class Api {
             int,
             int,
           )>();
-  late final _clientConvosFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientConvosFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_convos_future_poll");
-
-  late final _clientConvosFuturePoll = _clientConvosFuturePollPtr.asFunction<
-      _ClientConvosFuturePollReturn Function(
-        int,
-        int,
-        int,
-      )>();
   late final _clientSpacesFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientSpacesFuturePollReturn Function(
@@ -23012,21 +23148,20 @@ class Api {
             int,
             int,
           )>();
-  late final _clientGetSpaceFuturePollPtr = _lookup<
+  late final _clientSpaceFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientGetSpaceFuturePollReturn Function(
+          _ClientSpaceFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__Client_get_space_future_poll");
+          )>>("__Client_space_future_poll");
 
-  late final _clientGetSpaceFuturePoll =
-      _clientGetSpaceFuturePollPtr.asFunction<
-          _ClientGetSpaceFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+  late final _clientSpaceFuturePoll = _clientSpaceFuturePollPtr.asFunction<
+      _ClientSpaceFuturePollReturn Function(
+        int,
+        int,
+        int,
+      )>();
   late final _clientPinnedLinksFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientPinnedLinksFuturePollReturn Function(
@@ -23860,18 +23995,18 @@ class Api {
             int,
             int,
           )>();
-  late final _timelineStreamDiffRxStreamPollPtr = _lookup<
+  late final _timelineStreamDiffStreamStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _TimelineStreamDiffRxStreamPollReturn Function(
+          _TimelineStreamDiffStreamStreamPollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__TimelineStream_diff_rx_stream_poll");
+          )>>("__TimelineStream_diff_stream_stream_poll");
 
-  late final _timelineStreamDiffRxStreamPoll =
-      _timelineStreamDiffRxStreamPollPtr.asFunction<
-          _TimelineStreamDiffRxStreamPollReturn Function(
+  late final _timelineStreamDiffStreamStreamPoll =
+      _timelineStreamDiffStreamStreamPollPtr.asFunction<
+          _TimelineStreamDiffStreamStreamPollReturn Function(
             int,
             int,
             int,
@@ -23945,18 +24080,35 @@ class Api {
             int,
             int,
           )>();
-  late final _clientConvosRxStreamPollPtr = _lookup<
+  late final _clientConvosStreamStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientConvosRxStreamPollReturn Function(
+          _ClientConvosStreamStreamPollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__Client_convos_rx_stream_poll");
+          )>>("__Client_convos_stream_stream_poll");
 
-  late final _clientConvosRxStreamPoll =
-      _clientConvosRxStreamPollPtr.asFunction<
-          _ClientConvosRxStreamPollReturn Function(
+  late final _clientConvosStreamStreamPoll =
+      _clientConvosStreamStreamPollPtr.asFunction<
+          _ClientConvosStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _clientSpacesStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSpacesStreamStreamPollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_spaces_stream_stream_poll");
+
+  late final _clientSpacesStreamStreamPoll =
+      _clientSpacesStreamStreamPollPtr.asFunction<
+          _ClientSpacesStreamStreamPollReturn Function(
             int,
             int,
             int,
@@ -30848,6 +31000,200 @@ class TimelineDiff {
   }
 }
 
+class ConvoDiff {
+  final Api _api;
+  final _Box _box;
+
+  ConvoDiff._(this._api, this._box);
+
+  /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
+  String action() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoDiffAction(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// for Append/Reset
+  FfiListConvo? values() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoDiffValues(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FfiListConvo");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp5 = FfiListConvo._(_api, tmp4_1);
+    final tmp2 = tmp5;
+    return tmp2;
+  }
+
+  /// for Insert/Set/Remove
+  int? index() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoDiffIndex(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// for Insert/Set/PushBack/PushFront
+  Convo? value() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoDiffValue(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Convo");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = Convo._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class SpaceDiff {
+  final Api _api;
+  final _Box _box;
+
+  SpaceDiff._(this._api, this._box);
+
+  /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
+  String action() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceDiffAction(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// for Append/Reset
+  FfiListSpace? values() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceDiffValues(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FfiListSpace");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp5 = FfiListSpace._(_api, tmp4_1);
+    final tmp2 = tmp5;
+    return tmp2;
+  }
+
+  /// for Insert/Set/Remove
+  int? index() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceDiffIndex(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// for Insert/Set/PushBack/PushFront
+  Space? value() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceDiffValue(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Space");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = Space._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 /// Timeline with Room Events
 class TimelineStream {
   final Api _api;
@@ -30856,32 +31202,19 @@ class TimelineStream {
   TimelineStream._(this._api, this._box);
 
   /// Fires whenever new diff found
-  Stream<TimelineDiff> diffRx() {
+  Stream<TimelineDiff> diffStream() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._timelineStreamDiffRx(
+    final tmp1 = _api._timelineStreamDiffStream(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__TimelineStream_diff_rx_stream_drop");
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__TimelineStream_diff_stream_stream_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeStream(tmp3_1, _api.__timelineStreamDiffRxStreamPoll);
-    return tmp2;
-  }
-
-  /// Fires whenever new event arrived
-  Future<RoomMessage> next() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._timelineStreamNext(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__TimelineStream_next_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__timelineStreamNextFuturePoll);
+    final tmp2 =
+        _nativeStream(tmp3_1, _api.__timelineStreamDiffStreamStreamPoll);
     return tmp2;
   }
 
@@ -31213,6 +31546,18 @@ class Convo {
     final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomMessage");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = RoomMessage._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// Latest message timestamp or 0
+  int latestMessageTs() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoLatestMessageTs(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
     return tmp2;
   }
 
@@ -32718,6 +33063,34 @@ class Convo {
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
       _api.__deallocate(tmp3_0, tmp5 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// is this a direct message
+  bool isDm() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoIsDm(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// the list of users ids if this is a direct message
+  FfiListFfiString dmUsers() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoDmUsers(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -40837,21 +41210,17 @@ class Notification {
     return tmp2;
   }
 
-  Space? space() {
+  Future<Space> space() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._notificationSpace(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Space");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = Space._(_api, tmp4_1);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Notification_space_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__notificationSpaceFuturePoll);
     return tmp2;
   }
 
@@ -40873,21 +41242,17 @@ class Notification {
     return tmp2;
   }
 
-  Convo? convo() {
+  Future<Convo> convo() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._notificationConvo(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Convo");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = Convo._(_api, tmp4_1);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Notification_convo_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__notificationConvoFuturePoll);
     return tmp2;
   }
 
@@ -41726,33 +42091,19 @@ class Client {
     return tmp6;
   }
 
-  /// The convos the user is involved in
-  Future<FfiListConvo> convos() {
+  /// Fires whenever the convo list changes (in order or number)
+  /// fires immediately with the current state of convos
+  Stream<ConvoDiff> convosStream() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._clientConvos(
+    final tmp1 = _api._clientConvosStream(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Client_convos_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_convos_stream_stream_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__clientConvosFuturePoll);
-    return tmp2;
-  }
-
-  /// The update event of convos the user is involved in
-  Stream<FfiListConvo> convosRx() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._clientConvosRx(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Client_convos_rx_stream_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeStream(tmp3_1, _api.__clientConvosRxStreamPoll);
+    final tmp2 = _nativeStream(tmp3_1, _api.__clientConvosStreamStreamPoll);
     return tmp2;
   }
 
@@ -41768,6 +42119,22 @@ class Client {
     final tmp3_1 = _Box(_api, tmp3_0, "__Client_spaces_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__clientSpacesFuturePoll);
+    return tmp2;
+  }
+
+  /// Fires whenever the space list changes (in order or number)
+  /// fires immediately with the current state of spaces
+  Stream<SpaceDiff> spacesStream() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientSpacesStream(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_spaces_stream_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(tmp3_1, _api.__clientSpacesStreamStreamPoll);
     return tmp2;
   }
 
@@ -41972,7 +42339,7 @@ class Client {
   }
 
   /// Get the space that user belongs to
-  Future<Space> getSpace(
+  Future<Space> space(
     String roomIdOrAlias,
   ) {
     final tmp1 = roomIdOrAlias;
@@ -41989,7 +42356,7 @@ class Client {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._clientGetSpace(
+    final tmp5 = _api._clientSpace(
       tmp0,
       tmp2,
       tmp3,
@@ -41997,9 +42364,9 @@ class Client {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Client_get_space_future_drop");
+    final tmp7_1 = _Box(_api, tmp7_0, "__Client_space_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__clientGetSpaceFuturePoll);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__clientSpaceFuturePoll);
     return tmp6;
   }
 
@@ -45560,6 +45927,66 @@ class _TimelineDiffValueReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _ConvoDiffActionReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _ConvoDiffValuesReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _ConvoDiffIndexReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _ConvoDiffValueReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _SpaceDiffActionReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _SpaceDiffValuesReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _SpaceDiffIndexReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _SpaceDiffValueReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
 class _ConvoTopicReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -46284,21 +46711,7 @@ class _NotificationRoomIdStrReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _NotificationSpaceReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
 class _NotificationRoomMessageReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _NotificationConvoReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -46927,21 +47340,6 @@ class _RsvpManagerUsersAtStatusFuturePollReturn extends ffi.Struct {
 }
 
 class _RsvpDraftSendFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _TimelineStreamNextFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -48689,6 +49087,36 @@ class _AccountUnignoreUserFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _NotificationSpaceFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _NotificationConvoFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _NotificationListResultNotificationsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -48768,21 +49196,6 @@ class _ClientUploadMediaFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientConvosFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
 class _ClientSpacesFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -48843,7 +49256,7 @@ class _ClientPublicSpacesFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientGetSpaceFuturePollReturn extends ffi.Struct {
+class _ClientSpaceFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -49662,7 +50075,7 @@ class _ActerPinSubscribeStreamStreamPollReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _TimelineStreamDiffRxStreamPollReturn extends ffi.Struct {
+class _TimelineStreamDiffStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -49701,7 +50114,14 @@ class _SyncStateSyncErrorRxStreamPollReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ClientConvosRxStreamPollReturn extends ffi.Struct {
+class _ClientConvosStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _ClientSpacesStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
