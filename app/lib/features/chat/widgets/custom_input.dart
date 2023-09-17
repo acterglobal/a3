@@ -25,7 +25,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:mime/mime.dart';
 
-final mentionKey = GlobalKey<FlutterMentionsState>();
+// keep track of text controller values across rooms.
+final _textValuesProvider =
+    StateProvider.family<String, String>((ref, roomId) => '');
 
 class CustomChatInput extends ConsumerStatefulWidget {
   final Convo convo;
@@ -37,18 +39,20 @@ class CustomChatInput extends ConsumerStatefulWidget {
 }
 
 class _CustomChatInputState extends ConsumerState<CustomChatInput> {
+  GlobalKey<FlutterMentionsState> mentionKey =
+      GlobalKey<FlutterMentionsState>();
   bool isEncrypted = false;
   @override
   void initState() {
     super.initState();
-    getEncryptionStatus();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      getEncryptionStatus();
+    });
   }
 
-  void getEncryptionStatus() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      isEncrypted = await ref
-          .read(isRoomEncryptedProvider(widget.convo.getRoomIdStr()).future);
-    });
+  void getEncryptionStatus() async {
+    isEncrypted = await ref
+        .read(isRoomEncryptedProvider(widget.convo.getRoomIdStr()).future);
   }
 
   @override
@@ -265,6 +269,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: _TextInputWidget(
+                          mentionKey: mentionKey,
                           convo: widget.convo,
                           onSendButtonPressed: onSendButtonPressed,
                           isEncrypted: isEncrypted,
@@ -510,11 +515,9 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     final mentionReplacements =
         ref.read(chatInputProvider(roomId)).mentionReplacements;
     final mentionState = mentionKey.currentState!;
-
     inputNotifier.prepareSending();
     String markdownText = mentionState.controller!.text;
     int messageLength = markdownText.length;
-
     mentionReplacements.forEach((key, value) {
       markdownText = markdownText.replaceAll(key, value);
     });
@@ -531,7 +534,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     }
   }
 
-  // // push messages in convo
+  // push messages in convo
   Future<void> handleSendPressed(
     String markdownMessage,
     int messageLength,
@@ -607,14 +610,22 @@ class _FileWidget extends ConsumerWidget {
 }
 
 class _TextInputWidget extends ConsumerWidget {
+  final GlobalKey<FlutterMentionsState> mentionKey;
   final Convo convo;
   final Function() onSendButtonPressed;
   final bool isEncrypted;
   const _TextInputWidget({
+    required this.mentionKey,
     required this.convo,
     required this.onSendButtonPressed,
     this.isEncrypted = false,
   });
+
+  void _updateTextValue(String roomId, WidgetRef ref) {
+    String textValue = '';
+    textValue += mentionKey.currentState!.controller!.text;
+    ref.read(_textValuesProvider(roomId).notifier).update((state) => textValue);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -624,6 +635,8 @@ class _TextInputWidget extends ConsumerWidget {
     final width = MediaQuery.of(context).size.width;
     return FlutterMentions(
       key: mentionKey,
+      // restore input if available
+      defaultText: ref.watch(_textValuesProvider(roomId)),
       suggestionPosition: SuggestionPosition.Top,
       suggestionListWidth: width >= 770 ? width * 0.6 : width * 0.8,
       onMentionAdd: (Map<String, dynamic> roomMember) {
@@ -638,11 +651,9 @@ class _TextInputWidget extends ConsumerWidget {
         color: Theme.of(context).colorScheme.onSecondary,
         borderRadius: BorderRadius.circular(6),
       ),
+      autofocus: true,
       onChanged: (String value) async {
-        final focusNode = ref.read(chatInputFocusProvider);
-        if (!focusNode.hasFocus) {
-          focusNode.requestFocus();
-        }
+        _updateTextValue(roomId, ref);
         if (value.isNotEmpty) {
           chatInputNotifier.showSendBtn(true);
           Future.delayed(const Duration(milliseconds: 500), () async {
