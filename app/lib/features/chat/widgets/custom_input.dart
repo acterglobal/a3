@@ -26,7 +26,8 @@ import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:mime/mime.dart';
 
 // keep track of text controller values across rooms.
-final _textValuesProvider = StateProvider<Map<String, String>>((ref) => {});
+final _textValuesProvider =
+    StateProvider.family<String, String>((ref, roomId) => '');
 
 class CustomChatInput extends ConsumerStatefulWidget {
   final Convo convo;
@@ -621,17 +622,9 @@ class _TextInputWidget extends ConsumerWidget {
   });
 
   void _updateTextValue(String roomId, WidgetRef ref) {
-    var textValues = ref.watch(_textValuesProvider);
-
-    if (textValues[roomId] != null) {
-      textValues[roomId] = '';
-      String value = textValues[roomId]!;
-      value += mentionKey.currentState!.controller!.text;
-      textValues[roomId] = value;
-    } else {
-      textValues[roomId] = mentionKey.currentState!.controller!.text;
-    }
-    ref.read(_textValuesProvider.notifier).update((state) => textValues);
+    String textValue = '';
+    textValue += mentionKey.currentState!.controller!.text;
+    ref.read(_textValuesProvider(roomId).notifier).update((state) => textValue);
   }
 
   @override
@@ -643,7 +636,7 @@ class _TextInputWidget extends ConsumerWidget {
     return FlutterMentions(
       key: mentionKey,
       // restore input if available
-      defaultText: ref.watch(_textValuesProvider)[roomId],
+      defaultText: ref.watch(_textValuesProvider(roomId)),
       suggestionPosition: SuggestionPosition.Top,
       suggestionListWidth: width >= 770 ? width * 0.6 : width * 0.8,
       onMentionAdd: (Map<String, dynamic> roomMember) {
