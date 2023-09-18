@@ -23,77 +23,77 @@ class EventsPage extends ConsumerWidget {
     final account = ref.watch(accountProfileProvider);
     final events = ref.watch(myEventsProvider);
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
-        child: CustomScrollView(
-          slivers: <Widget>[
-            PageHeaderWidget(
-              title: 'Events',
-              sectionColor: Colors.blue.shade200,
-              actions: [
-                IconButton(
-                  icon: const Icon(Atlas.funnel_sort_thin),
-                  onPressed: () {
-                    customMsgSnackbar(
-                      context,
-                      'Events filtering not yet implemented',
-                    );
-                  },
-                ),
-                IconButton(
-                  icon: Icon(
-                    Atlas.plus_circle_thin,
-                    color: Theme.of(context).colorScheme.neutral5,
-                  ),
-                  iconSize: 28,
-                  color: Theme.of(context).colorScheme.surface,
-                  onPressed: () => context.pushNamed(Routes.createEvent.name),
-                ),
-              ],
-              expandedContent: const Text(
-                'Calendar events from all the Spaces you are part of',
-              ),
+      backgroundColor: Theme.of(context).colorScheme.neutral,
+      body: CustomScrollView(
+        slivers: <Widget>[
+          PageHeaderWidget(
+            title: 'Events',
+            sectionDecoration: const BoxDecoration(
+              gradient: AppTheme.primaryGradient,
             ),
-            events.when(
-              data: (events) {
-                final widthCount =
-                    (MediaQuery.of(context).size.width ~/ 600).toInt();
-                const int minCount = 2;
-                if (events.isEmpty) {
-                  return const SliverToBoxAdapter(
-                    child: Center(
-                      child: Text('There\'s nothing scheduled yet'),
-                    ),
+            actions: [
+              IconButton(
+                icon: const Icon(Atlas.funnel_sort_thin),
+                onPressed: () {
+                  customMsgSnackbar(
+                    context,
+                    'Events filtering not yet implemented',
                   );
-                }
-                return SliverGrid.builder(
-                  itemCount: events.length,
-                  gridDelegate:
-                      SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
-                    crossAxisCount: max(1, min(widthCount, minCount)),
-                    height: MediaQuery.of(context).size.height * 0.1,
-                  ),
-                  itemBuilder: (context, index) {
-                    final event = events[index];
-                    return EventItem(
-                      event: event,
-                    );
-                  },
-                );
-              },
-              error: (error, stack) => SliverToBoxAdapter(
-                child: Center(
-                  child: Text('Loading failed: $error'),
-                ),
+                },
               ),
-              loading: () => const SliverToBoxAdapter(
-                child: Center(
-                  child: Text('Loading'),
+              IconButton(
+                icon: Icon(
+                  Atlas.plus_circle_thin,
+                  color: Theme.of(context).colorScheme.neutral5,
                 ),
+                iconSize: 28,
+                color: Theme.of(context).colorScheme.surface,
+                onPressed: () => context.pushNamed(Routes.createEvent.name),
+              ),
+            ],
+            expandedContent: const Text(
+              'Calendar events from all the Spaces you are part of',
+            ),
+          ),
+          events.when(
+            data: (events) {
+              final widthCount =
+                  (MediaQuery.of(context).size.width ~/ 600).toInt();
+              const int minCount = 2;
+              if (events.isEmpty) {
+                return const SliverToBoxAdapter(
+                  child: Center(
+                    child: Text('There\'s nothing scheduled yet'),
+                  ),
+                );
+              }
+              return SliverGrid.builder(
+                itemCount: events.length,
+                gridDelegate:
+                    SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
+                  crossAxisCount: max(1, min(widthCount, minCount)),
+                  height: MediaQuery.of(context).size.height * 0.1,
+                ),
+                itemBuilder: (context, index) {
+                  final event = events[index];
+                  return EventItem(
+                    event: event,
+                  );
+                },
+              );
+            },
+            error: (error, stack) => SliverToBoxAdapter(
+              child: Center(
+                child: Text('Loading failed: $error'),
               ),
             ),
-          ],
-        ),
+            loading: () => const SliverToBoxAdapter(
+              child: Center(
+                child: Text('Loading'),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

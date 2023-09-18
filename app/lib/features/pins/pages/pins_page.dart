@@ -23,80 +23,80 @@ class PinsPage extends ConsumerWidget {
     final account = ref.watch(accountProfileProvider);
     final pins = ref.watch(pinsProvider);
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
-        child: CustomScrollView(
-          slivers: <Widget>[
-            PageHeaderWidget(
-              title: 'Pins',
-              sectionColor: Colors.blue.shade200,
-              actions: [
-                IconButton(
-                  icon: const Icon(Atlas.funnel_sort_thin),
-                  onPressed: () {
-                    customMsgSnackbar(
-                      context,
-                      'Pin filtering not yet implemented',
-                    );
-                  },
-                ),
-                IconButton(
-                  icon: Icon(
-                    Atlas.plus_circle_thin,
-                    color: Theme.of(context).colorScheme.neutral5,
-                  ),
-                  iconSize: 28,
-                  color: Theme.of(context).colorScheme.surface,
-                  onPressed: () => context.pushNamed(
-                    Routes.actionAddPin.name,
-                  ),
-                ),
-              ],
-              expandedContent: const Text(
-                'Pinned items from all the Spaces you are part of',
-              ),
+      backgroundColor: Theme.of(context).colorScheme.neutral,
+      body: CustomScrollView(
+        slivers: <Widget>[
+          PageHeaderWidget(
+            title: 'Pins',
+            sectionDecoration: const BoxDecoration(
+              gradient: AppTheme.primaryGradient,
             ),
-            pins.when(
-              data: (pins) {
-                final widthCount =
-                    (MediaQuery.of(context).size.width ~/ 600).toInt();
-                const int minCount = 2;
-                if (pins.isEmpty) {
-                  return const SliverToBoxAdapter(
-                    child: Center(
-                      child: Text('there is nothing pinned yet'),
-                    ),
+            actions: [
+              IconButton(
+                icon: const Icon(Atlas.funnel_sort_thin),
+                onPressed: () {
+                  customMsgSnackbar(
+                    context,
+                    'Pin filtering not yet implemented',
                   );
-                }
-                return SliverGrid.builder(
-                  itemCount: pins.length,
-                  gridDelegate:
-                      SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
-                    crossAxisCount: max(1, min(widthCount, minCount)),
-                    height: MediaQuery.of(context).size.height * 0.1,
-                  ),
-                  itemBuilder: (context, index) {
-                    final pin = pins[index];
-                    return PinListItem(
-                      pin: pin,
-                      showSpace: true,
-                    );
-                  },
-                );
-              },
-              error: (error, stack) => SliverToBoxAdapter(
-                child: Center(
-                  child: Text('Loading failed: $error'),
+                },
+              ),
+              IconButton(
+                icon: Icon(
+                  Atlas.plus_circle_thin,
+                  color: Theme.of(context).colorScheme.neutral5,
+                ),
+                iconSize: 28,
+                color: Theme.of(context).colorScheme.surface,
+                onPressed: () => context.pushNamed(
+                  Routes.actionAddPin.name,
                 ),
               ),
-              loading: () => const SliverToBoxAdapter(
-                child: Center(
-                  child: Text('Loading'),
+            ],
+            expandedContent: const Text(
+              'Pinned items from all the Spaces you are part of',
+            ),
+          ),
+          pins.when(
+            data: (pins) {
+              final widthCount =
+                  (MediaQuery.of(context).size.width ~/ 600).toInt();
+              const int minCount = 2;
+              if (pins.isEmpty) {
+                return const SliverToBoxAdapter(
+                  child: Center(
+                    child: Text('there is nothing pinned yet'),
+                  ),
+                );
+              }
+              return SliverGrid.builder(
+                itemCount: pins.length,
+                gridDelegate:
+                    SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
+                  crossAxisCount: max(1, min(widthCount, minCount)),
+                  height: MediaQuery.of(context).size.height * 0.1,
                 ),
+                itemBuilder: (context, index) {
+                  final pin = pins[index];
+                  return PinListItem(
+                    pin: pin,
+                    showSpace: true,
+                  );
+                },
+              );
+            },
+            error: (error, stack) => SliverToBoxAdapter(
+              child: Center(
+                child: Text('Loading failed: $error'),
               ),
             ),
-          ],
-        ),
+            loading: () => const SliverToBoxAdapter(
+              child: Center(
+                child: Text('Loading'),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
