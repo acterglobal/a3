@@ -250,7 +250,7 @@ class MyProfile extends ConsumerWidget {
 
                     //Not implemented yet 
                     Visibility(
-                      visible: false,
+                      visible: true,
                       child: Container(
                           margin: const EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
@@ -286,20 +286,6 @@ class MyProfile extends ConsumerWidget {
                           ],
                         ),
                       ),
-                    Container(
-                        margin: const EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: AppTheme.brandColorScheme.onError),
-                        ),
-                        child:    Column(
-                          children: [
-                             ProfileItemTile(icon: Atlas.trash_can_thin,title: 'Deactivate account',onPressed: () =>
-                            deactivationConfirmationDialog(context, ref),color: Colors.red,),
-                          ],
-                        ),
-                      ),
-
                      
                     ],
                     
