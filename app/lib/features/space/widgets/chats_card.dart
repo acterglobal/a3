@@ -1,6 +1,6 @@
 import 'dart:core';
 
-import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +40,12 @@ class ChatsCard extends ConsumerWidget {
                       itemBuilder: (context, index) => ConvoCard(
                         room: chats[index],
                         showParent: false,
+                        onTap: () => context.pushNamed(
+                          Routes.chatroom.name,
+                          pathParameters: {
+                            'roomId': chats[index].getRoomIdStr(),
+                          },
+                        ),
                       ),
                     ),
                     chats.length > 3

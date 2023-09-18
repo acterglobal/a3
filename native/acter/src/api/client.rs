@@ -5,11 +5,16 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use derive_builder::Builder;
+use eyeball_im::{ObservableVector, Vector, VectorSubscriber};
 use futures::{
+    future::join_all,
     pin_mut,
     stream::{Stream, StreamExt},
 };
-use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
+use futures_signals::{
+    signal::{Mutable, MutableLockMut, MutableSignalCloned, SignalExt, SignalStream},
+    signal_vec::{MutableVec, MutableVecLockMut},
+};
 use matrix_sdk::{
     config::SyncSettings,
     event_handler::EventHandlerHandle,
@@ -40,7 +45,7 @@ use std::{
 use tokio::{
     sync::{
         broadcast::{channel, Receiver, Sender},
-        Mutex, RwLock,
+        Mutex, RwLock, RwLockWriteGuard,
     },
     task::JoinHandle,
     time,
@@ -51,18 +56,9 @@ use tracing::{error, info, trace, warn};
 use crate::Notification;
 
 use super::{
-    account::Account,
-    api::FfiBuffer,
-    convo::{Convo, ConvoController},
-    device::DeviceController,
-    invitation::InvitationController,
-    profile::UserProfile,
-    receipt::ReceiptController,
-    room::Room,
-    spaces::Space,
-    typing::TypingController,
-    verification::VerificationController,
-    RUNTIME,
+    account::Account, api::FfiBuffer, convo::Convo, device::DeviceController,
+    invitation::InvitationController, profile::UserProfile, receipt::ReceiptController, room::Room,
+    spaces::Space, typing::TypingController, verification::VerificationController, RUNTIME,
 };
 
 #[derive(Default, Builder, Debug)]
@@ -89,7 +85,8 @@ pub struct Client {
     pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
     pub(crate) receipt_controller: ReceiptController,
-    pub(crate) convo_controller: ConvoController,
+    pub spaces: Arc<RwLock<eyeball_im::ObservableVector<Space>>>,
+    pub convos: Arc<RwLock<eyeball_im::ObservableVector<Convo>>>,
     pub(crate) notifications: Arc<Sender<RumaNotification>>,
 }
 
@@ -128,31 +125,6 @@ impl Default for SpaceFilter {
             include_invited: true,
         }
     }
-}
-
-pub(crate) async fn devide_spaces_from_convos(
-    client: Client,
-    filter: Option<SpaceFilter>,
-) -> (Vec<Space>, Vec<Convo>) {
-    let filter = filter.unwrap_or_default();
-    let (spaces, convos, _) = futures::stream::iter(client.rooms().into_iter())
-        .filter(|room| futures::future::ready(filter.should_include(room)))
-        .fold(
-            (Vec::new(), Vec::new(), client),
-            async move |(mut spaces, mut convos, client), room| {
-                let inner = Room { room: room.clone() };
-
-                if inner.is_space() {
-                    spaces.push(Space::new(client.clone(), inner));
-                } else {
-                    convos.push(Convo::new(client.convo_controller.clone(), inner));
-                }
-
-                (spaces, convos, client)
-            },
-        )
-        .await;
-    (spaces, convos)
 }
 
 #[derive(Clone, Debug, Default)]
@@ -445,6 +417,33 @@ impl Client {
     }
 }
 
+// helper methods for managing spaces and chats
+fn remove_from(target: &mut RwLockWriteGuard<ObservableVector<Space>>, r_id: &OwnedRoomId) {
+    if let Some(idx) = target.iter().position(|s| s.room_id() == r_id) {
+        target.remove(idx);
+    }
+}
+
+fn remove_from_chat(target: &mut RwLockWriteGuard<ObservableVector<Convo>>, r_id: &OwnedRoomId) {
+    if let Some(idx) = target.iter().position(|s| s.room_id() == r_id) {
+        target.remove(idx);
+    }
+}
+
+// we expect chat to always stay sorted.
+fn insert_to_chat(target: &mut RwLockWriteGuard<ObservableVector<Convo>>, convo: Convo) {
+    let msg_ts = convo.latest_message_ts();
+    if (msg_ts > 0) {
+        if let Some(idx) = target.iter().position(|s| s.latest_message_ts() < msg_ts) {
+            target.insert(idx, convo);
+            return;
+        }
+    }
+
+    // fallback: push at the end.
+    target.push_back(convo);
+}
+
 // external API
 impl Client {
     pub async fn new(client: SdkClient, state: ClientState) -> Result<Self> {
@@ -452,18 +451,119 @@ impl Client {
         let mut cl = Client {
             core,
             state: Arc::new(RwLock::new(state)),
+            spaces: Default::default(),
+            convos: Default::default(),
             invitation_controller: InvitationController::new(),
             verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(),
             typing_controller: TypingController::new(),
             receipt_controller: ReceiptController::new(),
-            convo_controller: ConvoController::new(),
+
             notifications: Arc::new(channel(25).0),
         };
 
-        let (_spaces, convos) = devide_spaces_from_convos(cl.clone(), None).await;
-        cl.convo_controller.load_rooms(&convos);
+        cl.load_from_cache().await;
         Ok(cl)
+    }
+
+    async fn load_from_cache(&self) {
+        let (spaces, chats) = self.get_spaces_and_chats(None).await;
+        // FIXME for a lack of a better system, we just sort by room-id
+        let mut space_types: Vector<Space> = spaces
+            .into_iter()
+            .map(|r| Space::new(self.clone(), r))
+            .collect();
+        space_types.sort();
+
+        self.spaces.write().await.append(space_types);
+        let mut values = join_all(chats.into_iter().map(|r| Convo::new(self.clone(), r))).await;
+        values.sort();
+        self.convos.write().await.append(values.into());
+    }
+
+    async fn get_spaces_and_chats(&self, filter: Option<SpaceFilter>) -> (Vec<Room>, Vec<Room>) {
+        let filter = filter.unwrap_or_default();
+        futures::stream::iter(self.rooms().into_iter())
+            .filter(|room| futures::future::ready(filter.should_include(room)))
+            .fold(
+                (Vec::new(), Vec::new()),
+                async move |(mut spaces, mut convos), room| {
+                    if matches!(room, SdkRoom::Left(_)) {
+                        // ignore rooms we aren't in anymore ... maybe make them available somewhere else at some point
+                        return (spaces, convos);
+                    }
+                    let inner = Room { room };
+
+                    if inner.is_space() {
+                        spaces.push(inner);
+                    } else {
+                        convos.push(inner);
+                    }
+
+                    (spaces, convos)
+                },
+            )
+            .await
+    }
+
+    async fn refresh_rooms(&self, changed_rooms: Vec<&OwnedRoomId>) {
+        let update_keys = {
+            let mut updated: Vec<String> = vec![];
+
+            let mut chats = self.convos.write().await;
+            let mut spaces = self.spaces.write().await;
+
+            for r_id in changed_rooms {
+                let Some(room) = self.core.client().get_room(r_id) else {
+                    remove_from(&mut spaces, r_id);
+                    remove_from_chat(&mut chats, r_id);
+                    continue
+                };
+
+                if matches!(room, SdkRoom::Left(_)) {
+                    // remove rooms we aren't in anymore
+                    remove_from(&mut spaces, r_id);
+                    remove_from_chat(&mut chats, r_id);
+                    updated.push(r_id.to_string());
+                    continue;
+                }
+
+                let inner = Room { room: room.clone() };
+
+                if inner.is_space() {
+                    if let Some(space_idx) = spaces.iter().position(|s| s.room_id() == r_id) {
+                        let space = spaces.remove(space_idx).update_room(inner);
+                        spaces.insert(space_idx, space);
+                    } else {
+                        spaces.push_front(Space::new(self.clone(), inner))
+                    }
+                    // also clear from convos if it was in there...
+                    remove_from_chat(&mut chats, r_id);
+                    updated.push(r_id.to_string());
+                } else {
+                    if let Some(chat_idx) = chats.iter().position(|s| s.room_id() == r_id) {
+                        let chat = chats.remove(chat_idx).update_room(inner);
+                        // chat.update_latest_msg_ts().await;
+                        insert_to_chat(&mut chats, chat);
+                    } else {
+                        insert_to_chat(&mut chats, Convo::new(self.clone(), inner).await);
+                    }
+                    // also clear from convos if it was in there...
+                    remove_from(&mut spaces, r_id);
+                    updated.push(r_id.to_string());
+                }
+            }
+
+            updated
+        };
+        self.executor().notify(update_keys);
+    }
+
+    pub async fn resolve_room_alias(&self, alias_id: OwnedRoomAliasId) -> Result<OwnedRoomId> {
+        let client = self.core.client().clone();
+        RUNTIME
+            .spawn(async move { anyhow::Ok(client.resolve_room_alias(&alias_id).await?.room_id) })
+            .await?
     }
 
     pub fn store(&self) -> &Store {
@@ -489,7 +589,6 @@ impl Client {
         self.invitation_controller.add_event_handler(&client);
         self.typing_controller.add_event_handler(&client);
         self.receipt_controller.add_event_handler(&client);
-        self.convo_controller.add_event_handler(&client);
 
         self.verification_controller
             .add_to_device_event_handler(&client);
@@ -500,7 +599,6 @@ impl Client {
 
         let mut invitation_controller = self.invitation_controller.clone();
         let mut device_controller = self.device_controller.clone();
-        let mut convo_controller = self.convo_controller.clone();
         let notifications = self.notifications.clone();
 
         let (first_synced_tx, first_synced_rx) = channel(1);
@@ -522,7 +620,6 @@ impl Client {
 
             let mut invitation_controller = invitation_controller.clone();
             let mut device_controller = device_controller.clone();
-            let mut convo_controller = convo_controller.clone();
 
             let history_loading = history_loading.clone();
             let first_sync_task = first_sync_task.clone();
@@ -541,7 +638,6 @@ impl Client {
 
                     let mut invitation_controller = invitation_controller.clone();
                     let mut device_controller = device_controller.clone();
-                    let mut convo_controller = convo_controller.clone();
 
                     let first_synced_arc = first_synced_arc.clone();
                     let sync_error_arc = sync_error_arc.clone();
@@ -570,14 +666,6 @@ impl Client {
                     {
                         info!("received first sync");
                         trace!(user_id=?client.user_id(), "initial synced");
-                        let filter = SpaceFilterBuilder::default()
-                            .build()
-                            .expect("Builder SpaceFilter doesn't fail");
-                        // divide_spaces_from_convos must be called after first sync
-                        let (spaces, convos) =
-                            devide_spaces_from_convos(me.clone(), Some(filter)).await;
-                        convo_controller.load_rooms(&convos).await;
-                        // load invitations after first sync
                         invitation_controller.load_invitations(&client).await;
 
                         initial.store(false, Ordering::SeqCst);
@@ -626,12 +714,10 @@ impl Client {
                         .keys()
                         .chain(response.rooms.leave.keys())
                         .chain(response.rooms.invite.keys())
-                        .map(|id| id.to_string()) // FIXME: handle aliases, too?!?
-                        .collect::<Vec<String>>();
+                        .collect::<Vec<_>>();
 
                     if (!changed_rooms.is_empty()) {
-                        changed_rooms.push("SPACES".to_owned());
-                        me.executor().notify(changed_rooms);
+                        me.refresh_rooms(changed_rooms).await;
                     }
 
                     if let Ok(mut w) = state.try_write() {
@@ -704,17 +790,6 @@ impl Client {
             is_guest,
         })?;
         Ok(result)
-    }
-
-    pub async fn convos(&self) -> Result<Vec<Convo>> {
-        let client = self.clone();
-        let filter = SpaceFilterBuilder::default().build()?;
-        RUNTIME
-            .spawn(async move {
-                let (spaces, convos) = devide_spaces_from_convos(client, Some(filter)).await;
-                Ok(convos)
-            })
-            .await?
     }
 
     // pub async fn get_mxcuri_media(&self, uri: String) -> Result<Vec<u8>> {
@@ -828,7 +903,7 @@ impl Client {
         self.executor().subscribe(key)
     }
 
-    pub(crate) async fn wait_for(
+    pub async fn wait_for(
         &self,
         key: String,
         timeout: Option<Box<Duration>>,
@@ -902,7 +977,6 @@ impl Client {
             .remove_sync_event_handler(&client);
         self.typing_controller.remove_event_handler(&client);
         self.receipt_controller.remove_event_handler(&client);
-        self.convo_controller.remove_event_handler(&client);
 
         RUNTIME
             .spawn(async move {

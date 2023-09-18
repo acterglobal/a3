@@ -52,11 +52,7 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
 
   Future<Space?> _getSpace() async {
     final client = ref.read(clientProvider)!;
-    try {
-      return await client.getSpace(arg);
-    } catch (e) {
-      return null;
-    }
+    return await client.space(arg);
   }
 
   @override
@@ -67,6 +63,7 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
     _sub = _listener.listen(
       (e) async {
         debugPrint('seen update $arg');
+
         state = await AsyncValue.guard(() => _getSpace());
       },
       onError: (e, stack) {
@@ -85,38 +82,88 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
   }
 }
 
-class AsyncSpacesNotifier extends AsyncNotifier<List<Space>> {
-  late Stream<bool> _listener;
-  late StreamSubscription<bool> _sub;
+class SpaceListNotifier extends StateNotifier<List<Space>> {
+  final Ref ref;
+  final Client client;
+  StreamSubscription<SpaceDiff>? subscription;
 
-  Future<List<Space>> _getSpaces() async {
-    final client = ref.read(clientProvider)!;
-    final spaces = await client.spaces();
-    return spaces.toList(); // this might throw internally
+  SpaceListNotifier({
+    required this.ref,
+    required this.client,
+  }) : super(List<Space>.empty(growable: false)) {
+    _init();
   }
 
-  @override
-  Future<List<Space>> build() async {
-    final client = ref.watch(clientProvider)!;
-    ref.onDispose(onDispose);
-    _listener = client.subscribeStream('SPACES');
-    _sub = _listener.listen(
-      (e) async {
-        debugPrint('seen update on SPACES');
-        state = await AsyncValue.guard(() => _getSpaces());
-      },
-      onError: (e, stack) {
-        debugPrint('stream errored: $e : $stack');
-      },
-      onDone: () {
-        debugPrint('stream ended');
-      },
-    );
-    return _getSpaces();
+  void _init() async {
+    subscription = client.spacesStream().listen((diff) async {
+      await _handleDiff(diff);
+    });
+    ref.onDispose(() async {
+      debugPrint('disposing message stream');
+      await subscription?.cancel();
+    });
   }
 
-  void onDispose() {
-    debugPrint('disposing profile for SPACES');
-    _sub.cancel();
+  List<Space> listCopy() => List.from(state, growable: true);
+
+  Future<void> _handleDiff(SpaceDiff diff) async {
+    switch (diff.action()) {
+      case 'Append':
+        final newList = listCopy();
+        List<Space> items = diff.values()!.toList();
+        newList.addAll(items);
+        state = newList;
+        break;
+      case 'Insert':
+        Space m = diff.value()!;
+        final index = diff.index()!;
+        final newList = listCopy();
+        newList.insert(index, m);
+        state = newList;
+        break;
+      case 'Set':
+        Space m = diff.value()!;
+        final index = diff.index()!;
+        final newList = listCopy();
+        newList[index] = m;
+        state = newList;
+        break;
+      case 'Remove':
+        final index = diff.index()!;
+        final newList = listCopy();
+        newList.removeAt(index);
+        state = newList;
+        break;
+      case 'PushBack':
+        Space m = diff.value()!;
+        final newList = listCopy();
+        newList.add(m);
+        state = newList;
+        break;
+      case 'PushFront':
+        Space m = diff.value()!;
+        final newList = listCopy();
+        newList.insert(0, m);
+        state = newList;
+        break;
+      case 'PopBack':
+        final newList = listCopy();
+        newList.removeLast();
+        state = newList;
+        break;
+      case 'PopFront':
+        final newList = listCopy();
+        newList.removeAt(0);
+        state = newList;
+        break;
+      case 'Clear':
+        state = [];
+        break;
+      case 'Reset':
+        state = diff.values()!.toList();
+        break;
+      default:
+        break;
+    }
   }
 }

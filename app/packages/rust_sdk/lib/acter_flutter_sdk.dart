@@ -18,12 +18,12 @@ const rustLogKey = 'RUST_LOG';
 
 const defaultServerUrl = String.fromEnvironment(
   'DEFAULT_HOMESERVER_URL',
-  defaultValue: 'https://matrix.acter.global',
+  defaultValue: 'https://m-1.acter.global',
 );
 
 const defaultServerName = String.fromEnvironment(
   'DEFAULT_HOMESERVER_NAME',
-  defaultValue: 'acter.global',
+  defaultValue: 'm-1.acter.global',
 );
 
 const defaultLogSetting = String.fromEnvironment(

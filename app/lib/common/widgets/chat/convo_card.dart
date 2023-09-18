@@ -1,19 +1,19 @@
-import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/common/widgets/chat/loading_convo_card.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class ConvoCard extends ConsumerStatefulWidget {
   final Convo room;
+
+  final Function()? onTap;
 
   /// Whether or not to render the parent Icon
   ///
@@ -22,6 +22,7 @@ class ConvoCard extends ConsumerStatefulWidget {
   const ConvoCard({
     Key? key,
     required this.room,
+    this.onTap,
     this.showParent = true,
   }) : super(key: key);
 
@@ -43,36 +44,37 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
     final client = ref.watch(clientProvider);
     String roomId = widget.room.getRoomIdStr();
     final convoProfile = ref.watch(chatProfileDataProvider(widget.room));
+    final latestMsg = ref.watch(latestMessageProvider(widget.room));
     // ToDo: UnreadCounter
     return convoProfile.when(
       data: (profile) => ConvoWithProfileCard(
         roomId: roomId,
         showParent: widget.showParent,
         profile: profile,
-        onTap: () {
-          ref
-              .read(currentConvoProvider.notifier)
-              .update((state) => widget.room);
-
-          context.pushNamed(
-            Routes.chatroom.name,
-            pathParameters: {'roomId': roomId},
-          );
-        },
-        subtitle: _SubtitleWidget(
-          room: widget.room,
-          latestMessage: widget.room.latestMessage(),
-        ),
-        trailing: _TrailingWidget(
-          // controller: receiptController,
-          room: widget.room,
-          latestMessage: widget.room.latestMessage(),
-          activeMembers: activeMembers,
-          userId: client!.userId().toString(),
-        ),
+        onTap: widget.onTap,
+        subtitle: latestMsg != null
+            ? _SubtitleWidget(
+                room: widget.room,
+                latestMessage: latestMsg,
+              )
+            : const SizedBox.shrink(),
+        trailing: latestMsg != null
+            ? _TrailingWidget(
+                // controller: receiptController,
+                room: widget.room,
+                latestMessage: latestMsg,
+                activeMembers: activeMembers,
+                userId: client!.userId().toString(),
+              )
+            : const SizedBox.shrink(),
       ),
-      error: (error, stackTrace) => const Text('Failed to load Conversation'),
-      loading: () => const CircularProgressIndicator(),
+      error: (error, stackTrace) => LoadingConvoCard(
+        roomId: roomId,
+        subtitle: const Text('Failed to load Conversation'),
+      ),
+      loading: () => LoadingConvoCard(
+        roomId: roomId,
+      ),
     );
   }
 
@@ -87,27 +89,11 @@ class _SubtitleWidget extends ConsumerWidget {
     required this.latestMessage,
   });
   final Convo room;
-  final RoomMessage? latestMessage;
+  final RoomMessage latestMessage;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final typingEvent = ref.watch(typingProvider);
-    if (typingEvent.isNotEmpty) {
-      debugPrint('$typingEvent');
-      if (typingEvent['roomId'] == room.getRoomIdStr()) {
-        return Container(
-          margin: const EdgeInsets.symmetric(vertical: 10),
-          child: Text(
-            getUserPlural(typingEvent['typingUsers']),
-            style: Theme.of(context).textTheme.labelLarge,
-          ),
-        );
-      }
-    }
-    if (latestMessage == null) {
-      return const SizedBox.shrink();
-    }
-    RoomEventItem? eventItem = latestMessage!.eventItem();
+    RoomEventItem? eventItem = latestMessage.eventItem();
     if (eventItem == null) {
       return const SizedBox.shrink();
     }
@@ -334,11 +320,10 @@ class _SubtitleWidget extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Text(
-                  '${simplifyUserId(sender)}: ',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall!
-                      .copyWith(fontWeight: FontWeight.w700),
+                  '${simplifyUserId(sender)} ',
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        fontStyle: FontStyle.italic,
+                      ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -351,6 +336,7 @@ class _SubtitleWidget extends ConsumerWidget {
                 maxLines: 1,
                 defaultTextStyle: const TextStyle(
                   overflow: TextOverflow.ellipsis,
+                  fontStyle: FontStyle.italic,
                   fontSize: 14,
                 ),
                 onLinkTap: (url) => {},
@@ -378,22 +364,19 @@ class _SubtitleWidget extends ConsumerWidget {
 class _TrailingWidget extends ConsumerWidget {
   final Convo room;
   final List<Member> activeMembers;
-  final RoomMessage? latestMessage;
+  final RoomMessage latestMessage;
   final String? userId;
 
   const _TrailingWidget({
     required this.room,
     required this.activeMembers,
-    this.latestMessage,
+    required this.latestMessage,
     required this.userId,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (latestMessage == null) {
-      return const SizedBox.shrink();
-    }
-    RoomEventItem? eventItem = latestMessage!.eventItem();
+    RoomEventItem? eventItem = latestMessage.eventItem();
     if (eventItem == null) {
       return const SizedBox.shrink();
     }
@@ -402,7 +385,7 @@ class _TrailingWidget extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          jiffyTime(latestMessage!.eventItem()!.originServerTs()),
+          jiffyTime(latestMessage.eventItem()!.originServerTs()),
           style: Theme.of(context).textTheme.labelMedium,
         ),
       ],

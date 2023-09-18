@@ -42,7 +42,7 @@ impl Manage {
         while is_synced.next().await != Some(true) {} // let's wait for it to have synced
         info!(" - First Sync finished - ");
 
-        let space = client.get_space(room_id.to_string()).await?;
+        let space = client.space(room_id.to_string()).await?;
 
         if !space.is_space() {
             warn!("{room_id} is not a space. quitting.");
@@ -75,7 +75,7 @@ impl Manage {
         while is_synced.next().await != Some(true) {} // let's wait for it to have synced
         info!(" - First Sync finished - ");
 
-        let space = client.get_space(room_id.to_string()).await?;
+        let space = client.space(room_id.to_string()).await?;
 
         space.create_onboarding_data().await?;
 

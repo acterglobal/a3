@@ -1,10 +1,11 @@
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
+import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
-import 'package:acter/common/widgets/spaces/has_space_permission.dart';
 import 'package:acter/features/events/providers/events_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -17,6 +18,105 @@ class CalendarEventPage extends ConsumerWidget {
 
   const CalendarEventPage({super.key, required this.calendarId});
 
+  Widget buildActions(
+    BuildContext context,
+    WidgetRef ref,
+    CalendarEvent event,
+  ) {
+    final spaceId = event.roomIdStr();
+    List<PopupMenuEntry> actions = [];
+    final membership = ref.watch(spaceMembershipProvider(spaceId));
+    if (membership.valueOrNull != null) {
+      final memb = membership.requireValue!;
+      if (memb.canString('CanPostEvent')) {
+        actions.add(
+          PopupMenuItem(
+            onTap: () => context.pushNamed(
+              Routes.editCalendarEvent.name,
+              pathParameters: {'calendarId': calendarId},
+            ),
+            child: const Row(
+              children: <Widget>[
+                Icon(Atlas.pencil_edit_thin),
+                SizedBox(width: 10),
+                Text('Edit Event'),
+              ],
+            ),
+          ),
+        );
+      }
+
+      if (memb.canString('CanRedact') ||
+          memb.userId().toString() == event.sender().toString()) {
+        actions.addAll([
+          PopupMenuItem(
+            onTap: () => showAdaptiveDialog(
+              context: context,
+              builder: (context) => RedactContentWidget(
+                title: 'Redact this post',
+                eventId: event.eventId().toString(),
+                onSuccess: () {
+                  ref.invalidate(calendarEventProvider);
+                  if (context.mounted) {
+                    context.go('/');
+                  }
+                },
+                senderId: event.sender().toString(),
+                roomId: event.roomIdStr(),
+                isSpace: true,
+              ),
+            ),
+            child: Row(
+              children: <Widget>[
+                Icon(
+                  Atlas.trash_can_thin,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+                const SizedBox(width: 10),
+                const Text('Redact Event'),
+              ],
+            ),
+          ),
+        ]);
+      }
+    } else {
+      actions.add(
+        PopupMenuItem(
+          onTap: () => showAdaptiveDialog(
+            context: context,
+            builder: (ctx) => ReportContentWidget(
+              title: 'Report this Event',
+              description:
+                  'Report this content to your homeserver administrator. Please note that your administrator won\'t be able to read or view files in encrypted spaces.',
+              eventId: calendarId,
+              roomId: event.roomIdStr(),
+              senderId: event.sender().toString(),
+              isSpace: true,
+            ),
+          ),
+          child: Row(
+            children: <Widget>[
+              Icon(
+                Atlas.warning_thin,
+                color: Theme.of(context).colorScheme.error,
+              ),
+              const SizedBox(width: 10),
+              const Text('Report Event'),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (actions.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return PopupMenuButton(
+      itemBuilder: (ctx) => actions,
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final event = ref.watch(calendarEventProvider(calendarId));
@@ -27,29 +127,12 @@ class CalendarEventPage extends ConsumerWidget {
           PageHeaderWidget(
             title: event.hasValue ? event.value!.title() : 'Loading Event',
             sectionColor: Colors.blue.shade200,
-            actions: event.hasValue
-                ? [
-                    HasSpacePermission(
-                      spaceId: event.value!.roomIdStr(),
-                      permission: 'CanPostEvent',
-                      child: PopupMenuButton(
-                        itemBuilder: (BuildContext ctx) => <PopupMenuEntry>[
-                          PopupMenuItem(
-                            onTap: () => ctx.pushNamed(
-                              Routes.editCalendarEvent.name,
-                              pathParameters: {'calendarId': calendarId},
-                            ),
-                            child: const Text('Edit Event'),
-                          ),
-                          PopupMenuItem(
-                            onTap: () => onDelete(ctx),
-                            child: const Text('Delete Event'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ]
-                : [],
+            actions: [
+              event.maybeWhen(
+                data: (event) => buildActions(context, ref, event),
+                orElse: () => const SizedBox.shrink(),
+              ),
+            ],
           ),
           event.when(
             data: (ev) {
@@ -123,25 +206,6 @@ class CalendarEventPage extends ConsumerWidget {
                                       child: const Text('No'),
                                     ),
                                   ],
-                                ),
-                              ),
-                              const Spacer(),
-                              IconButton(
-                                onPressed: () => showAdaptiveDialog(
-                                  context: context,
-                                  builder: (ctx) => ReportContentWidget(
-                                    title: 'Report this Event',
-                                    description:
-                                        'Report this content to your homeserver administrator. Please note that your adminstrator won\'t be able to read or view files, if space is encrypted',
-                                    eventId: calendarId,
-                                    roomId: ev.roomIdStr(),
-                                    senderId: ev.sender().toString(),
-                                    isSpace: true,
-                                  ),
-                                ),
-                                icon: Icon(
-                                  Atlas.warning_thin,
-                                  color: Theme.of(context).colorScheme.error,
                                 ),
                               ),
                             ],

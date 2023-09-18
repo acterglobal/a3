@@ -60,7 +60,7 @@ pub struct LoginConfig {
     #[clap(long)]
     dont_store_token: bool,
 
-    /// Use the path for reading (and optionall storing) the access token
+    /// Use the path for reading (and optionally storing) the access token
     #[clap(long)]
     token_path: Option<PathBuf>,
 }
