@@ -80,7 +80,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
 
     List<Widget> children = [];
     if (isActive(LabsFeature.events)) {
-      children.add(const MyEventsSection());
+      children.add(const MyEventsSection(limit: 5));
     }
 
     if (children.isEmpty) {

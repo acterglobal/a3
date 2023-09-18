@@ -64,7 +64,7 @@ class SpacePinsPage extends ConsumerWidget {
                 itemCount: pins.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: max(1, min(widthCount, minCount)),
-                  childAspectRatio: 6,
+                  childAspectRatio: 8,
                 ),
                 itemBuilder: (context, index) {
                   final pin = pins[index];

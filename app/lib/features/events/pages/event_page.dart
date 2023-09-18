@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_button.dart';
@@ -122,109 +123,114 @@ class CalendarEventPage extends ConsumerWidget {
     final event = ref.watch(calendarEventProvider(calendarId));
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: <Widget>[
-          PageHeaderWidget(
-            title: event.hasValue ? event.value!.title() : 'Loading Event',
-            sectionColor: Colors.blue.shade200,
-            actions: [
-              event.maybeWhen(
-                data: (event) => buildActions(context, ref, event),
-                orElse: () => const SizedBox.shrink(),
-              ),
-            ],
-          ),
-          event.when(
-            data: (ev) {
-              String dateTime = 'Date and Time: ${formatDt(ev)}';
-              String description = '';
-              TextMessageContent? content = ev.description();
-              if (content != null) {
-                description = 'Description: ${content.body()}';
-              }
-              return SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Card(
-                    child: Container(
-                      margin: const EdgeInsets.all(10),
-                      child: Column(
-                        key: Key(calendarId),
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(ev.title()),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 15),
-                              Text(dateTime),
-                              const SizedBox(height: 15),
-                              Text(description),
-                              const SizedBox(height: 15),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(
-                                height: 50,
-                                width: 100,
-                                child: DefaultButton(
-                                  title: 'Invite',
-                                  onPressed: () => onInvite(context),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 50,
-                                width: 100,
-                                child: DefaultButton(
-                                  title: 'Join',
-                                  onPressed: () => onJoin(context),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 50,
-                                width: 100,
-                                child: PopupMenuButton(
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    child: const Text('RSVP'),
+      body: Container(
+        decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+        child: CustomScrollView(
+          slivers: <Widget>[
+            PageHeaderWidget(
+              title: event.hasValue ? event.value!.title() : 'Loading Event',
+              sectionColor: Colors.blue.shade200,
+              // gradientBottom: Theme.of(context).colorScheme.neutral,
+              actions: [
+                event.maybeWhen(
+                  data: (event) => buildActions(context, ref, event),
+                  orElse: () => const SizedBox.shrink(),
+                ),
+              ],
+            ),
+            event.when(
+              data: (ev) {
+                String dateTime = 'Date and Time: ${formatDt(ev)}';
+                String description = '';
+                TextMessageContent? content = ev.description();
+                if (content != null) {
+                  description = 'Description: ${content.body()}';
+                }
+                return SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Card(
+                      child: Container(
+                        margin: const EdgeInsets.all(10),
+                        child: Column(
+                          key: Key(calendarId),
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(ev.title()),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 15),
+                                Text(dateTime),
+                                const SizedBox(height: 15),
+                                Text(description),
+                                const SizedBox(height: 15),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(
+                                  height: 50,
+                                  width: 100,
+                                  child: DefaultButton(
+                                    title: 'Invite',
+                                    onPressed: () => onInvite(context),
                                   ),
-                                  itemBuilder: (BuildContext context) =>
-                                      <PopupMenuEntry>[
-                                    PopupMenuItem(
-                                      onTap: () => onRsvp(context, ev, 'Yes'),
-                                      child: const Text('Yes'),
-                                    ),
-                                    PopupMenuItem(
-                                      onTap: () => onRsvp(context, ev, 'Maybe'),
-                                      child: const Text('Maybe'),
-                                    ),
-                                    PopupMenuItem(
-                                      onTap: () => onRsvp(context, ev, 'No'),
-                                      child: const Text('No'),
-                                    ),
-                                  ],
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                                SizedBox(
+                                  height: 50,
+                                  width: 100,
+                                  child: DefaultButton(
+                                    title: 'Join',
+                                    onPressed: () => onJoin(context),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 50,
+                                  width: 100,
+                                  child: PopupMenuButton(
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      child: const Text('RSVP'),
+                                    ),
+                                    itemBuilder: (BuildContext context) =>
+                                        <PopupMenuEntry>[
+                                      PopupMenuItem(
+                                        onTap: () => onRsvp(context, ev, 'Yes'),
+                                        child: const Text('Yes'),
+                                      ),
+                                      PopupMenuItem(
+                                        onTap: () =>
+                                            onRsvp(context, ev, 'Maybe'),
+                                        child: const Text('Maybe'),
+                                      ),
+                                      PopupMenuItem(
+                                        onTap: () => onRsvp(context, ev, 'No'),
+                                        child: const Text('No'),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
-            error: (error, stackTrace) => SliverToBoxAdapter(
-              child: Text('Error loading event due to $error'),
+                );
+              },
+              error: (error, stackTrace) => SliverToBoxAdapter(
+                child: Text('Error loading event due to $error'),
+              ),
+              loading: () => const SliverToBoxAdapter(
+                child: Center(child: CircularProgressIndicator()),
+              ),
             ),
-            loading: () => const SliverToBoxAdapter(
-              child: Center(child: CircularProgressIndicator()),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

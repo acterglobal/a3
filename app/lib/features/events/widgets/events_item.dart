@@ -11,14 +11,19 @@ class EventItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(event.title()),
-      subtitle: Text(
-        formatDt(event),
-      ),
-      onTap: () => context.pushNamed(
-        Routes.calendarEvent.name,
-        pathParameters: {'calendarId': event.eventId().toString()},
+    return Card(
+      color: Theme.of(context).colorScheme.primaryContainer,
+      child: ListTile(
+        title:
+            Text(event.title(), style: Theme.of(context).textTheme.bodyMedium),
+        subtitle: Text(
+          formatDt(event),
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        onTap: () => context.pushNamed(
+          Routes.calendarEvent.name,
+          pathParameters: {'calendarId': event.eventId().toString()},
+        ),
       ),
     );
   }

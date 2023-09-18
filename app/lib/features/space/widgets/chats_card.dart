@@ -15,59 +15,62 @@ class ChatsCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chats = ref.watch(relatedChatsProvider(spaceId));
-    return Card(
-      elevation: 0,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Chats',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 10),
-            chats.when(
-              error: (error, stack) => Text('Loading chats failed: $error'),
-              loading: () => const Text('Loading'),
-              data: (chats) {
-                return Column(
-                  children: [
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: chats.length > 3 ? 3 : chats.length,
-                      itemBuilder: (context, index) => ConvoCard(
-                        room: chats[index],
-                        showParent: false,
-                        onTap: () => context.pushNamed(
-                          Routes.chatroom.name,
-                          pathParameters: {
-                            'roomId': chats[index].getRoomIdStr(),
-                          },
-                        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Chats',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 10),
+          chats.when(
+            error: (error, stack) => Text('Loading chats failed: $error'),
+            loading: () => const Text('Loading'),
+            data: (chats) {
+              if (chats.isEmpty) {
+                return Text(
+                  'There are no chats in this space',
+                  style: Theme.of(context).textTheme.bodySmall,
+                );
+              }
+              return Column(
+                children: [
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: chats.length > 3 ? 3 : chats.length,
+                    itemBuilder: (context, index) => ConvoCard(
+                      room: chats[index],
+                      showParent: false,
+                      onTap: () => context.pushNamed(
+                        Routes.chatroom.name,
+                        pathParameters: {
+                          'roomId': chats[index].getRoomIdStr(),
+                        },
                       ),
                     ),
-                    chats.length > 3
-                        ? Padding(
-                            padding: const EdgeInsets.only(left: 30, top: 8),
-                            child: OutlinedButton(
-                              onPressed: () {
-                                context.goNamed(
-                                  Routes.spaceChats.name,
-                                  pathParameters: {'spaceId': spaceId},
-                                );
-                              },
-                              child: Text('see all my ${chats.length} chats'),
-                            ),
-                          )
-                        : const SizedBox.shrink(),
-                  ],
-                );
-              },
-            ),
-          ],
-        ),
+                  ),
+                  chats.length > 3
+                      ? Padding(
+                          padding: const EdgeInsets.only(left: 30, top: 8),
+                          child: OutlinedButton(
+                            onPressed: () {
+                              context.goNamed(
+                                Routes.spaceChats.name,
+                                pathParameters: {'spaceId': spaceId},
+                              );
+                            },
+                            child: Text('see all my ${chats.length} chats'),
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                ],
+              );
+            },
+          ),
+        ],
       ),
     );
   }

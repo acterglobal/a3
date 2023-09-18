@@ -4,7 +4,8 @@ import 'package:acter/features/events/widgets/events_calendar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MyEventsSection extends ConsumerWidget {
-  const MyEventsSection({super.key});
+  final int? limit;
+  const MyEventsSection({super.key, this.limit});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -12,7 +13,7 @@ class MyEventsSection extends ConsumerWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      child: EventsCalendar(events: events),
+      child: EventsCalendar(limit: limit, events: events),
     );
   }
 }

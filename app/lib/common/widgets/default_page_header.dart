@@ -23,42 +23,37 @@ class PageHeaderWidget extends StatelessWidget {
     return SliverAppBar(
       backgroundColor: sectionColor,
       pinned: true,
-      snap: false,
-      floating: false,
       expandedHeight: expandedHeight,
       title: Text(title),
       actions: actions,
-      flexibleSpace: FlexibleSpaceBar(
-        // title: Text(title),
-        background: expandedContent != null
-            ? SizedBox.expand(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: sectionColor,
-                    gradient: LinearGradient(
-                      begin: FractionalOffset.topCenter,
-                      end: FractionalOffset.bottomCenter,
-                      colors: [
-                        sectionColor,
-                        gradientBottom ?? Theme.of(context).canvasColor,
-                      ],
-                      stops: const [0, 1],
-                    ),
+      flexibleSpace: expandedContent != null
+          ? SizedBox.expand(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: sectionColor,
+                  gradient: LinearGradient(
+                    begin: FractionalOffset.topCenter,
+                    end: FractionalOffset.bottomCenter,
+                    colors: [
+                      sectionColor,
+                      gradientBottom ?? Theme.of(context).canvasColor,
+                    ],
+                    stops: const [0, 1],
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 40),
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: expandedContent!,
-                      ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 40),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: expandedContent!,
                     ),
                   ),
                 ),
-              )
-            : null,
-      ),
+              ),
+            )
+          : null,
     );
   }
 }

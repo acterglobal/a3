@@ -1,13 +1,17 @@
+import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/features/events/widgets/events_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show CalendarEvent;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class EventsCalendar extends ConsumerWidget {
+  final int? limit;
   final AsyncValue<List<CalendarEvent>> events;
 
-  const EventsCalendar({super.key, required this.events});
+  const EventsCalendar({super.key, this.limit, required this.events});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,6 +20,8 @@ class EventsCalendar extends ConsumerWidget {
         'Loading events failed: $error',
       ),
       data: (events) {
+        int eventsLimit =
+            (limit != null && events.length > limit!) ? limit! : events.length;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -24,13 +30,12 @@ class EventsCalendar extends ConsumerWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             events.isNotEmpty
-                ? ListView(
+                ? ListView.builder(
                     shrinkWrap: true,
+                    itemCount: eventsLimit,
                     physics: const NeverScrollableScrollPhysics(),
-                    children: List.generate(
-                      events.length,
-                      (idx) => EventItem(event: events[idx]),
-                    ),
+                    itemBuilder: (context, idx) =>
+                        EventItem(event: events[idx]),
                   )
                 : Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -39,6 +44,17 @@ class EventsCalendar extends ConsumerWidget {
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
+            eventsLimit != events.length
+                ? Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: DefaultButton(
+                      onPressed: () =>
+                          context.pushNamed(Routes.calendarEvents.name),
+                      title: 'See all my ${events.length} events',
+                      isOutlined: true,
+                    ),
+                  )
+                : const SizedBox.shrink(),
           ],
         );
       },

@@ -184,7 +184,11 @@ class AppTheme {
         circularTrackColor: Colors.transparent,
       ),
       dividerColor: const Color(0xFFDDEDFC),
-      cardTheme: CardTheme(color: brandColorScheme.background, elevation: 0),
+      cardTheme: CardTheme(
+        color: brandColorScheme.primaryContainer,
+        elevation: 0,
+        margin: const EdgeInsets.all(8),
+      ),
       dialogTheme: DialogTheme(
         iconColor: const Color(0xFF67A24A),
         backgroundColor: const Color(0xFF122D46),

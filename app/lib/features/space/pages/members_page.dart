@@ -76,7 +76,7 @@ class SpaceMembersPage extends ConsumerWidget {
                 itemCount: members.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: max(1, min(widthCount, minCount)),
-                  childAspectRatio: 6,
+                  childAspectRatio: 8,
                 ),
                 itemBuilder: (context, index) {
                   final member = members[index];
