@@ -86,7 +86,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
     if (children.isEmpty) {
       children.add(const SliverToBoxAdapter(child: MySpacesSection()));
     } else {
-      children.add(const MySpacesSection(limit: 5));
+      children.insert(0, const MySpacesSection(limit: 5));
       final widthCount = (MediaQuery.of(context).size.width ~/ 600).toInt();
       const int minCount = 2;
       // we have more than just the spaces screen, put them into a grid.

@@ -3,8 +3,8 @@ import 'dart:core';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -20,21 +20,14 @@ class MySpacesSection extends ConsumerWidget {
 
     int spacesLimit =
         (limit != null && spaces.length > limit!) ? limit! : spaces.length;
-    List<Space> subspaces =
-        limit == spacesLimit ? spaces : spaces.sublist(0, spacesLimit);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          InkWell(
-            onTap: () {
-              context.pushNamed(Routes.spaces.name);
-            },
-            child: Text(
-              'My Spaces',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+          Text(
+            'My Spaces',
+            style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 10),
           spaces.isEmpty
@@ -44,23 +37,44 @@ class MySpacesSection extends ConsumerWidget {
                   children: [
                     ListView.builder(
                       shrinkWrap: true,
-                      itemCount: subspaces.length,
+                      itemCount: spacesLimit,
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
-                        return SpaceCard(space: subspaces[index]);
+                        return SpaceCard(space: spaces[index]);
                       },
                     ),
-                    subspaces.length != spaces.length
+                    spacesLimit != spaces.length
                         ? Padding(
-                            padding: const EdgeInsets.only(left: 30, top: 8),
-                            child: OutlinedButton(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: DefaultButton(
                               onPressed: () {
                                 context.pushNamed(Routes.spaces.name);
                               },
-                              child: Text('see all my ${spaces.length} spaces'),
+                              title: 'See all my ${spaces.length} spaces',
+                              isOutlined: true,
                             ),
                           )
-                        : const Text(''),
+                        : Padding(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                DefaultButton(
+                                  onPressed: () => context
+                                      .pushNamed(Routes.createSpace.name),
+                                  title: 'Create Space',
+                                  isOutlined: true,
+                                ),
+                                const SizedBox(height: 10),
+                                DefaultButton(
+                                  onPressed: () =>
+                                      context.pushNamed(Routes.joinSpace.name),
+                                  title: 'Join Space',
+                                  isOutlined: true,
+                                ),
+                              ],
+                            ),
+                          ),
                   ],
                 ),
         ],
