@@ -46,7 +46,7 @@ mod typing;
 mod utils;
 mod verification;
 
-pub use account::{Account, EmailTokenResponse};
+pub use account::Account;
 pub use acter_core::{
     events::{
         news::NewsContent,
@@ -77,7 +77,7 @@ pub use invitation::Invitation;
 pub use message::{RoomEventItem, RoomMessage, RoomVirtualItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide};
 pub use notifications::{Notification, NotificationListResult};
-pub use password_reset::PasswordReset;
+pub use password_reset::{EmailTokenResponse, PasswordReset};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
