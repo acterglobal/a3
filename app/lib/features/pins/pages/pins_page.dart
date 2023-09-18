@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -69,9 +70,10 @@ class PinsPage extends ConsumerWidget {
                 }
                 return SliverGrid.builder(
                   itemCount: pins.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate:
+                      SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
                     crossAxisCount: max(1, min(widthCount, minCount)),
-                    childAspectRatio: 8,
+                    height: MediaQuery.of(context).size.height * 0.1,
                   ),
                   itemBuilder: (context, index) {
                     final pin = pins[index];

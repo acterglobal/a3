@@ -147,77 +147,103 @@ class CalendarEventPage extends ConsumerWidget {
                   description = 'Description: ${content.body()}';
                 }
                 return SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.all(15),
-                    child: Card(
-                      child: Container(
-                        margin: const EdgeInsets.all(10),
-                        child: Column(
-                          key: Key(calendarId),
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(ev.title()),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      key: Key(calendarId),
+                      children: [
+                        Flexible(
+                          flex: 1,
+                          child: Card(
+                            elevation: 0,
+                            child: Column(
                               children: [
-                                const SizedBox(height: 15),
-                                Text(dateTime),
-                                const SizedBox(height: 15),
-                                Text(description),
-                                const SizedBox(height: 15),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SizedBox(
-                                  height: 50,
-                                  width: 100,
-                                  child: DefaultButton(
-                                    title: 'Invite',
-                                    onPressed: () => onInvite(context),
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    ev.title(),
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 50,
-                                  width: 100,
-                                  child: DefaultButton(
-                                    title: 'Join',
-                                    onPressed: () => onJoin(context),
-                                  ),
+                                const SizedBox(height: 15),
+                                Container(
+                                  alignment: Alignment.topLeft,
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(dateTime),
                                 ),
-                                SizedBox(
-                                  height: 50,
-                                  width: 100,
-                                  child: PopupMenuButton(
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      child: const Text('RSVP'),
-                                    ),
-                                    itemBuilder: (BuildContext context) =>
-                                        <PopupMenuEntry>[
-                                      PopupMenuItem(
-                                        onTap: () => onRsvp(context, ev, 'Yes'),
-                                        child: const Text('Yes'),
-                                      ),
-                                      PopupMenuItem(
-                                        onTap: () =>
-                                            onRsvp(context, ev, 'Maybe'),
-                                        child: const Text('Maybe'),
-                                      ),
-                                      PopupMenuItem(
-                                        onTap: () => onRsvp(context, ev, 'No'),
-                                        child: const Text('No'),
-                                      ),
-                                    ],
-                                  ),
+                                const SizedBox(height: 15),
+                                Container(
+                                  alignment: Alignment.topLeft,
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(description),
                                 ),
                               ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
+                        Flexible(
+                          flex: 1,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              DefaultButton(
+                                title: 'Invite',
+                                onPressed: () => onInvite(context),
+                                isOutlined: true,
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 32,
+                                    vertical: 18,
+                                  ),
+                                  side: BorderSide(
+                                    color:
+                                        Theme.of(context).colorScheme.success,
+                                    width: 1.5,
+                                  ),
+                                ),
+                              ),
+                              PopupMenuButton(
+                                tooltip: 'RSVP',
+                                offset: const Offset(80, 35),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 32,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    color:
+                                        Theme.of(context).colorScheme.success,
+                                  ),
+                                  child: Text(
+                                    'Join',
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                ),
+                                itemBuilder: (BuildContext context) =>
+                                    <PopupMenuEntry>[
+                                  PopupMenuItem(
+                                    onTap: () => onRsvp(context, ev, 'Yes'),
+                                    child: const Text('Yes'),
+                                  ),
+                                  PopupMenuItem(
+                                    onTap: () => onRsvp(context, ev, 'Maybe'),
+                                    child: const Text('Maybe'),
+                                  ),
+                                  PopupMenuItem(
+                                    onTap: () => onRsvp(context, ev, 'No'),
+                                    child: const Text('No'),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );

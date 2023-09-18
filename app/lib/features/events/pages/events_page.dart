@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/features/events/widgets/events_item.dart';
 import 'package:acter/features/home/providers/events.dart';
@@ -67,9 +68,10 @@ class EventsPage extends ConsumerWidget {
                 }
                 return SliverGrid.builder(
                   itemCount: events.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate:
+                      SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
                     crossAxisCount: max(1, min(widthCount, minCount)),
-                    childAspectRatio: 8,
+                    height: MediaQuery.of(context).size.height * 0.1,
                   ),
                   itemBuilder: (context, index) {
                     final event = events[index];

@@ -106,7 +106,8 @@ class SpaceWithProfileCard extends StatelessWidget {
     );
 
     return Card(
-      color: Theme.of(context).colorScheme.primaryContainer,
+      color: Theme.of(context).colorScheme.surface,
+      shape: renderShape(context),
       child: ListTile(
         contentPadding: contentPadding,
         onTap: onTap ?? () => context.go('/$roomId'),
@@ -115,7 +116,7 @@ class SpaceWithProfileCard extends StatelessWidget {
         titleTextStyle: titleTextStyle,
         subtitleTextStyle: subtitleTextStyle,
         leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
-        title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
+        title: Text(title),
         subtitle: subtitle,
         leading: showParent
             ? SpaceParentBadge(
@@ -127,5 +128,21 @@ class SpaceWithProfileCard extends StatelessWidget {
         trailing: trailing,
       ),
     );
+  }
+
+  ShapeBorder? renderShape(BuildContext context) {
+    if (shape != null) {
+      return shape;
+    }
+    if (withBorder) {
+      return RoundedRectangleBorder(
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.inversePrimary,
+          width: 1,
+        ),
+        borderRadius: BorderRadius.circular(12),
+      );
+    }
+    return null;
   }
 }
