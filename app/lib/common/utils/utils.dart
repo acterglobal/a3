@@ -310,7 +310,8 @@ class SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight
 
   @override
   bool shouldRelayout(
-      SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight oldDelegate) {
+    SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight oldDelegate,
+  ) {
     return oldDelegate.crossAxisCount != crossAxisCount ||
         oldDelegate.mainAxisSpacing != mainAxisSpacing ||
         oldDelegate.crossAxisSpacing != crossAxisSpacing ||
