@@ -6,6 +6,7 @@ import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/emoji_reaction_item.dart';
 import 'package:acter/features/chat/widgets/emoji_row.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
+import 'package:acter/features/chat/widgets/receipts_builder.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -38,56 +39,61 @@ class BubbleBuilder extends ConsumerWidget {
     final myId = client!.userId().toString();
     final isAuthor = (myId == message.author.id);
     final roomId = convo.getRoomIdStr();
-
     final chatInputState = ref.watch(chatInputProvider(roomId));
     final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
+
     String eventType = '';
     if (message.metadata!.containsKey('eventType')) {
       eventType = message.metadata?['eventType'];
     }
     bool isMemberEvent = eventType == 'm.room.member';
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        isMemberEvent
+            ? child
+            : SwipeTo(
+                onLeftSwipe: !isAuthor
+                    ? null
+                    : () {
+                        if (chatInputState.currentMessageId != null) {
+                          chatInputNotifier.emojiRowVisible(false);
 
-    return isMemberEvent
-        ? child
-        : SwipeTo(
-            onLeftSwipe: !isAuthor
-                ? null
-                : () {
-                    if (chatInputState.currentMessageId != null) {
-                      chatInputNotifier.emojiRowVisible(false);
+                          chatInputNotifier.toggleReplyView(true);
+                          chatInputNotifier.setRepliedToMessage(message);
+                          chatInputNotifier.setReplyWidget(child);
+                        } else {
+                          chatInputNotifier.toggleReplyView(true);
+                          chatInputNotifier.setRepliedToMessage(message);
+                          chatInputNotifier.setReplyWidget(child);
+                        }
+                      },
+                onRightSwipe: isAuthor
+                    ? null
+                    : () {
+                        if (chatInputState.emojiRowVisible) {
+                          chatInputNotifier.emojiRowVisible(false);
 
-                      chatInputNotifier.toggleReplyView(true);
-                      chatInputNotifier.setRepliedToMessage(message);
-                      chatInputNotifier.setReplyWidget(child);
-                    } else {
-                      chatInputNotifier.toggleReplyView(true);
-                      chatInputNotifier.setRepliedToMessage(message);
-                      chatInputNotifier.setReplyWidget(child);
-                    }
-                  },
-            onRightSwipe: isAuthor
-                ? null
-                : () {
-                    if (chatInputState.emojiRowVisible) {
-                      chatInputNotifier.emojiRowVisible(false);
-
-                      chatInputNotifier.setRepliedToMessage(message);
-                      chatInputNotifier.toggleReplyView(true);
-                      chatInputNotifier.setReplyWidget(child);
-                    } else {
-                      chatInputNotifier.toggleReplyView(true);
-                      chatInputNotifier.setRepliedToMessage(message);
-                      chatInputNotifier.setReplyWidget(child);
-                    }
-                  },
-            child: _ChatBubble(
-              convo: convo,
-              message: message,
-              nextMessageInGroup: nextMessageInGroup,
-              enlargeEmoji: enlargeEmoji,
-              child: child,
-            ),
-          );
+                          chatInputNotifier.setRepliedToMessage(message);
+                          chatInputNotifier.toggleReplyView(true);
+                          chatInputNotifier.setReplyWidget(child);
+                        } else {
+                          chatInputNotifier.toggleReplyView(true);
+                          chatInputNotifier.setRepliedToMessage(message);
+                          chatInputNotifier.setReplyWidget(child);
+                        }
+                      },
+                child: _ChatBubble(
+                  convo: convo,
+                  message: message,
+                  nextMessageInGroup: nextMessageInGroup,
+                  enlargeEmoji: enlargeEmoji,
+                  child: child,
+                ),
+              ),
+      ],
+    );
   }
 }
 
@@ -109,9 +115,13 @@ class _ChatBubble extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final client = ref.watch(clientProvider);
+    final chatRoomState = ref.watch(chatStateProvider(convo));
+    final receipts = chatRoomState.userReceipts;
     final myId = client!.userId().toString();
     final isAuthor = (myId == message.author.id);
     final roomId = convo.getRoomIdStr();
+    bool hasMarker =
+        receipts.containsKey(message.id) && receipts[message.id]!.isNotEmpty;
 
     bool hasRepliedMessage = message.repliedMessage != null;
     return Column(
@@ -194,6 +204,16 @@ class _ChatBubble extends ConsumerWidget {
             nextMessageInGroup: nextMessageInGroup,
           ),
         ),
+        hasMarker
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ReceiptsBuilder(
+                    seenList: receipts[message.id]!,
+                  ),
+                ],
+              )
+            : const SizedBox.shrink(),
       ],
     );
   }

@@ -5,6 +5,7 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,6 +28,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     required this.ref,
   }) : super(const ChatRoomState()) {
     _init();
+    _fetchUserReciepts();
     _fetchMentionRecords();
   }
 
@@ -229,6 +231,24 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         mentionListNotifier.setMentions(mentionRecords);
       }
     }
+  }
+
+  Future<void> _fetchUserReciepts() async {
+    final client = ref.read(clientProvider)!;
+    final receipts =
+        await convo.userReceipts().then((ffiList) => ffiList.toList());
+    Map<String, List<String>> userReceiptsMap = {};
+    for (var r in receipts) {
+      String seenBy = r.seenBy();
+      if (seenBy != client.userId().toString()) {
+        String eventId = r.eventId();
+        if (!userReceiptsMap.containsKey(eventId)) {
+          userReceiptsMap[eventId] = [];
+        }
+        userReceiptsMap[eventId]?.add(seenBy);
+      }
+    }
+    state = state.copyWith(userReceipts: userReceiptsMap);
   }
 
   // fetch original content media for reply msg, i.e. text/image/file etc.

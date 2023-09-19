@@ -137,7 +137,7 @@ dev_dependencies:
       url: https://github.com/acterglobal/flutter_gherkin
       ref: main
   gherkin: ^3.1.0
-  mockito: ^5.4.2
+  # mockito: ^5.4.2
 
 icons_launcher:
   image_path: "assets/icon/logo.png"
