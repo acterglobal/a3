@@ -61,6 +61,7 @@ dependencies:
   flutter_slidable: ^3.0.0
   timelines: ^0.1.0
   photo_view: ^0.14.0
+  quds_popup_menu: ^0.0.1+1
   acter_avatar:
     # path: "../../acter-avatar"
     git:
