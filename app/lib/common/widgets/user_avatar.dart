@@ -23,7 +23,7 @@ class UserAvatarWidget extends ConsumerWidget {
             ActerAvatar(
               mode: DisplayMode.User,
               uniqueId: client.userId().toString(),
-              size: size,
+              size: data.profile.hasAvatar() ? size : size * 2,
               avatar: data.profile.getAvatarImage(),
               displayName: data.profile.displayName,
             ),

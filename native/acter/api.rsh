@@ -655,13 +655,39 @@ object TimelineDiff {
     fn value() -> Option<RoomMessage>;
 }
 
+
+object ConvoDiff {
+    /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
+    fn action() -> string;
+
+    /// for Append/Reset
+    fn values() -> Option<Vec<Convo>>;
+
+    /// for Insert/Set/Remove
+    fn index() -> Option<usize>;
+
+    /// for Insert/Set/PushBack/PushFront
+    fn value() -> Option<Convo>;
+}
+
+object SpaceDiff {
+    /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
+    fn action() -> string;
+
+    /// for Append/Reset
+    fn values() -> Option<Vec<Space>>;
+
+    /// for Insert/Set/Remove
+    fn index() -> Option<usize>;
+
+    /// for Insert/Set/PushBack/PushFront
+    fn value() -> Option<Space>;
+}
+
 /// Timeline with Room Events
 object TimelineStream {
     /// Fires whenever new diff found
-    fn diff_rx() -> Stream<TimelineDiff>;
-
-    /// Fires whenever new event arrived
-    fn next() -> Future<Result<RoomMessage>>;
+    fn diff_stream() -> Stream<TimelineDiff>;
 
     /// Get the next count messages backwards, and return whether it has more items
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
@@ -700,6 +726,9 @@ object Convo {
 
     /// The last message sent to the room
     fn latest_message() -> Option<RoomMessage>;
+
+    /// Latest message timestamp or 0
+    fn latest_message_ts() -> u64;
 
     /// the Membership of myself
     fn get_my_membership() -> Future<Result<Member>>;
@@ -789,6 +818,12 @@ object Convo {
 
     /// get the user status on this room
     fn room_type() -> string;
+
+    /// is this a direct message
+    fn is_dm() -> bool;
+
+    /// the list of users ids if this is a direct message
+    fn dm_users() -> Vec<string>;
 
     /// invite the new user to this room
     fn invite_user(user_id: string) -> Future<Result<bool>>;
@@ -1681,9 +1716,9 @@ object Notification {
     fn has_room() -> bool;
     fn is_space() -> bool;
     fn is_acter_space() -> bool;
-    fn space() -> Option<Space>;
+    fn space() -> Future<Result<Space>>;
     fn room_message() -> Option<RoomMessage>;
-    fn convo() -> Option<Convo>;
+    fn convo() -> Future<Result<Convo>>;
 }
 
 object NotificationListResult {
@@ -1797,15 +1832,17 @@ object Client {
 
     /// upload file and return remote url
     fn upload_media(uri: string) -> Future<Result<MxcUri>>;
-
-    /// The convos the user is involved in
-    fn convos() -> Future<Result<Vec<Convo>>>;
-
-    /// The update event of convos the user is involved in
-    fn convos_rx() -> Stream<Vec<Convo>>;
+    
+    /// Fires whenever the convo list changes (in order or number)
+    /// fires immediately with the current state of convos
+    fn convos_stream() -> Stream<ConvoDiff>;
 
     /// The spaces the user is part of
     fn spaces() -> Future<Result<Vec<Space>>>;
+
+    /// Fires whenever the space list changes (in order or number)
+    /// fires immediately with the current state of spaces
+    fn spaces_stream() -> Stream<SpaceDiff>;
 
     /// attempt to join a space
     fn join_space(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Space>>;
@@ -1817,7 +1854,7 @@ object Client {
     fn public_spaces(search_term: Option<string>, server: Option<string>, since: Option<string>) -> Future<Result<PublicSearchResult>>;
 
     /// Get the space that user belongs to
-    fn get_space(room_id_or_alias: string) -> Future<Result<Space>>;
+    fn space(room_id_or_alias: string) -> Future<Result<Space>>;
 
     /// Get the Pinned Links for the client
     fn pinned_links() -> Future<Result<Vec<ActerPin>>>;

@@ -64,7 +64,7 @@ pub use common::{
     OptionBuffer, OptionString, ReactionRecord, TextDesc, ThumbnailInfo, VideoDesc,
 };
 pub use convo::{
-    new_convo_settings_builder, Convo, CreateConvoSettings, CreateConvoSettingsBuilder,
+    new_convo_settings_builder, Convo, ConvoDiff, CreateConvoSettings, CreateConvoSettingsBuilder,
 };
 pub use core::time::Duration as EfkDuration;
 pub use device::{DeviceChangedEvent, DeviceLeftEvent};
@@ -85,8 +85,8 @@ pub use settings::{
 };
 pub use spaces::{
     new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
-    RelationTargetType, Space, SpaceHierarchyListResult, SpaceHierarchyRoomInfo, SpaceRelation,
-    SpaceRelations,
+    RelationTargetType, Space, SpaceDiff, SpaceHierarchyListResult, SpaceHierarchyRoomInfo,
+    SpaceRelation, SpaceRelations,
 };
 pub use stream::{TimelineDiff, TimelineStream};
 pub use tasks::{

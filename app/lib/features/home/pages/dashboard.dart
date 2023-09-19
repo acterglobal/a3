@@ -44,7 +44,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
         return;
       }
 
-      final spaces = await ref.watch(spacesProvider.future);
+      final spaces = ref.watch(spacesProvider);
       clearFirstSyncListener();
       if (spaces.isEmpty && context.mounted) {
         onBoardingDialog(
@@ -138,14 +138,17 @@ class _DashboardState extends ConsumerState<Dashboard> {
                         mode: DisplayMode.User,
                       ),
                     ),
-                    child: Container(
-                      key: Keys.avatar,
-                      margin: const EdgeInsets.all(8),
-                      child: InkWell(
-                        onTap: () => context.pushNamed(Routes.myProfile.name),
-                        child: const UserAvatarWidget(size: 20),
-                      ),
-                    ),
+                    child: !isDesktop
+                        ? Container(
+                            key: Keys.avatar,
+                            margin: const EdgeInsets.all(8),
+                            child: InkWell(
+                              onTap: () =>
+                                  context.pushNamed(Routes.myProfile.name),
+                              child: const UserAvatarWidget(size: 20),
+                            ),
+                          )
+                        : const SizedBox.shrink(),
                   ),
                 ],
                 title: isDesktop

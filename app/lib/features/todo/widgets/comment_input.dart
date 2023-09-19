@@ -1,4 +1,3 @@
-
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
