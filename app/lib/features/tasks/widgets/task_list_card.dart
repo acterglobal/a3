@@ -2,6 +2,7 @@ import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/features/tasks/widgets/task_entry.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter/material.dart';
@@ -53,6 +54,75 @@ final tasksProvider =
     AsyncNotifierProvider.family<TasksNotifier, TasksOverview, TaskList>(() {
   return TasksNotifier();
 });
+
+class InlineTaskAdd extends StatefulWidget {
+  final Function() cancel;
+  final TaskList taskList;
+  const InlineTaskAdd({Key? key, required this.cancel, required this.taskList})
+      : super(key: key);
+
+  @override
+  _InlineTaskAddState createState() => _InlineTaskAddState();
+}
+
+class _InlineTaskAddState extends State<InlineTaskAdd> {
+  final _formKey = GlobalKey<FormState>();
+  final _textCtrl = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Row(
+        children: [
+          Expanded(
+            child: TextFormField(
+              autofocus: true,
+              controller: _textCtrl,
+              decoration: const InputDecoration(
+                icon: Icon(Atlas.plus_circle_thin),
+                border: UnderlineInputBorder(),
+                labelText: 'Title the new task..',
+              ),
+              onFieldSubmitted: (value) {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  _handleSubmit(context);
+                }
+              },
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'A task must have a title';
+                }
+                return null;
+              },
+            ),
+          ),
+          IconButton(
+            onPressed: widget.cancel,
+            icon: const Icon(
+              Atlas.xmark_circle_thin,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handleSubmit(BuildContext context) async {
+    final taskDraft = widget.taskList.taskBuilder();
+    taskDraft.title(_textCtrl.text);
+    try {
+      await taskDraft.send();
+    } catch (e) {
+      if (context.mounted) {
+        customMsgSnackbar(context, 'Creating Task failed: $e');
+      }
+      return;
+    }
+    _textCtrl.text = '';
+  }
+}
 
 class TaskListCard extends ConsumerStatefulWidget {
   final TaskList taskList;
@@ -118,12 +188,16 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                   }
                   if (showInlineAddTask) {
                     children.add(
-                      const Padding(
-                        padding: EdgeInsets.symmetric(
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 24,
                           vertical: 8,
                         ),
-                        child: Text('Inline Task Adding'),
+                        child: InlineTaskAdd(
+                          taskList: taskList,
+                          cancel: () =>
+                              setState(() => showInlineAddTask = false),
+                        ),
                       ),
                     );
                   } else {

@@ -103,11 +103,16 @@ class TaskEntry extends ConsumerWidget {
             minVerticalPadding: 0,
           )
           .style,
-      leading: Checkbox(
-        value: isDone,
-        onChanged: (bool? value) async {
+      leading: InkWell(
+        child: Padding(
+          padding: const EdgeInsets.only(right: 5),
+          child: Icon(
+            isDone ? Atlas.check_circle_thin : Icons.radio_button_off_outlined,
+          ),
+        ),
+        onTap: () async {
           final updater = task.updateBuilder();
-          if (value == true) {
+          if (!isDone) {
             updater.markDone();
           } else {
             updater.markUndone();

@@ -77,7 +77,7 @@ class SpaceTasksPage extends ConsumerWidget {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

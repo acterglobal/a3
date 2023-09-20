@@ -28,18 +28,11 @@ impl SimpleSettingWithTurnOff {
 }
 
 // TasksSettings
-#[derive(Clone, Debug, Deserialize, Serialize, Builder)]
+#[derive(Clone, Debug, Deserialize, Serialize, Builder, Default)]
 pub struct TasksSettings {
     // Tasks are off by default until the lab flag is removed
     active: bool,
 }
-
-impl Default for TasksSettings {
-    fn default() -> Self {
-        TasksSettings { active: false }
-    }
-}
-
 impl TasksSettings {
     pub fn active(&self) -> bool {
         self.active
