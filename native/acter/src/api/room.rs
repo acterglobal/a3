@@ -10,6 +10,7 @@ use acter_core::{
 };
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
+use filesize::PathExt;
 use matrix_sdk::{
     attachment::{
         AttachmentConfig, AttachmentInfo, BaseAudioInfo, BaseFileInfo, BaseImageInfo, BaseVideoInfo,
@@ -804,7 +805,6 @@ impl Room {
         &self,
         uri: String,
         name: String,
-        size: Option<u32>,
         width: Option<u32>,
         height: Option<u32>,
         blurhash: Option<String>,
@@ -822,8 +822,9 @@ impl Room {
             .to_owned();
 
         let path = PathBuf::from(uri);
+        let size = path.clone().size_on_disk()?;
         let config = AttachmentConfig::new().info(AttachmentInfo::Image(BaseImageInfo {
-            size: size.map(UInt::from),
+            size: UInt::new(size),
             width: width.map(UInt::from),
             height: height.map(UInt::from),
             blurhash: None,
@@ -885,7 +886,6 @@ impl Room {
         event_id: String,
         uri: String,
         name: String,
-        size: Option<u32>,
         width: Option<u32>,
         height: Option<u32>,
     ) -> Result<OwnedEventId> {
@@ -915,6 +915,7 @@ impl Room {
 
                 let path = PathBuf::from(uri);
                 let mut image_buf = std::fs::read(path.clone())?;
+                let size = path.clone().size_on_disk()?;
 
                 let timeline_event = room.event(&event_id).await?;
                 let event_content = timeline_event
@@ -939,7 +940,7 @@ impl Room {
 
                 let info = assign!(ImageInfo::new(), {
                     mimetype,
-                    size: size.map(UInt::from),
+                    size: UInt::new(size),
                     width: width.map(UInt::from),
                     height: height.map(UInt::from),
                 });
@@ -962,7 +963,6 @@ impl Room {
         &self,
         uri: String,
         name: String,
-        size: Option<u32>,
         secs: Option<u32>,
     ) -> Result<OwnedEventId> {
         let room = if let SdkRoom::Joined(r) = &self.room {
@@ -978,8 +978,9 @@ impl Room {
             .to_owned();
 
         let path = PathBuf::from(uri);
+        let size = path.clone().size_on_disk()?;
         let config = AttachmentConfig::new().info(AttachmentInfo::Audio(BaseAudioInfo {
-            size: size.map(UInt::from),
+            size: UInt::new(size),
             duration: secs.map(|x| Duration::from_secs(x as u64)),
         }));
         let guess = mime_guess::from_path(path.clone());
@@ -1039,7 +1040,6 @@ impl Room {
         event_id: String,
         uri: String,
         name: String,
-        size: Option<u32>,
         secs: Option<u32>,
     ) -> Result<OwnedEventId> {
         let room = if let SdkRoom::Joined(r) = &self.room {
@@ -1067,6 +1067,7 @@ impl Room {
                 }
 
                 let path = PathBuf::from(uri);
+                let size = path.clone().size_on_disk()?;
                 let mut audio_buf = std::fs::read(path.clone())?;
 
                 let timeline_event = room.event(&event_id).await?;
@@ -1092,7 +1093,7 @@ impl Room {
 
                 let info = assign!(AudioInfo::new(), {
                     mimetype,
-                    size: size.map(UInt::from),
+                    size: UInt::new(size),
                     duration: secs.map(|x| Duration::from_secs(x as u64)),
                 });
                 let mut audio_content = AudioMessageEventContent::plain(name, response.content_uri);
@@ -1110,12 +1111,10 @@ impl Room {
             .await?
     }
 
-    #[allow(clippy::too_many_arguments)]
     pub async fn send_video_message(
         &self,
         uri: String,
         name: String,
-        size: Option<u32>,
         secs: Option<u32>,
         width: Option<u32>,
         height: Option<u32>,
@@ -1134,8 +1133,9 @@ impl Room {
             .to_owned();
 
         let path = PathBuf::from(uri);
+        let size = path.clone().size_on_disk()?;
         let config = AttachmentConfig::new().info(AttachmentInfo::Video(BaseVideoInfo {
-            size: size.map(UInt::from),
+            size: UInt::new(size),
             duration: secs.map(|x| Duration::from_secs(x as u64)),
             width: width.map(UInt::from),
             height: height.map(UInt::from),
@@ -1193,13 +1193,11 @@ impl Room {
             .await?
     }
 
-    #[allow(clippy::too_many_arguments)]
     pub async fn edit_video_message(
         &self,
         event_id: String,
         uri: String,
         name: String,
-        size: Option<u32>,
         secs: Option<u32>,
         width: Option<u32>,
         height: Option<u32>,
@@ -1229,6 +1227,7 @@ impl Room {
                 }
 
                 let path = PathBuf::from(uri);
+                let size = path.clone().size_on_disk()?;
                 let mut video_buf = std::fs::read(path.clone())?;
 
                 let timeline_event = room.event(&event_id).await?;
@@ -1254,7 +1253,7 @@ impl Room {
 
                 let info = assign!(VideoInfo::new(), {
                     mimetype,
-                    size: size.map(UInt::from),
+                    size: UInt::new(size),
                     duration: secs.map(|x| Duration::from_secs(x as u64)),
                     width: width.map(UInt::from),
                     height: height.map(UInt::from),
@@ -1274,12 +1273,7 @@ impl Room {
             .await?
     }
 
-    pub async fn send_file_message(
-        &self,
-        uri: String,
-        name: String,
-        size: u32,
-    ) -> Result<OwnedEventId> {
+    pub async fn send_file_message(&self, uri: String, name: String) -> Result<OwnedEventId> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -1293,8 +1287,9 @@ impl Room {
             .to_owned();
 
         let path = PathBuf::from(uri);
+        let size = path.clone().size_on_disk()?;
         let config = AttachmentConfig::new().info(AttachmentInfo::File(BaseFileInfo {
-            size: Some(UInt::from(size)),
+            size: UInt::new(size),
         }));
         let guess = mime_guess::from_path(path.clone());
         let content_type = guess.first().context("MIME type should be given")?;
@@ -1353,7 +1348,6 @@ impl Room {
         event_id: String,
         uri: String,
         name: String,
-        size: Option<u32>,
     ) -> Result<OwnedEventId> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
@@ -1380,6 +1374,7 @@ impl Room {
                 }
 
                 let path = PathBuf::from(uri);
+                let size = path.clone().size_on_disk()?;
                 let mut file_buf = std::fs::read(path.clone())?;
 
                 let timeline_event = room.event(&event_id).await?;
@@ -1405,7 +1400,7 @@ impl Room {
 
                 let info = assign!(FileInfo::new(), {
                     mimetype,
-                    size: size.map(UInt::from),
+                    size: UInt::new(size),
                 });
                 let mut file_content = FileMessageEventContent::plain(name, response.content_uri);
                 file_content.info = Some(Box::new(info));
@@ -2052,12 +2047,10 @@ impl Room {
             .await?
     }
 
-    #[allow(clippy::too_many_arguments)]
     pub async fn send_image_reply(
         &self,
         uri: String,
         name: String,
-        size: Option<u32>,
         width: Option<u32>,
         height: Option<u32>,
         event_id: String,
@@ -2076,9 +2069,10 @@ impl Room {
         let guess = mime_guess::from_path(path.clone());
         let content_type = guess.first().context("MIME type should be given")?;
         let mimetype = Some(content_type.to_string());
+        let size = path.clone().size_on_disk()?;
         let info = assign!(ImageInfo::new(), {
             mimetype,
-            size: size.map(UInt::from),
+            size: UInt::new(size),
             width: width.map(UInt::from),
             height: height.map(UInt::from),
         });
@@ -2122,7 +2116,6 @@ impl Room {
         &self,
         uri: String,
         name: String,
-        size: Option<u32>,
         secs: Option<u32>,
         event_id: String,
         txn_id: Option<String>,
@@ -2140,10 +2133,11 @@ impl Room {
         let guess = mime_guess::from_path(path.clone());
         let content_type = guess.first().context("MIME type should be given")?;
         let mimetype = Some(content_type.to_string());
+        let size = path.clone().size_on_disk()?;
         let info = assign!(AudioInfo::new(), {
             mimetype,
+            size: UInt::new(size),
             duration: secs.map(|x| Duration::from_secs(x as u64)),
-            size: size.map(UInt::from),
         });
 
         RUNTIME
@@ -2186,7 +2180,6 @@ impl Room {
         &self,
         uri: String,
         name: String,
-        size: Option<u32>,
         secs: Option<u32>,
         width: Option<u32>,
         height: Option<u32>,
@@ -2207,12 +2200,13 @@ impl Room {
         let guess = mime_guess::from_path(path.clone());
         let content_type = guess.first().context("MIME type should be given")?;
         let mimetype = Some(content_type.to_string());
+        let size = path.clone().size_on_disk()?;
         let info = assign!(VideoInfo::new(), {
-            duration: secs.map(|x| Duration::from_secs(x as u64)),
-            height: height.map(UInt::from),
-            width: width.map(UInt::from),
             mimetype,
-            size: size.map(UInt::from),
+            size: UInt::new(size),
+            duration: secs.map(|x| Duration::from_secs(x as u64)),
+            width: width.map(UInt::from),
+            height: height.map(UInt::from),
             blurhash,
         });
 
@@ -2255,7 +2249,6 @@ impl Room {
         &self,
         uri: String,
         name: String,
-        size: Option<u32>,
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
@@ -2272,9 +2265,10 @@ impl Room {
         let guess = mime_guess::from_path(path.clone());
         let content_type = guess.first().context("MIME type should be given")?;
         let mimetype = Some(content_type.to_string());
+        let size = path.clone().size_on_disk()?;
         let info = assign!(FileInfo::new(), {
             mimetype,
-            size: size.map(UInt::from),
+            size: UInt::new(size),
         });
 
         RUNTIME

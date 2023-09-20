@@ -8,6 +8,7 @@ use acter_core::{
 };
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
+use filesize::PathExt;
 use futures::stream::StreamExt;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
@@ -402,7 +403,6 @@ impl NewsEntryDraft {
         &mut self,
         body: String,
         uri: String,
-        size: Option<u32>,
         width: Option<u32>,
         height: Option<u32>,
         blurhash: Option<String>,
@@ -415,6 +415,7 @@ impl NewsEntryDraft {
         let guess = mime_guess::from_path(path.clone());
         let content_type = guess.first().context("MIME type should be given")?;
         let mimetype = Some(content_type.to_string());
+        let size = path.clone().size_on_disk()?;
         let mut image_content = RUNTIME
             .spawn(async move {
                 if room.is_encrypted().await? {
@@ -432,7 +433,7 @@ impl NewsEntryDraft {
             .await??;
         let info = assign!(ImageInfo::new(), {
             mimetype,
-            size: size.map(UInt::from),
+            size: UInt::new(size),
             width: width.map(UInt::from),
             height: height.map(UInt::from),
             blurhash,
@@ -455,7 +456,6 @@ impl NewsEntryDraft {
         body: String,
         uri: String,
         secs: Option<u32>,
-        size: Option<u32>,
     ) -> Result<bool> {
         trace!("add audio slide");
         let client = self.client.clone();
@@ -465,6 +465,7 @@ impl NewsEntryDraft {
         let guess = mime_guess::from_path(path.clone());
         let content_type = guess.first().context("MIME type should be given")?;
         let mimetype = Some(content_type.to_string());
+        let size = path.clone().size_on_disk()?;
         let mut audio_content = RUNTIME
             .spawn(async move {
                 if room.is_encrypted().await? {
@@ -482,7 +483,7 @@ impl NewsEntryDraft {
             .await??;
         let info = assign!(AudioInfo::new(), {
             mimetype,
-            size: size.map(UInt::from),
+            size: UInt::new(size),
             duration: secs.map(|x| Duration::from_secs(x as u64)),
         });
         audio_content.info = Some(Box::new(info));
@@ -503,7 +504,6 @@ impl NewsEntryDraft {
         &mut self,
         body: String,
         uri: String,
-        size: Option<u32>,
         secs: Option<u32>,
         width: Option<u32>,
         height: Option<u32>,
@@ -517,6 +517,7 @@ impl NewsEntryDraft {
         let guess = mime_guess::from_path(path.clone());
         let content_type = guess.first().context("MIME type should be given")?;
         let mimetype = Some(content_type.to_string());
+        let size = path.clone().size_on_disk()?;
         let mut video_content = RUNTIME
             .spawn(async move {
                 if room.is_encrypted().await? {
@@ -534,7 +535,7 @@ impl NewsEntryDraft {
             .await??;
         let info = assign!(VideoInfo::new(), {
             mimetype,
-            size: size.map(UInt::from),
+            size: UInt::new(size),
             duration: secs.map(|x| Duration::from_secs(x as u64)),
             width: width.map(UInt::from),
             height: height.map(UInt::from),
@@ -552,12 +553,7 @@ impl NewsEntryDraft {
         Ok(true)
     }
 
-    pub async fn add_file_slide(
-        &mut self,
-        body: String,
-        uri: String,
-        size: Option<u32>,
-    ) -> Result<bool> {
+    pub async fn add_file_slide(&mut self, body: String, uri: String) -> Result<bool> {
         trace!("add file slide");
         let client = self.client.clone();
         let room = self.room.clone();
@@ -566,6 +562,7 @@ impl NewsEntryDraft {
         let guess = mime_guess::from_path(path.clone());
         let content_type = guess.first().context("MIME type should be given")?;
         let mimetype = Some(content_type.to_string());
+        let size = path.clone().size_on_disk()?;
         let mut file_content = RUNTIME
             .spawn(async move {
                 if room.is_encrypted().await? {
@@ -583,7 +580,7 @@ impl NewsEntryDraft {
             .await??;
         let info = assign!(FileInfo::new(), {
             mimetype,
-            size: size.map(UInt::from),
+            size: UInt::new(size),
         });
         file_content.info = Some(Box::new(info));
 
