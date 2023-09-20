@@ -13326,7 +13326,7 @@ class Api {
           )>();
   late final _rsvpDraftStatusPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          ffi.Void Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Uint64,
@@ -13334,7 +13334,7 @@ class Api {
           )>>("__RsvpDraft_status");
 
   late final _rsvpDraftStatus = _rsvpDraftStatusPtr.asFunction<
-      int Function(
+      void Function(
         int,
         int,
         int,
@@ -28987,7 +28987,7 @@ class RsvpDraft {
   RsvpDraft._(this._api, this._box);
 
   /// set status of this RSVP
-  RsvpDraft status(
+  void status(
     String status,
   ) {
     final tmp1 = status;
@@ -29004,18 +29004,13 @@ class RsvpDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._rsvpDraftStatus(
+    _api._rsvpDraftStatus(
       tmp0,
       tmp2,
       tmp3,
       tmp4,
     );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_RsvpDraft");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = RsvpDraft._(_api, tmp7_1);
-    return tmp6;
+    return;
   }
 
   /// create this RSVP
