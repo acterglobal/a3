@@ -39,7 +39,7 @@ object UtcDateTime {
     fn timestamp() -> i64;
     fn to_rfc2822() -> string;
     fn to_rfc3339() -> string;
-    fn timestamp_millis()-> i64;
+    fn timestamp_millis() -> i64;
 }
 
 object RefDetails {
@@ -344,16 +344,16 @@ object CalendarEventDraft {
     /// set the utc_start for this calendar event in rfc3339 format
     fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
     /// set the utc_start for this calendar event in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string)-> Result<()>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
     /// set the utc_start for this calendar event in custom format
-    fn utc_start_from_format(utc_start: string, format: string)-> Result<()>;
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
 
     /// set the utc_end for this calendar event in rfc3339 format
     fn utc_end_from_rfc3339(utc_end: string) -> Result<()>;
     /// set the utc_end for this calendar event in rfc2822 format
-    fn utc_end_from_rfc2822(utc_end: string)-> Result<()>;
+    fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
     /// set the utc_end for this calendar event in custom format
-    fn utc_end_from_format(utc_end: string, format: string)-> Result<()>;
+    fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
 
     /// create this calendar event
     fn send() -> Future<Result<EventId>>;
@@ -1072,18 +1072,18 @@ object TaskUpdateBuilder {
     /// set the utc_due for this task list in rfc3339 format
     fn utc_due_from_rfc3339(utc_due: string) -> Result<()>;
     /// set the utc_due for this task list in rfc2822 format
-    fn utc_due_from_rfc2822(utc_due: string)-> Result<()>;
+    fn utc_due_from_rfc2822(utc_due: string) -> Result<()>;
     /// set the utc_due for this task list in custom format
-    fn utc_due_from_format(utc_due: string, format: string)-> Result<()>;
+    fn utc_due_from_format(utc_due: string, format: string) -> Result<()>;
     fn unset_utc_due();
     fn unset_utc_due_update();
 
     /// set the utc_start for this task list in rfc3339 format
     fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
     /// set the utc_start for this task list in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string)-> Result<()>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
     /// set the utc_start for this task list in custom format
-    fn utc_start_from_format(utc_start: string, format: string)-> Result<()>;
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
     fn unset_utc_start();
     fn unset_utc_start_update();
 
@@ -1141,17 +1141,17 @@ object TaskDraft {
     /// set the utc_due for this task in rfc3339 format
     fn utc_due_from_rfc3339(utc_due: string) -> Result<()>;
     /// set the utc_due for this task in rfc2822 format
-    fn utc_due_from_rfc2822(utc_due: string)-> Result<()>;
+    fn utc_due_from_rfc2822(utc_due: string) -> Result<()>;
     /// set the utc_due for this task in custom format
-    fn utc_due_from_format(utc_due: string, format: string)-> Result<()>;
+    fn utc_due_from_format(utc_due: string, format: string) -> Result<()>;
     fn unset_utc_due();
 
     /// set the utc_start for this task in rfc3339 format
     fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
     /// set the utc_start for this task in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string)-> Result<()>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
     /// set the utc_start for this task in custom format
-    fn utc_start_from_format(utc_start: string, format: string)-> Result<()>;
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
     fn unset_utc_start();
 
     /// set the sort order for this task
