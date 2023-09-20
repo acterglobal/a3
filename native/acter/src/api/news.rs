@@ -426,10 +426,7 @@ impl NewsEntryDraft {
                 } else {
                     let data = std::fs::read(path)?;
                     let response = client.media().upload(&content_type, data).await?;
-                    anyhow::Ok(ImageMessageEventContent::plain(
-                        body,
-                        response.content_uri,
-                    ))
+                    anyhow::Ok(ImageMessageEventContent::plain(body, response.content_uri))
                 }
             })
             .await??;
@@ -479,10 +476,7 @@ impl NewsEntryDraft {
                 } else {
                     let data = std::fs::read(path)?;
                     let response = client.media().upload(&content_type, data).await?;
-                    anyhow::Ok(AudioMessageEventContent::plain(
-                        body,
-                        response.content_uri,
-                    ))
+                    anyhow::Ok(AudioMessageEventContent::plain(body, response.content_uri))
                 }
             })
             .await??;
@@ -534,10 +528,7 @@ impl NewsEntryDraft {
                 } else {
                     let data = std::fs::read(path)?;
                     let response = client.media().upload(&content_type, data).await?;
-                    anyhow::Ok(VideoMessageEventContent::plain(
-                        body,
-                        response.content_uri,
-                    ))
+                    anyhow::Ok(VideoMessageEventContent::plain(body, response.content_uri))
                 }
             })
             .await??;
@@ -586,10 +577,7 @@ impl NewsEntryDraft {
                 } else {
                     let data = std::fs::read(path)?;
                     let response = client.media().upload(&content_type, data).await?;
-                    anyhow::Ok(FileMessageEventContent::plain(
-                        body,
-                        response.content_uri,
-                    ))
+                    anyhow::Ok(FileMessageEventContent::plain(body, response.content_uri))
                 }
             })
             .await??;
