@@ -49,7 +49,6 @@ import 'package:acter/features/space/pages/shell_page.dart';
 import 'package:acter/features/space/pages/tasks_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/tasks/dialogs/create_task_list_sheet.dart';
-import 'package:acter/features/tasks/dialogs/create_task_sidesheet.dart';
 import 'package:acter/features/tasks/pages/tasks_page.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/settings/pages/index_page.dart';
@@ -151,28 +150,6 @@ List<RouteBase> makeRoutes(Ref ref) {
       pageBuilder: (context, state) => DialogPage(
         builder: (BuildContext ctx) => const QuickjumpDialog(),
       ),
-    ),
-    GoRoute(
-      parentNavigatorKey: rootNavKey,
-      name: Routes.actionAddTask.name,
-      path: Routes.actionAddTask.route,
-      pageBuilder: (context, state) {
-        return SideSheetPage(
-          key: state.pageKey,
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween(
-                begin: const Offset(1, 0),
-                end: const Offset(0, 0),
-              ).animate(
-                animation,
-              ),
-              child: child,
-            );
-          },
-          child: const AddTaskActionSideSheet(),
-        );
-      },
     ),
 
     GoRoute(
