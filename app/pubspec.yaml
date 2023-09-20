@@ -46,7 +46,6 @@ dependencies:
   flutter_link_previewer: ^3.0.1
   bubble: ^1.2.1
   swipe_to: ^1.0.2
-  implicitly_animated_reorderable_list_2: ^0.5.0
   image_picker: ^1.0.0
   cross_file_image: ^1.0.0
   overlay_support: ^2.1.0
@@ -83,10 +82,6 @@ dependencies:
   go_router: ^10.0.0
 
   # widgets
-  table_calendar:
-    git:
-      url: https://github.com/acterglobal/table_calendar.git
-
   settings_ui: '2.0.2'
 
   # Utilities
@@ -122,6 +117,7 @@ dependencies:
   logging: ^1.2.0
   args: ^2.4.2
   breadcrumbs: ^0.1.0
+  great_list_view: ^0.2.3
 
 dev_dependencies:
   flutter_test:
@@ -130,13 +126,7 @@ dev_dependencies:
     sdk: flutter
   icons_launcher: ^2.0.7
   flutter_lints: ^2.0.2
-  build_runner: ^2.3.3
-  mockito: ^5.4.2
-  # The current build runner version is breaking when generating due to the issue 
-  # https://github.com/dart-lang/build/issues/3519, the most probable fix is to upgrade
-  # but that requires updated flutter SDK, temporarily we can add build_runner_core
-  # as a fix and be compatible with flutter 3.7 versions.
-  build_runner_core: ^7.2.7+1
+  build_runner: ^2.4.6
   flutter_gherkin:
     # path: "../../flutter_gherkin"
     git:

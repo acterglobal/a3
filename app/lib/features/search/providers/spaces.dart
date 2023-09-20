@@ -16,7 +16,7 @@ class SpaceDetails {
 
 final AutoDisposeFutureProvider<List<SpaceDetails>> spacesFoundProvider =
     FutureProvider.autoDispose((ref) async {
-  final spaces = await ref.watch(spacesProvider.future);
+  final spaces = ref.watch(spacesProvider);
   final List<SpaceDetails> finalSpaces = [];
   final searchValue = ref.watch(searchValueProvider).toLowerCase();
 

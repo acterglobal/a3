@@ -1,6 +1,5 @@
-import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
@@ -26,30 +25,36 @@ class SpaceChatsPage extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: CustomScrollView(
-        physics: const NeverScrollableScrollPhysics(),
         slivers: <Widget>[
-          SliverToBoxAdapter(
-            child: Row(
-              children: [
-                Text(
-                  'Chats',
-                  style: Theme.of(context).textTheme.titleMedium,
+          related.maybeWhen(
+            data: (spaces) {
+              bool checkPermission(String permission) {
+                if (spaces.membership != null) {
+                  return spaces.membership!.canString(permission);
+                }
+                return false;
+              }
+
+              if (!checkPermission('CanLinkSpaces')) {
+                return const SliverToBoxAdapter(child: SizedBox.shrink());
+              }
+
+              return SliverToBoxAdapter(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      onPressed: () => context.pushNamed(
+                        Routes.createChat.name,
+                        queryParameters: {'parentSpaceId': spaceIdOrAlias},
+                      ),
+                      icon: const Icon(Atlas.plus_circle_thin),
+                    ),
+                  ],
                 ),
-                const Spacer(),
-                IconButton(
-                  icon: Icon(
-                    Atlas.plus_circle_thin,
-                    color: Theme.of(context).colorScheme.neutral5,
-                  ),
-                  iconSize: 28,
-                  color: Theme.of(context).colorScheme.surface,
-                  onPressed: () => context.pushNamed(
-                    Routes.createChat.name,
-                    queryParameters: {'spaceId': spaceIdOrAlias},
-                  ),
-                ),
-              ],
-            ),
+              );
+            },
+            orElse: () => const SliverToBoxAdapter(child: SizedBox.shrink()),
           ),
           chats.when(
             data: (rooms) {
@@ -58,11 +63,23 @@ class SpaceChatsPage extends ConsumerWidget {
                   initialItemCount: rooms.length,
                   itemBuilder: (context, index, animation) => SizeTransition(
                     sizeFactor: animation,
-                    child: ConvoCard(room: rooms[index], showParent: false),
+                    child: ConvoCard(
+                      room: rooms[index],
+                      showParent: false,
+                      onTap: () => context.pushNamed(
+                        Routes.chatroom.name,
+                        pathParameters: {'roomId': rooms[index].getRoomIdStr()},
+                      ),
+                    ),
                   ),
                 );
               }
-              return const SliverToBoxAdapter(child: SizedBox.shrink());
+              return const SliverToBoxAdapter(
+                child: Center(
+                  heightFactor: 5,
+                  child: Text('Chats are empty'),
+                ),
+              );
             },
             error: (error, stackTrace) => SliverToBoxAdapter(
               child: Center(child: Text('Failed to load events due to $error')),

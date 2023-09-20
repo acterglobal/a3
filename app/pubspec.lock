@@ -139,7 +139,7 @@ packages:
     source: hosted
     version: "2.4.6"
   build_runner_core:
-    dependency: "direct dev"
+    dependency: transitive
     description:
       name: build_runner_core
       sha256: "6d6ee4276b1c5f34f21fdf39425202712d2be82019983d52f351c94aafbc2c41"
@@ -489,10 +489,10 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: ab54f71b2f8709fe12205531bcdfc274c72048e8
+      resolved-ref: c141341ac34cfb902de24579c65e6cff6fd0116e
       url: "https://github.com/acterglobal/flutter_gherkin"
     source: git
-    version: "3.0.0-rc.18"
+    version: "3.0.0-rc.19"
   flutter_highlight:
     dependency: transitive
     description:
@@ -763,6 +763,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.1"
+  great_list_view:
+    dependency: "direct main"
+    description:
+      name: great_list_view
+      sha256: "4e528745d65c95d731b7c90af620822895233943ff531ad7a5d2b5a43e187b12"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.3"
   highlight:
     dependency: transitive
     description:
@@ -883,14 +891,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.1"
-  implicitly_animated_reorderable_list_2:
-    dependency: "direct main"
-    description:
-      name: implicitly_animated_reorderable_list_2
-      sha256: bcdf9bfbf78a61f7c4c7a6b53a9e570bf5096592b94e9ad07cbf78b877cd91aa
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.5.1"
   infinite_scroll_pagination:
     dependency: "direct main"
     description:
@@ -1424,14 +1424,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
-  simple_gesture_detector:
-    dependency: transitive
-    description:
-      name: simple_gesture_detector
-      sha256: "86d08f85f1f58583b7b4b941d989f48ea6ce08c1724a1d10954a277c2ec36592"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -1557,15 +1549,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.0"
-  table_calendar:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "319ffdedb3e00c9377bc158444612b8d2e9f4009"
-      url: "https://github.com/acterglobal/table_calendar.git"
-    source: git
-    version: "3.0.9"
   term_glyph:
     dependency: transitive
     description:
@@ -1782,6 +1765,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.7"
+  worker_manager:
+    dependency: transitive
+    description:
+      name: worker_manager
+      sha256: "42501e49ee0acad9eeda562984e3dcfe6fe3d26f2d8dc410bd76308a86447eb5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.3"
   xdg_directories:
     dependency: transitive
     description:
@@ -1807,5 +1798,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: "3.1.0"
+  dart: ">=3.1.0 <4.0.0"
   flutter: ">=3.10.0"

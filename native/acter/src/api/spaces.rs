@@ -48,17 +48,21 @@ use matrix_sdk::{
     },
     Client as SdkClient,
 };
+use ruma::OwnedRoomOrAliasId;
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, thread::JoinHandle};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::{error, trace, warn};
 
+use crate::RoomId;
+
 use super::{
-    client::{devide_spaces_from_convos, Client, SpaceFilterBuilder},
+    client::Client,
     common::OptionBuffer,
     room::Room,
     search::PublicSearchResult,
+    utils::{remap_for_diff, ApiVectorDiff},
     RUNTIME,
 };
 
@@ -66,6 +70,26 @@ use super::{
 pub struct Space {
     pub client: Client,
     pub(crate) inner: Room,
+}
+
+impl PartialEq for Space {
+    fn eq(&self, other: &Self) -> bool {
+        self.inner.room_id() == other.inner.room_id()
+    }
+}
+
+impl Eq for Space {}
+
+impl PartialOrd for Space {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.room_id().partial_cmp(other.room_id())
+    }
+}
+
+impl Ord for Space {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.room_id().cmp(other.room_id())
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -76,6 +100,13 @@ struct HistoryState {
 
 // internal API
 impl Space {
+    pub(crate) fn update_room(self, room: Room) -> Self {
+        let Space { client, .. } = self;
+        Space {
+            client,
+            inner: room,
+        }
+    }
     pub(crate) async fn setup_handles(&self) -> Vec<EventHandlerHandle> {
         self.room
             .client()
@@ -351,8 +382,31 @@ impl Space {
             let has_chunks = !chunk.is_empty();
 
             for msg in chunk {
-                let model = match AnyActerModel::from_raw_tlevent(&msg.event) {
-                    Ok(model) => model,
+                match AnyActerModel::try_from(&msg.event) {
+                    Ok(model) => {
+                        trace!(?room_id, user_id=?client.user_id(), ?model, "handling timeline event");
+                        if let Err(e) = self.client.executor().handle(model).await {
+                            error!("Failure handling event: {:}", e);
+                        }
+                    }
+                    Err(Error::ModelRedacted {
+                        model_type,
+                        meta,
+                        reason,
+                    }) => {
+                        trace!(?room_id, user_id=?client.user_id(), model_type, ?meta.event_id, "redacted event");
+                        if let Err(e) = self
+                            .client
+                            .executor()
+                            .redact(model_type, meta, reason)
+                            .await
+                        {
+                            error!("Failure redacting {:}", e);
+                        }
+                    }
+                    Err(Error::UnknownModel(inner)) => {
+                        trace!(?room_id, user_id=?client.user_id(), ?inner, "ignoring event");
+                    }
                     Err(m) => {
                         if let Ok(state_key) = msg.event.get_field::<String>("state_key") {
                             trace!(state_key=?state_key, "ignoring state event");
@@ -360,20 +414,8 @@ impl Space {
                         } else {
                             error!(event=?msg.event, "Model didn't parse {:}", m);
                         }
-                        continue;
                     }
                 };
-                // match event {
-                //     MessageLikeEvent::Original(o) => {
-                trace!(?room_id, user_id=?client.user_id(), ?model, "handling timeline event");
-                if let Err(e) = self.client.executor().handle(model).await {
-                    error!("Failure handling event: {:}", e);
-                }
-                //     }
-                //     MessageLikeEvent::Redacted(r) => {
-                //         trace!(redaction = ?r, "redaction ignored");
-                //     }
-                // }
             }
 
             // Todo: Do we want to do something with the states, too?
@@ -741,6 +783,8 @@ pub fn new_space_settings_builder() -> CreateSpaceSettingsBuilder {
     CreateSpaceSettingsBuilder::default()
 }
 
+pub type SpaceDiff = ApiVectorDiff<Space>;
+
 // External API
 impl Client {
     pub async fn create_acter_space(
@@ -784,43 +828,80 @@ impl Client {
     }
 
     pub async fn spaces(&self) -> Result<Vec<Space>> {
-        let c = self.clone();
-        let filter = SpaceFilterBuilder::default().include_left(false).build()?;
-        RUNTIME
-            .spawn(async move {
-                let (spaces, convos) = devide_spaces_from_convos(c, Some(filter)).await;
-                Ok(spaces)
-            })
-            .await?
+        Ok(self.spaces.read().await.clone().into_iter().collect())
     }
 
-    pub async fn get_space(&self, room_id_or_alias: String) -> Result<Space> {
-        if let Ok(room_id) = OwnedRoomId::try_from(room_id_or_alias.clone()) {
-            // alias passes here too
-            if let Some(room) = self.get_room(&room_id) {
-                let space = Space {
-                    client: self.clone(),
-                    inner: Room { room },
-                };
-                return Ok(space);
+    pub fn spaces_stream(&self) -> impl Stream<Item = SpaceDiff> {
+        let spaces = self.spaces.clone();
+        async_stream::stream! {
+        let (current_items, stream) = {
+            let locked = spaces.read().await;
+            (
+                SpaceDiff::current_items(locked.clone().into_iter().collect()),
+                locked.subscribe(),
+            )
+        };
+            let mut remap = stream.map(move |diff| remap_for_diff(diff, |x| x));
+            yield current_items;
+
+            while let Some(d) = remap.next().await {
+                yield d
             }
         }
-        // if None, it is alias
-        if let Ok(alias_id) = OwnedRoomAliasId::try_from(room_id_or_alias) {
-            let me = self.clone();
-            RUNTIME
-                .spawn(async move {
-                    let response = me.resolve_room_alias(&alias_id).await?;
-                    for space in me.spaces().await?.into_iter() {
-                        if space.inner.room.room_id() == response.room_id {
-                            return Ok(space);
-                        }
+    }
+
+    pub async fn space_typed(&self, room_id: &OwnedRoomId) -> Option<Space> {
+        self.spaces
+            .read()
+            .await
+            .iter()
+            .find(|s| s.room_id() == room_id)
+            .map(Clone::clone)
+    }
+
+    pub async fn space_by_alias_typed(&self, room_alias: OwnedRoomAliasId) -> Result<Space> {
+        let space = self
+            .spaces
+            .read()
+            .await
+            .iter()
+            .find(|s| {
+                if let Some(con_alias) = s.canonical_alias() {
+                    if con_alias == room_alias {
+                        return true;
                     }
-                    bail!("Room with alias not found");
-                })
-                .await?
+                }
+                for alt_alias in s.alt_aliases() {
+                    if alt_alias == room_alias {
+                        return true;
+                    }
+                }
+                false
+            })
+            .map(Clone::clone);
+        match space {
+            Some(space) => Ok(space),
+            None => {
+                let room_id = self.resolve_room_alias(room_alias.clone()).await?;
+                self.space_typed(&room_id).await.context(format!(
+                    "Space with alias {room_alias} ({room_id}) not found"
+                ))
+            }
+        }
+    }
+
+    pub async fn space(&self, room_id_or_alias: String) -> Result<Space> {
+        let either = OwnedRoomOrAliasId::try_from(room_id_or_alias.as_str())?;
+        if either.is_room_id() {
+            let room_id = OwnedRoomId::try_from(either.as_str())?;
+            self.space_typed(&room_id)
+                .await
+                .context(format!("Space {room_id} not found"))
+        } else if either.is_room_alias_id() {
+            let room_alias = OwnedRoomAliasId::try_from(either.as_str())?;
+            self.space_by_alias_typed(room_alias).await
         } else {
-            bail!("Neither roomId nor alias provided");
+            bail!("{room_id_or_alias} isn't a valid room id or alias...");
         }
     }
 }

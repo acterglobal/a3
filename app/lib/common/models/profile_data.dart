@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 class ProfileData {
   final String? displayName;
   final FfiBufferUint8? avatar;
+  final bool isDm;
   MemoryImage? avatarMem;
 
-  ProfileData(this.displayName, this.avatar);
+  ProfileData(this.displayName, this.avatar, {this.isDm = false});
 
   bool hasAvatar() {
     return avatar != null;

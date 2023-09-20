@@ -5,10 +5,10 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
+import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -197,20 +197,7 @@ class MyProfile extends ConsumerWidget {
                           context,
                           ref,
                         ),
-                        child: Container(
-                          margin: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(100),
-                            border: Border.all(width: 5),
-                          ),
-                          child: ActerAvatar(
-                            mode: DisplayMode.User,
-                            uniqueId: userId,
-                            avatar: data.profile.getAvatarImage(),
-                            displayName: data.profile.displayName,
-                            size: 100,
-                          ),
-                        ),
+                        child: const UserAvatarWidget(size: 100),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,

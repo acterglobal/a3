@@ -75,7 +75,8 @@ async fn main() -> Result<()> {
                     sender.send(AppUpdate::SetSynced(synced)).unwrap();
                     if synced {
                         // let's update the chats;
-                        let conversastions = client.convos().await.unwrap();
+                        let conversastions =
+                            client.convos.read().await.clone().into_iter().collect();
                         sender
                             .send(AppUpdate::UpdateConvos(conversastions))
                             .unwrap();

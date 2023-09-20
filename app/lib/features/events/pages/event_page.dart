@@ -1,10 +1,12 @@
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
+import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
-import 'package:acter/common/widgets/spaces/has_space_permission.dart';
 import 'package:acter/features/events/providers/events_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -17,6 +19,105 @@ class CalendarEventPage extends ConsumerWidget {
 
   const CalendarEventPage({super.key, required this.calendarId});
 
+  Widget buildActions(
+    BuildContext context,
+    WidgetRef ref,
+    CalendarEvent event,
+  ) {
+    final spaceId = event.roomIdStr();
+    List<PopupMenuEntry> actions = [];
+    final membership = ref.watch(spaceMembershipProvider(spaceId));
+    if (membership.valueOrNull != null) {
+      final memb = membership.requireValue!;
+      if (memb.canString('CanPostEvent')) {
+        actions.add(
+          PopupMenuItem(
+            onTap: () => context.pushNamed(
+              Routes.editCalendarEvent.name,
+              pathParameters: {'calendarId': calendarId},
+            ),
+            child: const Row(
+              children: <Widget>[
+                Icon(Atlas.pencil_edit_thin),
+                SizedBox(width: 10),
+                Text('Edit Event'),
+              ],
+            ),
+          ),
+        );
+      }
+
+      if (memb.canString('CanRedact') ||
+          memb.userId().toString() == event.sender().toString()) {
+        actions.addAll([
+          PopupMenuItem(
+            onTap: () => showAdaptiveDialog(
+              context: context,
+              builder: (context) => RedactContentWidget(
+                title: 'Redact this post',
+                eventId: event.eventId().toString(),
+                onSuccess: () {
+                  ref.invalidate(calendarEventProvider);
+                  if (context.mounted) {
+                    context.go('/');
+                  }
+                },
+                senderId: event.sender().toString(),
+                roomId: event.roomIdStr(),
+                isSpace: true,
+              ),
+            ),
+            child: Row(
+              children: <Widget>[
+                Icon(
+                  Atlas.trash_can_thin,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+                const SizedBox(width: 10),
+                const Text('Redact Event'),
+              ],
+            ),
+          ),
+        ]);
+      }
+    } else {
+      actions.add(
+        PopupMenuItem(
+          onTap: () => showAdaptiveDialog(
+            context: context,
+            builder: (ctx) => ReportContentWidget(
+              title: 'Report this Event',
+              description:
+                  'Report this content to your homeserver administrator. Please note that your administrator won\'t be able to read or view files in encrypted spaces.',
+              eventId: calendarId,
+              roomId: event.roomIdStr(),
+              senderId: event.sender().toString(),
+              isSpace: true,
+            ),
+          ),
+          child: Row(
+            children: <Widget>[
+              Icon(
+                Atlas.warning_thin,
+                color: Theme.of(context).colorScheme.error,
+              ),
+              const SizedBox(width: 10),
+              const Text('Report Event'),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (actions.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return PopupMenuButton(
+      itemBuilder: (ctx) => actions,
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final event = ref.watch(calendarEventProvider(calendarId));
@@ -26,30 +127,15 @@ class CalendarEventPage extends ConsumerWidget {
         slivers: <Widget>[
           PageHeaderWidget(
             title: event.hasValue ? event.value!.title() : 'Loading Event',
-            sectionColor: Colors.blue.shade200,
-            actions: event.hasValue
-                ? [
-                    HasSpacePermission(
-                      spaceId: event.value!.roomIdStr(),
-                      permission: 'CanPostEvent',
-                      child: PopupMenuButton(
-                        itemBuilder: (BuildContext ctx) => <PopupMenuEntry>[
-                          PopupMenuItem(
-                            onTap: () => ctx.pushNamed(
-                              Routes.editCalendarEvent.name,
-                              pathParameters: {'calendarId': calendarId},
-                            ),
-                            child: const Text('Edit Event'),
-                          ),
-                          PopupMenuItem(
-                            onTap: () => onDelete(ctx),
-                            child: const Text('Delete Event'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ]
-                : [],
+            sectionDecoration: const BoxDecoration(
+              gradient: AppTheme.primaryGradient,
+            ),
+            actions: [
+              event.maybeWhen(
+                data: (event) => buildActions(context, ref, event),
+                orElse: () => const SizedBox.shrink(),
+              ),
+            ],
           ),
           event.when(
             data: (ev) {
@@ -60,95 +146,100 @@ class CalendarEventPage extends ConsumerWidget {
                 description = 'Description: ${content.body()}';
               }
               return SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Card(
-                    child: Container(
-                      margin: const EdgeInsets.all(10),
-                      child: Column(
-                        key: Key(calendarId),
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(ev.title()),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    key: Key(calendarId),
+                    children: [
+                      Flexible(
+                        flex: 1,
+                        child: Card(
+                          elevation: 0,
+                          child: Column(
                             children: [
-                              const SizedBox(height: 15),
-                              Text(dateTime),
-                              const SizedBox(height: 15),
-                              Text(description),
-                              const SizedBox(height: 15),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(
-                                height: 50,
-                                width: 100,
-                                child: DefaultButton(
-                                  title: 'Invite',
-                                  onPressed: () => onInvite(context),
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text(
+                                  ev.title(),
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
                                 ),
                               ),
-                              SizedBox(
-                                height: 50,
-                                width: 100,
-                                child: DefaultButton(
-                                  title: 'Join',
-                                  onPressed: () => onJoin(context),
-                                ),
+                              const SizedBox(height: 15),
+                              Container(
+                                alignment: Alignment.topLeft,
+                                padding: const EdgeInsets.all(8),
+                                child: Text(dateTime),
                               ),
-                              SizedBox(
-                                height: 50,
-                                width: 100,
-                                child: PopupMenuButton(
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    child: const Text('RSVP'),
-                                  ),
-                                  itemBuilder: (BuildContext context) =>
-                                      <PopupMenuEntry>[
-                                    PopupMenuItem(
-                                      onTap: () => onRsvp(context, ev, 'Yes'),
-                                      child: const Text('Yes'),
-                                    ),
-                                    PopupMenuItem(
-                                      onTap: () => onRsvp(context, ev, 'Maybe'),
-                                      child: const Text('Maybe'),
-                                    ),
-                                    PopupMenuItem(
-                                      onTap: () => onRsvp(context, ev, 'No'),
-                                      child: const Text('No'),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Spacer(),
-                              IconButton(
-                                onPressed: () => showAdaptiveDialog(
-                                  context: context,
-                                  builder: (ctx) => ReportContentWidget(
-                                    title: 'Report this Event',
-                                    description:
-                                        'Report this content to your homeserver administrator. Please note that your adminstrator won\'t be able to read or view files, if space is encrypted',
-                                    eventId: calendarId,
-                                    roomId: ev.roomIdStr(),
-                                    senderId: ev.sender().toString(),
-                                    isSpace: true,
-                                  ),
-                                ),
-                                icon: Icon(
-                                  Atlas.warning_thin,
-                                  color: Theme.of(context).colorScheme.error,
-                                ),
+                              const SizedBox(height: 15),
+                              Container(
+                                alignment: Alignment.topLeft,
+                                padding: const EdgeInsets.all(8),
+                                child: Text(description),
                               ),
                             ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
+                      Flexible(
+                        flex: 1,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            DefaultButton(
+                              title: 'Invite',
+                              onPressed: () => onInvite(context),
+                              isOutlined: true,
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 32,
+                                  vertical: 18,
+                                ),
+                                side: BorderSide(
+                                  color: Theme.of(context).colorScheme.success,
+                                  width: 1.5,
+                                ),
+                              ),
+                            ),
+                            PopupMenuButton(
+                              tooltip: 'RSVP',
+                              offset: const Offset(80, 35),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 32,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Theme.of(context).colorScheme.success,
+                                ),
+                                child: Text(
+                                  'Join',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ),
+                              itemBuilder: (BuildContext context) =>
+                                  <PopupMenuEntry>[
+                                PopupMenuItem(
+                                  onTap: () => onRsvp(context, ev, 'Yes'),
+                                  child: const Text('Yes'),
+                                ),
+                                PopupMenuItem(
+                                  onTap: () => onRsvp(context, ev, 'Maybe'),
+                                  child: const Text('Maybe'),
+                                ),
+                                PopupMenuItem(
+                                  onTap: () => onRsvp(context, ev, 'No'),
+                                  child: const Text('No'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               );

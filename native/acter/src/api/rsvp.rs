@@ -7,12 +7,15 @@ use core::time::Duration;
 use futures::stream::StreamExt;
 use matrix_sdk::{
     room::{Joined, Room},
-    ruma::{events::room::message::TextMessageEventContent, OwnedEventId, OwnedUserId},
+    ruma::{
+        events::{room::message::TextMessageEventContent, MessageLikeEventType},
+        OwnedEventId, OwnedUserId,
+    },
 };
 use std::{ops::Deref, str::FromStr};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::trace;
+use tracing::{error, trace};
 
 use super::{client::Client, common::OptionString, RUNTIME};
 
@@ -75,10 +78,11 @@ pub struct RsvpDraft {
 
 impl RsvpDraft {
     pub fn status(&mut self, status: String) -> &mut Self {
-        let Ok(s) = RsvpStatus::from_str(&status) else {
-            unreachable!("Wrong status about RSVP")
-        };
-        self.inner.status(s);
+        if let Ok(s) = RsvpStatus::from_str(&status) {
+            self.inner.status(s);
+        } else {
+            error!("Wrong status about RSVP");
+        }
         self
     }
 
@@ -86,8 +90,20 @@ impl RsvpDraft {
         let room = self.room.clone();
         let inner = self.inner.build()?;
         trace!("rsvp draft spawn");
+
+        let client = room.client();
+        let my_id = client.user_id().context("User not found")?.to_owned();
+
         RUNTIME
             .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+
                 trace!("before sending rsvp");
                 let resp = room.send(inner, None).await?;
                 trace!("after sending rsvp");

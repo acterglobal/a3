@@ -20,13 +20,14 @@ pub use common::*;
 pub use core::fmt::Debug;
 use enum_dispatch::enum_dispatch;
 use matrix_sdk::ruma::{
-    events::{AnySyncTimelineEvent, AnyTimelineEvent, MessageLikeEvent},
+    events::{AnySyncTimelineEvent, AnyTimelineEvent, MessageLikeEvent, StaticEventContent},
     serde::Raw,
-    EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, RoomId,
+    EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId,
 };
 pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
 pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
+use ruma_common::events::{room::redaction::RoomRedactionEventContent, UnsignedRoomRedactionEvent};
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
 pub use tasks::{Task, TaskList, TaskListUpdate, TaskStats, TaskUpdate};
@@ -39,29 +40,17 @@ pub use crate::store::Store;
 use crate::{
     error::Error,
     events::{
-        attachments::{
-            OriginalAttachmentEvent, OriginalAttachmentUpdateEvent, SyncAttachmentEvent,
-            SyncAttachmentUpdateEvent,
-        },
-        calendar::{
-            OriginalCalendarEventEvent, OriginalCalendarEventUpdateEvent, SyncCalendarEventEvent,
-            SyncCalendarEventUpdateEvent,
-        },
-        comments::{
-            OriginalCommentEvent, OriginalCommentUpdateEvent, SyncCommentEvent,
-            SyncCommentUpdateEvent,
-        },
-        news::{
-            OriginalNewsEntryEvent, OriginalNewsEntryUpdateEvent, SyncNewsEntryEvent,
-            SyncNewsEntryUpdateEvent,
-        },
-        pins::{OriginalPinEvent, OriginalPinUpdateEvent, SyncPinEvent, SyncPinUpdateEvent},
-        rsvp::{OriginalRsvpEvent, SyncRsvpEvent},
+        attachments::{AttachmentEventContent, AttachmentUpdateEventContent},
+        calendar::{CalendarEventEventContent, CalendarEventUpdateEventContent},
+        comments::{CommentEventContent, CommentUpdateEventContent},
+        news::{NewsEntryEventContent, NewsEntryUpdateEventContent},
+        pins::{PinEventContent, PinUpdateEventContent},
+        rsvp::RsvpEventContent,
         tasks::{
-            OriginalTaskEvent, OriginalTaskListEvent, OriginalTaskListUpdateEvent,
-            OriginalTaskUpdateEvent, SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent,
-            SyncTaskUpdateEvent,
+            TaskEventContent, TaskListEventContent, TaskListUpdateEventContent,
+            TaskUpdateEventContent,
         },
+        AnyActerEvent,
     },
 };
 
@@ -136,6 +125,98 @@ pub trait ActerModel: Debug {
         error!(?self, ?model, "Transition has not been implemented");
         Ok(false)
     }
+    /// The execution to run when this model is found.
+    async fn redact(
+        &self,
+        store: &Store,
+        redaction_model: RedactedActerModel,
+    ) -> crate::Result<Vec<String>> {
+        trace!(event_id=?redaction_model.event_id(), ?redaction_model, "handling");
+        let Some(belongs_to) = self.belongs_to() else {
+            let event_id = redaction_model.event_id();
+            trace!(?event_id, "saving simple model");
+            return store.save(redaction_model.into()).await
+        };
+        let model: AnyActerModel = redaction_model.into();
+        trace!(event_id=?model.event_id(), ?belongs_to, "transitioning tree");
+        let mut models = transition_tree(store, belongs_to, &model).await?;
+        models.push(model);
+        store.save_many(models).await
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct RedactionContent {
+    /// Data specific to the event type.
+    pub content: RoomRedactionEventContent,
+
+    /// The globally unique event identifier for the user who sent the event.
+    pub event_id: OwnedEventId,
+
+    /// The fully-qualified ID of the user who sent this event.
+    pub sender: OwnedUserId,
+
+    /// Timestamp in milliseconds on originating homeserver when this event was sent.
+    pub origin_server_ts: MilliSecondsSinceUnixEpoch,
+}
+
+impl From<UnsignedRoomRedactionEvent> for RedactionContent {
+    fn from(value: UnsignedRoomRedactionEvent) -> Self {
+        let UnsignedRoomRedactionEvent {
+            content,
+            event_id,
+            sender,
+            origin_server_ts,
+            ..
+        } = value;
+        RedactionContent {
+            content,
+            event_id,
+            sender,
+            origin_server_ts,
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct RedactedActerModel {
+    orig_type: String,
+    indizes: Vec<String>,
+    meta: EventMeta,
+    content: RedactionContent,
+}
+
+impl RedactedActerModel {
+    pub fn new(
+        orig_type: String,
+        orig_indizes: Vec<String>,
+        meta: EventMeta,
+        content: UnsignedRoomRedactionEvent,
+    ) -> Self {
+        RedactedActerModel {
+            meta,
+            orig_type,
+            content: content.into(),
+            indizes: orig_indizes
+                .into_iter()
+                .map(|s| format!("{s}::redacted"))
+                .collect(),
+        }
+    }
+}
+
+impl ActerModel for RedactedActerModel {
+    fn indizes(&self) -> Vec<String> {
+        self.indizes.clone()
+    }
+
+    fn event_id(&self) -> &EventId {
+        &self.meta.event_id
+    }
+
+    async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
+        default_model_execute(store, self.into()).await
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -156,481 +237,282 @@ pub struct EventMeta {
 #[enum_dispatch]
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum AnyActerModel {
+    RedactedActerModel,
+
     // -- Calendar
-    CalendarEvent,
-    CalendarEventUpdate,
+    CalendarEvent(CalendarEvent),
+    CalendarEventUpdate(CalendarEventUpdate),
 
     // -- Tasks
-    TaskList,
-    TaskListUpdate,
-    Task,
-    TaskUpdate,
+    TaskList(TaskList),
+    TaskListUpdate(TaskListUpdate),
+    Task(Task),
+    TaskUpdate(TaskUpdate),
 
     // -- Pins
-    Pin,
-    PinUpdate,
+    Pin(Pin),
+    PinUpdate(PinUpdate),
 
     // -- News
-    NewsEntry,
-    NewsEntryUpdate,
+    NewsEntry(NewsEntry),
+    NewsEntryUpdate(NewsEntryUpdate),
 
     // -- more generics
-    Comment,
-    CommentUpdate,
+    Comment(Comment),
+    CommentUpdate(CommentUpdate),
 
-    Attachment,
-    AttachmentUpdate,
+    Attachment(Attachment),
+    AttachmentUpdate(AttachmentUpdate),
 
-    Rsvp,
+    Rsvp(Rsvp),
 
     #[cfg(test)]
-    TestModel,
+    TestModel(TestModel),
 }
 
-impl AnyActerModel {
-    pub fn from_raw_tlevent(raw: &Raw<AnyTimelineEvent>) -> Result<Self, Error> {
-        let Ok(Some(model_type)) = raw.get_field("type") else {
-            return Err(Error::UnknownModel(None));
-        };
-
-        trace!("from raw timeline event: {}", model_type);
-
-        match model_type {
-            // -- CALENDAR
-            "global.acter.dev.calendar_event" => Ok(AnyActerModel::CalendarEvent(
-                raw.deserialize_as::<OriginalCalendarEventEvent>()
-                    .map_err(|error| {
-                        error!(?error, ?raw, "parsing calendar_event event failed");
-                        Error::FailedToParse {
-                            model_type: "global.acter.dev.calendar_event".to_string(),
-                            msg: error.to_string(),
-                        }
-                    })?
-                    .into(),
-            )),
-            "global.acter.dev.calendar_event.update" => Ok(AnyActerModel::CalendarEventUpdate(
-                raw.deserialize_as::<OriginalCalendarEventUpdateEvent>()
-                    .map_err(|error| {
-                        error!(?error, ?raw, "parsing calendar_event update event failed");
-                        Error::FailedToParse {
-                            model_type: "global.acter.dev.calendar_event.update".to_string(),
-                            msg: error.to_string(),
-                        }
-                    })?
-                    .into(),
-            )),
-
-            // -- TASKS
-            "global.acter.dev.tasklist" => Ok(AnyActerModel::TaskList(
-                raw.deserialize_as::<OriginalTaskListEvent>()
-                    .map_err(|error| {
-                        error!(?error, ?raw, "parsing task list event failed");
-                        Error::FailedToParse {
-                            model_type: "global.acter.dev.tasklist".to_string(),
-                            msg: error.to_string(),
-                        }
-                    })?
-                    .into(),
-            )),
-            "global.acter.dev.tasklist.update" => Ok(AnyActerModel::TaskListUpdate(
-                raw.deserialize_as::<OriginalTaskListUpdateEvent>()
-                    .map_err(|error| {
-                        error!(?error, ?raw, "parsing task list update event failed");
-                        Error::FailedToParse {
-                            model_type: "global.acter.dev.tasklist.update".to_string(),
-                            msg: error.to_string(),
-                        }
-                    })?
-                    .into(),
-            )),
-            "global.acter.dev.task" => Ok(AnyActerModel::Task(
-                raw.deserialize_as::<OriginalTaskEvent>()
-                    .map_err(|error| {
-                        error!(?error, ?raw, "parsing task event failed");
-                        Error::FailedToParse {
-                            model_type: "global.acter.dev.task".to_string(),
-                            msg: error.to_string(),
-                        }
-                    })?
-                    .into(),
-            )),
-            "global.acter.dev.task.update" => Ok(AnyActerModel::TaskUpdate(
-                raw.deserialize_as::<OriginalTaskUpdateEvent>()
-                    .map_err(|error| {
-                        error!(?error, ?raw, "parsing task update event failed");
-                        Error::FailedToParse {
-                            model_type: "global.acter.dev.task.update".to_string(),
-                            msg: error.to_string(),
-                        }
-                    })?
-                    .into(),
-            )),
-
-            // -- Pins
-            "global.acter.dev.pin" => Ok(AnyActerModel::Pin(
-                raw.deserialize_as::<OriginalPinEvent>()
-                    .map_err(|error| {
-                        error!(?error, ?raw, "parsing pin event failed");
-                        Error::FailedToParse {
-                            model_type: "global.acter.dev.pin".to_string(),
-                            msg: error.to_string(),
-                        }
-                    })?
-                    .into(),
-            )),
-            "global.acter.dev.pin.update" => Ok(AnyActerModel::PinUpdate(
-                raw.deserialize_as::<OriginalPinUpdateEvent>()
-                    .map_err(|error| {
-                        error!(?error, ?raw, "parsing pin update event failed");
-                        Error::FailedToParse {
-                            model_type: "global.acter.dev.pin.update".to_string(),
-                            msg: error.to_string(),
-                        }
-                    })?
-                    .into(),
-            )),
-
-            // -- News
-            "global.acter.dev.news" => Ok(AnyActerModel::NewsEntry(
-                raw.deserialize_as::<OriginalNewsEntryEvent>()
-                    .map_err(|error| {
-                        error!(?error, ?raw, "parsing news event failed");
-                        Error::FailedToParse {
-                            model_type: "global.acter.dev.news".to_string(),
-                            msg: error.to_string(),
-                        }
-                    })?
-                    .into(),
-            )),
-            "global.acter.dev.news.update" => Ok(AnyActerModel::NewsEntryUpdate(
-                raw.deserialize_as::<OriginalNewsEntryUpdateEvent>()
-                    .map_err(|error| {
-                        error!(?error, ?raw, "parsing news update event failed");
-                        Error::FailedToParse {
-                            model_type: "global.acter.dev.news.update".to_string(),
-                            msg: error.to_string(),
-                        }
-                    })?
-                    .into(),
-            )),
-
-            // -- generics
-
-            // comments
-            "global.acter.dev.comment" => Ok(AnyActerModel::Comment(
-                raw.deserialize_as::<OriginalCommentEvent>()
-                    .map_err(|error| {
-                        error!(?error, ?raw, "parsing comment event failed");
-                        Error::FailedToParse {
-                            model_type: "global.acter.dev.comment".to_string(),
-                            msg: error.to_string(),
-                        }
-                    })?
-                    .into(),
-            )),
-            "global.acter.dev.comment.update" => Ok(AnyActerModel::CommentUpdate(
-                raw.deserialize_as::<OriginalCommentUpdateEvent>()
-                    .map_err(|error| {
-                        error!(?error, ?raw, "parsing comment update event failed");
-                        Error::FailedToParse {
-                            model_type: "global.acter.dev.comment.update".to_string(),
-                            msg: error.to_string(),
-                        }
-                    })?
-                    .into(),
-            )),
-
-            // attachments
-            "global.acter.dev.attachment" => Ok(AnyActerModel::Attachment(
-                raw.deserialize_as::<OriginalAttachmentEvent>()
-                    .map_err(|error| {
-                        error!(?error, ?raw, "parsing attachment event failed");
-                        Error::FailedToParse {
-                            model_type: "global.acter.dev.attachment".to_string(),
-                            msg: error.to_string(),
-                        }
-                    })?
-                    .into(),
-            )),
-            "global.acter.dev.attachment.update" => Ok(AnyActerModel::AttachmentUpdate(
-                raw.deserialize_as::<OriginalAttachmentUpdateEvent>()
-                    .map_err(|error| {
-                        error!(?error, ?raw, "parsing attachment update event failed");
-                        Error::FailedToParse {
-                            model_type: "global.acter.dev.attachment.update".to_string(),
-                            msg: error.to_string(),
-                        }
-                    })?
-                    .into(),
-            )),
-
-            // rsvp
-            "global.acter.dev.rsvp" => Ok(AnyActerModel::Rsvp(
-                raw.deserialize_as::<OriginalRsvpEvent>()
-                    .map_err(|error| {
-                        error!(?error, ?raw, "parsing rsvp event failed");
-                        Error::FailedToParse {
-                            model_type: "global.acter.dev.rsvp".to_string(),
-                            msg: error.to_string(),
-                        }
-                    })?
-                    .into(),
-            )),
-
-            _ => {
-                if model_type.starts_with("global.acter.") {
-                    error!(?raw, "{model_type} not implemented");
-                }
-
-                Err(Error::UnknownModel(Some(model_type.to_owned())))
-            }
+impl TryFrom<AnyActerEvent> for AnyActerModel {
+    type Error = Error;
+    fn try_from(value: AnyActerEvent) -> Result<Self, Self::Error> {
+        match value {
+            // Originals
+            AnyActerEvent::CalendarEvent(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::CalendarEvent(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: CalendarEventEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+            AnyActerEvent::CalendarEventUpdate(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::CalendarEventUpdate(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: CalendarEventUpdateEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+            AnyActerEvent::Pin(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::Pin(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: PinEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+            AnyActerEvent::PinUpdate(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::PinUpdate(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: PinUpdateEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+            AnyActerEvent::NewsEntry(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::NewsEntry(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: NewsEntryEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+            AnyActerEvent::NewsEntryUpdate(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::NewsEntryUpdate(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: NewsEntryUpdateEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+            AnyActerEvent::TaskList(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::TaskList(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: TaskListEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+            AnyActerEvent::TaskListUpdate(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::TaskListUpdate(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: TaskListUpdateEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+            AnyActerEvent::Task(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::Task(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: TaskEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+            AnyActerEvent::TaskUpdate(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::TaskUpdate(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: TaskUpdateEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+            AnyActerEvent::Comment(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::Comment(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: CommentEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+            AnyActerEvent::CommentUpdate(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::CommentUpdate(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: CommentUpdateEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+            AnyActerEvent::Attachment(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::Attachment(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: AttachmentEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+            AnyActerEvent::AttachmentUpdate(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::AttachmentUpdate(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: AttachmentUpdateEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+            AnyActerEvent::Rsvp(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::Rsvp(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: RsvpEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
         }
     }
+}
 
-    pub fn from_raw_synctlevent(
-        raw: &Raw<AnySyncTimelineEvent>,
-        room_id: &RoomId,
-    ) -> Result<Self, Error> {
-        let Ok(Some(model_type)) = raw.get_field("type") else {
+impl TryFrom<&Raw<AnyTimelineEvent>> for AnyActerModel {
+    type Error = Error;
+    fn try_from(raw: &Raw<AnyTimelineEvent>) -> Result<Self, Self::Error> {
+        let Ok(Some(model_type)) = raw.get_field::<String>("type") else {
             return Err(Error::UnknownModel(None));
         };
 
-        match model_type {
-            // -- Calendar
-            "global.acter.dev.calendar_event" => match raw
-                .deserialize_as::<SyncCalendarEventEvent>()
-                .map_err(|error| {
-                    error!(?error, ?raw, "parsing calendar_event event failed");
-                    Error::FailedToParse {
-                        model_type: "global.acter.dev.calendar_event".to_string(),
-                        msg: error.to_string(),
-                    }
-                })?
-                .into_full_event(room_id.to_owned())
-            {
-                MessageLikeEvent::Original(t) => Ok(AnyActerModel::CalendarEvent(t.into())),
-                _ => Err(Error::UnknownModel(None)),
-            },
-            "global.acter.dev.calendar_event.update" => match raw
-                .deserialize_as::<SyncCalendarEventUpdateEvent>()
-                .map_err(|error| {
-                    error!(?error, ?raw, "parsing calendar_event update event failed");
-                    Error::FailedToParse {
-                        model_type: "global.acter.dev.calendar_event.update".to_string(),
-                        msg: error.to_string(),
-                    }
-                })?
-                .into_full_event(room_id.to_owned())
-            {
-                MessageLikeEvent::Original(t) => Ok(AnyActerModel::CalendarEventUpdate(t.into())),
-                _ => Err(Error::UnknownModel(None)),
-            },
-
-            // -- Tasks
-            "global.acter.dev.tasklist" => match raw
-                .deserialize_as::<SyncTaskListEvent>()
-                .map_err(|error| {
-                    error!(?error, ?raw, "parsing task list event failed");
-                    Error::FailedToParse {
-                        model_type: "global.acter.dev.tasklist".to_string(),
-                        msg: error.to_string(),
-                    }
-                })?
-                .into_full_event(room_id.to_owned())
-            {
-                MessageLikeEvent::Original(t) => Ok(AnyActerModel::TaskList(t.into())),
-                _ => Err(Error::UnknownModel(None)),
-            },
-            "global.acter.dev.tasklist.update" => match raw
-                .deserialize_as::<SyncTaskListUpdateEvent>()
-                .map_err(|error| {
-                    error!(?error, ?raw, "parsing task list update event failed");
-                    Error::FailedToParse {
-                        model_type: "global.acter.dev.tasklist.update".to_string(),
-                        msg: error.to_string(),
-                    }
-                })?
-                .into_full_event(room_id.to_owned())
-            {
-                MessageLikeEvent::Original(t) => Ok(AnyActerModel::TaskListUpdate(t.into())),
-                _ => Err(Error::UnknownModel(None)),
-            },
-            "global.acter.dev.task" => match raw
-                .deserialize_as::<SyncTaskEvent>()
-                .map_err(|error| {
-                    error!(?error, ?raw, "parsing task event failed");
-                    Error::FailedToParse {
-                        model_type: "global.acter.dev.task".to_string(),
-                        msg: error.to_string(),
-                    }
-                })?
-                .into_full_event(room_id.to_owned())
-            {
-                MessageLikeEvent::Original(t) => Ok(AnyActerModel::Task(t.into())),
-                _ => Err(Error::UnknownModel(None)),
-            },
-            "global.acter.dev.task.update" => match raw
-                .deserialize_as::<SyncTaskUpdateEvent>()
-                .map_err(|error| {
-                    error!(?error, ?raw, "parsing task update event failed");
-                    Error::FailedToParse {
-                        model_type: "global.acter.dev.task.update".to_string(),
-                        msg: error.to_string(),
-                    }
-                })?
-                .into_full_event(room_id.to_owned())
-            {
-                MessageLikeEvent::Original(t) => Ok(AnyActerModel::TaskUpdate(t.into())),
-                _ => Err(Error::UnknownModel(None)),
-            },
-
-            // -- Pins
-            "global.acter.dev.pin" => match raw
-                .deserialize_as::<SyncPinEvent>()
-                .map_err(|error| {
-                    error!(?error, ?raw, "parsing pin event failed");
-                    Error::FailedToParse {
-                        model_type: "global.acter.dev.pin".to_string(),
-                        msg: error.to_string(),
-                    }
-                })?
-                .into_full_event(room_id.to_owned())
-            {
-                MessageLikeEvent::Original(t) => Ok(AnyActerModel::Pin(t.into())),
-                _ => Err(Error::UnknownModel(None)),
-            },
-            "global.acter.dev.pin.update" => match raw
-                .deserialize_as::<SyncPinUpdateEvent>()
-                .map_err(|error| {
-                    error!(?error, ?raw, "parsing pin update event failed");
-                    Error::FailedToParse {
-                        model_type: "global.acter.dev.pin.update".to_string(),
-                        msg: error.to_string(),
-                    }
-                })?
-                .into_full_event(room_id.to_owned())
-            {
-                MessageLikeEvent::Original(t) => Ok(AnyActerModel::PinUpdate(t.into())),
-                _ => Err(Error::UnknownModel(None)),
-            },
-
-            // -- NewsEntrys
-            "global.acter.dev.news" => match raw
-                .deserialize_as::<SyncNewsEntryEvent>()
-                .map_err(|error| {
-                    error!(?error, ?raw, "parsing news event failed");
-                    Error::FailedToParse {
-                        model_type: "global.acter.dev.news".to_string(),
-                        msg: error.to_string(),
-                    }
-                })?
-                .into_full_event(room_id.to_owned())
-            {
-                MessageLikeEvent::Original(t) => Ok(AnyActerModel::NewsEntry(t.into())),
-                _ => Err(Error::UnknownModel(None)),
-            },
-            "global.acter.dev.news.update" => match raw
-                .deserialize_as::<SyncNewsEntryUpdateEvent>()
-                .map_err(|error| {
-                    error!(?error, ?raw, "parsing news update event failed");
-                    Error::FailedToParse {
-                        model_type: "global.acter.dev.news.update".to_string(),
-                        msg: error.to_string(),
-                    }
-                })?
-                .into_full_event(room_id.to_owned())
-            {
-                MessageLikeEvent::Original(t) => Ok(AnyActerModel::NewsEntryUpdate(t.into())),
-                _ => Err(Error::UnknownModel(None)),
-            },
-
-            // generic
-
-            // comments
-            "global.acter.dev.comment" => match raw
-                .deserialize_as::<SyncCommentEvent>()
-                .map_err(|error| {
-                    error!(?error, ?raw, "parsing comment event failed");
-                    Error::FailedToParse {
-                        model_type: "global.acter.dev.comment".to_string(),
-                        msg: error.to_string(),
-                    }
-                })?
-                .into_full_event(room_id.to_owned())
-            {
-                MessageLikeEvent::Original(t) => Ok(AnyActerModel::Comment(t.into())),
-                _ => Err(Error::UnknownModel(None)),
-            },
-            "global.acter.dev.comment.update" => match raw
-                .deserialize_as::<SyncCommentUpdateEvent>()
-                .map_err(|error| {
-                    error!(?error, ?raw, "parsing comment update event failed");
-                    Error::FailedToParse {
-                        model_type: "global.acter.dev.comment.update".to_string(),
-                        msg: error.to_string(),
-                    }
-                })?
-                .into_full_event(room_id.to_owned())
-            {
-                MessageLikeEvent::Original(t) => Ok(AnyActerModel::CommentUpdate(t.into())),
-                _ => Err(Error::UnknownModel(None)),
-            },
-
-            // attachments
-            "global.acter.dev.attachment" => match raw
-                .deserialize_as::<SyncAttachmentEvent>()
-                .map_err(|error| {
-                    error!(?error, ?raw, "parsing attachment event failed");
-                    Error::FailedToParse {
-                        model_type: "global.acter.dev.attachment".to_string(),
-                        msg: error.to_string(),
-                    }
-                })?
-                .into_full_event(room_id.to_owned())
-            {
-                MessageLikeEvent::Original(t) => Ok(AnyActerModel::Attachment(t.into())),
-                _ => Err(Error::UnknownModel(None)),
-            },
-            "global.acter.dev.attachment.update" => match raw
-                .deserialize_as::<SyncAttachmentUpdateEvent>()
-                .map_err(|error| {
-                    error!(?error, ?raw, "parsing attachment update event failed");
-                    Error::FailedToParse {
-                        model_type: "global.acter.dev.attachment.update".to_string(),
-                        msg: error.to_string(),
-                    }
-                })?
-                .into_full_event(room_id.to_owned())
-            {
-                MessageLikeEvent::Original(t) => Ok(AnyActerModel::AttachmentUpdate(t.into())),
-                _ => Err(Error::UnknownModel(None)),
-            },
-
-            // RSVP events
-            "global.acter.dev.rsvp" => match raw
-                .deserialize_as::<SyncRsvpEvent>()
-                .map_err(|error| {
-                    error!(?error, ?raw, "parsing RSVP event failed");
-                    Error::FailedToParse {
-                        model_type: "global.acter.dev.rsvp".to_string(),
-                        msg: error.to_string(),
-                    }
-                })?
-                .into_full_event(room_id.to_owned())
-            {
-                MessageLikeEvent::Original(t) => Ok(AnyActerModel::Rsvp(t.into())),
-                _ => Err(Error::UnknownModel(None)),
-            },
-
-            // unimplemented cases
-            _ => {
-                if model_type.starts_with("global.acter.") {
-                    error!(?raw, "{model_type} not implemented");
-                }
-
-                Err(Error::UnknownModel(Some(model_type.to_owned())))
-            }
+        if !model_type.starts_with("global.acter") || model_type == "global.acter.app_settings" {
+            return Err(Error::UnknownModel(Some(model_type)));
         }
+
+        Self::try_from(raw.deserialize_as::<AnyActerEvent>().map_err(|error| {
+            trace!(?error, ?raw, "parsing acter event failed");
+            Error::FailedToParse {
+                model_type,
+                msg: error.to_string(),
+            }
+        })?)
+    }
+}
+
+impl TryFrom<&Raw<AnySyncTimelineEvent>> for AnyActerModel {
+    type Error = Error;
+    fn try_from(raw: &Raw<AnySyncTimelineEvent>) -> Result<Self, Self::Error> {
+        let Ok(Some(model_type)) = raw.get_field::<String>("type") else {
+            return Err(Error::UnknownModel(None));
+        };
+
+        if !model_type.starts_with("global.acter") || model_type == "global.acter.app_settings" {
+            return Err(Error::UnknownModel(Some(model_type)));
+        }
+
+        Self::try_from(raw.deserialize_as::<AnyActerEvent>().map_err(|error| {
+            trace!(?error, ?raw, "parsing acter event failed");
+            Error::FailedToParse {
+                model_type,
+                msg: error.to_string(),
+            }
+        })?)
     }
 }
 
@@ -638,6 +520,7 @@ impl AnyActerModel {
 mod tests {
     use super::*;
     use crate::Result;
+    use matrix_sdk::ruma::owned_event_id;
     use serde_json;
     #[test]
     fn ensure_minimal_tasklist_parses() -> Result<()> {
@@ -648,7 +531,7 @@ mod tests {
             "event_id":"$KwumA4L3M-duXu0I3UA886LvN-BDCKAyxR1skNfnh3c",
             "user_id":"@odo:ds9.acter.global","age":11523850}"#;
         let event = serde_json::from_str::<Raw<AnyTimelineEvent>>(json_raw)?;
-        let _acter_ev = AnyActerModel::from_raw_tlevent(&event)?;
+        let _acter_ev = AnyActerModel::try_from(&event)?;
         // assert!(matches!(event, AnyCreation::TaskList(_)));
         Ok(())
     }
@@ -661,7 +544,147 @@ mod tests {
             "event_id":"$KwumA4L3M-duXu0I3UA886LvN-BDCKAyxR1skNfnh3c",
             "user_id":"@odo:ds9.acter.global","age":11523850}"#;
         let event = serde_json::from_str::<Raw<AnyTimelineEvent>>(json_raw)?;
-        let _acter_ev = AnyActerModel::from_raw_tlevent(&event)?;
+        let _acter_ev = AnyActerModel::try_from(&event)?;
+        // assert!(matches!(event, AnyCreation::TaskList(_)));
+        Ok(())
+    }
+
+    #[test]
+    #[allow(unused_variables)]
+    fn ensure_redacted_news_parses() -> Result<()> {
+        let json_raw = r#"{
+            "content": {},
+            "origin_server_ts": 1689158713657,
+            "room_id": "!uUufOaBOZwafrtxhoO:effektio.org",
+            "sender": "@emilvincentz:effektio.org",
+            "type": "global.acter.dev.news",
+            "unsigned": {
+              "redacted_by": "$2_k7NsG2GOGfyeNOvV55OovysVl7WGKgGEY2hv6VosY",
+              "redacted_because": {
+                "type": "m.room.redaction",
+                "room_id": "!uUufOaBOZwafrtxhoO:effektio.org",
+                "sender": "@ben:acter.global",
+                "content": {
+                  "reason": "",
+                  "redacts": "$WAfv0heG198eXRIRPVVuli2Guc9pI2PB_spOcS8NXco"
+                },
+                "redacts": "$WAfv0heG198eXRIRPVVuli2Guc9pI2PB_spOcS8NXco",
+                "origin_server_ts": 1694550003475,
+                "unsigned": {
+                  "age": 56316493,
+                  "transaction_id": "1c85807d10074b17941f84ac02f168ee"
+                },
+                "event_id": "$2_k7NsG2GOGfyeNOvV55OovysVl7WGKgGEY2hv6VosY",
+                "user_id": "@ben:acter.global",
+                "age": 56316493
+              }
+            },
+            "event_id": "$WAfv0heG198eXRIRPVVuli2Guc9pI2PB_spOcS8NXco",
+            "user_id": "@emilvincentz:effektio.org",
+            "redacted_because": {
+              "type": "m.room.redaction",
+              "room_id": "!uUufOaBOZwafrtxhoO:effektio.org",
+              "sender": "@ben:acter.global",
+              "content": {
+                "reason": "",
+                "redacts": "$WAfv0heG198eXRIRPVVuli2Guc9pI2PB_spOcS8NXco"
+              },
+              "redacts": "$WAfv0heG198eXRIRPVVuli2Guc9pI2PB_spOcS8NXco",
+              "origin_server_ts": 1694550003475,
+              "unsigned": {
+                "age": 56316493,
+                "transaction_id": "1c85807d10074b17941f84ac02f168ee"
+              },
+              "event_id": "$2_k7NsG2GOGfyeNOvV55OovysVl7WGKgGEY2hv6VosY",
+              "user_id": "@ben:acter.global",
+              "age": 56316493
+            }
+          }"#;
+        let event = serde_json::from_str::<Raw<AnyTimelineEvent>>(json_raw)?;
+        let acter_ev_result = AnyActerModel::try_from(&event);
+        let model_type = "global.acter.dev.news".to_owned();
+        let event_id = owned_event_id!("$2_k7NsG2GOGfyeNOvV55OovysVl7WGKgGEY2hv6VosY");
+        assert!(
+            matches!(
+                acter_ev_result,
+                Err(Error::ModelRedacted {
+                    ref model_type,
+                    meta: EventMeta { ref event_id, .. },
+                    ..
+                })
+            ),
+            "Didn't receive expected error: {acter_ev_result:?}"
+        );
+        // assert!(matches!(event, AnyCreation::TaskList(_)));
+        Ok(())
+    }
+
+    #[test]
+    #[allow(unused_variables)]
+    fn ensure_redacted_pin_parses() -> Result<()> {
+        let json_raw = r#"{
+            "content": {},
+            "origin_server_ts": 1689158713657,
+            "room_id": "!uUufOaBOZwafrtxhoO:effektio.org",
+            "sender": "@emilvincentz:effektio.org",
+            "type": "global.acter.dev.pin",
+            "unsigned": {
+              "redacted_by": "$2_k7NsG2GOGfyeNOvV55OovysVl7WGKgGEY2hv6VosY",
+              "redacted_because": {
+                "type": "m.room.redaction",
+                "room_id": "!uUufOaBOZwafrtxhoO:effektio.org",
+                "sender": "@ben:acter.global",
+                "content": {
+                  "reason": "",
+                  "redacts": "$WAfv0heG198eXRIRPVVuli2Guc9pI2PB_spOcS8NXco"
+                },
+                "redacts": "$WAfv0heG198eXRIRPVVuli2Guc9pI2PB_spOcS8NXco",
+                "origin_server_ts": 1694550003475,
+                "unsigned": {
+                  "age": 56316493,
+                  "transaction_id": "1c85807d10074b17941f84ac02f168ee"
+                },
+                "event_id": "$2_k7NsG2GOGfyeNOvV55OovysVl7WGKgGEY2hv6VosY",
+                "user_id": "@ben:acter.global",
+                "age": 56316493
+              }
+            },
+            "event_id": "$WAfv0heG198eXRIRPVVuli2Guc9pI2PB_spOcS8NXco",
+            "user_id": "@emilvincentz:effektio.org",
+            "redacted_because": {
+              "type": "m.room.redaction",
+              "room_id": "!uUufOaBOZwafrtxhoO:effektio.org",
+              "sender": "@ben:acter.global",
+              "content": {
+                "reason": "",
+                "redacts": "$WAfv0heG198eXRIRPVVuli2Guc9pI2PB_spOcS8NXco"
+              },
+              "redacts": "$WAfv0heG198eXRIRPVVuli2Guc9pI2PB_spOcS8NXco",
+              "origin_server_ts": 1694550003475,
+              "unsigned": {
+                "age": 56316493,
+                "transaction_id": "1c85807d10074b17941f84ac02f168ee"
+              },
+              "event_id": "$2_k7NsG2GOGfyeNOvV55OovysVl7WGKgGEY2hv6VosY",
+              "user_id": "@ben:acter.global",
+              "age": 56316493
+            }
+          }"#;
+        let event = serde_json::from_str::<Raw<AnyTimelineEvent>>(json_raw)?;
+        let acter_ev_result = AnyActerModel::try_from(&event);
+        let model_type = "global.acter.dev.pin".to_owned();
+        let event_id = owned_event_id!("$KwumA4L3M-duXu0I3UA886LvN-BDCKAyxR1skNfnh3c");
+        assert!(
+            matches!(
+                acter_ev_result,
+                Err(Error::ModelRedacted {
+                    ref model_type,
+                    meta: EventMeta { ref event_id, .. },
+                    ..
+                })
+            ),
+            "Didn't receive expected error: {acter_ev_result:?}"
+        );
         // assert!(matches!(event, AnyCreation::TaskList(_)));
         Ok(())
     }

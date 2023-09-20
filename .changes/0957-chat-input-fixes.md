@@ -1,0 +1,1 @@
+- [fix] chat input is linked with room now and will preserve.

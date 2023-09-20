@@ -4,6 +4,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
@@ -11,12 +12,14 @@ import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TextMessageBuilder extends ConsumerStatefulWidget {
+  final Convo convo;
   final types.TextMessage message;
   final int messageWidth;
   final bool isReply;
 
   const TextMessageBuilder({
     Key? key,
+    required this.convo,
     required this.message,
     this.isReply = false,
     required this.messageWidth,
@@ -102,10 +105,8 @@ class _TextMessageBuilderConsumerState
   }
 
   void onPreviewDataFetched(types.PreviewData previewData) {
-    if (widget.message.previewData == null) {
-      final roomNotifier = ref.read(chatRoomProvider.notifier);
-      roomNotifier.handlePreviewDataFetched(widget.message, previewData);
-    }
+    final chatRoomState = ref.read(chatStateProvider(widget.convo).notifier);
+    chatRoomState.handlePreviewDataFetched(widget.message, previewData);
   }
 }
 
@@ -142,6 +143,7 @@ class _TextWidget extends ConsumerWidget {
               maxLines: isReply ? 3 : null,
             )
           : Html(
+              backgroundColor: Colors.transparent,
               data: message.text,
               shrinkToFit: true,
               defaultTextStyle: Theme.of(context).textTheme.bodySmall!.copyWith(

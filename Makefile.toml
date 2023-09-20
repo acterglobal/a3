@@ -122,12 +122,13 @@ dependencies = [
 
 [tasks.mock-data]
 command = "cargo"
-args = ["run", "-p", "acter-cli", "mock", "http://localhost:8118"]
+args = ["run", "-p", "acter-cli", "mock", "--homeserver-url",  "http://localhost:8118", "--homeserver-name", "localhost"]
 
 [tasks.fixup]
 dependencies = [
     "format-fixup",
     "clippy-fixup",
+    "dart-fixup",
 ]
 
 [tasks.format-fixup]
@@ -137,6 +138,16 @@ args = ["fmt", "--all"]
 [tasks.clippy-fixup]
 command = "cargo"
 args = ["clippy", "--all", "--tests", "--allow-dirty", "--allow-staged", "--fix"]
+
+
+[tasks.dart-fixup]
+script_runner = "@shell"
+script = [
+    "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}",
+    "dart fix --apply",
+    "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/app",
+    "dart fix --apply",
+]
 
 [tasks.build]
 # Runs the rust compiler.

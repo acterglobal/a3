@@ -14,7 +14,7 @@ async fn message_redaction() -> Result<()> {
     while synced.next().await != Some(true) {} // let's wait for it to have synced
 
     let space = user
-        .get_space(room_id.to_string())
+        .space(room_id.to_string())
         .await
         .expect("user belongs to its space");
     let event_id = space.send_plain_message("Hi, everyone".to_string()).await?;

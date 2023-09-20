@@ -2,7 +2,7 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -22,21 +22,15 @@ class PinsPage extends ConsumerWidget {
     final account = ref.watch(accountProfileProvider);
     final pins = ref.watch(pinsProvider);
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.neutral,
       body: CustomScrollView(
         slivers: <Widget>[
           PageHeaderWidget(
             title: 'Pins',
-            sectionColor: Colors.blue.shade200,
+            sectionDecoration: const BoxDecoration(
+              gradient: AppTheme.primaryGradient,
+            ),
             actions: [
-              IconButton(
-                icon: const Icon(Atlas.funnel_sort_thin),
-                onPressed: () {
-                  customMsgSnackbar(
-                    context,
-                    'Pin filtering not yet implemented',
-                  );
-                },
-              ),
               IconButton(
                 icon: Icon(
                   Atlas.plus_circle_thin,
@@ -67,9 +61,10 @@ class PinsPage extends ConsumerWidget {
               }
               return SliverGrid.builder(
                 itemCount: pins.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate:
+                    SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
                   crossAxisCount: max(1, min(widthCount, minCount)),
-                  childAspectRatio: 6,
+                  height: MediaQuery.of(context).size.height * 0.15,
                 ),
                 itemBuilder: (context, index) {
                   final pin = pins[index];

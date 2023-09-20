@@ -100,6 +100,9 @@ impl ActerModel for CalendarEvent {
             return Ok(false)
         };
 
+        // FIXME: redacting a CalendarEventUpdate would mean reverting to the previous
+        //        state. That is currently not that easy...
+
         update.apply(&mut self.inner)
     }
 }

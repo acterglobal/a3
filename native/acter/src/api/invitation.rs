@@ -15,7 +15,7 @@ use tokio::time::{sleep, Duration};
 use tracing::{error, info};
 
 use super::{
-    client::{devide_spaces_from_convos, Client},
+    client::Client,
     profile::{PublicProfile, UserProfile},
     RUNTIME,
 };
@@ -336,11 +336,7 @@ impl Client {
                     .collect::<Vec<OwnedUserId>>();
                 // iterate my rooms to get user list
                 let mut profiles: Vec<UserProfile> = vec![];
-                let (spaces, convos) = devide_spaces_from_convos(client.clone(), None).await;
-                for convo in convos {
-                    if convo.room_id() == room_id {
-                        continue;
-                    }
+                if let Some(convo) = client.convo_typed(&room_id).await {
                     let members = convo.members(RoomMemberships::ACTIVE).await?;
                     for member in members {
                         let user_id = member.user_id().to_owned();
