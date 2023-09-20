@@ -6,6 +6,7 @@ import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -25,6 +26,36 @@ class SpaceChatsPage extends ConsumerWidget {
       padding: const EdgeInsets.all(20),
       child: CustomScrollView(
         slivers: <Widget>[
+          related.maybeWhen(
+            data: (spaces) {
+              bool checkPermission(String permission) {
+                if (spaces.membership != null) {
+                  return spaces.membership!.canString(permission);
+                }
+                return false;
+              }
+
+              if (!checkPermission('CanLinkSpaces')) {
+                return const SliverToBoxAdapter(child: SizedBox.shrink());
+              }
+
+              return SliverToBoxAdapter(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      onPressed: () => context.pushNamed(
+                        Routes.createChat.name,
+                        queryParameters: {'parentSpaceId': spaceIdOrAlias},
+                      ),
+                      icon: const Icon(Atlas.plus_circle_thin),
+                    ),
+                  ],
+                ),
+              );
+            },
+            orElse: () => const SliverToBoxAdapter(child: SizedBox.shrink()),
+          ),
           chats.when(
             data: (rooms) {
               if (rooms.isNotEmpty) {
