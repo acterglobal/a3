@@ -10,6 +10,7 @@ class AboutCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final space = ref.watch(spaceProvider(spaceId));
     return Card(
+      color: Theme.of(context).colorScheme.onPrimary,
       elevation: 0,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

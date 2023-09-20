@@ -43,7 +43,12 @@ class SpaceChatsPage extends ConsumerWidget {
                   ),
                 );
               }
-              return const SliverToBoxAdapter(child: SizedBox.shrink());
+              return const SliverToBoxAdapter(
+                child: Center(
+                  heightFactor: 5,
+                  child: Text('Chats are empty'),
+                ),
+              );
             },
             error: (error, stackTrace) => SliverToBoxAdapter(
               child: Center(child: Text('Failed to load events due to $error')),

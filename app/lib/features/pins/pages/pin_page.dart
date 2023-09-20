@@ -1,6 +1,7 @@
 import 'dart:core';
 
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/redact_content.dart';
@@ -130,7 +131,9 @@ class PinPage extends ConsumerWidget {
         slivers: <Widget>[
           PageHeaderWidget(
             title: pin.hasValue ? pin.value!.title() : 'Loading pin',
-            sectionColor: Colors.blue.shade200,
+            sectionDecoration: const BoxDecoration(
+              gradient: AppTheme.primaryGradient,
+            ),
             actions: [
               pin.maybeWhen(
                 data: (pin) => buildActions(context, ref, pin),

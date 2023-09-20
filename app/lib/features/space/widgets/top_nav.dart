@@ -70,7 +70,7 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
                   topLeft: Radius.circular(10),
                   topRight: Radius.circular(10),
                 ),
-                color: Theme.of(context).colorScheme.background,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
               margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: TabBar(

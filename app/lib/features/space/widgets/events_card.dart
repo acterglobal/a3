@@ -13,13 +13,10 @@ class EventsCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final space = ref.watch(spaceProvider(spaceId)).requireValue;
     final events = ref.watch(spaceEventsProvider(space));
-    return Card(
-      elevation: 0,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: EventsCalendar(
-          events: events,
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: EventsCalendar(
+        events: events,
       ),
     );
   }
