@@ -51,7 +51,7 @@ final tabsProvider =
       );
     }
 
-    if (isActive(LabsFeature.tasks)) {
+    if (isActive(LabsFeature.tasks) && appSettings.tasks().active()) {
       tabs.add(
         TabEntry(
           key: const Key('tasks'),

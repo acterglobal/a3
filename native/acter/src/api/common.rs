@@ -1,3 +1,4 @@
+use acter_core::models::TextMessageContent;
 use core::time::Duration;
 use matrix_sdk::ruma::{
     events::room::{
@@ -6,6 +7,7 @@ use matrix_sdk::ruma::{
     },
     MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedUserId,
 };
+use ruma::events::room::message::TextMessageEventContent;
 use serde::{Deserialize, Serialize};
 
 use super::api::FfiBuffer;
@@ -127,6 +129,15 @@ impl TextDesc {
     }
     pub fn has_formatted(&self) -> bool {
         self.formatted_body.is_some()
+    }
+}
+
+impl From<&TextMessageEventContent> for TextDesc {
+    fn from(value: &TextMessageEventContent) -> Self {
+        Self {
+            body: value.body.clone(),
+            formatted_body: value.formatted.as_ref().map(|x| x.body.clone()),
+        }
     }
 }
 
