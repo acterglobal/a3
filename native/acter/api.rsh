@@ -139,16 +139,16 @@ object NewsEntryDraft {
     fn add_text_slide(body: string);
 
     /// create news slide for image msg
-    fn add_image_slide(body: string, url: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>) -> Future<Result<bool>>;
+    fn add_image_slide(body: string, uri: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>) -> Future<Result<bool>>;
 
     /// create news slide for audio msg
-    fn add_audio_slide(body: string, url: string, secs: Option<u32>, mimetype: Option<string>, size: Option<u32>);
+    fn add_audio_slide(body: string, uri: string, mimetype: string, size: Option<u32>, secs: Option<u32>) -> Future<Result<bool>>;
 
     /// create news slide for video msg
-    fn add_video_slide(body: string, url: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, mimetype: Option<string>, size: Option<u32>, blurhash: Option<string>);
+    fn add_video_slide(body: string, uri: string, mimetype: string, size: Option<u32>, secs: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>) -> Future<Result<bool>>;
 
     /// create news slide for file msg
-    fn add_file_slide(body: string, url: string, mimetype: Option<string>, size: Option<u32>);
+    fn add_file_slide(body: string, uri: string, mimetype: string, size: Option<u32>) -> Future<Result<bool>>;
 
     /// clear slides
     fn unset_slides();
@@ -778,7 +778,7 @@ object Convo {
     fn edit_image_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<EventId>>;
 
     /// send the audio message to this room
-    fn send_audio_message(uri: string, name: string, mimetype: string, secs: Option<u32>, size: Option<u32>) -> Future<Result<EventId>>;
+    fn send_audio_message(uri: string, name: string, mimetype: string, size: Option<u32>, secs: Option<u32>) -> Future<Result<EventId>>;
 
     /// decrypted audio buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -786,10 +786,10 @@ object Convo {
     fn audio_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// edit the audio message
-    fn edit_audio_message(event_id: string, uri: string, name: string, mimetype: string, secs: Option<u32>, size: Option<u32>) -> Future<Result<EventId>>;
+    fn edit_audio_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u32>, secs: Option<u32>) -> Future<Result<EventId>>;
 
     /// send the video message to this room
-    fn send_video_message(uri: string, name: string, mimetype: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, size: Option<u32>, blurhash: Option<string>) -> Future<Result<EventId>>;
+    fn send_video_message(uri: string, name: string, mimetype: string, size: Option<u32>, secs: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>) -> Future<Result<EventId>>;
 
     /// decrypted video buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -797,7 +797,7 @@ object Convo {
     fn video_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// edit the video message
-    fn edit_video_message(event_id: string, uri: string, name: string, mimetype: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, size: Option<u32>) -> Future<Result<EventId>>;
+    fn edit_video_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u32>, secs: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<EventId>>;
 
     /// send the file message to this room
     fn send_file_message(uri: string, name: string, mimetype: string, size: u32) -> Future<Result<EventId>>;
@@ -977,10 +977,10 @@ object AttachmentsManager {
     fn image_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>) -> AttachmentDraft;
 
     /// create news slide for audio msg
-    fn audio_attachment_draft(body: string, url: string, secs: Option<u32>, mimetype: Option<string>, size: Option<u32>) -> AttachmentDraft;
+    fn audio_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u32>, secs: Option<u32>) -> AttachmentDraft;
 
     /// create news slide for video msg
-    fn video_attachment_draft(body: string, url: string, secs: Option<u32>, height: Option<u32>, width: Option<u32>, mimetype: Option<string>, size: Option<u32>, blurhash: Option<string>) -> AttachmentDraft;
+    fn video_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u32>, secs: Option<u32>, width: Option<u32>, height: Option<u32>, blurhash: Option<string>) -> AttachmentDraft;
 
     /// create news slide for file msg
     fn file_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u32>) -> AttachmentDraft;

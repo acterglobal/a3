@@ -1,14 +1,11 @@
 use derive_builder::Builder;
 use derive_getters::Getters;
-use matrix_sdk::ruma::{
-    events::{
-        macros::EventContent,
-        room::message::{
-            AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
-            LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
-        },
+use matrix_sdk::ruma::events::{
+    macros::EventContent,
+    room::message::{
+        AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
+        LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
     },
-    OwnedMxcUri,
 };
 use serde::{Deserialize, Serialize};
 
@@ -99,50 +96,6 @@ pub struct NewsSlide {
     #[builder(default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub references: Vec<ObjRef>,
-}
-
-impl NewsSlide {
-    pub fn new_text(body: String) -> Self {
-        NewsSlide {
-            content: NewsContent::Text(TextMessageEventContent::markdown(body)),
-            references: vec![],
-        }
-    }
-
-    pub fn new_image(body: String, url: OwnedMxcUri) -> Self {
-        NewsSlide {
-            content: NewsContent::Image(ImageMessageEventContent::plain(body, url)),
-            references: vec![],
-        }
-    }
-
-    pub fn new_audio(body: String, url: OwnedMxcUri) -> Self {
-        NewsSlide {
-            content: NewsContent::Audio(AudioMessageEventContent::plain(body, url)),
-            references: vec![],
-        }
-    }
-
-    pub fn new_video(body: String, url: OwnedMxcUri) -> Self {
-        NewsSlide {
-            content: NewsContent::Video(VideoMessageEventContent::plain(body, url)),
-            references: vec![],
-        }
-    }
-
-    pub fn new_file(body: String, url: OwnedMxcUri) -> Self {
-        NewsSlide {
-            content: NewsContent::File(FileMessageEventContent::plain(body, url)),
-            references: vec![],
-        }
-    }
-
-    pub fn new_location(body: String, geo_uri: String) -> Self {
-        NewsSlide {
-            content: NewsContent::Location(LocationMessageEventContent::new(body, geo_uri)),
-            references: vec![],
-        }
-    }
 }
 
 /// The payload for our news creation event.

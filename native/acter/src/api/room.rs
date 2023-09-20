@@ -825,9 +825,9 @@ impl Room {
 
         let path = PathBuf::from(uri);
         let config = AttachmentConfig::new().info(AttachmentInfo::Image(BaseImageInfo {
-            height: height.map(UInt::from),
-            width: width.map(UInt::from),
             size: size.map(UInt::from),
+            width: width.map(UInt::from),
+            height: height.map(UInt::from),
             blurhash: None,
         }));
         let mime_type = mimetype.parse::<mime::Mime>()?;
@@ -939,10 +939,10 @@ impl Room {
                 let response = client.media().upload(&content_type, image_buf).await?;
 
                 let info = assign!(ImageInfo::new(), {
-                    height: height.map(UInt::from),
-                    width: width.map(UInt::from),
                     mimetype: Some(mimetype),
                     size: size.map(UInt::from),
+                    width: width.map(UInt::from),
+                    height: height.map(UInt::from),
                 });
                 let mut image_content = ImageMessageEventContent::plain(name, response.content_uri);
                 image_content.info = Some(Box::new(info));
@@ -964,8 +964,8 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        secs: Option<u32>,
         size: Option<u32>,
+        secs: Option<u32>,
     ) -> Result<OwnedEventId> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
@@ -981,8 +981,8 @@ impl Room {
 
         let path = PathBuf::from(uri);
         let config = AttachmentConfig::new().info(AttachmentInfo::Audio(BaseAudioInfo {
-            duration: secs.map(|x| Duration::from_secs(x as u64)),
             size: size.map(UInt::from),
+            duration: secs.map(|x| Duration::from_secs(x as u64)),
         }));
         let mime_type = mimetype.parse::<mime::Mime>()?;
 
@@ -1042,8 +1042,8 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        secs: Option<u32>,
         size: Option<u32>,
+        secs: Option<u32>,
     ) -> Result<OwnedEventId> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
@@ -1092,9 +1092,9 @@ impl Room {
                 let response = client.media().upload(&content_type, audio_buf).await?;
 
                 let info = assign!(AudioInfo::new(), {
-                    duration: secs.map(|x| Duration::from_secs(x as u64)),
                     mimetype: Some(mimetype),
                     size: size.map(UInt::from),
+                    duration: secs.map(|x| Duration::from_secs(x as u64)),
                 });
                 let mut audio_content = AudioMessageEventContent::plain(name, response.content_uri);
                 audio_content.info = Some(Box::new(info));
@@ -1117,10 +1117,10 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        secs: Option<u32>,
-        height: Option<u32>,
-        width: Option<u32>,
         size: Option<u32>,
+        secs: Option<u32>,
+        width: Option<u32>,
+        height: Option<u32>,
         blurhash: Option<String>,
     ) -> Result<OwnedEventId> {
         let room = if let SdkRoom::Joined(r) = &self.room {
@@ -1137,10 +1137,10 @@ impl Room {
 
         let path = PathBuf::from(uri);
         let config = AttachmentConfig::new().info(AttachmentInfo::Video(BaseVideoInfo {
-            duration: secs.map(|x| Duration::from_secs(x as u64)),
-            height: height.map(UInt::from),
-            width: width.map(UInt::from),
             size: size.map(UInt::from),
+            duration: secs.map(|x| Duration::from_secs(x as u64)),
+            width: width.map(UInt::from),
+            height: height.map(UInt::from),
             blurhash,
         }));
         let mime_type = mimetype.parse::<mime::Mime>()?;
@@ -1201,10 +1201,10 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        secs: Option<u32>,
-        height: Option<u32>,
-        width: Option<u32>,
         size: Option<u32>,
+        secs: Option<u32>,
+        width: Option<u32>,
+        height: Option<u32>,
     ) -> Result<OwnedEventId> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()
@@ -1253,11 +1253,11 @@ impl Room {
                 let response = client.media().upload(&content_type, video_buf).await?;
 
                 let info = assign!(VideoInfo::new(), {
-                    duration: secs.map(|x| Duration::from_secs(x as u64)),
-                    height: height.map(UInt::from),
-                    width: width.map(UInt::from),
                     mimetype: Some(mimetype),
                     size: size.map(UInt::from),
+                    duration: secs.map(|x| Duration::from_secs(x as u64)),
+                    width: width.map(UInt::from),
+                    height: height.map(UInt::from),
                 });
                 let mut video_content = VideoMessageEventContent::plain(name, response.content_uri);
                 video_content.info = Some(Box::new(info));

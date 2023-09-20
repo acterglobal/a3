@@ -1712,6 +1712,138 @@ class Api {
     return tmp7;
   }
 
+  bool? __newsEntryDraftAddAudioSlideFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _newsEntryDraftAddAudioSlideFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __newsEntryDraftAddVideoSlideFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _newsEntryDraftAddVideoSlideFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __newsEntryDraftAddFileSlideFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _newsEntryDraftAddFileSlideFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   EventId? __newsEntryDraftSendFuturePoll(
     int boxed,
     int postCobject,
@@ -12116,8 +12248,11 @@ class Api {
           )>();
   late final _newsEntryDraftAddAudioSlidePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(
+          ffi.Int64 Function(
             ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -12126,18 +12261,13 @@ class Api {
             ffi.Uint64,
             ffi.Uint8,
             ffi.Uint32,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
             ffi.Uint8,
             ffi.Uint32,
           )>>("__NewsEntryDraft_add_audio_slide");
 
   late final _newsEntryDraftAddAudioSlide =
       _newsEntryDraftAddAudioSlidePtr.asFunction<
-          void Function(
-            int,
+          int Function(
             int,
             int,
             int,
@@ -12155,8 +12285,11 @@ class Api {
           )>();
   late final _newsEntryDraftAddVideoSlidePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(
+          ffi.Int64 Function(
             ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -12169,10 +12302,6 @@ class Api {
             ffi.Uint32,
             ffi.Uint8,
             ffi.Uint32,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
             ffi.Uint8,
             ffi.Uint32,
             ffi.Uint8,
@@ -12183,8 +12312,7 @@ class Api {
 
   late final _newsEntryDraftAddVideoSlide =
       _newsEntryDraftAddVideoSlidePtr.asFunction<
-          void Function(
-            int,
+          int Function(
             int,
             int,
             int,
@@ -12210,7 +12338,7 @@ class Api {
           )>();
   late final _newsEntryDraftAddFileSlidePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(
+          ffi.Int64 Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Uint64,
@@ -12218,7 +12346,6 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -12228,8 +12355,7 @@ class Api {
 
   late final _newsEntryDraftAddFileSlide =
       _newsEntryDraftAddFileSlidePtr.asFunction<
-          void Function(
-            int,
+          int Function(
             int,
             int,
             int,
@@ -15890,11 +16016,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
-            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint32,
             ffi.Uint8,
             ffi.Uint32,
           )>>("__AttachmentsManager_audio_attachment_draft");
@@ -15929,15 +16055,15 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
-            ffi.Uint8,
-            ffi.Uint32,
-            ffi.Uint8,
-            ffi.Uint32,
-            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
             ffi.Uint8,
             ffi.Uint32,
             ffi.Uint8,
@@ -21048,6 +21174,51 @@ class Api {
   late final _newsEntryDraftAddImageSlideFuturePoll =
       _newsEntryDraftAddImageSlideFuturePollPtr.asFunction<
           _NewsEntryDraftAddImageSlideFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _newsEntryDraftAddAudioSlideFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsEntryDraftAddAudioSlideFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__NewsEntryDraft_add_audio_slide_future_poll");
+
+  late final _newsEntryDraftAddAudioSlideFuturePoll =
+      _newsEntryDraftAddAudioSlideFuturePollPtr.asFunction<
+          _NewsEntryDraftAddAudioSlideFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _newsEntryDraftAddVideoSlideFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsEntryDraftAddVideoSlideFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__NewsEntryDraft_add_video_slide_future_poll");
+
+  late final _newsEntryDraftAddVideoSlideFuturePoll =
+      _newsEntryDraftAddVideoSlideFuturePollPtr.asFunction<
+          _NewsEntryDraftAddVideoSlideFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _newsEntryDraftAddFileSlideFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsEntryDraftAddFileSlideFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__NewsEntryDraft_add_file_slide_future_poll");
+
+  late final _newsEntryDraftAddFileSlideFuturePoll =
+      _newsEntryDraftAddFileSlideFuturePollPtr.asFunction<
+          _NewsEntryDraftAddFileSlideFuturePollReturn Function(
             int,
             int,
             int,
@@ -26479,7 +26650,7 @@ class NewsEntryDraft {
   /// create news slide for image msg
   Future<bool> addImageSlide(
     String body,
-    String url,
+    String uri,
     String mimetype,
     int? size,
     int? width,
@@ -26487,7 +26658,7 @@ class NewsEntryDraft {
     String? blurhash,
   ) {
     final tmp1 = body;
-    final tmp5 = url;
+    final tmp5 = uri;
     final tmp9 = mimetype;
     final tmp13 = size;
     final tmp17 = width;
@@ -26606,18 +26777,18 @@ class NewsEntryDraft {
   }
 
   /// create news slide for audio msg
-  void addAudioSlide(
+  Future<bool> addAudioSlide(
     String body,
-    String url,
-    int? secs,
-    String? mimetype,
+    String uri,
+    String mimetype,
     int? size,
+    int? secs,
   ) {
     final tmp1 = body;
-    final tmp5 = url;
-    final tmp9 = secs;
-    final tmp13 = mimetype;
-    final tmp19 = size;
+    final tmp5 = uri;
+    final tmp9 = mimetype;
+    final tmp13 = size;
+    final tmp17 = secs;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -26626,13 +26797,12 @@ class NewsEntryDraft {
     var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
+    var tmp11 = 0;
     var tmp12 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
-    var tmp17 = 0;
     var tmp18 = 0;
     var tmp20 = 0;
-    var tmp22 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -26650,35 +26820,29 @@ class NewsEntryDraft {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
     if (tmp13 == null) {
       tmp14 = 0;
     } else {
       tmp14 = 1;
       final tmp15 = tmp13;
-      final tmp15_0 = utf8.encode(tmp15);
-      tmp17 = tmp15_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
-      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
-      tmp16_1.setAll(0, tmp15_0);
-      tmp16 = tmp16_0.address;
-      tmp18 = tmp17;
+      tmp16 = tmp15;
     }
-    if (tmp19 == null) {
-      tmp20 = 0;
+    if (tmp17 == null) {
+      tmp18 = 0;
     } else {
-      tmp20 = 1;
-      final tmp21 = tmp19;
-      tmp22 = tmp21;
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
     }
-    _api._newsEntryDraftAddAudioSlide(
+    final tmp21 = _api._newsEntryDraftAddAudioSlide(
       tmp0,
       tmp2,
       tmp3,
@@ -26687,36 +26851,42 @@ class NewsEntryDraft {
       tmp7,
       tmp8,
       tmp10,
+      tmp11,
       tmp12,
       tmp14,
       tmp16,
-      tmp17,
       tmp18,
       tmp20,
-      tmp22,
     );
-    return;
+    final tmp23 = tmp21;
+    final ffi.Pointer<ffi.Void> tmp23_0 = ffi.Pointer.fromAddress(tmp23);
+    final tmp23_1 =
+        _Box(_api, tmp23_0, "__NewsEntryDraft_add_audio_slide_future_drop");
+    tmp23_1._finalizer = _api._registerFinalizer(tmp23_1);
+    final tmp22 =
+        _nativeFuture(tmp23_1, _api.__newsEntryDraftAddAudioSlideFuturePoll);
+    return tmp22;
   }
 
   /// create news slide for video msg
-  void addVideoSlide(
+  Future<bool> addVideoSlide(
     String body,
-    String url,
-    int? secs,
-    int? height,
-    int? width,
-    String? mimetype,
+    String uri,
+    String mimetype,
     int? size,
+    int? secs,
+    int? width,
+    int? height,
     String? blurhash,
   ) {
     final tmp1 = body;
-    final tmp5 = url;
-    final tmp9 = secs;
-    final tmp13 = height;
-    final tmp17 = width;
-    final tmp21 = mimetype;
-    final tmp27 = size;
-    final tmp31 = blurhash;
+    final tmp5 = uri;
+    final tmp9 = mimetype;
+    final tmp13 = size;
+    final tmp17 = secs;
+    final tmp21 = width;
+    final tmp25 = height;
+    final tmp29 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -26725,6 +26895,7 @@ class NewsEntryDraft {
     var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
+    var tmp11 = 0;
     var tmp12 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
@@ -26732,14 +26903,12 @@ class NewsEntryDraft {
     var tmp20 = 0;
     var tmp22 = 0;
     var tmp24 = 0;
-    var tmp25 = 0;
     var tmp26 = 0;
     var tmp28 = 0;
     var tmp30 = 0;
     var tmp32 = 0;
+    var tmp33 = 0;
     var tmp34 = 0;
-    var tmp35 = 0;
-    var tmp36 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -26757,13 +26926,14 @@ class NewsEntryDraft {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
     if (tmp13 == null) {
       tmp14 = 0;
     } else {
@@ -26783,37 +26953,30 @@ class NewsEntryDraft {
     } else {
       tmp22 = 1;
       final tmp23 = tmp21;
-      final tmp23_0 = utf8.encode(tmp23);
-      tmp25 = tmp23_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
-      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
-      tmp24_1.setAll(0, tmp23_0);
-      tmp24 = tmp24_0.address;
-      tmp26 = tmp25;
+      tmp24 = tmp23;
     }
-    if (tmp27 == null) {
-      tmp28 = 0;
+    if (tmp25 == null) {
+      tmp26 = 0;
     } else {
-      tmp28 = 1;
-      final tmp29 = tmp27;
-      tmp30 = tmp29;
+      tmp26 = 1;
+      final tmp27 = tmp25;
+      tmp28 = tmp27;
     }
-    if (tmp31 == null) {
-      tmp32 = 0;
+    if (tmp29 == null) {
+      tmp30 = 0;
     } else {
-      tmp32 = 1;
-      final tmp33 = tmp31;
-      final tmp33_0 = utf8.encode(tmp33);
-      tmp35 = tmp33_0.length;
+      tmp30 = 1;
+      final tmp31 = tmp29;
+      final tmp31_0 = utf8.encode(tmp31);
+      tmp33 = tmp31_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp34_0 = _api.__allocate(tmp35 * 1, 1);
-      final Uint8List tmp34_1 = tmp34_0.asTypedList(tmp35);
-      tmp34_1.setAll(0, tmp33_0);
-      tmp34 = tmp34_0.address;
-      tmp36 = tmp35;
+      final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
+      final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
+      tmp32_1.setAll(0, tmp31_0);
+      tmp32 = tmp32_0.address;
+      tmp34 = tmp33;
     }
-    _api._newsEntryDraftAddVideoSlide(
+    final tmp35 = _api._newsEntryDraftAddVideoSlide(
       tmp0,
       tmp2,
       tmp3,
@@ -26822,6 +26985,7 @@ class NewsEntryDraft {
       tmp7,
       tmp8,
       tmp10,
+      tmp11,
       tmp12,
       tmp14,
       tmp16,
@@ -26829,29 +26993,34 @@ class NewsEntryDraft {
       tmp20,
       tmp22,
       tmp24,
-      tmp25,
       tmp26,
       tmp28,
       tmp30,
       tmp32,
+      tmp33,
       tmp34,
-      tmp35,
-      tmp36,
     );
-    return;
+    final tmp37 = tmp35;
+    final ffi.Pointer<ffi.Void> tmp37_0 = ffi.Pointer.fromAddress(tmp37);
+    final tmp37_1 =
+        _Box(_api, tmp37_0, "__NewsEntryDraft_add_video_slide_future_drop");
+    tmp37_1._finalizer = _api._registerFinalizer(tmp37_1);
+    final tmp36 =
+        _nativeFuture(tmp37_1, _api.__newsEntryDraftAddVideoSlideFuturePoll);
+    return tmp36;
   }
 
   /// create news slide for file msg
-  void addFileSlide(
+  Future<bool> addFileSlide(
     String body,
-    String url,
-    String? mimetype,
+    String uri,
+    String mimetype,
     int? size,
   ) {
     final tmp1 = body;
-    final tmp5 = url;
+    final tmp5 = uri;
     final tmp9 = mimetype;
-    final tmp15 = size;
+    final tmp13 = size;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -26860,11 +27029,10 @@ class NewsEntryDraft {
     var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
+    var tmp11 = 0;
     var tmp12 = 0;
-    var tmp13 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
-    var tmp18 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -26882,28 +27050,22 @@ class NewsEntryDraft {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      final tmp11_0 = utf8.encode(tmp11);
-      tmp13 = tmp11_0.length;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-      tmp12_1.setAll(0, tmp11_0);
-      tmp12 = tmp12_0.address;
-      tmp14 = tmp13;
-    }
-    if (tmp15 == null) {
-      tmp16 = 0;
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    if (tmp13 == null) {
+      tmp14 = 0;
     } else {
-      tmp16 = 1;
-      final tmp17 = tmp15;
-      tmp18 = tmp17;
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
     }
-    _api._newsEntryDraftAddFileSlide(
+    final tmp17 = _api._newsEntryDraftAddFileSlide(
       tmp0,
       tmp2,
       tmp3,
@@ -26912,13 +27074,19 @@ class NewsEntryDraft {
       tmp7,
       tmp8,
       tmp10,
+      tmp11,
       tmp12,
-      tmp13,
       tmp14,
       tmp16,
-      tmp18,
     );
-    return;
+    final tmp19 = tmp17;
+    final ffi.Pointer<ffi.Void> tmp19_0 = ffi.Pointer.fromAddress(tmp19);
+    final tmp19_1 =
+        _Box(_api, tmp19_0, "__NewsEntryDraft_add_file_slide_future_drop");
+    tmp19_1._finalizer = _api._registerFinalizer(tmp19_1);
+    final tmp18 =
+        _nativeFuture(tmp19_1, _api.__newsEntryDraftAddFileSlideFuturePoll);
+    return tmp18;
   }
 
   /// clear slides
@@ -32183,14 +32351,14 @@ class Convo {
     String uri,
     String name,
     String mimetype,
-    int? secs,
     int? size,
+    int? secs,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
     final tmp9 = mimetype;
-    final tmp13 = secs;
-    final tmp17 = size;
+    final tmp13 = size;
+    final tmp17 = secs;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -32310,15 +32478,15 @@ class Convo {
     String uri,
     String name,
     String mimetype,
-    int? secs,
     int? size,
+    int? secs,
   ) {
     final tmp1 = eventId;
     final tmp5 = uri;
     final tmp9 = name;
     final tmp13 = mimetype;
-    final tmp17 = secs;
-    final tmp21 = size;
+    final tmp17 = size;
+    final tmp21 = secs;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -32417,19 +32585,19 @@ class Convo {
     String uri,
     String name,
     String mimetype,
-    int? secs,
-    int? height,
-    int? width,
     int? size,
+    int? secs,
+    int? width,
+    int? height,
     String? blurhash,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
     final tmp9 = mimetype;
-    final tmp13 = secs;
-    final tmp17 = height;
+    final tmp13 = size;
+    final tmp17 = secs;
     final tmp21 = width;
-    final tmp25 = size;
+    final tmp25 = height;
     final tmp29 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -32594,19 +32762,19 @@ class Convo {
     String uri,
     String name,
     String mimetype,
-    int? secs,
-    int? height,
-    int? width,
     int? size,
+    int? secs,
+    int? width,
+    int? height,
   ) {
     final tmp1 = eventId;
     final tmp5 = uri;
     final tmp9 = name;
     final tmp13 = mimetype;
-    final tmp17 = secs;
-    final tmp21 = height;
+    final tmp17 = size;
+    final tmp21 = secs;
     final tmp25 = width;
-    final tmp29 = size;
+    final tmp29 = height;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -34923,15 +35091,15 @@ class AttachmentsManager {
   AttachmentDraft audioAttachmentDraft(
     String body,
     String url,
-    int? secs,
     String? mimetype,
     int? size,
+    int? secs,
   ) {
     final tmp1 = body;
     final tmp5 = url;
-    final tmp9 = secs;
-    final tmp13 = mimetype;
-    final tmp19 = size;
+    final tmp9 = mimetype;
+    final tmp15 = size;
+    final tmp19 = secs;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -34941,9 +35109,9 @@ class AttachmentsManager {
     var tmp8 = 0;
     var tmp10 = 0;
     var tmp12 = 0;
+    var tmp13 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
-    var tmp17 = 0;
     var tmp18 = 0;
     var tmp20 = 0;
     var tmp22 = 0;
@@ -34969,20 +35137,20 @@ class AttachmentsManager {
     } else {
       tmp10 = 1;
       final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      final tmp15_0 = utf8.encode(tmp15);
-      tmp17 = tmp15_0.length;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
-      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
-      tmp16_1.setAll(0, tmp15_0);
-      tmp16 = tmp16_0.address;
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
       tmp18 = tmp17;
     }
     if (tmp19 == null) {
@@ -35002,9 +35170,9 @@ class AttachmentsManager {
       tmp8,
       tmp10,
       tmp12,
+      tmp13,
       tmp14,
       tmp16,
-      tmp17,
       tmp18,
       tmp20,
       tmp22,
@@ -35021,20 +35189,20 @@ class AttachmentsManager {
   AttachmentDraft videoAttachmentDraft(
     String body,
     String url,
-    int? secs,
-    int? height,
-    int? width,
     String? mimetype,
     int? size,
+    int? secs,
+    int? width,
+    int? height,
     String? blurhash,
   ) {
     final tmp1 = body;
     final tmp5 = url;
-    final tmp9 = secs;
-    final tmp13 = height;
-    final tmp17 = width;
-    final tmp21 = mimetype;
-    final tmp27 = size;
+    final tmp9 = mimetype;
+    final tmp15 = size;
+    final tmp19 = secs;
+    final tmp23 = width;
+    final tmp27 = height;
     final tmp31 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -35045,13 +35213,13 @@ class AttachmentsManager {
     var tmp8 = 0;
     var tmp10 = 0;
     var tmp12 = 0;
+    var tmp13 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
     var tmp18 = 0;
     var tmp20 = 0;
     var tmp22 = 0;
     var tmp24 = 0;
-    var tmp25 = 0;
     var tmp26 = 0;
     var tmp28 = 0;
     var tmp30 = 0;
@@ -35081,34 +35249,34 @@ class AttachmentsManager {
     } else {
       tmp10 = 1;
       final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      tmp16 = tmp15;
-    }
-    if (tmp17 == null) {
-      tmp18 = 0;
-    } else {
-      tmp18 = 1;
-      final tmp19 = tmp17;
-      tmp20 = tmp19;
-    }
-    if (tmp21 == null) {
-      tmp22 = 0;
-    } else {
-      tmp22 = 1;
-      final tmp23 = tmp21;
-      final tmp23_0 = utf8.encode(tmp23);
-      tmp25 = tmp23_0.length;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
-      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
-      tmp24_1.setAll(0, tmp23_0);
-      tmp24 = tmp24_0.address;
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
+      tmp18 = tmp17;
+    }
+    if (tmp19 == null) {
+      tmp20 = 0;
+    } else {
+      tmp20 = 1;
+      final tmp21 = tmp19;
+      tmp22 = tmp21;
+    }
+    if (tmp23 == null) {
+      tmp24 = 0;
+    } else {
+      tmp24 = 1;
+      final tmp25 = tmp23;
       tmp26 = tmp25;
     }
     if (tmp27 == null) {
@@ -35142,13 +35310,13 @@ class AttachmentsManager {
       tmp8,
       tmp10,
       tmp12,
+      tmp13,
       tmp14,
       tmp16,
       tmp18,
       tmp20,
       tmp22,
       tmp24,
-      tmp25,
       tmp26,
       tmp28,
       tmp30,
@@ -47115,6 +47283,51 @@ class _NewsSlideFileBinaryFuturePollReturn extends ffi.Struct {
 }
 
 class _NewsEntryDraftAddImageSlideFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _NewsEntryDraftAddAudioSlideFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _NewsEntryDraftAddVideoSlideFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _NewsEntryDraftAddFileSlideFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

@@ -243,19 +243,19 @@ impl AttachmentsManager {
         body: String,
         url: String,
         mimetype: Option<String>,
-        size: Option<u64>,
-        width: Option<u64>,
-        height: Option<u64>,
+        size: Option<u32>,
+        width: Option<u32>,
+        height: Option<u32>,
         blurhash: Option<String>,
     ) -> Result<AttachmentDraft> {
         let Room::Joined(joined) = &self.room else {
             bail!("Can only attachment in joined rooms");
         };
         let info = assign!(ImageInfo::new(), {
-            height: height.and_then(UInt::new),
-            width: width.and_then(UInt::new),
             mimetype,
-            size: size.and_then(UInt::new),
+            size: size.map(UInt::from),
+            width: width.map(UInt::from),
+            height: height.map(UInt::from),
             blurhash,
         });
         let url = Box::<MxcUri>::from(url.as_str());
@@ -275,17 +275,17 @@ impl AttachmentsManager {
         &self,
         body: String,
         url: String,
-        secs: Option<u64>,
         mimetype: Option<String>,
-        size: Option<u64>,
+        size: Option<u32>,
+        secs: Option<u32>,
     ) -> Result<AttachmentDraft> {
         let Room::Joined(joined) = &self.room else {
             bail!("Can only attachment in joined rooms");
         };
         let info = assign!(AudioInfo::new(), {
-            duration: secs.map(|x| Duration::new(x, 0)),
             mimetype,
-            size: size.and_then(UInt::new),
+            size: size.map(UInt::from),
+            duration: secs.map(|x| Duration::from_secs(x as u64)),
         });
         let url = Box::<MxcUri>::from(url.as_str());
         let mut builder = self.inner.draft_builder();
@@ -305,22 +305,22 @@ impl AttachmentsManager {
         &self,
         body: String,
         url: String,
-        secs: Option<u64>,
-        height: Option<u64>,
-        width: Option<u64>,
         mimetype: Option<String>,
-        size: Option<u64>,
+        size: Option<u32>,
+        secs: Option<u32>,
+        width: Option<u32>,
+        height: Option<u32>,
         blurhash: Option<String>,
     ) -> Result<AttachmentDraft> {
         let Room::Joined(joined) = &self.room else {
             bail!("Can only attachment in joined rooms");
         };
         let info = assign!(VideoInfo::new(), {
-            duration: secs.map(|x| Duration::new(x, 0)),
-            height: height.and_then(UInt::new),
-            width: width.and_then(UInt::new),
             mimetype,
-            size: size.and_then(UInt::new),
+            size: size.map(UInt::from),
+            duration: secs.map(|x| Duration::from_secs(x as u64)),
+            width: width.map(UInt::from),
+            height: height.map(UInt::from),
             blurhash,
         });
         let url = Box::<MxcUri>::from(url.as_str());
