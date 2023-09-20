@@ -2,7 +2,6 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -32,15 +31,6 @@ class PinsPage extends ConsumerWidget {
               gradient: AppTheme.primaryGradient,
             ),
             actions: [
-              IconButton(
-                icon: const Icon(Atlas.funnel_sort_thin),
-                onPressed: () {
-                  customMsgSnackbar(
-                    context,
-                    'Pin filtering not yet implemented',
-                  );
-                },
-              ),
               IconButton(
                 icon: Icon(
                   Atlas.plus_circle_thin,
@@ -74,7 +64,7 @@ class PinsPage extends ConsumerWidget {
                 gridDelegate:
                     SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
                   crossAxisCount: max(1, min(widthCount, minCount)),
-                  height: MediaQuery.of(context).size.height * 0.1,
+                  height: MediaQuery.of(context).size.height * 0.15,
                 ),
                 itemBuilder: (context, index) {
                   final pin = pins[index];

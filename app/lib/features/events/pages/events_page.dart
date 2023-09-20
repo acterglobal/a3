@@ -2,7 +2,6 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
@@ -32,15 +31,6 @@ class EventsPage extends ConsumerWidget {
               gradient: AppTheme.primaryGradient,
             ),
             actions: [
-              IconButton(
-                icon: const Icon(Atlas.funnel_sort_thin),
-                onPressed: () {
-                  customMsgSnackbar(
-                    context,
-                    'Events filtering not yet implemented',
-                  );
-                },
-              ),
               IconButton(
                 icon: Icon(
                   Atlas.plus_circle_thin,

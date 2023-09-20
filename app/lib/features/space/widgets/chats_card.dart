@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'dart:math';
 
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -40,7 +41,7 @@ class ChatsCard extends ConsumerWidget {
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: chats.length > 3 ? 3 : chats.length,
+                    itemCount: min(chats.length, 3),
                     itemBuilder: (context, index) => ConvoCard(
                       room: chats[index],
                       showParent: false,
