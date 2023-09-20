@@ -15,7 +15,7 @@ use matrix_sdk::{
 use std::{ops::Deref, str::FromStr};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::trace;
+use tracing::{error, trace};
 
 use super::{client::Client, common::OptionString, RUNTIME};
 
@@ -78,10 +78,11 @@ pub struct RsvpDraft {
 
 impl RsvpDraft {
     pub fn status(&mut self, status: String) -> &mut Self {
-        let Ok(s) = RsvpStatus::from_str(&status) else {
-            unreachable!("Wrong status about RSVP")
-        };
-        self.inner.status(s);
+        if let Ok(s) = RsvpStatus::from_str(&status) {
+            self.inner.status(s);
+        } else {
+            error!("Wrong status about RSVP");
+        }
         self
     }
 
