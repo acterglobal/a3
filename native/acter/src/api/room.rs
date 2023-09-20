@@ -800,12 +800,10 @@ impl Room {
             .await?
     }
 
-    #[allow(clippy::too_many_arguments)]
     pub async fn send_image_message(
         &self,
         uri: String,
         name: String,
-        mimetype: String,
         size: Option<u32>,
         width: Option<u32>,
         height: Option<u32>,
@@ -830,7 +828,8 @@ impl Room {
             height: height.map(UInt::from),
             blurhash: None,
         }));
-        let mime_type = mimetype.parse::<mime::Mime>()?;
+        let guess = mime_guess::from_path(path.clone());
+        let content_type = guess.first().context("MIME type should be given")?;
 
         RUNTIME
             .spawn(async move {
@@ -843,7 +842,7 @@ impl Room {
                 }
                 let image_buf = std::fs::read(path).context("File should be read")?;
                 let response = room
-                    .send_attachment(name.as_str(), &mime_type, image_buf, config)
+                    .send_attachment(name.as_str(), &content_type, image_buf, config)
                     .await?;
                 Ok(response.event_id)
             })
@@ -881,13 +880,11 @@ impl Room {
             .await?
     }
 
-    #[allow(clippy::too_many_arguments)]
     pub async fn edit_image_message(
         &self,
         event_id: String,
         uri: String,
         name: String,
-        mimetype: String,
         size: Option<u32>,
         width: Option<u32>,
         height: Option<u32>,
@@ -917,7 +914,7 @@ impl Room {
                 }
 
                 let path = PathBuf::from(uri);
-                let mut image_buf = std::fs::read(path)?;
+                let mut image_buf = std::fs::read(path.clone())?;
 
                 let timeline_event = room.event(&event_id).await?;
                 let event_content = timeline_event
@@ -935,11 +932,13 @@ impl Room {
                     bail!("Can't edit an event not sent by own user");
                 }
 
-                let content_type: mime::Mime = mimetype.parse()?;
+                let guess = mime_guess::from_path(path);
+                let content_type = guess.first().context("MIME type should be given")?;
+                let mimetype = Some(content_type.to_string());
                 let response = client.media().upload(&content_type, image_buf).await?;
 
                 let info = assign!(ImageInfo::new(), {
-                    mimetype: Some(mimetype),
+                    mimetype,
                     size: size.map(UInt::from),
                     width: width.map(UInt::from),
                     height: height.map(UInt::from),
@@ -963,7 +962,6 @@ impl Room {
         &self,
         uri: String,
         name: String,
-        mimetype: String,
         size: Option<u32>,
         secs: Option<u32>,
     ) -> Result<OwnedEventId> {
@@ -984,7 +982,8 @@ impl Room {
             size: size.map(UInt::from),
             duration: secs.map(|x| Duration::from_secs(x as u64)),
         }));
-        let mime_type = mimetype.parse::<mime::Mime>()?;
+        let guess = mime_guess::from_path(path.clone());
+        let content_type = guess.first().context("MIME type should be given")?;
 
         RUNTIME
             .spawn(async move {
@@ -997,7 +996,7 @@ impl Room {
                 }
                 let audio_buf = std::fs::read(path).context("File should be read")?;
                 let response = room
-                    .send_attachment(name.as_str(), &mime_type, audio_buf, config)
+                    .send_attachment(name.as_str(), &content_type, audio_buf, config)
                     .await?;
                 Ok(response.event_id)
             })
@@ -1035,13 +1034,11 @@ impl Room {
             .await?
     }
 
-    #[allow(clippy::too_many_arguments)]
     pub async fn edit_audio_message(
         &self,
         event_id: String,
         uri: String,
         name: String,
-        mimetype: String,
         size: Option<u32>,
         secs: Option<u32>,
     ) -> Result<OwnedEventId> {
@@ -1070,7 +1067,7 @@ impl Room {
                 }
 
                 let path = PathBuf::from(uri);
-                let mut audio_buf = std::fs::read(path)?;
+                let mut audio_buf = std::fs::read(path.clone())?;
 
                 let timeline_event = room.event(&event_id).await?;
                 let event_content = timeline_event
@@ -1088,11 +1085,13 @@ impl Room {
                     bail!("Can't edit an event not sent by own user");
                 }
 
-                let content_type: mime::Mime = mimetype.parse()?;
+                let guess = mime_guess::from_path(path);
+                let content_type = guess.first().context("MIME type should be given")?;
+                let mimetype = Some(content_type.to_string());
                 let response = client.media().upload(&content_type, audio_buf).await?;
 
                 let info = assign!(AudioInfo::new(), {
-                    mimetype: Some(mimetype),
+                    mimetype,
                     size: size.map(UInt::from),
                     duration: secs.map(|x| Duration::from_secs(x as u64)),
                 });
@@ -1116,7 +1115,6 @@ impl Room {
         &self,
         uri: String,
         name: String,
-        mimetype: String,
         size: Option<u32>,
         secs: Option<u32>,
         width: Option<u32>,
@@ -1143,7 +1141,8 @@ impl Room {
             height: height.map(UInt::from),
             blurhash,
         }));
-        let mime_type = mimetype.parse::<mime::Mime>()?;
+        let guess = mime_guess::from_path(path.clone());
+        let content_type = guess.first().context("MIME type should be given")?;
 
         RUNTIME
             .spawn(async move {
@@ -1156,7 +1155,7 @@ impl Room {
                 }
                 let video_buf = std::fs::read(path).context("File should be read")?;
                 let response = room
-                    .send_attachment(name.as_str(), &mime_type, video_buf, config)
+                    .send_attachment(name.as_str(), &content_type, video_buf, config)
                     .await?;
                 Ok(response.event_id)
             })
@@ -1200,7 +1199,6 @@ impl Room {
         event_id: String,
         uri: String,
         name: String,
-        mimetype: String,
         size: Option<u32>,
         secs: Option<u32>,
         width: Option<u32>,
@@ -1231,7 +1229,7 @@ impl Room {
                 }
 
                 let path = PathBuf::from(uri);
-                let mut video_buf = std::fs::read(path)?;
+                let mut video_buf = std::fs::read(path.clone())?;
 
                 let timeline_event = room.event(&event_id).await?;
                 let event_content = timeline_event
@@ -1249,11 +1247,13 @@ impl Room {
                     bail!("Can't edit an event not sent by own user");
                 }
 
-                let content_type: mime::Mime = mimetype.parse()?;
+                let guess = mime_guess::from_path(path);
+                let content_type = guess.first().context("MIME type should be given")?;
+                let mimetype = Some(content_type.to_string());
                 let response = client.media().upload(&content_type, video_buf).await?;
 
                 let info = assign!(VideoInfo::new(), {
-                    mimetype: Some(mimetype),
+                    mimetype,
                     size: size.map(UInt::from),
                     duration: secs.map(|x| Duration::from_secs(x as u64)),
                     width: width.map(UInt::from),
@@ -1278,7 +1278,6 @@ impl Room {
         &self,
         uri: String,
         name: String,
-        mimetype: String,
         size: u32,
     ) -> Result<OwnedEventId> {
         let room = if let SdkRoom::Joined(r) = &self.room {
@@ -1297,7 +1296,8 @@ impl Room {
         let config = AttachmentConfig::new().info(AttachmentInfo::File(BaseFileInfo {
             size: Some(UInt::from(size)),
         }));
-        let mime_type = mimetype.parse::<mime::Mime>()?;
+        let guess = mime_guess::from_path(path.clone());
+        let content_type = guess.first().context("MIME type should be given")?;
 
         RUNTIME
             .spawn(async move {
@@ -1310,7 +1310,7 @@ impl Room {
                 }
                 let file_buf = std::fs::read(path).context("File should be read")?;
                 let response = room
-                    .send_attachment(name.as_str(), &mime_type, file_buf, config)
+                    .send_attachment(name.as_str(), &content_type, file_buf, config)
                     .await?;
                 Ok(response.event_id)
             })
@@ -1353,7 +1353,6 @@ impl Room {
         event_id: String,
         uri: String,
         name: String,
-        mimetype: String,
         size: Option<u32>,
     ) -> Result<OwnedEventId> {
         let room = if let SdkRoom::Joined(r) = &self.room {
@@ -1381,7 +1380,7 @@ impl Room {
                 }
 
                 let path = PathBuf::from(uri);
-                let mut file_buf = std::fs::read(path)?;
+                let mut file_buf = std::fs::read(path.clone())?;
 
                 let timeline_event = room.event(&event_id).await?;
                 let event_content = timeline_event
@@ -1399,11 +1398,13 @@ impl Room {
                     bail!("Can't edit an event not sent by own user");
                 }
 
-                let content_type: mime::Mime = mimetype.parse()?;
+                let guess = mime_guess::from_path(path);
+                let content_type = guess.first().context("MIME type should be given")?;
+                let mimetype = Some(content_type.to_string());
                 let response = client.media().upload(&content_type, file_buf).await?;
 
                 let info = assign!(FileInfo::new(), {
-                    mimetype: Some(mimetype),
+                    mimetype,
                     size: size.map(UInt::from),
                 });
                 let mut file_content = FileMessageEventContent::plain(name, response.content_uri);
@@ -2056,7 +2057,6 @@ impl Room {
         &self,
         uri: String,
         name: String,
-        mimetype: String,
         size: Option<u32>,
         width: Option<u32>,
         height: Option<u32>,
@@ -2073,12 +2073,14 @@ impl Room {
 
         let path = PathBuf::from(uri);
         let event_id = EventId::parse(event_id)?;
-        let content_type = mimetype.parse::<mime::Mime>()?;
+        let guess = mime_guess::from_path(path.clone());
+        let content_type = guess.first().context("MIME type should be given")?;
+        let mimetype = Some(content_type.to_string());
         let info = assign!(ImageInfo::new(), {
-            height: height.map(UInt::from),
-            width: width.map(UInt::from),
-            mimetype: Some(mimetype),
+            mimetype,
             size: size.map(UInt::from),
+            width: width.map(UInt::from),
+            height: height.map(UInt::from),
         });
 
         RUNTIME
@@ -2116,14 +2118,12 @@ impl Room {
             .await?
     }
 
-    #[allow(clippy::too_many_arguments)]
     pub async fn send_audio_reply(
         &self,
         uri: String,
         name: String,
-        mimetype: String,
-        secs: Option<u32>,
         size: Option<u32>,
+        secs: Option<u32>,
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
@@ -2137,9 +2137,11 @@ impl Room {
 
         let path = PathBuf::from(uri);
         let event_id = EventId::parse(event_id)?;
-        let content_type = mimetype.parse::<mime::Mime>()?;
+        let guess = mime_guess::from_path(path.clone());
+        let content_type = guess.first().context("MIME type should be given")?;
+        let mimetype = Some(content_type.to_string());
         let info = assign!(AudioInfo::new(), {
-            mimetype: Some(mimetype),
+            mimetype,
             duration: secs.map(|x| Duration::from_secs(x as u64)),
             size: size.map(UInt::from),
         });
@@ -2184,11 +2186,10 @@ impl Room {
         &self,
         uri: String,
         name: String,
-        mimetype: String,
+        size: Option<u32>,
         secs: Option<u32>,
         width: Option<u32>,
         height: Option<u32>,
-        size: Option<u32>,
         blurhash: Option<String>,
         event_id: String,
         txn_id: Option<String>,
@@ -2203,12 +2204,14 @@ impl Room {
 
         let path = PathBuf::from(uri);
         let event_id = EventId::parse(event_id)?;
-        let content_type = mimetype.parse::<mime::Mime>()?;
+        let guess = mime_guess::from_path(path.clone());
+        let content_type = guess.first().context("MIME type should be given")?;
+        let mimetype = Some(content_type.to_string());
         let info = assign!(VideoInfo::new(), {
             duration: secs.map(|x| Duration::from_secs(x as u64)),
             height: height.map(UInt::from),
             width: width.map(UInt::from),
-            mimetype: Some(mimetype),
+            mimetype,
             size: size.map(UInt::from),
             blurhash,
         });
@@ -2252,7 +2255,6 @@ impl Room {
         &self,
         uri: String,
         name: String,
-        mimetype: String,
         size: Option<u32>,
         event_id: String,
         txn_id: Option<String>,
@@ -2267,9 +2269,11 @@ impl Room {
 
         let path = PathBuf::from(uri);
         let event_id = EventId::parse(event_id)?;
-        let content_type = mimetype.parse::<mime::Mime>()?;
+        let guess = mime_guess::from_path(path.clone());
+        let content_type = guess.first().context("MIME type should be given")?;
+        let mimetype = Some(content_type.to_string());
         let info = assign!(FileInfo::new(), {
-            mimetype: Some(mimetype),
+            mimetype,
             size: size.map(UInt::from),
         });
 

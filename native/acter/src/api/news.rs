@@ -398,12 +398,10 @@ impl NewsEntryDraft {
         self
     }
 
-    #[allow(clippy::too_many_arguments)]
     pub async fn add_image_slide(
         &mut self,
         body: String,
         uri: String,
-        mimetype: String,
         size: Option<u32>,
         width: Option<u32>,
         height: Option<u32>,
@@ -414,27 +412,29 @@ impl NewsEntryDraft {
         let room = self.room.clone();
 
         let path = PathBuf::from(uri);
-        let mime_type = mimetype.parse::<mime::Mime>()?;
+        let guess = mime_guess::from_path(path.clone());
+        let content_type = guess.first().context("MIME type should be given")?;
+        let mimetype = Some(content_type.to_string());
         let mut image_content = RUNTIME
             .spawn(async move {
                 if room.is_encrypted().await? {
                     let mut reader = std::fs::File::open(path)?;
                     let encrypted_file = client
-                        .prepare_encrypted_file(&mime_type, &mut reader)
+                        .prepare_encrypted_file(&content_type, &mut reader)
                         .await?;
                     anyhow::Ok(ImageMessageEventContent::encrypted(body, encrypted_file))
                 } else {
                     let data = std::fs::read(path)?;
-                    let upload_resp = client.media().upload(&mime_type, data).await?;
+                    let response = client.media().upload(&content_type, data).await?;
                     anyhow::Ok(ImageMessageEventContent::plain(
                         body,
-                        upload_resp.content_uri,
+                        response.content_uri,
                     ))
                 }
             })
             .await??;
         let info = assign!(ImageInfo::new(), {
-            mimetype: Some(mimetype),
+            mimetype,
             size: size.map(UInt::from),
             width: width.map(UInt::from),
             height: height.map(UInt::from),
@@ -457,7 +457,6 @@ impl NewsEntryDraft {
         &mut self,
         body: String,
         uri: String,
-        mimetype: String,
         secs: Option<u32>,
         size: Option<u32>,
     ) -> Result<bool> {
@@ -466,27 +465,29 @@ impl NewsEntryDraft {
         let room = self.room.clone();
 
         let path = PathBuf::from(uri);
-        let mime_type = mimetype.parse::<mime::Mime>()?;
+        let guess = mime_guess::from_path(path.clone());
+        let content_type = guess.first().context("MIME type should be given")?;
+        let mimetype = Some(content_type.to_string());
         let mut audio_content = RUNTIME
             .spawn(async move {
                 if room.is_encrypted().await? {
                     let mut reader = std::fs::File::open(path)?;
                     let encrypted_file = client
-                        .prepare_encrypted_file(&mime_type, &mut reader)
+                        .prepare_encrypted_file(&content_type, &mut reader)
                         .await?;
                     anyhow::Ok(AudioMessageEventContent::encrypted(body, encrypted_file))
                 } else {
                     let data = std::fs::read(path)?;
-                    let upload_resp = client.media().upload(&mime_type, data).await?;
+                    let response = client.media().upload(&content_type, data).await?;
                     anyhow::Ok(AudioMessageEventContent::plain(
                         body,
-                        upload_resp.content_uri,
+                        response.content_uri,
                     ))
                 }
             })
             .await??;
         let info = assign!(AudioInfo::new(), {
-            mimetype: Some(mimetype),
+            mimetype,
             size: size.map(UInt::from),
             duration: secs.map(|x| Duration::from_secs(x as u64)),
         });
@@ -508,7 +509,6 @@ impl NewsEntryDraft {
         &mut self,
         body: String,
         uri: String,
-        mimetype: String,
         size: Option<u32>,
         secs: Option<u32>,
         width: Option<u32>,
@@ -520,27 +520,29 @@ impl NewsEntryDraft {
         let room = self.room.clone();
 
         let path = PathBuf::from(uri);
-        let mime_type = mimetype.parse::<mime::Mime>()?;
+        let guess = mime_guess::from_path(path.clone());
+        let content_type = guess.first().context("MIME type should be given")?;
+        let mimetype = Some(content_type.to_string());
         let mut video_content = RUNTIME
             .spawn(async move {
                 if room.is_encrypted().await? {
                     let mut reader = std::fs::File::open(path)?;
                     let encrypted_file = client
-                        .prepare_encrypted_file(&mime_type, &mut reader)
+                        .prepare_encrypted_file(&content_type, &mut reader)
                         .await?;
                     anyhow::Ok(VideoMessageEventContent::encrypted(body, encrypted_file))
                 } else {
                     let data = std::fs::read(path)?;
-                    let upload_resp = client.media().upload(&mime_type, data).await?;
+                    let response = client.media().upload(&content_type, data).await?;
                     anyhow::Ok(VideoMessageEventContent::plain(
                         body,
-                        upload_resp.content_uri,
+                        response.content_uri,
                     ))
                 }
             })
             .await??;
         let info = assign!(VideoInfo::new(), {
-            mimetype: Some(mimetype),
+            mimetype,
             size: size.map(UInt::from),
             duration: secs.map(|x| Duration::from_secs(x as u64)),
             width: width.map(UInt::from),
@@ -563,7 +565,6 @@ impl NewsEntryDraft {
         &mut self,
         body: String,
         uri: String,
-        mimetype: String,
         size: Option<u32>,
     ) -> Result<bool> {
         trace!("add file slide");
@@ -571,27 +572,29 @@ impl NewsEntryDraft {
         let room = self.room.clone();
 
         let path = PathBuf::from(uri);
-        let mime_type = mimetype.parse::<mime::Mime>()?;
+        let guess = mime_guess::from_path(path.clone());
+        let content_type = guess.first().context("MIME type should be given")?;
+        let mimetype = Some(content_type.to_string());
         let mut file_content = RUNTIME
             .spawn(async move {
                 if room.is_encrypted().await? {
                     let mut reader = std::fs::File::open(path)?;
                     let encrypted_file = client
-                        .prepare_encrypted_file(&mime_type, &mut reader)
+                        .prepare_encrypted_file(&content_type, &mut reader)
                         .await?;
                     anyhow::Ok(FileMessageEventContent::encrypted(body, encrypted_file))
                 } else {
                     let data = std::fs::read(path)?;
-                    let upload_resp = client.media().upload(&mime_type, data).await?;
+                    let response = client.media().upload(&content_type, data).await?;
                     anyhow::Ok(FileMessageEventContent::plain(
                         body,
-                        upload_resp.content_uri,
+                        response.content_uri,
                     ))
                 }
             })
             .await??;
         let info = assign!(FileInfo::new(), {
-            mimetype: Some(mimetype),
+            mimetype,
             size: size.map(UInt::from),
         });
         file_content.info = Some(Box::new(info));

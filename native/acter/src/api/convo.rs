@@ -358,14 +358,14 @@ impl Client {
                         let guess = mime_guess::from_path(path.clone());
                         let content_type = guess.first().expect("MIME type should be given");
                         let buf = std::fs::read(path).expect("File should be read");
-                        let upload_resp = client.media().upload(&content_type, buf).await?;
+                        let response = client.media().upload(&content_type, buf).await?;
 
                         let info = assign!(ImageInfo::new(), {
-                            blurhash: upload_resp.blurhash,
+                            blurhash: response.blurhash,
                             mimetype: Some(content_type.to_string()),
                         });
                         assign!(RoomAvatarEventContent::new(), {
-                            url: Some(upload_resp.content_uri),
+                            url: Some(response.content_uri),
                             info: Some(Box::new(info)),
                         })
                     };
