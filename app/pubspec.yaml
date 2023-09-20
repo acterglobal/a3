@@ -82,10 +82,6 @@ dependencies:
   go_router: ^10.0.0
 
   # widgets
-  table_calendar:
-    git:
-      url: https://github.com/acterglobal/table_calendar.git
-
   settings_ui: '2.0.2'
 
   # Utilities

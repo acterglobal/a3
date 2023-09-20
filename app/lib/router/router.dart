@@ -5,6 +5,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/activities/pages/activities_page.dart';
+import 'package:acter/features/events/pages/events_page.dart';
 import 'package:acter/features/settings/pages/blocked_users.dart';
 import 'package:acter/features/settings/pages/sessions_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
@@ -499,6 +500,19 @@ List<RouteBase> makeRoutes(Ref ref) {
             return NoTransitionPage(
               key: state.pageKey,
               child: PinPage(pinId: state.pathParameters['pinId']!),
+            );
+          },
+        ),
+
+        GoRoute(
+          parentNavigatorKey: shellNavKey,
+          name: Routes.calendarEvents.name,
+          path: Routes.calendarEvents.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: const EventsPage(),
             );
           },
         ),

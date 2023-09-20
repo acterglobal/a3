@@ -240,34 +240,34 @@ pub enum AnyActerModel {
     RedactedActerModel,
 
     // -- Calendar
-    CalendarEvent,
-    CalendarEventUpdate,
+    CalendarEvent(CalendarEvent),
+    CalendarEventUpdate(CalendarEventUpdate),
 
     // -- Tasks
-    TaskList,
-    TaskListUpdate,
-    Task,
-    TaskUpdate,
+    TaskList(TaskList),
+    TaskListUpdate(TaskListUpdate),
+    Task(Task),
+    TaskUpdate(TaskUpdate),
 
     // -- Pins
-    Pin,
-    PinUpdate,
+    Pin(Pin),
+    PinUpdate(PinUpdate),
 
     // -- News
-    NewsEntry,
-    NewsEntryUpdate,
+    NewsEntry(NewsEntry),
+    NewsEntryUpdate(NewsEntryUpdate),
 
     // -- more generics
-    Comment,
-    CommentUpdate,
+    Comment(Comment),
+    CommentUpdate(CommentUpdate),
 
-    Attachment,
-    AttachmentUpdate,
+    Attachment(Attachment),
+    AttachmentUpdate(AttachmentUpdate),
 
-    Rsvp,
+    Rsvp(Rsvp),
 
     #[cfg(test)]
-    TestModel,
+    TestModel(TestModel),
 }
 
 impl TryFrom<AnyActerEvent> for AnyActerModel {

@@ -3,6 +3,7 @@ enum Routes {
   actionAddTask('/actions/addTask'),
   actionAddTaskList('/actions/addTaskList'),
   actionAddPin('/actions/addPin'),
+  actionAddEvent('/actions/addEvent'),
   actionAddUpdate('/actions/addUpdate'),
 
   // --- Auth
@@ -56,6 +57,7 @@ enum Routes {
   editPin('/pins/:pinId/edit'),
 
   // -- events
+  calendarEvents('/events'),
   createEvent('/events/create'),
   calendarEvent('/events/:calendarId'),
   editCalendarEvent('/events/:calendarId/edit'),

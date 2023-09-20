@@ -1,4 +1,3 @@
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/common/themes/app_theme.dart';
@@ -23,7 +22,9 @@ class TasksPage extends ConsumerWidget {
         slivers: <Widget>[
           PageHeaderWidget(
             title: 'Tasks',
-            sectionColor: Theme.of(context).colorScheme.tasksBG,
+            sectionDecoration: const BoxDecoration(
+              gradient: AppTheme.primaryGradient,
+            ),
             actions: [
               // IconButton(
               //   icon: const Icon(Atlas.funnel_sort_thin),
