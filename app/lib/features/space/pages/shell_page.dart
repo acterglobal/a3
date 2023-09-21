@@ -96,18 +96,6 @@ class _ShellToolbar extends ConsumerWidget {
           ),
         );
       }
-
-      if (membership.canString('CanInvite')) {
-        submenu.add(
-          PopupMenuItem(
-            onTap: () => context.pushNamed(
-              Routes.spaceInvite.name,
-              pathParameters: {'spaceId': spaceId},
-            ),
-            child: const Text('Invite Users'),
-          ),
-        );
-      }
     }
 
     if (submenu.isNotEmpty) {
@@ -205,8 +193,8 @@ class _ShellHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    return Padding(
+      padding: const EdgeInsets.only(left: 10),
       child: Row(
         children: <Widget>[
           SpaceParentBadge(
@@ -257,10 +245,10 @@ class _ShellHeader extends ConsumerWidget {
           members = members.sublist(0, 5);
         }
         return Padding(
-          padding: const EdgeInsets.only(left: 14),
+          padding: const EdgeInsets.only(left: 10),
           child: Wrap(
             direction: Axis.horizontal,
-            spacing: -6,
+            spacing: -12,
             children: [
               ...members.map(
                 (a) => MemberAvatar(member: a),

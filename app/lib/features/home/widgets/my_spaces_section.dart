@@ -20,65 +20,61 @@ class MySpacesSection extends ConsumerWidget {
 
     int spacesLimit =
         (limit != null && spaces.length > limit!) ? limit! : spaces.length;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'My Spaces',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 10),
-          spaces.isEmpty
-              ? const _NoSpacesWidget()
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: spacesLimit,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return SpaceCard(space: spaces[index]);
-                      },
-                    ),
-                    spacesLimit != spaces.length
-                        ? Padding(
-                            padding: const EdgeInsets.only(top: 10),
-                            child: DefaultButton(
-                              onPressed: () {
-                                context.pushNamed(Routes.spaces.name);
-                              },
-                              title: 'See all my ${spaces.length} spaces',
-                              isOutlined: true,
-                            ),
-                          )
-                        : Padding(
-                            padding: const EdgeInsets.only(top: 10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                DefaultButton(
-                                  onPressed: () => context
-                                      .pushNamed(Routes.createSpace.name),
-                                  title: 'Create Space',
-                                  isOutlined: true,
-                                ),
-                                const SizedBox(height: 10),
-                                DefaultButton(
-                                  onPressed: () =>
-                                      context.pushNamed(Routes.joinSpace.name),
-                                  title: 'Join Space',
-                                  isOutlined: true,
-                                ),
-                              ],
-                            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'My Spaces',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        spaces.isEmpty
+            ? const _NoSpacesWidget()
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: spacesLimit,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      return SpaceCard(space: spaces[index]);
+                    },
+                  ),
+                  spacesLimit != spaces.length
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: DefaultButton(
+                            onPressed: () {
+                              context.pushNamed(Routes.spaces.name);
+                            },
+                            title: 'See all my ${spaces.length} spaces',
+                            isOutlined: true,
                           ),
-                  ],
-                ),
-        ],
-      ),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.only(top: 10, left: 8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              DefaultButton(
+                                onPressed: () =>
+                                    context.pushNamed(Routes.createSpace.name),
+                                title: 'Create Space',
+                                isOutlined: true,
+                              ),
+                              const SizedBox(height: 10),
+                              DefaultButton(
+                                onPressed: () =>
+                                    context.pushNamed(Routes.joinSpace.name),
+                                title: 'Join Space',
+                                isOutlined: true,
+                              ),
+                            ],
+                          ),
+                        ),
+                ],
+              ),
+      ],
     );
   }
 }
