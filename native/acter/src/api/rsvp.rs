@@ -1,6 +1,7 @@
 use acter_core::{
     events::rsvp::{RsvpBuilder, RsvpStatus},
     models::{self, ActerModel, AnyActerModel, Color},
+    statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
@@ -15,9 +16,9 @@ use matrix_sdk::{
 use std::{ops::Deref, str::FromStr};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::{error, trace};
+use tracing::{error, trace, warn};
 
-use super::{client::Client, common::OptionString, RUNTIME};
+use super::{calendar_events::CalendarEvent, client::Client, common::OptionString, RUNTIME};
 
 impl Client {
     pub async fn wait_for_rsvp(&self, key: String, timeout: Option<Box<Duration>>) -> Result<Rsvp> {
@@ -37,6 +38,140 @@ impl Client {
                     room,
                     inner: rsvp,
                 })
+            })
+            .await?
+    }
+
+    pub async fn all_upcoming_events(
+        &self,
+        secs_from_now: Option<u32>,
+    ) -> Result<Vec<CalendarEvent>> {
+        let client = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let mut cal_events = vec![];
+                for mdl in client.store().get_list(KEYS::CALENDAR).await? {
+                    if let AnyActerModel::CalendarEvent(inner) = mdl {
+                        let now = chrono::Utc::now();
+                        let start_time = inner.utc_start();
+                        if now > start_time {
+                            // skip past events
+                            continue;
+                        }
+                        if let Some(secs) = secs_from_now {
+                            if start_time > now + chrono::Duration::seconds(secs as i64) {
+                                // skip too far events
+                                continue;
+                            }
+                        }
+                        let room = client
+                            .get_room(inner.room_id())
+                            .context("Room of calendar event not found")?;
+                        let cal_event = CalendarEvent::new(client.clone(), room, inner);
+                        cal_events.push(cal_event);
+                    } else {
+                        warn!(
+                            "Non calendar_event model found in `calendar_events` index: {:?}",
+                            mdl
+                        );
+                    }
+                }
+                Ok(cal_events)
+            })
+            .await?
+    }
+
+    pub async fn my_upcoming_events(
+        &self,
+        secs_from_now: Option<u32>,
+    ) -> Result<Vec<CalendarEvent>> {
+        let client = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let mut cal_events = vec![];
+                for mdl in client.store().get_list(KEYS::CALENDAR).await? {
+                    if let AnyActerModel::CalendarEvent(inner) = mdl {
+                        let now = chrono::Utc::now();
+                        let start_time = inner.utc_start();
+                        if now > start_time {
+                            // skip past events
+                            continue;
+                        }
+                        if let Some(secs) = secs_from_now {
+                            if start_time > now + chrono::Duration::seconds(secs as i64) {
+                                // skip too far events
+                                continue;
+                            }
+                        }
+                        let room = client
+                            .get_room(inner.room_id())
+                            .context("Room of calendar event not found")?;
+                        let cal_event = CalendarEvent::new(client.clone(), room, inner);
+                        // fliter only events that i sent rsvp
+                        let rsvp_manager = cal_event.rsvp_manager().await?;
+                        let status = rsvp_manager.my_status().await?;
+                        if let Some(status) = status.text() {
+                            match status.as_str() {
+                                "Yes" | "Maybe" => {
+                                    cal_events.push(cal_event);
+                                }
+                                _ => {}
+                            }
+                        }
+                    } else {
+                        warn!(
+                            "Non calendar_event model found in `calendar_events` index: {:?}",
+                            mdl
+                        );
+                    }
+                }
+                Ok(cal_events)
+            })
+            .await?
+    }
+
+    pub async fn my_past_events(&self, secs_from_now: Option<u32>) -> Result<Vec<CalendarEvent>> {
+        let client = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let mut cal_events = vec![];
+                for mdl in client.store().get_list(KEYS::CALENDAR).await? {
+                    if let AnyActerModel::CalendarEvent(inner) = mdl {
+                        let now = chrono::Utc::now();
+                        let start_time = inner.utc_start();
+                        if start_time > now {
+                            // skip upcoming events
+                            continue;
+                        }
+                        if let Some(secs) = secs_from_now {
+                            if start_time < now - chrono::Duration::seconds(secs as i64) {
+                                // skip too far events
+                                continue;
+                            }
+                        }
+                        let room = client
+                            .get_room(inner.room_id())
+                            .context("Room of calendar event not found")?;
+                        let cal_event = CalendarEvent::new(client.clone(), room, inner);
+                        // fliter only events that i sent rsvp
+                        let rsvp_manager = cal_event.rsvp_manager().await?;
+                        let status = rsvp_manager.my_status().await?;
+                        if let Some(status) = status.text() {
+                            match status.as_str() {
+                                "Yes" | "Maybe" => {
+                                    cal_events.push(cal_event);
+                                }
+                                _ => {}
+                            }
+                        }
+                    } else {
+                        warn!(
+                            "Non calendar_event model found in `calendar_events` index: {:?}",
+                            mdl
+                        );
+                    }
+                }
+                Ok(cal_events)
             })
             .await?
     }

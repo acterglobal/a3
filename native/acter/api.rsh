@@ -1926,6 +1926,15 @@ object Client {
     /// listen to incoming notifications
     fn notifications_stream() -> Stream<Notification>;
 
+    /// get all upcoming events, whether I responded or not
+    fn all_upcoming_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
+
+    /// get only upcoming events that I responded as rsvp
+    fn my_upcoming_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
+
+    /// get only past events that I responded as rsvp
+    fn my_past_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
+
 }
 
 object OptionString {
