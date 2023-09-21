@@ -63,7 +63,7 @@ impl RsvpManager {
         Ok(entries)
     }
 
-    pub(crate) async fn add_rsvp_entry(&mut self, _entry: &Rsvp) -> Result<bool> {
+    pub(crate) fn add_rsvp_entry(&mut self, _entry: &Rsvp) -> Result<bool> {
         self.stats.has_rsvp_entries = true;
         self.stats.total_rsvp_count += 1;
         Ok(true)
@@ -152,7 +152,7 @@ impl super::ActerModel for Rsvp {
             // FIXME: what if we have this twice in the same loop?
             let mut manager = RsvpManager::from_store_and_event_id(store, model.event_id()).await;
             trace!(event_id=?self.event_id(), "adding rsvp entry");
-            if manager.add_rsvp_entry(&self).await? {
+            if manager.add_rsvp_entry(&self)? {
                 trace!(event_id=?self.event_id(), "added rsvp entry");
                 managers.push(manager);
             }
