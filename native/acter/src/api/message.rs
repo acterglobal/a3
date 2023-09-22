@@ -214,8 +214,8 @@ impl RoomEventItem {
         self.in_reply_to = Some(value);
     }
 
-    pub(crate) fn add_receipt(&mut self, user_id: String, receipt: Receipt) {
-        self.read_receipts.insert(user_id, receipt);
+    pub(crate) fn add_receipt(&mut self, seen_by: String, receipt: Receipt) {
+        self.read_receipts.insert(seen_by, receipt);
     }
 
     pub fn read_users(&self) -> Vec<String> {
@@ -223,15 +223,15 @@ impl RoomEventItem {
         // create string vector to deallocate string item using toDartString().
         // apply this way for only function that string vector is calculated indirectly.
         let mut users = vec![];
-        for user_id in self.read_receipts.keys() {
-            users.push(user_id.to_string());
+        for seen_by in self.read_receipts.keys() {
+            users.push(seen_by.to_string());
         }
         users
     }
 
-    pub fn receipt_ts(&self, user_id: String) -> Option<u64> {
-        if self.read_receipts.contains_key(&user_id) {
-            self.read_receipts[&user_id].ts.map(|x| x.get().into())
+    pub fn receipt_ts(&self, seen_by: String) -> Option<u64> {
+        if self.read_receipts.contains_key(&seen_by) {
+            self.read_receipts[&seen_by].ts.map(|x| x.get().into())
         } else {
             None
         }
@@ -1700,8 +1700,8 @@ impl RoomMessage {
                     "m.room.message".to_string(),
                 );
                 result.set_msg_type(msg_type.msgtype().to_string());
-                for (user_id, receipt) in event.read_receipts().iter() {
-                    result.add_receipt(user_id.to_string(), receipt.clone());
+                for (seen_by, receipt) in event.read_receipts().iter() {
+                    result.add_receipt(seen_by.to_string(), receipt.clone());
                 }
                 for (key, reaction) in event.reactions().iter() {
                     let records = reaction
