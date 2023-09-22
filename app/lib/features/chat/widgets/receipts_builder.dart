@@ -7,7 +7,12 @@ import 'package:quds_popup_menu/quds_popup_menu.dart';
 
 class ReceiptsBuilder extends ConsumerWidget {
   final List<String> seenList;
-  const ReceiptsBuilder({super.key, required this.seenList});
+
+  const ReceiptsBuilder({
+    super.key,
+    required this.seenList,
+  });
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final limit = seenList.length > 5 ? 5 : seenList.length;
@@ -16,7 +21,7 @@ class ReceiptsBuilder extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: QudsPopupButton(
-        items: _showSeenInfo(context, ref),
+        items: showDetails(),
         child: Wrap(
           spacing: -16,
           children: limit != seenList.length
@@ -105,25 +110,27 @@ class ReceiptsBuilder extends ConsumerWidget {
     );
   }
 
-  List<QudsPopupMenuBase> _showSeenInfo(BuildContext ctx, WidgetRef ref) {
+  List<QudsPopupMenuBase> showDetails() {
     return [
       QudsPopupMenuWidget(
-        builder: (ctx) => Container(
+        builder: (context) => Container(
           decoration: BoxDecoration(
-            color: Theme.of(ctx).colorScheme.onPrimary,
+            color: Theme.of(context).colorScheme.onPrimary,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child:
-                    Text('Seen By', style: Theme.of(ctx).textTheme.labelLarge),
+                child: Text(
+                  'Seen By',
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
               ),
               ListView.builder(
                 shrinkWrap: true,
                 itemCount: seenList.length,
-                itemBuilder: (ctx, index) {
+                itemBuilder: (context, index) {
                   final userId = seenList[index];
                   return Consumer(
                     builder: (context, ref, child) {
@@ -161,11 +168,14 @@ class ReceiptsBuilder extends ConsumerWidget {
                           member.hasValue
                               ? member.requireValue.displayName!
                               : userId,
-                          style: Theme.of(ctx).textTheme.labelSmall,
+                          style: Theme.of(context).textTheme.labelSmall,
                         ),
                         trailing: Text(
                           userId,
-                          style: Theme.of(ctx).textTheme.labelSmall!.copyWith(
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelSmall!
+                              .copyWith(
                                 color: Theme.of(context).colorScheme.neutral5,
                               ),
                         ),

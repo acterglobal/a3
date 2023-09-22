@@ -42,10 +42,7 @@ class BubbleBuilder extends ConsumerWidget {
     final chatInputState = ref.watch(chatInputProvider(roomId));
     final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
 
-    String eventType = '';
-    if (message.metadata!.containsKey('eventType')) {
-      eventType = message.metadata?['eventType'];
-    }
+    String eventType = message.metadata?['eventType'] ?? '';
     bool isMemberEvent = eventType == 'm.room.member';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,15 +112,12 @@ class _ChatBubble extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final client = ref.watch(clientProvider);
-    final chatRoomState = ref.watch(chatStateProvider(convo));
-    final receipts = chatRoomState.userReceipts;
     final myId = client!.userId().toString();
     final isAuthor = (myId == message.author.id);
     final roomId = convo.getRoomIdStr();
-    bool hasMarker =
-        receipts.containsKey(message.id) && receipts[message.id]!.isNotEmpty;
-
     bool hasRepliedMessage = message.repliedMessage != null;
+    final receipts = message.metadata?['receipts'];
+
     return Column(
       crossAxisAlignment:
           isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -204,16 +198,15 @@ class _ChatBubble extends ConsumerWidget {
             nextMessageInGroup: nextMessageInGroup,
           ),
         ),
-        hasMarker
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  ReceiptsBuilder(
-                    seenList: receipts[message.id]!,
-                  ),
-                ],
-              )
-            : const SizedBox.shrink(),
+        if (receipts != null)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              ReceiptsBuilder(
+                seenList: (receipts as Map<String, int>).keys.toList(),
+              ),
+            ],
+          ),
       ],
     );
   }
@@ -300,7 +293,10 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
   @override
   void initState() {
     super.initState();
-    tabBarController = TabController(length: reactionTabs.length, vsync: this);
+    tabBarController = TabController(
+      length: reactionTabs.length,
+      vsync: this,
+    );
   }
 
   @override
@@ -342,8 +338,10 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
                   }
                 },
                 child: Chip(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 1, horizontal: 2),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 1,
+                    horizontal: 2,
+                  ),
                   backgroundColor: sentByMe
                       ? AppTheme.theme.colorScheme.inversePrimary
                       : Colors.transparent,
@@ -411,7 +409,14 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
             ),
           );
         });
-        reactionTabs.insert(0, (Tab(child: Chip(label: Text('All $total')))));
+        reactionTabs.insert(
+          0,
+          Tab(
+            child: Chip(
+              label: Text('All $total'),
+            ),
+          ),
+        );
         tabBarController = TabController(
           length: reactionTabs.length,
           vsync: this,
@@ -483,7 +488,10 @@ class _OriginalMessageBuilder extends ConsumerWidget {
   final types.Message message;
   final Convo convo;
 
-  const _OriginalMessageBuilder({required this.convo, required this.message});
+  const _OriginalMessageBuilder({
+    required this.convo,
+    required this.message,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -538,7 +546,10 @@ class _ReactionListing extends StatelessWidget {
   final List<String> users;
   final Map<String, List<String>> usersMap; // UserId -> List of Emoji
 
-  const _ReactionListing({required this.users, required this.usersMap});
+  const _ReactionListing({
+    required this.users,
+    required this.usersMap,
+  });
 
   @override
   Widget build(BuildContext context) {
