@@ -22,7 +22,7 @@ use matrix_sdk::{
             },
             ImageInfo,
         },
-        MxcUri, OwnedEventId, OwnedRoomId, UInt,
+        MxcUri, OwnedEventId, OwnedRoomId, OwnedUserId, UInt,
     },
 };
 use std::{
@@ -365,6 +365,14 @@ impl NewsEntry {
 
     pub fn room_id(&self) -> OwnedRoomId {
         self.room.room_id().to_owned()
+    }
+
+    pub fn sender(&self) -> OwnedUserId {
+        self.content.sender().to_owned()
+    }
+
+    pub fn event_id(&self) -> OwnedEventId {
+        self.content.event_id().to_owned()
     }
 }
 

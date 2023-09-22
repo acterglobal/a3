@@ -5,31 +5,36 @@ import 'dart:io';
 @pragma('vm:platform-const')
 bool isDesktop = (Platform.isLinux || Platform.isWindows || Platform.isMacOS);
 @pragma('vm:platform-const')
-final usesNotoEmoji = !(Platform.isWindows || Platform.isMacOS || Platform.isIOS || Platform.isAndroid);
+final usesNotoEmoji = !(Platform.isWindows ||
+    Platform.isMacOS ||
+    Platform.isIOS ||
+    Platform.isAndroid);
 
 const defaultEmojiFont = 'NotoEmoji';
 
 String? selectEmojiFont() {
-  switch(Platform.operatingSystem) {
+  switch (Platform.operatingSystem) {
     case 'ios':
     case 'macos':
       return 'Apple Color Emoji';
     case 'windows':
       return 'Segoe UI Emoji';
-    case 'linux' :
+    case 'linux':
       return defaultEmojiFont;
     // we fallback to system supported emoji otherwise
-    default: return null;
+    default:
+      return null;
   }
 }
 
 final emojiFont = selectEmojiFont();
 // non-noto-emoji we just fallback to the system fonts.
-final List<String>? emojiFallbackFonts = emojiFont != null ? [ emojiFont! ] : null;
+final List<String>? emojiFallbackFonts =
+    emojiFont != null ? [emojiFont!] : null;
 
 class EmojiConfig {
-  static TextStyle? emojiTextStyle = emojiFont != null ?
-      TextStyle(fontFamily: emojiFont) : null;
+  static TextStyle? emojiTextStyle =
+      emojiFont != null ? TextStyle(fontFamily: emojiFont) : null;
   static final checkPlatformCompatibility = emojiFont != defaultEmojiFont;
   static final emojiSizeMax = 32 * ((!kIsWeb && Platform.isIOS) ? 1.30 : 1.0);
 }
@@ -172,12 +177,18 @@ class AppTheme {
     ).copyWith(
       scaffoldBackgroundColor: const Color(0x122334FF),
       splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      hoverColor: Colors.transparent,
       progressIndicatorTheme: const ProgressIndicatorThemeData(
         color: Color(0xffFF8E00),
         circularTrackColor: Colors.transparent,
       ),
       dividerColor: const Color(0xFFDDEDFC),
-      cardTheme: CardTheme(color: brandColorScheme.background, elevation: 0),
+      cardTheme: CardTheme(
+        color: brandColorScheme.primaryContainer,
+        elevation: 0,
+        margin: const EdgeInsets.all(8),
+      ),
       dialogTheme: DialogTheme(
         iconColor: const Color(0xFF67A24A),
         backgroundColor: const Color(0xFF122D46),
@@ -187,10 +198,28 @@ class AppTheme {
           borderRadius: BorderRadius.circular(6),
         ),
       ),
-      buttonTheme: ButtonThemeData(
-        splashColor: Colors.transparent,
-        buttonColor: brandColorScheme.secondary,
-        disabledColor: const Color(0xFF2F2F2F),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.all(18),
+          elevation: 0,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.all(18),
+          shape: RoundedRectangleBorder(
+            side: BorderSide(
+              color: brandColorScheme.secondary,
+              width: 0.5,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          foregroundColor: Colors.white,
+        ),
       ),
       dividerTheme: const DividerThemeData(
         indent: 75,

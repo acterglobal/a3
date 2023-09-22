@@ -44,7 +44,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
         return;
       }
 
-      final spaces = await ref.watch(spacesProvider.future);
+      final spaces = ref.watch(spacesProvider);
       clearFirstSyncListener();
       if (spaces.isEmpty && context.mounted) {
         onBoardingDialog(
@@ -80,13 +80,13 @@ class _DashboardState extends ConsumerState<Dashboard> {
 
     List<Widget> children = [];
     if (isActive(LabsFeature.events)) {
-      children.add(const MyEventsSection());
+      children.add(const MyEventsSection(limit: 5));
     }
 
     if (children.isEmpty) {
       children.add(const SliverToBoxAdapter(child: MySpacesSection()));
     } else {
-      children.add(const MySpacesSection(limit: 5));
+      children.insert(0, const MySpacesSection(limit: 5));
       final widthCount = (MediaQuery.of(context).size.width ~/ 600).toInt();
       const int minCount = 2;
       // we have more than just the spaces screen, put them into a grid.
@@ -138,14 +138,17 @@ class _DashboardState extends ConsumerState<Dashboard> {
                         mode: DisplayMode.User,
                       ),
                     ),
-                    child: Container(
-                      key: Keys.avatar,
-                      margin: const EdgeInsets.all(8),
-                      child: InkWell(
-                        onTap: () => context.pushNamed(Routes.myProfile.name),
-                        child: const UserAvatarWidget(),
-                      ),
-                    ),
+                    child: !isDesktop
+                        ? Container(
+                            key: Keys.avatar,
+                            margin: const EdgeInsets.all(8),
+                            child: InkWell(
+                              onTap: () =>
+                                  context.pushNamed(Routes.myProfile.name),
+                              child: const UserAvatarWidget(size: 20),
+                            ),
+                          )
+                        : const SizedBox.shrink(),
                   ),
                 ],
                 title: isDesktop

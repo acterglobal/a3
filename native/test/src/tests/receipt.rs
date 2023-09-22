@@ -29,7 +29,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     let mut sisko_synced = sisko_syncer.first_synced_rx();
     while sisko_synced.next().await != Some(true) {} // let's wait for it to have synced
     let sisko_space = sisko
-        .get_space(format!("#ops:{homeserver_name}"))
+        .space(format!("#ops:{homeserver_name}"))
         .await
         .expect("sisko should belong to ops");
     let event_id = sisko_space
@@ -50,7 +50,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     let mut first_synced = kyra_syncer.first_synced_rx();
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
     let kyra_space = kyra
-        .get_space(format!("#ops:{homeserver_name}"))
+        .space(format!("#ops:{homeserver_name}"))
         .await
         .expect("kyra should belong to ops");
     kyra_space.read_receipt(event_id.to_string()).await?;

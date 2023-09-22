@@ -1,0 +1,5 @@
+- A massive refactoring of the entire Chat section of the app, brings a lot of improvements:
+  - better performance of the chat section
+  - cached latest message and latest-message oriented sorting
+  - immediately access to the cached chat rooms list at startup
+  - better managements of spaces and rooms, fewer UI refreshes

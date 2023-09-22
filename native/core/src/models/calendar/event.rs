@@ -1,4 +1,4 @@
-use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId};
+use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId, UserId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
@@ -42,6 +42,10 @@ impl CalendarEvent {
 
     pub fn room_id(&self) -> &RoomId {
         &self.meta.room_id
+    }
+
+    pub fn sender(&self) -> &UserId {
+        &self.meta.sender
     }
 
     pub fn updater(&self) -> CalendarEventUpdateBuilder {
@@ -95,6 +99,9 @@ impl ActerModel for CalendarEvent {
         let AnyActerModel::CalendarEventUpdate(update) = model else {
             return Ok(false)
         };
+
+        // FIXME: redacting a CalendarEventUpdate would mean reverting to the previous
+        //        state. That is currently not that easy...
 
         update.apply(&mut self.inner)
     }

@@ -1,4 +1,4 @@
-import 'package:acter/common/widgets/custom_button.dart';
+import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -176,7 +176,7 @@ class _CreateBtnWidget extends StatelessWidget {
               ? const Center(
                   child: CircularProgressIndicator(),
                 )
-              : CustomButton(
+              : DefaultButton(
                   onPressed: (controller.taskNameCount < 30 &&
                           nameController.text.trim().isNotEmpty)
                       ? () async {

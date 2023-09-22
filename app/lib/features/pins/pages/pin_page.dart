@@ -1,11 +1,15 @@
 import 'dart:core';
 
+import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/common/widgets/spaces/has_space_permission.dart';
+import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +23,105 @@ class PinPage extends ConsumerWidget {
     required this.pinId,
   });
 
+  Widget buildActions(
+    BuildContext context,
+    WidgetRef ref,
+    ActerPin pin,
+  ) {
+    final spaceId = pin.roomIdStr();
+    List<PopupMenuEntry> actions = [];
+    final membership = ref.watch(spaceMembershipProvider(spaceId));
+    if (membership.valueOrNull != null) {
+      final memb = membership.requireValue!;
+      if (memb.canString('CanPostPin')) {
+        actions.add(
+          PopupMenuItem(
+            onTap: () => context.pushNamed(
+              Routes.editPin.name,
+              pathParameters: {'pinId': pin.eventIdStr()},
+            ),
+            child: const Row(
+              children: <Widget>[
+                Icon(Atlas.pencil_edit_thin),
+                SizedBox(width: 10),
+                Text('Edit Pin'),
+              ],
+            ),
+          ),
+        );
+      }
+
+      if (memb.canString('CanRedact') ||
+          memb.userId().toString() == pin.sender().toString()) {
+        actions.addAll([
+          PopupMenuItem(
+            onTap: () => showAdaptiveDialog(
+              context: context,
+              builder: (context) => RedactContentWidget(
+                title: 'Redact this post',
+                eventId: pin.eventIdStr(),
+                onSuccess: () {
+                  ref.invalidate(pinsProvider);
+                  if (context.mounted) {
+                    context.go('/');
+                  }
+                },
+                senderId: pin.sender().toString(),
+                roomId: pin.roomIdStr(),
+                isSpace: true,
+              ),
+            ),
+            child: Row(
+              children: <Widget>[
+                Icon(
+                  Atlas.trash_can_thin,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+                const SizedBox(width: 10),
+                const Text('Redact Pin'),
+              ],
+            ),
+          ),
+        ]);
+      }
+    } else {
+      actions.add(
+        PopupMenuItem(
+          onTap: () => showAdaptiveDialog(
+            context: context,
+            builder: (ctx) => ReportContentWidget(
+              title: 'Report this Pin',
+              description:
+                  'Report this content to your homeserver administrator. Please note that your administrator won\'t be able to read or view files in encrypted spaces.',
+              eventId: pinId,
+              roomId: pin.roomIdStr(),
+              senderId: pin.sender().toString(),
+              isSpace: true,
+            ),
+          ),
+          child: Row(
+            children: <Widget>[
+              Icon(
+                Atlas.warning_thin,
+                color: Theme.of(context).colorScheme.error,
+              ),
+              const SizedBox(width: 10),
+              const Text('Report Pin'),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (actions.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return PopupMenuButton(
+      itemBuilder: (ctx) => actions,
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // ignore: unused_local_variable
@@ -28,22 +131,15 @@ class PinPage extends ConsumerWidget {
         slivers: <Widget>[
           PageHeaderWidget(
             title: pin.hasValue ? pin.value!.title() : 'Loading pin',
-            sectionColor: Colors.blue.shade200,
-            actions: pin.hasValue
-                ? [
-                    HasSpacePermission(
-                      spaceId: pin.value!.roomIdStr(),
-                      permission: 'CanPostPin',
-                      child: IconButton(
-                        icon: const Icon(Atlas.pencil_edit_thin),
-                        onPressed: () => context.pushNamed(
-                          Routes.editPin.name,
-                          pathParameters: {'pinId': pin.value!.eventIdStr()},
-                        ),
-                      ),
-                    ),
-                  ]
-                : [],
+            sectionDecoration: const BoxDecoration(
+              gradient: AppTheme.primaryGradient,
+            ),
+            actions: [
+              pin.maybeWhen(
+                data: (pin) => buildActions(context, ref, pin),
+                orElse: () => const SizedBox.shrink(),
+              ),
+            ],
           ),
           pin.when(
             data: (pin) {
@@ -94,6 +190,24 @@ class PinPage extends ConsumerWidget {
                             child: Wrap(
                               alignment: WrapAlignment.start,
                               children: [SpaceChip(spaceId: spaceId)],
+                            ),
+                          ),
+                          trailing: IconButton(
+                            onPressed: () => showAdaptiveDialog(
+                              context: context,
+                              builder: (ctx) => ReportContentWidget(
+                                title: 'Report this Pin',
+                                description:
+                                    'Report this content to your homeserver administrator. Please note that your adminstrator won\'t be able to read or view files, if space is encrypted',
+                                eventId: pinId,
+                                roomId: pin.roomIdStr(),
+                                senderId: pin.sender().toString(),
+                                isSpace: true,
+                              ),
+                            ),
+                            icon: Icon(
+                              Atlas.warning_thin,
+                              color: Theme.of(context).colorScheme.error,
                             ),
                           ),
                         ),

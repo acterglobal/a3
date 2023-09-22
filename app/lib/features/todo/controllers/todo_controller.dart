@@ -180,7 +180,7 @@ class ToDoController extends GetxController {
     String name,
     String? description,
   ) async {
-    final Space space = await client.getSpace(teamId);
+    final Space space = await client.space(teamId);
     final RoomProfile profile = space.getProfile();
     final OptionString dispName = await profile.getDisplayName();
     final Team team = Team(

@@ -45,8 +45,7 @@ use matrix_sdk::{
     },
     Client, RoomMemberships, RoomState,
 };
-use matrix_sdk_ui::timeline::RoomExt;
-use std::{io::Write, ops::Deref, path::PathBuf, sync::Arc};
+use std::{io::Write, ops::Deref, path::PathBuf};
 use tracing::{error, info};
 
 use super::{
@@ -54,7 +53,6 @@ use super::{
     api::FfiBuffer,
     message::RoomMessage,
     profile::{RoomProfile, UserProfile},
-    stream::TimelineStream,
     RUNTIME,
 };
 
@@ -537,18 +535,6 @@ impl Room {
                     member,
                     acter_app_settings: acter_app_settings.clone(),
                 })
-            })
-            .await?
-    }
-
-    pub async fn timeline_stream(&self) -> Result<TimelineStream> {
-        let room = self.room.clone();
-
-        RUNTIME
-            .spawn(async move {
-                let timeline = Arc::new(room.timeline().await);
-                let stream = TimelineStream::new(room, timeline);
-                Ok(stream)
             })
             .await?
     }
@@ -2414,6 +2400,22 @@ impl Room {
                     reason,
                 );
                 room.client().send(request, None).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn redact_content(&self, event_id: String, reason: Option<String>) -> Result<bool> {
+        let event_id = EventId::parse(event_id)?;
+        let room = if let SdkRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't redact content in a room we are not in")
+        };
+
+        RUNTIME
+            .spawn(async move {
+                room.redact(&event_id, reason.as_deref(), None).await?;
                 Ok(true)
             })
             .await?

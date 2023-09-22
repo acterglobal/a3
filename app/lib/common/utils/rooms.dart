@@ -1,8 +1,9 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:go_router/go_router.dart';
 
 Future<void> joinRoom(
@@ -12,13 +13,16 @@ Future<void> joinRoom(
   String roomIdOrAlias,
   String? server,
 ) async {
-  popUpDialog(
+  showAdaptiveDialog(
+    barrierDismissible: false,
     context: context,
-    title: Text(
-      displayMsg,
-      style: Theme.of(context).textTheme.titleSmall,
+    builder: (context) => DefaultDialog(
+      title: Text(
+        displayMsg,
+        style: Theme.of(context).textTheme.titleSmall,
+      ),
+      isLoader: true,
     ),
-    isLoader: true,
   );
   final client = ref.read(clientProvider)!;
   try {
@@ -44,19 +48,21 @@ Future<void> joinRoom(
     if (!context.mounted) {
       return;
     }
-    Navigator.of(context, rootNavigator: true).pop();
-
-    popUpDialog(
+    showAdaptiveDialog(
+      barrierDismissible: false,
       context: context,
-      title: Text(
-        '$displayMsg failed: \n $err"',
-        style: Theme.of(context).textTheme.titleSmall,
+      builder: (context) => DefaultDialog(
+        title: Text(
+          '$displayMsg failed: \n $err"',
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        actions: <Widget>[
+          DefaultButton(
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            title: 'Close',
+          ),
+        ],
       ),
-      isLoader: false,
-      btnText: 'Close',
-      onPressedBtn: () {
-        Navigator.of(context, rootNavigator: true).pop();
-      },
     );
   }
 }

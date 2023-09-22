@@ -83,16 +83,17 @@ use matrix_sdk::{
 };
 use matrix_sdk_ui::timeline::{
     EventSendState, EventTimelineItem, MembershipChange, TimelineItem, TimelineItemContent,
-    VirtualTimelineItem,
+    TimelineItemKind, VirtualTimelineItem,
 };
-use std::{collections::HashMap, sync::Arc};
+use serde::{Deserialize, Serialize};
+use std::{collections::HashMap, ops::Deref, sync::Arc};
 use tracing::info;
 
 use super::common::{
     AudioDesc, FileDesc, ImageDesc, LocationDesc, ReactionRecord, TextDesc, VideoDesc,
 };
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct RoomEventItem {
     event_id: String,
     sender: String,
@@ -242,7 +243,7 @@ impl RoomEventItem {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct RoomVirtualItem {
     event_type: String,
     desc: Option<String>,
@@ -262,7 +263,7 @@ impl RoomVirtualItem {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct RoomMessage {
     item_type: String,
     room_id: OwnedRoomId,
@@ -1101,11 +1102,11 @@ impl RoomMessage {
         };
         let mut text_desc = TextDesc::new(fallback, None);
         match event.content.msgtype {
-            MessageType::Text(content) => {
-                if let Some(formatted) = &content.formatted {
-                    if formatted.format == MessageFormat::Html {
-                        text_desc.set_formatted_body(Some(formatted.body.clone()));
-                    }
+            MessageType::Audio(content) => {
+                if let Some(info) = &content.info {
+                    let audio_desc =
+                        AudioDesc::new(content.body.clone(), content.source.clone(), *info.clone());
+                    event_item.set_audio_desc(audio_desc);
                 }
             }
             MessageType::Emote(content) => {
@@ -1115,32 +1116,18 @@ impl RoomMessage {
                     }
                 }
             }
-            MessageType::Image(content) => {
-                if let Some(info) = &content.info {
-                    let image_desc =
-                        ImageDesc::new(content.body.clone(), content.source.clone(), *info.clone());
-                    event_item.set_image_desc(image_desc);
-                }
-            }
-            MessageType::Audio(content) => {
-                if let Some(info) = &content.info {
-                    let audio_desc =
-                        AudioDesc::new(content.body.clone(), content.source.clone(), *info.clone());
-                    event_item.set_audio_desc(audio_desc);
-                }
-            }
-            MessageType::Video(content) => {
-                if let Some(info) = &content.info {
-                    let video_desc =
-                        VideoDesc::new(content.body.clone(), content.source.clone(), *info.clone());
-                    event_item.set_video_desc(video_desc);
-                }
-            }
             MessageType::File(content) => {
                 if let Some(info) = &content.info {
                     let file_desc =
                         FileDesc::new(content.body.clone(), content.source.clone(), *info.clone());
                     event_item.set_file_desc(file_desc);
+                }
+            }
+            MessageType::Image(content) => {
+                if let Some(info) = &content.info {
+                    let image_desc =
+                        ImageDesc::new(content.body.clone(), content.source.clone(), *info.clone());
+                    event_item.set_image_desc(image_desc);
                 }
             }
             MessageType::Location(content) => {
@@ -1154,6 +1141,20 @@ impl RoomMessage {
                         location_desc.set_thumbnail_info(*thumbnail_info.clone());
                     }
                     event_item.set_location_desc(location_desc);
+                }
+            }
+            MessageType::Text(content) => {
+                if let Some(formatted) = &content.formatted {
+                    if formatted.format == MessageFormat::Html {
+                        text_desc.set_formatted_body(Some(formatted.body.clone()));
+                    }
+                }
+            }
+            MessageType::Video(content) => {
+                if let Some(info) = &content.info {
+                    let video_desc =
+                        VideoDesc::new(content.body.clone(), content.source.clone(), *info.clone());
+                    event_item.set_video_desc(video_desc);
                 }
             }
             _ => {}
@@ -1189,11 +1190,11 @@ impl RoomMessage {
         };
         let mut text_desc = TextDesc::new(fallback, None);
         match event.content.msgtype {
-            MessageType::Text(content) => {
-                if let Some(formatted) = &content.formatted {
-                    if formatted.format == MessageFormat::Html {
-                        text_desc.set_formatted_body(Some(formatted.body.clone()));
-                    }
+            MessageType::Audio(content) => {
+                if let Some(info) = &content.info {
+                    let audio_desc =
+                        AudioDesc::new(content.body.clone(), content.source.clone(), *info.clone());
+                    event_item.set_audio_desc(audio_desc);
                 }
             }
             MessageType::Emote(content) => {
@@ -1203,27 +1204,6 @@ impl RoomMessage {
                     }
                 }
             }
-            MessageType::Image(content) => {
-                if let Some(info) = &content.info {
-                    let image_desc =
-                        ImageDesc::new(content.body.clone(), content.source.clone(), *info.clone());
-                    event_item.set_image_desc(image_desc);
-                }
-            }
-            MessageType::Audio(content) => {
-                if let Some(info) = &content.info {
-                    let audio_desc =
-                        AudioDesc::new(content.body.clone(), content.source.clone(), *info.clone());
-                    event_item.set_audio_desc(audio_desc);
-                }
-            }
-            MessageType::Video(content) => {
-                if let Some(info) = &content.info {
-                    let video_desc =
-                        VideoDesc::new(content.body.clone(), content.source.clone(), *info.clone());
-                    event_item.set_video_desc(video_desc);
-                }
-            }
             MessageType::File(content) => {
                 if let Some(info) = &content.info {
                     let file_desc =
@@ -1231,11 +1211,38 @@ impl RoomMessage {
                     event_item.set_file_desc(file_desc);
                 }
             }
+            MessageType::Image(content) => {
+                if let Some(info) = &content.info {
+                    let image_desc =
+                        ImageDesc::new(content.body.clone(), content.source.clone(), *info.clone());
+                    event_item.set_image_desc(image_desc);
+                }
+            }
             MessageType::Location(content) => {
                 if let Some(info) = &content.info {
-                    let location_desc =
+                    let mut location_desc =
                         LocationDesc::new(content.body.clone(), content.geo_uri.clone());
+                    if let Some(thumbnail_source) = &info.thumbnail_source {
+                        location_desc.set_thumbnail_source(thumbnail_source.clone());
+                    }
+                    if let Some(thumbnail_info) = &info.thumbnail_info {
+                        location_desc.set_thumbnail_info(*thumbnail_info.clone());
+                    }
                     event_item.set_location_desc(location_desc);
+                }
+            }
+            MessageType::Text(content) => {
+                if let Some(formatted) = &content.formatted {
+                    if formatted.format == MessageFormat::Html {
+                        text_desc.set_formatted_body(Some(formatted.body.clone()));
+                    }
+                }
+            }
+            MessageType::Video(content) => {
+                if let Some(info) = &content.info {
+                    let video_desc =
+                        VideoDesc::new(content.body.clone(), content.source.clone(), *info.clone());
+                    event_item.set_video_desc(video_desc);
                 }
             }
             _ => {}
@@ -1977,6 +1984,21 @@ impl RoomMessage {
         self.event_item.clone()
     }
 
+    pub(crate) fn event_id(&self) -> Option<String> {
+        self.event_item.as_ref().map(|e| e.event_id.clone())
+    }
+
+    pub(crate) fn event_type(&self) -> String {
+        self.event_item
+            .as_ref()
+            .map(|e| e.event_type())
+            .unwrap_or_else(|| "virtual".to_owned()) // if we can't find it, it is because we are a virtual event
+    }
+
+    pub(crate) fn origin_server_ts(&self) -> Option<u64> {
+        self.event_item.as_ref().map(|e| e.origin_server_ts())
+    }
+
     pub(crate) fn set_event_item(&mut self, event_item: Option<RoomEventItem>) {
         self.event_item = event_item;
     }
@@ -2151,14 +2173,25 @@ pub(crate) fn sync_event_to_message(
     None
 }
 
-pub(crate) fn timeline_item_to_message(item: Arc<TimelineItem>, room: Room) -> RoomMessage {
-    if let Some(event_item) = item.as_event() {
-        return RoomMessage::from_timeline_event_item(event_item, room);
+impl From<(Arc<TimelineItem>, Room)> for RoomMessage {
+    fn from(v: (Arc<TimelineItem>, Room)) -> RoomMessage {
+        let (item, room) = v;
+
+        match item.deref().deref() {
+            TimelineItemKind::Event(event_item) => {
+                RoomMessage::from_timeline_event_item(event_item, room)
+            }
+            TimelineItemKind::Virtual(virtual_item) => {
+                RoomMessage::from_timeline_virtual_item(virtual_item, room)
+            }
+        }
     }
-    if let Some(virtual_item) = item.as_virtual() {
-        return RoomMessage::from_timeline_virtual_item(virtual_item, room);
+}
+impl From<(EventTimelineItem, Room)> for RoomMessage {
+    fn from(v: (EventTimelineItem, Room)) -> RoomMessage {
+        let (event_item, room) = v;
+        RoomMessage::from_timeline_event_item(&event_item, room)
     }
-    unreachable!("Timeline item should be one of event or virtual");
 }
 
 // this function was removed from EventTimelineItem so we clone that function

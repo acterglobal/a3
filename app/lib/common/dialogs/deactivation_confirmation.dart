@@ -1,7 +1,8 @@
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -14,9 +15,19 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
     context: context,
     builder: (BuildContext ctx) {
       return AlertDialog(
+<<<<<<< HEAD
         title: Text('Deactivate Account',
             style: TextStyle(
                 color: AppTheme.brandColorScheme.error, fontSize: 18,),),
+=======
+        title: Text(
+          'Deactivate Account',
+          style: TextStyle(
+            color: AppTheme.brandColorScheme.error,
+            fontSize: 32,
+          ),
+        ),
+>>>>>>> main
         content: SingleChildScrollView(
           child: Wrap(
             children: [
@@ -60,6 +71,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
           ),
         ),
         actions: <Widget>[
+<<<<<<< HEAD
           Row(
             children: [
               Expanded(
@@ -134,6 +146,67 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
            ),
 
             ],
+=======
+          TextButton(
+            onPressed: () => ctx.pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              showAdaptiveDialog(
+                barrierDismissible: false,
+                context: context,
+                builder: (context) => DefaultDialog(
+                  title: Text(
+                    'Deactivating your account',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  isLoader: true,
+                ),
+              );
+              final sdk = await ref.read(sdkProvider.future);
+              try {
+                if (!await sdk.deactivateAndDestroyCurrentClient(
+                  passwordController.text,
+                )) {
+                  throw 'Deactivation and removing all local data failed';
+                }
+                // ignore: use_build_context_synchronously
+                if (!context.mounted) {
+                  return;
+                }
+                // remove pop up
+                Navigator.of(context, rootNavigator: true).pop();
+                // remove ourselves
+                Navigator.of(context, rootNavigator: true).pop();
+                context.goNamed(Routes.main.name);
+              } catch (err) {
+                // We are doing as expected, but the lints triggers.
+                // ignore: use_build_context_synchronously
+                if (!context.mounted) {
+                  return;
+                }
+
+                showAdaptiveDialog(
+                  context: context,
+                  builder: (context) => DefaultDialog(
+                    title: Text(
+                      'Deactivating failed: \n $err"',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    actions: <Widget>[
+                      DefaultButton(
+                        onPressed: () =>
+                            Navigator.of(context, rootNavigator: true).pop(),
+                        title: 'Close',
+                      ),
+                    ],
+                  ),
+                );
+              }
+            },
+            child: const Text('Deactivate'),
+>>>>>>> main
           ),
           
          
