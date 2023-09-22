@@ -341,13 +341,13 @@ impl AttachmentsManager {
         body: String,
         url: String,
         mimetype: Option<String>,
-        size: Option<u64>,
+        size: Option<u32>,
     ) -> Result<AttachmentDraft> {
         let Room::Joined(joined) = &self.room else {
             bail!("Can only attachment in joined rooms");
         };
         let mut builder = self.inner.draft_builder();
-        let size = size.and_then(UInt::new);
+        let size = size.map(UInt::from);
         let info = assign!(FileInfo::new(), { mimetype, size });
         let mut file_content = FileMessageEventContent::plain(body, url.into());
         file_content.info = Some(Box::new(info));
