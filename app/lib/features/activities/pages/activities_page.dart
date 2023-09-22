@@ -110,11 +110,14 @@ class ActivitiesPage extends ConsumerWidget {
     final weAreEmpty = children.isEmpty;
 
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.neutral,
       body: CustomScrollView(
         slivers: <Widget>[
           PageHeaderWidget(
             title: 'Activities',
-            sectionColor: Colors.pink.shade600,
+            sectionDecoration: const BoxDecoration(
+              gradient: AppTheme.primaryGradient,
+            ),
             actions: [
               IconButton(
                 icon: const Icon(Atlas.funnel_sort_thin),

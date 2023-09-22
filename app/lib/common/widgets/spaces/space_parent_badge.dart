@@ -43,7 +43,10 @@ class SpaceParentBadge extends ConsumerWidget {
               final parentId = parent.space.getRoomIdStr();
               return Column(
                 children: <Widget>[
-                  SizedBox(height: badgeSize + badgeOverflow),
+                  SizedBox(
+                    width: badgeSize + badgeOverflow,
+                    height: badgeSize + badgeOverflow,
+                  ),
                   Tooltip(
                     message: parent.profile.displayName,
                     child: InkWell(
