@@ -120,7 +120,7 @@ class SpaceWithProfileCard extends StatelessWidget {
         subtitle: subtitle,
         leading: showParent
             ? SpaceParentBadge(
-                spaceId: roomId,
+                roomId: roomId,
                 badgeSize: avatarSize / 2,
                 child: avatar,
               )

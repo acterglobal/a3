@@ -129,7 +129,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
               child: Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: SpaceParentBadge(
-                  spaceId: convo.getRoomIdStr(),
+                  roomId: convo.getRoomIdStr(),
                   badgeSize: 20,
                   child: convoProfile.when(
                     data: (profile) => ActerAvatar(

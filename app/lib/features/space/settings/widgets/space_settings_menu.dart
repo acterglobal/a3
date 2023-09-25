@@ -39,7 +39,7 @@ class SpaceSettingsMenu extends ConsumerWidget {
             ...spaceProfile.when(
               data: (spaceProfile) => [
                 SpaceParentBadge(
-                  spaceId: spaceId,
+                  roomId: spaceId,
                   badgeSize: 18,
                   child: ActerAvatar(
                     mode: DisplayMode.Space,

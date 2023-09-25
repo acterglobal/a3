@@ -2416,6 +2416,53 @@ class Api {
     return tmp7;
   }
 
+  SpaceRelations? __roomSpaceRelationsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _roomSpaceRelationsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_SpaceRelations");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = SpaceRelations._(this, tmp13_1);
+    return tmp7;
+  }
+
   bool? __timelineStreamPaginateBackwardsFuturePoll(
     int boxed,
     int postCobject,
@@ -2501,6 +2548,53 @@ class Api {
       throw tmp9_0;
     }
     final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  SpaceRelations? __convoSpaceRelationsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoSpaceRelationsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_SpaceRelations");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = SpaceRelations._(this, tmp13_1);
     return tmp7;
   }
 
@@ -8064,6 +8158,53 @@ class Api {
       tmp13_0 = ffi.Pointer.fromAddress(tmp13);
       this.__deallocate(tmp13_0, tmp15 * 1, 1);
     }
+    return tmp7;
+  }
+
+  Room? __clientRoomFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientRoomFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Room");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = Room._(this, tmp13_1);
     return tmp7;
   }
 
@@ -14135,6 +14276,26 @@ class Api {
       _TimelineDiffValueReturn Function(
         int,
       )>();
+  late final _roomGetProfilePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Room_get_profile");
+
+  late final _roomGetProfile = _roomGetProfilePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _roomSpaceRelationsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Room_space_relations");
+
+  late final _roomSpaceRelations = _roomSpaceRelationsPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _convoDiffActionPtr = _lookup<
       ffi.NativeFunction<
           _ConvoDiffActionReturn Function(
@@ -14276,6 +14437,16 @@ class Api {
           )>>("__Convo_get_profile");
 
   late final _convoGetProfile = _convoGetProfilePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _convoSpaceRelationsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Convo_space_relations");
+
+  late final _convoSpaceRelations = _convoSpaceRelationsPtr.asFunction<
       int Function(
         int,
       )>();
@@ -19634,6 +19805,22 @@ class Api {
       _ClientUserIdReturn Function(
         int,
       )>();
+  late final _clientRoomPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Client_room");
+
+  late final _clientRoom = _clientRoomPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _clientConvoPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -21275,6 +21462,21 @@ class Api {
         int,
         int,
       )>();
+  late final _roomSpaceRelationsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomSpaceRelationsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Room_space_relations_future_poll");
+
+  late final _roomSpaceRelationsFuturePoll =
+      _roomSpaceRelationsFuturePollPtr.asFunction<
+          _RoomSpaceRelationsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _timelineStreamPaginateBackwardsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _TimelineStreamPaginateBackwardsFuturePollReturn Function(
@@ -21301,6 +21503,21 @@ class Api {
   late final _timelineStreamEditFuturePoll =
       _timelineStreamEditFuturePollPtr.asFunction<
           _TimelineStreamEditFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _convoSpaceRelationsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConvoSpaceRelationsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Convo_space_relations_future_poll");
+
+  late final _convoSpaceRelationsFuturePoll =
+      _convoSpaceRelationsFuturePollPtr.asFunction<
+          _ConvoSpaceRelationsFuturePollReturn Function(
             int,
             int,
             int,
@@ -23060,6 +23277,20 @@ class Api {
             int,
             int,
           )>();
+  late final _clientRoomFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientRoomFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_room_future_poll");
+
+  late final _clientRoomFuturePoll = _clientRoomFuturePollPtr.asFunction<
+      _ClientRoomFuturePollReturn Function(
+        int,
+        int,
+        int,
+      )>();
   late final _clientConvoFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientConvoFuturePollReturn Function(
@@ -31091,6 +31322,49 @@ class TimelineDiff {
   }
 }
 
+/// Generic Room Properties
+class Room {
+  final Api _api;
+  final _Box _box;
+
+  Room._(this._api, this._box);
+
+  /// get the room profile that contains avatar and display name
+  RoomProfile getProfile() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomGetProfile(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_RoomProfile");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = RoomProfile._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// get the room profile that contains avatar and display name
+  Future<SpaceRelations> spaceRelations() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomSpaceRelations(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Room_space_relations_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__roomSpaceRelationsFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class ConvoDiff {
   final Api _api;
   final _Box _box;
@@ -31428,6 +31702,21 @@ class Convo {
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_RoomProfile");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = RoomProfile._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// get the room profile that contains avatar and display name
+  Future<SpaceRelations> spaceRelations() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoSpaceRelations(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Convo_space_relations_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__convoSpaceRelationsFuturePoll);
     return tmp2;
   }
 
@@ -42087,6 +42376,38 @@ class Client {
     return tmp2;
   }
 
+  /// Get the generic room that user belongs to
+  Future<Room> room(
+    String roomIdOrAlias,
+  ) {
+    final tmp1 = roomIdOrAlias;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._clientRoom(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Client_room_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__clientRoomFuturePoll);
+    return tmp6;
+  }
+
   /// get convo room
   Future<Convo> convo(
     String roomIdOrAlias,
@@ -47511,6 +47832,21 @@ class _RsvpDraftSendFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _RoomSpaceRelationsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _TimelineStreamPaginateBackwardsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -47538,6 +47874,21 @@ class _TimelineStreamEditFuturePollReturn extends ffi.Struct {
   @ffi.Uint64()
   external int arg4;
   @ffi.Uint8()
+  external int arg5;
+}
+
+class _ConvoSpaceRelationsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
   external int arg5;
 }
 
@@ -49321,6 +49672,21 @@ class _ClientRestoreTokenFuturePollReturn extends ffi.Struct {
   external int arg6;
   @ffi.Uint64()
   external int arg7;
+}
+
+class _ClientRoomFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
 }
 
 class _ClientConvoFuturePollReturn extends ffi.Struct {
