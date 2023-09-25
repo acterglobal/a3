@@ -2,7 +2,6 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/profile/widgets/profile_item_tile.dart';
 import 'package:file_picker/file_picker.dart';
@@ -142,7 +141,6 @@ class MyProfile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final account = ref.watch(accountProfileProvider);
-    final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
 
     return account.when(
       data: (data) {
@@ -150,7 +148,6 @@ class MyProfile extends ConsumerWidget {
         return Scaffold(
           appBar: AppBar(
             title: const Text('My profile'),
-            
           ),
           body: SingleChildScrollView(
             child: Column(
@@ -167,8 +164,8 @@ class MyProfile extends ConsumerWidget {
                   ),
                 ),
                 Container(
-                  width: isDesktop ? 400 : MediaQuery.of(context).size.width -15,
-                  margin:  const EdgeInsets.symmetric(horizontal: 20),
+                  constraints: const BoxConstraints(maxWidth: 400),    
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
                   alignment: Alignment.center,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -232,65 +229,96 @@ class MyProfile extends ConsumerWidget {
                         ],
                       ),
                       const SizedBox(height: 5),
-                        Container(
+                      Container(
                         margin: const EdgeInsets.symmetric(vertical: 10),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF122D46),
+                          color: Theme.of(context).colorScheme.cardBackground,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child:    Column(
+                        child: Column(
                           children: [
-                             ProfileItemTile(icon: Atlas.check_shield,title: 'Linked Devices',onPressed: () =>
-                            context.pushNamed(Routes.settingSessions.name),color: Colors.white,),
-                            const Divider(indent: 40,endIndent: 10,),
-                             ProfileItemTile(icon: Atlas.gear,title: 'Settings',onPressed: () =>
-                            context.pushNamed(Routes.settings.name),color: Colors.white,),
+                            ProfileItemTile(
+                              icon: Atlas.check_shield,
+                              title: 'Linked Devices',
+                              onPressed: () => context
+                                  .pushNamed(Routes.settingSessions.name),
+                              color: Colors.white,
+                            ),
+                            const Divider(
+                              indent: 40,
+                              endIndent: 10,
+                            ),
+                            ProfileItemTile(
+                              icon: Atlas.gear,
+                              title: 'Settings',
+                              onPressed: () =>
+                                  context.pushNamed(Routes.settings.name),
+                              color: Colors.white,
+                            ),
                           ],
                         ),
                       ),
-                    const SizedBox(height: 5),
+                      const SizedBox(height: 5),
 
-                    //Not implemented yet 
-                    Visibility(
-                      visible: false,
-                      child: Container(
+                      //Not implemented yet
+                      Visibility(
+                        visible: false,
+                        child: Container(
                           margin: const EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF122D46),
+                            color: Theme.of(context).colorScheme.cardBackground,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child:    Column(
+                          child: Column(
                             children: [
-                               ProfileItemTile(icon: Atlas.bell_reminder,title: 'Notifications',onPressed: () =>
-                              context.pushNamed(Routes.settingSessions.name),color: Colors.white,),
-                              const Divider(indent: 40,endIndent: 10,),
-                               ProfileItemTile(icon: Icons.star_border_outlined,title: 'Rate us',onPressed: () =>
-                              context.pushNamed(Routes.settings.name),color: Colors.white,),
+                              ProfileItemTile(
+                                icon: Atlas.bell_reminder,
+                                title: 'Notifications',
+                                onPressed: () => context
+                                    .pushNamed(Routes.settingSessions.name),
+                                color: Colors.white,
+                              ),
+                              const Divider(
+                                indent: 40,
+                                endIndent: 10,
+                              ),
+                              ProfileItemTile(
+                                icon: Icons.star_border_outlined,
+                                title: 'Rate us',
+                                onPressed: () =>
+                                    context.pushNamed(Routes.settings.name),
+                                color: Colors.white,
+                              ),
                             ],
                           ),
                         ),
-                    ),
-                    const SizedBox(height: 5),
-                    Container(
-                      alignment: Alignment.topLeft,
-                      child: const Text('Danger Zone',style: TextStyle(color: Colors.red)),
-                    ),
-                    Container(
+                      ),
+                      const SizedBox(height: 5),
+                      Container(
+                        alignment: Alignment.topLeft,
+                        child:  Text('Danger Zone',
+                            style: TextStyle(color: Theme.of(context).colorScheme.error),),
+                      ),
+                      Container(
                         margin: const EdgeInsets.symmetric(vertical: 10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: AppTheme.brandColorScheme.onError),
+                          border: Border.all(
+                              color: AppTheme.brandColorScheme.onError,),
                         ),
-                        child:    Column(
+                        child: Column(
                           children: [
-                             ProfileItemTile(icon: Atlas.exit,title: 'Logout',onPressed: () =>
-                            logoutConfirmationDialog(context, ref),color: Colors.red,),
+                            ProfileItemTile(
+                              icon: Atlas.exit,
+                              title: 'Logout',
+                              onPressed: () =>
+                                  logoutConfirmationDialog(context, ref),
+                              color: Theme.of(context).colorScheme.error,
+                            ),
                           ],
                         ),
                       ),
-                     
                     ],
-                    
                   ),
                 ),
                 const SizedBox(height: 25),
@@ -304,5 +332,3 @@ class MyProfile extends ConsumerWidget {
     );
   }
 }
-
-

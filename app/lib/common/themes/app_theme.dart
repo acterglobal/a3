@@ -52,6 +52,8 @@ extension CustomColorScheme on ColorScheme {
   Color get neutral5 => const Color(0xFFB7B7B7);
   Color get neutral6 => const Color(0xFFE5E5E5);
   Color get m3Primary => const Color(0xFFD0BCFF);
+  Color get cardBackground => const Color(0xFF122D46);
+  Color get error => const Color(0xFFFF0000);
 
   Color get badgeUnread => const Color(0xFF67A24A);
   Color get badgeImportant => const Color(0xFFFFC333);
@@ -91,6 +93,7 @@ class AppTheme {
     surfaceTint: Color(0xFF9CCAFF),
     outlineVariant: Color(0xFF42474E),
     scrim: Color(0xFF000000),
+    
   );
 
   static const primaryGradient = LinearGradient(
