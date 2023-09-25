@@ -57,7 +57,7 @@ class _PinListItemState extends ConsumerState<PinListItem> {
           key: Key(pin.eventIdStr()), // FIXME: causes crashes in ffigen
           leading: Icon(isLink ? Atlas.link_chain_thin : Atlas.document_thin),
           title: Text(pin.title()),
-          titleTextStyle: Theme.of(context).textTheme.headlineSmall,
+          titleTextStyle: Theme.of(context).textTheme.titleSmall,
           subtitle: widget.showSpace
               ? Padding(
                   padding: const EdgeInsets.only(top: 4),

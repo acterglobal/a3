@@ -499,6 +499,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
           onTap: () {
             inputNotifier.toggleReplyView(false);
             inputNotifier.setReplyWidget(null);
+            inputNotifier.setRepliedToMessage(null);
           },
           child: const Icon(
             Atlas.xmark_circle,

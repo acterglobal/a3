@@ -1,0 +1,12 @@
+- Dashboard/Overview:
+  - Spaces listing is now prioritized to be shown on top.
+  - Fewer joined spaces will now show 'create space' and 'join space' buttons below for easier accessibility. If more than 5 joined spaces, this'll be replaced with 'show all spaces' button.
+  - Calendar widget is now removed and will be added when its properly functional.
+  - Update theme of UI cards.
+- Pins:
+  - Remove non functional button (pins filtering).
+  - Update theme of section.
+- Calendar Events:
+  - Calendar events can now be accessed from quick jump actions, showing all events, user is part of.
+  - Update theme of section.
+- Some layout improvements in card component views.

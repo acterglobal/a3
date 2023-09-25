@@ -1,5 +1,4 @@
 import 'package:acter/common/dialogs/onboarding_dialog.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
@@ -33,7 +32,8 @@ class _DashboardState extends ConsumerState<Dashboard> {
   @override
   void initState() {
     super.initState();
-    _checkIfSpacesPresent();
+    WidgetsBinding.instance
+        .addPostFrameCallback((timestamp) => _checkIfSpacesPresent());
   }
 
   void _checkIfSpacesPresent() {
@@ -80,13 +80,13 @@ class _DashboardState extends ConsumerState<Dashboard> {
 
     List<Widget> children = [];
     if (isActive(LabsFeature.events)) {
-      children.add(const MyEventsSection());
+      children.add(const MyEventsSection(limit: 5));
     }
 
     if (children.isEmpty) {
       children.add(const SliverToBoxAdapter(child: MySpacesSection()));
     } else {
-      children.add(const MySpacesSection(limit: 5));
+      children.insert(0, const MySpacesSection(limit: 5));
       final widthCount = (MediaQuery.of(context).size.width ~/ 600).toInt();
       const int minCount = 2;
       // we have more than just the spaces screen, put them into a grid.
@@ -115,15 +115,6 @@ class _DashboardState extends ConsumerState<Dashboard> {
               SliverAppBar(
                 backgroundColor: Colors.transparent,
                 actions: <Widget>[
-                  IconButton(
-                    icon: const Icon(Atlas.settings_monitor_thin),
-                    onPressed: () {
-                      customMsgSnackbar(
-                        context,
-                        'Configuration Page for Dashboard not yet implemented',
-                      );
-                    },
-                  ),
                   IconButton(
                     icon: const Icon(Atlas.construction_tools_thin),
                     onPressed: () => context.pushNamed(Routes.settings.name),
