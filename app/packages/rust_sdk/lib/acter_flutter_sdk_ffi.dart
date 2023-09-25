@@ -2088,6 +2088,68 @@ class Api {
     return tmp7;
   }
 
+  String? __calendarEventMyRsvpStatusStrFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _calendarEventMyRsvpStatusStrFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
+    return tmp7;
+  }
+
   EventId? __calendarEventUpdateBuilderSendFuturePoll(
     int boxed,
     int postCobject,
@@ -13044,6 +13106,17 @@ class Api {
           int Function(
             int,
           )>();
+  late final _calendarEventMyRsvpStatusStrPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__CalendarEvent_my_rsvp_status_str");
+
+  late final _calendarEventMyRsvpStatusStr =
+      _calendarEventMyRsvpStatusStrPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _calendarEventUpdateBuilderTitlePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -21357,6 +21430,21 @@ class Api {
             int,
             int,
           )>();
+  late final _calendarEventMyRsvpStatusStrFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventMyRsvpStatusStrFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__CalendarEvent_my_rsvp_status_str_future_poll");
+
+  late final _calendarEventMyRsvpStatusStrFuturePoll =
+      _calendarEventMyRsvpStatusStrFuturePollPtr.asFunction<
+          _CalendarEventMyRsvpStatusStrFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _calendarEventUpdateBuilderSendFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _CalendarEventUpdateBuilderSendFuturePollReturn Function(
@@ -28363,6 +28451,23 @@ class CalendarEvent {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 =
         _nativeFuture(tmp3_1, _api.__calendarEventRsvpManagerFuturePoll);
+    return tmp2;
+  }
+
+  /// get my RSVP status, one of Yes/Maybe/No/Pending
+  Future<String> myRsvpStatusStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventMyRsvpStatusStr(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__CalendarEvent_my_rsvp_status_str_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__calendarEventMyRsvpStatusStrFuturePoll);
     return tmp2;
   }
 
@@ -47725,6 +47830,25 @@ class _CalendarEventRsvpManagerFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
+}
+
+class _CalendarEventMyRsvpStatusStrFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
 }
 
 class _CalendarEventUpdateBuilderSendFuturePollReturn extends ffi.Struct {

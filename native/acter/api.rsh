@@ -310,6 +310,8 @@ object CalendarEvent {
     fn update_builder() -> Result<CalendarEventUpdateBuilder>;
     /// get RSVP manager
     fn rsvp_manager() -> Future<Result<RsvpManager>>;
+    /// get my RSVP status, one of Yes/Maybe/No/Pending
+    fn my_rsvp_status_str() -> Future<Result<string>>;
 }
 
 object CalendarEventUpdateBuilder {

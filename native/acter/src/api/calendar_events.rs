@@ -229,6 +229,26 @@ impl CalendarEvent {
             })
             .await?
     }
+
+    pub async fn my_rsvp_status_str(&self) -> Result<String> {
+        let client = self.client.clone();
+        let event_id = self.inner.event_id().to_owned();
+        let my_id = self.client.user_id().context("User not found")?;
+
+        RUNTIME
+            .spawn(async move {
+                let manager =
+                    models::RsvpManager::from_store_and_event_id(client.store(), &event_id).await;
+                // read last rsvp
+                for entry in manager.rsvp_entries().await?.into_iter().rev() {
+                    if entry.meta.sender == my_id {
+                        return Ok(entry.status.to_string());
+                    }
+                }
+                Ok("Pending".to_string())
+            })
+            .await?
+    }
 }
 
 #[derive(Clone)]
