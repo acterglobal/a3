@@ -1,27 +1,19 @@
-import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
-<<<<<<< HEAD
 import 'package:acter/features/profile/widgets/profile_item_tile.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
-import 'package:acter/common/dialogs/pop_up_dialog.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-=======
-import 'package:acter/common/widgets/default_dialog.dart';
-import 'package:acter/common/widgets/user_avatar.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
->>>>>>> main
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import 'package:acter/common/widgets/default_dialog.dart';
 
 class ChangeDisplayName extends StatefulWidget {
   final AccountProfile account;
@@ -188,7 +180,6 @@ class MyProfile extends ConsumerWidget {
                           context,
                           ref,
                         ),
-<<<<<<< HEAD
                         child: Container(
                           margin: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
@@ -203,9 +194,6 @@ class MyProfile extends ConsumerWidget {
                             size: 80,
                           ),
                         ),
-=======
-                        child: const UserAvatarWidget(size: 100),
->>>>>>> main
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -243,7 +231,6 @@ class MyProfile extends ConsumerWidget {
                           ),
                         ],
                       ),
-<<<<<<< HEAD
                       const SizedBox(height: 5),
                         Container(
                         margin: const EdgeInsets.symmetric(vertical: 10),
@@ -260,20 +247,12 @@ class MyProfile extends ConsumerWidget {
                             context.pushNamed(Routes.settings.name),color: Colors.white,),
                           ],
                         ),
-=======
-                      const SizedBox(height: 30),
-                      OutlinedButton.icon(
-                        icon: const Icon(Atlas.construction_tools_thin),
-                        onPressed: () =>
-                            context.pushNamed(Routes.settings.name),
-                        label: const Text('Settings'),
->>>>>>> main
                       ),
                     const SizedBox(height: 5),
 
                     //Not implemented yet 
                     Visibility(
-                      visible: true,
+                      visible: false,
                       child: Container(
                           margin: const EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
