@@ -54,17 +54,6 @@ final maybeSpaceProvider =
   () => AsyncMaybeSpaceNotifier(),
 );
 
-/// Get the user's membership for a specific space based off the spaceId
-/// will throw if the client doesn't kow the space
-final spaceMembershipProvider =
-    FutureProvider.autoDispose.family<Member?, String>((ref, spaceId) async {
-  final space = await ref.watch(spaceProvider(spaceId).future);
-  if (!space.isJoined()) {
-    return null;
-  }
-  return await space.getMyMembership();
-});
-
 /// Get the SpaceItem of a spaceId or null if the space wasn't found. Keeps up to
 /// date with the underlying client even if the space wasn't found initially.
 final maybeSpaceInfoProvider =
@@ -285,7 +274,7 @@ final spaceRelationsOverviewProvider = FutureProvider.autoDispose
   if (relatedSpaces == null) {
     throw 'Space not found';
   }
-  final membership = await ref.watch(spaceMembershipProvider(spaceId).future);
+  final membership = await ref.watch(roomMembershipProvider(spaceId).future);
   bool hasMoreSubspaces = false;
   bool hasMoreChats = false;
   final List<Space> knownSubspaces = [];

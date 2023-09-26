@@ -1,0 +1,7 @@
+- Fix: Parent space in Chat is shown.
+- Fix: Invite flow for chat reactivated
+- Fix: Joining related chats from a space
+- Fix: Setting the power level of members in a space
+- UX: Show content of Registration Token
+- Removed: Acter welcome screen when the user has no spaces
+- Fix: When redacting content, move back to the type index for that space

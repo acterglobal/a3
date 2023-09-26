@@ -157,7 +157,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                   return;
                 }
                 Navigator.of(context, rootNavigator: true).pop();
-                context.goNamed(
+                context.pushNamed(
                   Routes.pin.name,
                   pathParameters: {'pinId': pinId.toString()},
                 );

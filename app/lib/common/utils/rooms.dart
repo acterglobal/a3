@@ -1,10 +1,8 @@
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 Future<void> joinRoom(
   BuildContext context,
@@ -12,6 +10,7 @@ Future<void> joinRoom(
   String displayMsg,
   String roomIdOrAlias,
   String? server,
+  Function(String) forward,
 ) async {
   showAdaptiveDialog(
     barrierDismissible: false,
@@ -36,12 +35,7 @@ Future<void> joinRoom(
       return;
     }
     Navigator.of(context, rootNavigator: true).pop();
-    context.goNamed(
-      Routes.space.name,
-      pathParameters: {
-        'spaceId': newSpace.getRoomIdStr(),
-      },
-    );
+    forward(newSpace.getRoomIdStr());
   } catch (err) {
     // We are doing as expected, but the lints triggers.
     // ignore: use_build_context_synchronously
