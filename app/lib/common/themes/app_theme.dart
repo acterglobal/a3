@@ -69,7 +69,7 @@ class AppTheme {
     brightness: Brightness.dark,
     primary: Color(0xFF9CCAFF),
     onPrimary: Color(0xFF003257),
-    primaryContainer: Color(0xFF00497B),
+    primaryContainer: Color(0xFF10273D),
     onPrimaryContainer: Color(0xFFD0E4FF),
     secondary: Color(0xFF9ACBFF),
     onSecondary: Color(0xFF003355),
@@ -103,7 +103,7 @@ class AppTheme {
     begin: Alignment.topCenter,
     end: Alignment.center,
     colors: <Color>[
-      Color(0xFF001B3D),
+      Color(0xFF10273D),
       Color(0xFF121212),
     ],
   );
@@ -190,8 +190,12 @@ class AppTheme {
         circularTrackColor: Colors.transparent,
       ),
       dividerColor: const Color(0xFFDDEDFC),
+      appBarTheme: AppBarTheme(
+        backgroundColor: brandColorScheme.primaryContainer,
+        elevation: 0,
+      ),
       cardTheme: CardTheme(
-        color: brandColorScheme.primaryContainer,
+        color: brandColorScheme.secondaryContainer,
         elevation: 0,
         margin: const EdgeInsets.all(8),
       ),
@@ -202,6 +206,12 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           side: BorderSide.none,
           borderRadius: BorderRadius.circular(6),
+        ),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: brandColorScheme.neutral,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -225,6 +235,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(12),
           ),
           foregroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
         ),
       ),
       dividerTheme: const DividerThemeData(

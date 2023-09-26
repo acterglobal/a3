@@ -2,7 +2,6 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/chat_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/avatar_builder.dart';
@@ -12,7 +11,6 @@ import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -26,7 +24,10 @@ import 'package:intl/intl.dart';
 
 class RoomPage extends ConsumerWidget {
   final String roomId;
-  const RoomPage({required this.roomId, super.key});
+  const RoomPage({
+    required this.roomId,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -54,9 +55,9 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
 
   @override
   Widget build(BuildContext context) {
-    final location = ref.watch(currentRoutingLocation);
     final client = ref.watch(clientProvider);
     final convo = widget.convo;
+    final inSideBar = ref.watch(inSideBarProvider);
     final convoProfile = ref.watch(chatProfileDataProvider(convo));
     final activeMembers = ref.watch(chatMembersProvider(convo.getRoomIdStr()));
     final chatState = ref.watch(chatStateProvider(convo));
@@ -74,11 +75,17 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
       builder: (context, orientation) => Scaffold(
         resizeToAvoidBottomInset: orientation == Orientation.portrait,
         appBar: AppBar(
+          automaticallyImplyLeading: false,
+          leading: !inSideBar
+              ? IconButton(
+                  onPressed: () => context.canPop()
+                      ? context.pop()
+                      : context.goNamed(Routes.chat.name),
+                  icon: const Icon(Icons.chevron_left_outlined, size: 28),
+                )
+              : null,
           centerTitle: true,
           toolbarHeight: 70,
-          flexibleSpace: FrostEffect(
-            child: Container(),
-          ),
           title: Column(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -117,14 +124,14 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
           actions: [
             GestureDetector(
               onTap: () {
-                if (!isDesktop || location != Routes.chat.route) {
-                  context.pushNamed(
-                    Routes.chatProfile.name,
-                    pathParameters: {'roomId': convo.getRoomIdStr()},
-                  );
-                } else {
-                  ref.read(showFullSplitView.notifier).update((state) => true);
-                }
+                inSideBar
+                    ? ref
+                        .read(hasExpandedPanel.notifier)
+                        .update((state) => true)
+                    : context.pushNamed(
+                        Routes.chatProfile.name,
+                        pathParameters: {'roomId': convo.getRoomIdStr()},
+                      );
               },
               child: Padding(
                 padding: const EdgeInsets.only(right: 10),
@@ -134,7 +141,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                   child: convoProfile.when(
                     data: (profile) => ActerAvatar(
                       uniqueId: convo.getRoomIdStr(),
-                      mode: DisplayMode.GroupChat,
+                      mode: profile.isDm ? DisplayMode.User : DisplayMode.Space,
                       displayName: profile.displayName ?? convo.getRoomIdStr(),
                       avatar: profile.getAvatarImage(),
                       size: 36,

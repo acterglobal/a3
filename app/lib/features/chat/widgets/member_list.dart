@@ -23,15 +23,16 @@ class MemberList extends ConsumerWidget {
     return members.when(
       data: (members) {
         if (members.isEmpty) {
-          return const SliverToBoxAdapter(
-            child: Center(
-              child: Text(
-                'No members found. How can that even be, you are here, aren\'t you?',
-              ),
+          return const Center(
+            child: Text(
+              'No members found. How can that even be, you are here, aren\'t you?',
             ),
           );
         }
-        return SliverList.builder(
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(vertical: 5),
           itemCount: members.length,
           itemBuilder: (context, index) {
             final member = members[index];
@@ -46,15 +47,11 @@ class MemberList extends ConsumerWidget {
           },
         );
       },
-      error: (error, stack) => SliverToBoxAdapter(
-        child: Center(
-          child: Text('Loading failed: $error'),
-        ),
+      error: (error, stack) => Center(
+        child: Text('Loading failed: $error'),
       ),
-      loading: () => const SliverToBoxAdapter(
-        child: Center(
-          child: Text('Loading'),
-        ),
+      loading: () => const Center(
+        child: Text('Loading'),
       ),
     );
   }

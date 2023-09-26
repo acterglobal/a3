@@ -104,7 +104,10 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             widgetWidth: size.width,
             child: Container(
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+                color: Theme.of(context)
+                    .colorScheme
+                    .primaryContainer
+                    .withOpacity(0.5),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Padding(
@@ -139,7 +142,10 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+                color: Theme.of(context)
+                    .colorScheme
+                    .primaryContainer
+                    .withOpacity(0.5),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -247,7 +253,10 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 15),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+                color: Theme.of(context)
+                    .colorScheme
+                    .primaryContainer
+                    .withOpacity(0.5),
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -652,7 +661,6 @@ class _TextInputWidget extends ConsumerWidget {
         color: Theme.of(context).colorScheme.onSecondary,
         borderRadius: BorderRadius.circular(6),
       ),
-      autofocus: true,
       onChanged: (String value) async {
         _updateTextValue(roomId, ref);
         if (value.isNotEmpty) {
@@ -671,7 +679,7 @@ class _TextInputWidget extends ConsumerWidget {
       enabled: chatInputState.allowEdit,
       onSubmitted: (value) => onSendButtonPressed(),
       style: Theme.of(context).textTheme.bodySmall,
-      cursorColor: Theme.of(context).colorScheme.tertiary,
+      cursorColor: Theme.of(context).colorScheme.primary,
       maxLines: 6,
       minLines: 1,
       focusNode: ref.watch(chatInputFocusProvider),
@@ -681,7 +689,7 @@ class _TextInputWidget extends ConsumerWidget {
             ? Icon(
                 Icons.shield,
                 size: 18,
-                color: Theme.of(context).colorScheme.primary,
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
               )
             : null,
         suffixIcon: InkWell(
@@ -711,14 +719,14 @@ class _TextInputWidget extends ConsumerWidget {
           borderSide: BorderSide(
             width: 0.5,
             style: BorderStyle.solid,
-            color: Theme.of(context).colorScheme.secondary,
+            color: Theme.of(context).colorScheme.secondaryContainer,
           ),
         ),
         hintText: isEncrypted
             ? 'New Encrypted Message '
             : AppLocalizations.of(context)!.newMessage,
         hintStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
-              color: Theme.of(context).colorScheme.secondary,
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
             ),
         contentPadding: const EdgeInsets.all(15),
         hintMaxLines: 1,
