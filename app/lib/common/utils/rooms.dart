@@ -12,6 +12,7 @@ Future<void> joinRoom(
   String displayMsg,
   String roomIdOrAlias,
   String? server,
+  Function(String) forward,
 ) async {
   showAdaptiveDialog(
     barrierDismissible: false,
@@ -36,12 +37,7 @@ Future<void> joinRoom(
       return;
     }
     Navigator.of(context, rootNavigator: true).pop();
-    context.goNamed(
-      Routes.space.name,
-      pathParameters: {
-        'spaceId': newSpace.getRoomIdStr(),
-      },
-    );
+    forward(newSpace.getRoomIdStr());
   } catch (err) {
     // We are doing as expected, but the lints triggers.
     // ignore: use_build_context_synchronously

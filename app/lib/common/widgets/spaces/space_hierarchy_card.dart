@@ -1,13 +1,17 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/rooms.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_with_profile_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class RoomHierarchyJoinButtons extends ConsumerWidget {
+  final Function(String)? forward;
   final SpaceHierarchyRoomInfo space;
-  const RoomHierarchyJoinButtons({super.key, required this.space});
+  const RoomHierarchyJoinButtons(
+      {super.key, required this.space, this.forward});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,6 +34,13 @@ class RoomHierarchyJoinButtons extends ConsumerWidget {
                 'Trying to join ${space.name()}',
                 space.roomIdStr(),
                 space.viaServerName(),
+                forward ??
+                    (roomId) => context.pushNamed(
+                          Routes.space.name,
+                          pathParameters: {
+                            'spaceId': roomId,
+                          },
+                        ),
               );
             },
             child: const Text('join'),
@@ -46,6 +57,13 @@ class RoomHierarchyJoinButtons extends ConsumerWidget {
                 'Trying to join ${space.name()}',
                 space.roomIdStr(),
                 space.viaServerName(),
+                forward ??
+                    (roomId) => context.pushNamed(
+                          Routes.space.name,
+                          pathParameters: {
+                            'spaceId': roomId,
+                          },
+                        ),
               );
             },
             child: const Text('join'),
