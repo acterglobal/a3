@@ -53,6 +53,7 @@ class PinPage extends ConsumerWidget {
 
       if (memb.canString('CanRedact') ||
           memb.userId().toString() == pin.sender().toString()) {
+        final roomId = pin.roomIdStr();
         actions.addAll([
           PopupMenuItem(
             onTap: () => showAdaptiveDialog(
@@ -63,11 +64,14 @@ class PinPage extends ConsumerWidget {
                 onSuccess: () {
                   ref.invalidate(pinsProvider);
                   if (context.mounted) {
-                    context.go('/');
+                    context.goNamed(
+                      Routes.spaceEvents.name,
+                      pathParameters: {'spaceId': roomId},
+                    );
                   }
                 },
                 senderId: pin.sender().toString(),
-                roomId: pin.roomIdStr(),
+                roomId: roomId,
                 isSpace: true,
               ),
             ),

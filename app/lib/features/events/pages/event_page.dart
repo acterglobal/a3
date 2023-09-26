@@ -49,6 +49,7 @@ class CalendarEventPage extends ConsumerWidget {
 
       if (memb.canString('CanRedact') ||
           memb.userId().toString() == event.sender().toString()) {
+        final roomId = event.roomIdStr();
         actions.addAll([
           PopupMenuItem(
             onTap: () => showAdaptiveDialog(
@@ -59,11 +60,14 @@ class CalendarEventPage extends ConsumerWidget {
                 onSuccess: () {
                   ref.invalidate(calendarEventProvider);
                   if (context.mounted) {
-                    context.go('/');
+                    context.goNamed(
+                      Routes.spaceEvents.name,
+                      pathParameters: {'spaceId': roomId},
+                    );
                   }
                 },
                 senderId: event.sender().toString(),
-                roomId: event.roomIdStr(),
+                roomId: roomId,
                 isSpace: true,
               ),
             ),
