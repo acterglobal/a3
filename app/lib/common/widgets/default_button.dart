@@ -19,21 +19,18 @@ class DefaultButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      child: isOutlined!
-          ? OutlinedButton(
-              style: style,
-              onPressed: onPressed,
-              child: Text(title),
-            )
-          : ElevatedButton(
-              style: style,
-              onPressed: onPressed,
-              child: Text(
-                title,
-              ),
+    return isOutlined!
+        ? OutlinedButton(
+            style: style,
+            onPressed: onPressed,
+            child: Text(title),
+          )
+        : ElevatedButton(
+            style: style,
+            onPressed: onPressed,
+            child: Text(
+              title,
             ),
-    );
+          );
   }
 }

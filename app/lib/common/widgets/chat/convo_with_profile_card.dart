@@ -65,7 +65,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
                 onLongPress: onLongPress,
                 leading: (!profile.isDm && showParent)
                     ? SpaceParentBadge(
-                        spaceId: roomId,
+                        roomId: roomId,
                         badgeSize: 20,
                         child: avatar,
                       )

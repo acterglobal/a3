@@ -119,7 +119,7 @@ class RoomProfilePage extends ConsumerWidget {
                       ),
                       child: SpaceParentBadge(
                         badgeSize: 20,
-                        spaceId: roomId,
+                        roomId: roomId,
                         child: convoProfile.when(
                           data: (profile) => ActerAvatar(
                             mode: DisplayMode.GroupChat,

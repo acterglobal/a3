@@ -39,7 +39,7 @@ object UtcDateTime {
     fn timestamp() -> i64;
     fn to_rfc2822() -> string;
     fn to_rfc3339() -> string;
-    fn timestamp_millis()-> i64;
+    fn timestamp_millis() -> i64;
 }
 
 object RefDetails {
@@ -315,20 +315,24 @@ object CalendarEvent {
 object CalendarEventUpdateBuilder {
     /// set title of the event>
     fn title(title: string);
+
     /// set description text
     fn description_text(body: string);
+
     /// set utc start in rfc3339 string
-    fn utc_start_from_rfc3339(utc_start: string);
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
     /// set utc start in rfc2822 string
-    fn utc_start_from_rfc2822(utc_start: string);
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
     /// set utc start in custom format
-    fn utc_start_from_format(utc_start: string, format: string);
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
+
     /// set utc end in rfc3339 string
-    fn utc_end_from_rfc3339(utc_end: string);
+    fn utc_end_from_rfc3339(utc_end: string) -> Result<()>;
     /// set utc end in rfc2822 string
-    fn utc_end_from_rfc2822(utc_end: string);
+    fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
     /// set utc end in custom format
-    fn utc_end_from_format(utc_end: string, format: string);
+    fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
+
     /// send builder update
     fn send() -> Future<Result<EventId>>;
 }
@@ -344,16 +348,16 @@ object CalendarEventDraft {
     /// set the utc_start for this calendar event in rfc3339 format
     fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
     /// set the utc_start for this calendar event in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string)-> Result<()>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
     /// set the utc_start for this calendar event in custom format
-    fn utc_start_from_format(utc_start: string, format: string)-> Result<()>;
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
 
     /// set the utc_end for this calendar event in rfc3339 format
     fn utc_end_from_rfc3339(utc_end: string) -> Result<()>;
     /// set the utc_end for this calendar event in rfc2822 format
-    fn utc_end_from_rfc2822(utc_end: string)-> Result<()>;
+    fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
     /// set the utc_end for this calendar event in custom format
-    fn utc_end_from_format(utc_end: string, format: string)-> Result<()>;
+    fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
 
     /// create this calendar event
     fn send() -> Future<Result<EventId>>;
@@ -387,7 +391,7 @@ object RsvpManager {
 
 object RsvpDraft {
     /// set status of this RSVP
-    fn status(status: string) -> RsvpDraft;
+    fn status(status: string);
 
     /// create this RSVP
     fn send() -> Future<Result<EventId>>;
@@ -655,6 +659,15 @@ object TimelineDiff {
     fn value() -> Option<RoomMessage>;
 }
 
+/// Generic Room Properties
+object Room {
+    /// get the room profile that contains avatar and display name
+    fn get_profile() -> RoomProfile;
+
+    /// get the room profile that contains avatar and display name
+    fn space_relations() -> Future<Result<SpaceRelations>>;
+}
+
 
 object ConvoDiff {
     /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
@@ -699,6 +712,9 @@ object TimelineStream {
 object Convo {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> RoomProfile;
+
+    /// get the room profile that contains avatar and display name
+    fn space_relations() -> Future<Result<SpaceRelations>>;
 
     /// Change the avatar of the room
     fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
@@ -1072,18 +1088,18 @@ object TaskUpdateBuilder {
     /// set the utc_due for this task list in rfc3339 format
     fn utc_due_from_rfc3339(utc_due: string) -> Result<()>;
     /// set the utc_due for this task list in rfc2822 format
-    fn utc_due_from_rfc2822(utc_due: string)-> Result<()>;
+    fn utc_due_from_rfc2822(utc_due: string) -> Result<()>;
     /// set the utc_due for this task list in custom format
-    fn utc_due_from_format(utc_due: string, format: string)-> Result<()>;
+    fn utc_due_from_format(utc_due: string, format: string) -> Result<()>;
     fn unset_utc_due();
     fn unset_utc_due_update();
 
     /// set the utc_start for this task list in rfc3339 format
     fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
     /// set the utc_start for this task list in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string)-> Result<()>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
     /// set the utc_start for this task list in custom format
-    fn utc_start_from_format(utc_start: string, format: string)-> Result<()>;
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
     fn unset_utc_start();
     fn unset_utc_start_update();
 
@@ -1141,17 +1157,17 @@ object TaskDraft {
     /// set the utc_due for this task in rfc3339 format
     fn utc_due_from_rfc3339(utc_due: string) -> Result<()>;
     /// set the utc_due for this task in rfc2822 format
-    fn utc_due_from_rfc2822(utc_due: string)-> Result<()>;
+    fn utc_due_from_rfc2822(utc_due: string) -> Result<()>;
     /// set the utc_due for this task in custom format
-    fn utc_due_from_format(utc_due: string, format: string)-> Result<()>;
+    fn utc_due_from_format(utc_due: string, format: string) -> Result<()>;
     fn unset_utc_due();
 
     /// set the utc_start for this task in rfc3339 format
     fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
     /// set the utc_start for this task in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string)-> Result<()>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
     /// set the utc_start for this task in custom format
-    fn utc_start_from_format(utc_start: string, format: string)-> Result<()>;
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
     fn unset_utc_start();
 
     /// set the sort order for this task
@@ -1823,6 +1839,9 @@ object Client {
     /// The user_id of the client
     /// deprecated, please use account() instead.
     fn user_id() -> Result<UserId>;
+
+    /// Get the generic room that user belongs to
+    fn room(room_id_or_alias: string) -> Future<Result<Room>>;
 
     /// get convo room
     fn convo(room_id_or_alias: string) -> Future<Result<Convo>>;

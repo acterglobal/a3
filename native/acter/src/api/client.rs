@@ -340,7 +340,7 @@ impl Client {
         futures::future::join_all(
             new_spaces
                 .into_iter()
-                .map(|room| Space::new(self.clone(), Room { room }))
+                .map(|room| Space::new(self.clone(), Room::new( self.core.clone(), room )))
                 .map(|mut space| {
                     let history = history.clone();
                     let room_handles = room_handles.clone();
@@ -409,9 +409,7 @@ impl Client {
                 let joined = c
                     .join_room_by_id_or_alias(alias.as_ref(), server_names.as_slice())
                     .await?;
-                Ok(Room {
-                    room: joined.into(),
-                })
+                Ok(Room::new(c.core.clone(), joined.into()))
             })
             .await?
     }
@@ -483,27 +481,27 @@ impl Client {
 
     async fn get_spaces_and_chats(&self, filter: Option<SpaceFilter>) -> (Vec<Room>, Vec<Room>) {
         let filter = filter.unwrap_or_default();
-        futures::stream::iter(self.rooms().into_iter())
-            .filter(|room| futures::future::ready(filter.should_include(room)))
+        let client = self.core.clone();
+        self.rooms()
+            .into_iter()
+            .filter(|room| filter.should_include(room))
             .fold(
                 (Vec::new(), Vec::new()),
-                async move |(mut spaces, mut convos), room| {
+                move |(mut spaces, mut convos), room| {
                     if matches!(room, SdkRoom::Left(_)) {
                         // ignore rooms we aren't in anymore ... maybe make them available somewhere else at some point
                         return (spaces, convos);
                     }
-                    let inner = Room { room };
+                    let inner = Room::new(client.clone(), room);
 
                     if inner.is_space() {
                         spaces.push(inner);
                     } else {
                         convos.push(inner);
                     }
-
                     (spaces, convos)
                 },
             )
-            .await
     }
 
     async fn refresh_rooms(&self, changed_rooms: Vec<&OwnedRoomId>) {
@@ -528,7 +526,7 @@ impl Client {
                     continue;
                 }
 
-                let inner = Room { room: room.clone() };
+                let inner = Room::new(self.core.clone(), room.clone());
 
                 if inner.is_space() {
                     if let Some(space_idx) = spaces.iter().position(|s| s.room_id() == r_id) {
@@ -847,7 +845,7 @@ impl Client {
         self.core
             .client()
             .get_room(room_id)
-            .map(|room| Room { room })
+            .map(|room| Room::new(self.core.clone(), room))
     }
 
     pub async fn room_by_alias_typed(&self, room_alias: &OwnedRoomAliasId) -> Result<Room> {
@@ -855,12 +853,12 @@ impl Client {
             // looping locally first
             if let Some(con_alias) = r.canonical_alias() {
                 if &con_alias == room_alias {
-                    return Ok(Room { room: r });
+                    return Ok(Room::new(self.core.clone(), r));
                 }
             }
             for alt_alias in r.alt_aliases() {
                 if &alt_alias == room_alias {
-                    return Ok(Room { room: r });
+                    return Ok(Room::new(self.core.clone(), r));
                 }
             }
         }
