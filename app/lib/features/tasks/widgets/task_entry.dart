@@ -1,14 +1,10 @@
+import 'package:acter/features/tasks/providers/tasks.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jiffy/jiffy.dart';
-
-final taskCommentsProvider =
-    FutureProvider.autoDispose.family<CommentsManager, Task>((ref, t) async {
-  return await t.comments();
-});
 
 class TaskEntry extends ConsumerWidget {
   final Task task;
@@ -89,8 +85,7 @@ class TaskEntry extends ConsumerWidget {
                 ),
       ),
     );
-    final assignees = task.assignees();
-    if (assignees.isNotEmpty) {}
+
     return ListTile(
       horizontalTitleGap: 0,
       minVerticalPadding: 0,
