@@ -1,4 +1,4 @@
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,7 +8,7 @@ import 'package:logging/logging.dart';
 final log = Logger('SpaceParentBadge');
 
 class SpaceParentBadge extends ConsumerWidget {
-  final String spaceId;
+  final String roomId;
   final Widget child;
   final double badgeSize;
 
@@ -18,7 +18,7 @@ class SpaceParentBadge extends ConsumerWidget {
   final GestureTapCallback? onTap;
   const SpaceParentBadge({
     super.key,
-    required this.spaceId,
+    required this.roomId,
     required this.child,
     this.onTap,
     this.badgeSize = 25,
@@ -26,7 +26,7 @@ class SpaceParentBadge extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final canonicalParent = ref.watch(canonicalParentProvider(spaceId));
+    final canonicalParent = ref.watch(canonicalParentProvider(roomId));
     final badgeOverflow = badgeSize / 5;
     return Stack(
       clipBehavior: Clip.none,
@@ -68,7 +68,7 @@ class SpaceParentBadge extends ConsumerWidget {
             },
             error: (error, stackTrace) {
               log.severe(
-                'Failed to load canonical parent of $spaceId',
+                'Failed to load canonical parent of $roomId',
                 error,
                 stackTrace,
               );

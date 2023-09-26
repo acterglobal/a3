@@ -198,7 +198,7 @@ class _ShellHeader extends ConsumerWidget {
       child: Row(
         children: <Widget>[
           SpaceParentBadge(
-            spaceId: spaceId,
+            roomId: spaceId,
             badgeSize: 40,
             child: ActerAvatar(
               mode: DisplayMode.Space,
