@@ -1736,6 +1736,10 @@ impl Room {
         matches!(self.room, SdkRoom::Joined(_))
     }
 
+    pub fn room_id_str(&self) -> String {
+        self.room.room_id().to_string()
+    }
+
     pub async fn invite_user(&self, user_id: String) -> Result<bool> {
         let room = if let SdkRoom::Joined(r) = &self.room {
             r.clone()

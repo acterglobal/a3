@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
@@ -31,7 +32,11 @@ class SettingsAndMembership {
   final Member? member;
 
   const SettingsAndMembership(
-      this.space, this.powerLevels, this.settings, this.member,);
+    this.space,
+    this.powerLevels,
+    this.settings,
+    this.member,
+  );
 }
 
 final spaceAppSettingsProvider = FutureProvider.autoDispose
@@ -41,7 +46,7 @@ final spaceAppSettingsProvider = FutureProvider.autoDispose
     space,
     await space.powerLevels(),
     await space.appSettings(),
-    await ref.watch(spaceMembershipProvider(spaceId).future),
+    await ref.watch(roomMembershipProvider(spaceId).future),
   );
 });
 

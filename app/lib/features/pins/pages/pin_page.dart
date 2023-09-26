@@ -1,6 +1,6 @@
 import 'dart:core';
 
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -30,7 +30,7 @@ class PinPage extends ConsumerWidget {
   ) {
     final spaceId = pin.roomIdStr();
     List<PopupMenuEntry> actions = [];
-    final membership = ref.watch(spaceMembershipProvider(spaceId));
+    final membership = ref.watch(roomMembershipProvider(spaceId));
     if (membership.valueOrNull != null) {
       final memb = membership.requireValue!;
       if (memb.canString('CanPostPin')) {

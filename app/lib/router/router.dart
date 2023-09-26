@@ -39,7 +39,7 @@ import 'package:acter/features/settings/pages/info_page.dart';
 import 'package:acter/features/settings/pages/labs_page.dart';
 import 'package:acter/features/settings/pages/licenses_page.dart';
 import 'package:acter/features/space/dialogs/edit_space_sheet.dart';
-import 'package:acter/features/space/dialogs/invite_to_space_dialog.dart';
+import 'package:acter/common/dialogs/invite_to_room_dialog.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/pages/events_page.dart';
 import 'package:acter/features/space/pages/overview_page.dart';
@@ -343,8 +343,18 @@ List<RouteBase> makeRoutes(Ref ref) {
       name: Routes.spaceInvite.name,
       path: Routes.spaceInvite.route,
       pageBuilder: (context, state) => DialogPage(
-        builder: (BuildContext ctx) => InviteToSpaceDialog(
-          spaceId: state.pathParameters['spaceId']!,
+        builder: (BuildContext ctx) => InviteToRoomDialog(
+          roomId: state.pathParameters['spaceId']!,
+        ),
+      ),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.chatInvite.name,
+      path: Routes.chatInvite.route,
+      pageBuilder: (context, state) => DialogPage(
+        builder: (BuildContext ctx) => InviteToRoomDialog(
+          roomId: state.pathParameters['chatId']!,
         ),
       ),
     ),

@@ -1,4 +1,4 @@
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -26,7 +26,7 @@ class CalendarEventPage extends ConsumerWidget {
   ) {
     final spaceId = event.roomIdStr();
     List<PopupMenuEntry> actions = [];
-    final membership = ref.watch(spaceMembershipProvider(spaceId));
+    final membership = ref.watch(roomMembershipProvider(spaceId));
     if (membership.valueOrNull != null) {
       final memb = membership.requireValue!;
       if (memb.canString('CanPostEvent')) {

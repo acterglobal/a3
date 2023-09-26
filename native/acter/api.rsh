@@ -661,11 +661,33 @@ object TimelineDiff {
 
 /// Generic Room Properties
 object Room {
+    /// the RoomId as a String
+    fn room_id_str() -> string;
+
+    /// whether we are part of this room
+    fn is_joined() -> bool;
+
     /// get the room profile that contains avatar and display name
     fn get_profile() -> RoomProfile;
 
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
+
+    /// the Membership of myself
+    fn get_my_membership() -> Future<Result<Member>>;
+
+    /// the members currently in the room
+    fn active_members() -> Future<Result<Vec<Member>>>;
+
+    /// the members invited to this room
+    fn invited_members() -> Future<Result<Vec<Member>>>;
+
+    /// get the room member by user id
+    fn get_member(user_id: string) -> Future<Result<Member>>;
+
+    /// invite the new user to this room
+    fn invite_user(user_id: string) -> Future<Result<bool>>;
+
 }
 
 

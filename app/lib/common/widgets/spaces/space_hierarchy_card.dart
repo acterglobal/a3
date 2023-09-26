@@ -11,7 +11,7 @@ class RoomHierarchyJoinButtons extends ConsumerWidget {
   final Function(String)? forward;
   final SpaceHierarchyRoomInfo space;
   const RoomHierarchyJoinButtons(
-      {super.key, required this.space, this.forward});
+      {super.key, required this.space, this.forward,});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
