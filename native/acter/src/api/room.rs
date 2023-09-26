@@ -9,6 +9,7 @@ use acter_core::{
         news::{NewsContent, NewsEntryEvent, NewsEntryEventContent},
         pins::PinEventContent,
         settings::{ActerAppSettings, ActerAppSettingsContent},
+        tasks::{TaskEventContent, TaskListEventContent},
     },
     spaces::is_acter_space,
     statics::PURPOSE_FIELD_DEV,
@@ -96,6 +97,8 @@ pub enum MemberPermission {
     CanPostNews,
     CanPostPin,
     CanPostEvent,
+    CanPostTaskList,
+    CanPostTask,
     // moderation tools
     CanBan,
     CanInvite,
@@ -231,6 +234,36 @@ impl Member {
                 {
                     PermissionTest::Message(MessageLikeEventType::from(
                         <CalendarEventEventContent as StaticEventContent>::TYPE,
+                    ))
+                } else {
+                    // Not an acter space or Pins are not activated..
+                    return false;
+                }
+            }
+            MemberPermission::CanPostTaskList => {
+                if self
+                    .acter_app_settings
+                    .as_ref()
+                    .map(|s| s.tasks().active())
+                    .unwrap_or_default()
+                {
+                    PermissionTest::Message(MessageLikeEventType::from(
+                        <TaskListEventContent as StaticEventContent>::TYPE,
+                    ))
+                } else {
+                    // Not an acter space or Pins are not activated..
+                    return false;
+                }
+            }
+            MemberPermission::CanPostTask => {
+                if self
+                    .acter_app_settings
+                    .as_ref()
+                    .map(|s| s.tasks().active())
+                    .unwrap_or_default()
+                {
+                    PermissionTest::Message(MessageLikeEventType::from(
+                        <TaskEventContent as StaticEventContent>::TYPE,
                     ))
                 } else {
                     // Not an acter space or Pins are not activated..

@@ -55,16 +55,6 @@ class QuickActionsBuilder extends ConsumerWidget {
                   label: const Text('Update'),
                 )
               : null,
-          isActive(LabsFeature.tasks)
-              ? OutlinedButton.icon(
-                  onPressed: () {
-                    navigateTo(route: Routes.actionAddTask, push: true);
-                    debugPrint('Add Task');
-                  },
-                  icon: const Icon(Atlas.plus_circle_thin),
-                  label: const Text('Task'),
-                )
-              : null,
           canPostPin
               ? OutlinedButton.icon(
                   onPressed: () => context.pushNamed(Routes.actionAddPin.name),

@@ -63,7 +63,6 @@ class SettingsLabsPage extends ConsumerWidget {
                 ),
                 SettingsTile.switchTile(
                   title: const Text('Tasks'),
-                  enabled: false,
                   description:
                       const Text('Manage Tasks lists and ToDos together'),
                   initialValue: false,

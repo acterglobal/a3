@@ -56,6 +56,12 @@ extension CustomColorScheme on ColorScheme {
   Color get badgeUnread => const Color(0xFF67A24A);
   Color get badgeImportant => const Color(0xFFFFC333);
   Color get badgeUrgent => const Color(0xFF93000A);
+
+  // tasks
+  Color get tasksBG => const Color(0xFF67A200);
+  Color get tasksFG => const Color(0xFFD0E4FF);
+  Color get taskOverdueBG => AppTheme.brandColorScheme.errorContainer;
+  Color get taskOverdueFG => AppTheme.brandColorScheme.error;
 }
 
 class AppTheme {
