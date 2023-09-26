@@ -2,7 +2,6 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -43,8 +42,10 @@ class PinsPage extends ConsumerWidget {
                 ),
               ),
             ],
-            expandedContent: const Text(
+            expandedContent: Text(
               'Pinned items from all the Spaces you are part of',
+              softWrap: true,
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
           pins.when(
@@ -61,10 +62,9 @@ class PinsPage extends ConsumerWidget {
               }
               return SliverGrid.builder(
                 itemCount: pins.length,
-                gridDelegate:
-                    SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: max(1, min(widthCount, minCount)),
-                  height: MediaQuery.of(context).size.height * 0.15,
+                  childAspectRatio: 4.0,
                 ),
                 itemBuilder: (context, index) {
                   final pin = pins[index];

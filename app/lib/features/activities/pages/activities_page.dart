@@ -1,4 +1,3 @@
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
@@ -118,28 +117,10 @@ class ActivitiesPage extends ConsumerWidget {
             sectionDecoration: const BoxDecoration(
               gradient: AppTheme.primaryGradient,
             ),
-            actions: [
-              IconButton(
-                icon: const Icon(Atlas.funnel_sort_thin),
-                onPressed: () {
-                  customMsgSnackbar(
-                    context,
-                    'Activities filters not yet implemented',
-                  );
-                },
-              ),
-              IconButton(
-                icon: const Icon(Atlas.gear_thin),
-                onPressed: () {
-                  customMsgSnackbar(
-                    context,
-                    'Notifications Settings page not yet implemented',
-                  );
-                },
-              ),
-            ],
-            expandedContent: const Text(
+            expandedContent: Text(
               'All the important stuff requiring your attention can be found here',
+              softWrap: true,
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
           ...children,

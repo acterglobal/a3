@@ -5,6 +5,7 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -206,71 +207,80 @@ class PublicSpaceItem extends ConsumerWidget {
       color: Theme.of(context).colorScheme.surface,
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.start,
+        // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5),
-            child: ListTile(
-              onTap: () => onSelected(
-                space,
-                withInfo.valueOrNull,
-              ),
-              leading: withInfo.when(
-                data: (data) => data != null
-                    ? ActerAvatar(
-                        mode: DisplayMode.Space,
-                        uniqueId: spaceId,
-                        size: 48,
-                        displayName: data.spaceProfileData.displayName,
-                        avatar: data.spaceProfileData.hasAvatar()
-                            ? data.spaceProfileData.getAvatarImage()
-                            : null,
-                      )
-                    : fallbackAvatar(),
-                error: (e, a) {
-                  debugPrint('loading failed: $e');
-                  return ActerAvatar(
-                    mode: DisplayMode.Space,
-                    uniqueId: spaceId,
-                    size: 48,
-                    displayName: spaceId,
-                  );
-                },
-                loading: fallbackAvatar,
-              ),
-              title: Text(space.name() ?? 'no display name'),
-              subtitle: Text('${space.numJoinedMembers()} Members'),
-              trailing: withInfo.when(
-                data: (data) => data != null
-                    ? const Chip(label: Text('member'))
-                    : space.joinRuleStr() == 'Public'
-                        ? OutlinedButton(
-                            onPressed: () => onSelected(
-                              space,
-                              withInfo.valueOrNull,
+          Flexible(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: ListTile(
+                onTap: () => onSelected(
+                  space,
+                  withInfo.valueOrNull,
+                ),
+                leading: withInfo.when(
+                  data: (data) => data != null
+                      ? ActerAvatar(
+                          mode: DisplayMode.Space,
+                          uniqueId: spaceId,
+                          displayName: data.spaceProfileData.displayName,
+                          avatar: data.spaceProfileData.hasAvatar()
+                              ? data.spaceProfileData.getAvatarImage()
+                              : null,
+                        )
+                      : fallbackAvatar(),
+                  error: (e, a) {
+                    debugPrint('loading failed: $e');
+                    return ActerAvatar(
+                      mode: DisplayMode.Space,
+                      uniqueId: spaceId,
+                      displayName: spaceId,
+                    );
+                  },
+                  loading: fallbackAvatar,
+                ),
+                title: Text(
+                  space.name() ?? 'no display name',
+                  style: Theme.of(context).textTheme.labelLarge,
+                  softWrap: false,
+                ),
+                subtitle: Text(
+                  '${space.numJoinedMembers()} Members',
+                  style: Theme.of(context).textTheme.labelSmall,
+                  softWrap: false,
+                ),
+                trailing: withInfo.when(
+                  data: (data) => data != null
+                      ? const Chip(label: Text('member'))
+                      : space.joinRuleStr() == 'Public'
+                          ? OutlinedButton(
+                              onPressed: () => onSelected(
+                                space,
+                                withInfo.valueOrNull,
+                              ),
+                              child: const Text('join'),
+                            )
+                          : OutlinedButton(
+                              onPressed: () => onSelected(
+                                space,
+                                withInfo.valueOrNull,
+                              ),
+                              child: const Text('request to join'),
                             ),
-                            child: const Text('join'),
-                          )
-                        : OutlinedButton(
-                            onPressed: () => onSelected(
-                              space,
-                              withInfo.valueOrNull,
-                            ),
-                            child: const Text('request to join'),
-                          ),
-                error: (e, s) => Text('error loading membership: $e'),
-                loading: () => const Text('loading'),
+                  error: (e, s) => Text('error loading membership: $e'),
+                  loading: () => const Text('loading'),
+                ),
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(
-              left: 20,
-              top: 2,
-              bottom: 2,
+          Flexible(
+            child: Html(
+              padding: const EdgeInsets.all(8),
+              data: '${space.topic()}',
+              defaultTextStyle: Theme.of(context).textTheme.labelMedium,
+              shrinkToFit: true,
+              maxLines: 5,
             ),
-            child: Text('${space.topic()}'),
           ),
         ],
       ),
@@ -421,11 +431,7 @@ class PublicSpaceSelector extends ConsumerWidget {
             onSelected: (item, info) =>
                 onSelected(item, ref.read(selectedServerProvider), info),
           ),
-          pagedBuilder: (controller, builder) => PagedSliverGrid(
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 800,
-              childAspectRatio: 3,
-            ),
+          pagedBuilder: (controller, builder) => PagedSliverList(
             pagingController: controller,
             builderDelegate: builder,
           ),
