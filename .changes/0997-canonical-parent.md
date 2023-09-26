@@ -1,0 +1,1 @@
+- Fix: Parent space in Chat is shown again.

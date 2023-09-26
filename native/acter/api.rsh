@@ -659,6 +659,15 @@ object TimelineDiff {
     fn value() -> Option<RoomMessage>;
 }
 
+/// Generic Room Properties
+object Room {
+    /// get the room profile that contains avatar and display name
+    fn get_profile() -> RoomProfile;
+
+    /// get the room profile that contains avatar and display name
+    fn space_relations() -> Future<Result<SpaceRelations>>;
+}
+
 
 object ConvoDiff {
     /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
@@ -703,6 +712,9 @@ object TimelineStream {
 object Convo {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> RoomProfile;
+
+    /// get the room profile that contains avatar and display name
+    fn space_relations() -> Future<Result<SpaceRelations>>;
 
     /// Change the avatar of the room
     fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
@@ -1803,6 +1815,9 @@ object Client {
     /// The user_id of the client
     /// deprecated, please use account() instead.
     fn user_id() -> Result<UserId>;
+
+    /// Get the generic room that user belongs to
+    fn room(room_id_or_alias: string) -> Future<Result<Room>>;
 
     /// get convo room
     fn convo(room_id_or_alias: string) -> Future<Result<Convo>>;
