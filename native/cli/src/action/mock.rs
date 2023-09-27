@@ -7,12 +7,10 @@ use acter_core::models::ActerModel;
 use anyhow::{bail, Context, Result};
 use clap::{crate_version, Parser, Subcommand};
 use futures::StreamExt;
-use matrix_sdk::{
-    ruma::{api::client::room::Visibility, OwnedUserId},
-    HttpError,
-};
+use matrix_sdk::{ruma::api::client::room::Visibility, HttpError};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use matrix_sdk_sqlite::make_store_config;
+use ruma_common::OwnedUserId;
 use std::collections::HashMap;
 use tracing::{error, info, trace};
 

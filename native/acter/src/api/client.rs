@@ -20,18 +20,16 @@ use matrix_sdk::{
     event_handler::EventHandlerHandle,
     media::{MediaFormat, MediaRequest},
     room::Room as SdkRoom,
-    ruma::{
-        api::client::{
-            error::{ErrorBody, ErrorKind},
-            push::get_notifications::v3::Notification as RumaNotification,
-            Error,
-        },
-        device_id,
-        events::room::MediaSource,
-        OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
-        OwnedServerName, OwnedUserId, RoomOrAliasId, UserId,
+    ruma::api::client::{
+        error::{ErrorBody, ErrorKind},
+        push::get_notifications::v3::Notification as RumaNotification,
+        Error,
     },
-    Client as SdkClient, LoopCtrl, RumaApiError,
+    Client as SdkClient, LoopCtrl, RoomState, RumaApiError,
+};
+use ruma_common::{
+    device_id, events::room::MediaSource, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId,
+    OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId, RoomOrAliasId, UserId,
 };
 use std::{
     collections::{BTreeMap, HashMap},
@@ -109,10 +107,10 @@ pub struct SpaceFilter {
 
 impl SpaceFilter {
     pub fn should_include(&self, room: &SdkRoom) -> bool {
-        match room {
-            SdkRoom::Joined(r) => self.include_joined,
-            SdkRoom::Left(r) => self.include_left,
-            SdkRoom::Invited(r) => self.include_invited,
+        match room.state() {
+            RoomState::Joined => self.include_joined,
+            RoomState::Left => self.include_left,
+            RoomState::Invited => self.include_invited,
         }
     }
 }
@@ -402,7 +400,7 @@ impl Client {
         let server_names = server_names
             .into_iter()
             .map(OwnedServerName::try_from)
-            .collect::<Result<Vec<OwnedServerName>, ruma::IdParseError>>()?;
+            .collect::<Result<Vec<OwnedServerName>, ruma_common::IdParseError>>()?;
         let c = self.clone();
         RUNTIME
             .spawn(async move {
@@ -458,10 +456,8 @@ impl Client {
             device_controller: DeviceController::new(),
             typing_controller: TypingController::new(),
             receipt_controller: ReceiptController::new(),
-
             notifications: Arc::new(channel(25).0),
         };
-
         cl.load_from_cache().await;
         Ok(cl)
     }
@@ -488,7 +484,7 @@ impl Client {
             .fold(
                 (Vec::new(), Vec::new()),
                 async move |(mut spaces, mut convos), room| {
-                    if matches!(room, SdkRoom::Left(_)) {
+                    if matches!(room.state(), RoomState::Left) {
                         // ignore rooms we aren't in anymore ... maybe make them available somewhere else at some point
                         return (spaces, convos);
                     }
@@ -520,7 +516,7 @@ impl Client {
                     continue
                 };
 
-                if matches!(room, SdkRoom::Left(_)) {
+                if matches!(room.state(), RoomState::Left) {
                     // remove rooms we aren't in anymore
                     remove_from(&mut spaces, r_id);
                     remove_from_chat(&mut chats, r_id);
@@ -658,7 +654,7 @@ impl Client {
                     };
                     trace!(target: "acter::sync_response::full", "sync response: {:#?}", response);
 
-                    device_controller.process_device_lists(&client, &response);
+                    // device_controller.process_device_lists(&client, &response);
                     trace!("post device controller");
 
                     if initial.compare_exchange(true, false, Ordering::Relaxed, Ordering::Relaxed)

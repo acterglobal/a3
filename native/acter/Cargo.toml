@@ -15,7 +15,7 @@ cbindgen = []
 dart = []
 
 [build-dependencies]
-ffi-gen = { git = "https://github.com/acterglobal/ffi-gen", branch = "span-support" }
+ffi-gen = { git = "https://github.com/acterglobal/ffi-gen", branch = "proc-macro2-unpin" }
 cbindgen = "0.24.3"
 
 [dependencies]
@@ -25,7 +25,7 @@ chrono =  "0.4"
 derive_builder = "0.10.2"
 eyeball-im = "0.2"
 fern = { git = "https://github.com/acterglobal/fern", branch = "rotate", features = ["manual"] }
-ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen", branch = "span-support" }
+ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen", branch = "proc-macro2-unpin" }
 futures = "0.3.17"
 futures-signals = "0.3.31"
 lazy_static = "1.4"
@@ -35,7 +35,7 @@ mime = "0.3.16"
 mime_guess = "2.0.4"
 parse-env-filter = "0.1.0"
 strum = { workspace = true }
-ruma = { workspace = true }
+ruma-common = { workspace = true }
 sanitize-filename-reader-friendly = "2.2.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"

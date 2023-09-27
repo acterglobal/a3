@@ -2,7 +2,7 @@ use acter_core::spaces::CreateSpaceSettingsBuilder;
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use futures::stream::StreamExt;
-use matrix_sdk::ruma::OwnedRoomId;
+use ruma_common::OwnedRoomId;
 use tracing::{info, warn};
 
 use crate::config::LoginConfig;

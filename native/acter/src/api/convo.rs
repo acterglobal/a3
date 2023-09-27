@@ -5,28 +5,14 @@ use futures::stream::{Stream, StreamExt};
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
     event_handler::{Ctx, EventHandlerHandle},
-    room::{MessagesOptions, Room as SdkRoom},
+    executor::JoinHandle,
+    room::MessagesOptions,
     ruma::{
         api::client::room::{
             create_room::v3::{CreationContent, Request as CreateRoomRequest},
             Visibility,
         },
         assign,
-        events::{
-            receipt::{ReceiptThread, ReceiptType},
-            room::{
-                avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
-                encrypted::OriginalSyncRoomEncryptedEvent,
-                join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
-                member::{MembershipState, OriginalSyncRoomMemberEvent},
-                message::OriginalSyncRoomMessageEvent,
-                redaction::SyncRoomRedactionEvent,
-            },
-            space::parent::SpaceParentEventContent,
-            AnySyncTimelineEvent, InitialStateEvent,
-        },
-        serde::Raw,
-        MxcUri, OwnedRoomId, OwnedUserId, RoomId, UserId,
     },
     Client as SdkClient, RoomMemberships,
 };
@@ -34,12 +20,27 @@ use matrix_sdk_ui::{
     timeline::{EventTimelineItem, PaginationOptions, RoomExt, TimelineItem},
     Timeline,
 };
-use ruma::{OwnedRoomAliasId, OwnedRoomOrAliasId};
+use ruma_common::{
+    events::{
+        receipt::{ReceiptThread, ReceiptType},
+        room::{
+            avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
+            encrypted::OriginalSyncRoomEncryptedEvent,
+            join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
+            member::{MembershipState, OriginalSyncRoomMemberEvent},
+            message::OriginalSyncRoomMessageEvent,
+            redaction::SyncRoomRedactionEvent,
+        },
+        space::parent::SpaceParentEventContent,
+        AnySyncTimelineEvent, InitialStateEvent,
+    },
+    serde::Raw,
+    MxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId, OwnedUserId, RoomId, UserId,
+};
 use std::{
     ops::Deref,
     path::PathBuf,
     sync::{Arc, RwLock as StdRwLock},
-    thread::JoinHandle,
 };
 use tracing::{error, info, trace, warn};
 
@@ -63,7 +64,7 @@ pub struct Convo {
     inner: Room,
     latest_message: LatestMsgLock,
     timeline: Arc<Timeline>,
-    timeline_listener: Arc<matrix_sdk::executor::JoinHandle<()>>,
+    timeline_listener: Arc<JoinHandle<()>>,
 }
 
 impl PartialEq for Convo {

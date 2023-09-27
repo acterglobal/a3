@@ -14,14 +14,13 @@ use acter_core::events::{
 use anyhow::{bail, Result};
 use matrix_sdk::{
     deserialized_responses::SyncOrStrippedState,
-    room::{Messages, MessagesOptions, Room as SdkRoom},
+    room::{Messages, MessagesOptions},
+    ruma::Int,
+    RoomState,
 };
-use ruma::{
-    events::{
-        room::power_levels::{RoomPowerLevels as RumaRoomPowerLevels, RoomPowerLevelsEventContent},
-        MessageLikeEvent, StaticEventContent, SyncStateEvent, TimelineEventType,
-    },
-    Int,
+use ruma_common::events::{
+    room::power_levels::{RoomPowerLevels as RumaRoomPowerLevels, RoomPowerLevelsEventContent},
+    MessageLikeEvent, StaticEventContent, SyncStateEvent, TimelineEventType,
 };
 
 use crate::Room;
@@ -133,6 +132,7 @@ impl Room {
             })
             .await?
     }
+
     pub async fn update_feature_power_levels(
         &self,
         name: String,
@@ -171,10 +171,10 @@ impl Room {
         }
 
         let client = self.room.client().clone();
-        let SdkRoom::Joined(joined) = &self.room else {
+        if !self.is_joined() {
             bail!("You can't update a space you aren't part of");
-        };
-        let room = joined.clone();
+        }
+        let room = self.room.clone();
 
         RUNTIME
             .spawn(async move {
@@ -219,10 +219,10 @@ impl Room {
         }
 
         let client = self.room.client().clone();
-        let SdkRoom::Joined(joined) = &self.room else {
+        if !self.is_joined() {
             bail!("You can't update a space you aren't part of");
-        };
-        let room = joined.clone();
+        }
+        let room = self.room.clone();
 
         RUNTIME
             .spawn(async move {

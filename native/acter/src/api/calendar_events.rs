@@ -10,11 +10,9 @@ use anyhow::{bail, Context, Result};
 use chrono::DateTime;
 use core::time::Duration;
 use futures::stream::StreamExt;
-use matrix_sdk::{
-    room::{Joined, Room},
-    ruma::{
-        events::room::message::TextMessageEventContent, OwnedEventId, OwnedRoomId, OwnedUserId,
-    },
+use matrix_sdk::{room::Room, RoomState};
+use ruma_common::{
+    events::room::message::TextMessageEventContent, OwnedEventId, OwnedRoomId, OwnedUserId,
 };
 use std::{
     collections::{hash_map::Entry, HashMap},
@@ -189,13 +187,17 @@ impl CalendarEvent {
             .await?
     }
 
+    fn is_joined(&self) -> bool {
+        matches!(self.room.state(), RoomState::Joined)
+    }
+
     pub fn update_builder(&self) -> Result<CalendarEventUpdateBuilder> {
-        let Room::Joined(joined) = &self.room else {
+        if !self.is_joined() {
             bail!("Can only update calendar_events in joined rooms");
-        };
+        }
         Ok(CalendarEventUpdateBuilder {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.room.clone(),
             inner: self.inner.updater(),
         })
     }
@@ -242,7 +244,7 @@ impl CalendarEvent {
 #[derive(Clone)]
 pub struct CalendarEventDraft {
     client: Client,
-    room: Joined,
+    room: Room,
     inner: CalendarEventBuilder,
 }
 
@@ -314,7 +316,7 @@ impl CalendarEventDraft {
 #[derive(Clone)]
 pub struct CalendarEventUpdateBuilder {
     client: Client,
-    room: Joined,
+    room: Room,
     inner: calendar_events::CalendarEventUpdateBuilder,
 }
 
@@ -406,12 +408,12 @@ impl CalendarEventUpdateBuilder {
 
 impl Space {
     pub fn calendar_event_draft(&self) -> Result<CalendarEventDraft> {
-        let Room::Joined(joined) = &self.inner.room else {
-            bail!("You can't create calendar_events for spaces we are not part on")
-        };
+        if !self.is_joined() {
+            bail!("You can't create calendar_events for spaces we are not part on");
+        }
         Ok(CalendarEventDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.inner.room.clone(),
             inner: Default::default(),
         })
     }
@@ -420,12 +422,12 @@ impl Space {
         &self,
         inner: CalendarEventBuilder,
     ) -> Result<CalendarEventDraft> {
-        let Room::Joined(joined) = &self.inner.room else {
-            bail!("You can't create calendar_events for spaces we are not part on")
-        };
+        if !self.is_joined() {
+            bail!("You can't create calendar_events for spaces we are not part on");
+        }
         Ok(CalendarEventDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.inner.room.clone(),
             inner,
         })
     }

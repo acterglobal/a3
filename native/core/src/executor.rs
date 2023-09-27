@@ -134,11 +134,11 @@ mod tests {
         Result,
     };
     use env_logger;
-    use matrix_sdk::{
-        ruma::{api::MatrixVersion, event_id, events::room::message::TextMessageEventContent},
-        Client,
-    };
+    use matrix_sdk::Client;
     use matrix_sdk_base::store::{MemoryStore, StoreConfig};
+    use ruma_common::{
+        api::MatrixVersion, event_id, events::room::message::TextMessageEventContent,
+    };
 
     async fn fresh_executor() -> Result<Executor> {
         let config = StoreConfig::default().state_store(MemoryStore::new());
