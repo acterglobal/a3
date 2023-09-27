@@ -28,6 +28,7 @@ enum Routes {
   createChat('/chat/create'),
   chatroom('/chat/:roomId([!#][^/]+)'), // !roomId, #roomName
   chatProfile('/chat/:roomId([!#][^/]+)/profile'),
+  chatInvite('/:roomId([!#][^/]+)/invite'),
 
   tasks('/tasks'),
   task('/tasks/:taskListId([!#][^/]+)/:taskId([!#][^/]+)'),

@@ -66,7 +66,7 @@ final tabsProvider =
               BlendMode.srcIn,
             ),
           ),
-          target: Routes.space.name,
+          target: Routes.spaceTasks.name,
         ),
       );
     }

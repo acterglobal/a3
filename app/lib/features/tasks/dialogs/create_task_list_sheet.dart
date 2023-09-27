@@ -37,6 +37,51 @@ class _CreateTaskListSheetConsumerState
     });
   }
 
+  Future<void> submitForm(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      DefaultDialog(
+        title: Text(
+          'Posting TaskList',
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        isLoader: true,
+      );
+      try {
+        final spaceId = ref.read(selectedSpaceIdProvider);
+        final space = await ref.read(spaceProvider(spaceId!).future);
+        final taskListDraft = space.taskListDraft();
+        final text = ref.read(textProvider);
+        taskListDraft.name(ref.read(titleProvider));
+        if (text.isNotEmpty) {
+          taskListDraft.descriptionMarkdown(text);
+        }
+        final taskListId = await taskListDraft.send();
+        // reset providers
+
+        ref.read(titleProvider.notifier).state = '';
+        ref.read(textProvider.notifier).state = '';
+
+        // We are doing as expected, but the lints triggers.
+        // ignore: use_build_context_synchronously
+        if (!context.mounted) {
+          return;
+        }
+        Navigator.of(context, rootNavigator: true).pop();
+        context.goNamed(
+          Routes.taskList.name,
+          pathParameters: {'taskListId': taskListId.toString()},
+        );
+      } catch (e) {
+        // We are doing as expected, but the lints triggers.
+        // ignore: use_build_context_synchronously
+        if (!context.mounted) {
+          return;
+        }
+        customMsgSnackbar(context, 'Failed to create task list: $e');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final titleInput = ref.watch(titleProvider);
@@ -109,47 +154,7 @@ class _CreateTaskListSheetConsumerState
         const SizedBox(width: 10),
         ElevatedButton(
           onPressed: () async {
-            if (_formKey.currentState!.validate()) {
-              DefaultDialog(
-                title: Text(
-                  'Posting TaskList',
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                isLoader: true,
-              );
-              try {
-                final spaceId = ref.read(selectedSpaceIdProvider);
-                final space = await ref.read(spaceProvider(spaceId!).future);
-                final taskListDraft = space.taskListDraft();
-                final text = ref.read(textProvider);
-                taskListDraft.name(ref.read(titleProvider));
-                if (text.isNotEmpty) {
-                  taskListDraft.descriptionMarkdown(text);
-                }
-                final taskListId = await taskListDraft.send();
-                // reset providers
-                titleNotifier.state = '';
-                textNotifier.state = '';
-
-                // We are doing as expected, but the lints triggers.
-                // ignore: use_build_context_synchronously
-                if (!context.mounted) {
-                  return;
-                }
-                Navigator.of(context, rootNavigator: true).pop();
-                context.goNamed(
-                  Routes.taskList.name,
-                  pathParameters: {'taskListId': taskListId.toString()},
-                );
-              } catch (e) {
-                // We are doing as expected, but the lints triggers.
-                // ignore: use_build_context_synchronously
-                if (!context.mounted) {
-                  return;
-                }
-                customMsgSnackbar(context, 'Failed to create task list: $e');
-              }
-            }
+            await submitForm(context);
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: titleInput.isNotEmpty

@@ -1,4 +1,5 @@
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/tasks/providers/tasks.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/features/tasks/widgets/task_entry.dart';
@@ -6,123 +7,6 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter/material.dart';
-
-@immutable
-class TasksOverview {
-  final List<Task> openTasks;
-  final List<Task> doneTasks;
-  const TasksOverview({required this.openTasks, required this.doneTasks});
-}
-
-class TasksNotifier extends FamilyAsyncNotifier<TasksOverview, TaskList> {
-  late Stream<void> subscriber;
-
-  Future<TasksOverview> _refresh(TaskList taskList) async {
-    final tasks = (await taskList.tasks()).toList();
-    List<Task> openTasks = [];
-    List<Task> doneTasks = [];
-    for (final task in tasks) {
-      if (task.isDone()) {
-        doneTasks.add(task);
-      } else {
-        openTasks.add(task);
-      }
-    }
-
-    // FIXME: ordering?
-
-    return TasksOverview(openTasks: openTasks, doneTasks: doneTasks);
-  }
-
-  @override
-  Future<TasksOverview> build(TaskList arg) async {
-    // Load initial todo list from the remote repository
-    final taskList = arg;
-    final retState = _refresh(taskList);
-    subscriber = taskList.subscribeStream();
-    subscriber.forEach((element) async {
-      state = const AsyncValue.loading();
-      state = await AsyncValue.guard(() async {
-        return await _refresh(taskList);
-      });
-    });
-    return retState;
-  }
-}
-
-final tasksProvider =
-    AsyncNotifierProvider.family<TasksNotifier, TasksOverview, TaskList>(() {
-  return TasksNotifier();
-});
-
-class InlineTaskAdd extends StatefulWidget {
-  final Function() cancel;
-  final TaskList taskList;
-  const InlineTaskAdd({Key? key, required this.cancel, required this.taskList})
-      : super(key: key);
-
-  @override
-  _InlineTaskAddState createState() => _InlineTaskAddState();
-}
-
-class _InlineTaskAddState extends State<InlineTaskAdd> {
-  final _formKey = GlobalKey<FormState>();
-  final _textCtrl = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Row(
-        children: [
-          Expanded(
-            child: TextFormField(
-              autofocus: true,
-              controller: _textCtrl,
-              decoration: const InputDecoration(
-                icon: Icon(Atlas.plus_circle_thin),
-                border: UnderlineInputBorder(),
-                labelText: 'Title the new task..',
-              ),
-              onFieldSubmitted: (value) {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  _handleSubmit(context);
-                }
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'A task must have a title';
-                }
-                return null;
-              },
-            ),
-          ),
-          IconButton(
-            onPressed: widget.cancel,
-            icon: const Icon(
-              Atlas.xmark_circle_thin,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _handleSubmit(BuildContext context) async {
-    final taskDraft = widget.taskList.taskBuilder();
-    taskDraft.title(_textCtrl.text);
-    try {
-      await taskDraft.send();
-    } catch (e) {
-      if (context.mounted) {
-        customMsgSnackbar(context, 'Creating Task failed: $e');
-      }
-      return;
-    }
-    _textCtrl.text = '';
-  }
-}
 
 class TaskListCard extends ConsumerStatefulWidget {
   final TaskList taskList;
@@ -193,7 +77,7 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                           horizontal: 24,
                           vertical: 8,
                         ),
-                        child: InlineTaskAdd(
+                        child: _InlineTaskAdd(
                           taskList: taskList,
                           cancel: () =>
                               setState(() => showInlineAddTask = false),
@@ -235,5 +119,74 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
         ),
       ),
     );
+  }
+}
+
+class _InlineTaskAdd extends StatefulWidget {
+  final Function() cancel;
+  final TaskList taskList;
+  const _InlineTaskAdd({Key? key, required this.cancel, required this.taskList})
+      : super(key: key);
+
+  @override
+  _InlineTaskAddState createState() => _InlineTaskAddState();
+}
+
+class _InlineTaskAddState extends State<_InlineTaskAdd> {
+  final _formKey = GlobalKey<FormState>();
+  final _textCtrl = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Row(
+        children: [
+          Expanded(
+            child: TextFormField(
+              autofocus: true,
+              controller: _textCtrl,
+              decoration: const InputDecoration(
+                icon: Icon(Atlas.plus_circle_thin),
+                border: UnderlineInputBorder(),
+                labelText: 'Title the new task..',
+              ),
+              onFieldSubmitted: (value) {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  _handleSubmit(context);
+                }
+              },
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'A task must have a title';
+                }
+                return null;
+              },
+            ),
+          ),
+          IconButton(
+            onPressed: widget.cancel,
+            icon: const Icon(
+              Atlas.xmark_circle_thin,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handleSubmit(BuildContext context) async {
+    final taskDraft = widget.taskList.taskBuilder();
+    taskDraft.title(_textCtrl.text);
+    try {
+      await taskDraft.send();
+    } catch (e) {
+      if (context.mounted) {
+        customMsgSnackbar(context, 'Creating Task failed: $e');
+      }
+      return;
+    }
+    _textCtrl.text = '';
   }
 }

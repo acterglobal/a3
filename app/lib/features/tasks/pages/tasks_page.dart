@@ -26,15 +26,6 @@ class TasksPage extends ConsumerWidget {
               gradient: AppTheme.primaryGradient,
             ),
             actions: [
-              // IconButton(
-              //   icon: const Icon(Atlas.funnel_sort_thin),
-              //   onPressed: () {
-              //     customMsgSnackbar(
-              //       context,
-              //       'Task filters not yet implemented',
-              //     );
-              //   },
-              // ),
               IconButton(
                 icon: const Icon(Atlas.plus_circle),
                 onPressed: () {

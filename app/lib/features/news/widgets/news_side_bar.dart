@@ -83,7 +83,7 @@ class NewsSideBar extends ConsumerWidget {
         const SizedBox(height: 10),
         InkWell(
           onTap: () {
-            context.goNamed(
+            context.pushNamed(
               Routes.space.name,
               pathParameters: {'spaceId': roomId},
             );
@@ -187,9 +187,6 @@ class ActionBox extends ConsumerWidget {
               eventId: news.eventId().toString(),
               onSuccess: () {
                 ref.invalidate(newsListProvider);
-                if (context.mounted) {
-                  context.pop();
-                }
               },
               senderId: senderId,
               roomId: roomId,

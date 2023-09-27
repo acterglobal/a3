@@ -1,4 +1,4 @@
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -36,19 +36,19 @@ bool isInvited(String userId, List<Member> invited) {
 
 class UserBuilder extends ConsumerWidget {
   final UserProfile profile;
-  final String spaceId;
+  final String roomId;
 
   const UserBuilder({
     Key? key,
     required this.profile,
-    required this.spaceId,
+    required this.roomId,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final space = ref.watch(briefSpaceItemWithMembershipProvider(spaceId));
+    final room = ref.watch(briefRoomItemWithMembershipProvider(roomId));
     final invited =
-        ref.watch(spaceInvitedMembersProvider(spaceId)).valueOrNull ?? [];
+        ref.watch(roomInvitedMembersProvider(roomId)).valueOrNull ?? [];
     final avatarProv = ref.watch(userAvatarProvider(profile));
     final displayName = ref.watch(displayNameProvider(profile));
     final userId = profile.userId().toString();
@@ -72,10 +72,10 @@ class UserBuilder extends ConsumerWidget {
           displayName: displayName.valueOrNull,
           avatar: avatarProv.valueOrNull,
         ),
-        trailing: space.when(
+        trailing: room.when(
           data: (data) => InviteButton(
             userId: userId,
-            space: data.space!,
+            room: data.room!,
             invited: isInvited(userId, invited),
           ),
           error: (err, stackTrace) => Text('Error: $err'),
@@ -89,11 +89,11 @@ class UserBuilder extends ConsumerWidget {
 class InviteButton extends StatefulWidget {
   final String userId;
   final bool invited;
-  final Space space;
+  final Room room;
 
   const InviteButton({
     super.key,
-    required this.space,
+    required this.room,
     this.invited = false,
     required this.userId,
   });
@@ -121,7 +121,7 @@ class _InviteButtonState extends State<InviteButton> {
         if (mounted) {
           setState(() => _loading = true);
         }
-        await widget.space.inviteUser(widget.userId);
+        await widget.room.inviteUser(widget.userId);
         if (mounted) {
           setState(() => _success = true);
         }

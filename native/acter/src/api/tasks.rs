@@ -336,9 +336,7 @@ impl TaskList {
     pub fn space(&self) -> Space {
         Space::new(
             self.client.clone(),
-            crate::Room {
-                room: self.room.clone(),
-            },
+            crate::Room::new(self.client.core.clone(), self.room.clone()),
         )
     }
 

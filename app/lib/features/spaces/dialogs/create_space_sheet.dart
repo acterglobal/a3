@@ -280,7 +280,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       }
 
       Navigator.of(context, rootNavigator: true).pop();
-      context.goNamed(
+      context.pushNamed(
         Routes.space.name,
         pathParameters: {
           'spaceId': roomId.toString(),
