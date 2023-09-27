@@ -1,4 +1,5 @@
 #![warn(clippy::all)]
+#![recursion_limit = "256"]
 
 mod action;
 mod config;
