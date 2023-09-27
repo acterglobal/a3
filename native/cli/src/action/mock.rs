@@ -275,7 +275,7 @@ impl<'a> Mock<'a> {
             sync_stream.next().await;
             for invited in member.invited_rooms().iter() {
                 info!(" - accepting {:?}", invited.room_id());
-                invited.accept_invitation().await?;
+                invited.join().await?;
             }
             sync_stream.next().await;
         }
