@@ -75,17 +75,20 @@ pub use notifications::{Notification, NotificationListResult};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
-pub use room::{Member, MemberPermission, MembershipStatus, Room};
+pub use room::{
+    Member, MemberPermission, MembershipStatus, Room, SpaceHierarchyListResult,
+    SpaceHierarchyRoomInfo, SpaceRelation, SpaceRelations,
+};
 pub use rsvp::{Rsvp, RsvpDraft, RsvpManager};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
 pub use settings::{
     ActerAppSettings, ActerAppSettingsBuilder, EventsSettings, NewsSettings, PinsSettings,
-    RoomPowerLevels, SimpleSettingWithTurnOff, SimpleSettingWithTurnOffBuilder,
+    RoomPowerLevels, SimpleSettingWithTurnOff, SimpleSettingWithTurnOffBuilder, TasksSettings,
+    TasksSettingsBuilder,
 };
 pub use spaces::{
     new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
-    RelationTargetType, Space, SpaceDiff, SpaceHierarchyListResult, SpaceHierarchyRoomInfo,
-    SpaceRelation, SpaceRelations,
+    RelationTargetType, Space, SpaceDiff,
 };
 pub use stream::{TimelineDiff, TimelineStream};
 pub use tasks::{

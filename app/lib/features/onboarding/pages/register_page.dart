@@ -230,7 +230,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                               decoration: InputDecoration(
                                 hintText: AppLocalizations.of(context)!.token,
                               ),
-                              obscureText: true,
                               inputFormatters: [
                                 FilteringTextInputFormatter.deny(RegExp(r'\s')),
                               ],

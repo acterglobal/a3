@@ -251,7 +251,7 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
         return;
       }
       Navigator.of(context, rootNavigator: true).pop();
-      context.goNamed(
+      context.pushNamed(
         Routes.chatroom.name,
         pathParameters: {'roomId': roomId.toString()},
         extra: convo,

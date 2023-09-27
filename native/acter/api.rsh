@@ -659,6 +659,37 @@ object TimelineDiff {
     fn value() -> Option<RoomMessage>;
 }
 
+/// Generic Room Properties
+object Room {
+    /// the RoomId as a String
+    fn room_id_str() -> string;
+
+    /// whether we are part of this room
+    fn is_joined() -> bool;
+
+    /// get the room profile that contains avatar and display name
+    fn get_profile() -> RoomProfile;
+
+    /// get the room profile that contains avatar and display name
+    fn space_relations() -> Future<Result<SpaceRelations>>;
+
+    /// the Membership of myself
+    fn get_my_membership() -> Future<Result<Member>>;
+
+    /// the members currently in the room
+    fn active_members() -> Future<Result<Vec<Member>>>;
+
+    /// the members invited to this room
+    fn invited_members() -> Future<Result<Vec<Member>>>;
+
+    /// get the room member by user id
+    fn get_member(user_id: string) -> Future<Result<Member>>;
+
+    /// invite the new user to this room
+    fn invite_user(user_id: string) -> Future<Result<bool>>;
+
+}
+
 
 object ConvoDiff {
     /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
@@ -703,6 +734,9 @@ object TimelineStream {
 object Convo {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> RoomProfile;
+
+    /// get the room profile that contains avatar and display name
+    fn space_relations() -> Future<Result<SpaceRelations>>;
 
     /// Change the avatar of the room
     fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
@@ -995,7 +1029,7 @@ object Task {
     fn title() -> string;
 
     /// the description of this task
-    fn description_text() -> Option<string>;
+    fn description() -> Option<TextDesc>;
 
     /// the users assigned
     fn assignees() -> Vec<UserId>;
@@ -1020,10 +1054,10 @@ object Task {
     fn priority() -> Option<u8>;
 
     /// When this is due
-    fn utc_due() -> Option<UtcDateTime>;
+    fn utc_due_rfc3339() -> Option<string>;
 
     /// When this was started
-    fn utc_start() -> Option<UtcDateTime>;
+    fn utc_start_rfc3339() -> Option<string>;
 
     /// Has this been colored in?
     fn color() -> Option<EfkColor>;
@@ -1187,7 +1221,7 @@ object TaskList {
     fn name() -> string;
 
     /// the description of this task list
-    fn description_text() -> Option<string>;
+    fn description() -> Option<TextDesc>;
 
     /// who wants to be informed on updates about this?
     fn subscribers() -> Vec<UserId>;
@@ -1227,6 +1261,9 @@ object TaskList {
 
     /// the space this TaskList belongs to
     fn space() -> Space;
+
+    /// the id of the space this TaskList belongs to
+    fn space_id_str() -> string;
 }
 
 object TaskListDraft {
@@ -1235,6 +1272,7 @@ object TaskListDraft {
 
     /// set the description for this task list
     fn description_text(text: string);
+    fn description_markdown(text: string);
     fn unset_description();
 
     /// set the sort order for this task list
@@ -1366,6 +1404,12 @@ object RoomPowerLevels {
     fn events_default() -> i64;
     fn users_default() -> i64;
     fn max_power_level() -> i64;
+
+    fn tasks() -> Option<i64>;
+    fn tasks_key() -> string;
+
+    fn task_lists() -> Option<i64>;
+    fn task_lists_key() -> string;
 }
 
 object SimpleSettingWithTurnOff {
@@ -1377,9 +1421,19 @@ object SimpleSettingWithTurnOffBuilder {
     fn build() -> Result<SimpleSettingWithTurnOff>;
 }
 
+
+object TasksSettingsBuilder {
+    fn active(active: bool);
+    fn build() -> Result<TasksSettings>;
+}
 object NewsSettings {
     fn active() -> bool;
     fn updater() -> SimpleSettingWithTurnOffBuilder;
+}
+
+object TasksSettings {
+    fn active() -> bool;
+    fn updater() -> TasksSettingsBuilder;
 }
 
 object EventsSettings {
@@ -1396,6 +1450,7 @@ object ActerAppSettings {
     fn news() -> NewsSettings;
     fn pins() -> PinsSettings;
     fn events() -> EventsSettings;
+    fn tasks() -> TasksSettings;
     fn update_builder() -> ActerAppSettingsBuilder;
 }
 
@@ -1403,6 +1458,7 @@ object ActerAppSettingsBuilder {
     fn news(news: Option<SimpleSettingWithTurnOff>);
     fn pins(pins: Option<SimpleSettingWithTurnOff>);
     fn events(events: Option<SimpleSettingWithTurnOff>);
+    fn tasks(tasks: Option<TasksSettings>);
 }
 
 object Space {
@@ -1580,6 +1636,8 @@ enum MemberPermission {
     CanPostNews,
     CanPostPin,
     CanPostEvent,
+    CanPostTaskList,
+    CanPostTask,
     CanBan,
     CanKick,
     CanInvite,
@@ -1803,6 +1861,9 @@ object Client {
     /// The user_id of the client
     /// deprecated, please use account() instead.
     fn user_id() -> Result<UserId>;
+
+    /// Get the generic room that user belongs to
+    fn room(room_id_or_alias: string) -> Future<Result<Room>>;
 
     /// get convo room
     fn convo(room_id_or_alias: string) -> Future<Result<Convo>>;

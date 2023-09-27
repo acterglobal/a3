@@ -63,6 +63,12 @@ class JoinSpacePage extends ConsumerWidget {
       'Trying to join ${alias ?? roomId}',
       (alias ?? roomId)!,
       serverNames.first,
+      (roomId) => context.pushNamed(
+        Routes.space.name,
+        pathParameters: {
+          'spaceId': roomId,
+        },
+      ),
     );
   }
 
@@ -75,7 +81,7 @@ class JoinSpacePage extends ConsumerWidget {
   ) async {
     if (spaceInfo != null) {
       // we know the space, user just wants to enter it
-      context.goNamed(
+      context.pushNamed(
         Routes.space.name,
         pathParameters: {'spaceId': spaceInfo.roomId},
       );
@@ -97,6 +103,12 @@ class JoinSpacePage extends ConsumerWidget {
       'Trying to join ${spaceSearchResult.name()}',
       spaceSearchResult.roomIdStr(),
       searchServer,
+      (roomId) => context.pushNamed(
+        Routes.space.name,
+        pathParameters: {
+          'spaceId': roomId,
+        },
+      ),
     );
   }
 }

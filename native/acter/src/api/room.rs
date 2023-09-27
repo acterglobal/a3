@@ -1,9 +1,15 @@
+pub use acter_core::spaces::{
+    CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, SpaceRelation,
+    SpaceRelations as CoreSpaceRelations,
+};
 use acter_core::{
+    client::CoreClient,
     events::{
         calendar::CalendarEventEventContent,
         news::{NewsContent, NewsEntryEvent, NewsEntryEventContent},
         pins::PinEventContent,
         settings::{ActerAppSettings, ActerAppSettingsContent},
+        tasks::{TaskEventContent, TaskListEventContent},
     },
     spaces::is_acter_space,
     statics::PURPOSE_FIELD_DEV,
@@ -20,6 +26,12 @@ use matrix_sdk::{
         api::client::{
             receipt::create_receipt::v3::ReceiptType as CreateReceiptType,
             room::report_content::v3::Request as ReportContentRequest,
+            space::{
+                get_hierarchy::v1::{
+                    Request as GetHierarchyRequest, Response as GetHierarchyResponse,
+                },
+                SpaceHierarchyRoomsChunk,
+            },
         },
         assign, Int, UInt,
     },
@@ -40,16 +52,22 @@ use ruma_common::{
                 RoomMessageEventContent, TextMessageEventContent, VideoInfo,
                 VideoMessageEventContent,
             },
-            ImageInfo,
+            ImageInfo, MediaSource,
         },
+        space::child::HierarchySpaceChildEvent,
         AnyMessageLikeEvent, AnyStateEvent, AnyTimelineEvent, MessageLikeEvent,
         MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
     },
     room::RoomType,
-    EventId, OwnedEventId, OwnedMxcUri, OwnedUserId, TransactionId, UserId,
+    serde::Raw,
+    space::SpaceRoomJoinRule,
+    EventId, OwnedEventId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedUserId, TransactionId,
+    UserId,
 };
 use std::{io::Write, ops::Deref, path::PathBuf};
 use tracing::{error, info};
+
+use crate::OptionBuffer;
 
 use super::{
     account::Account,
@@ -79,6 +97,8 @@ pub enum MemberPermission {
     CanPostNews,
     CanPostPin,
     CanPostEvent,
+    CanPostTaskList,
+    CanPostTask,
     // moderation tools
     CanBan,
     CanInvite,
@@ -220,6 +240,36 @@ impl Member {
                     return false;
                 }
             }
+            MemberPermission::CanPostTaskList => {
+                if self
+                    .acter_app_settings
+                    .as_ref()
+                    .map(|s| s.tasks().active())
+                    .unwrap_or_default()
+                {
+                    PermissionTest::Message(MessageLikeEventType::from(
+                        <TaskListEventContent as StaticEventContent>::TYPE,
+                    ))
+                } else {
+                    // Not an acter space or Pins are not activated..
+                    return false;
+                }
+            }
+            MemberPermission::CanPostTask => {
+                if self
+                    .acter_app_settings
+                    .as_ref()
+                    .map(|s| s.tasks().active())
+                    .unwrap_or_default()
+                {
+                    PermissionTest::Message(MessageLikeEventType::from(
+                        <TaskEventContent as StaticEventContent>::TYPE,
+                    ))
+                } else {
+                    // Not an acter space or Pins are not activated..
+                    return false;
+                }
+            }
             MemberPermission::CanUpgradeToActerSpace => {
                 if self.acter_app_settings.is_some() {
                     return false; // already an acter space
@@ -262,18 +312,206 @@ impl Member {
     }
 }
 
+pub struct SpaceHierarchyRoomInfo {
+    chunk: SpaceHierarchyRoomsChunk,
+    client: CoreClient,
+}
+
+impl SpaceHierarchyRoomInfo {
+    pub fn canonical_alias(&self) -> Option<OwnedRoomAliasId> {
+        self.chunk.canonical_alias.clone()
+    }
+
+    /// The name of the room, if any.
+    pub fn name(&self) -> Option<String> {
+        self.chunk.name.clone()
+    }
+
+    /// The number of members joined to the room.
+    pub fn num_joined_members(&self) -> u64 {
+        self.chunk.num_joined_members.into()
+    }
+
+    /// The ID of the room.
+    pub fn room_id(&self) -> OwnedRoomId {
+        self.chunk.room_id.clone()
+    }
+
+    pub fn room_id_str(&self) -> String {
+        self.room_id().to_string()
+    }
+
+    pub fn topic(&self) -> Option<String> {
+        self.chunk.topic.clone()
+    }
+
+    /// Whether the room may be viewed by guest users without joining.
+    pub fn world_readable(&self) -> bool {
+        self.chunk.world_readable
+    }
+
+    pub fn guest_can_join(&self) -> bool {
+        self.chunk.guest_can_join
+    }
+
+    pub fn avatar_url(&self) -> Option<OwnedMxcUri> {
+        self.chunk.avatar_url.clone()
+    }
+
+    pub fn avatar_url_str(&self) -> Option<String> {
+        self.avatar_url().map(|a| a.to_string())
+    }
+
+    /// The join rule of the room.
+    pub fn join_rule(&self) -> SpaceRoomJoinRule {
+        self.chunk.join_rule.clone()
+    }
+
+    pub fn join_rule_str(&self) -> String {
+        self.join_rule().to_string()
+    }
+
+    /// The type of room from `m.room.create`, if any.
+    pub fn room_type(&self) -> Option<RoomType> {
+        self.chunk.room_type.clone()
+    }
+
+    pub fn is_space(&self) -> bool {
+        matches!(self.chunk.room_type, Some(RoomType::Space))
+    }
+
+    /// The stripped `m.space.child` events of the space-room.
+    ///
+    /// If the room is not a space-room, this should be empty.
+    pub fn children_state(&self) -> Vec<Raw<HierarchySpaceChildEvent>> {
+        self.chunk.children_state.clone()
+    }
+
+    pub fn has_avatar(&self) -> bool {
+        self.chunk.avatar_url.is_some()
+    }
+
+    pub fn via_server_name(&self) -> Option<String> {
+        for v in &self.chunk.children_state {
+            let Ok(h) = v.deserialize() else { continue };
+            let Some(via) = h.content.via else { continue };
+            if let Some(v) = via.into_iter().next() {
+                return Some(v.to_string());
+            }
+        }
+        None
+    }
+
+    pub async fn get_avatar(&self) -> Result<OptionBuffer> {
+        let client = self.client.client().clone();
+        if let Some(url) = self.chunk.avatar_url.clone() {
+            return RUNTIME
+                .spawn(async move {
+                    let request = MediaRequest {
+                        source: MediaSource::Plain(url),
+                        format: MediaFormat::File,
+                    };
+                    let buf = client.media().get_media_content(&request, true).await?;
+                    Ok(OptionBuffer::new(Some(buf)))
+                })
+                .await?;
+        }
+        Ok(OptionBuffer::new(None))
+    }
+}
+
+impl SpaceHierarchyRoomInfo {
+    pub(crate) async fn new(chunk: SpaceHierarchyRoomsChunk, client: CoreClient) -> Self {
+        SpaceHierarchyRoomInfo { chunk, client }
+    }
+}
+
+pub struct SpaceHierarchyListResult {
+    resp: GetHierarchyResponse,
+    client: CoreClient,
+}
+
+impl SpaceHierarchyListResult {
+    pub fn next_batch(&self) -> Option<String> {
+        self.resp.next_batch.clone()
+    }
+
+    pub async fn rooms(&self) -> Result<Vec<SpaceHierarchyRoomInfo>> {
+        let client = self.client.clone();
+        let chunks = self.resp.rooms.clone();
+        RUNTIME
+            .spawn(async move {
+                let iter = chunks
+                    .into_iter()
+                    .map(|chunk| SpaceHierarchyRoomInfo::new(chunk, client.clone()));
+                Ok(futures::future::join_all(iter).await)
+            })
+            .await?
+    }
+}
+
+pub struct SpaceRelations {
+    pub(crate) core: CoreSpaceRelations,
+    pub(crate) room: Room,
+}
+
+impl Deref for SpaceRelations {
+    type Target = CoreSpaceRelations;
+    fn deref(&self) -> &Self::Target {
+        &self.core
+    }
+}
+
+impl SpaceRelations {
+    pub fn room_id(&self) -> OwnedRoomId {
+        self.room.room_id().to_owned()
+    }
+
+    pub fn room_id_str(&self) -> String {
+        self.room.room_id().to_string()
+    }
+
+    pub async fn query_hierarchy(&self, from: Option<String>) -> Result<SpaceHierarchyListResult> {
+        let c = self.room.core.clone();
+        let room_id = self.room.room_id().to_owned();
+        RUNTIME
+            .spawn(async move {
+                let request = assign!(GetHierarchyRequest::new(room_id), { from, max_depth: Some(1u32.into()) });
+                let resp = c.client().send(request, None).await?;
+                Ok(SpaceHierarchyListResult { resp, client: c.clone() })
+            })
+            .await?
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct Room {
+    pub(crate) core: CoreClient,
     pub(crate) room: SdkRoom,
 }
 
 impl Room {
+    pub fn new(core: CoreClient, room: SdkRoom) -> Self {
+        Room { core, room }
+    }
+
     pub async fn is_acter_space(&self) -> Result<bool> {
         let inner = self.room.clone();
         let result = RUNTIME
             .spawn(async move { is_acter_space(&inner).await })
             .await?;
         Ok(result)
+    }
+
+    pub async fn space_relations(&self) -> Result<SpaceRelations> {
+        let c = self.core.clone();
+        let me = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let core = c.space_relations(&me.room).await?;
+                Ok(SpaceRelations { core, room: me })
+            })
+            .await?
     }
 
     pub async fn get_my_membership(&self) -> Result<Member> {
@@ -1519,6 +1757,10 @@ impl Room {
 
     fn is_left(&self) -> bool {
         matches!(self.room.state(), RoomState::Left)
+    }
+
+    pub fn room_id_str(&self) -> String {
+        self.room.room_id().to_string()
     }
 
     pub async fn invite_user(&self, user_id: String) -> Result<bool> {

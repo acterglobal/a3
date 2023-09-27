@@ -42,7 +42,7 @@ final spaceItemsProvider = FutureProvider.autoDispose
       ),
       data: (info) => SidebarNavigationItem(
         icon: SpaceParentBadge(
-          spaceId: roomId,
+          roomId: roomId,
           child: ActerAvatar(
             uniqueId: roomId,
             displayName: info.displayName,

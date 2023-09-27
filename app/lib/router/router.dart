@@ -39,21 +39,22 @@ import 'package:acter/features/settings/pages/info_page.dart';
 import 'package:acter/features/settings/pages/labs_page.dart';
 import 'package:acter/features/settings/pages/licenses_page.dart';
 import 'package:acter/features/space/dialogs/edit_space_sheet.dart';
-import 'package:acter/features/space/dialogs/invite_to_space_dialog.dart';
+import 'package:acter/common/dialogs/invite_to_room_dialog.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/pages/events_page.dart';
 import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/pins_page.dart';
 import 'package:acter/features/space/pages/related_spaces_page.dart';
 import 'package:acter/features/space/pages/shell_page.dart';
+import 'package:acter/features/space/pages/tasks_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
+import 'package:acter/features/tasks/dialogs/create_task_list_sheet.dart';
+import 'package:acter/features/tasks/pages/tasks_page.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/settings/pages/index_page.dart';
 import 'package:acter/features/spaces/dialogs/create_space_sheet.dart';
 import 'package:acter/features/spaces/pages/join_space.dart';
 import 'package:acter/features/spaces/pages/spaces_page.dart';
-import 'package:acter/features/todo/pages/create_task_sidesheet.dart';
-import 'package:acter/features/todo/pages/todo_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -149,28 +150,6 @@ List<RouteBase> makeRoutes(Ref ref) {
       pageBuilder: (context, state) => DialogPage(
         builder: (BuildContext ctx) => const QuickjumpDialog(),
       ),
-    ),
-    GoRoute(
-      parentNavigatorKey: rootNavKey,
-      name: Routes.actionAddTask.name,
-      path: Routes.actionAddTask.route,
-      pageBuilder: (context, state) {
-        return SideSheetPage(
-          key: state.pageKey,
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween(
-                begin: const Offset(1, 0),
-                end: const Offset(0, 0),
-              ).animate(
-                animation,
-              ),
-              child: child,
-            );
-          },
-          child: const AddTaskActionSideSheet(),
-        );
-      },
     ),
 
     GoRoute(
@@ -271,6 +250,31 @@ List<RouteBase> makeRoutes(Ref ref) {
 
     GoRoute(
       parentNavigatorKey: rootNavKey,
+      name: Routes.actionAddTaskList.name,
+      path: Routes.actionAddTaskList.route,
+      pageBuilder: (context, state) {
+        return SideSheetPage(
+          key: state.pageKey,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween(
+                begin: const Offset(1, 0),
+                end: const Offset(0, 0),
+              ).animate(
+                animation,
+              ),
+              child: child,
+            );
+          },
+          child: CreateTaskListSheet(
+            initialSelectedSpace: state.uri.queryParameters['spaceId'],
+          ),
+        );
+      },
+    ),
+
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
       name: Routes.createSpace.name,
       path: Routes.createSpace.route,
       pageBuilder: (context, state) {
@@ -343,8 +347,18 @@ List<RouteBase> makeRoutes(Ref ref) {
       name: Routes.spaceInvite.name,
       path: Routes.spaceInvite.route,
       pageBuilder: (context, state) => DialogPage(
-        builder: (BuildContext ctx) => InviteToSpaceDialog(
-          spaceId: state.pathParameters['spaceId']!,
+        builder: (BuildContext ctx) => InviteToRoomDialog(
+          roomId: state.pathParameters['spaceId']!,
+        ),
+      ),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.chatInvite.name,
+      path: Routes.chatInvite.route,
+      pageBuilder: (context, state) => DialogPage(
+        builder: (BuildContext ctx) => InviteToRoomDialog(
+          roomId: state.pathParameters['chatId']!,
         ),
       ),
     ),
@@ -447,7 +461,7 @@ List<RouteBase> makeRoutes(Ref ref) {
           pageBuilder: (context, state) {
             return NoTransitionPage(
               key: state.pageKey,
-              child: const TodoPage(),
+              child: const TasksPage(),
             );
           },
         ),
@@ -780,6 +794,22 @@ List<RouteBase> makeRoutes(Ref ref) {
                 return NoTransitionPage(
                   key: state.pageKey,
                   child: SpaceChatsPage(
+                    spaceIdOrAlias: state.pathParameters['spaceId']!,
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: Routes.spaceTasks.name,
+              path: Routes.spaceTasks.route,
+              redirect: authGuardRedirect,
+              pageBuilder: (context, state) {
+                ref
+                    .read(selectedTabKeyProvider.notifier)
+                    .switchTo(const Key('tasks'));
+                return NoTransitionPage(
+                  key: state.pageKey,
+                  child: SpaceTasksPage(
                     spaceIdOrAlias: state.pathParameters['spaceId']!,
                   ),
                 );

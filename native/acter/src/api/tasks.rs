@@ -1,8 +1,5 @@
 use acter_core::{
-    events::{
-        tasks::{self, Priority, TaskBuilder, TaskListBuilder},
-        UtcDateTime,
-    },
+    events::tasks::{self, Priority, TaskBuilder, TaskListBuilder},
     models::{self, ActerModel, AnyActerModel, Color, TaskStats},
     statics::KEYS,
 };
@@ -21,6 +18,8 @@ use std::{
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::warn;
+
+use crate::TextDesc;
 
 use super::{client::Client, spaces::Space, RUNTIME};
 
@@ -201,6 +200,12 @@ impl TaskListDraft {
         self
     }
 
+    pub fn description_markdown(&mut self, body: String) -> &mut Self {
+        let desc = TextMessageEventContent::markdown(body);
+        self.content.description(Some(desc));
+        self
+    }
+
     pub fn unset_description(&mut self) -> &mut Self {
         self.content.description(None);
         self
@@ -282,7 +287,10 @@ impl Deref for TaskList {
 
 /// helpers for content
 impl TaskList {
-    pub fn description_text(&self) -> Option<String> {
+    pub fn name(&self) -> String {
+        self.content.name.to_owned()
+    }
+    pub fn description(&self) -> Option<String> {
         self.content.description.as_ref().map(|t| t.body.clone())
     }
 
@@ -326,10 +334,12 @@ impl TaskList {
     pub fn space(&self) -> Space {
         Space::new(
             self.client.clone(),
-            crate::Room {
-                room: self.room.clone(),
-            },
+            crate::Room::new(self.client.core.clone(), self.room.clone()),
         )
+    }
+
+    pub fn space_id_str(&self) -> String {
+        self.room.room_id().to_string()
     }
 }
 
@@ -463,12 +473,19 @@ impl Deref for Task {
 
 /// helpers for content
 impl Task {
-    pub fn description_text(&self) -> Option<String> {
-        self.content.description.as_ref().map(|t| t.body.clone())
+    pub fn title(&self) -> String {
+        self.content.title().to_owned()
+    }
+    pub fn description(&self) -> Option<TextDesc> {
+        self.content.description.as_ref().map(Into::into)
     }
 
     pub fn sort_order(&self) -> u32 {
         self.content.sort_order
+    }
+
+    pub fn room_id_str(&self) -> String {
+        self.content.room_id().to_string()
     }
 
     pub fn priority(&self) -> Option<u8> {

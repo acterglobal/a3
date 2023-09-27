@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -26,7 +26,7 @@ class RoomProfilePage extends ConsumerWidget {
     final convo = ref.watch(chatProvider(roomId));
     final convoProfile = ref.watch(chatProfileDataProviderById(roomId));
     final members = ref.watch(chatMembersProvider(roomId));
-    final myMembership = ref.watch(spaceMembershipProvider(roomId));
+    final myMembership = ref.watch(roomMembershipProvider(roomId));
     final location = ref.watch(currentRoutingLocation);
     final List<Widget> topMenu = [
       members.when(
@@ -54,8 +54,8 @@ class RoomProfilePage extends ConsumerWidget {
             iconSize: 24,
             color: Theme.of(context).colorScheme.surface,
             onPressed: () => context.pushNamed(
-              Routes.spaceInvite.name,
-              pathParameters: {'spaceId': roomId},
+              Routes.chatInvite.name,
+              pathParameters: {'roomId': roomId},
             ),
           ),
         );
@@ -119,7 +119,7 @@ class RoomProfilePage extends ConsumerWidget {
                       ),
                       child: SpaceParentBadge(
                         badgeSize: 20,
-                        spaceId: roomId,
+                        roomId: roomId,
                         child: convoProfile.when(
                           data: (profile) => ActerAvatar(
                             mode: DisplayMode.GroupChat,

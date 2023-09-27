@@ -1,7 +1,7 @@
 import 'dart:core';
 
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/member_list_entry.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +18,7 @@ class MemberList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = convo.getRoomIdStr();
     final members = ref.watch(chatMembersProvider(roomId));
-    final myMembership = ref.watch(spaceMembershipProvider(roomId));
+    final myMembership = ref.watch(roomMembershipProvider(roomId));
 
     return members.when(
       data: (members) {

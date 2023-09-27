@@ -169,7 +169,7 @@ class _EditPinSheetConsumerState extends ConsumerState<EditPinSheet> {
                   return;
                 }
                 Navigator.of(context, rootNavigator: true).pop();
-                context.goNamed(
+                context.pushNamed(
                   Routes.pin.name,
                   pathParameters: {'pinId': widget.pinId.toString()},
                 );

@@ -1,8 +1,11 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
+import 'package:acter/common/widgets/spaces/space_hierarchy_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class ConvoHierarchyCard extends ConsumerWidget {
   final SpaceHierarchyRoomInfo space;
@@ -94,6 +97,15 @@ class ConvoHierarchyCard extends ConsumerWidget {
         roomId: roomId,
         profile: profile,
         subtitle: subtitle,
+        trailing: RoomHierarchyJoinButtons(
+          space: space,
+          forward: (roomId) => context.pushNamed(
+            Routes.chatroom.name,
+            pathParameters: {
+              'roomId': roomId,
+            },
+          ),
+        ),
         onTap: onTap,
         onFocusChange: onFocusChange,
         onLongPress: onLongPress,

@@ -58,7 +58,7 @@ class ChatsCard extends ConsumerWidget {
                           padding: const EdgeInsets.only(left: 30, top: 8),
                           child: OutlinedButton(
                             onPressed: () {
-                              context.goNamed(
+                              context.pushNamed(
                                 Routes.spaceChats.name,
                                 pathParameters: {'spaceId': spaceId},
                               );

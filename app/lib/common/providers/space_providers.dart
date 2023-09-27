@@ -2,6 +2,7 @@ import 'dart:core';
 
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -52,17 +53,6 @@ final maybeSpaceProvider =
     AsyncNotifierProvider.family<AsyncMaybeSpaceNotifier, Space?, String>(
   () => AsyncMaybeSpaceNotifier(),
 );
-
-/// Get the user's membership for a specific space based off the spaceId
-/// will throw if the client doesn't kow the space
-final spaceMembershipProvider =
-    FutureProvider.autoDispose.family<Member?, String>((ref, spaceId) async {
-  final space = await ref.watch(spaceProvider(spaceId).future);
-  if (!space.isJoined()) {
-    return null;
-  }
-  return await space.getMyMembership();
-});
 
 /// Get the SpaceItem of a spaceId or null if the space wasn't found. Keeps up to
 /// date with the underlying client even if the space wasn't found initially.
@@ -275,55 +265,6 @@ final spaceInvitedMembersProvider = FutureProvider.autoDispose
   return members.toList();
 });
 
-/// Get the relations of the given SpaceId.  Throws
-/// if the space isn't found. Stays up to date with underlying client data
-/// if a space was found.
-final spaceRelationsProvider = FutureProvider.autoDispose
-    .family<SpaceRelations?, String>((ref, spaceId) async {
-  final space = await ref.watch(maybeSpaceProvider(spaceId).future);
-  if (space == null) {
-    return null;
-  }
-  return await space.spaceRelations();
-});
-
-/// Get the canonical parent of the space. Errors if the space isn't found. Stays up
-/// to date with underlying client data if a space was found.
-final canonicalParentProvider = FutureProvider.autoDispose
-    .family<SpaceWithProfileData?, String>((ref, spaceId) async {
-  try {
-    final relations = await ref.watch(spaceRelationsProvider(spaceId).future);
-    if (relations == null) {
-      return null;
-    }
-    final parent = relations.mainParent();
-    if (parent == null) {
-      return null;
-    }
-
-    final parentSpace =
-        await ref.watch(maybeSpaceProvider(parent.roomId().toString()).future);
-    if (parentSpace == null) {
-      return null;
-    }
-    final profile =
-        await ref.watch(spaceProfileDataProvider(parentSpace).future);
-    return SpaceWithProfileData(parentSpace, profile);
-  } catch (e) {
-    log.warning('Failed to load canonical parent for $spaceId');
-    return null;
-  }
-});
-
-/// Get the List of related of the spaces for the space. Errors if the space or any
-/// related space isn't found. Stays up  to date with underlying client data if
-/// a space was found.
-final relatedSpacesProvider = FutureProvider.autoDispose
-    .family<List<Space>, String>((ref, spaceId) async {
-  return (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
-      .knownSubspaces;
-});
-
 /// Get the SpaceRelationsOverview of related SpaceItem for the space. Errors if
 /// the space or any related space isn't found. Stays up  to date with underlying
 /// client data if a space was found.
@@ -333,7 +274,7 @@ final spaceRelationsOverviewProvider = FutureProvider.autoDispose
   if (relatedSpaces == null) {
     throw 'Space not found';
   }
-  final membership = await ref.watch(spaceMembershipProvider(spaceId).future);
+  final membership = await ref.watch(roomMembershipProvider(spaceId).future);
   bool hasMoreSubspaces = false;
   bool hasMoreChats = false;
   final List<Space> knownSubspaces = [];

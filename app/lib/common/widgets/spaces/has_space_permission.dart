@@ -1,4 +1,4 @@
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -18,7 +18,7 @@ class HasSpacePermission extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final otherwise = fallback ?? const SizedBox.shrink();
-    return ref.watch(spaceMembershipProvider(spaceId)).when(
+    return ref.watch(roomMembershipProvider(spaceId)).when(
           data: (membership) =>
               (membership != null && membership.canString(permission))
                   ? child

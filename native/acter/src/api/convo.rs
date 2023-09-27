@@ -44,7 +44,7 @@ use std::{
 };
 use tracing::{error, info, trace, warn};
 
-use crate::TimelineStream;
+use crate::{SpaceRelations, TimelineStream};
 
 use super::{
     client::Client,

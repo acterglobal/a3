@@ -1,13 +1,25 @@
 import 'package:acter/common/models/profile_data.dart';
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/space/widgets/user_builder.dart';
+import 'package:acter/common/widgets/user_builder.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final userNameRegExp = RegExp(
+  r'@\S+:\S+.\S+$',
+  unicode: true,
+  caseSensitive: false,
+);
+
+final noAtUserNameRegExp = RegExp(
+  r'\S+:\S+.\S+$',
+  unicode: true,
+  caseSensitive: false,
+);
 
 final searchController = Provider.autoDispose<TextEditingController>((ref) {
   final controller = TextEditingController();
@@ -111,19 +123,19 @@ class UserEntry extends ConsumerWidget {
   }
 }
 
-class InviteToSpaceDialog extends ConsumerStatefulWidget {
-  final String spaceId;
-  const InviteToSpaceDialog({
+class InviteToRoomDialog extends ConsumerStatefulWidget {
+  final String roomId;
+  const InviteToRoomDialog({
     super.key,
-    required this.spaceId,
+    required this.roomId,
   });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      _InviteToSpaceDialogState();
+      _InviteToRoomDialogState();
 }
 
-class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
+class _InviteToRoomDialogState extends ConsumerState<InviteToRoomDialog>
     with TickerProviderStateMixin {
   late final TabController _tabController;
 
@@ -141,16 +153,44 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
 
   @override
   Widget build(BuildContext context) {
-    final spaceId = widget.spaceId;
-    final space = ref.watch(briefSpaceItemWithMembershipProvider(spaceId));
+    final roomId = widget.roomId;
+    final room = ref.watch(briefRoomItemWithMembershipProvider(roomId));
     final invited =
-        ref.watch(spaceInvitedMembersProvider(spaceId)).valueOrNull ?? [];
+        ref.watch(roomInvitedMembersProvider(roomId)).valueOrNull ?? [];
     final searchTextCtrl = ref.watch(searchController);
     final suggestedUsers =
-        ref.watch(filteredSuggestedUsersProvider(spaceId)).valueOrNull;
+        ref.watch(filteredSuggestedUsersProvider(roomId)).valueOrNull;
     final foundUsers = ref.watch(searchResultProvider);
     final searchValueNotifier = ref.watch(searchValueProvider.notifier);
+    final searchValue = ref.watch(searchValueProvider);
     final children = [];
+
+    if (searchValue != null && searchValue.isNotEmpty) {
+      final cleaned = searchValue.trim();
+      if (userNameRegExp.hasMatch(cleaned)) {
+        // this is a fully qualified username we can invite;
+
+        children.add(
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: _DirectInvite(roomId: roomId, userId: cleaned),
+            ),
+          ),
+        );
+      } else if (noAtUserNameRegExp.hasMatch(cleaned)) {
+        // this is a fully qualified username we can invite;
+
+        children.add(
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: _DirectInvite(roomId: roomId, userId: '@$cleaned'),
+            ),
+          ),
+        );
+      }
+    }
 
     if (suggestedUsers != null && suggestedUsers.isNotEmpty) {
       children.add(
@@ -182,7 +222,7 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
                   ),
                   trailing: InviteButton(
                     userId: e.userId,
-                    space: space.valueOrNull!.space!,
+                    room: room.valueOrNull!.room!,
                     invited: isInvited(e.userId, invited),
                   ),
                 ),
@@ -212,7 +252,7 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
             (context, index) => foundUsers.when(
               data: (data) => UserBuilder(
                 profile: data[index],
-                spaceId: widget.spaceId,
+                roomId: widget.roomId,
               ),
               error: (err, stackTrace) => Text('Error: $err'),
               loading: () => const Text('Loading found user'),
@@ -226,9 +266,9 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
     return ConstrainedBox(
       constraints: const BoxConstraints(minWidth: 400),
       child: Scaffold(
-        appBar: space.when(
-          data: (space) => AppBar(
-            title: Text('Invite to ${space.spaceProfileData.displayName}'),
+        appBar: room.when(
+          data: (room) => AppBar(
+            title: Text('Invite to ${room.roomProfileData.displayName}'),
             bottom: TabBar(
               controller: _tabController,
               dividerColor: Colors.transparent,
@@ -284,7 +324,7 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
                   delegate: SliverChildBuilderDelegate(
                     (context, index) => UserBuilder(
                       profile: invited[index].getProfile(),
-                      spaceId: widget.spaceId,
+                      roomId: widget.roomId,
                     ),
                     childCount: invited.length,
                   ),
@@ -292,6 +332,40 @@ class _InviteToSpaceDialogState extends ConsumerState<InviteToSpaceDialog>
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DirectInvite extends ConsumerWidget {
+  final String userId;
+  final String roomId;
+
+  const _DirectInvite({
+    Key? key,
+    required this.userId,
+    required this.roomId,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final invited =
+        ref.watch(roomInvitedMembersProvider(roomId)).valueOrNull ?? [];
+    final room = ref.watch(briefRoomItemWithMembershipProvider(roomId));
+    return Card(
+      child: ListTile(
+        title: Text(userId),
+        subtitle: Text('directly invite $userId'),
+        leading: const Icon(Atlas.paper_airplane_thin),
+        trailing: room.when(
+          data: (data) => InviteButton(
+            userId: userId,
+            room: data.room!,
+            invited: isInvited(userId, invited),
+          ),
+          error: (err, stackTrace) => Text('Error: $err'),
+          loading: () => const Text('Loading room'),
         ),
       ),
     );
