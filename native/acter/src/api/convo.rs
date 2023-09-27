@@ -478,8 +478,7 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let retry_strategy = FixedInterval::from_millis(250).take(10);
-                Retry::spawn(retry_strategy, || me.convo_str(room_id_or_alias.as_str()))
-                        .await
+                Retry::spawn(retry_strategy, || me.convo_str(room_id_or_alias.as_str())).await
             })
             .await?
     }
