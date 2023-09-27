@@ -2,6 +2,7 @@ use acter_core::{statics::default_acter_convo_states, Error};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use futures::stream::{Stream, StreamExt};
+
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
     event_handler::{Ctx, EventHandlerHandle},
@@ -41,6 +42,7 @@ use std::{
     sync::{Arc, RwLock as StdRwLock},
     thread::JoinHandle,
 };
+use tokio_retry::{strategy::FixedInterval, Retry};
 use tracing::{error, info, trace, warn};
 
 use crate::{SpaceRelations, TimelineStream};
@@ -452,7 +454,11 @@ impl Client {
     }
 
     pub async fn convo(&self, room_id_or_alias: String) -> Result<Convo> {
-        let either = OwnedRoomOrAliasId::try_from(room_id_or_alias.as_str())?;
+        self.convo_str(room_id_or_alias.as_str()).await
+    }
+
+    pub async fn convo_str(&self, room_id_or_alias: &str) -> Result<Convo> {
+        let either = OwnedRoomOrAliasId::try_from(room_id_or_alias)?;
         if either.is_room_id() {
             let room_id = OwnedRoomId::try_from(either.as_str())?;
             self.convo_typed(&room_id)
@@ -464,6 +470,18 @@ impl Client {
         } else {
             bail!("{room_id_or_alias} isn't a valid room id or alias...");
         }
+    }
+
+    /// get the convo or retry avery 250ms for retry times.
+    pub async fn convo_with_retry(&self, room_id_or_alias: String, retry: u8) -> Result<Convo> {
+        let me = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let retry_strategy = FixedInterval::from_millis(250).take(10);
+                Retry::spawn(retry_strategy, || me.convo_str(room_id_or_alias.as_str()))
+                        .await
+            })
+            .await?
     }
 
     pub async fn convo_typed(&self, room_id: &OwnedRoomId) -> Option<Convo> {

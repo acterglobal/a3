@@ -8489,6 +8489,53 @@ class Api {
     return tmp7;
   }
 
+  Convo? __clientConvoWithRetryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientConvoWithRetryFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Convo");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = Convo._(this, tmp13_1);
+    return tmp7;
+  }
+
   MxcUri? __clientUploadMediaFuturePoll(
     int boxed,
     int postCobject,
@@ -20291,6 +20338,24 @@ class Api {
         int,
         int,
       )>();
+  late final _clientConvoWithRetryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+          )>>("__Client_convo_with_retry");
+
+  late final _clientConvoWithRetry = _clientConvoWithRetryPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _clientGetUserProfilePtr = _lookup<
       ffi.NativeFunction<
           _ClientGetUserProfileReturn Function(
@@ -23833,6 +23898,21 @@ class Api {
         int,
         int,
       )>();
+  late final _clientConvoWithRetryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientConvoWithRetryFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_convo_with_retry_future_poll");
+
+  late final _clientConvoWithRetryFuturePoll =
+      _clientConvoWithRetryFuturePollPtr.asFunction<
+          _ClientConvoWithRetryFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _clientUploadMediaFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientUploadMediaFuturePollReturn Function(
@@ -43394,6 +43474,43 @@ class Client {
     return tmp6;
   }
 
+  /// get convo room of retry 250ms for retry times
+  Future<Convo> convoWithRetry(
+    String roomIdOrAlias,
+    int retry,
+  ) {
+    final tmp1 = roomIdOrAlias;
+    final tmp5 = retry;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    tmp6 = tmp5;
+    final tmp7 = _api._clientConvoWithRetry(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+    );
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0, "__Client_convo_with_retry_future_drop");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = _nativeFuture(tmp9_1, _api.__clientConvoWithRetryFuturePoll);
+    return tmp8;
+  }
+
   /// get the user profile that contains avatar and display name
   UserProfile getUserProfile() {
     var tmp0 = 0;
@@ -50792,6 +50909,21 @@ class _ClientRoomFuturePollReturn extends ffi.Struct {
 }
 
 class _ClientConvoFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ClientConvoWithRetryFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
