@@ -407,7 +407,7 @@ impl Client {
                 let joined = c
                     .join_room_by_id_or_alias(alias.as_ref(), server_names.as_slice())
                     .await?;
-                Ok(Room::new(c.core.clone(), joined.into()))
+                Ok(Room::new(c.core.clone(), joined))
             })
             .await?
     }

@@ -393,7 +393,7 @@ impl NewsEntryDraft {
     pub fn add_text_slide(&mut self, body: String) -> &mut Self {
         self.slides.push(NewsSlide {
             client: self.client.clone(),
-            room: self.room.clone().into(),
+            room: self.room.clone(),
             inner: news::NewsSlide::new_text(body),
         });
         self
@@ -445,7 +445,7 @@ impl NewsEntryDraft {
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
-            room: self.room.clone().into(),
+            room: self.room.clone(),
             inner: news::NewsSlide {
                 content: NewsContent::Image(image_content),
                 references: Default::default(),
@@ -466,7 +466,7 @@ impl NewsEntryDraft {
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
-            room: self.room.clone().into(),
+            room: self.room.clone(),
             inner: news::NewsSlide::new_audio(body, (*url).to_owned()),
         });
         self
@@ -488,7 +488,7 @@ impl NewsEntryDraft {
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
-            room: self.room.clone().into(),
+            room: self.room.clone(),
             inner: news::NewsSlide::new_video(body, (*url).to_owned()),
         });
         self
@@ -505,7 +505,7 @@ impl NewsEntryDraft {
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
-            room: self.room.clone().into(),
+            room: self.room.clone(),
             inner: news::NewsSlide::new_file(body, (*url).to_owned()),
         });
         self
