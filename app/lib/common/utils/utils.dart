@@ -5,7 +5,6 @@ import 'dart:math';
 import 'dart:async';
 
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:flutter/rendering.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
