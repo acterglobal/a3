@@ -17,6 +17,7 @@ class PinsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final size = MediaQuery.of(context).size;
     // ignore: unused_local_variable
     final account = ref.watch(accountProfileProvider);
     final pins = ref.watch(pinsProvider);
@@ -42,11 +43,13 @@ class PinsPage extends ConsumerWidget {
                 ),
               ),
             ],
-            expandedContent: Text(
-              'Pinned items from all the Spaces you are part of',
-              softWrap: true,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            expandedContent: size.width <= 600
+                ? null
+                : Text(
+                    'Pinned items from all the Spaces you are part of',
+                    softWrap: true,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
           ),
           pins.when(
             data: (pins) {

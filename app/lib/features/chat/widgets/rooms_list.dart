@@ -28,7 +28,7 @@ class RoomsListWidget extends ConsumerWidget {
     final inSideBar = ref.watch(inSideBarProvider);
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer,
+        color: Theme.of(context).colorScheme.onSecondary.withOpacity(0.8),
       ),
       child: PageStorage(
         bucket: bucketGlobal,

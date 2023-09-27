@@ -142,10 +142,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: Theme.of(context)
-                    .colorScheme
-                    .primaryContainer
-                    .withOpacity(0.5),
+                color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.5),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -253,10 +250,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 15),
               decoration: BoxDecoration(
-                color: Theme.of(context)
-                    .colorScheme
-                    .primaryContainer
-                    .withOpacity(0.5),
+                color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.5),
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),

@@ -48,7 +48,7 @@ class RoomProfilePage extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor:
-          Theme.of(context).colorScheme.primaryContainer.withOpacity(0.8),
+          Theme.of(context).colorScheme.onSecondary.withOpacity(0.5),
       extendBodyBehindAppBar: true,
       body: CustomScrollView(
         shrinkWrap: true,
@@ -146,7 +146,7 @@ class RoomProfilePage extends ConsumerWidget {
               darkTheme: SettingsThemeData(
                 settingsListBackground: Colors.transparent,
                 settingsSectionBackground:
-                    Theme.of(context).colorScheme.onSecondary,
+                    Theme.of(context).colorScheme.onPrimary,
                 dividerColor: Colors.transparent,
                 leadingIconsColor: Theme.of(context).colorScheme.neutral6,
               ),

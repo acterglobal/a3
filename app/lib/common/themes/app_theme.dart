@@ -69,7 +69,7 @@ class AppTheme {
     brightness: Brightness.dark,
     primary: Color(0xFF9CCAFF),
     onPrimary: Color(0xFF003257),
-    primaryContainer: Color(0xFF10273D),
+    primaryContainer: Color(0xFF00497B),
     onPrimaryContainer: Color(0xFFD0E4FF),
     secondary: Color(0xFF9ACBFF),
     onSecondary: Color(0xFF003355),
@@ -100,10 +100,10 @@ class AppTheme {
   );
 
   static const primaryGradient = LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.center,
+    begin: AlignmentDirectional(-1.5, -2.0),
+    end: AlignmentDirectional(-1.5, 0.5),
     colors: <Color>[
-      Color(0xFF10273D),
+      Color(0xFF001B3D),
       Color(0xFF121212),
     ],
   );
@@ -190,10 +190,6 @@ class AppTheme {
         circularTrackColor: Colors.transparent,
       ),
       dividerColor: const Color(0xFFDDEDFC),
-      appBarTheme: AppBarTheme(
-        backgroundColor: brandColorScheme.primaryContainer,
-        elevation: 0,
-      ),
       cardTheme: CardTheme(
         color: brandColorScheme.secondaryContainer,
         elevation: 0,
@@ -281,7 +277,7 @@ class AppTheme {
         elevation: 0,
       ),
       navigationRailTheme: const NavigationRailThemeData(
-        backgroundColor: Color(0xff1D293E),
+        backgroundColor: Color(0xff122D46),
         indicatorColor: Color(0xff1E4E7B),
         unselectedLabelTextStyle: TextStyle(
           color: Colors.white,

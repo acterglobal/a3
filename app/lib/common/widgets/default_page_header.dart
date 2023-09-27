@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class PageHeaderWidget extends StatelessWidget {
   final String title;
-  final BoxDecoration sectionDecoration;
+  final bool? centerTitle;
+  final BoxDecoration? sectionDecoration;
   final Widget? expandedContent;
   final double expandedHeight;
   final List<Widget>? actions;
@@ -10,7 +11,8 @@ class PageHeaderWidget extends StatelessWidget {
   const PageHeaderWidget({
     Key? key,
     required this.title,
-    required this.sectionDecoration,
+    this.sectionDecoration,
+    this.centerTitle = false,
     this.expandedHeight = 120,
     this.actions,
     this.expandedContent,
@@ -22,24 +24,25 @@ class PageHeaderWidget extends StatelessWidget {
       pinned: true,
       expandedHeight: expandedHeight,
       actions: actions,
-      flexibleSpace: expandedContent != null
-          ? LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-                return Container(
-                  decoration: sectionDecoration,
-                  child: FlexibleSpaceBar(
-                    titlePadding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 12,
-                    ),
-                    title: AnimatedSize(
-                      duration: const Duration(milliseconds: 300),
-                      child: Text(
-                        title,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                    ),
-                    background: Column(
+      flexibleSpace: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          return Container(
+            decoration: sectionDecoration,
+            child: FlexibleSpaceBar(
+              titlePadding: const EdgeInsets.symmetric(
+                horizontal: 50,
+                vertical: 12,
+              ),
+              centerTitle: centerTitle,
+              title: AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
+              background: expandedContent != null
+                  ? Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -54,12 +57,12 @@ class PageHeaderWidget extends StatelessWidget {
                           ),
                         ),
                       ],
-                    ),
-                  ),
-                );
-              },
-            )
-          : null,
+                    )
+                  : null,
+            ),
+          );
+        },
+      ),
     );
   }
 }

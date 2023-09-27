@@ -20,6 +20,7 @@ class EventsPage extends ConsumerWidget {
     // ignore: unused_local_variable
     final account = ref.watch(accountProfileProvider);
     final events = ref.watch(myEventsProvider);
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.neutral,
       body: CustomScrollView(
@@ -40,11 +41,12 @@ class EventsPage extends ConsumerWidget {
                 onPressed: () => context.pushNamed(Routes.createEvent.name),
               ),
             ],
-            expandedContent: Text(
-              'Calendar events from all the Spaces you are part of',
-              softWrap: true,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            expandedContent: size.width <= 600
+                ? null
+                : Text(
+                    'Calendar events from all the Spaces you are part of',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
           ),
           events.when(
             data: (events) {
