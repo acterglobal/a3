@@ -16,15 +16,8 @@ class JoinSpacePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.center,
-            colors: <Color>[
-              Theme.of(context).colorScheme.background,
-              Theme.of(context).colorScheme.neutral,
-            ],
-          ),
+        decoration: const BoxDecoration(
+          gradient: AppTheme.primaryGradient,
         ),
         child: PublicSpaceSelector(
           autofocus: true,

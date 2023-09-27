@@ -87,6 +87,7 @@ jobs:
           - name: Mac OSx 
             os: macos-12
             with_apple_cert: true
+            target: macos
             cargo_make_args: desktop
             flutter_config: "--enable-macos-desktop"
             flutter_build_args: "build macos"
@@ -228,6 +229,11 @@ jobs:
             --dart-define DEFAULT_HOMESERVER_NAME="${{vars.DEFAULT_HOMESERVER_NAME}}"
         working-directory: ./app
 
+      - name: Sign Acter.app
+        if: matrix.target == 'macos'
+        working-directory: ${{ matrix.artifact_path }}
+        run: codesign --deep --force --verbose --sign "${{ secrets.MAC_SIGNING_IDENTIY}}" Acter.app
+
       # Important! Cleanup: remove the certificate and provisioning profile from the runner!
       - name: Clean up keychain and provisioning profile
         if: ${{ always() && matrix.with_apple_cert }}
@@ -324,7 +330,7 @@ jobs:
           git config --global user.name 'Sari'
           git config --global user.email 'acter-sari@users.noreply.github.com'
           git add "docs/content/nightly/${{ needs.tags.outputs.tag }}.md"
-          git commit -m "Add nightly ${{ needs.tags.outputs.tag }} to docs"
+          git commit -F nightly-changes.md
           git tag nightly-${{ needs.tags.outputs.tag }}
           git tag -f nightly-latest
           git push -f origin main nightly-${{ needs.tags.outputs.tag }} nightly-latest

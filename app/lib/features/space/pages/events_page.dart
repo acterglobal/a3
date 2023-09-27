@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/events/providers/events_provider.dart';
 import 'package:acter/features/events/widgets/events_item.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -62,10 +61,9 @@ class SpaceEventsPage extends ConsumerWidget {
               }
               return SliverGrid.builder(
                 itemCount: events.length,
-                gridDelegate:
-                    SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: max(1, min(widthCount, minCount)),
-                  height: MediaQuery.of(context).size.height * 0.1,
+                  childAspectRatio: 4.0,
                 ),
                 itemBuilder: (context, index) =>
                     EventItem(event: events[index]),

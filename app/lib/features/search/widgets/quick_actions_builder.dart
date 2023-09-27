@@ -51,22 +51,37 @@ class QuickActionsBuilder extends ConsumerWidget {
                     navigateTo(route: Routes.actionAddUpdate, push: true);
                     debugPrint('Update');
                   },
-                  icon: const Icon(Atlas.plus_circle_thin),
-                  label: const Text('Update'),
+                  icon: const Icon(
+                    Atlas.plus_circle_thin,
+                    size: 18,
+                  ),
+                  label: Text(
+                    'Update',
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
                 )
               : null,
           canPostPin
               ? OutlinedButton.icon(
                   onPressed: () => context.pushNamed(Routes.actionAddPin.name),
-                  icon: const Icon(Atlas.plus_circle_thin),
-                  label: const Text('Pin'),
+                  icon: const Icon(
+                    Atlas.plus_circle_thin,
+                    size: 18,
+                  ),
+                  label: Text(
+                    'Pin',
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
                 )
               : null,
           canPostEvent
               ? OutlinedButton.icon(
                   onPressed: () => context.pushNamed(Routes.createEvent.name),
-                  icon: const Icon(Atlas.plus_circle_thin),
-                  label: const Text('Event'),
+                  icon: const Icon(Atlas.plus_circle_thin, size: 18),
+                  label: Text(
+                    'Event',
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
                 )
               : null,
           isActive(LabsFeature.polls)
@@ -74,8 +89,11 @@ class QuickActionsBuilder extends ConsumerWidget {
                   onPressed: () {
                     debugPrint('poll');
                   },
-                  icon: const Icon(Atlas.plus_circle_thin),
-                  label: const Text('Poll'),
+                  icon: const Icon(Atlas.plus_circle_thin, size: 18),
+                  label: Text(
+                    'Poll',
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
                 )
               : null,
           isActive(LabsFeature.discussions)
@@ -87,8 +105,14 @@ class QuickActionsBuilder extends ConsumerWidget {
                   onPressed: () {
                     debugPrint('Discussion');
                   },
-                  icon: const Icon(Atlas.plus_circle_thin),
-                  label: const Text('Discussion'),
+                  icon: const Icon(
+                    Atlas.plus_circle_thin,
+                    size: 18,
+                  ),
+                  label: Text(
+                    'Discussion',
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
                 )
               : null,
           OutlinedButton.icon(
@@ -96,8 +120,11 @@ class QuickActionsBuilder extends ConsumerWidget {
               foregroundColor: Colors.greenAccent,
               side: const BorderSide(width: 1, color: Colors.greenAccent),
             ),
-            icon: const Icon(Atlas.bug_clipboard_thin),
-            label: const Text('Report bug'),
+            icon: const Icon(Atlas.bug_clipboard_thin, size: 18),
+            label: Text(
+              'Report bug',
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
             onPressed: () => navigateTo(route: Routes.bugReport, push: true),
           ),
         ].where((element) => element != null),

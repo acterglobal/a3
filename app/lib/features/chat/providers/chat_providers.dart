@@ -43,7 +43,8 @@ final searchedChatsProvider = FutureProvider<List<Convo>>((ref) async {
 });
 
 // for desktop only
-final showFullSplitView = StateProvider<bool>((ref) => false);
+final inSideBarProvider = StateProvider<bool>((ref) => false);
+final hasExpandedPanel = StateProvider<bool>((ref) => false);
 
 // get status of room encryption
 final isRoomEncryptedProvider =

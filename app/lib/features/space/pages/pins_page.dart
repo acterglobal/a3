@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/pins/widgets/pin_list_item.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:flutter/material.dart';
@@ -63,10 +62,9 @@ class SpacePinsPage extends ConsumerWidget {
               }
               return SliverGrid.builder(
                 itemCount: pins.length,
-                gridDelegate:
-                    SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: max(1, min(widthCount, minCount)),
-                  height: MediaQuery.of(context).size.height * 0.1,
+                  childAspectRatio: 4.0,
                 ),
                 itemBuilder: (context, index) {
                   final pin = pins[index];

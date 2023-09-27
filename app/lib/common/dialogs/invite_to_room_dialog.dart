@@ -9,6 +9,18 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+final userNameRegExp = RegExp(
+  r'@\S+:\S+.\S+$',
+  unicode: true,
+  caseSensitive: false,
+);
+
+final noAtUserNameRegExp = RegExp(
+  r'\S+:\S+.\S+$',
+  unicode: true,
+  caseSensitive: false,
+);
+
 final searchController = Provider.autoDispose<TextEditingController>((ref) {
   final controller = TextEditingController();
   ref.onDispose(() {
@@ -150,7 +162,35 @@ class _InviteToRoomDialogState extends ConsumerState<InviteToRoomDialog>
         ref.watch(filteredSuggestedUsersProvider(roomId)).valueOrNull;
     final foundUsers = ref.watch(searchResultProvider);
     final searchValueNotifier = ref.watch(searchValueProvider.notifier);
+    final searchValue = ref.watch(searchValueProvider);
     final children = [];
+
+    if (searchValue != null && searchValue.isNotEmpty) {
+      final cleaned = searchValue.trim();
+      if (userNameRegExp.hasMatch(cleaned)) {
+        // this is a fully qualified username we can invite;
+
+        children.add(
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: _DirectInvite(roomId: roomId, userId: cleaned),
+            ),
+          ),
+        );
+      } else if (noAtUserNameRegExp.hasMatch(cleaned)) {
+        // this is a fully qualified username we can invite;
+
+        children.add(
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: _DirectInvite(roomId: roomId, userId: '@$cleaned'),
+            ),
+          ),
+        );
+      }
+    }
 
     if (suggestedUsers != null && suggestedUsers.isNotEmpty) {
       children.add(
@@ -292,6 +332,40 @@ class _InviteToRoomDialogState extends ConsumerState<InviteToRoomDialog>
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DirectInvite extends ConsumerWidget {
+  final String userId;
+  final String roomId;
+
+  const _DirectInvite({
+    Key? key,
+    required this.userId,
+    required this.roomId,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final invited =
+        ref.watch(roomInvitedMembersProvider(roomId)).valueOrNull ?? [];
+    final room = ref.watch(briefRoomItemWithMembershipProvider(roomId));
+    return Card(
+      child: ListTile(
+        title: Text(userId),
+        subtitle: Text('directly invite $userId'),
+        leading: const Icon(Atlas.paper_airplane_thin),
+        trailing: room.when(
+          data: (data) => InviteButton(
+            userId: userId,
+            room: data.room!,
+            invited: isInvited(userId, invited),
+          ),
+          error: (err, stackTrace) => Text('Error: $err'),
+          loading: () => const Text('Loading room'),
         ),
       ),
     );
