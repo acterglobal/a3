@@ -44,6 +44,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final avatar = ActerAvatar(
       uniqueId: roomId,
+      //FIXME: add support for DM/Group chats
       mode: profile.isDm ? DisplayMode.User : DisplayMode.Space,
       displayName: profile.displayName ?? roomId,
       avatar: profile.getAvatarImage(),

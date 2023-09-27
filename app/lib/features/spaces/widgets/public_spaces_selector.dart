@@ -5,7 +5,6 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -207,8 +206,8 @@ class PublicSpaceItem extends ConsumerWidget {
       color: Theme.of(context).colorScheme.surface,
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        // mainAxisAlignment: MainAxisAlignment.start,
-        // crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Flexible(
             child: Padding(
@@ -274,12 +273,14 @@ class PublicSpaceItem extends ConsumerWidget {
             ),
           ),
           Flexible(
-            child: Html(
-              padding: const EdgeInsets.all(8),
-              data: '${space.topic()}',
-              defaultTextStyle: Theme.of(context).textTheme.labelMedium,
-              shrinkToFit: true,
-              maxLines: 5,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Text(
+                '${space.topic()}',
+                style: Theme.of(context).textTheme.labelMedium,
+                maxLines: 5,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ],

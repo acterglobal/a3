@@ -18,6 +18,7 @@ class ChatShell extends ConsumerWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth >= sidebarMinWidth) {
+          // FIXME: do state change inside notifier
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
             ref.read(inSideBarProvider.notifier).update((state) => true);
           });

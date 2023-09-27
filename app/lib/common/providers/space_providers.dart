@@ -63,10 +63,11 @@ final maybeSpaceInfoProvider =
     return null;
   }
   final profileData = await ref.watch(spaceProfileDataProvider(space).future);
+  final membership = await space.getMyMembership();
   return SpaceItem(
     space: space,
     roomId: space.getRoomId().toString(),
-    membership: await space.getMyMembership(),
+    membership: membership,
     activeMembers: [],
     spaceProfileData: profileData,
   );

@@ -3,6 +3,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
@@ -197,7 +198,7 @@ class RoomProfilePage extends ConsumerWidget {
                         );
                       },
                       title: Text(
-                        'Copy Room Link',
+                        'Copy Room ID',
                         style: tileTextTheme,
                       ),
                       leading: const Icon(Atlas.chain_link_thin, size: 18),
@@ -249,6 +250,82 @@ class RoomProfilePage extends ConsumerWidget {
                   ),
                   tiles: [
                     SettingsTile(
+                      onPressed: (ctx) => showAdaptiveDialog(
+                        context: ctx,
+                        builder: (ctx) => DefaultDialog(
+                          title: Text(
+                            'Leave Room',
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          subtitle: Text(
+                            'Are you sure you want to leave room? This action cannot be undone',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          actions: [
+                            DefaultButton(
+                              onPressed: () =>
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pop(),
+                              title: 'No',
+                              isOutlined: true,
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(
+                                  color: Theme.of(context).colorScheme.success,
+                                ),
+                              ),
+                            ),
+                            DefaultButton(
+                              onPressed: () async {
+                                Navigator.of(context, rootNavigator: true)
+                                    .pop();
+                                showAdaptiveDialog(
+                                  context: context,
+                                  builder: (context) => const DefaultDialog(
+                                    title: Text('Leaving room'),
+                                    isLoader: true,
+                                  ),
+                                );
+                                var res = await _handleLeaveRoom(ref, roomId);
+                                if (res) {
+                                  if (context.mounted) {
+                                    context.pop();
+                                    context.goNamed(Routes.chat.name);
+                                  }
+                                } else {
+                                  if (context.mounted) {
+                                    showAdaptiveDialog(
+                                      context: ctx,
+                                      builder: (ctx) => DefaultDialog(
+                                        title: Text(
+                                          'Some error occured',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleSmall,
+                                        ),
+                                        isLoader: true,
+                                        actions: [
+                                          DefaultButton(
+                                            onPressed: () => Navigator.of(
+                                              context,
+                                              rootNavigator: true,
+                                            ).pop(),
+                                            title: 'Close',
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                              title: 'Yes',
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.badgeUrgent,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                       title: Text(
                         'Leave Room',
                         style: tileTextTheme!.copyWith(
@@ -269,5 +346,10 @@ class RoomProfilePage extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<bool> _handleLeaveRoom(WidgetRef ref, String roomId) async {
+    final convo = await ref.read(chatProvider(roomId).future);
+    return await convo.leave();
   }
 }

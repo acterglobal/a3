@@ -152,6 +152,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                       child: convoProfile.when(
                         data: (profile) => ActerAvatar(
                           uniqueId: convo.getRoomIdStr(),
+                          //FIXME: add support for DM/Group Chats
                           mode: profile.isDm
                               ? DisplayMode.User
                               : DisplayMode.Space,
