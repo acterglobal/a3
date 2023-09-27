@@ -100,8 +100,8 @@ class AppTheme {
   );
 
   static const primaryGradient = LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.center,
+    begin: AlignmentDirectional(-1.5, -2.0),
+    end: AlignmentDirectional(-1.5, 0.5),
     colors: <Color>[
       Color(0xFF001B3D),
       Color(0xFF121212),
@@ -191,7 +191,7 @@ class AppTheme {
       ),
       dividerColor: const Color(0xFFDDEDFC),
       cardTheme: CardTheme(
-        color: brandColorScheme.primaryContainer,
+        color: brandColorScheme.secondaryContainer,
         elevation: 0,
         margin: const EdgeInsets.all(8),
       ),
@@ -202,6 +202,12 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           side: BorderSide.none,
           borderRadius: BorderRadius.circular(6),
+        ),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: brandColorScheme.neutral,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -225,6 +231,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(12),
           ),
           foregroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
         ),
       ),
       dividerTheme: const DividerThemeData(
@@ -270,7 +277,7 @@ class AppTheme {
         elevation: 0,
       ),
       navigationRailTheme: const NavigationRailThemeData(
-        backgroundColor: Color(0xff1D293E),
+        backgroundColor: Color(0xff122D46),
         indicatorColor: Color(0xff1E4E7B),
         unselectedLabelTextStyle: TextStyle(
           color: Colors.white,

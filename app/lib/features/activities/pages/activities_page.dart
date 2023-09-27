@@ -1,4 +1,3 @@
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
@@ -24,6 +23,7 @@ class ActivitiesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final size = MediaQuery.of(context).size;
     // ignore: unused_local_variable
     final allDone = ref.watch(hasActivitiesProvider) == HasActivities.none;
     final allSessions = ref.watch(allSessionsProvider);
@@ -118,29 +118,13 @@ class ActivitiesPage extends ConsumerWidget {
             sectionDecoration: const BoxDecoration(
               gradient: AppTheme.primaryGradient,
             ),
-            actions: [
-              IconButton(
-                icon: const Icon(Atlas.funnel_sort_thin),
-                onPressed: () {
-                  customMsgSnackbar(
-                    context,
-                    'Activities filters not yet implemented',
-                  );
-                },
-              ),
-              IconButton(
-                icon: const Icon(Atlas.gear_thin),
-                onPressed: () {
-                  customMsgSnackbar(
-                    context,
-                    'Notifications Settings page not yet implemented',
-                  );
-                },
-              ),
-            ],
-            expandedContent: const Text(
-              'All the important stuff requiring your attention can be found here',
-            ),
+            expandedContent: size.width <= 600
+                ? null
+                : Text(
+                    'All the important stuff requiring your attention can be found here',
+                    softWrap: true,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
           ),
           ...children,
           RiverPagedBuilder<Next?, ffi.Notification>.autoDispose(
