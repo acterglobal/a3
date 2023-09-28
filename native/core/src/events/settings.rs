@@ -1,9 +1,8 @@
 use derive_builder::Builder;
+use ruma_common::events::{macros::EventContent, EmptyStateKey};
+use serde::{Deserialize, Serialize};
 
 pub static APP_SETTINGS_FIELD: &str = "global.acter.app_settings";
-
-use matrix_sdk::ruma::events::{macros::EventContent, EmptyStateKey};
-use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize, Builder)]
 pub struct SimpleSettingWithTurnOff {

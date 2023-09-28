@@ -12,8 +12,8 @@ class EventItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Theme.of(context).colorScheme.primaryContainer,
       child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
         title:
             Text(event.title(), style: Theme.of(context).textTheme.bodyMedium),
         subtitle: Text(

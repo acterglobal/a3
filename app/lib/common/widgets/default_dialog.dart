@@ -6,6 +6,8 @@ class DefaultDialog extends ConsumerWidget {
   final Widget title;
   final Widget? subtitle;
   final Widget? description;
+  final double? height;
+  final double? width;
   final bool isLoader;
   final List<Widget>? actions;
 
@@ -14,6 +16,8 @@ class DefaultDialog extends ConsumerWidget {
     required this.title,
     this.subtitle,
     this.description,
+    this.height,
+    this.width,
     this.isLoader = false,
     this.actions = const <Widget>[],
   });
@@ -25,7 +29,8 @@ class DefaultDialog extends ConsumerWidget {
         padding: const EdgeInsets.all(8.0),
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.5,
+            maxWidth: width ?? MediaQuery.of(context).size.width * 0.5,
+            maxHeight: height ?? double.infinity,
           ),
           child: SingleChildScrollView(
             child: Column(

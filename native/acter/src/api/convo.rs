@@ -2,31 +2,18 @@ use acter_core::{statics::default_acter_convo_states, Error};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use futures::stream::{Stream, StreamExt};
+
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
     event_handler::{Ctx, EventHandlerHandle},
-    room::{MessagesOptions, Room as SdkRoom},
+    executor::JoinHandle,
+    room::MessagesOptions,
     ruma::{
         api::client::room::{
             create_room::v3::{CreationContent, Request as CreateRoomRequest},
             Visibility,
         },
         assign,
-        events::{
-            receipt::{ReceiptThread, ReceiptType},
-            room::{
-                avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
-                encrypted::OriginalSyncRoomEncryptedEvent,
-                join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
-                member::{MembershipState, OriginalSyncRoomMemberEvent},
-                message::OriginalSyncRoomMessageEvent,
-                redaction::SyncRoomRedactionEvent,
-            },
-            space::parent::SpaceParentEventContent,
-            AnySyncTimelineEvent, InitialStateEvent,
-        },
-        serde::Raw,
-        MxcUri, OwnedRoomId, OwnedUserId, RoomId, UserId,
     },
     Client as SdkClient, RoomMemberships,
 };
@@ -34,13 +21,29 @@ use matrix_sdk_ui::{
     timeline::{EventTimelineItem, PaginationOptions, RoomExt, TimelineItem},
     Timeline,
 };
-use ruma::{OwnedRoomAliasId, OwnedRoomOrAliasId};
+use ruma_common::{
+    events::{
+        receipt::{ReceiptThread, ReceiptType},
+        room::{
+            avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
+            encrypted::OriginalSyncRoomEncryptedEvent,
+            join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
+            member::{MembershipState, OriginalSyncRoomMemberEvent},
+            message::OriginalSyncRoomMessageEvent,
+            redaction::SyncRoomRedactionEvent,
+        },
+        space::parent::SpaceParentEventContent,
+        AnySyncTimelineEvent, InitialStateEvent,
+    },
+    serde::Raw,
+    MxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId, OwnedUserId, RoomId, UserId,
+};
 use std::{
     ops::Deref,
     path::PathBuf,
     sync::{Arc, RwLock as StdRwLock},
-    thread::JoinHandle,
 };
+use tokio_retry::{strategy::FixedInterval, Retry};
 use tracing::{error, info, trace, warn};
 
 use crate::{SpaceRelations, TimelineStream};
@@ -63,7 +66,7 @@ pub struct Convo {
     inner: Room,
     latest_message: LatestMsgLock,
     timeline: Arc<Timeline>,
-    timeline_listener: Arc<matrix_sdk::executor::JoinHandle<()>>,
+    timeline_listener: Arc<JoinHandle<()>>,
 }
 
 impl PartialEq for Convo {
@@ -452,7 +455,11 @@ impl Client {
     }
 
     pub async fn convo(&self, room_id_or_alias: String) -> Result<Convo> {
-        let either = OwnedRoomOrAliasId::try_from(room_id_or_alias.as_str())?;
+        self.convo_str(room_id_or_alias.as_str()).await
+    }
+
+    pub async fn convo_str(&self, room_id_or_alias: &str) -> Result<Convo> {
+        let either = OwnedRoomOrAliasId::try_from(room_id_or_alias)?;
         if either.is_room_id() {
             let room_id = OwnedRoomId::try_from(either.as_str())?;
             self.convo_typed(&room_id)
@@ -464,6 +471,17 @@ impl Client {
         } else {
             bail!("{room_id_or_alias} isn't a valid room id or alias...");
         }
+    }
+
+    /// get the convo or retry avery 250ms for retry times.
+    pub async fn convo_with_retry(&self, room_id_or_alias: String, retry: u8) -> Result<Convo> {
+        let me = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let retry_strategy = FixedInterval::from_millis(250).take(10);
+                Retry::spawn(retry_strategy, || me.convo_str(room_id_or_alias.as_str())).await
+            })
+            .await?
     }
 
     pub async fn convo_typed(&self, room_id: &OwnedRoomId) -> Option<Convo> {

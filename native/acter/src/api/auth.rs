@@ -5,13 +5,13 @@ use matrix_sdk::{
     ruma::{
         api::client::{
             account::register::{v3::Request as RegisterRequest, RegistrationKind},
-            uiaa::{AuthData, Dummy, RegistrationToken},
+            uiaa::{AuthData, Dummy, Password, RegistrationToken},
         },
-        assign, OwnedUserId,
+        assign,
     },
     Client as SdkClient, ClientBuilder, SessionMeta,
 };
-use ruma::api::client::uiaa::Password;
+use ruma_common::OwnedUserId;
 use tracing::{error, info};
 
 use super::{

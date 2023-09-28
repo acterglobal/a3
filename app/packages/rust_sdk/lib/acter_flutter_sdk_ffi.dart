@@ -492,7 +492,7 @@ class Api {
     if (Platform.isIOS) name = "";
     if (Platform.isWindows) name = "acter.dll";
     if (name == null) {
-      throw UnsupportedError("\"This platform is not supported.\"");
+      throw UnsupportedError("This platform is not supported.");
     }
     if (name == "") {
       return Api.loadStatic();
@@ -8457,6 +8457,53 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 = _clientConvoFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Convo");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = Convo._(this, tmp13_1);
+    return tmp7;
+  }
+
+  Convo? __clientConvoWithRetryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientConvoWithRetryFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -20291,6 +20338,24 @@ class Api {
         int,
         int,
       )>();
+  late final _clientConvoWithRetryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+          )>>("__Client_convo_with_retry");
+
+  late final _clientConvoWithRetry = _clientConvoWithRetryPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _clientGetUserProfilePtr = _lookup<
       ffi.NativeFunction<
           _ClientGetUserProfileReturn Function(
@@ -23833,6 +23898,21 @@ class Api {
         int,
         int,
       )>();
+  late final _clientConvoWithRetryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientConvoWithRetryFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_convo_with_retry_future_poll");
+
+  late final _clientConvoWithRetryFuturePoll =
+      _clientConvoWithRetryFuturePollPtr.asFunction<
+          _ClientConvoWithRetryFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _clientUploadMediaFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientUploadMediaFuturePollReturn Function(
@@ -43394,6 +43474,43 @@ class Client {
     return tmp6;
   }
 
+  /// get convo room of retry 250ms for retry times
+  Future<Convo> convoWithRetry(
+    String roomIdOrAlias,
+    int retry,
+  ) {
+    final tmp1 = roomIdOrAlias;
+    final tmp5 = retry;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    tmp6 = tmp5;
+    final tmp7 = _api._clientConvoWithRetry(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+    );
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0, "__Client_convo_with_retry_future_drop");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = _nativeFuture(tmp9_1, _api.__clientConvoWithRetryFuturePoll);
+    return tmp8;
+  }
+
   /// get the user profile that contains avatar and display name
   UserProfile getUserProfile() {
     var tmp0 = 0;
@@ -50806,6 +50923,21 @@ class _ClientConvoFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ClientConvoWithRetryFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _ClientUploadMediaFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -51824,7 +51956,7 @@ class FfiListActerPin extends Iterable<ActerPin>
     return _api._ffiListActerPinLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   ActerPin elementAt(int index) {
     final address = _api._ffiListActerPinElementAt(_box.borrow(), index);
@@ -51850,15 +51982,15 @@ class FfiListActerPin extends Iterable<ActerPin>
     return ActerPin._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(ActerPin element) {
     _api._ffiListActerPinAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, ActerPin element) {
     _api._ffiListActerPinInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
@@ -51884,7 +52016,7 @@ class FfiListAttachment extends Iterable<Attachment>
     return _api._ffiListAttachmentLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   Attachment elementAt(int index) {
     final address = _api._ffiListAttachmentElementAt(_box.borrow(), index);
@@ -51910,15 +52042,15 @@ class FfiListAttachment extends Iterable<Attachment>
     return Attachment._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(Attachment element) {
     _api._ffiListAttachmentAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, Attachment element) {
     _api._ffiListAttachmentInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
@@ -51944,7 +52076,7 @@ class FfiListCalendarEvent extends Iterable<CalendarEvent>
     return _api._ffiListCalendarEventLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   CalendarEvent elementAt(int index) {
     final address = _api._ffiListCalendarEventElementAt(_box.borrow(), index);
@@ -51970,15 +52102,15 @@ class FfiListCalendarEvent extends Iterable<CalendarEvent>
     return CalendarEvent._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(CalendarEvent element) {
     _api._ffiListCalendarEventAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, CalendarEvent element) {
     _api._ffiListCalendarEventInsert(
         _box.borrow(), index, element._box.borrow());
@@ -52005,7 +52137,7 @@ class FfiListComment extends Iterable<Comment>
     return _api._ffiListCommentLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   Comment elementAt(int index) {
     final address = _api._ffiListCommentElementAt(_box.borrow(), index);
@@ -52031,15 +52163,15 @@ class FfiListComment extends Iterable<Comment>
     return Comment._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(Comment element) {
     _api._ffiListCommentAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, Comment element) {
     _api._ffiListCommentInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
@@ -52064,7 +52196,7 @@ class FfiListConvo extends Iterable<Convo> implements CustomIterable<Convo> {
     return _api._ffiListConvoLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   Convo elementAt(int index) {
     final address = _api._ffiListConvoElementAt(_box.borrow(), index);
@@ -52090,15 +52222,15 @@ class FfiListConvo extends Iterable<Convo> implements CustomIterable<Convo> {
     return Convo._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(Convo element) {
     _api._ffiListConvoAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, Convo element) {
     _api._ffiListConvoInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
@@ -52124,7 +52256,7 @@ class FfiListDeviceRecord extends Iterable<DeviceRecord>
     return _api._ffiListDeviceRecordLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   DeviceRecord elementAt(int index) {
     final address = _api._ffiListDeviceRecordElementAt(_box.borrow(), index);
@@ -52150,15 +52282,15 @@ class FfiListDeviceRecord extends Iterable<DeviceRecord>
     return DeviceRecord._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(DeviceRecord element) {
     _api._ffiListDeviceRecordAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, DeviceRecord element) {
     _api._ffiListDeviceRecordInsert(
         _box.borrow(), index, element._box.borrow());
@@ -52185,7 +52317,7 @@ class FfiListFfiString extends Iterable<FfiString>
     return _api._ffiListFfiStringLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   FfiString elementAt(int index) {
     final address = _api._ffiListFfiStringElementAt(_box.borrow(), index);
@@ -52211,15 +52343,15 @@ class FfiListFfiString extends Iterable<FfiString>
     return FfiString._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(FfiString element) {
     _api._ffiListFfiStringAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, FfiString element) {
     _api._ffiListFfiStringInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
@@ -52245,7 +52377,7 @@ class FfiListInvitation extends Iterable<Invitation>
     return _api._ffiListInvitationLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   Invitation elementAt(int index) {
     final address = _api._ffiListInvitationElementAt(_box.borrow(), index);
@@ -52271,15 +52403,15 @@ class FfiListInvitation extends Iterable<Invitation>
     return Invitation._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(Invitation element) {
     _api._ffiListInvitationAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, Invitation element) {
     _api._ffiListInvitationInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
@@ -52304,7 +52436,7 @@ class FfiListMember extends Iterable<Member> implements CustomIterable<Member> {
     return _api._ffiListMemberLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   Member elementAt(int index) {
     final address = _api._ffiListMemberElementAt(_box.borrow(), index);
@@ -52330,15 +52462,15 @@ class FfiListMember extends Iterable<Member> implements CustomIterable<Member> {
     return Member._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(Member element) {
     _api._ffiListMemberAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, Member element) {
     _api._ffiListMemberInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
@@ -52364,7 +52496,7 @@ class FfiListNewsEntry extends Iterable<NewsEntry>
     return _api._ffiListNewsEntryLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   NewsEntry elementAt(int index) {
     final address = _api._ffiListNewsEntryElementAt(_box.borrow(), index);
@@ -52390,15 +52522,15 @@ class FfiListNewsEntry extends Iterable<NewsEntry>
     return NewsEntry._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(NewsEntry element) {
     _api._ffiListNewsEntryAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, NewsEntry element) {
     _api._ffiListNewsEntryInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
@@ -52424,7 +52556,7 @@ class FfiListNewsSlide extends Iterable<NewsSlide>
     return _api._ffiListNewsSlideLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   NewsSlide elementAt(int index) {
     final address = _api._ffiListNewsSlideElementAt(_box.borrow(), index);
@@ -52450,15 +52582,15 @@ class FfiListNewsSlide extends Iterable<NewsSlide>
     return NewsSlide._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(NewsSlide element) {
     _api._ffiListNewsSlideAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, NewsSlide element) {
     _api._ffiListNewsSlideInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
@@ -52484,7 +52616,7 @@ class FfiListNotification extends Iterable<Notification>
     return _api._ffiListNotificationLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   Notification elementAt(int index) {
     final address = _api._ffiListNotificationElementAt(_box.borrow(), index);
@@ -52510,15 +52642,15 @@ class FfiListNotification extends Iterable<Notification>
     return Notification._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(Notification element) {
     _api._ffiListNotificationAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, Notification element) {
     _api._ffiListNotificationInsert(
         _box.borrow(), index, element._box.borrow());
@@ -52544,7 +52676,7 @@ class FfiListObjRef extends Iterable<ObjRef> implements CustomIterable<ObjRef> {
     return _api._ffiListObjRefLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   ObjRef elementAt(int index) {
     final address = _api._ffiListObjRefElementAt(_box.borrow(), index);
@@ -52570,15 +52702,15 @@ class FfiListObjRef extends Iterable<ObjRef> implements CustomIterable<ObjRef> {
     return ObjRef._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(ObjRef element) {
     _api._ffiListObjRefAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, ObjRef element) {
     _api._ffiListObjRefInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
@@ -52604,7 +52736,7 @@ class FfiListPublicSearchResultItem extends Iterable<PublicSearchResultItem>
     return _api._ffiListPublicSearchResultItemLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   PublicSearchResultItem elementAt(int index) {
     final address =
@@ -52632,16 +52764,16 @@ class FfiListPublicSearchResultItem extends Iterable<PublicSearchResultItem>
     return PublicSearchResultItem._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(PublicSearchResultItem element) {
     _api._ffiListPublicSearchResultItemAdd(
         _box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, PublicSearchResultItem element) {
     _api._ffiListPublicSearchResultItemInsert(
         _box.borrow(), index, element._box.borrow());
@@ -52668,7 +52800,7 @@ class FfiListReactionRecord extends Iterable<ReactionRecord>
     return _api._ffiListReactionRecordLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   ReactionRecord elementAt(int index) {
     final address = _api._ffiListReactionRecordElementAt(_box.borrow(), index);
@@ -52694,15 +52826,15 @@ class FfiListReactionRecord extends Iterable<ReactionRecord>
     return ReactionRecord._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(ReactionRecord element) {
     _api._ffiListReactionRecordAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, ReactionRecord element) {
     _api._ffiListReactionRecordInsert(
         _box.borrow(), index, element._box.borrow());
@@ -52729,7 +52861,7 @@ class FfiListReceiptRecord extends Iterable<ReceiptRecord>
     return _api._ffiListReceiptRecordLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   ReceiptRecord elementAt(int index) {
     final address = _api._ffiListReceiptRecordElementAt(_box.borrow(), index);
@@ -52755,15 +52887,15 @@ class FfiListReceiptRecord extends Iterable<ReceiptRecord>
     return ReceiptRecord._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(ReceiptRecord element) {
     _api._ffiListReceiptRecordAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, ReceiptRecord element) {
     _api._ffiListReceiptRecordInsert(
         _box.borrow(), index, element._box.borrow());
@@ -52790,7 +52922,7 @@ class FfiListRoomMessage extends Iterable<RoomMessage>
     return _api._ffiListRoomMessageLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   RoomMessage elementAt(int index) {
     final address = _api._ffiListRoomMessageElementAt(_box.borrow(), index);
@@ -52816,15 +52948,15 @@ class FfiListRoomMessage extends Iterable<RoomMessage>
     return RoomMessage._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(RoomMessage element) {
     _api._ffiListRoomMessageAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, RoomMessage element) {
     _api._ffiListRoomMessageInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
@@ -52849,7 +52981,7 @@ class FfiListRsvp extends Iterable<Rsvp> implements CustomIterable<Rsvp> {
     return _api._ffiListRsvpLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   Rsvp elementAt(int index) {
     final address = _api._ffiListRsvpElementAt(_box.borrow(), index);
@@ -52875,15 +53007,15 @@ class FfiListRsvp extends Iterable<Rsvp> implements CustomIterable<Rsvp> {
     return Rsvp._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(Rsvp element) {
     _api._ffiListRsvpAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, Rsvp element) {
     _api._ffiListRsvpInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
@@ -52908,7 +53040,7 @@ class FfiListSpace extends Iterable<Space> implements CustomIterable<Space> {
     return _api._ffiListSpaceLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   Space elementAt(int index) {
     final address = _api._ffiListSpaceElementAt(_box.borrow(), index);
@@ -52934,15 +53066,15 @@ class FfiListSpace extends Iterable<Space> implements CustomIterable<Space> {
     return Space._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(Space element) {
     _api._ffiListSpaceAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, Space element) {
     _api._ffiListSpaceInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
@@ -52968,7 +53100,7 @@ class FfiListSpaceHierarchyRoomInfo extends Iterable<SpaceHierarchyRoomInfo>
     return _api._ffiListSpaceHierarchyRoomInfoLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   SpaceHierarchyRoomInfo elementAt(int index) {
     final address =
@@ -52996,16 +53128,16 @@ class FfiListSpaceHierarchyRoomInfo extends Iterable<SpaceHierarchyRoomInfo>
     return SpaceHierarchyRoomInfo._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(SpaceHierarchyRoomInfo element) {
     _api._ffiListSpaceHierarchyRoomInfoAdd(
         _box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, SpaceHierarchyRoomInfo element) {
     _api._ffiListSpaceHierarchyRoomInfoInsert(
         _box.borrow(), index, element._box.borrow());
@@ -53032,7 +53164,7 @@ class FfiListSpaceRelation extends Iterable<SpaceRelation>
     return _api._ffiListSpaceRelationLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   SpaceRelation elementAt(int index) {
     final address = _api._ffiListSpaceRelationElementAt(_box.borrow(), index);
@@ -53058,15 +53190,15 @@ class FfiListSpaceRelation extends Iterable<SpaceRelation>
     return SpaceRelation._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(SpaceRelation element) {
     _api._ffiListSpaceRelationAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, SpaceRelation element) {
     _api._ffiListSpaceRelationInsert(
         _box.borrow(), index, element._box.borrow());
@@ -53092,7 +53224,7 @@ class FfiListTask extends Iterable<Task> implements CustomIterable<Task> {
     return _api._ffiListTaskLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   Task elementAt(int index) {
     final address = _api._ffiListTaskElementAt(_box.borrow(), index);
@@ -53118,15 +53250,15 @@ class FfiListTask extends Iterable<Task> implements CustomIterable<Task> {
     return Task._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(Task element) {
     _api._ffiListTaskAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, Task element) {
     _api._ffiListTaskInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
@@ -53152,7 +53284,7 @@ class FfiListTaskList extends Iterable<TaskList>
     return _api._ffiListTaskListLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   TaskList elementAt(int index) {
     final address = _api._ffiListTaskListElementAt(_box.borrow(), index);
@@ -53178,15 +53310,15 @@ class FfiListTaskList extends Iterable<TaskList>
     return TaskList._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(TaskList element) {
     _api._ffiListTaskListAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, TaskList element) {
     _api._ffiListTaskListInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
@@ -53211,7 +53343,7 @@ class FfiListUserId extends Iterable<UserId> implements CustomIterable<UserId> {
     return _api._ffiListUserIdLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   UserId elementAt(int index) {
     final address = _api._ffiListUserIdElementAt(_box.borrow(), index);
@@ -53237,15 +53369,15 @@ class FfiListUserId extends Iterable<UserId> implements CustomIterable<UserId> {
     return UserId._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(UserId element) {
     _api._ffiListUserIdAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, UserId element) {
     _api._ffiListUserIdInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
@@ -53271,7 +53403,7 @@ class FfiListUserProfile extends Iterable<UserProfile>
     return _api._ffiListUserProfileLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   UserProfile elementAt(int index) {
     final address = _api._ffiListUserProfileElementAt(_box.borrow(), index);
@@ -53297,15 +53429,15 @@ class FfiListUserProfile extends Iterable<UserProfile>
     return UserProfile._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(UserProfile element) {
     _api._ffiListUserProfileAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, UserProfile element) {
     _api._ffiListUserProfileInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
@@ -53331,7 +53463,7 @@ class FfiListVerificationEmoji extends Iterable<VerificationEmoji>
     return _api._ffiListVerificationEmojiLen(_box.borrow());
   }
 
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   VerificationEmoji elementAt(int index) {
     final address =
@@ -53358,15 +53490,15 @@ class FfiListVerificationEmoji extends Iterable<VerificationEmoji>
     return VerificationEmoji._(_api, reference);
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void add(VerificationEmoji element) {
     _api._ffiListVerificationEmojiAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, VerificationEmoji element) {
     _api._ffiListVerificationEmojiInsert(
         _box.borrow(), index, element._box.borrow());

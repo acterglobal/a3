@@ -1,16 +1,14 @@
 use anyhow::{bail, Result};
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::{
-    room::Room,
-    ruma::{
-        events::{
-            relation::Replacement,
-            room::message::{MessageType, Relation, RoomMessageEvent, RoomMessageEventContent},
-        },
-        EventId,
-    },
-};
+use matrix_sdk::{room::Room, RoomState};
 use matrix_sdk_ui::timeline::{BackPaginationStatus, PaginationOptions, Timeline};
+use ruma_common::{
+    events::{
+        relation::Replacement,
+        room::message::{MessageType, Relation, RoomMessageEvent, RoomMessageEventContent},
+    },
+    EventId,
+};
 use std::sync::Arc;
 use tracing::{error, info};
 
@@ -73,17 +71,20 @@ impl TimelineStream {
             .await?
     }
 
+    fn is_joined(&self) -> bool {
+        matches!(self.room.state(), RoomState::Joined)
+    }
+
     pub async fn edit(
         &self,
         new_msg: String,
         original_event_id: String,
         txn_id: Option<String>,
     ) -> Result<bool> {
-        let room = if let Room::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't edit message from a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't edit message from a room we are not in");
+        }
+        let room = self.room.clone();
         let timeline = self.timeline.clone();
         let event_id = EventId::parse(original_event_id)?;
         let client = self.room.client();
@@ -106,7 +107,7 @@ impl TimelineStream {
 
                 let replacement = Replacement::new(
                     event_id.to_owned(),
-                    MessageType::text_markdown(new_msg.to_string()),
+                    MessageType::text_markdown(new_msg.to_string()).into(),
                 );
                 let mut edited_content = RoomMessageEventContent::text_markdown(new_msg);
                 edited_content.relates_to = Some(Relation::Replacement(replacement));

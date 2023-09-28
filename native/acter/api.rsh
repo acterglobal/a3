@@ -1868,6 +1868,9 @@ object Client {
     /// get convo room
     fn convo(room_id_or_alias: string) -> Future<Result<Convo>>;
 
+    /// get convo room of retry 250ms for retry times
+    fn convo_with_retry(room_id_or_alias: string, retry: u8) -> Future<Result<Convo>>;
+
     /// get the user profile that contains avatar and display name
     fn get_user_profile() -> Result<UserProfile>;
 

@@ -1,89 +1,83 @@
 use chrono::{DateTime, Utc};
 use core::time::Duration;
-use matrix_sdk::{
-    deserialized_responses::SyncTimelineEvent,
-    room::Room,
-    ruma::{
-        events::{
-            call::{
-                answer::{OriginalCallAnswerEvent, OriginalSyncCallAnswerEvent},
-                candidates::{OriginalCallCandidatesEvent, OriginalSyncCallCandidatesEvent},
-                hangup::{OriginalCallHangupEvent, OriginalSyncCallHangupEvent},
-                invite::{OriginalCallInviteEvent, OriginalSyncCallInviteEvent},
-            },
-            key::verification::{
-                accept::{
-                    AcceptMethod, OriginalKeyVerificationAcceptEvent,
-                    OriginalSyncKeyVerificationAcceptEvent,
-                },
-                cancel::{
-                    OriginalKeyVerificationCancelEvent, OriginalSyncKeyVerificationCancelEvent,
-                },
-                done::{OriginalKeyVerificationDoneEvent, OriginalSyncKeyVerificationDoneEvent},
-                key::{OriginalKeyVerificationKeyEvent, OriginalSyncKeyVerificationKeyEvent},
-                mac::{OriginalKeyVerificationMacEvent, OriginalSyncKeyVerificationMacEvent},
-                ready::{OriginalKeyVerificationReadyEvent, OriginalSyncKeyVerificationReadyEvent},
-                start::{
-                    OriginalKeyVerificationStartEvent, OriginalSyncKeyVerificationStartEvent,
-                    StartMethod,
-                },
-                VerificationMethod,
-            },
-            policy::rule::{
-                room::{OriginalPolicyRuleRoomEvent, OriginalSyncPolicyRuleRoomEvent},
-                server::{OriginalPolicyRuleServerEvent, OriginalSyncPolicyRuleServerEvent},
-                user::{OriginalPolicyRuleUserEvent, OriginalSyncPolicyRuleUserEvent},
-            },
-            reaction::{OriginalReactionEvent, OriginalSyncReactionEvent},
-            room::{
-                aliases::{OriginalRoomAliasesEvent, OriginalSyncRoomAliasesEvent},
-                avatar::{OriginalRoomAvatarEvent, OriginalSyncRoomAvatarEvent},
-                canonical_alias::{
-                    OriginalRoomCanonicalAliasEvent, OriginalSyncRoomCanonicalAliasEvent,
-                },
-                create::{OriginalRoomCreateEvent, OriginalSyncRoomCreateEvent},
-                encrypted::{
-                    EncryptedEventScheme, OriginalRoomEncryptedEvent,
-                    OriginalSyncRoomEncryptedEvent,
-                },
-                encryption::{OriginalRoomEncryptionEvent, OriginalSyncRoomEncryptionEvent},
-                guest_access::{OriginalRoomGuestAccessEvent, OriginalSyncRoomGuestAccessEvent},
-                history_visibility::{
-                    OriginalRoomHistoryVisibilityEvent, OriginalSyncRoomHistoryVisibilityEvent,
-                },
-                join_rules::{OriginalRoomJoinRulesEvent, OriginalSyncRoomJoinRulesEvent},
-                member::{MembershipState, OriginalRoomMemberEvent, OriginalSyncRoomMemberEvent},
-                message::{
-                    AudioInfo, FileInfo, MessageFormat, MessageType, OriginalRoomMessageEvent,
-                    OriginalSyncRoomMessageEvent, VideoInfo,
-                },
-                name::{OriginalRoomNameEvent, OriginalSyncRoomNameEvent},
-                pinned_events::{OriginalRoomPinnedEventsEvent, OriginalSyncRoomPinnedEventsEvent},
-                power_levels::{OriginalRoomPowerLevelsEvent, OriginalSyncRoomPowerLevelsEvent},
-                redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
-                server_acl::{OriginalRoomServerAclEvent, OriginalSyncRoomServerAclEvent},
-                third_party_invite::{
-                    OriginalRoomThirdPartyInviteEvent, OriginalSyncRoomThirdPartyInviteEvent,
-                },
-                tombstone::{OriginalRoomTombstoneEvent, OriginalSyncRoomTombstoneEvent},
-                topic::{OriginalRoomTopicEvent, OriginalSyncRoomTopicEvent},
-                ImageInfo, MediaSource,
-            },
-            space::{
-                child::{OriginalSpaceChildEvent, OriginalSyncSpaceChildEvent},
-                parent::{OriginalSpaceParentEvent, OriginalSyncSpaceParentEvent},
-            },
-            sticker::{OriginalStickerEvent, OriginalSyncStickerEvent},
-            AnySyncMessageLikeEvent, AnySyncStateEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
-            SyncStateEvent,
-        },
-        serde::Raw,
-        OwnedEventId, OwnedRoomId, OwnedUserId,
-    },
-};
+use matrix_sdk::{deserialized_responses::SyncTimelineEvent, room::Room};
 use matrix_sdk_ui::timeline::{
     EventSendState, EventTimelineItem, MembershipChange, TimelineItem, TimelineItemContent,
     TimelineItemKind, VirtualTimelineItem,
+};
+use ruma_common::{
+    events::{
+        call::{
+            answer::{OriginalCallAnswerEvent, OriginalSyncCallAnswerEvent},
+            candidates::{OriginalCallCandidatesEvent, OriginalSyncCallCandidatesEvent},
+            hangup::{OriginalCallHangupEvent, OriginalSyncCallHangupEvent},
+            invite::{OriginalCallInviteEvent, OriginalSyncCallInviteEvent},
+        },
+        key::verification::{
+            accept::{
+                AcceptMethod, OriginalKeyVerificationAcceptEvent,
+                OriginalSyncKeyVerificationAcceptEvent,
+            },
+            cancel::{OriginalKeyVerificationCancelEvent, OriginalSyncKeyVerificationCancelEvent},
+            done::{OriginalKeyVerificationDoneEvent, OriginalSyncKeyVerificationDoneEvent},
+            key::{OriginalKeyVerificationKeyEvent, OriginalSyncKeyVerificationKeyEvent},
+            mac::{OriginalKeyVerificationMacEvent, OriginalSyncKeyVerificationMacEvent},
+            ready::{OriginalKeyVerificationReadyEvent, OriginalSyncKeyVerificationReadyEvent},
+            start::{
+                OriginalKeyVerificationStartEvent, OriginalSyncKeyVerificationStartEvent,
+                StartMethod,
+            },
+            VerificationMethod,
+        },
+        policy::rule::{
+            room::{OriginalPolicyRuleRoomEvent, OriginalSyncPolicyRuleRoomEvent},
+            server::{OriginalPolicyRuleServerEvent, OriginalSyncPolicyRuleServerEvent},
+            user::{OriginalPolicyRuleUserEvent, OriginalSyncPolicyRuleUserEvent},
+        },
+        reaction::{OriginalReactionEvent, OriginalSyncReactionEvent},
+        room::{
+            aliases::{OriginalRoomAliasesEvent, OriginalSyncRoomAliasesEvent},
+            avatar::{OriginalRoomAvatarEvent, OriginalSyncRoomAvatarEvent},
+            canonical_alias::{
+                OriginalRoomCanonicalAliasEvent, OriginalSyncRoomCanonicalAliasEvent,
+            },
+            create::{OriginalRoomCreateEvent, OriginalSyncRoomCreateEvent},
+            encrypted::{
+                EncryptedEventScheme, OriginalRoomEncryptedEvent, OriginalSyncRoomEncryptedEvent,
+            },
+            encryption::{OriginalRoomEncryptionEvent, OriginalSyncRoomEncryptionEvent},
+            guest_access::{OriginalRoomGuestAccessEvent, OriginalSyncRoomGuestAccessEvent},
+            history_visibility::{
+                OriginalRoomHistoryVisibilityEvent, OriginalSyncRoomHistoryVisibilityEvent,
+            },
+            join_rules::{OriginalRoomJoinRulesEvent, OriginalSyncRoomJoinRulesEvent},
+            member::{MembershipState, OriginalRoomMemberEvent, OriginalSyncRoomMemberEvent},
+            message::{
+                AudioInfo, FileInfo, MessageFormat, MessageType, OriginalRoomMessageEvent,
+                OriginalSyncRoomMessageEvent, VideoInfo,
+            },
+            name::{OriginalRoomNameEvent, OriginalSyncRoomNameEvent},
+            pinned_events::{OriginalRoomPinnedEventsEvent, OriginalSyncRoomPinnedEventsEvent},
+            power_levels::{OriginalRoomPowerLevelsEvent, OriginalSyncRoomPowerLevelsEvent},
+            redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
+            server_acl::{OriginalRoomServerAclEvent, OriginalSyncRoomServerAclEvent},
+            third_party_invite::{
+                OriginalRoomThirdPartyInviteEvent, OriginalSyncRoomThirdPartyInviteEvent,
+            },
+            tombstone::{OriginalRoomTombstoneEvent, OriginalSyncRoomTombstoneEvent},
+            topic::{OriginalRoomTopicEvent, OriginalSyncRoomTopicEvent},
+            ImageInfo, MediaSource,
+        },
+        space::{
+            child::{OriginalSpaceChildEvent, OriginalSyncSpaceChildEvent},
+            parent::{OriginalSpaceParentEvent, OriginalSyncSpaceParentEvent},
+        },
+        sticker::{OriginalStickerEvent, OriginalSyncStickerEvent},
+        AnySyncMessageLikeEvent, AnySyncStateEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
+        SyncStateEvent,
+    },
+    serde::Raw,
+    OwnedEventId, OwnedRoomId, OwnedUserId,
 };
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Deref, sync::Arc};

@@ -1,0 +1,5 @@
+- Updated look on room profile section. On desktop and larger screens, supports split view opening.
+- corrected acter background gradient pattern.
+- updated theme on component cards and overall system design to be intuitive.
+- fix for avatars not getting fallback properly.
+- fix overflow of content in pins, events and spaces cards.

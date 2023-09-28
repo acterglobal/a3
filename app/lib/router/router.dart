@@ -558,39 +558,7 @@ List<RouteBase> makeRoutes(Ref ref) {
             GoRoute(
               name: Routes.chat.name,
               path: Routes.chat.route,
-              redirect: (context, state) async {
-                final acterSdk = await ActerSdk.instance;
-                if (acterSdk.hasClients) {
-                  // we do have client, proceed chat redirection to room page if roomId is available
-                  final roomId = ref.read(selectedChatIdProvider);
-                  if (roomId != null) {
-                    return state.namedLocation(
-                      Routes.chatroom.name,
-                      pathParameters: {'roomId': roomId},
-                    );
-                  } else {
-                    return state.namedLocation(Routes.chat.name);
-                  }
-                }
-
-                /// else we would check guard redirect
-                if (autoGuestLogin) {
-                  // if compiled with auto-guest-login, create an account
-                  await acterSdk.newGuestClient(setAsCurrent: true);
-                  return null;
-                }
-
-                // no client found yet, send user to fresh login
-
-                // next param calculation
-                final next = Uri.encodeComponent(state.uri.toString());
-
-                // ignore: deprecated_member_use
-                return state.namedLocation(
-                  Routes.start.name,
-                  queryParameters: {'next': next},
-                );
-              },
+              redirect: authGuardRedirect,
               pageBuilder: (context, state) {
                 selectedChatNotifier.select(null);
                 return NoTransitionPage(

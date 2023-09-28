@@ -7,11 +7,9 @@ use anyhow::{bail, Context, Result};
 use chrono::DateTime;
 use core::time::Duration;
 use futures::stream::StreamExt;
-use matrix_sdk::{
-    room::{Joined, Room},
-    ruma::{
-        events::room::message::TextMessageEventContent, OwnedEventId, OwnedRoomId, OwnedUserId,
-    },
+use matrix_sdk::{room::Room, RoomState};
+use ruma_common::{
+    events::room::message::TextMessageEventContent, OwnedEventId, OwnedRoomId, OwnedUserId,
 };
 use std::{
     collections::{hash_map::Entry, HashMap},
@@ -186,7 +184,7 @@ impl Space {
 #[derive(Clone, Debug)]
 pub struct TaskListDraft {
     client: Client,
-    room: Joined,
+    room: Room,
     content: TaskListBuilder,
 }
 
@@ -379,26 +377,30 @@ impl TaskList {
         self.client.subscribe(key)
     }
 
+    fn is_joined(&self) -> bool {
+        matches!(self.room.state(), RoomState::Joined)
+    }
+
     pub fn task_builder(&self) -> Result<TaskDraft> {
-        let Room::Joined(joined) = &self.room else {
+        if !self.is_joined() {
             bail!("Can only create tasks in joined rooms");
-        };
+        }
         let mut content = TaskBuilder::default();
         content.task_list_id(self.event_id().to_owned());
         Ok(TaskDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.room.clone(),
             content,
         })
     }
 
     pub fn update_builder(&self) -> Result<TaskListUpdateBuilder> {
-        let Room::Joined(joined) = &self.room else {
+        if !self.is_joined() {
             bail!("Can only update tasks in joined rooms");
-        };
+        }
         Ok(TaskListUpdateBuilder {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.room.clone(),
             content: self.content.updater(),
         })
     }
@@ -553,13 +555,17 @@ impl Task {
             .await?
     }
 
+    fn is_joined(&self) -> bool {
+        matches!(self.room.state(), RoomState::Joined)
+    }
+
     pub fn update_builder(&self) -> Result<TaskUpdateBuilder> {
-        let Room::Joined(joined) = &self.room else {
+        if !self.is_joined() {
             bail!("Can only update tasks in joined rooms");
-        };
+        }
         Ok(TaskUpdateBuilder {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.room.clone(),
             content: self.content.updater(),
         })
     }
@@ -592,7 +598,7 @@ impl Task {
 #[derive(Clone)]
 pub struct TaskDraft {
     client: Client,
-    room: Joined,
+    room: Room,
     content: TaskBuilder,
 }
 
@@ -747,7 +753,7 @@ impl TaskDraft {
 #[derive(Clone)]
 pub struct TaskUpdateBuilder {
     client: Client,
-    room: Joined,
+    room: Room,
     content: tasks::TaskUpdateBuilder,
 }
 
@@ -968,7 +974,7 @@ impl TaskUpdateBuilder {
 #[derive(Clone)]
 pub struct TaskListUpdateBuilder {
     client: Client,
-    room: Joined,
+    room: Room,
     content: tasks::TaskListUpdateBuilder,
 }
 
@@ -1082,23 +1088,23 @@ impl TaskListUpdateBuilder {
 
 impl Space {
     pub fn task_list_draft(&self) -> Result<TaskListDraft> {
-        let Room::Joined(joined) = &self.inner.room else {
-            bail!("You can't create tasks for spaces we are not part on")
-        };
+        if !self.inner.is_joined() {
+            bail!("You can't create tasks for spaces we are not part on");
+        }
         Ok(TaskListDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.inner.room.clone(),
             content: Default::default(),
         })
     }
 
     pub fn task_list_draft_with_builder(&self, content: TaskListBuilder) -> Result<TaskListDraft> {
-        let Room::Joined(joined) = &self.inner.room else {
-            bail!("You can't create tasks for spaces we are not part on")
-        };
+        if !self.inner.is_joined() {
+            bail!("You can't create tasks for spaces we are not part on");
+        }
         Ok(TaskListDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.inner.room.clone(),
             content,
         })
     }

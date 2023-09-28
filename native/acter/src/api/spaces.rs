@@ -15,7 +15,6 @@ use acter_core::{
     },
     executor::Executor,
     models::AnyActerModel,
-    spaces::is_acter_space,
     statics::default_acter_space_states,
     templates::Engine,
 };
@@ -31,31 +30,31 @@ use matrix_sdk::{
                 get_hierarchy::v1::{
                     Request as GetHierarchyRequest, Response as GetHierarchyResponse,
                 },
-                SpaceHierarchyRoomsChunk, SpaceRoomJoinRule,
+                SpaceHierarchyRoomsChunk,
             },
             state::send_state_event::v3::Request as SendStateEventRequest,
         },
         assign,
-        directory::RoomTypeFilter,
-        events::{
-            room::MediaSource,
-            space::child::{HierarchySpaceChildEvent, SpaceChildEventContent},
-            AnyStateEventContent, MessageLikeEvent, StateEventType,
-        },
-        room::RoomType,
-        serde::Raw,
-        OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
     },
-    Client as SdkClient,
+    RoomState,
 };
-use ruma::OwnedRoomOrAliasId;
+use ruma_common::{
+    directory::RoomTypeFilter,
+    events::{
+        room::MediaSource,
+        space::child::{HierarchySpaceChildEvent, SpaceChildEventContent},
+        AnyStateEventContent, MessageLikeEvent, StateEventType,
+    },
+    room::RoomType,
+    serde::Raw,
+    space::SpaceRoomJoinRule,
+    OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
+};
 use serde::{Deserialize, Serialize};
-use std::{ops::Deref, thread::JoinHandle};
+use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::{error, trace, warn};
-
-use crate::RoomId;
 
 use super::{
     client::Client,
@@ -489,16 +488,16 @@ impl Space {
     }
 
     pub async fn set_acter_space_states(&self) -> Result<bool> {
+        if !self.inner.is_joined() {
+            bail!("You can't convert a space you didn't join");
+        }
         let room = self.inner.room.clone();
         RUNTIME
             .spawn(async move {
-                let SdkRoom::Joined(ref joined) = room else {
-                    bail!("You can't convert a space you didn't join");
-                };
-                let client = joined.client();
+                let client = room.client();
                 let my_id = client.user_id().context("User not found")?.to_owned();
-                let room_id = joined.room_id().to_owned();
-                let member = joined
+                let room_id = room.room_id().to_owned();
+                let member = room
                     .get_member(&my_id)
                     .await?
                     .context("Couldn't find me among room members")?;
@@ -544,10 +543,10 @@ impl Space {
         {
             bail!("You don't have permissions to add child-spaces");
         }
-        let SdkRoom::Joined(joined) = &self.inner.room else {
+        if !self.inner.is_joined() {
             bail!("You can't update a space you aren't part of");
-        };
-        let room = joined.clone();
+        }
+        let room = self.inner.room.clone();
         let client = self.client.clone();
 
         RUNTIME
@@ -650,13 +649,13 @@ impl Client {
     pub fn spaces_stream(&self) -> impl Stream<Item = SpaceDiff> {
         let spaces = self.spaces.clone();
         async_stream::stream! {
-        let (current_items, stream) = {
-            let locked = spaces.read().await;
-            (
-                SpaceDiff::current_items(locked.clone().into_iter().collect()),
-                locked.subscribe(),
-            )
-        };
+            let (current_items, stream) = {
+                let locked = spaces.read().await;
+                (
+                    SpaceDiff::current_items(locked.clone().into_iter().collect()),
+                    locked.subscribe(),
+                )
+            };
             let mut remap = stream.map(move |diff| remap_for_diff(diff, |x| x));
             yield current_items;
 
