@@ -1,5 +1,5 @@
 use derive_getters::Getters;
-use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId};
+use ruma_common::{events::OriginalMessageLikeEvent, EventId, RoomId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use tracing::{trace, warn};

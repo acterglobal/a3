@@ -5,11 +5,11 @@ use futures::{
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     room::Room,
-    ruma::{
-        events::receipt::{ReceiptType, SyncReceiptEvent},
-        MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId,
-    },
     Client as SdkClient,
+};
+use ruma_common::{
+    events::receipt::{ReceiptType, SyncReceiptEvent},
+    MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId,
 };
 use std::sync::Arc;
 use tokio::sync::Mutex;

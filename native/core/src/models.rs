@@ -19,15 +19,17 @@ pub use comments::{Comment, CommentUpdate, CommentsManager, CommentsStats};
 pub use common::*;
 pub use core::fmt::Debug;
 use enum_dispatch::enum_dispatch;
-use matrix_sdk::ruma::{
-    events::{AnySyncTimelineEvent, AnyTimelineEvent, MessageLikeEvent, StaticEventContent},
-    serde::Raw,
-    EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId,
-};
 pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
 pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
-use ruma_common::events::{room::redaction::RoomRedactionEventContent, UnsignedRoomRedactionEvent};
+use ruma_common::{
+    events::{
+        room::redaction::RoomRedactionEventContent, AnySyncTimelineEvent, AnyTimelineEvent,
+        MessageLikeEvent, StaticEventContent, UnsignedRoomRedactionEvent,
+    },
+    serde::Raw,
+    EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId,
+};
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
 pub use tasks::{Task, TaskList, TaskListUpdate, TaskStats, TaskUpdate};
@@ -520,7 +522,7 @@ impl TryFrom<&Raw<AnySyncTimelineEvent>> for AnyActerModel {
 mod tests {
     use super::*;
     use crate::Result;
-    use matrix_sdk::ruma::owned_event_id;
+    use ruma_common::owned_event_id;
     use serde_json;
     #[test]
     fn ensure_minimal_tasklist_parses() -> Result<()> {

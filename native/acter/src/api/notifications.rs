@@ -5,8 +5,9 @@ use matrix_sdk::ruma::{
         Notification as RumaNotification, Request as GetNotificationsRequest,
         Response as GetNotificationsResponse,
     },
-    assign, OwnedRoomId,
+    assign,
 };
+use ruma_common::OwnedRoomId;
 
 use crate::{Convo, RoomMessage, Space};
 

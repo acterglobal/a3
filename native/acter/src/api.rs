@@ -98,11 +98,11 @@ pub use typing::TypingEvent;
 pub use utils::parse_markdown;
 pub use verification::{SessionManager, VerificationEmoji, VerificationEvent};
 
-pub type DeviceId = matrix_sdk::ruma::OwnedDeviceId;
-pub type EventId = matrix_sdk::ruma::OwnedEventId;
-pub type MxcUri = matrix_sdk::ruma::OwnedMxcUri;
-pub type RoomId = matrix_sdk::ruma::OwnedRoomId;
-pub type UserId = matrix_sdk::ruma::OwnedUserId;
+pub type DeviceId = ruma_common::OwnedDeviceId;
+pub type EventId = ruma_common::OwnedEventId;
+pub type MxcUri = ruma_common::OwnedMxcUri;
+pub type RoomId = ruma_common::OwnedRoomId;
+pub type UserId = ruma_common::OwnedUserId;
 
 #[cfg(all(not(doctest), feature = "dart"))]
 ffi_gen_macro::ffi_gen!("native/acter/api.rsh");

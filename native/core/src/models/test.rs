@@ -1,7 +1,5 @@
 use derive_builder::Builder;
-use matrix_sdk::ruma::{
-    event_id, room_id, user_id, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId,
-};
+use ruma_common::{event_id, room_id, user_id, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId};
 use serde::{Deserialize, Serialize};
 
 use super::EventMeta;

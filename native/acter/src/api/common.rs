@@ -1,13 +1,12 @@
 use acter_core::models::TextMessageContent;
 use core::time::Duration;
-use matrix_sdk::ruma::{
+use ruma_common::{
     events::room::{
-        message::{AudioInfo, FileInfo, VideoInfo},
+        message::{AudioInfo, FileInfo, TextMessageEventContent, VideoInfo},
         ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
     },
     MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedUserId,
 };
-use ruma::events::room::message::TextMessageEventContent;
 use serde::{Deserialize, Serialize};
 
 use super::api::FfiBuffer;

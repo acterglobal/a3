@@ -1,5 +1,5 @@
 use chrono::{DateTime, Utc};
-use matrix_sdk::ruma::OwnedEventId;
+use ruma_common::OwnedEventId;
 use serde::{Deserialize, Serialize};
 
 mod labels;
