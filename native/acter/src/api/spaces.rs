@@ -40,15 +40,15 @@ use matrix_sdk::{
 };
 use ruma_common::{
     directory::RoomTypeFilter,
-    events::{
-        room::MediaSource,
-        space::child::{HierarchySpaceChildEvent, SpaceChildEventContent},
-        AnyStateEventContent, MessageLikeEvent, StateEventType,
-    },
     room::RoomType,
     serde::Raw,
     space::SpaceRoomJoinRule,
     OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
+};
+use ruma_events::{
+    room::MediaSource,
+    space::child::{HierarchySpaceChildEvent, SpaceChildEventContent},
+    AnyStateEventContent, MessageLikeEvent, StateEventType,
 };
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
@@ -557,9 +557,7 @@ impl Space {
                 let response = room
                     .send_state_event_for_key(
                         &room_id,
-                        assign!(SpaceChildEventContent::new(), {
-                            via: Some(vec![homeserver]),
-                        }),
+                        SpaceChildEventContent::new(vec![homeserver]),
                     )
                     .await?;
                 Ok(response.event_id.to_string())
@@ -656,7 +654,7 @@ impl Client {
                     locked.subscribe(),
                 )
             };
-            let mut remap = stream.map(move |diff| remap_for_diff(diff, |x| x));
+            let mut remap = stream.into_stream().map(move |diff| remap_for_diff(diff, |x| x));
             yield current_items;
 
             while let Some(d) = remap.next().await {

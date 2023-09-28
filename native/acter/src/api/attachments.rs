@@ -10,16 +10,14 @@ use matrix_sdk::{
     ruma::{assign, UInt},
     RoomState,
 };
-use ruma_common::{
-    events::room::{
-        message::{
-            AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-            ImageMessageEventContent, LocationMessageEventContent, VideoInfo,
-            VideoMessageEventContent,
-        },
-        ImageInfo,
+use ruma_common::{MxcUri, OwnedEventId, OwnedUserId};
+use ruma_events::room::{
+    message::{
+        AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
+        ImageMessageEventContent, LocationMessageEventContent, VideoInfo,
+        VideoMessageEventContent,
     },
-    MxcUri, OwnedEventId, OwnedUserId,
+    ImageInfo,
 };
 use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;

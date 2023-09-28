@@ -21,21 +21,21 @@ use matrix_sdk_ui::{
     Timeline,
 };
 use ruma_common::{
-    events::{
-        receipt::{ReceiptThread, ReceiptType},
-        room::{
-            avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
-            encrypted::OriginalSyncRoomEncryptedEvent,
-            join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
-            member::{MembershipState, OriginalSyncRoomMemberEvent},
-            message::OriginalSyncRoomMessageEvent,
-            redaction::SyncRoomRedactionEvent,
-        },
-        space::parent::SpaceParentEventContent,
-        AnySyncTimelineEvent, InitialStateEvent,
-    },
     serde::Raw,
     MxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId, OwnedUserId, RoomId, UserId,
+};
+use ruma_events::{
+    receipt::{ReceiptThread, ReceiptType},
+    room::{
+        avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
+        encrypted::OriginalSyncRoomEncryptedEvent,
+        join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
+        member::{MembershipState, OriginalSyncRoomMemberEvent},
+        message::OriginalSyncRoomMessageEvent,
+        redaction::SyncRoomRedactionEvent,
+    },
+    space::parent::SpaceParentEventContent,
+    AnySyncTimelineEvent, InitialStateEvent,
 };
 use std::{
     ops::Deref,
@@ -378,9 +378,7 @@ impl Client {
                       return Err(Error::HomeserverMissesHostname)?;
                     };
                     let parent_event = InitialStateEvent::<SpaceParentEventContent> {
-                        content: assign!(SpaceParentEventContent::new(true), {
-                            via: Some(vec![homeserver]),
-                        }),
+                        content: SpaceParentEventContent::new(vec![homeserver]),
                         state_key: parent.clone(),
                     };
                     initial_states.push(parent_event.to_raw_any());
@@ -486,7 +484,7 @@ impl Client {
                     locked.subscribe(),
                 )
             };
-            let mut remap = stream.map(move |diff| remap_for_diff(diff, |x| x));
+            let mut remap = stream.into_stream().map(move |diff| remap_for_diff(diff, |x| x));
             yield current_items;
 
             while let Some(d) = remap.next().await {

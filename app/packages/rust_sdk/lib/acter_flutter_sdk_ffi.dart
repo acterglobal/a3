@@ -18804,7 +18804,6 @@ class Api {
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -18812,7 +18811,6 @@ class Api {
 
   late final _spaceSetName = _spaceSetNamePtr.asFunction<
       int Function(
-        int,
         int,
         int,
         int,
@@ -40293,42 +40291,34 @@ class Space {
 
   /// set name of the room
   Future<EventId> setName(
-    String? name,
+    String name,
   ) {
     final tmp1 = name;
     var tmp0 = 0;
     var tmp2 = 0;
+    var tmp3 = 0;
     var tmp4 = 0;
-    var tmp5 = 0;
-    var tmp6 = 0;
     tmp0 = _box.borrow();
-    if (tmp1 == null) {
-      tmp2 = 0;
-    } else {
-      tmp2 = 1;
-      final tmp3 = tmp1;
-      final tmp3_0 = utf8.encode(tmp3);
-      tmp5 = tmp3_0.length;
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
-      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
-      tmp4_1.setAll(0, tmp3_0);
-      tmp4 = tmp4_0.address;
-      tmp6 = tmp5;
-    }
-    final tmp7 = _api._spaceSetName(
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._spaceSetName(
       tmp0,
       tmp2,
+      tmp3,
       tmp4,
-      tmp5,
-      tmp6,
     );
-    final tmp9 = tmp7;
-    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
-    final tmp9_1 = _Box(_api, tmp9_0, "__Space_set_name_future_drop");
-    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
-    final tmp8 = _nativeFuture(tmp9_1, _api.__spaceSetNameFuturePoll);
-    return tmp8;
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Space_set_name_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__spaceSetNameFuturePoll);
+    return tmp6;
   }
 
   /// the members currently in the space

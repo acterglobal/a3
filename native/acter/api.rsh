@@ -1491,7 +1491,7 @@ object Space {
     fn set_topic(topic: string) -> Future<Result<EventId>>;
 
     /// set name of the room
-    fn set_name(name: Option<string>) -> Future<Result<EventId>>;
+    fn set_name(name: string) -> Future<Result<EventId>>;
 
     /// the members currently in the space
     fn active_members() -> Future<Result<Vec<Member>>>;

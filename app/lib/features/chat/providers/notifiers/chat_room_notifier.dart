@@ -138,7 +138,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         replaceMessageAt(index, message);
         postProcessing.add(PostProcessItem(m, message));
         break;
-
       case 'Insert':
         RoomMessage m = timelineEvent.value()!;
         final index = timelineEvent.index()!;
@@ -188,6 +187,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         if (newList.isNotEmpty) {
           setMessages(newList);
         }
+        break;
+      case 'Truncate':
+        final length = timelineEvent.index()!;
+        final newList = messagesCopy();
+        setMessages(newList.take(length).toList());
         break;
       default:
         break;
@@ -759,6 +763,23 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             createdAt: createdAt,
             id: eventId,
             metadata: metadata,
+          );
+        }
+        break;
+      case 'm.poll.start':
+        TextDesc? description = eventItem.textDesc();
+        if (description != null) {
+          String body = description.body();
+          return types.CustomMessage(
+            author: author,
+            createdAt: createdAt,
+            id: eventId,
+            metadata: {
+              'itemType': 'event',
+              'eventType': eventType,
+              'msgType': eventItem.msgType(),
+              'body': body,
+            },
           );
         }
         break;

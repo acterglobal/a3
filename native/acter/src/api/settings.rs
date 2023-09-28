@@ -1,5 +1,3 @@
-use std::ops::Deref;
-
 pub use acter_core::events::settings::{
     ActerAppSettingsContent, EventsSettings, NewsSettings, PinsSettings, SimpleSettingWithTurnOff,
     SimpleSettingWithTurnOffBuilder, TasksSettings, TasksSettingsBuilder,
@@ -19,10 +17,11 @@ use matrix_sdk::{
     ruma::Int,
     RoomState,
 };
-use ruma_common::events::{
+use ruma_events::{
     room::power_levels::{RoomPowerLevels as RumaRoomPowerLevels, RoomPowerLevelsEventContent},
     MessageLikeEvent, StaticEventContent, SyncStateEvent, TimelineEventType,
 };
+use std::ops::Deref;
 
 use crate::Room;
 use crate::RUNTIME;
