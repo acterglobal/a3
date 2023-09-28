@@ -10,9 +10,7 @@ use matrix_sdk::{
     },
 };
 use ruma_common::{
-    room::RoomType,
-    serde::Raw,
-    MxcUri, OwnedRoomId, OwnedServerName, OwnedUserId, RoomId, UserId,
+    room::RoomType, serde::Raw, MxcUri, OwnedRoomId, OwnedServerName, OwnedUserId, RoomId, UserId,
 };
 use ruma_events::{
     room::{
@@ -364,7 +362,11 @@ impl CoreClient {
                 RelationTargetType::Unknown
             };
 
-            let order = original.content.order.clone().unwrap_or_else(|| target.to_string());
+            let order = original
+                .content
+                .order
+                .clone()
+                .unwrap_or_else(|| target.to_string());
             let me = SpaceRelation {
                 target_type,
                 room_id: target.to_owned(),

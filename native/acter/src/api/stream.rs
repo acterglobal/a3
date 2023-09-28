@@ -77,12 +77,7 @@ impl TimelineStream {
         matches!(self.room.state(), RoomState::Joined)
     }
 
-    pub async fn edit(
-        &self,
-        new_msg: String,
-        original_event_id: String,
-        txn_id: Option<String>,
-    ) -> Result<bool> {
+    pub async fn edit(&self, new_msg: String, original_event_id: String) -> Result<bool> {
         if !self.is_joined() {
             bail!("Can't edit message from a room we are not in");
         }

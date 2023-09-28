@@ -19,8 +19,8 @@ use ruma_common::{MxcUri, OwnedEventId, OwnedRoomId, OwnedUserId};
 use ruma_events::room::{
     message::{
         AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-        ImageMessageEventContent, LocationMessageEventContent, TextMessageEventContent,
-        VideoInfo, VideoMessageEventContent,
+        ImageMessageEventContent, LocationMessageEventContent, TextMessageEventContent, VideoInfo,
+        VideoMessageEventContent,
     },
     ImageInfo,
 };

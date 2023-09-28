@@ -728,7 +728,7 @@ object TimelineStream {
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
 
     /// modify the room message
-    fn edit(new_msg: string, original_event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+    fn edit(new_msg: string, original_event_id: string) -> Future<Result<bool>>;
 }
 
 object Convo {

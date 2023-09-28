@@ -15,10 +15,7 @@ use matrix_sdk::{
     },
     Client as SdkClient,
 };
-use ruma_common::{
-    device_id,
-    OwnedDeviceId, OwnedEventId, OwnedTransactionId, OwnedUserId,
-};
+use ruma_common::{device_id, OwnedDeviceId, OwnedEventId, OwnedTransactionId, OwnedUserId};
 use ruma_events::{
     key::verification::{accept::AcceptMethod, start::StartMethod, VerificationMethod},
     room::{

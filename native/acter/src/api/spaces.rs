@@ -39,11 +39,8 @@ use matrix_sdk::{
     RoomState,
 };
 use ruma_common::{
-    directory::RoomTypeFilter,
-    room::RoomType,
-    serde::Raw,
-    space::SpaceRoomJoinRule,
-    OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
+    directory::RoomTypeFilter, room::RoomType, serde::Raw, space::SpaceRoomJoinRule, OwnedMxcUri,
+    OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
 };
 use ruma_events::{
     room::MediaSource,

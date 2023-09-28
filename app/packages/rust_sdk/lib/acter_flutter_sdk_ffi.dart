@@ -14726,18 +14726,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
           )>>("__TimelineStream_edit");
 
   late final _timelineStreamEdit = _timelineStreamEditPtr.asFunction<
       int Function(
-        int,
-        int,
-        int,
-        int,
         int,
         int,
         int,
@@ -32287,11 +32279,9 @@ class TimelineStream {
   Future<bool> edit(
     String newMsg,
     String originalEventId,
-    String? txnId,
   ) {
     final tmp1 = newMsg;
     final tmp5 = originalEventId;
-    final tmp9 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -32299,10 +32289,6 @@ class TimelineStream {
     var tmp6 = 0;
     var tmp7 = 0;
     var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
-    var tmp13 = 0;
-    var tmp14 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -32320,21 +32306,7 @@ class TimelineStream {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      final tmp11_0 = utf8.encode(tmp11);
-      tmp13 = tmp11_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-      tmp12_1.setAll(0, tmp11_0);
-      tmp12 = tmp12_0.address;
-      tmp14 = tmp13;
-    }
-    final tmp15 = _api._timelineStreamEdit(
+    final tmp9 = _api._timelineStreamEdit(
       tmp0,
       tmp2,
       tmp3,
@@ -32342,17 +32314,13 @@ class TimelineStream {
       tmp6,
       tmp7,
       tmp8,
-      tmp10,
-      tmp12,
-      tmp13,
-      tmp14,
     );
-    final tmp17 = tmp15;
-    final ffi.Pointer<ffi.Void> tmp17_0 = ffi.Pointer.fromAddress(tmp17);
-    final tmp17_1 = _Box(_api, tmp17_0, "__TimelineStream_edit_future_drop");
-    tmp17_1._finalizer = _api._registerFinalizer(tmp17_1);
-    final tmp16 = _nativeFuture(tmp17_1, _api.__timelineStreamEditFuturePoll);
-    return tmp16;
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "__TimelineStream_edit_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(tmp11_1, _api.__timelineStreamEditFuturePoll);
+    return tmp10;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.

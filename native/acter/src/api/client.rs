@@ -28,8 +28,8 @@ use matrix_sdk::{
     Client as SdkClient, LoopCtrl, RoomState, RumaApiError,
 };
 use ruma_common::{
-    device_id, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId,
-    OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId, RoomOrAliasId, UserId,
+    device_id, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
+    OwnedServerName, OwnedUserId, RoomOrAliasId, UserId,
 };
 use ruma_events::room::MediaSource;
 use std::{

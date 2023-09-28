@@ -38,11 +38,8 @@ use matrix_sdk::{
     Client, RoomMemberships, RoomState,
 };
 use ruma_common::{
-    room::RoomType,
-    serde::Raw,
-    space::SpaceRoomJoinRule,
-    EventId, OwnedEventId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedUserId, TransactionId,
-    UserId,
+    room::RoomType, serde::Raw, space::SpaceRoomJoinRule, EventId, OwnedEventId, OwnedMxcUri,
+    OwnedRoomAliasId, OwnedRoomId, OwnedUserId, TransactionId, UserId,
 };
 use ruma_events::{
     reaction::ReactionEventContent,
@@ -52,17 +49,16 @@ use ruma_events::{
         avatar::ImageInfo as AvatarImageInfo,
         join_rules::{AllowRule, JoinRule},
         message::{
-            AddMentions, AudioInfo, AudioMessageEventContent, FileInfo,
-            FileMessageEventContent, ForwardThread, ImageMessageEventContent,
-            LocationMessageEventContent, MessageType, Relation, RoomMessageEvent,
-            RoomMessageEventContent, TextMessageEventContent, VideoInfo,
-            VideoMessageEventContent,
+            AddMentions, AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
+            ForwardThread, ImageMessageEventContent, LocationMessageEventContent, MessageType,
+            Relation, RoomMessageEvent, RoomMessageEventContent, TextMessageEventContent,
+            VideoInfo, VideoMessageEventContent,
         },
         ImageInfo, MediaSource,
     },
     space::child::HierarchySpaceChildEvent,
-    AnyMessageLikeEvent, AnyStateEvent, AnyTimelineEvent, MessageLikeEvent,
-    MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
+    AnyMessageLikeEvent, AnyStateEvent, AnyTimelineEvent, MessageLikeEvent, MessageLikeEventType,
+    StateEvent, StateEventType, StaticEventContent,
 };
 use std::{io::Write, ops::Deref, path::PathBuf};
 use tracing::{error, info};

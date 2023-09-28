@@ -5,10 +5,7 @@ use matrix_sdk_ui::timeline::{
     EventSendState, EventTimelineItem, MembershipChange, TimelineItem, TimelineItemContent,
     TimelineItemKind, VirtualTimelineItem,
 };
-use ruma_common::{
-    serde::Raw,
-    OwnedEventId, OwnedRoomId, OwnedUserId,
-};
+use ruma_common::{serde::Raw, OwnedEventId, OwnedRoomId, OwnedUserId};
 use ruma_events::{
     call::{
         answer::{OriginalCallAnswerEvent, OriginalSyncCallAnswerEvent},
@@ -27,8 +24,7 @@ use ruma_events::{
         mac::{OriginalKeyVerificationMacEvent, OriginalSyncKeyVerificationMacEvent},
         ready::{OriginalKeyVerificationReadyEvent, OriginalSyncKeyVerificationReadyEvent},
         start::{
-            OriginalKeyVerificationStartEvent, OriginalSyncKeyVerificationStartEvent,
-            StartMethod,
+            OriginalKeyVerificationStartEvent, OriginalSyncKeyVerificationStartEvent, StartMethod,
         },
         VerificationMethod,
     },
@@ -41,9 +37,7 @@ use ruma_events::{
     room::{
         aliases::{OriginalRoomAliasesEvent, OriginalSyncRoomAliasesEvent},
         avatar::{OriginalRoomAvatarEvent, OriginalSyncRoomAvatarEvent},
-        canonical_alias::{
-            OriginalRoomCanonicalAliasEvent, OriginalSyncRoomCanonicalAliasEvent,
-        },
+        canonical_alias::{OriginalRoomCanonicalAliasEvent, OriginalSyncRoomCanonicalAliasEvent},
         create::{OriginalRoomCreateEvent, OriginalSyncRoomCreateEvent},
         encrypted::{
             EncryptedEventScheme, OriginalRoomEncryptedEvent, OriginalSyncRoomEncryptedEvent,
@@ -1949,7 +1943,7 @@ impl RoomMessage {
                     result.set_text_desc(text_desc);
                 }
                 result
-            },
+            }
         };
         RoomMessage::new_event_item(room_id, event_item)
     }

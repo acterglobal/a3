@@ -21,8 +21,8 @@ use matrix_sdk_ui::{
     Timeline,
 };
 use ruma_common::{
-    serde::Raw,
-    MxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId, OwnedUserId, RoomId, UserId,
+    serde::Raw, MxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId, OwnedUserId, RoomId,
+    UserId,
 };
 use ruma_events::{
     receipt::{ReceiptThread, ReceiptType},

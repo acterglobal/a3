@@ -23,8 +23,7 @@ pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
 pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
 use ruma_common::{
-    serde::Raw,
-    EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId,
+    serde::Raw, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId,
 };
 use ruma_events::{
     room::redaction::RoomRedactionEventContent, AnySyncTimelineEvent, AnyTimelineEvent,

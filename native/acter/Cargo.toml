@@ -20,8 +20,8 @@ cbindgen = "0.24.3"
 
 [dependencies]
 anyhow = "1.0.51"
-async-stream =  "0.3.4"
-chrono =  "0.4"
+async-stream = "0.3.4"
+chrono = "0.4"
 derive_builder = "0.10.2"
 eyeball-im = "0.4.1"
 fern = { git = "https://github.com/acterglobal/fern", branch = "rotate", features = ["manual"] }
