@@ -175,9 +175,22 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
               if (!havePermission) {
                 // ignore: use_build_context_synchronously
                 customMsgSnackbar(
-                    context, 'Cannot edit space with no permissions');
+                  context,
+                  'Cannot edit space with no permissions',
+                );
               }
               if (context.mounted) {
+                showAdaptiveDialog(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (context) => DefaultDialog(
+                    title: Text(
+                      'Updating Space',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    isLoader: true,
+                  ),
+                );
                 final roomId = await _handleUpdateSpace(context);
                 debugPrint('Space Updated: $roomId');
                 // We are doing as expected, but the lints triggers.
@@ -185,6 +198,8 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                 if (!context.mounted) {
                   return;
                 }
+                context.pop();
+                context.pop();
                 context.pushNamed(
                   Routes.space.name,
                   pathParameters: {
@@ -256,18 +271,6 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
   // update space handler
   Future<RoomId> _handleUpdateSpace(BuildContext context) async {
-    showAdaptiveDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) => DefaultDialog(
-        title: Text(
-          'Updating Space',
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        isLoader: true,
-      ),
-    );
-
     final space = await ref.read(spaceProvider(widget.spaceId!).future);
     // update space name
     String title = ref.read(editTitleProvider);
