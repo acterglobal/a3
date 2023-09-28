@@ -4,11 +4,7 @@ use futures::{
     pin_mut,
     stream::StreamExt,
 };
-use matrix_sdk::{
-    executor::JoinHandle,
-    ruma::api::client::sync::sync_events::v3::Response as SyncResponse,
-    Client as SdkClient,
-};
+use matrix_sdk::{executor::JoinHandle, Client as SdkClient};
 use ruma_common::{device_id, OwnedDeviceId};
 use std::{
     sync::Arc,
