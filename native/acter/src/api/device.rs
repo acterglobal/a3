@@ -208,6 +208,9 @@ impl DeviceController {
             pin_mut!(devices_stream);
 
             while let Some(device_updates) = devices_stream.next().await {
+                if !client.logged_in() {
+                    break;
+                }
                 if let Some(user_devices) = device_updates.new.get(my_user_id) {
                     for device in user_devices.values() {
                         let dev_id = device.device_id().to_owned();
