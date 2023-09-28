@@ -126,7 +126,7 @@ async fn task_smoketests() -> Result<()> {
     let (mut user, room_id) = random_user_with_random_space("tasks_smoketest").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
-    let space = user.get_space(room_id.to_string()).await?;
+    let space = user.space(room_id.to_string()).await?;
 
     assert_eq!(
         space.task_lists().await?.len(),
@@ -253,10 +253,7 @@ async fn task_smoketests() -> Result<()> {
     let task_list = task_list.refresh().await?;
 
     assert_eq!(task_list.name(), "Setup");
-    assert_eq!(
-        task_list.description_text().unwrap(),
-        "All done now".to_owned()
-    );
+    assert_eq!(task_list.description().unwrap(), "All done now".to_owned());
 
     Ok(())
 }
@@ -267,7 +264,7 @@ async fn task_lists_comments_smoketests() -> Result<()> {
     let (mut user, room_id) = random_user_with_random_space("tasklist_comments_smoketest").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
-    let space = user.get_space(room_id.to_string()).await?;
+    let space = user.space(room_id.to_string()).await?;
 
     assert_eq!(
         space.task_lists().await?.len(),
@@ -335,7 +332,7 @@ async fn task_comment_smoketests() -> Result<()> {
     let (mut user, room_id) = random_user_with_random_space("tasks_smoketest").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
-    let space = user.get_space(room_id.to_string()).await?;
+    let space = user.space(room_id.to_string()).await?;
 
     assert_eq!(
         space.task_lists().await?.len(),

@@ -1,5 +1,5 @@
 use derive_getters::Getters;
-use matrix_sdk::ruma::{OwnedEventId, OwnedRoomId};
+use ruma_common::{OwnedEventId, OwnedRoomId};
 use serde::{Deserialize, Serialize};
 use strum::Display;
 

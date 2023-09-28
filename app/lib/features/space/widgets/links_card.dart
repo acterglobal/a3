@@ -13,25 +13,32 @@ class LinksCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final pins = ref.watch(pinnedLinksProvider(spaceId));
 
-    return Card(
-      elevation: 0,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Links',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 10),
-            Wrap(
-              direction: Axis.horizontal,
-              spacing: 10,
-              runSpacing: 10,
-              children: [
-                ...pins.when(
-                  data: (pins) => pins.map(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Links',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            direction: Axis.horizontal,
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+              ...pins.when(
+                data: (pins) {
+                  if (pins.isEmpty) {
+                    return [
+                      Text(
+                        'There are no pins in this space',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ];
+                  }
+                  return pins.map(
                     (pin) => OutlinedButton(
                       onPressed: () async {
                         final target = pin.url()!;
@@ -55,15 +62,14 @@ class LinksCard extends ConsumerWidget {
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ),
-                  ),
-                  error: (error, stack) =>
-                      [Text('Loading pins failed: $error')],
-                  loading: () => [const Text('Loading')],
-                ),
-              ],
-            ),
-          ],
-        ),
+                  );
+                },
+                error: (error, stack) => [Text('Loading pins failed: $error')],
+                loading: () => [const Text('Loading')],
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

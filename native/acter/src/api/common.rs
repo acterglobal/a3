@@ -1,11 +1,13 @@
+use acter_core::models::TextMessageContent;
 use core::time::Duration;
-use matrix_sdk::ruma::{
+use ruma_common::{
     events::room::{
-        message::{AudioInfo, FileInfo, VideoInfo},
+        message::{AudioInfo, FileInfo, TextMessageEventContent, VideoInfo},
         ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
     },
     MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedUserId,
 };
+use serde::{Deserialize, Serialize};
 
 use super::api::FfiBuffer;
 
@@ -95,7 +97,7 @@ impl ThumbnailInfo {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TextDesc {
     body: String,
     formatted_body: Option<String>,
@@ -129,7 +131,16 @@ impl TextDesc {
     }
 }
 
-#[derive(Clone, Debug)]
+impl From<&TextMessageEventContent> for TextDesc {
+    fn from(value: &TextMessageEventContent) -> Self {
+        Self {
+            body: value.body.clone(),
+            formatted_body: value.formatted.as_ref().map(|x| x.body.clone()),
+        }
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ImageDesc {
     name: String,
     source: SdkMediaSource,
@@ -200,7 +211,7 @@ impl ImageDesc {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AudioDesc {
     name: String,
     source: SdkMediaSource,
@@ -247,7 +258,7 @@ impl AudioDesc {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct VideoDesc {
     name: String,
     source: SdkMediaSource,
@@ -332,7 +343,7 @@ impl VideoDesc {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FileDesc {
     name: String,
     source: SdkMediaSource,
@@ -383,7 +394,7 @@ impl FileDesc {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LocationDesc {
     body: String,
     geo_uri: String,
@@ -430,7 +441,7 @@ impl LocationDesc {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ReactionRecord {
     sender_id: OwnedUserId,
     timestamp: MilliSecondsSinceUnixEpoch,
@@ -463,7 +474,7 @@ impl ReactionRecord {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct DeviceRecord {
     device_id: OwnedDeviceId,
     display_name: Option<String>,

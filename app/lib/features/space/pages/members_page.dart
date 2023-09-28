@@ -1,6 +1,7 @@
 import 'dart:core';
 import 'dart:math';
 
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/member_list_entry.dart';
@@ -18,7 +19,7 @@ class SpaceMembersPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final space = ref.watch(spaceProvider(spaceIdOrAlias)).requireValue;
     final members = ref.watch(spaceMembersProvider(spaceIdOrAlias));
-    final myMembership = ref.watch(spaceMembershipProvider(spaceIdOrAlias));
+    final myMembership = ref.watch(roomMembershipProvider(spaceIdOrAlias));
     final List<Widget> topMenu = [
       Expanded(
         child: Text(
@@ -76,7 +77,7 @@ class SpaceMembersPage extends ConsumerWidget {
                 itemCount: members.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: max(1, min(widthCount, minCount)),
-                  childAspectRatio: 6,
+                  childAspectRatio: 4.0,
                 ),
                 itemBuilder: (context, index) {
                   final member = members[index];

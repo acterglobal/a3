@@ -7,18 +7,20 @@ use matrix_sdk::{
             Visibility,
         },
         assign,
-        events::{
-            room::{
-                avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
-                join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
-            },
-            space::{child::SpaceChildEventContent, parent::SpaceParentEventContent},
-            InitialStateEvent,
-        },
-        room::RoomType,
-        serde::Raw,
-        MxcUri, OwnedRoomId, OwnedServerName, OwnedUserId, RoomId, UserId,
     },
+};
+use ruma_common::{
+    events::{
+        room::{
+            avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
+            join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
+        },
+        space::{child::SpaceChildEventContent, parent::SpaceParentEventContent},
+        InitialStateEvent,
+    },
+    room::RoomType,
+    serde::Raw,
+    MxcUri, OwnedRoomId, OwnedServerName, OwnedUserId, RoomId, UserId,
 };
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;

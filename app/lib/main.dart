@@ -61,6 +61,7 @@ class _ActerState extends ConsumerState<Acter> {
           routerConfig: appRouter,
           theme: AppTheme.theme,
           title: 'Acter',
+          debugShowCheckedModeBanner: false,
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,

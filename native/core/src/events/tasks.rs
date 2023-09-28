@@ -2,7 +2,7 @@ use chrono_tz::Tz;
 use core::result::Result as CoreResult;
 use derive_builder::Builder;
 use derive_getters::Getters;
-use matrix_sdk::ruma::{
+use ruma_common::{
     events::{macros::EventContent, room::message::TextMessageEventContent},
     OwnedUserId,
 };

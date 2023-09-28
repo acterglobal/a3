@@ -5,9 +5,10 @@ use futures::{
     Stream,
 };
 use indexmap::IndexMap;
-use matrix_sdk::ruma::RoomId;
+use matrix_sdk::RoomState;
 pub use minijinja::value::Value;
 use minijinja::Environment;
+use ruma_common::RoomId;
 use serde::Deserialize;
 use std::{collections::BTreeMap, sync::Arc};
 use tokio_retry::{
@@ -416,14 +417,14 @@ impl Engine {
                     let fetcher_client = client.client().clone();
                     Retry::spawn(retry_strategy, move || {
                         std::future::ready(if fetcher_client
-                            .get_joined_room(&new_room_id)
-                            .is_none() {
+                            .get_room(&new_room_id)
+                            .is_some_and(|x| matches!(x.state(), RoomState::Joined)) {
+                                Ok(())
+                            } else {
                                 Err(Error::Remap(
                                     format!("created space '{key}' ({new_room_id}) could not be found"),
                                     "Do you have a sync running?".to_owned()
                                 ))
-                            } else {
-                                Ok(())
                             })
                     }).await?;
 
@@ -447,7 +448,7 @@ impl Engine {
 
                 let room = client
                     .client()
-                    .get_joined_room(&room_id)
+                    .get_room(&room_id)
                     .ok_or_else(|| Error::UnknownReference(format!("{key}.room"), room_name.clone(), key.to_string()))?;
 
                 match obj {

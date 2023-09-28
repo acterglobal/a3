@@ -51,7 +51,7 @@ final tabsProvider =
       );
     }
 
-    if (isActive(LabsFeature.tasks)) {
+    if (isActive(LabsFeature.tasks) && appSettings.tasks().active()) {
       tabs.add(
         TabEntry(
           key: const Key('tasks'),
@@ -66,7 +66,7 @@ final tabsProvider =
               BlendMode.srcIn,
             ),
           ),
-          target: Routes.space.name,
+          target: Routes.spaceTasks.name,
         ),
       );
     }
@@ -81,16 +81,17 @@ final tabsProvider =
         ),
       );
     }
-
-    tabs.add(
-      TabEntry(
-        key: const Key('chat'),
-        label: 'Chats',
-        makeIcon: (ctx) => const Icon(Atlas.chats_thin),
-        target: Routes.spaceChats.name,
-      ),
-    );
   }
+
+  tabs.add(
+    TabEntry(
+      key: const Key('chat'),
+      label: 'Chats',
+      makeIcon: (ctx) => const Icon(Atlas.chats_thin),
+      target: Routes.spaceChats.name,
+    ),
+  );
+
   tabs.add(
     TabEntry(
       key: const Key('spaces'),

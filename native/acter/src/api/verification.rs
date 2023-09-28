@@ -11,18 +11,21 @@ use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     ruma::{
         api::client::uiaa::{AuthData, Password, UserIdentifier},
-        assign, device_id,
-        events::{
-            key::verification::{accept::AcceptMethod, start::StartMethod, VerificationMethod},
-            room::{
-                encrypted::OriginalSyncRoomEncryptedEvent,
-                message::{MessageType, OriginalSyncRoomMessageEvent},
-            },
-            AnyToDeviceEvent, EventContent,
-        },
-        OwnedDeviceId, OwnedEventId, OwnedTransactionId, OwnedUserId,
+        assign,
     },
     Client as SdkClient,
+};
+use ruma_common::{
+    device_id,
+    events::{
+        key::verification::{accept::AcceptMethod, start::StartMethod, VerificationMethod},
+        room::{
+            encrypted::OriginalSyncRoomEncryptedEvent,
+            message::{MessageType, OriginalSyncRoomMessageEvent},
+        },
+        AnyToDeviceEvent, EventContent,
+    },
+    OwnedDeviceId, OwnedEventId, OwnedTransactionId, OwnedUserId,
 };
 use std::{
     collections::HashMap,

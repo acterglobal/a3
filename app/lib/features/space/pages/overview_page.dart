@@ -54,12 +54,12 @@ class SpaceOverview extends ConsumerWidget {
               axisDirection: AxisDirection.down,
               crossAxisCount: min(widthCount, minCount),
               children: <Widget>[
+                AboutCard(spaceId: spaceIdOrAlias),
                 ActerSpaceChecker(
                   spaceId: spaceIdOrAlias,
                   expectation: (a) => a == null,
                   child: NonActerSpaceCard(spaceId: spaceIdOrAlias),
                 ),
-                AboutCard(spaceId: spaceIdOrAlias),
                 ActerSpaceChecker(
                   spaceId: spaceIdOrAlias,
                   expectation: (a) => a != null ? a.events().active() : false,

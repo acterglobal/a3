@@ -1,12 +1,13 @@
 use acter_core::spaces::is_acter_space;
-use anyhow::Result;
+use anyhow::{Context, Result};
 use matrix_sdk::ruma::{
     api::client::push::get_notifications::v3::{
         Notification as RumaNotification, Request as GetNotificationsRequest,
         Response as GetNotificationsResponse,
     },
-    assign, OwnedRoomId,
+    assign,
 };
+use ruma_common::OwnedRoomId;
 
 use crate::{Convo, RoomMessage, Space};
 
@@ -76,17 +77,18 @@ impl Notification {
         self.is_acter_space
     }
 
-    pub fn space(&self) -> Option<Space> {
-        self.room.as_ref().map(|r| Space {
-            inner: r.clone(),
-            client: self.client.clone(),
-        })
+    pub async fn space(&self) -> Result<Space> {
+        self.client
+            .space_typed(&self.notification.room_id)
+            .await
+            .context("Space not found")
     }
 
-    pub fn convo(&self) -> Option<Convo> {
-        self.room
-            .as_ref()
-            .map(|r| Convo::new(self.client.convo_controller.clone(), r.clone()))
+    pub async fn convo(&self) -> Result<Convo> {
+        self.client
+            .convo_typed(&self.notification.room_id)
+            .await
+            .context("Chat not found")
     }
 }
 

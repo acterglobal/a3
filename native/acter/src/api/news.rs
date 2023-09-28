@@ -11,19 +11,20 @@ use core::time::Duration;
 use futures::stream::StreamExt;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
-    room::{Joined, Room},
-    ruma::{
-        assign,
-        events::room::{
-            message::{
-                AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-                ImageMessageEventContent, LocationMessageEventContent, TextMessageEventContent,
-                VideoInfo, VideoMessageEventContent,
-            },
-            ImageInfo,
+    room::Room,
+    ruma::{assign, UInt},
+    RoomState,
+};
+use ruma_common::{
+    events::room::{
+        message::{
+            AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
+            ImageMessageEventContent, LocationMessageEventContent, TextMessageEventContent,
+            VideoInfo, VideoMessageEventContent,
         },
-        MxcUri, OwnedEventId, OwnedRoomId, OwnedUserId, UInt,
+        ImageInfo,
     },
+    MxcUri, OwnedEventId, OwnedRoomId, OwnedUserId,
 };
 use std::{
     collections::{hash_map::Entry, HashMap},
@@ -320,13 +321,17 @@ impl NewsEntry {
             .await?
     }
 
+    fn is_joined(&self) -> bool {
+        matches!(self.room.state(), RoomState::Joined)
+    }
+
     pub fn update_builder(&self) -> Result<NewsEntryUpdateBuilder> {
-        let Room::Joined(joined) = &self.room else {
+        if !self.is_joined() {
             bail!("Can only update news in joined rooms");
-        };
+        }
         Ok(NewsEntryUpdateBuilder {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.room.clone(),
             content: self.content.updater(),
         })
     }
@@ -379,7 +384,7 @@ impl NewsEntry {
 #[derive(Clone)]
 pub struct NewsEntryDraft {
     client: Client,
-    room: Joined,
+    room: Room,
     content: NewsEntryBuilder,
     slides: Vec<NewsSlide>,
 }
@@ -388,7 +393,7 @@ impl NewsEntryDraft {
     pub fn add_text_slide(&mut self, body: String) -> &mut Self {
         self.slides.push(NewsSlide {
             client: self.client.clone(),
-            room: self.room.clone().into(),
+            room: self.room.clone(),
             inner: news::NewsSlide::new_text(body),
         });
         self
@@ -440,7 +445,7 @@ impl NewsEntryDraft {
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
-            room: self.room.clone().into(),
+            room: self.room.clone(),
             inner: news::NewsSlide {
                 content: NewsContent::Image(image_content),
                 references: Default::default(),
@@ -461,7 +466,7 @@ impl NewsEntryDraft {
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
-            room: self.room.clone().into(),
+            room: self.room.clone(),
             inner: news::NewsSlide::new_audio(body, (*url).to_owned()),
         });
         self
@@ -483,7 +488,7 @@ impl NewsEntryDraft {
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
-            room: self.room.clone().into(),
+            room: self.room.clone(),
             inner: news::NewsSlide::new_video(body, (*url).to_owned()),
         });
         self
@@ -500,7 +505,7 @@ impl NewsEntryDraft {
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
-            room: self.room.clone().into(),
+            room: self.room.clone(),
             inner: news::NewsSlide::new_file(body, (*url).to_owned()),
         });
         self
@@ -547,7 +552,7 @@ impl NewsEntryDraft {
 #[derive(Clone)]
 pub struct NewsEntryUpdateBuilder {
     client: Client,
-    room: Joined,
+    room: Room,
     content: news::NewsEntryUpdateBuilder,
 }
 
@@ -598,24 +603,24 @@ impl NewsEntryUpdateBuilder {
 
 impl Space {
     pub fn news_draft(&self) -> Result<NewsEntryDraft> {
-        let Room::Joined(joined) = &self.inner.room else {
-            bail!("You can't create news for spaces we are not part on")
-        };
+        if !self.is_joined() {
+            bail!("You can't create news for spaces we are not part on");
+        }
         Ok(NewsEntryDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.inner.room.clone(),
             content: Default::default(),
             slides: vec![],
         })
     }
 
     pub fn news_draft_with_builder(&self, content: NewsEntryBuilder) -> Result<NewsEntryDraft> {
-        let Room::Joined(joined) = &self.inner.room else {
-            bail!("You can't create news for spaces we are not part on")
-        };
+        if !self.is_joined() {
+            bail!("You can't create news for spaces we are not part on");
+        }
         Ok(NewsEntryDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.inner.room.clone(),
             content,
             slides: vec![],
         })

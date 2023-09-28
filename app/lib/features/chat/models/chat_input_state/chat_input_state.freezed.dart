@@ -18,10 +18,16 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$ChatInputState {
   bool get showReplyView => throw _privateConstructorUsedError;
   Widget? get replyWidget => throw _privateConstructorUsedError;
+  bool get allowEdit => throw _privateConstructorUsedError;
   bool get sendBtnVisible => throw _privateConstructorUsedError;
   bool get emojiRowVisible => throw _privateConstructorUsedError;
   bool get emojiPickerVisible => throw _privateConstructorUsedError;
   bool get attachmentVisible => throw _privateConstructorUsedError;
+  String? get currentMessageId => throw _privateConstructorUsedError;
+  types.Message? get repliedToMessage => throw _privateConstructorUsedError;
+  List<Map<String, String>> get mentions => throw _privateConstructorUsedError;
+  Map<String, String> get mentionReplacements =>
+      throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ChatInputStateCopyWith<ChatInputState> get copyWith =>
@@ -37,10 +43,15 @@ abstract class $ChatInputStateCopyWith<$Res> {
   $Res call(
       {bool showReplyView,
       Widget? replyWidget,
+      bool allowEdit,
       bool sendBtnVisible,
       bool emojiRowVisible,
       bool emojiPickerVisible,
-      bool attachmentVisible});
+      bool attachmentVisible,
+      String? currentMessageId,
+      types.Message? repliedToMessage,
+      List<Map<String, String>> mentions,
+      Map<String, String> mentionReplacements});
 }
 
 /// @nodoc
@@ -58,10 +69,15 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
   $Res call({
     Object? showReplyView = null,
     Object? replyWidget = freezed,
+    Object? allowEdit = null,
     Object? sendBtnVisible = null,
     Object? emojiRowVisible = null,
     Object? emojiPickerVisible = null,
     Object? attachmentVisible = null,
+    Object? currentMessageId = freezed,
+    Object? repliedToMessage = freezed,
+    Object? mentions = null,
+    Object? mentionReplacements = null,
   }) {
     return _then(_value.copyWith(
       showReplyView: null == showReplyView
@@ -72,6 +88,10 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
           ? _value.replyWidget
           : replyWidget // ignore: cast_nullable_to_non_nullable
               as Widget?,
+      allowEdit: null == allowEdit
+          ? _value.allowEdit
+          : allowEdit // ignore: cast_nullable_to_non_nullable
+              as bool,
       sendBtnVisible: null == sendBtnVisible
           ? _value.sendBtnVisible
           : sendBtnVisible // ignore: cast_nullable_to_non_nullable
@@ -88,6 +108,22 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
           ? _value.attachmentVisible
           : attachmentVisible // ignore: cast_nullable_to_non_nullable
               as bool,
+      currentMessageId: freezed == currentMessageId
+          ? _value.currentMessageId
+          : currentMessageId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      repliedToMessage: freezed == repliedToMessage
+          ? _value.repliedToMessage
+          : repliedToMessage // ignore: cast_nullable_to_non_nullable
+              as types.Message?,
+      mentions: null == mentions
+          ? _value.mentions
+          : mentions // ignore: cast_nullable_to_non_nullable
+              as List<Map<String, String>>,
+      mentionReplacements: null == mentionReplacements
+          ? _value.mentionReplacements
+          : mentionReplacements // ignore: cast_nullable_to_non_nullable
+              as Map<String, String>,
     ) as $Val);
   }
 }
@@ -103,10 +139,15 @@ abstract class _$$_ChatInputStateCopyWith<$Res>
   $Res call(
       {bool showReplyView,
       Widget? replyWidget,
+      bool allowEdit,
       bool sendBtnVisible,
       bool emojiRowVisible,
       bool emojiPickerVisible,
-      bool attachmentVisible});
+      bool attachmentVisible,
+      String? currentMessageId,
+      types.Message? repliedToMessage,
+      List<Map<String, String>> mentions,
+      Map<String, String> mentionReplacements});
 }
 
 /// @nodoc
@@ -122,10 +163,15 @@ class __$$_ChatInputStateCopyWithImpl<$Res>
   $Res call({
     Object? showReplyView = null,
     Object? replyWidget = freezed,
+    Object? allowEdit = null,
     Object? sendBtnVisible = null,
     Object? emojiRowVisible = null,
     Object? emojiPickerVisible = null,
     Object? attachmentVisible = null,
+    Object? currentMessageId = freezed,
+    Object? repliedToMessage = freezed,
+    Object? mentions = null,
+    Object? mentionReplacements = null,
   }) {
     return _then(_$_ChatInputState(
       showReplyView: null == showReplyView
@@ -136,6 +182,10 @@ class __$$_ChatInputStateCopyWithImpl<$Res>
           ? _value.replyWidget
           : replyWidget // ignore: cast_nullable_to_non_nullable
               as Widget?,
+      allowEdit: null == allowEdit
+          ? _value.allowEdit
+          : allowEdit // ignore: cast_nullable_to_non_nullable
+              as bool,
       sendBtnVisible: null == sendBtnVisible
           ? _value.sendBtnVisible
           : sendBtnVisible // ignore: cast_nullable_to_non_nullable
@@ -152,6 +202,22 @@ class __$$_ChatInputStateCopyWithImpl<$Res>
           ? _value.attachmentVisible
           : attachmentVisible // ignore: cast_nullable_to_non_nullable
               as bool,
+      currentMessageId: freezed == currentMessageId
+          ? _value.currentMessageId
+          : currentMessageId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      repliedToMessage: freezed == repliedToMessage
+          ? _value.repliedToMessage
+          : repliedToMessage // ignore: cast_nullable_to_non_nullable
+              as types.Message?,
+      mentions: null == mentions
+          ? _value._mentions
+          : mentions // ignore: cast_nullable_to_non_nullable
+              as List<Map<String, String>>,
+      mentionReplacements: null == mentionReplacements
+          ? _value._mentionReplacements
+          : mentionReplacements // ignore: cast_nullable_to_non_nullable
+              as Map<String, String>,
     ));
   }
 }
@@ -162,10 +228,17 @@ class _$_ChatInputState implements _ChatInputState {
   const _$_ChatInputState(
       {this.showReplyView = false,
       this.replyWidget = null,
+      this.allowEdit = true,
       this.sendBtnVisible = false,
       this.emojiRowVisible = false,
       this.emojiPickerVisible = false,
-      this.attachmentVisible = false});
+      this.attachmentVisible = false,
+      this.currentMessageId = null,
+      this.repliedToMessage = null,
+      final List<Map<String, String>> mentions = const [],
+      final Map<String, String> mentionReplacements = const {}})
+      : _mentions = mentions,
+        _mentionReplacements = mentionReplacements;
 
   @override
   @JsonKey()
@@ -173,6 +246,9 @@ class _$_ChatInputState implements _ChatInputState {
   @override
   @JsonKey()
   final Widget? replyWidget;
+  @override
+  @JsonKey()
+  final bool allowEdit;
   @override
   @JsonKey()
   final bool sendBtnVisible;
@@ -185,10 +261,34 @@ class _$_ChatInputState implements _ChatInputState {
   @override
   @JsonKey()
   final bool attachmentVisible;
+  @override
+  @JsonKey()
+  final String? currentMessageId;
+  @override
+  @JsonKey()
+  final types.Message? repliedToMessage;
+  final List<Map<String, String>> _mentions;
+  @override
+  @JsonKey()
+  List<Map<String, String>> get mentions {
+    if (_mentions is EqualUnmodifiableListView) return _mentions;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_mentions);
+  }
+
+  final Map<String, String> _mentionReplacements;
+  @override
+  @JsonKey()
+  Map<String, String> get mentionReplacements {
+    if (_mentionReplacements is EqualUnmodifiableMapView)
+      return _mentionReplacements;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_mentionReplacements);
+  }
 
   @override
   String toString() {
-    return 'ChatInputState(showReplyView: $showReplyView, replyWidget: $replyWidget, sendBtnVisible: $sendBtnVisible, emojiRowVisible: $emojiRowVisible, emojiPickerVisible: $emojiPickerVisible, attachmentVisible: $attachmentVisible)';
+    return 'ChatInputState(showReplyView: $showReplyView, replyWidget: $replyWidget, allowEdit: $allowEdit, sendBtnVisible: $sendBtnVisible, emojiRowVisible: $emojiRowVisible, emojiPickerVisible: $emojiPickerVisible, attachmentVisible: $attachmentVisible, currentMessageId: $currentMessageId, repliedToMessage: $repliedToMessage, mentions: $mentions, mentionReplacements: $mentionReplacements)';
   }
 
   @override
@@ -200,6 +300,8 @@ class _$_ChatInputState implements _ChatInputState {
                 other.showReplyView == showReplyView) &&
             (identical(other.replyWidget, replyWidget) ||
                 other.replyWidget == replyWidget) &&
+            (identical(other.allowEdit, allowEdit) ||
+                other.allowEdit == allowEdit) &&
             (identical(other.sendBtnVisible, sendBtnVisible) ||
                 other.sendBtnVisible == sendBtnVisible) &&
             (identical(other.emojiRowVisible, emojiRowVisible) ||
@@ -207,12 +309,30 @@ class _$_ChatInputState implements _ChatInputState {
             (identical(other.emojiPickerVisible, emojiPickerVisible) ||
                 other.emojiPickerVisible == emojiPickerVisible) &&
             (identical(other.attachmentVisible, attachmentVisible) ||
-                other.attachmentVisible == attachmentVisible));
+                other.attachmentVisible == attachmentVisible) &&
+            (identical(other.currentMessageId, currentMessageId) ||
+                other.currentMessageId == currentMessageId) &&
+            (identical(other.repliedToMessage, repliedToMessage) ||
+                other.repliedToMessage == repliedToMessage) &&
+            const DeepCollectionEquality().equals(other._mentions, _mentions) &&
+            const DeepCollectionEquality()
+                .equals(other._mentionReplacements, _mentionReplacements));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, showReplyView, replyWidget,
-      sendBtnVisible, emojiRowVisible, emojiPickerVisible, attachmentVisible);
+  int get hashCode => Object.hash(
+      runtimeType,
+      showReplyView,
+      replyWidget,
+      allowEdit,
+      sendBtnVisible,
+      emojiRowVisible,
+      emojiPickerVisible,
+      attachmentVisible,
+      currentMessageId,
+      repliedToMessage,
+      const DeepCollectionEquality().hash(_mentions),
+      const DeepCollectionEquality().hash(_mentionReplacements));
 
   @JsonKey(ignore: true)
   @override
@@ -225,15 +345,22 @@ abstract class _ChatInputState implements ChatInputState {
   const factory _ChatInputState(
       {final bool showReplyView,
       final Widget? replyWidget,
+      final bool allowEdit,
       final bool sendBtnVisible,
       final bool emojiRowVisible,
       final bool emojiPickerVisible,
-      final bool attachmentVisible}) = _$_ChatInputState;
+      final bool attachmentVisible,
+      final String? currentMessageId,
+      final types.Message? repliedToMessage,
+      final List<Map<String, String>> mentions,
+      final Map<String, String> mentionReplacements}) = _$_ChatInputState;
 
   @override
   bool get showReplyView;
   @override
   Widget? get replyWidget;
+  @override
+  bool get allowEdit;
   @override
   bool get sendBtnVisible;
   @override
@@ -242,6 +369,14 @@ abstract class _ChatInputState implements ChatInputState {
   bool get emojiPickerVisible;
   @override
   bool get attachmentVisible;
+  @override
+  String? get currentMessageId;
+  @override
+  types.Message? get repliedToMessage;
+  @override
+  List<Map<String, String>> get mentions;
+  @override
+  Map<String, String> get mentionReplacements;
   @override
   @JsonKey(ignore: true)
   _$$_ChatInputStateCopyWith<_$_ChatInputState> get copyWith =>

@@ -7,11 +7,12 @@ use matrix_sdk::{
         api::client::{
             account::register::v3::Request as RegistrationRequest, room::Visibility, uiaa,
         },
-        assign, OwnedUserId,
+        assign,
     },
     Client as SdkClient, ClientBuilder,
 };
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
+use ruma_common::OwnedUserId;
 use tokio::time::sleep;
 use tracing::info;
 

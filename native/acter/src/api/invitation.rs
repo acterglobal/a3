@@ -1,21 +1,21 @@
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     room::{Room, RoomMember},
-    ruma::{
-        api::client::user_directory::search_users::v3::User,
-        events::room::member::{MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent},
-        OwnedRoomId, OwnedUserId, RoomId,
-    },
-    Client as SdkClient, RoomMemberships,
+    ruma::api::client::user_directory::search_users::v3::User,
+    Client as SdkClient, RoomMemberships, RoomState,
+};
+use ruma_common::{
+    events::room::member::{MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent},
+    OwnedRoomId, OwnedUserId, RoomId,
 };
 use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::time::{sleep, Duration};
 use tracing::{error, info};
 
 use super::{
-    client::{devide_spaces_from_convos, Client},
+    client::Client,
     profile::{PublicProfile, UserProfile},
     RUNTIME,
 };
@@ -40,9 +40,10 @@ impl Invitation {
     pub async fn room_name(&self) -> Result<String> {
         let client = self.client.clone();
         let room_id = self.room.room_id().to_owned();
-        let room = client
-            .get_invited_room(&room_id)
-            .context("Can't get a room we are not invited")?;
+        let room = client.get_room(&room_id).context("Not found a room")?;
+        if !matches!(room.state(), RoomState::Invited) {
+            bail!("Can't get a room we are not invited");
+        }
         RUNTIME
             .spawn(async move {
                 let name = room.display_name().await?;
@@ -72,14 +73,15 @@ impl Invitation {
     pub async fn accept(&self) -> Result<bool> {
         let client = self.client.clone();
         let room_id = self.room.room_id().to_owned();
-        let room = client
-            .get_invited_room(&room_id)
-            .context("Can't get a room we are not invited")?;
+        let room = client.get_room(&room_id).context("Not found a room")?;
+        if !matches!(room.state(), RoomState::Invited) {
+            bail!("Can't get a room we are not invited");
+        }
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
                 let mut delay = 2;
-                while let Err(err) = room.accept_invitation().await {
+                while let Err(err) = room.join().await {
                     // retry autojoin due to synapse sending invites, before the
                     // invited user can join for more information see
                     // https://github.com/matrix-org/synapse/issues/4345
@@ -107,14 +109,15 @@ impl Invitation {
     pub async fn reject(&self) -> Result<bool> {
         let client = self.client.clone();
         let room_id = self.room.room_id().to_owned();
-        let room = client
-            .get_invited_room(&room_id)
-            .context("Can't get a room we are not invited")?;
+        let room = client.get_room(&room_id).context("Not found a room")?;
+        if !matches!(room.state(), RoomState::Invited) {
+            bail!("Can't get a room we are not invited");
+        }
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
                 let mut delay = 2;
-                while let Err(err) = room.reject_invitation().await {
+                while let Err(err) = room.leave().await {
                     // retry autojoin due to synapse sending invites, before the
                     // invited user can join for more information see
                     // https://github.com/matrix-org/synapse/issues/4345
@@ -203,7 +206,7 @@ impl InvitationController {
                 let invitation = Invitation {
                     client: client.clone(),
                     origin_server_ts: None,
-                    room: Room::Invited(room.clone()),
+                    room: room.clone(),
                     sender: inviter.user_id().to_owned(),
                 };
                 invitations.push(invitation);
@@ -336,11 +339,7 @@ impl Client {
                     .collect::<Vec<OwnedUserId>>();
                 // iterate my rooms to get user list
                 let mut profiles: Vec<UserProfile> = vec![];
-                let (spaces, convos) = devide_spaces_from_convos(client.clone(), None).await;
-                for convo in convos {
-                    if convo.room_id() == room_id {
-                        continue;
-                    }
+                if let Some(convo) = client.convo_typed(&room_id).await {
                     let members = convo.members(RoomMemberships::ACTIVE).await?;
                     for member in members {
                         let user_id = member.user_id().to_owned();

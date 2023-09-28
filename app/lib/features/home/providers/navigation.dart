@@ -18,80 +18,48 @@ final spaceItemsProvider = FutureProvider.autoDispose
     .family<List<SidebarNavigationItem>, BuildContext>((ref, context) async {
   final spaces = ref.watch(spacesProvider);
 
-  return spaces.when(
-    loading: () => [
-      SidebarNavigationItem(
+  return spaces.map((space) {
+    final profileData = ref.watch(spaceProfileDataProvider(space));
+    final roomId = space.getRoomId().toString();
+    return profileData.when(
+      loading: () => SidebarNavigationItem(
         icon: const Icon(Atlas.arrows_dots_rotate_thin),
         label: Text(
-          'Loading Spaces',
+          roomId,
           style: Theme.of(context).textTheme.labelSmall,
           softWrap: false,
         ),
-        location: null,
+        location: '/$roomId',
       ),
-    ],
-    error: (error, stackTrace) => [
-      SidebarNavigationItem(
-        icon: const Icon(Atlas.warning_thin),
+      error: (err, trace) => SidebarNavigationItem(
+        icon: const Icon(Atlas.warning_bold),
         label: Text(
-          error.toString(),
+          '$roomId: $err',
           style: Theme.of(context).textTheme.labelSmall,
           softWrap: false,
         ),
-        location: null,
+        location: '/$roomId',
       ),
-    ],
-    data: (spaces) {
-      spaces.sort((a, b) {
-        // FIXME probably not the way we want to sort
-        /// but at least this gives us a predictable order
-        return a.getRoomId().toString().compareTo(b.getRoomId().toString());
-      });
-
-      return spaces.map((space) {
-        final profileData = ref.watch(spaceProfileDataProvider(space));
-        final roomId = space.getRoomId().toString();
-        return profileData.when(
-          loading: () => SidebarNavigationItem(
-            icon: const Icon(Atlas.arrows_dots_rotate_thin),
-            label: Text(
-              roomId,
-              style: Theme.of(context).textTheme.labelSmall,
-              softWrap: false,
-            ),
-            location: '/$roomId',
+      data: (info) => SidebarNavigationItem(
+        icon: SpaceParentBadge(
+          roomId: roomId,
+          child: ActerAvatar(
+            uniqueId: roomId,
+            displayName: info.displayName,
+            mode: DisplayMode.Space,
+            avatar: info.getAvatarImage(),
+            size: 48,
           ),
-          error: (err, trace) => SidebarNavigationItem(
-            icon: const Icon(Atlas.warning_bold),
-            label: Text(
-              '$roomId: $err',
-              style: Theme.of(context).textTheme.labelSmall,
-              softWrap: false,
-            ),
-            location: '/$roomId',
-          ),
-          data: (info) => SidebarNavigationItem(
-            icon: SpaceParentBadge(
-              spaceId: roomId,
-              child: ActerAvatar(
-                uniqueId: roomId,
-                displayName: info.displayName,
-                mode: DisplayMode.Space,
-                avatar: info.getAvatarImage(),
-                size: 48,
-              ),
-            ),
-            label: Text(
-              info.displayName ?? roomId,
-              style: Theme.of(context).textTheme.labelSmall,
-              softWrap: false,
-            ),
-            location: '/$roomId',
-          ),
-        );
-      }).toList();
-    },
-  );
+        ),
+        label: Text(
+          info.displayName ?? roomId,
+          style: Theme.of(context).textTheme.labelSmall,
+          softWrap: false,
+        ),
+        location: '/$roomId',
+      ),
+    );
+  }).toList();
 });
 
 final activitiesIconProvider = Provider.family<Widget, BuildContext>(

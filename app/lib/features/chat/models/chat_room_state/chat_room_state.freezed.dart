@@ -15,7 +15,7 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 /// @nodoc
-mixin _$ChatRoomState {
+mixin _$ChatRoomLoadingState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() loading,
@@ -40,39 +40,40 @@ mixin _$ChatRoomState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(_ChatRoomStateLoading value) loading,
-    required TResult Function(_ChatRoomStateLoaded value) loaded,
-    required TResult Function(_ChatRoomStateError value) error,
+    required TResult Function(_ChatRoomLoadingStateLoading value) loading,
+    required TResult Function(_ChatRoomLoadingStateLoaded value) loaded,
+    required TResult Function(_ChatRoomLoadingStateError value) error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_ChatRoomStateLoading value)? loading,
-    TResult? Function(_ChatRoomStateLoaded value)? loaded,
-    TResult? Function(_ChatRoomStateError value)? error,
+    TResult? Function(_ChatRoomLoadingStateLoading value)? loading,
+    TResult? Function(_ChatRoomLoadingStateLoaded value)? loaded,
+    TResult? Function(_ChatRoomLoadingStateError value)? error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(_ChatRoomStateLoading value)? loading,
-    TResult Function(_ChatRoomStateLoaded value)? loaded,
-    TResult Function(_ChatRoomStateError value)? error,
+    TResult Function(_ChatRoomLoadingStateLoading value)? loading,
+    TResult Function(_ChatRoomLoadingStateLoaded value)? loaded,
+    TResult Function(_ChatRoomLoadingStateError value)? error,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $ChatRoomStateCopyWith<$Res> {
-  factory $ChatRoomStateCopyWith(
-          ChatRoomState value, $Res Function(ChatRoomState) then) =
-      _$ChatRoomStateCopyWithImpl<$Res, ChatRoomState>;
+abstract class $ChatRoomLoadingStateCopyWith<$Res> {
+  factory $ChatRoomLoadingStateCopyWith(ChatRoomLoadingState value,
+          $Res Function(ChatRoomLoadingState) then) =
+      _$ChatRoomLoadingStateCopyWithImpl<$Res, ChatRoomLoadingState>;
 }
 
 /// @nodoc
-class _$ChatRoomStateCopyWithImpl<$Res, $Val extends ChatRoomState>
-    implements $ChatRoomStateCopyWith<$Res> {
-  _$ChatRoomStateCopyWithImpl(this._value, this._then);
+class _$ChatRoomLoadingStateCopyWithImpl<$Res,
+        $Val extends ChatRoomLoadingState>
+    implements $ChatRoomLoadingStateCopyWith<$Res> {
+  _$ChatRoomLoadingStateCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -81,35 +82,39 @@ class _$ChatRoomStateCopyWithImpl<$Res, $Val extends ChatRoomState>
 }
 
 /// @nodoc
-abstract class _$$_ChatRoomStateLoadingCopyWith<$Res> {
-  factory _$$_ChatRoomStateLoadingCopyWith(_$_ChatRoomStateLoading value,
-          $Res Function(_$_ChatRoomStateLoading) then) =
-      __$$_ChatRoomStateLoadingCopyWithImpl<$Res>;
+abstract class _$$_ChatRoomLoadingStateLoadingCopyWith<$Res> {
+  factory _$$_ChatRoomLoadingStateLoadingCopyWith(
+          _$_ChatRoomLoadingStateLoading value,
+          $Res Function(_$_ChatRoomLoadingStateLoading) then) =
+      __$$_ChatRoomLoadingStateLoadingCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$_ChatRoomStateLoadingCopyWithImpl<$Res>
-    extends _$ChatRoomStateCopyWithImpl<$Res, _$_ChatRoomStateLoading>
-    implements _$$_ChatRoomStateLoadingCopyWith<$Res> {
-  __$$_ChatRoomStateLoadingCopyWithImpl(_$_ChatRoomStateLoading _value,
-      $Res Function(_$_ChatRoomStateLoading) _then)
+class __$$_ChatRoomLoadingStateLoadingCopyWithImpl<$Res>
+    extends _$ChatRoomLoadingStateCopyWithImpl<$Res,
+        _$_ChatRoomLoadingStateLoading>
+    implements _$$_ChatRoomLoadingStateLoadingCopyWith<$Res> {
+  __$$_ChatRoomLoadingStateLoadingCopyWithImpl(
+      _$_ChatRoomLoadingStateLoading _value,
+      $Res Function(_$_ChatRoomLoadingStateLoading) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$_ChatRoomStateLoading implements _ChatRoomStateLoading {
-  const _$_ChatRoomStateLoading();
+class _$_ChatRoomLoadingStateLoading implements _ChatRoomLoadingStateLoading {
+  const _$_ChatRoomLoadingStateLoading();
 
   @override
   String toString() {
-    return 'ChatRoomState.loading()';
+    return 'ChatRoomLoadingState.loading()';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$_ChatRoomStateLoading);
+        (other.runtimeType == runtimeType &&
+            other is _$_ChatRoomLoadingStateLoading);
   }
 
   @override
@@ -152,9 +157,9 @@ class _$_ChatRoomStateLoading implements _ChatRoomStateLoading {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(_ChatRoomStateLoading value) loading,
-    required TResult Function(_ChatRoomStateLoaded value) loaded,
-    required TResult Function(_ChatRoomStateError value) error,
+    required TResult Function(_ChatRoomLoadingStateLoading value) loading,
+    required TResult Function(_ChatRoomLoadingStateLoaded value) loaded,
+    required TResult Function(_ChatRoomLoadingStateError value) error,
   }) {
     return loading(this);
   }
@@ -162,9 +167,9 @@ class _$_ChatRoomStateLoading implements _ChatRoomStateLoading {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_ChatRoomStateLoading value)? loading,
-    TResult? Function(_ChatRoomStateLoaded value)? loaded,
-    TResult? Function(_ChatRoomStateError value)? error,
+    TResult? Function(_ChatRoomLoadingStateLoading value)? loading,
+    TResult? Function(_ChatRoomLoadingStateLoaded value)? loaded,
+    TResult? Function(_ChatRoomLoadingStateError value)? error,
   }) {
     return loading?.call(this);
   }
@@ -172,9 +177,9 @@ class _$_ChatRoomStateLoading implements _ChatRoomStateLoading {
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(_ChatRoomStateLoading value)? loading,
-    TResult Function(_ChatRoomStateLoaded value)? loaded,
-    TResult Function(_ChatRoomStateError value)? error,
+    TResult Function(_ChatRoomLoadingStateLoading value)? loading,
+    TResult Function(_ChatRoomLoadingStateLoaded value)? loaded,
+    TResult Function(_ChatRoomLoadingStateError value)? error,
     required TResult orElse(),
   }) {
     if (loading != null) {
@@ -184,40 +189,44 @@ class _$_ChatRoomStateLoading implements _ChatRoomStateLoading {
   }
 }
 
-abstract class _ChatRoomStateLoading implements ChatRoomState {
-  const factory _ChatRoomStateLoading() = _$_ChatRoomStateLoading;
+abstract class _ChatRoomLoadingStateLoading implements ChatRoomLoadingState {
+  const factory _ChatRoomLoadingStateLoading() = _$_ChatRoomLoadingStateLoading;
 }
 
 /// @nodoc
-abstract class _$$_ChatRoomStateLoadedCopyWith<$Res> {
-  factory _$$_ChatRoomStateLoadedCopyWith(_$_ChatRoomStateLoaded value,
-          $Res Function(_$_ChatRoomStateLoaded) then) =
-      __$$_ChatRoomStateLoadedCopyWithImpl<$Res>;
+abstract class _$$_ChatRoomLoadingStateLoadedCopyWith<$Res> {
+  factory _$$_ChatRoomLoadingStateLoadedCopyWith(
+          _$_ChatRoomLoadingStateLoaded value,
+          $Res Function(_$_ChatRoomLoadingStateLoaded) then) =
+      __$$_ChatRoomLoadingStateLoadedCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$_ChatRoomStateLoadedCopyWithImpl<$Res>
-    extends _$ChatRoomStateCopyWithImpl<$Res, _$_ChatRoomStateLoaded>
-    implements _$$_ChatRoomStateLoadedCopyWith<$Res> {
-  __$$_ChatRoomStateLoadedCopyWithImpl(_$_ChatRoomStateLoaded _value,
-      $Res Function(_$_ChatRoomStateLoaded) _then)
+class __$$_ChatRoomLoadingStateLoadedCopyWithImpl<$Res>
+    extends _$ChatRoomLoadingStateCopyWithImpl<$Res,
+        _$_ChatRoomLoadingStateLoaded>
+    implements _$$_ChatRoomLoadingStateLoadedCopyWith<$Res> {
+  __$$_ChatRoomLoadingStateLoadedCopyWithImpl(
+      _$_ChatRoomLoadingStateLoaded _value,
+      $Res Function(_$_ChatRoomLoadingStateLoaded) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$_ChatRoomStateLoaded implements _ChatRoomStateLoaded {
-  const _$_ChatRoomStateLoaded();
+class _$_ChatRoomLoadingStateLoaded implements _ChatRoomLoadingStateLoaded {
+  const _$_ChatRoomLoadingStateLoaded();
 
   @override
   String toString() {
-    return 'ChatRoomState.loaded()';
+    return 'ChatRoomLoadingState.loaded()';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$_ChatRoomStateLoaded);
+        (other.runtimeType == runtimeType &&
+            other is _$_ChatRoomLoadingStateLoaded);
   }
 
   @override
@@ -260,9 +269,9 @@ class _$_ChatRoomStateLoaded implements _ChatRoomStateLoaded {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(_ChatRoomStateLoading value) loading,
-    required TResult Function(_ChatRoomStateLoaded value) loaded,
-    required TResult Function(_ChatRoomStateError value) error,
+    required TResult Function(_ChatRoomLoadingStateLoading value) loading,
+    required TResult Function(_ChatRoomLoadingStateLoaded value) loaded,
+    required TResult Function(_ChatRoomLoadingStateError value) error,
   }) {
     return loaded(this);
   }
@@ -270,9 +279,9 @@ class _$_ChatRoomStateLoaded implements _ChatRoomStateLoaded {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_ChatRoomStateLoading value)? loading,
-    TResult? Function(_ChatRoomStateLoaded value)? loaded,
-    TResult? Function(_ChatRoomStateError value)? error,
+    TResult? Function(_ChatRoomLoadingStateLoading value)? loading,
+    TResult? Function(_ChatRoomLoadingStateLoaded value)? loaded,
+    TResult? Function(_ChatRoomLoadingStateError value)? error,
   }) {
     return loaded?.call(this);
   }
@@ -280,9 +289,9 @@ class _$_ChatRoomStateLoaded implements _ChatRoomStateLoaded {
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(_ChatRoomStateLoading value)? loading,
-    TResult Function(_ChatRoomStateLoaded value)? loaded,
-    TResult Function(_ChatRoomStateError value)? error,
+    TResult Function(_ChatRoomLoadingStateLoading value)? loading,
+    TResult Function(_ChatRoomLoadingStateLoaded value)? loaded,
+    TResult Function(_ChatRoomLoadingStateError value)? error,
     required TResult orElse(),
   }) {
     if (loaded != null) {
@@ -292,25 +301,28 @@ class _$_ChatRoomStateLoaded implements _ChatRoomStateLoaded {
   }
 }
 
-abstract class _ChatRoomStateLoaded implements ChatRoomState {
-  const factory _ChatRoomStateLoaded() = _$_ChatRoomStateLoaded;
+abstract class _ChatRoomLoadingStateLoaded implements ChatRoomLoadingState {
+  const factory _ChatRoomLoadingStateLoaded() = _$_ChatRoomLoadingStateLoaded;
 }
 
 /// @nodoc
-abstract class _$$_ChatRoomStateErrorCopyWith<$Res> {
-  factory _$$_ChatRoomStateErrorCopyWith(_$_ChatRoomStateError value,
-          $Res Function(_$_ChatRoomStateError) then) =
-      __$$_ChatRoomStateErrorCopyWithImpl<$Res>;
+abstract class _$$_ChatRoomLoadingStateErrorCopyWith<$Res> {
+  factory _$$_ChatRoomLoadingStateErrorCopyWith(
+          _$_ChatRoomLoadingStateError value,
+          $Res Function(_$_ChatRoomLoadingStateError) then) =
+      __$$_ChatRoomLoadingStateErrorCopyWithImpl<$Res>;
   @useResult
   $Res call({String? error});
 }
 
 /// @nodoc
-class __$$_ChatRoomStateErrorCopyWithImpl<$Res>
-    extends _$ChatRoomStateCopyWithImpl<$Res, _$_ChatRoomStateError>
-    implements _$$_ChatRoomStateErrorCopyWith<$Res> {
-  __$$_ChatRoomStateErrorCopyWithImpl(
-      _$_ChatRoomStateError _value, $Res Function(_$_ChatRoomStateError) _then)
+class __$$_ChatRoomLoadingStateErrorCopyWithImpl<$Res>
+    extends _$ChatRoomLoadingStateCopyWithImpl<$Res,
+        _$_ChatRoomLoadingStateError>
+    implements _$$_ChatRoomLoadingStateErrorCopyWith<$Res> {
+  __$$_ChatRoomLoadingStateErrorCopyWithImpl(
+      _$_ChatRoomLoadingStateError _value,
+      $Res Function(_$_ChatRoomLoadingStateError) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -318,7 +330,7 @@ class __$$_ChatRoomStateErrorCopyWithImpl<$Res>
   $Res call({
     Object? error = freezed,
   }) {
-    return _then(_$_ChatRoomStateError(
+    return _then(_$_ChatRoomLoadingStateError(
       freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -329,22 +341,22 @@ class __$$_ChatRoomStateErrorCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_ChatRoomStateError implements _ChatRoomStateError {
-  const _$_ChatRoomStateError([this.error]);
+class _$_ChatRoomLoadingStateError implements _ChatRoomLoadingStateError {
+  const _$_ChatRoomLoadingStateError([this.error]);
 
   @override
   final String? error;
 
   @override
   String toString() {
-    return 'ChatRoomState.error(error: $error)';
+    return 'ChatRoomLoadingState.error(error: $error)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_ChatRoomStateError &&
+            other is _$_ChatRoomLoadingStateError &&
             (identical(other.error, error) || other.error == error));
   }
 
@@ -354,9 +366,9 @@ class _$_ChatRoomStateError implements _ChatRoomStateError {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_ChatRoomStateErrorCopyWith<_$_ChatRoomStateError> get copyWith =>
-      __$$_ChatRoomStateErrorCopyWithImpl<_$_ChatRoomStateError>(
-          this, _$identity);
+  _$$_ChatRoomLoadingStateErrorCopyWith<_$_ChatRoomLoadingStateError>
+      get copyWith => __$$_ChatRoomLoadingStateErrorCopyWithImpl<
+          _$_ChatRoomLoadingStateError>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -395,9 +407,9 @@ class _$_ChatRoomStateError implements _ChatRoomStateError {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(_ChatRoomStateLoading value) loading,
-    required TResult Function(_ChatRoomStateLoaded value) loaded,
-    required TResult Function(_ChatRoomStateError value) error,
+    required TResult Function(_ChatRoomLoadingStateLoading value) loading,
+    required TResult Function(_ChatRoomLoadingStateLoaded value) loaded,
+    required TResult Function(_ChatRoomLoadingStateError value) error,
   }) {
     return error(this);
   }
@@ -405,9 +417,9 @@ class _$_ChatRoomStateError implements _ChatRoomStateError {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_ChatRoomStateLoading value)? loading,
-    TResult? Function(_ChatRoomStateLoaded value)? loaded,
-    TResult? Function(_ChatRoomStateError value)? error,
+    TResult? Function(_ChatRoomLoadingStateLoading value)? loading,
+    TResult? Function(_ChatRoomLoadingStateLoaded value)? loaded,
+    TResult? Function(_ChatRoomLoadingStateError value)? error,
   }) {
     return error?.call(this);
   }
@@ -415,9 +427,9 @@ class _$_ChatRoomStateError implements _ChatRoomStateError {
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(_ChatRoomStateLoading value)? loading,
-    TResult Function(_ChatRoomStateLoaded value)? loaded,
-    TResult Function(_ChatRoomStateError value)? error,
+    TResult Function(_ChatRoomLoadingStateLoading value)? loading,
+    TResult Function(_ChatRoomLoadingStateLoaded value)? loaded,
+    TResult Function(_ChatRoomLoadingStateError value)? error,
     required TResult orElse(),
   }) {
     if (error != null) {
@@ -427,12 +439,193 @@ class _$_ChatRoomStateError implements _ChatRoomStateError {
   }
 }
 
-abstract class _ChatRoomStateError implements ChatRoomState {
-  const factory _ChatRoomStateError([final String? error]) =
-      _$_ChatRoomStateError;
+abstract class _ChatRoomLoadingStateError implements ChatRoomLoadingState {
+  const factory _ChatRoomLoadingStateError([final String? error]) =
+      _$_ChatRoomLoadingStateError;
 
   String? get error;
   @JsonKey(ignore: true)
-  _$$_ChatRoomStateErrorCopyWith<_$_ChatRoomStateError> get copyWith =>
+  _$$_ChatRoomLoadingStateErrorCopyWith<_$_ChatRoomLoadingStateError>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+mixin _$ChatRoomState {
+  List<Message> get messages => throw _privateConstructorUsedError;
+  ChatRoomLoadingState get loading => throw _privateConstructorUsedError;
+  bool get hasMore => throw _privateConstructorUsedError;
+
+  @JsonKey(ignore: true)
+  $ChatRoomStateCopyWith<ChatRoomState> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ChatRoomStateCopyWith<$Res> {
+  factory $ChatRoomStateCopyWith(
+          ChatRoomState value, $Res Function(ChatRoomState) then) =
+      _$ChatRoomStateCopyWithImpl<$Res, ChatRoomState>;
+  @useResult
+  $Res call(
+      {List<Message> messages, ChatRoomLoadingState loading, bool hasMore});
+
+  $ChatRoomLoadingStateCopyWith<$Res> get loading;
+}
+
+/// @nodoc
+class _$ChatRoomStateCopyWithImpl<$Res, $Val extends ChatRoomState>
+    implements $ChatRoomStateCopyWith<$Res> {
+  _$ChatRoomStateCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? messages = null,
+    Object? loading = null,
+    Object? hasMore = null,
+  }) {
+    return _then(_value.copyWith(
+      messages: null == messages
+          ? _value.messages
+          : messages // ignore: cast_nullable_to_non_nullable
+              as List<Message>,
+      loading: null == loading
+          ? _value.loading
+          : loading // ignore: cast_nullable_to_non_nullable
+              as ChatRoomLoadingState,
+      hasMore: null == hasMore
+          ? _value.hasMore
+          : hasMore // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $ChatRoomLoadingStateCopyWith<$Res> get loading {
+    return $ChatRoomLoadingStateCopyWith<$Res>(_value.loading, (value) {
+      return _then(_value.copyWith(loading: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$_ChatRoomStateCopyWith<$Res>
+    implements $ChatRoomStateCopyWith<$Res> {
+  factory _$$_ChatRoomStateCopyWith(
+          _$_ChatRoomState value, $Res Function(_$_ChatRoomState) then) =
+      __$$_ChatRoomStateCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {List<Message> messages, ChatRoomLoadingState loading, bool hasMore});
+
+  @override
+  $ChatRoomLoadingStateCopyWith<$Res> get loading;
+}
+
+/// @nodoc
+class __$$_ChatRoomStateCopyWithImpl<$Res>
+    extends _$ChatRoomStateCopyWithImpl<$Res, _$_ChatRoomState>
+    implements _$$_ChatRoomStateCopyWith<$Res> {
+  __$$_ChatRoomStateCopyWithImpl(
+      _$_ChatRoomState _value, $Res Function(_$_ChatRoomState) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? messages = null,
+    Object? loading = null,
+    Object? hasMore = null,
+  }) {
+    return _then(_$_ChatRoomState(
+      messages: null == messages
+          ? _value._messages
+          : messages // ignore: cast_nullable_to_non_nullable
+              as List<Message>,
+      loading: null == loading
+          ? _value.loading
+          : loading // ignore: cast_nullable_to_non_nullable
+              as ChatRoomLoadingState,
+      hasMore: null == hasMore
+          ? _value.hasMore
+          : hasMore // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$_ChatRoomState implements _ChatRoomState {
+  const _$_ChatRoomState(
+      {final List<Message> messages = const [],
+      this.loading = const ChatRoomLoadingState.loading(),
+      this.hasMore = true})
+      : _messages = messages;
+
+  final List<Message> _messages;
+  @override
+  @JsonKey()
+  List<Message> get messages {
+    if (_messages is EqualUnmodifiableListView) return _messages;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_messages);
+  }
+
+  @override
+  @JsonKey()
+  final ChatRoomLoadingState loading;
+  @override
+  @JsonKey()
+  final bool hasMore;
+
+  @override
+  String toString() {
+    return 'ChatRoomState(messages: $messages, loading: $loading, hasMore: $hasMore)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$_ChatRoomState &&
+            const DeepCollectionEquality().equals(other._messages, _messages) &&
+            (identical(other.loading, loading) || other.loading == loading) &&
+            (identical(other.hasMore, hasMore) || other.hasMore == hasMore));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType,
+      const DeepCollectionEquality().hash(_messages), loading, hasMore);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$_ChatRoomStateCopyWith<_$_ChatRoomState> get copyWith =>
+      __$$_ChatRoomStateCopyWithImpl<_$_ChatRoomState>(this, _$identity);
+}
+
+abstract class _ChatRoomState implements ChatRoomState {
+  const factory _ChatRoomState(
+      {final List<Message> messages,
+      final ChatRoomLoadingState loading,
+      final bool hasMore}) = _$_ChatRoomState;
+
+  @override
+  List<Message> get messages;
+  @override
+  ChatRoomLoadingState get loading;
+  @override
+  bool get hasMore;
+  @override
+  @JsonKey(ignore: true)
+  _$$_ChatRoomStateCopyWith<_$_ChatRoomState> get copyWith =>
       throw _privateConstructorUsedError;
 }

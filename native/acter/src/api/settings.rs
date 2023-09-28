@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 pub use acter_core::events::settings::{
     ActerAppSettingsContent, EventsSettings, NewsSettings, PinsSettings, SimpleSettingWithTurnOff,
-    SimpleSettingWithTurnOffBuilder,
+    SimpleSettingWithTurnOffBuilder, TasksSettings, TasksSettingsBuilder,
 };
 
 use acter_core::events::{
@@ -10,18 +10,18 @@ use acter_core::events::{
     news::{NewsEntryEventContent, NewsEntryUpdateEvent},
     pins::PinEventContent,
     settings::ActerAppSettingsContentBuilder,
+    tasks::{TaskEventContent, TaskListEventContent},
 };
 use anyhow::{bail, Result};
 use matrix_sdk::{
     deserialized_responses::SyncOrStrippedState,
-    room::{Messages, MessagesOptions, Room as SdkRoom},
+    room::{Messages, MessagesOptions},
+    ruma::Int,
+    RoomState,
 };
-use ruma::{
-    events::{
-        room::power_levels::{RoomPowerLevels as RumaRoomPowerLevels, RoomPowerLevelsEventContent},
-        MessageLikeEvent, StaticEventContent, SyncStateEvent, TimelineEventType,
-    },
-    Int,
+use ruma_common::events::{
+    room::power_levels::{RoomPowerLevels as RumaRoomPowerLevels, RoomPowerLevelsEventContent},
+    MessageLikeEvent, StaticEventContent, SyncStateEvent, TimelineEventType,
 };
 
 use crate::Room;
@@ -47,6 +47,9 @@ impl ActerAppSettingsBuilder {
     pub fn events(&mut self, value: Option<Box<SimpleSettingWithTurnOff>>) {
         self.inner.events(value.map(|i| *i));
     }
+    pub fn tasks(&mut self, value: Option<Box<TasksSettings>>) {
+        self.inner.tasks(value.map(|i| *i));
+    }
 }
 
 pub struct RoomPowerLevels {
@@ -68,6 +71,18 @@ impl RoomPowerLevels {
     }
     pub fn events_key(&self) -> String {
         <CalendarEventEventContent as StaticEventContent>::TYPE.into()
+    }
+    pub fn task_lists(&self) -> Option<i64> {
+        self.get_for_key(<TaskListEventContent as StaticEventContent>::TYPE.into())
+    }
+    pub fn task_lists_key(&self) -> String {
+        <TaskListEventContent as StaticEventContent>::TYPE.into()
+    }
+    pub fn tasks(&self) -> Option<i64> {
+        self.get_for_key(<TaskEventContent as StaticEventContent>::TYPE.into())
+    }
+    pub fn tasks_key(&self) -> String {
+        <TaskEventContent as StaticEventContent>::TYPE.into()
     }
     pub fn pins(&self) -> Option<i64> {
         self.get_for_key(<PinEventContent as StaticEventContent>::TYPE.into())
@@ -133,6 +148,7 @@ impl Room {
             })
             .await?
     }
+
     pub async fn update_feature_power_levels(
         &self,
         name: String,
@@ -171,10 +187,10 @@ impl Room {
         }
 
         let client = self.room.client().clone();
-        let SdkRoom::Joined(joined) = &self.room else {
+        if !self.is_joined() {
             bail!("You can't update a space you aren't part of");
-        };
-        let room = joined.clone();
+        }
+        let room = self.room.clone();
 
         RUNTIME
             .spawn(async move {
@@ -219,10 +235,10 @@ impl Room {
         }
 
         let client = self.room.client().clone();
-        let SdkRoom::Joined(joined) = &self.room else {
+        if !self.is_joined() {
             bail!("You can't update a space you aren't part of");
-        };
-        let room = joined.clone();
+        }
+        let room = self.room.clone();
 
         RUNTIME
             .spawn(async move {

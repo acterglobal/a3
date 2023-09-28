@@ -57,7 +57,6 @@ async fn spaces_deleted() -> Result<()> {
     let second = spaces.pop().unwrap();
     let last = spaces.pop().unwrap();
 
-    let all_listener = user.subscribe("SPACES".to_owned());
     let mut first_listener = user.subscribe(first.room_id().to_string());
     let mut second_listener = user.subscribe(second.room_id().to_string());
     let mut last_listener = user.subscribe(last.room_id().to_string());
@@ -78,8 +77,8 @@ async fn spaces_deleted() -> Result<()> {
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), || async {
-        if all_listener.is_empty() {
-            bail!("all still empty");
+        if user.spaces().await?.is_empty() {
+            bail!("still no spaces found");
         };
         Ok(())
     })
@@ -98,9 +97,6 @@ async fn spaces_deleted() -> Result<()> {
     assert_eq!(second_listener.try_recv(), Err(TryRecvError::Empty));
     assert_eq!(last_listener.try_recv(), Err(TryRecvError::Empty));
 
-    // get a second listener
-    let all_listener = user.subscribe("SPACES".to_owned());
-
     second.leave().await?;
     let fetcher_client = user.clone();
     Retry::spawn(retry_strategy.clone(), move || {
@@ -112,15 +108,6 @@ async fn spaces_deleted() -> Result<()> {
                 Ok(())
             }
         }
-    })
-    .await?;
-
-    Retry::spawn(retry_strategy.clone(), || async {
-        if all_listener.is_empty() {
-            // this was empty, try again
-            bail!("all listeners still empty");
-        }
-        Ok(())
     })
     .await?;
 
@@ -178,7 +165,6 @@ async fn create_subspace() -> Result<()> {
 
     let first = spaces.pop().unwrap();
 
-    let all_listener = user.subscribe("SPACES".to_owned());
     let mut cfg = new_space_settings_builder();
     cfg.set_name("subspace".to_owned());
     cfg.set_parent(first.room_id().to_string());
@@ -199,7 +185,7 @@ async fn create_subspace() -> Result<()> {
     })
     .await?;
 
-    let space = user.get_space(subspace_id.to_string()).await?;
+    let space = user.space(subspace_id.to_string()).await?;
     let space_relations = space.space_relations().await?;
     let space_parent = space_relations
         .main_parent()
@@ -209,8 +195,8 @@ async fn create_subspace() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 
     Retry::spawn(retry_strategy.clone(), || async {
-        if all_listener.is_empty() {
-            bail!("all still empty");
+        if user.spaces().await?.is_empty() {
+            bail!("still no spaces found");
         };
         Ok(())
     })
@@ -259,7 +245,7 @@ async fn update_name() -> Result<()> {
         let client = fetcher_client.clone();
         let space_id = space_id_clone.clone();
         async move {
-            if client.get_space(space_id).await?.name() == Some("New Name".to_owned()) {
+            if client.space(space_id).await?.name() == Some("New Name".to_owned()) {
                 Ok(())
             } else {
                 bail!("Name not set")
@@ -273,7 +259,7 @@ async fn update_name() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), || async {
         if listener.is_empty() {
-            bail!("all still empty");
+            bail!("no updates received");
         };
         Ok(())
     })
@@ -295,7 +281,7 @@ async fn update_name() -> Result<()> {
     //     let client = fetcher_client.clone();
     //     let space_id = space_id_clone.clone();
     //     async move {
-    //         if client.get_space(space_id).await?.name().is_none() {
+    //         if client.space(space_id).await?.name().is_none() {
     //             Ok(())
     //         } else {
     //             bail!("Name not set")
@@ -365,7 +351,7 @@ async fn update_topic() -> Result<()> {
         let client = fetcher_client.clone();
         let space_id = space_id_clone.clone();
         async move {
-            if client.get_space(space_id).await?.topic() == Some("New topic".to_owned()) {
+            if client.space(space_id).await?.topic() == Some("New topic".to_owned()) {
                 Ok(())
             } else {
                 bail!("Topic not set")
@@ -378,7 +364,7 @@ async fn update_topic() -> Result<()> {
 
     Retry::spawn(retry_strategy.clone(), || async {
         if listener.is_empty() {
-            bail!("all still empty");
+            bail!("no updates received");
         };
         Ok(())
     })

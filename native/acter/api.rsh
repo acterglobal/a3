@@ -39,7 +39,7 @@ object UtcDateTime {
     fn timestamp() -> i64;
     fn to_rfc2822() -> string;
     fn to_rfc3339() -> string;
-    fn timestamp_millis()-> i64;
+    fn timestamp_millis() -> i64;
 }
 
 object RefDetails {
@@ -315,20 +315,24 @@ object CalendarEvent {
 object CalendarEventUpdateBuilder {
     /// set title of the event>
     fn title(title: string);
+
     /// set description text
     fn description_text(body: string);
+
     /// set utc start in rfc3339 string
-    fn utc_start_from_rfc3339(utc_start: string);
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
     /// set utc start in rfc2822 string
-    fn utc_start_from_rfc2822(utc_start: string);
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
     /// set utc start in custom format
-    fn utc_start_from_format(utc_start: string, format: string);
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
+
     /// set utc end in rfc3339 string
-    fn utc_end_from_rfc3339(utc_end: string);
+    fn utc_end_from_rfc3339(utc_end: string) -> Result<()>;
     /// set utc end in rfc2822 string
-    fn utc_end_from_rfc2822(utc_end: string);
+    fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
     /// set utc end in custom format
-    fn utc_end_from_format(utc_end: string, format: string);
+    fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
+
     /// send builder update
     fn send() -> Future<Result<EventId>>;
 }
@@ -344,16 +348,16 @@ object CalendarEventDraft {
     /// set the utc_start for this calendar event in rfc3339 format
     fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
     /// set the utc_start for this calendar event in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string)-> Result<()>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
     /// set the utc_start for this calendar event in custom format
-    fn utc_start_from_format(utc_start: string, format: string)-> Result<()>;
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
 
     /// set the utc_end for this calendar event in rfc3339 format
     fn utc_end_from_rfc3339(utc_end: string) -> Result<()>;
     /// set the utc_end for this calendar event in rfc2822 format
-    fn utc_end_from_rfc2822(utc_end: string)-> Result<()>;
+    fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
     /// set the utc_end for this calendar event in custom format
-    fn utc_end_from_format(utc_end: string, format: string)-> Result<()>;
+    fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
 
     /// create this calendar event
     fn send() -> Future<Result<EventId>>;
@@ -387,7 +391,7 @@ object RsvpManager {
 
 object RsvpDraft {
     /// set status of this RSVP
-    fn status(status: string) -> RsvpDraft;
+    fn status(status: string);
 
     /// create this RSVP
     fn send() -> Future<Result<EventId>>;
@@ -655,13 +659,70 @@ object TimelineDiff {
     fn value() -> Option<RoomMessage>;
 }
 
+/// Generic Room Properties
+object Room {
+    /// the RoomId as a String
+    fn room_id_str() -> string;
+
+    /// whether we are part of this room
+    fn is_joined() -> bool;
+
+    /// get the room profile that contains avatar and display name
+    fn get_profile() -> RoomProfile;
+
+    /// get the room profile that contains avatar and display name
+    fn space_relations() -> Future<Result<SpaceRelations>>;
+
+    /// the Membership of myself
+    fn get_my_membership() -> Future<Result<Member>>;
+
+    /// the members currently in the room
+    fn active_members() -> Future<Result<Vec<Member>>>;
+
+    /// the members invited to this room
+    fn invited_members() -> Future<Result<Vec<Member>>>;
+
+    /// get the room member by user id
+    fn get_member(user_id: string) -> Future<Result<Member>>;
+
+    /// invite the new user to this room
+    fn invite_user(user_id: string) -> Future<Result<bool>>;
+
+}
+
+
+object ConvoDiff {
+    /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
+    fn action() -> string;
+
+    /// for Append/Reset
+    fn values() -> Option<Vec<Convo>>;
+
+    /// for Insert/Set/Remove
+    fn index() -> Option<usize>;
+
+    /// for Insert/Set/PushBack/PushFront
+    fn value() -> Option<Convo>;
+}
+
+object SpaceDiff {
+    /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
+    fn action() -> string;
+
+    /// for Append/Reset
+    fn values() -> Option<Vec<Space>>;
+
+    /// for Insert/Set/Remove
+    fn index() -> Option<usize>;
+
+    /// for Insert/Set/PushBack/PushFront
+    fn value() -> Option<Space>;
+}
+
 /// Timeline with Room Events
 object TimelineStream {
     /// Fires whenever new diff found
-    fn diff_rx() -> Stream<TimelineDiff>;
-
-    /// Fires whenever new event arrived
-    fn next() -> Future<Result<RoomMessage>>;
+    fn diff_stream() -> Stream<TimelineDiff>;
 
     /// Get the next count messages backwards, and return whether it has more items
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
@@ -673,6 +734,9 @@ object TimelineStream {
 object Convo {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> RoomProfile;
+
+    /// get the room profile that contains avatar and display name
+    fn space_relations() -> Future<Result<SpaceRelations>>;
 
     /// Change the avatar of the room
     fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
@@ -700,6 +764,9 @@ object Convo {
 
     /// The last message sent to the room
     fn latest_message() -> Option<RoomMessage>;
+
+    /// Latest message timestamp or 0
+    fn latest_message_ts() -> u64;
 
     /// the Membership of myself
     fn get_my_membership() -> Future<Result<Member>>;
@@ -789,6 +856,12 @@ object Convo {
 
     /// get the user status on this room
     fn room_type() -> string;
+
+    /// is this a direct message
+    fn is_dm() -> bool;
+
+    /// the list of users ids if this is a direct message
+    fn dm_users() -> Vec<string>;
 
     /// invite the new user to this room
     fn invite_user(user_id: string) -> Future<Result<bool>>;
@@ -956,7 +1029,7 @@ object Task {
     fn title() -> string;
 
     /// the description of this task
-    fn description_text() -> Option<string>;
+    fn description() -> Option<TextDesc>;
 
     /// the users assigned
     fn assignees() -> Vec<UserId>;
@@ -981,10 +1054,10 @@ object Task {
     fn priority() -> Option<u8>;
 
     /// When this is due
-    fn utc_due() -> Option<UtcDateTime>;
+    fn utc_due_rfc3339() -> Option<string>;
 
     /// When this was started
-    fn utc_start() -> Option<UtcDateTime>;
+    fn utc_start_rfc3339() -> Option<string>;
 
     /// Has this been colored in?
     fn color() -> Option<EfkColor>;
@@ -1037,18 +1110,18 @@ object TaskUpdateBuilder {
     /// set the utc_due for this task list in rfc3339 format
     fn utc_due_from_rfc3339(utc_due: string) -> Result<()>;
     /// set the utc_due for this task list in rfc2822 format
-    fn utc_due_from_rfc2822(utc_due: string)-> Result<()>;
+    fn utc_due_from_rfc2822(utc_due: string) -> Result<()>;
     /// set the utc_due for this task list in custom format
-    fn utc_due_from_format(utc_due: string, format: string)-> Result<()>;
+    fn utc_due_from_format(utc_due: string, format: string) -> Result<()>;
     fn unset_utc_due();
     fn unset_utc_due_update();
 
     /// set the utc_start for this task list in rfc3339 format
     fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
     /// set the utc_start for this task list in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string)-> Result<()>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
     /// set the utc_start for this task list in custom format
-    fn utc_start_from_format(utc_start: string, format: string)-> Result<()>;
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
     fn unset_utc_start();
     fn unset_utc_start_update();
 
@@ -1106,17 +1179,17 @@ object TaskDraft {
     /// set the utc_due for this task in rfc3339 format
     fn utc_due_from_rfc3339(utc_due: string) -> Result<()>;
     /// set the utc_due for this task in rfc2822 format
-    fn utc_due_from_rfc2822(utc_due: string)-> Result<()>;
+    fn utc_due_from_rfc2822(utc_due: string) -> Result<()>;
     /// set the utc_due for this task in custom format
-    fn utc_due_from_format(utc_due: string, format: string)-> Result<()>;
+    fn utc_due_from_format(utc_due: string, format: string) -> Result<()>;
     fn unset_utc_due();
 
     /// set the utc_start for this task in rfc3339 format
     fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
     /// set the utc_start for this task in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string)-> Result<()>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
     /// set the utc_start for this task in custom format
-    fn utc_start_from_format(utc_start: string, format: string)-> Result<()>;
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
     fn unset_utc_start();
 
     /// set the sort order for this task
@@ -1148,7 +1221,7 @@ object TaskList {
     fn name() -> string;
 
     /// the description of this task list
-    fn description_text() -> Option<string>;
+    fn description() -> Option<TextDesc>;
 
     /// who wants to be informed on updates about this?
     fn subscribers() -> Vec<UserId>;
@@ -1188,6 +1261,9 @@ object TaskList {
 
     /// the space this TaskList belongs to
     fn space() -> Space;
+
+    /// the id of the space this TaskList belongs to
+    fn space_id_str() -> string;
 }
 
 object TaskListDraft {
@@ -1196,6 +1272,7 @@ object TaskListDraft {
 
     /// set the description for this task list
     fn description_text(text: string);
+    fn description_markdown(text: string);
     fn unset_description();
 
     /// set the sort order for this task list
@@ -1327,6 +1404,12 @@ object RoomPowerLevels {
     fn events_default() -> i64;
     fn users_default() -> i64;
     fn max_power_level() -> i64;
+
+    fn tasks() -> Option<i64>;
+    fn tasks_key() -> string;
+
+    fn task_lists() -> Option<i64>;
+    fn task_lists_key() -> string;
 }
 
 object SimpleSettingWithTurnOff {
@@ -1338,9 +1421,19 @@ object SimpleSettingWithTurnOffBuilder {
     fn build() -> Result<SimpleSettingWithTurnOff>;
 }
 
+
+object TasksSettingsBuilder {
+    fn active(active: bool);
+    fn build() -> Result<TasksSettings>;
+}
 object NewsSettings {
     fn active() -> bool;
     fn updater() -> SimpleSettingWithTurnOffBuilder;
+}
+
+object TasksSettings {
+    fn active() -> bool;
+    fn updater() -> TasksSettingsBuilder;
 }
 
 object EventsSettings {
@@ -1357,6 +1450,7 @@ object ActerAppSettings {
     fn news() -> NewsSettings;
     fn pins() -> PinsSettings;
     fn events() -> EventsSettings;
+    fn tasks() -> TasksSettings;
     fn update_builder() -> ActerAppSettingsBuilder;
 }
 
@@ -1364,6 +1458,7 @@ object ActerAppSettingsBuilder {
     fn news(news: Option<SimpleSettingWithTurnOff>);
     fn pins(pins: Option<SimpleSettingWithTurnOff>);
     fn events(events: Option<SimpleSettingWithTurnOff>);
+    fn tasks(tasks: Option<TasksSettings>);
 }
 
 object Space {
@@ -1541,6 +1636,8 @@ enum MemberPermission {
     CanPostNews,
     CanPostPin,
     CanPostEvent,
+    CanPostTaskList,
+    CanPostTask,
     CanBan,
     CanKick,
     CanInvite,
@@ -1657,9 +1754,9 @@ object Notification {
     fn has_room() -> bool;
     fn is_space() -> bool;
     fn is_acter_space() -> bool;
-    fn space() -> Option<Space>;
+    fn space() -> Future<Result<Space>>;
     fn room_message() -> Option<RoomMessage>;
-    fn convo() -> Option<Convo>;
+    fn convo() -> Future<Result<Convo>>;
 }
 
 object NotificationListResult {
@@ -1765,23 +1862,31 @@ object Client {
     /// deprecated, please use account() instead.
     fn user_id() -> Result<UserId>;
 
+    /// Get the generic room that user belongs to
+    fn room(room_id_or_alias: string) -> Future<Result<Room>>;
+
     /// get convo room
     fn convo(room_id_or_alias: string) -> Future<Result<Convo>>;
+
+    /// get convo room of retry 250ms for retry times
+    fn convo_with_retry(room_id_or_alias: string, retry: u8) -> Future<Result<Convo>>;
 
     /// get the user profile that contains avatar and display name
     fn get_user_profile() -> Result<UserProfile>;
 
     /// upload file and return remote url
     fn upload_media(uri: string) -> Future<Result<MxcUri>>;
-
-    /// The convos the user is involved in
-    fn convos() -> Future<Result<Vec<Convo>>>;
-
-    /// The update event of convos the user is involved in
-    fn convos_rx() -> Stream<Vec<Convo>>;
+    
+    /// Fires whenever the convo list changes (in order or number)
+    /// fires immediately with the current state of convos
+    fn convos_stream() -> Stream<ConvoDiff>;
 
     /// The spaces the user is part of
     fn spaces() -> Future<Result<Vec<Space>>>;
+
+    /// Fires whenever the space list changes (in order or number)
+    /// fires immediately with the current state of spaces
+    fn spaces_stream() -> Stream<SpaceDiff>;
 
     /// attempt to join a space
     fn join_space(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Space>>;
@@ -1793,7 +1898,7 @@ object Client {
     fn public_spaces(search_term: Option<string>, server: Option<string>, since: Option<string>) -> Future<Result<PublicSearchResult>>;
 
     /// Get the space that user belongs to
-    fn get_space(room_id_or_alias: string) -> Future<Result<Space>>;
+    fn space(room_id_or_alias: string) -> Future<Result<Space>>;
 
     /// Get the Pinned Links for the client
     fn pinned_links() -> Future<Result<Vec<ActerPin>>>;

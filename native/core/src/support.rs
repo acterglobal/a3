@@ -1,4 +1,4 @@
-use matrix_sdk::ruma::{OwnedDeviceId, OwnedUserId};
+use ruma_common::{OwnedDeviceId, OwnedUserId};
 use serde::{Deserialize, Serialize};
 use url::Url;
 

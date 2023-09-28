@@ -6,12 +6,11 @@ use acter::{
 use acter_core::models::ActerModel;
 use anyhow::{bail, Context, Result};
 use clap::{crate_version, Parser, Subcommand};
-use matrix_sdk::{
-    ruma::{api::client::room::Visibility, OwnedUserId},
-    HttpError,
-};
+use futures::StreamExt;
+use matrix_sdk::{ruma::api::client::room::Visibility, HttpError};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use matrix_sdk_sqlite::make_store_config;
+use ruma_common::OwnedUserId;
 use std::collections::HashMap;
 use tracing::{error, info, trace};
 
@@ -133,10 +132,9 @@ impl<'a> Mock<'a> {
         })
     }
 
-    async fn team(&mut self) -> [Client; 8] {
+    async fn team(&mut self) -> [Client; 7] {
         [
             self.client("sisko".to_owned()).await.unwrap(),
-            self.client("sisko1".to_owned()).await.unwrap(),
             self.client("kyra".to_owned()).await.unwrap(),
             self.client("worf".to_owned()).await.unwrap(),
             self.client("bashir".to_owned()).await.unwrap(),
@@ -273,11 +271,13 @@ impl<'a> Mock<'a> {
     pub async fn accept_invitations(&mut self) -> Result<()> {
         for member in self.everyone().await.iter() {
             info!("Accepting invites for {:}", member.user_id()?);
-            member.sync_once(Default::default()).await?;
+            let mut sync_stream = Box::pin(member.sync_stream(Default::default()).await);
+            sync_stream.next().await;
             for invited in member.invited_rooms().iter() {
-                trace!("accepting {:#?}", invited);
-                invited.accept_invitation().await?;
+                info!(" - accepting {:?}", invited.room_id());
+                invited.join().await?;
             }
+            sync_stream.next().await;
         }
         info!("Done accepting invites");
 
@@ -320,8 +320,8 @@ impl<'a> Mock<'a> {
                 let cloned_odo = cloned_odo.clone();
                 let alias = alias.clone();
                 async move {
-                    println!("tasks get_space {alias}");
-                    let space = cloned_odo.get_space(alias).await?;
+                    info!("tasks get_space {alias}");
+                    let space = cloned_odo.space(alias).await?;
                     Ok(Some(space))
                 }
             }).await? else {

@@ -21,7 +21,6 @@ class SpaceEventsPage extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: CustomScrollView(
-        physics: const NeverScrollableScrollPhysics(),
         slivers: <Widget>[
           SliverToBoxAdapter(
             child: Row(
@@ -64,7 +63,7 @@ class SpaceEventsPage extends ConsumerWidget {
                 itemCount: events.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: max(1, min(widthCount, minCount)),
-                  childAspectRatio: 4,
+                  childAspectRatio: 4.0,
                 ),
                 itemBuilder: (context, index) =>
                     EventItem(event: events[index]),

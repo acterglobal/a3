@@ -1,4 +1,4 @@
-use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, OwnedUserId, RoomId};
+use ruma_common::{events::OriginalMessageLikeEvent, EventId, OwnedUserId, RoomId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
@@ -46,6 +46,20 @@ impl Task {
 
     pub fn percent(&self) -> Option<u8> {
         self.inner.progress_percent
+    }
+
+    pub fn utc_due_rfc3339(&self) -> Option<String> {
+        self.inner
+            .utc_due
+            .as_ref()
+            .map(|d| d.to_rfc3339_opts(chrono::SecondsFormat::Secs, true))
+    }
+
+    pub fn utc_start_rfc3339(&self) -> Option<String> {
+        self.inner
+            .utc_start
+            .as_ref()
+            .map(|d| d.to_rfc3339_opts(chrono::SecondsFormat::Secs, true))
     }
 
     pub fn updater(&self) -> TaskUpdateBuilder {
