@@ -444,7 +444,7 @@ fn insert_to_chat(target: &mut RwLockWriteGuard<ObservableVector<Convo>>, convo:
 // external API
 impl Client {
     pub async fn new(client: SdkClient, state: ClientState) -> Result<Self> {
-        let core = CoreClient::new(client).await?;
+        let core = CoreClient::new(client.clone()).await?;
         let mut cl = Client {
             core,
             state: Arc::new(RwLock::new(state)),
@@ -452,7 +452,7 @@ impl Client {
             convos: Default::default(),
             invitation_controller: InvitationController::new(),
             verification_controller: VerificationController::new(),
-            device_controller: DeviceController::new(),
+            device_controller: DeviceController::new(client),
             typing_controller: TypingController::new(),
             receipt_controller: ReceiptController::new(),
             notifications: Arc::new(channel(25).0),
@@ -652,9 +652,6 @@ impl Client {
                         }
                     };
                     trace!(target: "acter::sync_response::full", "sync response: {:#?}", response);
-
-                    // device_controller.process_device_lists(&client, &response);
-                    trace!("post device controller");
 
                     if initial.compare_exchange(true, false, Ordering::Relaxed, Ordering::Relaxed)
                         == Ok(true)

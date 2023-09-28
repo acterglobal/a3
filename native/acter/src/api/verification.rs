@@ -32,7 +32,7 @@ use std::{
 use tokio::sync::Mutex;
 use tracing::{error, info};
 
-use super::{client::Client, common::DeviceRecord, device::DeviceChangedEvent, RUNTIME};
+use super::{client::Client, common::DeviceRecord, device::DeviceNewEvent, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct VerificationEvent {
@@ -1290,7 +1290,7 @@ impl Client {
     }
 }
 
-impl DeviceChangedEvent {
+impl DeviceNewEvent {
     pub async fn request_verification_to_user(&self) -> Result<bool> {
         let client = self.client();
         RUNTIME
