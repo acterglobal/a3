@@ -236,7 +236,7 @@ async fn update_name() -> Result<()> {
 
     // set name
 
-    let _event_id = space.set_name(Some("New Name".to_owned())).await?;
+    let _event_id = space.set_name("New Name".to_owned()).await?;
 
     let fetcher_client = user.clone();
     let space_id_clone = space_id.clone();
@@ -342,7 +342,7 @@ async fn update_topic() -> Result<()> {
 
     // set topic
 
-    let _event_id = space.set_topic("New topic".to_owned()).await?;
+    let _event_id = space.set_topic("New Topic".to_owned()).await?;
 
     let fetcher_client = user.clone();
     let space_id_clone = space_id.clone();
