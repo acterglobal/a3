@@ -25,7 +25,7 @@ impl DeviceNewEvent {
     pub(crate) fn new(client: &SdkClient, device_id: OwnedDeviceId) -> Self {
         DeviceNewEvent {
             client: client.clone(),
-            device_id: device_id.clone(),
+            device_id,
         }
     }
 
@@ -108,7 +108,7 @@ impl DeviceChangedEvent {
     pub(crate) fn new(client: &SdkClient, device_id: OwnedDeviceId) -> Self {
         DeviceChangedEvent {
             client: client.clone(),
-            device_id: device_id.clone(),
+            device_id,
         }
     }
 
