@@ -4,7 +4,6 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
@@ -56,11 +55,6 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
-              parentSelected
-                  ? 'Create a new subspace'
-                  : 'Create new space and start organizing.',
-            ),
             const SizedBox(height: 15),
             Row(
               children: <Widget>[
@@ -100,30 +94,6 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                 ),
               ],
             ),
-            // const SizedBox(height: 15),
-            // const Text('Wallpaper'),
-            // GestureDetector(
-            //   onTap: () => customMsgSnackbar(
-            //     context,
-            //     'Wallpaper uploading feature isn\'t available yet',
-            //   ),
-            //   child: Container(
-            //     margin: const EdgeInsets.only(top: 15),
-            //     padding: const EdgeInsets.all(10),
-            //     height: 75,
-            //     decoration: BoxDecoration(
-            //       color: Theme.of(context).colorScheme.primaryContainer,
-            //       borderRadius: BorderRadius.circular(12),
-            //     ),
-            //     child: Align(
-            //       alignment: Alignment.centerLeft,
-            //       child: Icon(
-            //         Atlas.up_arrow_from_bracket_thin,
-            //         color: Theme.of(context).colorScheme.neutral4,
-            //       ),
-            //     ),
-            //   ),
-            // ),
             const SizedBox(height: 15),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,50 +117,30 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
           ],
         ),
       ),
-      actions: [
-        ElevatedButton(
-          onPressed: () => context.canPop()
-              ? context.pop()
-              : context.goNamed(Routes.main.name),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.neutral,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
-            ),
-            side: BorderSide(
-              color: Theme.of(context).colorScheme.success,
-            ),
-            foregroundColor: Theme.of(context).colorScheme.neutral6,
-            textStyle: Theme.of(context).textTheme.bodySmall,
-          ),
-          child: const Text('Cancel'),
-        ),
-        const SizedBox(width: 10),
-        ElevatedButton(
-          onPressed: () async {
-            if (titleInput.isEmpty) {
-              customMsgSnackbar(context, 'Please enter space name');
-              return;
-            }
-            await _handleCreateSpace(
-              context,
-              titleInput,
-              _descriptionController.text.trim(),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: titleInput.isNotEmpty
-                ? Theme.of(context).colorScheme.success
-                : Theme.of(context).colorScheme.success.withOpacity(0.6),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
-            ),
-            foregroundColor: Theme.of(context).colorScheme.neutral6,
-            textStyle: Theme.of(context).textTheme.bodySmall,
-          ),
-          child: const Text('Create Space'),
-        ),
-      ],
+      confirmActionTitle: 'Create Space',
+      cancelActionTitle: 'Cancel',
+      confirmActionOnPressed: titleInput.trim().isEmpty
+          ? null
+          : () {
+              showAdaptiveDialog(
+                barrierDismissible: false,
+                context: context,
+                builder: (context) => DefaultDialog(
+                  title: Text(
+                    'Creating Space',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  isLoader: true,
+                ),
+              );
+              _handleCreateSpace(
+                context,
+                titleInput,
+                _descriptionController.text.trim(),
+              );
+            },
+      cancelActionOnPressed: () =>
+          context.canPop() ? context.pop() : context.goNamed(Routes.main.name),
     );
   }
 
@@ -240,17 +190,6 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     String spaceName,
     String description,
   ) async {
-    showAdaptiveDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) => DefaultDialog(
-        title: Text(
-          'Creating Space',
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        isLoader: true,
-      ),
-    );
     try {
       final sdk = await ref.read(sdkProvider.future);
       final config = sdk.newSpaceSettingsBuilder();
@@ -280,6 +219,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       }
 
       Navigator.of(context, rootNavigator: true).pop();
+      Navigator.of(context, rootNavigator: true).pop();
       context.pushNamed(
         Routes.space.name,
         pathParameters: {
@@ -292,21 +232,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       if (!context.mounted) {
         return;
       }
-      showAdaptiveDialog(
-        context: context,
-        builder: (context) => DefaultDialog(
-          title: Text(
-            'Creating Space failed: \n $err"',
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-          actions: <Widget>[
-            DefaultButton(
-              onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-              title: 'Close',
-            ),
-          ],
-        ),
-      );
+      customMsgSnackbar(context, 'Creating space failed $err');
     }
   }
 }
