@@ -1,4 +1,4 @@
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -26,7 +26,7 @@ class CalendarEventPage extends ConsumerWidget {
   ) {
     final spaceId = event.roomIdStr();
     List<PopupMenuEntry> actions = [];
-    final membership = ref.watch(spaceMembershipProvider(spaceId));
+    final membership = ref.watch(roomMembershipProvider(spaceId));
     if (membership.valueOrNull != null) {
       final memb = membership.requireValue!;
       if (memb.canString('CanPostEvent')) {
@@ -49,6 +49,7 @@ class CalendarEventPage extends ConsumerWidget {
 
       if (memb.canString('CanRedact') ||
           memb.userId().toString() == event.sender().toString()) {
+        final roomId = event.roomIdStr();
         actions.addAll([
           PopupMenuItem(
             onTap: () => showAdaptiveDialog(
@@ -59,11 +60,14 @@ class CalendarEventPage extends ConsumerWidget {
                 onSuccess: () {
                   ref.invalidate(calendarEventProvider);
                   if (context.mounted) {
-                    context.go('/');
+                    context.goNamed(
+                      Routes.spaceEvents.name,
+                      pathParameters: {'spaceId': roomId},
+                    );
                   }
                 },
                 senderId: event.sender().toString(),
-                roomId: event.roomIdStr(),
+                roomId: roomId,
                 isSpace: true,
               ),
             ),

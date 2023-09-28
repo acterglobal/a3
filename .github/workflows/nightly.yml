@@ -87,6 +87,7 @@ jobs:
           - name: Mac OSx 
             os: macos-12
             with_apple_cert: true
+            target: macos
             cargo_make_args: desktop
             flutter_config: "--enable-macos-desktop"
             flutter_build_args: "build macos"
@@ -213,6 +214,22 @@ jobs:
         working-directory: ./app/android
         run: echo "${{ secrets.ANDROID_KEYSTORE_JKS }}" | base64 --decode > key.jks
 
+      - name: Patch iOS Project data for nightly
+        if: matrix.target == 'ios'
+        working-directory: ./app/ios
+        run: |
+            /usr/libexec/PlistBuddy -c 'set objects:97C147071CF9000F007C117D:buildSettings:PROVISIONING_PROFILE_SPECIFIER ""' Runner.xcodeproj/project.pbxproj
+            /usr/libexec/PlistBuddy -c 'set objects:97C147071CF9000F007C117D:buildSettings:CODE_SIGN_IDENTITY Apple Development' Runner.xcodeproj/project.pbxproj
+            /usr/libexec/PlistBuddy -c 'delete objects:97C147071CF9000F007C117D:buildSettings:CODE_SIGN_ENTITLEMENTS' Runner.xcodeproj/project.pbxproj
+            /usr/libexec/PlistBuddy -c 'add objects:97C147071CF9000F007C117D:buildSettings:"CODE_SIGN_IDENTITY[sdk=iphoneos*]" string iPhone Distribution Apple Development' Runner.xcodeproj/project.pbxproj
+            /usr/libexec/PlistBuddy -c 'add objects:97C147071CF9000F007C117D:buildSettings:"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" string A3-Nightly-Internal' Runner.xcodeproj/project.pbxproj
+
+      - name: Patch MacOS Project data for nightly
+        if: matrix.target == 'macos'
+        working-directory: ./app/macos
+        run: |
+            /usr/libexec/PlistBuddy -c 'set objects:33CC10FD2044A3C60003C045:buildSettings:"CODE_SIGN_IDENTITY[sdk=macosx*]" -' Runner.xcodeproj/project.pbxproj
+
       - name: Flutter Build
         env:
           ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
@@ -227,6 +244,11 @@ jobs:
             --dart-define DEFAULT_HOMESERVER_URL="${{vars.DEFAULT_HOMESERVER_URL}}" \
             --dart-define DEFAULT_HOMESERVER_NAME="${{vars.DEFAULT_HOMESERVER_NAME}}"
         working-directory: ./app
+
+      - name: Sign Acter.app
+        if: matrix.target == 'macos'
+        working-directory: ${{ matrix.artifact_path }}
+        run: codesign --deep --force --verbose --sign "${{ secrets.MAC_SIGNING_IDENTIY}}" Acter.app
 
       # Important! Cleanup: remove the certificate and provisioning profile from the runner!
       - name: Clean up keychain and provisioning profile
@@ -324,7 +346,7 @@ jobs:
           git config --global user.name 'Sari'
           git config --global user.email 'acter-sari@users.noreply.github.com'
           git add "docs/content/nightly/${{ needs.tags.outputs.tag }}.md"
-          git commit -m "Add nightly ${{ needs.tags.outputs.tag }} to docs"
+          git commit -F nightly-changes.md
           git tag nightly-${{ needs.tags.outputs.tag }}
           git tag -f nightly-latest
           git push -f origin main nightly-${{ needs.tags.outputs.tag }} nightly-latest

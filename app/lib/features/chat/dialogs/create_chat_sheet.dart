@@ -166,17 +166,6 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
             if (isSpaceRoom && currentParentSpace == null) {
               return;
             }
-            showAdaptiveDialog(
-              barrierDismissible: false,
-              context: context,
-              builder: (context) => DefaultDialog(
-                title: Text(
-                  'Creating Chat room',
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                isLoader: true,
-              ),
-            );
             await _handleCreateConvo(
               context,
               titleInput,
@@ -223,6 +212,17 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
     String description,
   ) async {
     try {
+      showAdaptiveDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => DefaultDialog(
+          title: Text(
+            'Creating Chat room',
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          isLoader: true,
+        ),
+      );
       final sdk = await ref.read(sdkProvider.future);
       final config = sdk.newConvoSettingsBuilder();
       config.setName(convoName);
@@ -244,14 +244,15 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
         final space = await ref.read(spaceProvider(parentId).future);
         await space.addChildSpace(roomId.toString());
       }
-      final convo = await client.convo(roomId.toString());
+      final convo = await client.convoWithRetry(roomId.toString(), 12);
       // We are doing as expected, but the lint still triggers.
       // ignore: use_build_context_synchronously
       if (!context.mounted) {
         return;
       }
-      Navigator.of(context, rootNavigator: true).pop();
-      context.goNamed(
+      context.pop(); // clear the loading dialog
+      context.pop(); // remove this sidesheet
+      context.pushNamed(
         Routes.chatroom.name,
         pathParameters: {'roomId': roomId.toString()},
         extra: convo,
@@ -260,8 +261,8 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
       if (!context.mounted) {
         return;
       }
-      context.pop();
-      customMsgSnackbar(context, 'Some error occured $e');
+      context.pop(); // remove the loading dialog
+      customMsgSnackbar(context, 'Some error occurred $e');
     }
   }
 }

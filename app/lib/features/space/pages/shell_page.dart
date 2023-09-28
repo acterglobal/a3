@@ -1,4 +1,5 @@
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_button.dart';
@@ -72,7 +73,7 @@ class _ShellToolbar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final membership = ref.watch(spaceMembershipProvider(spaceId)).valueOrNull;
+    final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
     final List<PopupMenuEntry> submenu = [];
     if (membership != null) {
       if (membership.canString('CanSetName')) {
@@ -173,7 +174,7 @@ class _ShellToolbar extends ConsumerWidget {
                 return;
               }
               context.pop();
-              context.goNamed(Routes.dashboard.name);
+              context.pushNamed(Routes.dashboard.name);
             },
             title: 'Yes, Leave',
             style: ElevatedButton.styleFrom(
@@ -198,7 +199,7 @@ class _ShellHeader extends ConsumerWidget {
       child: Row(
         children: <Widget>[
           SpaceParentBadge(
-            spaceId: spaceId,
+            roomId: spaceId,
             badgeSize: 40,
             child: ActerAvatar(
               mode: DisplayMode.Space,

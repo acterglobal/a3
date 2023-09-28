@@ -6,12 +6,10 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use futures::stream::StreamExt;
-use matrix_sdk::{
-    room::{Joined, Room},
-    ruma::{
-        events::{room::message::TextMessageEventContent, MessageLikeEventType},
-        OwnedEventId, OwnedUserId,
-    },
+use matrix_sdk::{room::Room, RoomState};
+use ruma_common::{
+    events::{room::message::TextMessageEventContent, MessageLikeEventType},
+    OwnedEventId, OwnedUserId,
 };
 use std::{ops::Deref, str::FromStr};
 use tokio::sync::broadcast::Receiver;
@@ -207,7 +205,7 @@ impl Rsvp {
 
 pub struct RsvpDraft {
     client: Client,
-    room: Joined,
+    room: Room,
     inner: RsvpBuilder,
 }
 
@@ -352,13 +350,17 @@ impl RsvpManager {
             .await?
     }
 
+    fn is_joined(&self) -> bool {
+        matches!(self.room.state(), RoomState::Joined)
+    }
+
     pub fn rsvp_draft(&self) -> Result<RsvpDraft> {
-        let Room::Joined(joined) = &self.room else {
+        if !self.is_joined() {
             bail!("Can do RSVP in only joined rooms");
-        };
+        }
         Ok(RsvpDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.room.clone(),
             inner: self.inner.draft_builder(),
         })
     }

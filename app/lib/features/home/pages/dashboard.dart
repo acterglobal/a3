@@ -1,4 +1,3 @@
-import 'package:acter/common/dialogs/onboarding_dialog.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
@@ -8,7 +7,6 @@ import 'package:acter/features/home/widgets/my_spaces_section.dart';
 import 'package:acter/features/home/widgets/my_events.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:go_router/go_router.dart';
@@ -19,61 +17,11 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import 'dart:math';
 
-class Dashboard extends ConsumerStatefulWidget {
+class Dashboard extends ConsumerWidget {
   const Dashboard({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _DashboardState();
-}
-
-class _DashboardState extends ConsumerState<Dashboard> {
-  Function? firstSyncListener;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance
-        .addPostFrameCallback((timestamp) => _checkIfSpacesPresent());
-  }
-
-  void _checkIfSpacesPresent() {
-    firstSyncListener =
-        ref.read(syncStateProvider.notifier).addListener((syncState) async {
-      final hasFirstSynced = !syncState.syncing;
-      if (!hasFirstSynced) {
-        return;
-      }
-
-      final spaces = ref.watch(spacesProvider);
-      clearFirstSyncListener();
-      if (spaces.isEmpty && context.mounted) {
-        onBoardingDialog(
-          context: context,
-          btnText: 'Join Existing Space',
-          btn2Text: 'Create New Space',
-          onPressed1: () => context.pushNamed(Routes.joinSpace.name),
-          onPressed2: () => context.pushNamed(Routes.createSpace.name),
-          canDismissable: true,
-        );
-      }
-    });
-  }
-
-  void clearFirstSyncListener() {
-    if (firstSyncListener != null) {
-      firstSyncListener!();
-      firstSyncListener = null;
-    }
-  }
-
-  @override
-  void dispose() {
-    clearFirstSyncListener();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final client = ref.watch(clientProvider)!;
     final provider = ref.watch(featuresProvider);
     bool isActive(f) => provider.isActive(f);

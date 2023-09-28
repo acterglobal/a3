@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/features/events/widgets/events_item.dart';
 import 'package:acter/features/home/providers/events.dart';
@@ -21,6 +20,7 @@ class EventsPage extends ConsumerWidget {
     // ignore: unused_local_variable
     final account = ref.watch(accountProfileProvider);
     final events = ref.watch(myEventsProvider);
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.neutral,
       body: CustomScrollView(
@@ -41,9 +41,12 @@ class EventsPage extends ConsumerWidget {
                 onPressed: () => context.pushNamed(Routes.createEvent.name),
               ),
             ],
-            expandedContent: const Text(
-              'Calendar events from all the Spaces you are part of',
-            ),
+            expandedContent: size.width <= 600
+                ? null
+                : Text(
+                    'Calendar events from all the Spaces you are part of',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
           ),
           events.when(
             data: (events) {
@@ -59,10 +62,9 @@ class EventsPage extends ConsumerWidget {
               }
               return SliverGrid.builder(
                 itemCount: events.length,
-                gridDelegate:
-                    SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: max(1, min(widthCount, minCount)),
-                  height: MediaQuery.of(context).size.height * 0.1,
+                  childAspectRatio: 4,
                 ),
                 itemBuilder: (context, index) {
                   final event = events[index];

@@ -260,7 +260,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
             if (!context.mounted) {
               return;
             }
-            context.goNamed(
+            context.pushNamed(
               Routes.space.name,
               pathParameters: {
                 'spaceId': roomId.toString(),

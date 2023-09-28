@@ -3,7 +3,10 @@ use futures::{
     channel::mpsc::{channel, Receiver, Sender},
     stream::StreamExt,
 };
-use matrix_sdk::{ruma::device_id, sync::SyncResponse, Client as SdkClient};
+use matrix_sdk::{
+    ruma::api::client::sync::sync_events::v3::Response as SyncResponse, Client as SdkClient,
+};
+use ruma_common::device_id;
 use std::{
     sync::Arc,
     time::{Duration, SystemTime, UNIX_EPOCH},
@@ -194,15 +197,15 @@ impl DeviceController {
             let current_user_id = client
                 .user_id()
                 .expect("guest user cannot handle the device changed event");
-            for user_id in response.device_lists.changed.clone().into_iter() {
-                info!("device-changed user_id: {}", user_id);
-                if *user_id == *current_user_id {
-                    let evt = DeviceChangedEvent::new(client);
-                    if let Err(e) = self.changed_event_tx.try_send(evt) {
-                        error!("Dropping devices changed event: {}", e);
-                    }
-                }
-            }
+            // for user_id in response.device_lists.changed.clone().into_iter() {
+            //     info!("device-changed user_id: {}", user_id);
+            //     if *user_id == *current_user_id {
+            //         let evt = DeviceChangedEvent::new(client);
+            //         if let Err(e) = self.changed_event_tx.try_send(evt) {
+            //             error!("Dropping devices changed event: {}", e);
+            //         }
+            //     }
+            // }
         }
 
         // avoid device left event in case that user left room
@@ -210,15 +213,15 @@ impl DeviceController {
             let current_user_id = client
                 .user_id()
                 .expect("guest user cannot handle the device left event");
-            for user_id in response.device_lists.left.clone().into_iter() {
-                info!("device-left user_id: {}", user_id);
-                if *user_id == *current_user_id {
-                    let evt = DeviceLeftEvent::new(client);
-                    if let Err(e) = self.left_event_tx.try_send(evt) {
-                        error!("Dropping devices left event: {}", e);
-                    }
-                }
-            }
+            // for user_id in response.device_lists.left.clone().into_iter() {
+            //     info!("device-left user_id: {}", user_id);
+            //     if *user_id == *current_user_id {
+            //         let evt = DeviceLeftEvent::new(client);
+            //         if let Err(e) = self.left_event_tx.try_send(evt) {
+            //             error!("Dropping devices left event: {}", e);
+            //         }
+            //     }
+            // }
         }
     }
 }

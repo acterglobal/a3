@@ -52,10 +52,18 @@ extension CustomColorScheme on ColorScheme {
   Color get neutral5 => const Color(0xFFB7B7B7);
   Color get neutral6 => const Color(0xFFE5E5E5);
   Color get m3Primary => const Color(0xFFD0BCFF);
+  Color get cardBackground => const Color(0xFF122D46);
+  Color get error => const Color(0xFFFF0000);
 
   Color get badgeUnread => const Color(0xFF67A24A);
   Color get badgeImportant => const Color(0xFFFFC333);
   Color get badgeUrgent => const Color(0xFF93000A);
+
+  // tasks
+  Color get tasksBG => const Color(0xFF67A200);
+  Color get tasksFG => const Color(0xFFD0E4FF);
+  Color get taskOverdueBG => AppTheme.brandColorScheme.errorContainer;
+  Color get taskOverdueFG => AppTheme.brandColorScheme.error;
 }
 
 class AppTheme {
@@ -91,11 +99,12 @@ class AppTheme {
     surfaceTint: Color(0xFF9CCAFF),
     outlineVariant: Color(0xFF42474E),
     scrim: Color(0xFF000000),
+    
   );
 
   static const primaryGradient = LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.center,
+    begin: AlignmentDirectional(-1.5, -2.0),
+    end: AlignmentDirectional(-1.5, 0.5),
     colors: <Color>[
       Color(0xFF001B3D),
       Color(0xFF121212),
@@ -185,7 +194,7 @@ class AppTheme {
       ),
       dividerColor: const Color(0xFFDDEDFC),
       cardTheme: CardTheme(
-        color: brandColorScheme.primaryContainer,
+        color: brandColorScheme.secondaryContainer,
         elevation: 0,
         margin: const EdgeInsets.all(8),
       ),
@@ -196,6 +205,12 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           side: BorderSide.none,
           borderRadius: BorderRadius.circular(6),
+        ),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: brandColorScheme.neutral,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -219,6 +234,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(12),
           ),
           foregroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
         ),
       ),
       dividerTheme: const DividerThemeData(
@@ -264,7 +280,7 @@ class AppTheme {
         elevation: 0,
       ),
       navigationRailTheme: const NavigationRailThemeData(
-        backgroundColor: Color(0xff1D293E),
+        backgroundColor: Color(0xff122D46),
         indicatorColor: Color(0xff1E4E7B),
         unselectedLabelTextStyle: TextStyle(
           color: Colors.white,

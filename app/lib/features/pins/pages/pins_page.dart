@@ -2,7 +2,6 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +17,7 @@ class PinsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final size = MediaQuery.of(context).size;
     // ignore: unused_local_variable
     final account = ref.watch(accountProfileProvider);
     final pins = ref.watch(pinsProvider);
@@ -43,9 +43,13 @@ class PinsPage extends ConsumerWidget {
                 ),
               ),
             ],
-            expandedContent: const Text(
-              'Pinned items from all the Spaces you are part of',
-            ),
+            expandedContent: size.width <= 600
+                ? null
+                : Text(
+                    'Pinned items from all the Spaces you are part of',
+                    softWrap: true,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
           ),
           pins.when(
             data: (pins) {
@@ -61,10 +65,9 @@ class PinsPage extends ConsumerWidget {
               }
               return SliverGrid.builder(
                 itemCount: pins.length,
-                gridDelegate:
-                    SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: max(1, min(widthCount, minCount)),
-                  height: MediaQuery.of(context).size.height * 0.15,
+                  childAspectRatio: 4.0,
                 ),
                 itemBuilder: (context, index) {
                   final pin = pins[index];

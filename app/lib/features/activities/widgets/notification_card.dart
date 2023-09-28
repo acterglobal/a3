@@ -42,7 +42,7 @@ class NotificationCard extends ConsumerWidget {
             final spaceProfile =
                 ref.watch(notificationSpaceDataProvider(notification));
             return InkWell(
-              onTap: () => context.goNamed(
+              onTap: () => context.pushNamed(
                 Routes.space.name,
                 pathParameters: {'spaceIdOrAlias': roomId},
               ),
@@ -88,7 +88,7 @@ class NotificationCard extends ConsumerWidget {
             final profile =
                 ref.watch(notificationChatDataProvider(notification));
             return InkWell(
-              onTap: () => ctx.goNamed(
+              onTap: () => ctx.pushNamed(
                 Routes.chatroom.name,
                 pathParameters: {'roomId': roomId},
               ),

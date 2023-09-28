@@ -1,3 +1,4 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class SideSheet extends StatelessWidget {
@@ -41,7 +42,7 @@ class SideSheet extends StatelessWidget {
 
     return Material(
       elevation: 1,
-      color: colorScheme.surface,
+      color: colorScheme.neutral,
       surfaceTintColor: colorScheme.surfaceTint,
       borderRadius: const BorderRadius.horizontal(left: Radius.circular(28)),
       child: Container(
