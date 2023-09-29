@@ -214,6 +214,22 @@ jobs:
         working-directory: ./app/android
         run: echo "${{ secrets.ANDROID_KEYSTORE_JKS }}" | base64 --decode > key.jks
 
+      - name: Patch iOS Project data for nightly
+        if: matrix.target == 'ios'
+        working-directory: ./app/ios
+        run: |
+            /usr/libexec/PlistBuddy -c 'set objects:97C147071CF9000F007C117D:buildSettings:PROVISIONING_PROFILE_SPECIFIER ""' Runner.xcodeproj/project.pbxproj
+            /usr/libexec/PlistBuddy -c 'set objects:97C147071CF9000F007C117D:buildSettings:CODE_SIGN_IDENTITY Apple Development' Runner.xcodeproj/project.pbxproj
+            /usr/libexec/PlistBuddy -c 'delete objects:97C147071CF9000F007C117D:buildSettings:CODE_SIGN_ENTITLEMENTS' Runner.xcodeproj/project.pbxproj
+            /usr/libexec/PlistBuddy -c 'add objects:97C147071CF9000F007C117D:buildSettings:"CODE_SIGN_IDENTITY[sdk=iphoneos*]" string iPhone Distribution Apple Development' Runner.xcodeproj/project.pbxproj
+            /usr/libexec/PlistBuddy -c 'add objects:97C147071CF9000F007C117D:buildSettings:"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" string A3-Nightly-Internal' Runner.xcodeproj/project.pbxproj
+
+      - name: Patch MacOS Project data for nightly
+        if: matrix.target == 'macos'
+        working-directory: ./app/macos
+        run: |
+            /usr/libexec/PlistBuddy -c 'set objects:33CC10FD2044A3C60003C045:buildSettings:"CODE_SIGN_IDENTITY[sdk=macosx*]" -' Runner.xcodeproj/project.pbxproj
+
       - name: Flutter Build
         env:
           ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
