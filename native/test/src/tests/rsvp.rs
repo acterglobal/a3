@@ -97,9 +97,12 @@ async fn rsvp_last_status() -> Result<()> {
     })
     .await?;
 
+    // only last rsvp status of user is kept in hash map
+    // all older statuses are ignored
+    // user sent 2 rsvp responses, but only one entry will be kept
     let entries = rsvp_manager.rsvp_entries().await?;
-    assert_eq!(entries.len(), 2);
-    assert_eq!(entries[1].status(), "No");
+    assert_eq!(entries.len(), 1);
+    assert_eq!(entries[0].status(), "No");
 
     Ok(())
 }
@@ -243,9 +246,12 @@ async fn rsvp_count_at_status() -> Result<()> {
     })
     .await?;
 
+    // only last rsvp status of user is kept in hash map
+    // all older statuses are ignored
+    // user sent 2 rsvp responses, but only one entry will be kept
     let entries = rsvp_manager.rsvp_entries().await?;
-    assert_eq!(entries.len(), 2);
-    assert_eq!(entries[1].status(), "No");
+    assert_eq!(entries.len(), 1);
+    assert_eq!(entries[0].status(), "No");
 
     // get count at status
     let count = rsvp_manager.count_at_status("Yes".to_string()).await?;
@@ -317,9 +323,12 @@ async fn rsvp_users_at_status() -> Result<()> {
     })
     .await?;
 
+    // only last rsvp status of user is kept in hash map
+    // all older statuses are ignored
+    // user sent 2 rsvp responses, but only one entry will be kept
     let entries = rsvp_manager.rsvp_entries().await?;
-    assert_eq!(entries.len(), 2);
-    assert_eq!(entries[1].status(), "No");
+    assert_eq!(entries.len(), 1);
+    assert_eq!(entries[0].status(), "No");
 
     // get users at status
     let users = rsvp_manager.users_at_status("Maybe".to_string()).await?;
