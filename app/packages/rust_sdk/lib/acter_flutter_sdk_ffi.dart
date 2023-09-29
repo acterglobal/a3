@@ -30163,7 +30163,7 @@ class RsvpManager {
     return tmp6;
   }
 
-  /// get the user-ids that have responded said way for each status
+  /// get the user-ids that have responded for Yes/Maybe/No
   Future<FfiListUserId> usersAtStatus(
     String status,
   ) {

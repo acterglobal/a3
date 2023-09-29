@@ -241,11 +241,9 @@ impl CalendarEvent {
             .spawn(async move {
                 let manager =
                     models::RsvpManager::from_store_and_event_id(client.store(), &event_id).await;
-                // read last rsvp
-                for entry in manager.rsvp_entries().await?.into_iter().rev() {
-                    if entry.meta.sender == my_id {
-                        return Ok(entry.status.to_string());
-                    }
+                let entries = manager.rsvp_entries().await?;
+                if let Some(entry) = entries.get(&my_id) {
+                    return Ok(entry.status.to_string());
                 }
                 Ok("Pending".to_string())
             })

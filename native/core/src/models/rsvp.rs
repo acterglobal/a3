@@ -1,7 +1,7 @@
 use derive_getters::Getters;
-use ruma_common::{events::OriginalMessageLikeEvent, EventId, OwnedEventId};
+use ruma_common::{events::OriginalMessageLikeEvent, EventId, OwnedEventId, OwnedUserId};
 use serde::{Deserialize, Serialize};
-use std::ops::Deref;
+use std::{collections::HashMap, ops::Deref};
 use tracing::{error, trace};
 
 use super::{AnyActerModel, EventMeta};
@@ -50,16 +50,14 @@ impl RsvpManager {
         self.event_id.clone()
     }
 
-    pub async fn rsvp_entries(&self) -> Result<Vec<Rsvp>> {
-        let entries = self
-            .store
-            .get_list(&Rsvp::index_for(&self.event_id))
-            .await?
-            .filter_map(|e| match e {
-                AnyActerModel::Rsvp(c) => Some(c),
-                _ => None,
-            })
-            .collect();
+    pub async fn rsvp_entries(&self) -> Result<HashMap<OwnedUserId, Rsvp>> {
+        let mut entries = HashMap::new();
+        for mdl in self.store.get_list(&Rsvp::index_for(&self.event_id)).await? {
+            if let AnyActerModel::Rsvp(c) = mdl {
+                let key = c.clone().meta.sender;
+                entries.insert(key, c);
+            }
+        }
         Ok(entries)
     }
 

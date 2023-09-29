@@ -292,10 +292,10 @@ impl RsvpManager {
                     .rsvp_entries()
                     .await?
                     .into_iter()
-                    .map(|entry| Rsvp {
+                    .map(|(user_id, inner)| Rsvp {
                         client: client.clone(),
                         room: room.clone(),
-                        inner: entry,
+                        inner,
                     })
                     .collect();
                 Ok(res)
@@ -308,12 +308,10 @@ impl RsvpManager {
         let my_id = self.client.user_id().context("User not found")?;
         RUNTIME
             .spawn(async move {
-                // read last rsvp
-                for entry in manager.rsvp_entries().await?.into_iter().rev() {
-                    if entry.meta.sender == my_id {
-                        let status = entry.status.to_string();
-                        return Ok(OptionString::new(Some(status)));
-                    }
+                let entries = manager.rsvp_entries().await?;
+                if let Some(entry) = entries.get(&my_id) {
+                    let status = entry.status.to_string();
+                    return Ok(OptionString::new(Some(status)));
                 }
                 Ok(OptionString::new(None))
             })
@@ -325,7 +323,8 @@ impl RsvpManager {
         RUNTIME
             .spawn(async move {
                 let mut count = 0;
-                for entry in manager.rsvp_entries().await? {
+                let entries = manager.rsvp_entries().await?;
+                for (user_id, entry) in entries {
                     if entry.status.to_string() == status {
                         count += 1;
                     }
@@ -340,9 +339,10 @@ impl RsvpManager {
         RUNTIME
             .spawn(async move {
                 let mut senders = vec![];
-                for entry in manager.rsvp_entries().await? {
-                    if entry.status.to_string() == status && !senders.contains(&entry.meta.sender) {
-                        senders.push(entry.meta.sender);
+                let entries = manager.rsvp_entries().await?;
+                for (user_id, entry) in entries {
+                    if entry.status.to_string() == status {
+                        senders.push(user_id);
                     }
                 }
                 Ok(senders)

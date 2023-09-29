@@ -381,7 +381,7 @@ object RsvpManager {
     /// get the count of Yes/Maybe/No
     fn count_at_status(status: string) -> Future<Result<u32>>;
 
-    /// get the user-ids that have responded said way for each status
+    /// get the user-ids that have responded for Yes/Maybe/No
     fn users_at_status(status: string) -> Future<Result<Vec<UserId>>>;
 
     /// create rsvp draft
