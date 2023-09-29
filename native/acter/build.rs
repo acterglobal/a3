@@ -1,5 +1,4 @@
 use ffi_gen::FfiGen;
-use std::env;
 use std::path::PathBuf;
 
 static API_DESC_FILENAME: &str = "api.rsh";

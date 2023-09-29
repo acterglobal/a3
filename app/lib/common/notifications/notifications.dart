@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'dart:convert';
+
+import 'package:convert/convert.dart';
 
 import 'package:acter/common/notifications/models.dart';
 import 'package:acter/router/router.dart';
@@ -8,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:plain_notification_token/plain_notification_token.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:awesome_notifications_fcm/awesome_notifications_fcm.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 final plainNotificationToken = PlainNotificationToken();
 final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -36,6 +41,7 @@ class NotificationController {
     ReceivedNotification receivedNotification,
   ) async {
     // Your code goes here
+    debugPrint("received notification: ${receivedNotification.payload}");
   }
 
   /// Use this method to detect every time that a new notification is displayed
@@ -44,6 +50,7 @@ class NotificationController {
     ReceivedNotification receivedNotification,
   ) async {
     // Your code goes here
+    debugPrint("displayed notification: ${receivedNotification.payload}");
   }
 
   /// Use this method to detect if the user dismissed a notification
@@ -52,6 +59,7 @@ class NotificationController {
     ReceivedAction receivedAction,
   ) async {
     // Your code goes here
+    debugPrint("dismissed notification: $receivedAction");
   }
 
   /// Use this method to detect when the user taps on a notification or action button
@@ -60,9 +68,58 @@ class NotificationController {
     ReceivedAction receivedAction,
   ) async {
     // Your code goes here
+    debugPrint("called notification: $receivedAction");
 
     // Navigate into pages, avoiding to open the notification details page over another details page already opened
     rootNavKey.currentState?.pushNamed('/settings', arguments: receivedAction);
+  }
+
+  static Future<void> initializeRemoteNotifications({
+    required bool debug
+  }) async {
+    await Firebase.initializeApp();
+    await AwesomeNotificationsFcm().initialize(
+        onFcmSilentDataHandle: NotificationController.mySilentDataHandle,
+        onFcmTokenHandle: NotificationController.myFcmTokenHandle,
+        onNativeTokenHandle: NotificationController.myNativeTokenHandle,
+        // This license key is necessary only to remove the watermark for
+        // push notifications in release mode. To know more about it, please
+        // visit http://awesome-notifications.carda.me#prices
+        // licenseKey: null,
+        debug: debug);
+  }
+
+  ///  *********************************************
+  ///     REMOTE NOTIFICATION EVENTS
+  ///  *********************************************
+
+  /// Use this method to execute on background when a silent data arrives
+  /// (even while terminated)
+  @pragma("vm:entry-point")
+  static Future<void> mySilentDataHandle(FcmSilentData silentData) async {
+    print('"SilentData": ${silentData.toString()}');
+
+    if (silentData.createdLifeCycle != NotificationLifeCycle.Foreground) {
+      print("bg");
+    } else {
+      print("FOREGROUND");
+    }
+
+    print("starting long task");
+    await Future.delayed(Duration(seconds: 4));
+    print("long task done");
+  }
+
+  /// Use this method to detect when a new fcm token is received
+  @pragma("vm:entry-point")
+  static Future<void> myFcmTokenHandle(String token) async {
+    debugPrint('FCM Token:"$token"');
+  }
+
+  /// Use this method to detect when a new native token is received
+  @pragma("vm:entry-point")
+  static Future<void> myNativeTokenHandle(String token) async {
+    debugPrint('Native Token:"$token"');
   }
 }
 
@@ -130,7 +187,7 @@ Future<bool> setupPushNotifications(
     return true;
   }
 
-  final String? token = await plainNotificationToken.getToken();
+  String? token = await plainNotificationToken.getToken();
   if (token == null) {
     return false;
   }
@@ -138,6 +195,9 @@ Future<bool> setupPushNotifications(
   late String name;
   late String appId;
   if (Platform.isIOS) {
+    // FIXME sygnal expects token as a base64 encoded string, but we have a HEX from the plugin
+    token = base64.encode(hex.decode(token));
+
     final iOsInfo = await deviceInfo.iosInfo;
     name = iOsInfo.name;
     if (isProduction) {

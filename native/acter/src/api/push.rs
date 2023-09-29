@@ -2,7 +2,7 @@ use crate::RUNTIME;
 
 use super::Client;
 use anyhow::Result;
-use ruma::{
+use matrix_sdk::ruma::{
     api::client::push::{set_pusher, PusherIds, PusherInit, PusherKind},
     assign,
     push::HttpPusherData,
