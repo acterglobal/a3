@@ -52,7 +52,11 @@ impl RsvpManager {
 
     pub async fn rsvp_entries(&self) -> Result<HashMap<OwnedUserId, Rsvp>> {
         let mut entries = HashMap::new();
-        for mdl in self.store.get_list(&Rsvp::index_for(&self.event_id)).await? {
+        for mdl in self
+            .store
+            .get_list(&Rsvp::index_for(&self.event_id))
+            .await?
+        {
             if let AnyActerModel::Rsvp(c) = mdl {
                 let key = c.clone().meta.sender;
                 entries.insert(key, c);

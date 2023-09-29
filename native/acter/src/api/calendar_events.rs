@@ -240,7 +240,10 @@ impl CalendarEvent {
 
         RUNTIME
             .spawn(async move {
-                let manager = me.rsvp_manager().await.context("We should get rsvp manager")?;
+                let manager = me
+                    .rsvp_manager()
+                    .await
+                    .context("We should get rsvp manager")?;
                 manager.my_status().await
             })
             .await?
