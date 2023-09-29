@@ -166,9 +166,12 @@ async fn rsvp_my_status() -> Result<()> {
     })
     .await?;
 
+    // only last rsvp status of user is kept in hash map
+    // all older statuses are ignored
+    // user sent 2 rsvp responses, but only one entry will be kept
     let entries = rsvp_manager.rsvp_entries().await?;
-    assert_eq!(entries.len(), 2);
-    assert_eq!(entries[1].status(), "No");
+    assert_eq!(entries.len(), 1);
+    assert_eq!(entries[0].status(), "No");
 
     // get last RSVP
     let last_status = rsvp_manager.my_status().await?;
