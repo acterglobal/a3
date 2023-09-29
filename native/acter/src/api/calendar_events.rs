@@ -232,20 +232,16 @@ impl CalendarEvent {
             .await?
     }
 
-    pub async fn my_rsvp_status_str(&self) -> Result<String> {
+    pub async fn my_rsvp_status(&self) -> Result<String> {
+        let me = self.clone();
         let client = self.client.clone();
         let event_id = self.inner.event_id().to_owned();
         let my_id = self.client.user_id().context("User not found")?;
 
         RUNTIME
             .spawn(async move {
-                let manager =
-                    models::RsvpManager::from_store_and_event_id(client.store(), &event_id).await;
-                let entries = manager.rsvp_entries().await?;
-                if let Some(entry) = entries.get(&my_id) {
-                    return Ok(entry.status.to_string());
-                }
-                Ok("Pending".to_string())
+                let manager = me.rsvp_manager().await.context("We should get rsvp manager")?;
+                manager.my_status().await
             })
             .await?
     }

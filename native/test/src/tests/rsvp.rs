@@ -172,7 +172,7 @@ async fn rsvp_my_status() -> Result<()> {
 
     // get last RSVP
     let last_status = rsvp_manager.my_status().await?;
-    assert_eq!(last_status.text(), Some("No".to_string()));
+    assert_eq!(last_status, "No");
 
     Ok(())
 }

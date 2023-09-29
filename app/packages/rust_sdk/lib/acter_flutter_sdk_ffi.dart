@@ -2088,7 +2088,7 @@ class Api {
     return tmp7;
   }
 
-  String? __calendarEventMyRsvpStatusStrFuturePoll(
+  String? __calendarEventMyRsvpStatusFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2102,7 +2102,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _calendarEventMyRsvpStatusStrFuturePoll(
+    final tmp6 = _calendarEventMyRsvpStatusFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2292,7 +2292,7 @@ class Api {
     return tmp7;
   }
 
-  OptionString? __rsvpManagerMyStatusFuturePoll(
+  String? __rsvpManagerMyStatusFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2317,6 +2317,8 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -2332,10 +2334,23 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionString");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = OptionString._(this, tmp13_1);
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
     return tmp7;
   }
 
@@ -13528,14 +13543,14 @@ class Api {
           int Function(
             int,
           )>();
-  late final _calendarEventMyRsvpStatusStrPtr = _lookup<
+  late final _calendarEventMyRsvpStatusPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__CalendarEvent_my_rsvp_status_str");
+          )>>("__CalendarEvent_my_rsvp_status");
 
-  late final _calendarEventMyRsvpStatusStr =
-      _calendarEventMyRsvpStatusStrPtr.asFunction<
+  late final _calendarEventMyRsvpStatus =
+      _calendarEventMyRsvpStatusPtr.asFunction<
           int Function(
             int,
           )>();
@@ -22136,17 +22151,17 @@ class Api {
             int,
             int,
           )>();
-  late final _calendarEventMyRsvpStatusStrFuturePollPtr = _lookup<
+  late final _calendarEventMyRsvpStatusFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _CalendarEventMyRsvpStatusStrFuturePollReturn Function(
+          _CalendarEventMyRsvpStatusFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__CalendarEvent_my_rsvp_status_str_future_poll");
+          )>>("__CalendarEvent_my_rsvp_status_future_poll");
 
-  late final _calendarEventMyRsvpStatusStrFuturePoll =
-      _calendarEventMyRsvpStatusStrFuturePollPtr.asFunction<
-          _CalendarEventMyRsvpStatusStrFuturePollReturn Function(
+  late final _calendarEventMyRsvpStatusFuturePoll =
+      _calendarEventMyRsvpStatusFuturePollPtr.asFunction<
+          _CalendarEventMyRsvpStatusFuturePollReturn Function(
             int,
             int,
             int,
@@ -29294,19 +29309,19 @@ class CalendarEvent {
   }
 
   /// get my RSVP status, one of Yes/Maybe/No/Pending
-  Future<String> myRsvpStatusStr() {
+  Future<String> myRsvpStatus() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._calendarEventMyRsvpStatusStr(
+    final tmp1 = _api._calendarEventMyRsvpStatus(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 =
-        _Box(_api, tmp3_0, "__CalendarEvent_my_rsvp_status_str_future_drop");
+        _Box(_api, tmp3_0, "__CalendarEvent_my_rsvp_status_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 =
-        _nativeFuture(tmp3_1, _api.__calendarEventMyRsvpStatusStrFuturePoll);
+        _nativeFuture(tmp3_1, _api.__calendarEventMyRsvpStatusFuturePoll);
     return tmp2;
   }
 
@@ -30114,8 +30129,8 @@ class RsvpManager {
     return tmp2;
   }
 
-  /// get Yes/Maybe/No/None for the user's own status
-  Future<OptionString> myStatus() {
+  /// get Yes/Maybe/No/Pending for the user's own status
+  Future<String> myStatus() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._rsvpManagerMyStatus(
@@ -49297,7 +49312,7 @@ class _CalendarEventRsvpManagerFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _CalendarEventMyRsvpStatusStrFuturePollReturn extends ffi.Struct {
+class _CalendarEventMyRsvpStatusFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -49374,6 +49389,10 @@ class _RsvpManagerMyStatusFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
 }
 
 class _RsvpManagerCountAtStatusFuturePollReturn extends ffi.Struct {

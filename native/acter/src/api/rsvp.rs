@@ -108,13 +108,11 @@ impl Client {
                         // fliter only events that i sent rsvp
                         let rsvp_manager = cal_event.rsvp_manager().await?;
                         let status = rsvp_manager.my_status().await?;
-                        if let Some(status) = status.text() {
-                            match status.as_str() {
-                                "Yes" | "Maybe" => {
-                                    cal_events.push(cal_event);
-                                }
-                                _ => {}
+                        match status.as_str() {
+                            "Yes" | "Maybe" => {
+                                cal_events.push(cal_event);
                             }
+                            _ => {}
                         }
                     } else {
                         warn!(
@@ -154,13 +152,11 @@ impl Client {
                         // fliter only events that i sent rsvp
                         let rsvp_manager = cal_event.rsvp_manager().await?;
                         let status = rsvp_manager.my_status().await?;
-                        if let Some(status) = status.text() {
-                            match status.as_str() {
-                                "Yes" | "Maybe" => {
-                                    cal_events.push(cal_event);
-                                }
-                                _ => {}
+                        match status.as_str() {
+                            "Yes" | "Maybe" => {
+                                cal_events.push(cal_event);
                             }
+                            _ => {}
                         }
                     } else {
                         warn!(
@@ -303,17 +299,16 @@ impl RsvpManager {
             .await?
     }
 
-    pub async fn my_status(&self) -> Result<OptionString> {
+    pub async fn my_status(&self) -> Result<String> {
         let manager = self.inner.clone();
         let my_id = self.client.user_id().context("User not found")?;
         RUNTIME
             .spawn(async move {
                 let entries = manager.rsvp_entries().await?;
                 if let Some(entry) = entries.get(&my_id) {
-                    let status = entry.status.to_string();
-                    return Ok(OptionString::new(Some(status)));
+                    return Ok(entry.status.to_string());
                 }
-                Ok(OptionString::new(None))
+                Ok("Pending".to_string())
             })
             .await?
     }
