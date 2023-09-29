@@ -16,12 +16,25 @@ impl Client {
         device_name: String,
         app_name: String,
         server_url: String,
+        with_ios_defaults: bool,
         lang: Option<String>,
     ) -> Result<bool> {
         let client = self.core.client().clone();
+        let push_data = if with_ios_defaults {
+            assign!(HttpPusherData::new(server_url), {
+                    default_payload: serde_json::json!({
+                        "aps": {
+                            "mutable-content": 1,
+                            "content-available": 1
+                    }
+                })
+            })
+        } else {
+            HttpPusherData::new(server_url)
+        };
         let pusher_data = PusherInit {
             ids: PusherIds::new(token, app_id),
-            kind: PusherKind::Http(HttpPusherData::new(server_url)),
+            kind: PusherKind::Http(push_data),
             app_display_name: app_name,
             device_display_name: device_name,
             profile_tag: None,

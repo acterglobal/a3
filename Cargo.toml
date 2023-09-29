@@ -32,7 +32,7 @@ features = ["e2e-encryption"]
 [workspace.dependencies.ruma]
 git = "https://github.com/ruma/ruma"
 rev = "f59652b94086a5733cc741cf8e21d90bd56e05b1"
-features = ["client-api-c", "compat-upload-signatures", "compat-user-id"]
+features = ["client-api-c", "compat-upload-signatures", "compat-user-id", "unstable-unspecified"]
 
 [workspace.dependencies.ruma-macros]
 git = "https://github.com/ruma/ruma"

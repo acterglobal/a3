@@ -21003,6 +21003,7 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
+            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -21010,6 +21011,7 @@ class Api {
 
   late final _clientAddPusher = _clientAddPusherPtr.asFunction<
       int Function(
+        int,
         int,
         int,
         int,
@@ -44823,6 +44825,7 @@ class Client {
     String deviceName,
     String appName,
     String serverUrl,
+    bool withIosDefault,
     String? lang,
   ) {
     final tmp1 = appId;
@@ -44830,7 +44833,8 @@ class Client {
     final tmp9 = deviceName;
     final tmp13 = appName;
     final tmp17 = serverUrl;
-    final tmp21 = lang;
+    final tmp21 = withIosDefault;
+    final tmp23 = lang;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -44849,8 +44853,9 @@ class Client {
     var tmp20 = 0;
     var tmp22 = 0;
     var tmp24 = 0;
-    var tmp25 = 0;
     var tmp26 = 0;
+    var tmp27 = 0;
+    var tmp28 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -44892,21 +44897,22 @@ class Client {
     tmp18_1.setAll(0, tmp17_0);
     tmp18 = tmp18_0.address;
     tmp20 = tmp19;
-    if (tmp21 == null) {
-      tmp22 = 0;
+    tmp22 = tmp21 ? 1 : 0;
+    if (tmp23 == null) {
+      tmp24 = 0;
     } else {
-      tmp22 = 1;
-      final tmp23 = tmp21;
-      final tmp23_0 = utf8.encode(tmp23);
-      tmp25 = tmp23_0.length;
+      tmp24 = 1;
+      final tmp25 = tmp23;
+      final tmp25_0 = utf8.encode(tmp25);
+      tmp27 = tmp25_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
-      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
-      tmp24_1.setAll(0, tmp23_0);
-      tmp24 = tmp24_0.address;
-      tmp26 = tmp25;
+      final ffi.Pointer<ffi.Uint8> tmp26_0 = _api.__allocate(tmp27 * 1, 1);
+      final Uint8List tmp26_1 = tmp26_0.asTypedList(tmp27);
+      tmp26_1.setAll(0, tmp25_0);
+      tmp26 = tmp26_0.address;
+      tmp28 = tmp27;
     }
-    final tmp27 = _api._clientAddPusher(
+    final tmp29 = _api._clientAddPusher(
       tmp0,
       tmp2,
       tmp3,
@@ -44925,15 +44931,16 @@ class Client {
       tmp20,
       tmp22,
       tmp24,
-      tmp25,
       tmp26,
+      tmp27,
+      tmp28,
     );
-    final tmp29 = tmp27;
-    final ffi.Pointer<ffi.Void> tmp29_0 = ffi.Pointer.fromAddress(tmp29);
-    final tmp29_1 = _Box(_api, tmp29_0, "__Client_add_pusher_future_drop");
-    tmp29_1._finalizer = _api._registerFinalizer(tmp29_1);
-    final tmp28 = _nativeFuture(tmp29_1, _api.__clientAddPusherFuturePoll);
-    return tmp28;
+    final tmp31 = tmp29;
+    final ffi.Pointer<ffi.Void> tmp31_0 = ffi.Pointer.fromAddress(tmp31);
+    final tmp31_1 = _Box(_api, tmp31_0, "__Client_add_pusher_future_drop");
+    tmp31_1._finalizer = _api._registerFinalizer(tmp31_1);
+    final tmp30 = _nativeFuture(tmp31_1, _api.__clientAddPusherFuturePoll);
+    return tmp30;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.

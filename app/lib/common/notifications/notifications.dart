@@ -212,7 +212,7 @@ Future<bool> setupPushNotifications(
     appId = '$appIdPrefix.android';
   }
 
-  await client.addPusher(appId, token, name, appName, pushServerUrl, null);
+  await client.addPusher(appId, token, name, appName, pushServerUrl, Platform.isIOS, null);
 
   debugPrint(
     ' ---- notification pusher sent: $appName ($appId) on $name ($token) to $pushServerUrl',

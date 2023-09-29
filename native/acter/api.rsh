@@ -1991,7 +1991,7 @@ object Client {
     fn notifications_stream() -> Stream<Notification>;
 
     /// add another http pusher to the notification system
-    fn add_pusher(app_id: string, token: string, device_name: string, app_name: string, server_url: string, lang: Option<string>) -> Future<Result<bool>>;
+    fn add_pusher(app_id: string, token: string, device_name: string, app_name: string, server_url: string, with_ios_default: bool, lang: Option<string>) -> Future<Result<bool>>;
 
 }
 

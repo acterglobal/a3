@@ -31,6 +31,7 @@ dependencies = [
  "oslog",
  "parse-env-filter",
  "pulldown-cmark",
+ "ruma",
  "ruma-common",
  "sanitize-filename-reader-friendly",
  "serde",
@@ -3679,6 +3680,7 @@ dependencies = [
  "ruma-client-api",
  "ruma-common",
  "ruma-federation-api",
+ "ruma-push-gateway-api",
 ]
 
 [[package]]
@@ -3764,6 +3766,17 @@ dependencies = [
  "serde",
  "syn 2.0.37",
  "toml 0.7.5",
+]
+
+[[package]]
+name = "ruma-push-gateway-api"
+version = "0.7.1"
+source = "git+https://github.com/ruma/ruma?rev=f59652b94086a5733cc741cf8e21d90bd56e05b1#f59652b94086a5733cc741cf8e21d90bd56e05b1"
+dependencies = [
+ "js_int",
+ "ruma-common",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
