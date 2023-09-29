@@ -253,9 +253,9 @@ async fn rsvp_count_at_status() -> Result<()> {
     assert_eq!(entries.len(), 1);
     assert_eq!(entries[0].status(), "No");
 
-    // get count at status
+    // older rsvp would be ignored
     let count = rsvp_manager.count_at_status("Yes".to_string()).await?;
-    assert_eq!(count, 1);
+    assert_eq!(count, 0);
 
     Ok(())
 }
