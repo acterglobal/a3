@@ -353,7 +353,6 @@ impl Client {
                             history.set_loading(room_id, true);
                         }
 
-
                         let space_handles = space.setup_handles().await;
                         {
                             let mut handles = room_handles.lock().await;
@@ -556,7 +555,10 @@ impl Client {
     pub async fn resolve_room_alias(&self, alias_id: OwnedRoomAliasId) -> Result<OwnedRoomId> {
         let client = self.core.client().clone();
         RUNTIME
-            .spawn(async move { anyhow::Ok(client.resolve_room_alias(&alias_id).await?.room_id) })
+            .spawn(async move {
+                let response = client.resolve_room_alias(&alias_id).await?;
+                anyhow::Ok(response.room_id)
+            })
             .await?
     }
 

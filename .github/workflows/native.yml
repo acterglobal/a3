@@ -89,6 +89,12 @@ jobs:
         with:
           command: nextest
           args: run -p acter --target ${{matrix.target}} --lib
+      - uses: jlumbroso/free-disk-space@main
+        name: Free Disk Space (Ubuntu)
+        with:
+          # this might remove tools that are actually needed,
+          # when set to "true" but frees about 6 GB
+          tool-cache: true
       - uses: actions-rs/cargo@v1
         name: Doctests
         with:

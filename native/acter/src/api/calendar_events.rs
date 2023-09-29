@@ -41,11 +41,7 @@ impl Client {
                     .client()
                     .get_room(inner.room_id())
                     .context("Room not found")?;
-                Ok(CalendarEvent {
-                    client: me.clone(),
-                    room,
-                    inner,
-                })
+                Ok(CalendarEvent::new(me.clone(), room, inner))
             })
             .await?
     }
@@ -60,11 +56,7 @@ impl Client {
                 let room = client
                     .get_room(inner.room_id())
                     .context("Room of calendar event not found")?;
-                Ok(CalendarEvent {
-                    client,
-                    room,
-                    inner,
-                })
+                Ok(CalendarEvent::new(client, room, inner))
             })
             .await?
     }
@@ -90,11 +82,7 @@ impl Client {
                                 }
                             }
                         };
-                        calendar_events.push(CalendarEvent {
-                            client: client.clone(),
-                            room,
-                            inner: t,
-                        })
+                        calendar_events.push(CalendarEvent::new(client.clone(), room, t));
                     } else {
                         warn!(
                             "Non calendar_event model found in `calendar_events` index: {:?}",
@@ -119,11 +107,11 @@ impl Space {
                 let k = format!("{room_id}::{}", KEYS::CALENDAR);
                 for mdl in client.store().get_list(&k).await? {
                     if let AnyActerModel::CalendarEvent(inner) = mdl {
-                        calendar_events.push(CalendarEvent {
-                            client: client.clone(),
-                            room: room.clone(),
+                        calendar_events.push(CalendarEvent::new(
+                            client.clone(),
+                            room.clone(),
                             inner,
-                        })
+                        ));
                     } else {
                         warn!(
                             "Non calendar_event model found in `calendar_events` index: {:?}",
@@ -168,6 +156,14 @@ impl CalendarEvent {
 
 /// Custom functions
 impl CalendarEvent {
+    pub(crate) fn new(client: Client, room: Room, inner: models::CalendarEvent) -> Self {
+        CalendarEvent {
+            client,
+            room,
+            inner,
+        }
+    }
+
     pub async fn refresh(&self) -> Result<CalendarEvent> {
         let key = self.inner.event_id().to_string();
         let client = self.client.clone();
@@ -178,11 +174,7 @@ impl CalendarEvent {
                 let AnyActerModel::CalendarEvent(inner) = client.store().get(&key).await? else {
                     bail!("Refreshing failed. {key} not a calendar_event")
                 };
-                Ok(CalendarEvent {
-                    client,
-                    room,
-                    inner,
-                })
+                Ok(CalendarEvent::new(client, room, inner))
             })
             .await?
     }
@@ -236,6 +228,23 @@ impl CalendarEvent {
                 let inner =
                     models::RsvpManager::from_store_and_event_id(client.store(), &event_id).await;
                 Ok(crate::RsvpManager::new(client, room, inner))
+            })
+            .await?
+    }
+
+    pub async fn my_rsvp_status(&self) -> Result<String> {
+        let me = self.clone();
+        let client = self.client.clone();
+        let event_id = self.inner.event_id().to_owned();
+        let my_id = self.client.user_id().context("User not found")?;
+
+        RUNTIME
+            .spawn(async move {
+                let manager = me
+                    .rsvp_manager()
+                    .await
+                    .context("We should get rsvp manager")?;
+                manager.my_status().await
             })
             .await?
     }
