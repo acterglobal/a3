@@ -78,6 +78,12 @@ jobs:
         with:
           flutter-version: '3.13.1'
           channel: 'stable'
+      - uses: jlumbroso/free-disk-space@main
+        name: Free Disk Space (Ubuntu)
+        with:
+          # this might remove tools that are actually needed,
+          # when set to "true" but frees about 6 GB
+          tool-cache: true
       - uses: actions-rs/cargo@v1
         name: Clippy
         with:
@@ -89,12 +95,6 @@ jobs:
         with:
           command: nextest
           args: run -p acter --target ${{matrix.target}} --lib
-      - uses: jlumbroso/free-disk-space@main
-        name: Free Disk Space (Ubuntu)
-        with:
-          # this might remove tools that are actually needed,
-          # when set to "true" but frees about 6 GB
-          tool-cache: true
       - uses: actions-rs/cargo@v1
         name: Doctests
         with:
