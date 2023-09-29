@@ -1,8 +1,8 @@
 use derive_getters::Getters;
-use ruma_common::{EventId, OwnedEventId};
+use ruma_common::{EventId, OwnedEventId, OwnedUserId};
 use ruma_events::OriginalMessageLikeEvent;
 use serde::{Deserialize, Serialize};
-use std::ops::Deref;
+use std::{collections::HashMap, ops::Deref};
 use tracing::{error, trace};
 
 use super::{AnyActerModel, EventMeta};
@@ -51,20 +51,22 @@ impl RsvpManager {
         self.event_id.clone()
     }
 
-    pub async fn rsvp_entries(&self) -> Result<Vec<Rsvp>> {
-        let entries = self
+    pub async fn rsvp_entries(&self) -> Result<HashMap<OwnedUserId, Rsvp>> {
+        let mut entries = HashMap::new();
+        for mdl in self
             .store
             .get_list(&Rsvp::index_for(&self.event_id))
             .await?
-            .filter_map(|e| match e {
-                AnyActerModel::Rsvp(c) => Some(c),
-                _ => None,
-            })
-            .collect();
+        {
+            if let AnyActerModel::Rsvp(c) = mdl {
+                let key = c.clone().meta.sender;
+                entries.insert(key, c);
+            }
+        }
         Ok(entries)
     }
 
-    pub(crate) async fn add_rsvp_entry(&mut self, _entry: &Rsvp) -> Result<bool> {
+    pub(crate) fn add_rsvp_entry(&mut self, _entry: &Rsvp) -> Result<bool> {
         self.stats.has_rsvp_entries = true;
         self.stats.total_rsvp_count += 1;
         Ok(true)
@@ -153,7 +155,7 @@ impl super::ActerModel for Rsvp {
             // FIXME: what if we have this twice in the same loop?
             let mut manager = RsvpManager::from_store_and_event_id(store, model.event_id()).await;
             trace!(event_id=?self.event_id(), "adding rsvp entry");
-            if manager.add_rsvp_entry(&self).await? {
+            if manager.add_rsvp_entry(&self)? {
                 trace!(event_id=?self.event_id(), "added rsvp entry");
                 managers.push(manager);
             }

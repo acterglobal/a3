@@ -39,6 +39,7 @@ dependencies = [
  "strum",
  "tempfile",
  "tokio",
+ "tokio-retry",
  "tokio-stream",
  "tracing",
  "tracing-android",

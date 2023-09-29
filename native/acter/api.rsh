@@ -310,6 +310,8 @@ object CalendarEvent {
     fn update_builder() -> Result<CalendarEventUpdateBuilder>;
     /// get RSVP manager
     fn rsvp_manager() -> Future<Result<RsvpManager>>;
+    /// get my RSVP status, one of Yes/Maybe/No/Pending
+    fn my_rsvp_status() -> Future<Result<string>>;
 }
 
 object CalendarEventUpdateBuilder {
@@ -373,13 +375,13 @@ object RsvpManager {
     /// get rsvp entries
     fn rsvp_entries() -> Future<Result<Vec<Rsvp>>>;
 
-    /// get Yes/Maybe/No/None for the user's own status
-    fn my_status() -> Future<Result<OptionString>>;
+    /// get Yes/Maybe/No/Pending for the user's own status
+    fn my_status() -> Future<Result<string>>;
 
     /// get the count of Yes/Maybe/No
     fn count_at_status(status: string) -> Future<Result<u32>>;
 
-    /// get the user-ids that have responded said way for each status
+    /// get the user-ids that have responded for Yes/Maybe/No
     fn users_at_status(status: string) -> Future<Result<Vec<UserId>>>;
 
     /// create rsvp draft
@@ -1868,6 +1870,9 @@ object Client {
     /// get convo room
     fn convo(room_id_or_alias: string) -> Future<Result<Convo>>;
 
+    /// get convo room of retry 250ms for retry times
+    fn convo_with_retry(room_id_or_alias: string, retry: u8) -> Future<Result<Convo>>;
+
     /// get the user profile that contains avatar and display name
     fn get_user_profile() -> Result<UserProfile>;
 
@@ -1986,6 +1991,15 @@ object Client {
 
     /// listen to incoming notifications
     fn notifications_stream() -> Stream<Notification>;
+
+    /// get all upcoming events, whether I responded or not
+    fn all_upcoming_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
+
+    /// get only upcoming events that I responded as rsvp
+    fn my_upcoming_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
+
+    /// get only past events that I responded as rsvp
+    fn my_past_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
 
 }
 

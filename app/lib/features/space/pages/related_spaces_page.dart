@@ -2,7 +2,6 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/common/widgets/spaces/space_hierarchy_card.dart';
 import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
@@ -163,10 +162,9 @@ class RelatedSpacesPage extends ConsumerWidget {
                   items.add(
                     SliverGrid.builder(
                       itemCount: spaces.parents.length,
-                      gridDelegate:
-                          SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: max(1, min(widthCount, minCount)),
-                        height: MediaQuery.of(context).size.height * 0.1,
+                        childAspectRatio: 4.0,
                       ),
                       itemBuilder: (context, index) {
                         final space = spaces.parents[index];
@@ -189,10 +187,9 @@ class RelatedSpacesPage extends ConsumerWidget {
                 items.add(
                   SliverGrid.builder(
                     itemCount: spaces.knownSubspaces.length,
-                    gridDelegate:
-                        SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: max(1, min(widthCount, minCount)),
-                      height: MediaQuery.of(context).size.height * 0.1,
+                      childAspectRatio: 4.0,
                     ),
                     itemBuilder: (context, index) {
                       final space = spaces.knownSubspaces[index];
@@ -264,10 +261,9 @@ class RelatedSpacesPage extends ConsumerWidget {
                 items.add(
                   SliverGrid.builder(
                     itemCount: spaces.otherRelations.length,
-                    gridDelegate:
-                        SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: max(1, min(widthCount, minCount)),
-                      height: MediaQuery.of(context).size.height * 0.1,
+                      childAspectRatio: 4.0,
                     ),
                     itemBuilder: (context, index) {
                       final space = spaces.otherRelations[index];

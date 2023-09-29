@@ -44,7 +44,8 @@ class ConvoWithProfileCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final avatar = ActerAvatar(
       uniqueId: roomId,
-      mode: profile.isDm ? DisplayMode.DM : DisplayMode.GroupChat,
+      //FIXME: add support for DM/Group chats
+      mode: profile.isDm ? DisplayMode.User : DisplayMode.Space,
       displayName: profile.displayName ?? roomId,
       avatar: profile.getAvatarImage(),
       size: 36,
@@ -60,7 +61,8 @@ class ConvoWithProfileCard extends ConsumerWidget {
               child: ListTile(
                 onTap: onTap,
                 selected: roomId == ref.watch(selectedChatIdProvider),
-                selectedTileColor: Theme.of(context).colorScheme.onPrimary,
+                selectedTileColor:
+                    Theme.of(context).colorScheme.secondaryContainer,
                 onFocusChange: onFocusChange,
                 onLongPress: onLongPress,
                 leading: (!profile.isDm && showParent)
@@ -82,13 +84,6 @@ class ConvoWithProfileCard extends ConsumerWidget {
                 trailing: constraints.maxWidth < 300 ? null : trailing,
               ),
             ),
-            constraints.maxWidth < 300
-                ? const SizedBox.shrink()
-                : Divider(
-                    indent: 75,
-                    endIndent: 10,
-                    color: Theme.of(context).colorScheme.tertiary,
-                  ),
           ],
         );
       },
