@@ -68,7 +68,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                   child: Text('Name'),
                 ),
                 InputTextField(
-                  hintText: 'Type Name',
+                  hintText: 'Name of the event',
                   textInputType: TextInputType.multiline,
                   controller: _nameController,
                   onInputChanged: _handleTitleChange,
@@ -291,8 +291,8 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       if (!context.mounted) {
         return;
       }
-      context.pop();
-      context.pop();
+      context.pop(); // pop the loading screen
+      context.pop(); // pop the create sheet
       await context.pushNamed(
         Routes.calendarEvent.name,
         pathParameters: {'calendarId': eventId.toString()},

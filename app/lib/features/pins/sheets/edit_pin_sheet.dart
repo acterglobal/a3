@@ -165,8 +165,9 @@ class _EditPinSheetConsumerState extends ConsumerState<EditPinSheet> {
       if (!context.mounted) {
         return;
       }
-      Navigator.of(context, rootNavigator: true).pop();
-      Navigator.of(context, rootNavigator: true).pop();
+      Navigator.of(context, rootNavigator: true)
+          .pop(); // pop the loading screen
+      Navigator.of(context, rootNavigator: true).pop(); // pop the edit sheet
       context.pushNamed(
         Routes.pin.name,
         pathParameters: {'pinId': widget.pinId.toString()},

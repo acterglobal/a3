@@ -1,4 +1,3 @@
 - CRUD Sidesheets (Spaces, Pins, Events, Chat)
   - [fix] Sidesheets will now properly scroll on smaller screens, enabling to view submit buttons. The buttons will remain stick to bottom.
   - Sidesheet input validation fixes.
-  - Visual improvements

@@ -218,8 +218,9 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
         return;
       }
 
-      Navigator.of(context, rootNavigator: true).pop();
-      Navigator.of(context, rootNavigator: true).pop();
+      Navigator.of(context, rootNavigator: true)
+          .pop(); // pop the loading screen
+      Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
       context.pushNamed(
         Routes.space.name,
         pathParameters: {

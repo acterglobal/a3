@@ -178,6 +178,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                   context,
                   'Cannot edit space with no permissions',
                 );
+                return;
               }
               if (context.mounted) {
                 showAdaptiveDialog(
@@ -198,8 +199,8 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                 if (!context.mounted) {
                   return;
                 }
-                context.pop();
-                context.pop();
+                context.pop(); // pop the loading screen
+                context.pop(); // pop the edit sheet
                 context.pushNamed(
                   Routes.space.name,
                   pathParameters: {

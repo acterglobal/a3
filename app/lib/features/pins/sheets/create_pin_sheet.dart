@@ -155,8 +155,9 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
       if (!context.mounted) {
         return;
       }
-      Navigator.of(context, rootNavigator: true).pop();
-      Navigator.of(context, rootNavigator: true).pop();
+      Navigator.of(context, rootNavigator: true)
+          .pop(); // pop the loading screen
+      Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
       context.pushNamed(
         Routes.pin.name,
         pathParameters: {'pinId': pinId.toString()},
