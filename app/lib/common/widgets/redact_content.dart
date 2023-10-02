@@ -37,7 +37,7 @@ class RedactContentWidget extends ConsumerWidget {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
-            title ?? 'Redact',
+            title ?? 'Remove',
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
@@ -46,7 +46,7 @@ class RedactContentWidget extends ConsumerWidget {
         padding: const EdgeInsets.all(8.0),
         child: Text(
           description ??
-              'Redact this content. This can not be undone. Provide an optional reason to explain, why this was redacted',
+              'Remove this content. This can not be undone. Provide an optional reason to explain, why this was removed',
           style: Theme.of(context).textTheme.bodySmall!.copyWith(
                 color: Theme.of(context).colorScheme.neutral6,
               ),
@@ -69,7 +69,7 @@ class RedactContentWidget extends ConsumerWidget {
         ),
         DefaultButton(
           onPressed: () => redactContent(context, ref, textController.text),
-          title: 'Redact',
+          title: 'Remove',
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.errorContainer,
           ),
@@ -83,7 +83,7 @@ class RedactContentWidget extends ConsumerWidget {
     showAdaptiveDialog(
       context: (ctx),
       builder: (ctx) => const DefaultDialog(
-        title: Text('Sending Redact'),
+        title: Text('Removing content'),
         isLoader: true,
       ),
     );
@@ -102,7 +102,7 @@ class RedactContentWidget extends ConsumerWidget {
         if (ctx.mounted) {
           Navigator.of(ctx, rootNavigator: true).pop();
           Navigator.of(ctx, rootNavigator: true).pop(true);
-          customMsgSnackbar(ctx, 'Redaction sent');
+          customMsgSnackbar(ctx, 'Content successfully deleted');
           if (onSuccess != null) {
             onSuccess!();
           }

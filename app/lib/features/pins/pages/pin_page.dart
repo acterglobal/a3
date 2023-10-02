@@ -59,7 +59,7 @@ class PinPage extends ConsumerWidget {
             onTap: () => showAdaptiveDialog(
               context: context,
               builder: (context) => RedactContentWidget(
-                title: 'Redact this post',
+                title: 'Remove this post',
                 eventId: pin.eventIdStr(),
                 onSuccess: () {
                   ref.invalidate(pinsProvider);
@@ -82,7 +82,7 @@ class PinPage extends ConsumerWidget {
                   color: Theme.of(context).colorScheme.error,
                 ),
                 const SizedBox(width: 10),
-                const Text('Redact Pin'),
+                const Text('Delete Pin'),
               ],
             ),
           ),
