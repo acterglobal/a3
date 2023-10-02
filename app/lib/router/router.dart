@@ -96,14 +96,6 @@ final GlobalKey<NavigatorState> shellNavKey = GlobalKey<NavigatorState>(
   debugLabel: 'shell',
 );
 
-final GlobalKey<NavigatorState> spaceNavKey = GlobalKey<NavigatorState>(
-  debugLabel: 'space',
-);
-
-final GlobalKey<NavigatorState> chatShellKey = GlobalKey<NavigatorState>(
-  debugLabel: 'chat',
-);
-
 List<RouteBase> makeRoutes(Ref ref) {
   final tabKeyNotifier = ref.watch(selectedTabKeyProvider.notifier);
   final selectedChatNotifier = ref.watch(selectedChatIdProvider.notifier);
