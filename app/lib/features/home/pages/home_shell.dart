@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/activities/providers/notifications_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/providers/navigation.dart';
@@ -202,6 +203,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                         inAnimation: AdaptiveScaffold.bottomToTop,
                         outAnimation: AdaptiveScaffold.topToBottom,
                         builder: (BuildContext ctx) => BottomNavigationBar(
+                          key: Keys.mainNav,
                           showSelectedLabels: false,
                           showUnselectedLabels: false,
                           currentIndex: bottomBarIdx,

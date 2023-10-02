@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:gherkin/gherkin.dart';
 import 'package:integration_test/integration_test.dart';
 import 'steps/given_login.dart';
+import 'package:uuid/uuid.dart';
 
 import 'package:acter/main.dart' as app;
 
@@ -43,7 +44,8 @@ Future<void> main() async {
     configuration: config,
     appMainFunction: (World world) async {
       IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-      return await app.startFreshTestApp('kyra_can_login_smoketest');
+      final testRunName = const Uuid().v4().toString();
+      return await app.startFreshTestApp(testRunName);
     },
   );
 }

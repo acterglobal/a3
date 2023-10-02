@@ -1,3 +1,4 @@
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -111,6 +112,7 @@ class _IntroProfileState extends State<IntroProfile> {
                         ),
                         GestureDetector(
                           onTap: () => context.pushNamed(Routes.authLogin.name),
+                          key: Keys.loginBtn,
                           child: Container(
                             height: 54,
                             decoration: BoxDecoration(

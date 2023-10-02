@@ -22,8 +22,8 @@ class LoginPageKeys {
 }
 
 class Keys {
-  // generic / home
-  static const bottomBar = Key('bottom-bar');
+  static const mainNav = Key('main-nav'); // either bottom or sidebar
+
   static const newsSectionBtn = Key('news-section-btn');
   static const sidebarBtn = Key('sidebar-btn');
   static const logoutBtn = Key('login-btn');

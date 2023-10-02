@@ -12,21 +12,6 @@ StepDefinitionGeneric givenWellKnownUserIsLoggedIn() {
   return given1<String, FlutterWorld>(
     r'(kyra|sisko|odo) has logged in',
     (username, context) async {
-      // FIXME: add feature to always have a loginBtn.
-      // Finder bottomBar = find.byKey(Keys.bottomBar);
-      // context.expect(bottomBar, findsOneWidget);
-
-      // Finder newsSection = find.byKey(Keys.newsSectionBtn);
-      // context.expect(newsSection, findsOneWidget);
-
-      // await context.world.appDriver.tap(newsSection);
-      // await context.world.appDriver.waitForAppToSettle();
-
-      // Finder sidebar = find.byKey(Keys.sidebarBtn);
-      // context.expect(sidebar, findsOneWidget);
-
-      // await context.world.appDriver.tap(sidebar);
-      // await context.world.appDriver.waitForAppToSettle();
       String passwordText;
       if (registrationToken.isNotEmpty) {
         passwordText = '$registrationToken:$username';
@@ -59,16 +44,19 @@ StepDefinitionGeneric givenWellKnownUserIsLoggedIn() {
       Finder submitBtn = find.byKey(LoginPageKeys.submitBtn);
       context.expect(submitBtn, findsOneWidget);
       await context.world.appDriver.tap(submitBtn);
-      await context.world.appDriver.waitForAppToSettle();
-      context.expect(find.byKey(Keys.logoutBtn), findsOneWidget);
-
-      // we are back on the news screen
-      // On successful login, user avatar should appear.
-      Finder userAvatar = find.byKey(Keys.avatar);
-      context.expect(userAvatar, findsOneWidget);
-      await context.world.appDriver.waitForAppToSettle();
-
-      // implement your code
+      await context.world.appDriver.waitUntil(
+        () async {
+          await context.world.appDriver.waitForAppToSettle();
+          return context.world.appDriver.isPresent(
+            // seeing a main navigation means we are in!
+            context.world.appDriver.findBy(Keys.mainNav, FindType.key),
+          );
+        },
+        timeout: const Duration(seconds: 15),
+        pollInterval: const Duration(milliseconds: 100),
+      );
     },
+    configuration: StepDefinitionConfiguration()
+      ..timeout = const Duration(seconds: 30),
   );
 }
