@@ -1,4 +1,5 @@
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/widgets/default_button.dart';
 import 'package:flutter/material.dart';
 
 class SideSheet extends StatelessWidget {
@@ -52,25 +53,38 @@ class SideSheet extends StatelessWidget {
           minHeight: size.height,
           maxHeight: size.height,
         ),
-        child: Column(
-          children: [
-            _SheetHeader(
-              header: header,
-              addBackIconButton: addBackIconButton,
-              addCloseIconButton: addCloseIconButton,
-              backButtonTooltip: backButtonTooltip,
-              closeButtonTooltip: closeButtonTooltip,
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: CustomScrollView(
+          shrinkWrap: true,
+          slivers: [
+            SliverList(
+              delegate: SliverChildListDelegate(
+                [
+                  _SheetHeader(
+                    header: header,
+                    addBackIconButton: addBackIconButton,
+                    addCloseIconButton: addCloseIconButton,
+                    backButtonTooltip: backButtonTooltip,
+                    closeButtonTooltip: closeButtonTooltip,
+                  ),
+                  SingleChildScrollView(child: body),
+                ],
+              ),
             ),
-            Expanded(child: body),
-            Visibility(
-              visible: addActions,
-              child: _SheetFooter(
-                addDivider: addDivider,
-                confirmActionTitle: confirmActionTitle,
-                cancelActionTitle: cancelActionTitle,
-                actions: actions,
-                confirmActionOnPressed: confirmActionOnPressed,
-                cancelActionOnPressed: cancelActionOnPressed,
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Visibility(
+                visible: addActions,
+                child: _SheetFooter(
+                  addDivider: addDivider,
+                  confirmActionTitle: confirmActionTitle,
+                  cancelActionTitle: cancelActionTitle,
+                  actions: actions,
+                  confirmActionOnPressed: confirmActionOnPressed,
+                  cancelActionOnPressed: cancelActionOnPressed,
+                ),
               ),
             ),
           ],
@@ -165,6 +179,7 @@ class _SheetFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Visibility(
           visible: addDivider,
@@ -176,12 +191,7 @@ class _SheetFooter extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: actions ??
                 [
-                  FilledButton(
-                    onPressed: confirmActionOnPressed,
-                    child: Text(confirmActionTitle),
-                  ),
-                  const SizedBox(width: 12),
-                  OutlinedButton(
+                  DefaultButton(
                     onPressed: () {
                       if (cancelActionOnPressed == null) {
                         Navigator.pop(context);
@@ -189,7 +199,20 @@ class _SheetFooter extends StatelessWidget {
                         cancelActionOnPressed!();
                       }
                     },
-                    child: Text(cancelActionTitle),
+                    title: cancelActionTitle,
+                    isOutlined: true,
+                  ),
+                  const SizedBox(width: 12),
+                  DefaultButton(
+                    onPressed: confirmActionOnPressed,
+                    title: confirmActionTitle,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.success,
+                      disabledBackgroundColor: Theme.of(context)
+                          .colorScheme
+                          .success
+                          .withOpacity(0.5),
+                    ),
                   ),
                 ],
           ),

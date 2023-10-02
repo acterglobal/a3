@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/sdk_provider.dart';
+import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -38,73 +39,60 @@ class _MdEditorWithPreviewState extends ConsumerState<MdEditorWithPreview> {
   @override
   Widget build(BuildContext context) {
     final controller = widget.controller ?? _textCtr;
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Stack(
-          children: [
-            _showPreview
-                ? FormField(
-                    builder: (x) => Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            width: 3,
-                          ),
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Consumer(
-                            builder: (context, ref, child) => ref
-                                .watch(markdownProvider(controller.text))
-                                .when(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Stack(
+        children: [
+          _showPreview
+              ? FormField(
+                  builder: (x) => Container(
+                    constraints: const BoxConstraints(minHeight: 200),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.tertiary,
+                        width: 1.5,
+                      ),
+                    ),
+                    child: SingleChildScrollView(
+                      child: Consumer(
+                        builder: (context, ref, child) =>
+                            ref.watch(markdownProvider(controller.text)).when(
                                   data: (text) => RenderHtml(text: text),
                                   error: (error, stackTrace) =>
                                       Text('Parsing markdown failed: $error'),
                                   loading: () => const Text('Parsing ...'),
                                 ),
-                          ),
-                        ),
                       ),
                     ),
-                    validator: widget
-                        .validator, // make sure we still have the validator in the tree
-                  )
-                : TextFormField(
-                    decoration: InputDecoration(
-                      hintText: widget.hintText,
-                      labelText: widget.labelText,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                    ),
-                    textAlignVertical: TextAlignVertical.top,
-                    controller: controller,
-                    expands: true,
-                    minLines: null,
-                    maxLines: null,
-                    keyboardType: TextInputType.multiline,
-                    validator: widget.validator,
-                    onChanged: (String? value) {
-                      widget.onChanged ?? (value);
-                    },
                   ),
-            Positioned(
-              right: 10,
-              bottom: 10,
-              child: Tooltip(
-                message: 'Toggle preview',
-                child: IconButton(
-                  onPressed: () => setState(() => _showPreview = !_showPreview),
-                  icon: _showPreview
-                      ? const Icon(Atlas.xmark_circle_thin)
-                      : const Icon(Atlas.vision_thin),
+                  validator: widget
+                      .validator, // make sure we still have the validator in the tree
+                )
+              : InputTextField(
+                  controller: controller,
+                  hintText: 'Description',
+                  maxLines: 10,
+                  textInputType: TextInputType.multiline,
+                  validator: widget.validator,
+                  onInputChanged: (String? value) {
+                    widget.onChanged ?? (value);
+                  },
                 ),
+          Positioned(
+            right: 10,
+            bottom: 10,
+            child: Tooltip(
+              message: 'Toggle preview',
+              child: IconButton(
+                onPressed: () => setState(() => _showPreview = !_showPreview),
+                icon: _showPreview
+                    ? const Icon(Atlas.xmark_circle_thin)
+                    : const Icon(Atlas.vision_thin),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
