@@ -39,24 +39,23 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
     return profileData.when(
       data: (profile) => Scaffold(
         backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: DecoratedBox(
-            decoration: const BoxDecoration(
-              gradient: AppTheme.primaryGradient,
-            ),
-            child: Column(
-              children: <Widget>[
-                _ShellToolbar(profile.space, widget.spaceIdOrAlias),
-                _ShellHeader(widget.spaceIdOrAlias, profile.profile),
-                TopNavBar(
-                  spaceId: widget.spaceIdOrAlias,
-                  key: Key('${widget.spaceIdOrAlias}::top-nav'),
-                ),
-                Expanded(
-                  child: widget.child,
-                ),
-              ],
-            ),
+        body: Container(
+          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
+          decoration: const BoxDecoration(
+            gradient: AppTheme.primaryGradient,
+          ),
+          child: Column(
+            children: <Widget>[
+              _ShellToolbar(profile.space, widget.spaceIdOrAlias),
+              _ShellHeader(widget.spaceIdOrAlias, profile.profile),
+              TopNavBar(
+                spaceId: widget.spaceIdOrAlias,
+                key: Key('${widget.spaceIdOrAlias}::top-nav'),
+              ),
+              Expanded(
+                child: widget.child,
+              ),
+            ],
           ),
         ),
       ),
