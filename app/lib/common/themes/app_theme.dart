@@ -99,7 +99,6 @@ class AppTheme {
     surfaceTint: Color(0xFF9CCAFF),
     outlineVariant: Color(0xFF42474E),
     scrim: Color(0xFF000000),
-    
   );
 
   static const primaryGradient = LinearGradient(
@@ -109,6 +108,19 @@ class AppTheme {
       Color(0xFF001B3D),
       Color(0xFF121212),
     ],
+  );
+
+  static const introGradient = LinearGradient(
+    colors: [
+      Color(0xff121F2B),
+      Color(0xff122334),
+      Color(0xff121315),
+      Color(0xff121315),
+    ],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    stops: [0.0, 0.6, 0.8, 1.0],
+    tileMode: TileMode.decal,
   );
 
   static MaterialStateProperty<Color?> dangerState =
