@@ -5,6 +5,8 @@ enum Routes {
   actionAddPin('/actions/addPin'),
   actionAddEvent('/actions/addEvent'),
   actionAddUpdate('/actions/addUpdate'),
+  actionCreateChat('/actions/createChat'),
+  actionChatInvite('/actions/chatInvite/:roomId([!#][^/]+)'),
 
   // --- Auth
   intro('/intro'),
@@ -25,10 +27,8 @@ enum Routes {
 
   // --- chat
   chat('/chat'),
-  createChat('/chat/create'),
-  chatroom('/chat/:roomId([!#][^/]+)'), // !roomId, #roomName
-  chatProfile('/chat/:roomId([!#][^/]+)/profile'),
-  chatInvite('/:roomId([!#][^/]+)/invite'),
+  chatroom(':roomId([!#][^/]+)'), // !roomId, #roomName
+  chatProfile(':roomId([!#][^/]+)/profile'),
 
   tasks('/tasks'),
   task('/tasks/:taskListId([!#][^/]+)/:taskId([!#][^/]+)'),

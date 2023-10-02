@@ -103,7 +103,7 @@ class RoomsListWidget extends ConsumerWidget {
                           ),
                           IconButton(
                             onPressed: () =>
-                                context.pushNamed(Routes.createChat.name),
+                                context.pushNamed(Routes.actionCreateChat.name),
                             padding: const EdgeInsets.only(right: 10, left: 10),
                             icon: const Icon(
                               Atlas.plus_circle_thin,

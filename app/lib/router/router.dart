@@ -354,8 +354,8 @@ List<RouteBase> makeRoutes(Ref ref) {
     ),
     GoRoute(
       parentNavigatorKey: rootNavKey,
-      name: Routes.chatInvite.name,
-      path: Routes.chatInvite.route,
+      name: Routes.actionChatInvite.name,
+      path: Routes.actionChatInvite.route,
       pageBuilder: (context, state) => DialogPage(
         builder: (BuildContext ctx) => InviteToRoomDialog(
           roomId: state.pathParameters['chatId']!,
@@ -365,8 +365,8 @@ List<RouteBase> makeRoutes(Ref ref) {
 
     GoRoute(
       parentNavigatorKey: rootNavKey,
-      name: Routes.createChat.name,
-      path: Routes.createChat.route,
+      name: Routes.actionCreateChat.name,
+      path: Routes.actionCreateChat.route,
       pageBuilder: (context, state) {
         return SideSheetPage(
           key: state.pageKey,
@@ -544,29 +544,18 @@ List<RouteBase> makeRoutes(Ref ref) {
           },
         ),
 
-        ShellRoute(
-          navigatorKey: chatShellKey,
-          pageBuilder: (context, state, child) {
+        GoRoute(
+          name: Routes.chat.name,
+          path: Routes.chat.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            selectedChatNotifier.select(null);
             return NoTransitionPage(
               key: state.pageKey,
-              child: ChatShell(
-                child: child,
-              ),
+              child: const ChatShell(child: ChatSelectPage()),
             );
           },
           routes: <RouteBase>[
-            GoRoute(
-              name: Routes.chat.name,
-              path: Routes.chat.route,
-              redirect: authGuardRedirect,
-              pageBuilder: (context, state) {
-                selectedChatNotifier.select(null);
-                return NoTransitionPage(
-                  key: state.pageKey,
-                  child: const ChatSelectPage(),
-                );
-              },
-            ),
             GoRoute(
               name: Routes.chatroom.name,
               path: Routes.chatroom.route,
@@ -576,7 +565,7 @@ List<RouteBase> makeRoutes(Ref ref) {
                 selectedChatNotifier.select(roomId);
                 return NoTransitionPage(
                   key: state.pageKey,
-                  child: RoomPage(roomId: roomId),
+                  child: ChatShell(child: RoomPage(roomId: roomId)),
                 );
               },
             ),
@@ -589,7 +578,7 @@ List<RouteBase> makeRoutes(Ref ref) {
                 selectedChatNotifier.select(roomId);
                 return NoTransitionPage(
                   key: state.pageKey,
-                  child: RoomProfilePage(roomId: roomId),
+                  child: ChatShell(child: RoomProfilePage(roomId: roomId)),
                 );
               },
             ),

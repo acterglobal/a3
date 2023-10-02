@@ -45,7 +45,7 @@ class SpaceChatsPage extends ConsumerWidget {
                   children: [
                     IconButton(
                       onPressed: () => context.pushNamed(
-                        Routes.createChat.name,
+                        Routes.actionCreateChat.name,
                         queryParameters: {'parentSpaceId': spaceIdOrAlias},
                       ),
                       icon: const Icon(Atlas.plus_circle_thin),
