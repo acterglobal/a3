@@ -674,14 +674,20 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         /// Space subshell
-        ShellRoute(
-          navigatorKey: spaceNavKey,
-          pageBuilder: (context, state, child) {
+
+        GoRoute(
+          name: Routes.space.name,
+          path: Routes.space.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            tabKeyNotifier.switchTo(const Key('overview'));
             return NoTransitionPage(
               key: state.pageKey,
               child: SpaceShell(
                 spaceIdOrAlias: state.pathParameters['spaceId']!,
-                child: child,
+                child: SpaceOverview(
+                  spaceIdOrAlias: state.pathParameters['spaceId']!,
+                ),
               ),
             );
           },
@@ -694,8 +700,11 @@ List<RouteBase> makeRoutes(Ref ref) {
                 tabKeyNotifier.switchTo(const Key('spaces'));
                 return NoTransitionPage(
                   key: state.pageKey,
-                  child: RelatedSpacesPage(
+                  child: SpaceShell(
                     spaceIdOrAlias: state.pathParameters['spaceId']!,
+                    child: RelatedSpacesPage(
+                      spaceIdOrAlias: state.pathParameters['spaceId']!,
+                    ),
                   ),
                 );
               },
@@ -708,8 +717,11 @@ List<RouteBase> makeRoutes(Ref ref) {
                 tabKeyNotifier.switchTo(const Key('members'));
                 return NoTransitionPage(
                   key: state.pageKey,
-                  child: SpaceMembersPage(
+                  child: SpaceShell(
                     spaceIdOrAlias: state.pathParameters['spaceId']!,
+                    child: SpaceMembersPage(
+                      spaceIdOrAlias: state.pathParameters['spaceId']!,
+                    ),
                   ),
                 );
               },
@@ -722,8 +734,11 @@ List<RouteBase> makeRoutes(Ref ref) {
                 tabKeyNotifier.switchTo(const Key('pins'));
                 return NoTransitionPage(
                   key: state.pageKey,
-                  child: SpacePinsPage(
+                  child: SpaceShell(
                     spaceIdOrAlias: state.pathParameters['spaceId']!,
+                    child: SpacePinsPage(
+                      spaceIdOrAlias: state.pathParameters['spaceId']!,
+                    ),
                   ),
                 );
               },
@@ -736,8 +751,11 @@ List<RouteBase> makeRoutes(Ref ref) {
                 tabKeyNotifier.switchTo(const Key('events'));
                 return NoTransitionPage(
                   key: state.pageKey,
-                  child: SpaceEventsPage(
+                  child: SpaceShell(
                     spaceIdOrAlias: state.pathParameters['spaceId']!,
+                    child: SpaceEventsPage(
+                      spaceIdOrAlias: state.pathParameters['spaceId']!,
+                    ),
                   ),
                 );
               },
@@ -750,8 +768,11 @@ List<RouteBase> makeRoutes(Ref ref) {
                 tabKeyNotifier.switchTo(const Key('chat'));
                 return NoTransitionPage(
                   key: state.pageKey,
-                  child: SpaceChatsPage(
+                  child: SpaceShell(
                     spaceIdOrAlias: state.pathParameters['spaceId']!,
+                    child: SpaceChatsPage(
+                      spaceIdOrAlias: state.pathParameters['spaceId']!,
+                    ),
                   ),
                 );
               },
@@ -766,22 +787,11 @@ List<RouteBase> makeRoutes(Ref ref) {
                     .switchTo(const Key('tasks'));
                 return NoTransitionPage(
                   key: state.pageKey,
-                  child: SpaceTasksPage(
+                  child: SpaceShell(
                     spaceIdOrAlias: state.pathParameters['spaceId']!,
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: Routes.space.name,
-              path: Routes.space.route,
-              redirect: authGuardRedirect,
-              pageBuilder: (context, state) {
-                tabKeyNotifier.switchTo(const Key('overview'));
-                return NoTransitionPage(
-                  key: state.pageKey,
-                  child: SpaceOverview(
-                    spaceIdOrAlias: state.pathParameters['spaceId']!,
+                    child: SpaceTasksPage(
+                      spaceIdOrAlias: state.pathParameters['spaceId']!,
+                    ),
                   ),
                 );
               },

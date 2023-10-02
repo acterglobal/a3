@@ -40,16 +40,16 @@ enum Routes {
   createSpace('/spaces/create'),
   editSpace('/:spaceId([!#][^/]+)/edit'),
   spaceInvite('/:spaceId([!#][^/]+)/invite'),
-  space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
-  spaceRelatedSpaces('/:spaceId([!#][^/]+)/spaces'),
-  spaceMembers('/:spaceId([!#][^/]+)/members'),
-  spacePins('/:spaceId([!#][^/]+)/pins'),
-  spaceEvents('/:spaceId([!#][^/]+)/events'),
-  spaceChats('/:spaceId([!#][^/]+)/chats'),
-  spaceTasks('/:spaceId([!#][^/]+)/tasks'),
   // -- space Settings
   spaceSettings('/:spaceId([!#][^/]+)/settings'),
   spaceSettingsApps('/:spaceId([!#][^/]+)/settings/app'),
+  space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
+  spaceRelatedSpaces('spaces'),
+  spaceMembers('members'),
+  spacePins('pins'),
+  spaceEvents('events'),
+  spaceChats('chats'),
+  spaceTasks('tasks'),
 
   // -- pins
 

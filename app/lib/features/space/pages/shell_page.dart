@@ -16,12 +16,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+const spaceShellKey = Key('spaceShell');
+
 class SpaceShell extends ConsumerStatefulWidget {
   final String spaceIdOrAlias;
   final Widget child;
 
   const SpaceShell({
-    super.key,
+    super.key = spaceShellKey,
     required this.spaceIdOrAlias,
     required this.child,
   });
