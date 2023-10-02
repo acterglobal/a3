@@ -266,7 +266,10 @@ class PublicSpaceItem extends ConsumerWidget {
                               ),
                               child: const Text('request to join'),
                             ),
-                  error: (e, s) => Text('error loading membership: $e'),
+                  error: (e, s) => Text(
+                    '$e',
+                    softWrap: true,
+                  ),
                   loading: () => const Text('loading'),
                 ),
               ),
