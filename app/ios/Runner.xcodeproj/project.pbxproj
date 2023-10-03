@@ -17,6 +17,7 @@
 		A2701571CECDAC4F7B65236C /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B989526A51D9C2DBEBDD984 /* Pods_Runner.framework */; };
 		B54833C12AC704740098868B /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54833C02AC704740098868B /* NotificationService.swift */; };
 		B54833C52AC704740098868B /* ActerPushServiceExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B54833BE2AC704740098868B /* ActerPushServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B5AF87E62ACC6F7A00AAC606 /* ActerLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5AF87E52ACC6F7A00AAC606 /* ActerLogger.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,6 +78,7 @@
 		B54833C22AC704740098868B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B54833CA2AC707FA0098868B /* ActerPushServiceExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ActerPushServiceExtension.entitlements; sourceTree = "<group>"; };
 		B55C7BF92A9CACCE00293ABE /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
+		B5AF87E52ACC6F7A00AAC606 /* ActerLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActerLogger.swift; sourceTree = "<group>"; };
 		C2FE65B89091E833397E5A1E /* Pods_ActerPushServiceExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ActerPushServiceExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D875D8CE9EF84D9947B5064A /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		DB5C7BFA198366481394896A /* Pods-ActerPushServiceExtension.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ActerPushServiceExtension.profile.xcconfig"; path = "Target Support Files/Pods-ActerPushServiceExtension/Pods-ActerPushServiceExtension.profile.xcconfig"; sourceTree = "<group>"; };
@@ -178,6 +180,7 @@
 				B54833CA2AC707FA0098868B /* ActerPushServiceExtension.entitlements */,
 				B54833C02AC704740098868B /* NotificationService.swift */,
 				B54833C22AC704740098868B /* Info.plist */,
+				B5AF87E52ACC6F7A00AAC606 /* ActerLogger.swift */,
 			);
 			path = ActerPushServiceExtension;
 			sourceTree = "<group>";
@@ -396,6 +399,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B54833C12AC704740098868B /* NotificationService.swift in Sources */,
+				B5AF87E62ACC6F7A00AAC606 /* ActerLogger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -498,7 +502,7 @@
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Acter;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -647,7 +651,7 @@
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Acter;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -686,7 +690,7 @@
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Acter;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -729,7 +733,7 @@
 				INFOPLIST_FILE = ActerPushServiceExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ActerPushServiceExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -772,7 +776,7 @@
 				INFOPLIST_FILE = ActerPushServiceExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ActerPushServiceExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -812,7 +816,7 @@
 				INFOPLIST_FILE = ActerPushServiceExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ActerPushServiceExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
