@@ -1,0 +1,1 @@
+- Fix: do not render space-chat under space but switch to chat-section
