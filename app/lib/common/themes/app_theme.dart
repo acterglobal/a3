@@ -272,7 +272,7 @@ class AppTheme {
         ),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Color(0xff1D293E),
+        backgroundColor: Color(0xff122D46),
         unselectedLabelStyle: TextStyle(
           color: Colors.white,
           fontSize: 12,
