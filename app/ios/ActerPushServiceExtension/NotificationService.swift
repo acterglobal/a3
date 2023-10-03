@@ -13,23 +13,30 @@ class NotificationService: UNNotificationServiceExtension {
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
 
-    override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
+    override func didReceive(_ request: UNNotificationRequest,
+                            withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
-        Logger.push.log("Push received!")
+        Logger.push.log("Push received \(request)!")
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         if let sessions = UserDefaults.standard.string(forKey: "flutter.sessions") {
             print(sessions)
-            Logger.push.log("sessions: %{sessions}")
+            Logger.push.log("sessions:\(sessions)")
         } else {
             print("no sessions found.")
             Logger.push.log("no sessions found!")
-            return
         }
+
+        guard let roomId = request.roomId,
+            let eventId = request.eventId else {
+                Logger.push.log("not a matrix push ...");
+                // FIXME: forward to awesome_notifications_fcm?!?
+                return contentHandler(request.content)
+            }
 
         
         if let bestAttemptContent = bestAttemptContent {
             // Modify the notification content here...
-            bestAttemptContent.title = "modified !"
+            bestAttemptContent.body = "New message received"
             
             contentHandler(bestAttemptContent)
         }

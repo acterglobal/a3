@@ -15,9 +15,11 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		A2701571CECDAC4F7B65236C /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B989526A51D9C2DBEBDD984 /* Pods_Runner.framework */; };
-		B54833C12AC704740098868B /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54833C02AC704740098868B /* NotificationService.swift */; };
 		B54833C52AC704740098868B /* ActerPushServiceExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B54833BE2AC704740098868B /* ActerPushServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		B5AF87E62ACC6F7A00AAC606 /* ActerLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5AF87E52ACC6F7A00AAC606 /* ActerLogger.swift */; };
+		B5AF87EB2ACC825700AAC606 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5AF87EA2ACC825700AAC606 /* NotificationService.swift */; };
+		B5AF87EF2ACC828700AAC606 /* ActerLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5AF87EE2ACC828700AAC606 /* ActerLogger.swift */; };
+		B5AF87F12ACC829000AAC606 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5AF87F02ACC828F00AAC606 /* Constants.swift */; };
+		B5AF87F32ACC829200AAC606 /* UNNotificationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5AF87F22ACC829200AAC606 /* UNNotificationRequest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,11 +76,13 @@
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B54833BE2AC704740098868B /* ActerPushServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ActerPushServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		B54833C02AC704740098868B /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		B54833C22AC704740098868B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B54833CA2AC707FA0098868B /* ActerPushServiceExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ActerPushServiceExtension.entitlements; sourceTree = "<group>"; };
 		B55C7BF92A9CACCE00293ABE /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
-		B5AF87E52ACC6F7A00AAC606 /* ActerLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActerLogger.swift; sourceTree = "<group>"; };
+		B5AF87EA2ACC825700AAC606 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		B5AF87EE2ACC828700AAC606 /* ActerLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActerLogger.swift; sourceTree = "<group>"; };
+		B5AF87F02ACC828F00AAC606 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		B5AF87F22ACC829200AAC606 /* UNNotificationRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UNNotificationRequest.swift; sourceTree = "<group>"; };
 		C2FE65B89091E833397E5A1E /* Pods_ActerPushServiceExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ActerPushServiceExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D875D8CE9EF84D9947B5064A /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		DB5C7BFA198366481394896A /* Pods-ActerPushServiceExtension.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ActerPushServiceExtension.profile.xcconfig"; path = "Target Support Files/Pods-ActerPushServiceExtension/Pods-ActerPushServiceExtension.profile.xcconfig"; sourceTree = "<group>"; };
@@ -177,10 +181,12 @@
 		B54833BF2AC704740098868B /* ActerPushServiceExtension */ = {
 			isa = PBXGroup;
 			children = (
+				B5AF87EE2ACC828700AAC606 /* ActerLogger.swift */,
+				B5AF87F02ACC828F00AAC606 /* Constants.swift */,
+				B5AF87F22ACC829200AAC606 /* UNNotificationRequest.swift */,
+				B5AF87EA2ACC825700AAC606 /* NotificationService.swift */,
 				B54833CA2AC707FA0098868B /* ActerPushServiceExtension.entitlements */,
-				B54833C02AC704740098868B /* NotificationService.swift */,
 				B54833C22AC704740098868B /* Info.plist */,
-				B5AF87E52ACC6F7A00AAC606 /* ActerLogger.swift */,
 			);
 			path = ActerPushServiceExtension;
 			sourceTree = "<group>";
@@ -398,8 +404,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B54833C12AC704740098868B /* NotificationService.swift in Sources */,
-				B5AF87E62ACC6F7A00AAC606 /* ActerLogger.swift in Sources */,
+				B5AF87EB2ACC825700AAC606 /* NotificationService.swift in Sources */,
+				B5AF87F32ACC829200AAC606 /* UNNotificationRequest.swift in Sources */,
+				B5AF87EF2ACC828700AAC606 /* ActerLogger.swift in Sources */,
+				B5AF87F12ACC829000AAC606 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

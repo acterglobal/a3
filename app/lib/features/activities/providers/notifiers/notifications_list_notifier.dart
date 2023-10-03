@@ -84,7 +84,7 @@ class NotificationsListNotifier extends StateNotifier<NotificationListState>
         if (provider.isActive(LabsFeature.showNotifications)) {
           if (!ev.read()) {
             final brief = extractBrief(ev);
-            notify(brief);
+            // notify(brief);
           }
         }
         state = state.addNotification(ev);
