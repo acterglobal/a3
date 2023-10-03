@@ -55,8 +55,6 @@ class _PinListItemState extends ConsumerState<PinListItem> {
       child: Card(
         child: ListTile(
           key: Key(pin.eventIdStr()), // FIXME: causes crashes in ffigen
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           leading: Icon(isLink ? Atlas.link_chain_thin : Atlas.document_thin),
           title: Text(
             pin.title(),

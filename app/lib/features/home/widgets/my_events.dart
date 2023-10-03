@@ -12,7 +12,7 @@ class MyEventsSection extends ConsumerWidget {
     final events = ref.watch(myEventsProvider);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.only(top: 8),
       child: EventsCalendar(limit: limit, events: events),
     );
   }

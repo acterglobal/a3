@@ -210,6 +210,9 @@ class AppTheme {
         elevation: 0,
         margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
       ),
+      listTileTheme: const ListTileThemeData(
+        contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+      ),
       dialogTheme: DialogTheme(
         iconColor: const Color(0xFF67A24A),
         backgroundColor: const Color(0xFF122D46),
