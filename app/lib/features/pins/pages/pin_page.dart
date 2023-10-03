@@ -82,7 +82,7 @@ class PinPage extends ConsumerWidget {
                   color: Theme.of(context).colorScheme.error,
                 ),
                 const SizedBox(width: 10),
-                const Text('Delete Pin'),
+                const Text('Remove Pin'),
               ],
             ),
           ),

@@ -55,7 +55,7 @@ class CalendarEventPage extends ConsumerWidget {
             onTap: () => showAdaptiveDialog(
               context: context,
               builder: (context) => RedactContentWidget(
-                title: 'Delete this post',
+                title: 'Remove this post',
                 eventId: event.eventId().toString(),
                 onSuccess: () {
                   ref.invalidate(calendarEventProvider);
@@ -78,7 +78,7 @@ class CalendarEventPage extends ConsumerWidget {
                   color: Theme.of(context).colorScheme.error,
                 ),
                 const SizedBox(width: 10),
-                const Text('Delete Event'),
+                const Text('Remove Event'),
               ],
             ),
           ),

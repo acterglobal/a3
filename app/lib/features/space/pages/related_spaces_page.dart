@@ -89,10 +89,11 @@ class RelatedSpacesPage extends ConsumerWidget {
             if (spaces.parents.isNotEmpty || spaces.mainParent != null) {
               List<Widget> children = [
                 const Expanded(
-                    child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Text('Parents'),
-                )),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    child: Text('Parents'),
+                  ),
+                ),
               ];
               items.add(
                 SliverToBoxAdapter(

@@ -102,7 +102,7 @@ class RedactContentWidget extends ConsumerWidget {
         if (ctx.mounted) {
           Navigator.of(ctx, rootNavigator: true).pop();
           Navigator.of(ctx, rootNavigator: true).pop(true);
-          customMsgSnackbar(ctx, 'Content successfully deleted');
+          customMsgSnackbar(ctx, 'Content successfully removed');
           if (onSuccess != null) {
             onSuccess!();
           }
@@ -113,7 +113,7 @@ class RedactContentWidget extends ConsumerWidget {
           showAdaptiveDialog(
             context: ctx,
             builder: (ctx) => DefaultDialog(
-              title: const Text('Redaction sending failed'),
+              title: const Text('Removing content failed'),
               actions: <Widget>[
                 DefaultButton(
                   onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),

@@ -194,7 +194,7 @@ class ActionBox extends ConsumerWidget {
             ),
           ),
           icon: const Icon(Atlas.trash_thin),
-          label: const Text('Delete'),
+          label: const Text('Remove'),
         ),
       );
     }
