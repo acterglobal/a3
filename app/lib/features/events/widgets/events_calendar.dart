@@ -22,40 +22,43 @@ class EventsCalendar extends ConsumerWidget {
       data: (events) {
         int eventsLimit =
             (limit != null && events.length > limit!) ? limit! : events.length;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Events',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            events.isNotEmpty
-                ? ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: eventsLimit,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, idx) =>
-                        EventItem(event: events[idx]),
-                  )
-                : Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'At this moment, you are not joining any upcoming events. To find out what events are scheduled, check your spaces.',
-                      style: Theme.of(context).textTheme.bodySmall,
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Events',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              events.isNotEmpty
+                  ? ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: eventsLimit,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, idx) =>
+                          EventItem(event: events[idx]),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'At this moment, you are not joining any upcoming events. To find out what events are scheduled, check your spaces.',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
                     ),
-                  ),
-            eventsLimit != events.length
-                ? Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: DefaultButton(
-                      onPressed: () =>
-                          context.pushNamed(Routes.calendarEvents.name),
-                      title: 'See all my ${events.length} events',
-                      isOutlined: true,
-                    ),
-                  )
-                : const SizedBox.shrink(),
-          ],
+              eventsLimit != events.length
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: DefaultButton(
+                        onPressed: () =>
+                            context.pushNamed(Routes.calendarEvents.name),
+                        title: 'See all my ${events.length} events',
+                        isOutlined: true,
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ],
+          ),
         );
       },
       loading: () => const CircularProgressIndicator(),

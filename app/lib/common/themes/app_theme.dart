@@ -208,7 +208,7 @@ class AppTheme {
       cardTheme: CardTheme(
         color: brandColorScheme.secondaryContainer,
         elevation: 0,
-        margin: const EdgeInsets.all(8),
+        margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
       ),
       dialogTheme: DialogTheme(
         iconColor: const Color(0xFF67A24A),
