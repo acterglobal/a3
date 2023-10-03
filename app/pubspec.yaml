@@ -108,8 +108,9 @@ dependencies:
   infinite_scroll_pagination: ^3.2.0
   convert: ^3.1.1
   firebase_core: ^2.16.0
-  awesome_notifications: 0.7.5-dev.3
-  awesome_notifications_fcm: 0.7.5-dev.3
+  awesome_notifications_core: ^0.8.1
+  awesome_notifications: any         # managed by awesome_notifications_core
+  awesome_notifications_fcm: any     # managed by awesome_notifications_core
     # path: "../../awesome_notifications"
     # git:
     #   url: https://github.com/acterglobal/awesome_notifications

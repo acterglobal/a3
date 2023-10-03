@@ -81,6 +81,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.5-dev.3"
+  awesome_notifications_core:
+    dependency: "direct main"
+    description:
+      name: awesome_notifications_core
+      sha256: "0d67f3539aac87f9052b9eb204bdfbd00893a9d83b5975151098265428332bea"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.8.1"
   awesome_notifications_fcm:
     dependency: "direct main"
     description:
