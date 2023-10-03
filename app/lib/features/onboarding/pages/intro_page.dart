@@ -1,3 +1,4 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -21,18 +22,7 @@ class _IntroPageState extends State<IntroPage> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xff121F2B),
-              Color(0xff122334),
-              Color(0xff121315),
-              Color(0xff121315),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.0, 0.6, 0.8, 1.0],
-            tileMode: TileMode.decal,
-          ),
+          gradient: AppTheme.introGradient,
         ),
         child: Column(
           children: [
@@ -100,8 +90,8 @@ class _IntroPageState extends State<IntroPage> {
                                       text: TextSpan(
                                         children: [
                                           TextSpan(
-                                            text: '${introTexts[index]
-                                                    .split(' ')[0]} ',
+                                            text:
+                                                '${introTexts[index].split(' ')[0]} ',
                                             style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.green,

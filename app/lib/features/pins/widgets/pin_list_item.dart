@@ -56,15 +56,16 @@ class _PinListItemState extends ConsumerState<PinListItem> {
         child: ListTile(
           key: Key(pin.eventIdStr()), // FIXME: causes crashes in ffigen
           leading: Icon(isLink ? Atlas.link_chain_thin : Atlas.document_thin),
-          title: Text(pin.title()),
+          title: Text(
+            pin.title(),
+            softWrap: false,
+            overflow: TextOverflow.ellipsis,
+          ),
           titleTextStyle: Theme.of(context).textTheme.titleSmall,
           subtitle: widget.showSpace
-              ? Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Wrap(
-                    alignment: WrapAlignment.start,
-                    children: [SpaceChip(spaceId: spaceId)],
-                  ),
+              ? Wrap(
+                  alignment: WrapAlignment.start,
+                  children: [SpaceChip(spaceId: spaceId)],
                 )
               : null,
           onTap: onTap,
