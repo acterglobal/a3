@@ -16,6 +16,7 @@ class RedactContentWidget extends ConsumerWidget {
   final String senderId;
   final String roomId;
   final bool isSpace;
+  final void Function()? onRemove;
   final Function()? onSuccess;
   const RedactContentWidget({
     super.key,
@@ -26,6 +27,7 @@ class RedactContentWidget extends ConsumerWidget {
     required this.senderId,
     this.isSpace = false,
     this.onSuccess,
+    this.onRemove,
   });
 
   @override
@@ -68,7 +70,8 @@ class RedactContentWidget extends ConsumerWidget {
           isOutlined: true,
         ),
         DefaultButton(
-          onPressed: () => redactContent(context, ref, textController.text),
+          onPressed: onRemove ??
+              () => redactContent(context, ref, textController.text),
           title: 'Remove',
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.errorContainer,

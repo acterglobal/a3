@@ -1,6 +1,6 @@
 import 'package:acter/features/events/presentation/providers/providers.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/features/events/widgets/events_calendar.dart';
+import 'package:acter/features/events/presentation/widgets/events_calendar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MyEventsSection extends ConsumerWidget {
@@ -9,11 +9,20 @@ class MyEventsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final events = ref.watch(calendarEventsProvider);
+    final upcoming = ref.watch(upcomingEventsProvider);
 
     return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: EventsCalendar(limit: limit, events: events),
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Events',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          EventsCalendar(limit: limit, events: upcoming),
+        ],
+      ),
     );
   }
 }

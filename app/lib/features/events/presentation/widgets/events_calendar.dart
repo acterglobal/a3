@@ -1,6 +1,6 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_button.dart';
-import 'package:acter/features/events/widgets/events_item.dart';
+import 'package:acter/features/events/presentation/widgets/events_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show CalendarEvent;
 import 'package:flutter/material.dart';
@@ -27,17 +27,22 @@ class EventsCalendar extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Events',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
               events.isNotEmpty
-                  ? ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: eventsLimit,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, idx) =>
-                          EventItem(event: events[idx]),
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'Upcoming',
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: eventsLimit,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, idx) =>
+                              EventItem(event: events[idx]),
+                        ),
+                      ],
                     )
                   : Padding(
                       padding: const EdgeInsets.all(8.0),

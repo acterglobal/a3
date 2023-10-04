@@ -49,7 +49,6 @@ class CalendarEventPage extends ConsumerWidget {
 
       if (memb.canString('CanRedact') ||
           memb.userId().toString() == event.sender().toString()) {
-        final roomId = event.roomIdStr();
         actions.addAll([
           PopupMenuItem(
             onTap: () => showAdaptiveDialog(
@@ -57,17 +56,12 @@ class CalendarEventPage extends ConsumerWidget {
               builder: (context) => RedactContentWidget(
                 title: 'Remove this post',
                 eventId: event.eventId().toString(),
-                onSuccess: () {
-                  if (context.mounted) {
-                    context.goNamed(
-                      Routes.spaceEvents.name,
-                      pathParameters: {'spaceId': roomId},
-                    );
-                  }
-                },
                 senderId: event.sender().toString(),
-                roomId: roomId,
+                roomId: spaceId,
                 isSpace: true,
+                onRemove: () => ref
+                    .read(redactEventProvider.notifier)
+                    .redact(spaceId, event.eventId().toString(), ''),
               ),
             ),
             child: Row(
@@ -123,6 +117,14 @@ class CalendarEventPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen(redactEventProvider, (previous, next) {
+      next.whenData((res) {
+        if (res == null) return null;
+        context.pop();
+        context.pop();
+        ref.invalidate(spaceEventsProvider);
+      });
+    });
     final event = ref.watch(calendarEventProvider(calendarId));
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.neutral,

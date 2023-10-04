@@ -1,5 +1,4 @@
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/features/events/presentation/providers/providers.dart';
@@ -9,7 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-// interface data providers
 final _titleProvider = StateProvider.autoDispose<String>((ref) => '');
 final _dateProvider =
     StateProvider.autoDispose<DateTime>((ref) => DateTime.now());
@@ -46,44 +44,41 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
 
   // apply existing data to fields
   void _editEventData() async {
-    final calendarEvent = await ref.read(
-      calendarEventProvider(widget.calendarId!).future,
+    final calendarEvent = ref.read(
+      calendarEventProvider(widget.calendarId!),
     );
-    final titleNotifier = ref.read(_titleProvider.notifier);
-    final dateNotifier = ref.read(_dateProvider.notifier);
-    final startTimeNotifier = ref.read(_startTimeProvider.notifier);
-    final endTimeNotifier = ref.read(_endTimeProvider.notifier);
-
-    titleNotifier.update((state) => calendarEvent.title());
-    // parse RFC3393 date time
-    final dartDateTime = toDartDatetime(calendarEvent.utcStart());
-    final dartEndTime = toDartDatetime(calendarEvent.utcEnd());
-    dateNotifier.update(
-      (state) => DateTime(
-        dartDateTime.year,
-        dartDateTime.month,
-        dartDateTime.day,
-      ),
+    calendarEvent.whenData(
+      (event) {
+        _nameController.text = event.title();
+        _descriptionController.text =
+            event.description() == null ? '' : event.description()!.body();
+        final dartDateTime = toDartDatetime(event.utcStart());
+        final dartEndTime = toDartDatetime(event.utcEnd());
+        _dateController.text = DateFormat.yMd().format(dartDateTime.toLocal());
+        _startTimeController.text =
+            DateFormat.jm().format(dartDateTime.toLocal());
+        _endTimeController.text = DateFormat.jm().format(dartEndTime.toLocal());
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          ref
+              .read(_titleProvider.notifier)
+              .update((state) => _nameController.text);
+        });
+      },
     );
-    startTimeNotifier.update((state) => TimeOfDay.fromDateTime(dartDateTime));
-    endTimeNotifier.update((state) => TimeOfDay.fromDateTime(dartEndTime));
-
-    _nameController.text = ref.read(_titleProvider);
-    _dateController.text = DateFormat.yMd().format(ref.read(_dateProvider));
-
-    // We are doing as expected, but the lints triggers.
-    // ignore: use_build_context_synchronously
-    if (!context.mounted) {
-      return;
-    }
-    _startTimeController.text = ref.read(_startTimeProvider).format(context);
-    _endTimeController.text = ref.read(_endTimeProvider).format(context);
-    _descriptionController.text = calendarEvent.description()!.body();
   }
 
   @override
   Widget build(BuildContext context) {
     final titleInput = ref.watch(_titleProvider);
+    ref.listen(editEventProvider, (prev, next) {
+      next.whenData(
+        (event) {
+          if (event == null) return;
+          context.pop();
+          context.pop();
+        },
+      );
+    });
     return SideSheet(
       header: 'Edit event',
       addActions: true,
@@ -103,7 +98,8 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
                   hintText: 'Type Name',
                   textInputType: TextInputType.multiline,
                   controller: _nameController,
-                  onInputChanged: _handleTitleChange,
+                  onInputChanged: (val) =>
+                      ref.read(_titleProvider.notifier).update((state) => val!),
                 ),
               ],
             ),
@@ -256,97 +252,58 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
     );
   }
 
-  void _handleTitleChange(String? value) {
-    ref.read(_titleProvider.notifier).update((state) => value!);
-  }
-
   void _handleUpdateEvent(BuildContext context) async {
-    showAdaptiveDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) => DefaultDialog(
-        title: Text(
-          'Updating Event',
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        isLoader: true,
-      ),
-    );
-    final calendarEvent =
-        await ref.read(calendarEventProvider(widget.calendarId!).future);
-    try {
-      // initialize event update builder
-      final eventUpdateBuilder = calendarEvent.updateBuilder();
-
-      eventUpdateBuilder.title(ref.read(_titleProvider));
-
-      final date = ref.read(_dateProvider);
-      final startTime = ref.read(_startTimeProvider);
-      final utcStartDateTime = DateTime(
-        date.year,
-        date.month,
-        date.day,
-        startTime.hour,
-        startTime.minute,
-      ).toUtc();
-      eventUpdateBuilder
-          .utcStartFromRfc3339(utcStartDateTime.toIso8601String());
-
-      final endTime = ref.read(_endTimeProvider);
-      final utcEndDateTime = DateTime(
-        date.year,
-        date.month,
-        date.day,
-        endTime.hour,
-        endTime.minute,
-      ).toUtc();
-      eventUpdateBuilder.utcEndFromRfc3339(utcEndDateTime.toIso8601String());
-
-      eventUpdateBuilder.descriptionText(_descriptionController.text.trim());
-
-      final eventId = await eventUpdateBuilder.send();
-      debugPrint('Updated Calendar Event: ${eventId.toString()}');
-
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
-      if (!context.mounted) {
-        return;
-      }
-      context.pop();
-      context.pop();
-    } catch (e) {
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
-      if (!context.mounted) {
-        return;
-      }
-      context.pop();
-      debugPrint('Some error occured ${e.toString()}');
-    }
+    final asyncData = ref.read(calendarEventProvider(widget.calendarId!));
+    final spaceId = asyncData.value!.roomIdStr();
+    final date = ref.read(_dateProvider);
+    final startTime = ref.read(_startTimeProvider);
+    final endTime = ref.read(_endTimeProvider);
+    final utcStartDateTime = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      startTime.hour,
+      startTime.minute,
+    ).toUtc().toIso8601String();
+    final utcEndDateTime = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      endTime.hour,
+      endTime.minute,
+    ).toUtc().toIso8601String();
+    await ref.read(editEventProvider.notifier).update(
+          spaceId,
+          widget.calendarId!,
+          _nameController.text.trim(),
+          _descriptionController.text.trim(),
+          utcStartDateTime,
+          utcEndDateTime,
+        );
   }
 
   Future<void> _selectDate() async {
     DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: ref.read(_dateProvider),
+      initialDate: DateTime.now(),
       initialDatePickerMode: DatePickerMode.day,
       firstDate: DateTime.now(),
       lastDate: DateTime(2101),
     );
     if (picked != null) {
       ref.read(_dateProvider.notifier).update((state) => picked);
-      _dateController.text = DateFormat.yMd().format(ref.read(_dateProvider));
+      _dateController.text = DateFormat.yMd().format(picked);
     }
   }
 
   Future<void> _selectStartTime() async {
     TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: ref.read(_startTimeProvider),
+      initialTime: TimeOfDay.now(),
     );
     if (picked != null && context.mounted) {
+      final time = picked.format(context);
       ref.read(_startTimeProvider.notifier).update((state) => picked);
-      final time = ref.read(_startTimeProvider).format(context);
       _startTimeController.text = time;
     }
   }
@@ -354,11 +311,11 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
   Future<void> _selectEndTime() async {
     TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: ref.read(_endTimeProvider),
+      initialTime: TimeOfDay.now(),
     );
     if (picked != null && context.mounted) {
-      ref.read(_endTimeProvider.notifier).update((state) => picked);
-      final time = ref.read(_endTimeProvider).format(context);
+      final time = picked.format(context);
+      ref.read(_startTimeProvider.notifier).update((state) => picked);
       _endTimeController.text = time;
     }
   }

@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/events/presentation/providers/providers.dart';
-import 'package:acter/features/events/widgets/events_item.dart';
+import 'package:acter/features/events/presentation/widgets/events_item.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

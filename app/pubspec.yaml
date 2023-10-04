@@ -33,6 +33,7 @@ dependencies:
 
   # UI
   flutter_adaptive_scaffold: ^0.1.0
+  
   atlas_icons: ^0.0.12
   # stories_editor:
   #   path: "../../flutter_stories_editor"
@@ -64,6 +65,7 @@ dependencies:
     # path: "../../acter-avatar"
     git:
       url: https://github.com/acterglobal/acter-avatar
+  flutter_easyloading: ^3.0.5
 
   # Code Generation
   flutter_localizations:
@@ -83,6 +85,7 @@ dependencies:
   settings_ui: '2.0.2'
 
   # Utilities
+  fpdart: ^1.1.0
   path_provider: ^2.0.8
   path: ^1.8.3
   url_launcher: ^6.1.10
@@ -131,7 +134,7 @@ dev_dependencies:
       ref: main
   gherkin: ^3.1.0
   msix: ^3.7.0
-  mockito: ^5.4.2
+ # mockito: ^5.4.2
 
 icons_launcher:
   image_path: "assets/icon/logo.png"

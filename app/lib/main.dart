@@ -8,6 +8,7 @@ import 'package:acter/l10n/l10n.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
@@ -65,6 +66,7 @@ class _ActerState extends ConsumerState<Acter> {
           routerConfig: appRouter,
           theme: AppTheme.theme,
           title: 'Acter',
+          builder: EasyLoading.init(),
           debugShowCheckedModeBanner: false,
           localizationsDelegates: const [
             AppLocalizations.delegate,

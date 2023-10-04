@@ -1,16 +1,14 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/features/events/presentation/providers/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-// interface data providers
 final _titleProvider = StateProvider.autoDispose<String>((ref) => '');
 final _dateProvider =
     StateProvider.autoDispose<DateTime>((ref) => DateTime.now());
@@ -52,6 +50,20 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   @override
   Widget build(BuildContext context) {
     final titleInput = ref.watch(_titleProvider);
+    ref.listen(createEventProvider, (previous, next) {
+      next.whenData(
+        (event) {
+          if (event == null) return;
+          context.pop();
+          context.pop();
+          context.pushNamed(
+            Routes.calendarEvent.name,
+            pathParameters: {'calendarId': event.eventId().toString()},
+          );
+        },
+      );
+    });
+
     return SideSheet(
       header: 'Create new event',
       addActions: true,
@@ -71,7 +83,8 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                   hintText: 'Name of the event',
                   textInputType: TextInputType.multiline,
                   controller: _nameController,
-                  onInputChanged: _handleTitleChange,
+                  onInputChanged: (val) =>
+                      ref.read(_titleProvider.notifier).update((state) => val!),
                 ),
               ],
             ),
@@ -229,111 +242,72 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     );
   }
 
-  void _handleTitleChange(String? value) {
-    ref.read(_titleProvider.notifier).update((state) => value!);
-  }
-
   Future<void> _handleCreateEvent() async {
-    showAdaptiveDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) => const DefaultDialog(
-        title: Text('Creating Event'),
-        isLoader: true,
-      ),
-    );
+    final spaceId = ref.read(selectedSpaceIdProvider)!;
     // pre fill values if user doesn't set date time.
     if (_dateController.text.isEmpty) {
-      _dateController.text = DateFormat.yMd().format(ref.read(_dateProvider));
+      _dateController.text = DateFormat.yMd().format(DateTime.now().toUtc());
     }
     if (_startTimeController.text.isEmpty) {
-      final time = ref.read(_startTimeProvider).format(context);
+      final time = TimeOfDay.now().format(context);
       _startTimeController.text = time;
     }
     if (_endTimeController.text.isEmpty) {
-      final time = ref.read(_endTimeProvider).format(context);
+      final time = TimeOfDay(
+        hour: TimeOfDay.now().hour + 1,
+        minute: TimeOfDay.now().minute,
+      ).format(context);
       _endTimeController.text = time;
     }
-    try {
-      final spaceId = ref.read(selectedSpaceIdProvider);
-      final space = await ref.read(spaceProvider(spaceId!).future);
-      final draft = space.calendarEventDraft();
-
-      draft.title(ref.read(_titleProvider));
-      draft.descriptionText(_descriptionController.text.trim());
-
-      // convert selected date time to utc and RFC3339 format
-      final date = ref.read(_dateProvider);
-      final startTime = ref.read(_startTimeProvider);
-      final utcStartDateTime = DateTime(
-        date.year,
-        date.month,
-        date.day,
-        startTime.hour,
-        startTime.minute,
-      ).toUtc();
-      draft.utcStartFromRfc3339(utcStartDateTime.toIso8601String());
-
-      final endTime = ref.read(_endTimeProvider);
-      final utcEndDateTime = DateTime(
-        date.year,
-        date.month,
-        date.day,
-        endTime.hour,
-        endTime.minute,
-      ).toUtc();
-      draft.utcEndFromRfc3339(utcEndDateTime.toIso8601String());
-
-      final eventId = await draft.send();
-      debugPrint('Created Calendar Event: ${eventId.toString()}');
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
-      if (!context.mounted) {
-        return;
-      }
-      context.pop(); // pop the loading screen
-      context.pop(); // pop the create sheet
-      await context.pushNamed(
-        Routes.calendarEvent.name,
-        pathParameters: {'calendarId': eventId.toString()},
-      );
-    } catch (e) {
-      if (!context.mounted) {
-        return;
-      }
-      context.pop();
-      customMsgSnackbar(context, 'Some error occurred $e');
-    }
+    final date = ref.read(_dateProvider);
+    final startTime = ref.read(_startTimeProvider);
+    final endTime = ref.read(_endTimeProvider);
+    final utcStartDateTime = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      startTime.hour,
+      startTime.minute,
+    ).toUtc().toIso8601String();
+    final utcEndDateTime = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      endTime.hour,
+      endTime.minute,
+    ).toUtc().toIso8601String();
+    await ref.read(createEventProvider.notifier).create(
+          spaceId,
+          _nameController.text.trim(),
+          _descriptionController.text.trim(),
+          utcStartDateTime,
+          utcEndDateTime,
+        );
   }
 
   Future<void> _selectDate() async {
     DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: ref.read(_dateProvider),
+      initialDate: DateTime.now(),
       initialDatePickerMode: DatePickerMode.day,
       firstDate: DateTime.now(),
       lastDate: DateTime(2101),
     );
     if (picked != null) {
       ref.read(_dateProvider.notifier).update((state) => picked);
-      _dateController.text = DateFormat.yMd().format(ref.read(_dateProvider));
+      _dateController.text = DateFormat.yMd().format(picked);
     }
   }
 
   Future<void> _selectStartTime() async {
     TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: ref.read(_startTimeProvider),
+      initialTime: TimeOfDay.now(),
     );
 
-    // We are doing as expected, but the lints triggers.
-    // ignore: use_build_context_synchronously
-    if (!context.mounted) {
-      return;
-    }
-    if (picked != null) {
+    if (picked != null && context.mounted) {
+      final time = picked.format(context);
       ref.read(_startTimeProvider.notifier).update((state) => picked);
-      final time = ref.read(_startTimeProvider).format(context);
       _startTimeController.text = time;
     }
   }
@@ -341,17 +315,15 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   Future<void> _selectEndTime() async {
     TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: ref.read(_endTimeProvider),
+      initialTime: TimeOfDay(
+        hour: TimeOfDay.now().hour + 1,
+        minute: TimeOfDay.now().minute,
+      ),
     );
 
-    // We are doing as expected, but the lints triggers.
-    // ignore: use_build_context_synchronously
-    if (!context.mounted) {
-      return;
-    }
-    if (picked != null) {
+    if (picked != null && context.mounted) {
+      final time = picked.format(context);
       ref.read(_endTimeProvider.notifier).update((state) => picked);
-      final time = ref.read(_endTimeProvider).format(context);
       _endTimeController.text = time;
     }
   }
