@@ -2006,165 +2006,177 @@ pub(crate) fn sync_event_to_message(
     event: &Raw<AnySyncTimelineEvent>,
     room_id: OwnedRoomId,
 ) -> Option<RoomMessage> {
-    info!("sync event to message: {:?}", event);
+    log::debug!("raw sync event to message: {:?}", event);
     match event.deserialize() {
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::PolicyRuleRoom(
+        Ok(s) => any_sync_event_to_message(s, room_id),
+        Err(e) => {
+            log::debug!("Parsing sync failed: $e");
+            None
+        }
+    }
+}
+pub(crate) fn any_sync_event_to_message(
+    event: AnySyncTimelineEvent,
+    room_id: OwnedRoomId,
+) -> Option<RoomMessage> {
+    info!("sync event to message: {:?}", event);
+    match event {
+        AnySyncTimelineEvent::State(AnySyncStateEvent::PolicyRuleRoom(
             SyncStateEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::policy_rule_room_from_sync_event(e, room_id));
         }
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::PolicyRuleServer(
+        AnySyncTimelineEvent::State(AnySyncStateEvent::PolicyRuleServer(
             SyncStateEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::policy_rule_server_from_sync_event(e, room_id));
         }
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::PolicyRuleUser(
+        AnySyncTimelineEvent::State(AnySyncStateEvent::PolicyRuleUser(
             SyncStateEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::policy_rule_user_from_sync_event(e, room_id));
         }
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomAliases(
+        AnySyncTimelineEvent::State(AnySyncStateEvent::RoomAliases(
             SyncStateEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::room_aliases_from_sync_event(e, room_id));
         }
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomAvatar(
+        AnySyncTimelineEvent::State(AnySyncStateEvent::RoomAvatar(
             SyncStateEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::room_avatar_from_sync_event(e, room_id));
         }
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomCanonicalAlias(
+        AnySyncTimelineEvent::State(AnySyncStateEvent::RoomCanonicalAlias(
             SyncStateEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::room_canonical_alias_from_sync_event(
                 e, room_id,
             ));
         }
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomCreate(
+        AnySyncTimelineEvent::State(AnySyncStateEvent::RoomCreate(
             SyncStateEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::room_create_from_sync_event(e, room_id));
         }
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomEncryption(
+        AnySyncTimelineEvent::State(AnySyncStateEvent::RoomEncryption(
             SyncStateEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::room_encryption_from_sync_event(e, room_id));
         }
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomGuestAccess(
+        AnySyncTimelineEvent::State(AnySyncStateEvent::RoomGuestAccess(
             SyncStateEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::room_guest_access_from_sync_event(e, room_id));
         }
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomHistoryVisibility(
+        AnySyncTimelineEvent::State(AnySyncStateEvent::RoomHistoryVisibility(
             SyncStateEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::room_history_visibility_from_sync_event(
                 e, room_id,
             ));
         }
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomJoinRules(
+        AnySyncTimelineEvent::State(AnySyncStateEvent::RoomJoinRules(
             SyncStateEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::room_join_rules_from_sync_event(e, room_id));
         }
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomMember(
+        AnySyncTimelineEvent::State(AnySyncStateEvent::RoomMember(
             SyncStateEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::room_member_from_sync_event(e, room_id));
         }
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomName(SyncStateEvent::Original(
+        AnySyncTimelineEvent::State(AnySyncStateEvent::RoomName(SyncStateEvent::Original(
             e,
-        )))) => {
+        ))) => {
             return Some(RoomMessage::room_name_from_sync_event(e, room_id));
         }
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomPinnedEvents(
+        AnySyncTimelineEvent::State(AnySyncStateEvent::RoomPinnedEvents(
             SyncStateEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::room_pinned_events_from_sync_event(e, room_id));
         }
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomPowerLevels(
+        AnySyncTimelineEvent::State(AnySyncStateEvent::RoomPowerLevels(
             SyncStateEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::room_power_levels_from_sync_event(e, room_id));
         }
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomServerAcl(
+        AnySyncTimelineEvent::State(AnySyncStateEvent::RoomServerAcl(
             SyncStateEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::room_server_acl_from_sync_event(e, room_id));
         }
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomThirdPartyInvite(
+        AnySyncTimelineEvent::State(AnySyncStateEvent::RoomThirdPartyInvite(
             SyncStateEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::room_third_party_invite_from_sync_event(
                 e, room_id,
             ));
         }
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomTombstone(
+        AnySyncTimelineEvent::State(AnySyncStateEvent::RoomTombstone(
             SyncStateEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::room_tombstone_from_sync_event(e, room_id));
         }
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomTopic(
+        AnySyncTimelineEvent::State(AnySyncStateEvent::RoomTopic(
             SyncStateEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::room_topic_from_sync_event(e, room_id));
         }
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::SpaceChild(
+        AnySyncTimelineEvent::State(AnySyncStateEvent::SpaceChild(
             SyncStateEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::space_child_from_sync_event(e, room_id));
         }
-        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::SpaceParent(
+        AnySyncTimelineEvent::State(AnySyncStateEvent::SpaceParent(
             SyncStateEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::space_parent_from_sync_event(e, room_id));
         }
-        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::CallAnswer(
+        AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::CallAnswer(
             SyncMessageLikeEvent::Original(a),
-        ))) => {
+        )) => {
             return Some(RoomMessage::call_answer_from_sync_event(a, room_id));
         }
-        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::CallCandidates(
+        AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::CallCandidates(
             SyncMessageLikeEvent::Original(c),
-        ))) => {
+        )) => {
             return Some(RoomMessage::call_candidates_from_sync_event(c, room_id));
         }
-        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::CallHangup(
+        AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::CallHangup(
             SyncMessageLikeEvent::Original(h),
-        ))) => {
+        )) => {
             return Some(RoomMessage::call_hangup_from_sync_event(h, room_id));
         }
-        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::CallInvite(
+        AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::CallInvite(
             SyncMessageLikeEvent::Original(i),
-        ))) => {
+        )) => {
             return Some(RoomMessage::call_invite_from_sync_event(i, room_id));
         }
-        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::Reaction(
+        AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::Reaction(
             SyncMessageLikeEvent::Original(r),
-        ))) => {
+        )) => {
             return Some(RoomMessage::reaction_from_sync_event(r, room_id));
         }
-        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomEncrypted(
+        AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomEncrypted(
             SyncMessageLikeEvent::Original(e),
-        ))) => {
+        )) => {
             return Some(RoomMessage::room_encrypted_from_sync_event(e, room_id));
         }
-        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
+        AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
             SyncMessageLikeEvent::Original(m),
-        ))) => {
+        )) => {
             return Some(RoomMessage::room_message_from_sync_event(m, room_id, false));
         }
-        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomRedaction(r))) => {
+        AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomRedaction(r)) => {
             return Some(RoomMessage::room_redaction_from_sync_event(r, room_id));
         }
-        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::Sticker(
+        AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::Sticker(
             SyncMessageLikeEvent::Original(s),
-        ))) => {
+        )) => {
             return Some(RoomMessage::sticker_from_sync_event(s, room_id));
         }
-        _ => {}
+        _ => None
     }
-    None
 }
 
 impl From<(Arc<TimelineItem>, Room)> for RoomMessage {

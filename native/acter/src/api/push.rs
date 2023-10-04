@@ -1,14 +1,95 @@
-use crate::RUNTIME;
+use crate::{RUNTIME, RoomMessage};
 
-use super::Client;
-use anyhow::{Result, Context};
+use super::{Client, message::{sync_event_to_message, any_sync_event_to_message}};
+use anyhow::{Result, Context, bail};
+use matrix_sdk_ui::notification_client::{NotificationItem as SdkNotificationItem, NotificationClient, NotificationEvent};
 use matrix_sdk::ruma::{
     api::client::push::{set_pusher, PusherIds, PusherInit, PusherKind},
     assign,
     push::HttpPusherData,
 };
+use ruma_common::{OwnedRoomId, OwnedEventId};
+
+pub struct NotificationItem {
+    inner: SdkNotificationItem,
+    room_id: OwnedRoomId,
+}
+
+impl NotificationItem {
+    fn new(inner: SdkNotificationItem, room_id: OwnedRoomId) -> Self {
+        NotificationItem { inner, room_id }
+    }
+
+    pub fn is_invite(&self) -> bool {
+        matches!(self.inner.event, NotificationEvent::Invite(_))
+    }
+
+    pub fn room_message(&self) -> Option<RoomMessage> {
+        let NotificationEvent::Timeline(s) = &self.inner.event else {
+            return None;
+        };
+        any_sync_event_to_message(s.clone(), self.room_id.clone())
+    }
+    // pub fn event(&self) -> NotificationEvent {
+    //     self.inner.event
+    // }
+    pub fn sender_display_name(&self) -> Option<String> {
+        self.inner.sender_display_name.clone()
+    }
+
+    pub fn sender_avatar_url(&self) -> Option<String> {
+        self.inner.sender_avatar_url.clone()
+    }
+
+    pub fn room_display_name(&self) -> String {
+        self.inner.room_display_name.clone()
+    }
+
+    pub fn room_avatar_url(&self) -> Option<String> {
+        self.inner.room_avatar_url.clone()
+    }
+
+    pub fn room_canonical_alias(&self) -> Option<String> {
+        self.inner.room_canonical_alias.clone()
+    }
+
+    pub fn is_room_encrypted(&self) -> Option<bool> {
+        self.inner.is_room_encrypted
+    }
+
+    pub fn is_direct_message_room(&self) -> bool {
+        self.inner.is_direct_message_room
+    }
+
+    pub fn joined_members_count(&self) -> u64 {
+        self.inner.joined_members_count
+    }
+
+    pub fn is_noisy(&self) -> Option<bool> {
+        self.inner.is_noisy
+    }
+}
+
 
 impl Client {
+
+    pub async fn get_notification_item(&self, room_id: String, event_id: String) -> Result<NotificationItem> {
+        let client = self.core.client().clone();
+        let room_id : OwnedRoomId = room_id.try_into()?;
+        let event_id : OwnedEventId = event_id.try_into()?;
+        RUNTIME
+            .spawn(async move {
+                let notif_client = NotificationClient::builder(client).await?.build();
+                if let Some(notif) = notif_client.get_notification_with_context(&room_id, &event_id).await? {
+                    Ok(NotificationItem::new(notif, room_id))
+                } else {
+                    bail!("(hidden notification)")
+                }
+            })
+            .await?
+
+    }
+
     pub async fn add_pusher(
         &self,
         app_id: String,
@@ -44,7 +125,7 @@ impl Client {
             app_display_name: app_name,
             device_display_name: device_name,
             profile_tag: None,
-            lang: lang.unwrap_or("en".to_owned()), //
+            lang: lang.unwrap_or("en".to_owned()),
         };
         RUNTIME
             .spawn(async move {

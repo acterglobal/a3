@@ -50,7 +50,7 @@ use crate::{SpaceRelations, TimelineStream};
 
 use super::{
     client::Client,
-    message::{sync_event_to_message, RoomMessage},
+    message::RoomMessage,
     receipt::ReceiptRecord,
     room::{self, Room},
     utils::{remap_for_diff, ApiVectorDiff},
