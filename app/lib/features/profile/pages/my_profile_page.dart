@@ -164,7 +164,7 @@ class MyProfile extends ConsumerWidget {
                   ),
                 ),
                 Container(
-                  constraints: const BoxConstraints(maxWidth: 400),    
+                  constraints: const BoxConstraints(maxWidth: 400),
                   margin: const EdgeInsets.symmetric(horizontal: 20),
                   alignment: Alignment.center,
                   child: Column(
@@ -232,7 +232,7 @@ class MyProfile extends ConsumerWidget {
                       Container(
                         margin: const EdgeInsets.symmetric(vertical: 10),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.cardBackground,
+                          color: Theme.of(context).colorScheme.onPrimary,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Column(
@@ -266,7 +266,7 @@ class MyProfile extends ConsumerWidget {
                         child: Container(
                           margin: const EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.cardBackground,
+                            color: Theme.of(context).colorScheme.onPrimary,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Column(
@@ -296,15 +296,20 @@ class MyProfile extends ConsumerWidget {
                       const SizedBox(height: 5),
                       Container(
                         alignment: Alignment.topLeft,
-                        child:  Text('Danger Zone',
-                            style: TextStyle(color: Theme.of(context).colorScheme.error),),
+                        child: Text(
+                          'Danger Zone',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
                       ),
                       Container(
                         margin: const EdgeInsets.symmetric(vertical: 10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                              color: AppTheme.brandColorScheme.onError,),
+                            color: AppTheme.brandColorScheme.onError,
+                          ),
                         ),
                         child: Column(
                           children: [

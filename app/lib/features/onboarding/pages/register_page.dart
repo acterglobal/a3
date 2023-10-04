@@ -77,17 +77,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     final authState = ref.watch(authStateProvider);
     final authNotifier = ref.watch(authStateProvider.notifier);
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.neutral,
       primary: false,
-      appBar: AppBar(
-        actions: [
-          if (canGuestLogin)
-            OutlinedButton(
-              onPressed: () async => await authNotifier.makeGuest(context),
-              child: const Text('Continue as guest'),
-            ),
-        ],
-        title: Text(AppLocalizations.of(context)!.register),
-      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 10,
@@ -95,161 +86,215 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         ),
         child: CustomScrollView(
           slivers: [
+            SliverAppBar(
+              backgroundColor: Colors.transparent,
+              actions: [
+                if (canGuestLogin)
+                  OutlinedButton(
+                    onPressed: () async =>
+                        await authNotifier.makeGuest(context),
+                    child: const Text('Continue as guest'),
+                  ),
+              ],
+              title: Text(
+                AppLocalizations.of(context)!.register,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
             SliverToBoxAdapter(
               child: Form(
                 key: formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 80),
                     SizedBox(
                       height: 50,
                       width: 50,
                       child: SvgPicture.asset('assets/icon/acter.svg'),
                     ),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 20),
                     Text(
                       AppLocalizations.of(context)!.onboardText,
+                      style: Theme.of(context).textTheme.titleSmall,
                     ),
                     const SizedBox(height: 10),
                     Text(
                       AppLocalizations.of(context)!.createAccountText,
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       child: Column(
                         children: [
                           const SizedBox(height: 20),
-                          SizedBox(
-                            height: 60,
-                            child: TextFormField(
-                              controller: name,
-                              decoration: InputDecoration(
-                                hintText: AppLocalizations.of(context)!.name,
+                          TextFormField(
+                            controller: name,
+                            decoration: InputDecoration(
+                              hintText: AppLocalizations.of(context)!.name,
+                              fillColor: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
+                              filled: true,
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              inputFormatters: [
-                                FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                              ],
-                              style: Theme.of(context).textTheme.labelLarge,
-                              cursorColor:
-                                  Theme.of(context).colorScheme.tertiary2,
-                              validator: (val) {
-                                if (val == null || val.trim().isEmpty) {
-                                  return AppLocalizations.of(context)!
-                                      .missingName;
-                                }
-                                return null;
-                              },
-                              onChanged: (value) {
-                                name.text = value;
-                                name.selection = TextSelection.fromPosition(
-                                  TextPosition(offset: name.text.length),
-                                );
-                              },
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                  width: 0.5,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                            ],
+                            style: Theme.of(context).textTheme.labelLarge,
+                            cursorColor:
+                                Theme.of(context).colorScheme.tertiary2,
+                            validator: (val) {
+                              if (val == null || val.trim().isEmpty) {
+                                return AppLocalizations.of(context)!
+                                    .missingName;
+                              }
+                              return null;
+                            },
+                            onChanged: (value) {
+                              name.text = value;
+                              name.selection = TextSelection.fromPosition(
+                                TextPosition(offset: name.text.length),
+                              );
+                            },
                           ),
                           const SizedBox(height: 10),
-                          SizedBox(
-                            height: 60,
-                            child: TextFormField(
-                              controller: username,
-                              decoration: InputDecoration(
-                                hintText:
-                                    AppLocalizations.of(context)!.username,
+                          TextFormField(
+                            controller: username,
+                            decoration: InputDecoration(
+                              hintText: AppLocalizations.of(context)!.username,
+                              fillColor: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
+                              filled: true,
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              inputFormatters: [
-                                TextInputFormatter.withFunction((
-                                  TextEditingValue oldValue,
-                                  TextEditingValue newValue,
-                                ) {
-                                  return newValue.text.isEmpty ||
-                                          usernamePattern
-                                              .hasMatch(newValue.text)
-                                      ? newValue
-                                      : oldValue;
-                                }),
-                              ],
-                              style: Theme.of(context).textTheme.labelLarge,
-                              cursorColor:
-                                  Theme.of(context).colorScheme.tertiary2,
-                              validator: (val) {
-                                if (val == null || val.trim().isEmpty) {
-                                  return AppLocalizations.of(context)!
-                                      .emptyUsername;
-                                }
-                                final cleanedVal = val.trim().toLowerCase();
-                                if (!usernamePattern.hasMatch(cleanedVal)) {
-                                  return 'Username may only contain letters a-z, numbers and any of  ._=-/';
-                                }
-                                return null;
-                              },
-                              onChanged: (value) {
-                                username.text = value;
-                                username.selection = TextSelection.fromPosition(
-                                  TextPosition(offset: username.text.length),
-                                );
-                              },
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                  width: 0.5,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
+                            inputFormatters: [
+                              TextInputFormatter.withFunction((
+                                TextEditingValue oldValue,
+                                TextEditingValue newValue,
+                              ) {
+                                return newValue.text.isEmpty ||
+                                        usernamePattern.hasMatch(newValue.text)
+                                    ? newValue
+                                    : oldValue;
+                              }),
+                            ],
+                            style: Theme.of(context).textTheme.labelLarge,
+                            validator: (val) {
+                              if (val == null || val.trim().isEmpty) {
+                                return AppLocalizations.of(context)!
+                                    .emptyUsername;
+                              }
+                              final cleanedVal = val.trim().toLowerCase();
+                              if (!usernamePattern.hasMatch(cleanedVal)) {
+                                return 'Username may only contain letters a-z, numbers and any of  ._=-/';
+                              }
+                              return null;
+                            },
+                            onChanged: (value) {
+                              username.text = value;
+                              username.selection = TextSelection.fromPosition(
+                                TextPosition(offset: username.text.length),
+                              );
+                            },
                           ),
                           const SizedBox(height: 10),
-                          SizedBox(
-                            height: 60,
-                            child: TextFormField(
-                              controller: password,
-                              decoration: InputDecoration(
-                                hintText:
-                                    AppLocalizations.of(context)!.password,
+                          TextFormField(
+                            controller: password,
+                            decoration: InputDecoration(
+                              hintText: AppLocalizations.of(context)!.password,
+                              fillColor: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
+                              filled: true,
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              obscureText: true,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                              ],
-                              style: Theme.of(context).textTheme.labelLarge,
-                              cursorColor:
-                                  Theme.of(context).colorScheme.tertiary2,
-                              validator: (val) {
-                                if (val == null || val.trim().isEmpty) {
-                                  return AppLocalizations.of(context)!
-                                      .emptyPassword;
-                                }
-                                return null;
-                              },
-                              onChanged: (value) {
-                                password.text = value;
-                                password.selection = TextSelection.fromPosition(
-                                  TextPosition(offset: password.text.length),
-                                );
-                              },
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                  width: 0.5,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
+                            obscureText: true,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                            ],
+                            style: Theme.of(context).textTheme.labelLarge,
+                            validator: (val) {
+                              if (val == null || val.trim().isEmpty) {
+                                return AppLocalizations.of(context)!
+                                    .emptyPassword;
+                              }
+                              return null;
+                            },
+                            onChanged: (value) {
+                              password.text = value;
+                              password.selection = TextSelection.fromPosition(
+                                TextPosition(offset: password.text.length),
+                              );
+                            },
                           ),
                           const SizedBox(height: 10),
-                          SizedBox(
-                            height: 60,
-                            child: TextFormField(
-                              controller: token,
-                              decoration: InputDecoration(
-                                hintText: AppLocalizations.of(context)!.token,
+                          TextFormField(
+                            controller: token,
+                            decoration: InputDecoration(
+                              hintText: AppLocalizations.of(context)!.token,
+                              fillColor: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
+                              filled: true,
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              inputFormatters: [
-                                FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                              ],
-                              style: Theme.of(context).textTheme.labelLarge,
-                              cursorColor:
-                                  Theme.of(context).colorScheme.tertiary2,
-                              validator: (val) {
-                                if (val == null || val.trim().isEmpty) {
-                                  return AppLocalizations.of(context)!
-                                      .emptyToken;
-                                }
-                                return null;
-                              },
-                              onChanged: (value) {
-                                token.text = value;
-                                token.selection = TextSelection.fromPosition(
-                                  TextPosition(offset: token.text.length),
-                                );
-                              },
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                  width: 0.5,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                            ],
+                            style: Theme.of(context).textTheme.labelLarge,
+                            validator: (val) {
+                              if (val == null || val.trim().isEmpty) {
+                                return AppLocalizations.of(context)!.emptyToken;
+                              }
+                              return null;
+                            },
+                            onChanged: (value) {
+                              token.text = value;
+                              token.selection = TextSelection.fromPosition(
+                                TextPosition(offset: token.text.length),
+                              );
+                            },
                           ),
                           const SizedBox(height: 30),
                           RichText(
@@ -295,6 +340,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         : DefaultButton(
                             onPressed: handleSubmit,
                             title: AppLocalizations.of(context)!.register,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.success,
+                            ),
                           ),
                     const SizedBox(height: 20),
                     Row(
@@ -302,15 +351,20 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       children: [
                         Text(
                           '${AppLocalizations.of(context)!.haveAccount}  ',
+                          style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         InkWell(
                           key: Keys.loginBtn,
                           onTap: () => context.goNamed(Routes.authLogin.name),
                           child: Text(
                             AppLocalizations.of(context)!.logIn,
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.tertiary,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.tertiary2,
+                                ),
                           ),
                         ),
                       ],
