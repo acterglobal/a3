@@ -1,7 +1,7 @@
 use crate::RUNTIME;
 
 use super::Client;
-use anyhow::Result;
+use anyhow::{Result, Context};
 use matrix_sdk::ruma::{
     api::client::push::{set_pusher, PusherIds, PusherInit, PusherKind},
     assign,
@@ -20,17 +20,23 @@ impl Client {
         lang: Option<String>,
     ) -> Result<bool> {
         let client = self.core.client().clone();
+        let device_id = client.device_id().context("No Device ID given.")?;
         let push_data = if with_ios_defaults {
             assign!(HttpPusherData::new(server_url), {
                     default_payload: serde_json::json!({
                         "aps": {
                             "mutable-content": 1,
                             "content-available": 1
-                    }
+                    },
+                    "device_id": device_id,
                 })
             })
         } else {
-            HttpPusherData::new(server_url)
+            assign!(HttpPusherData::new(server_url), {
+                    default_payload: serde_json::json!({
+                    "device_id": device_id,
+                })
+            })
         };
         let pusher_data = PusherInit {
             ids: PusherIds::new(token, app_id),
