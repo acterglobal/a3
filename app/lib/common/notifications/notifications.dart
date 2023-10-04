@@ -33,44 +33,43 @@ const pushServer = String.fromEnvironment(
 const pushServerUrl = 'https://$pushServer/_matrix/push/v1/notify';
 
 Future<void> initializeNotifications() async {
+  // Handle notification launching app from terminated state
+  Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data) {
+    if (data == null) {
+      debugPrint("App was not launched by tapping a notification");
+    } else {
+      debugPrint('Notification tap launched app from terminated state:\n'
+          'RemoteMessage: ${data} \n');
+    }
+    // notificationWhichLaunchedApp.value = data;
+  });
 
-      // Handle notification launching app from terminated state
-      Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data) {
-        if (data == null) {
-          print("App was not launched by tapping a notification");
-        } else {
-          print('Notification tap launched app from terminated state:\n'
-              'RemoteMessage: ${data} \n');
-        }
-        // notificationWhichLaunchedApp.value = data;
-      });
+  // Handle notification taps
+  Push.instance.onNotificationTap.listen((data) {
+    debugPrint('Notification was tapped:\n'
+        'Data: ${data} \n');
+    // tappedNotificationPayloads.value += [data];
+  });
 
-      // Handle notification taps
-      Push.instance.onNotificationTap.listen((data) {
-        print('Notification was tapped:\n'
-            'Data: ${data} \n');
-        // tappedNotificationPayloads.value += [data];
-      });
+  // Handle push notifications
+  Push.instance.onMessage.listen((message) {
+    debugPrint('RemoteMessage received while app is in foreground:\n'
+        'RemoteMessage.Notification: ${message.notification} \n'
+        ' title: ${message.notification?.title.toString()}\n'
+        ' body: ${message.notification?.body.toString()}\n'
+        'RemoteMessage.Data: ${message.data}');
+    // messagesReceived.value += [message];
+  });
 
-      // Handle push notifications
-      Push.instance.onMessage.listen((message) {
-        print('RemoteMessage received while app is in foreground:\n'
-            'RemoteMessage.Notification: ${message.notification} \n'
-            ' title: ${message.notification?.title.toString()}\n'
-            ' body: ${message.notification?.body.toString()}\n'
-            'RemoteMessage.Data: ${message.data}');
-        // messagesReceived.value += [message];
-      });
-
-      // Handle push notifications from 
-      Push.instance.onBackgroundMessage.listen((message) {
-        print('RemoteMessage received while app is in background:\n'
-            'RemoteMessage.Notification: ${message.notification} \n'
-            ' title: ${message.notification?.title.toString()}\n'
-            ' body: ${message.notification?.body.toString()}\n'
-            'RemoteMessage.Data: ${message.data}');
-        // backgroundMessagesReceived.value += [message];
-      });
+  // Handle push notifications from
+  Push.instance.onBackgroundMessage.listen((message) {
+    debugPrint('RemoteMessage received while app is in background:\n'
+        'RemoteMessage.Notification: ${message.notification} \n'
+        ' title: ${message.notification?.title.toString()}\n'
+        ' body: ${message.notification?.body.toString()}\n'
+        'RemoteMessage.Data: ${message.data}');
+    // backgroundMessagesReceived.value += [message];
+  });
 
 }
 
@@ -78,7 +77,7 @@ Future<bool> setupPushNotifications(
   Client client, {
   forced = false,
 }) async {
-  if (!(Platform.isAndroid || Platform.isIOS || Platform.isLinux)) {
+  if (!(Platform.isAndroid || Platform.isIOS)) {
     // we are only supporting this on a limited set of platforms at the moment.
     return false;
   }
@@ -87,36 +86,36 @@ Future<bool> setupPushNotifications(
     return false;
   }
 
-  final deviceId = client.deviceId().toString();
-  final SharedPreferences preferences = await sharedPrefs();
-  final prefKey = '$deviceId.rejected_notifications';
-  // check whether we were already rejected and thus shouldn't ask again
-  if (!forced && (preferences.getBool(prefKey) ?? false)) {
-    // we need to be forced to continue
-    return false;
-  }
-  // TASK: show some extra dialog here?
-  final requested = await Push.instance.requestPermission();
-  if (!requested) {
-    // we were bluntly rejected, save and don't them bother again:
-    preferences.setBool(prefKey, false);
-    return false;
-  }
-
-  if (Platform.isLinux) {
-    // that's it for us on here.
-    return true;
-  }
-
   // To be informed that the device's token has been updated by the operating system
   // You should update your servers with this token
   Push.instance.onNewToken.listen((token) {
     // FIXME: how to identify which clients are connected to this?
-    print("Just got a new FCM registration token: ${token}");
+    debugPrint("Just got a new FCM registration token: ${token}");
     onNewToken(client, token);
   });
 
-  String? token = await await Push.instance.token;
+  final deviceId = client.deviceId().toString();
+  final SharedPreferences preferences = await sharedPrefs();
+  final prefKey = '$deviceId.rejected_notifications';
+
+  String? token = await Push.instance.token;
+  // do we already have a token, then no need to bother the user again
+  if (token == null) {
+    // check whether we were already rejected and thus shouldn't ask again
+    if (!forced && (preferences.getBool(prefKey) ?? false)) {
+      // we need to be forced to continue
+      return false;
+    }
+    // TASK: show some extra dialog here?
+    final requested = await Push.instance.requestPermission();
+    if (!requested) {
+      // we were bluntly rejected, save and don't them bother again:
+      preferences.setBool(prefKey, false);
+      return false;
+    }
+    token = await Push.instance.token;
+  }
+
   if (token == null) {
     return false;
   }
