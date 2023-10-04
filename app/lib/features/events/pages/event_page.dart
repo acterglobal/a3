@@ -6,7 +6,7 @@ import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
-import 'package:acter/features/events/providers/events_provider.dart';
+import 'package:acter/features/events/presentation/providers/providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +58,6 @@ class CalendarEventPage extends ConsumerWidget {
                 title: 'Remove this post',
                 eventId: event.eventId().toString(),
                 onSuccess: () {
-                  ref.invalidate(calendarEventProvider);
                   if (context.mounted) {
                     context.goNamed(
                       Routes.spaceEvents.name,
