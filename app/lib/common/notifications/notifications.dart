@@ -9,7 +9,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:plain_notification_token/plain_notification_token.dart';
+import 'package:acter_plain_notification_token/plain_notification_token.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:awesome_notifications_fcm/awesome_notifications_fcm.dart';
 import 'package:firebase_core/firebase_core.dart';

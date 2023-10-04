@@ -33,6 +33,15 @@ packages:
       relative: true
     source: path
     version: "0.0.1"
+  acter_plain_notification_token:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: master
+      resolved-ref: "5f25436d46a7b2bf6857feea201898ec145a9ac0"
+      url: "https://github.com/acterglobal/acter_plain_notification_token"
+    source: git
+    version: "0.0.4"
   analyzer:
     dependency: transitive
     description:
@@ -1223,14 +1232,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.14.0"
-  plain_notification_token:
-    dependency: "direct main"
-    description:
-      name: plain_notification_token
-      sha256: "32481c1c6ad76613ed38822ffe819ea5d5534f9e07e8ff1d44aafe069f45ea24"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.4"
   platform:
     dependency: transitive
     description:
