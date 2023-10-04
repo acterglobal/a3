@@ -1,10 +1,5 @@
-import 'package:acter/common/notifications/notifications.dart';
-import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/activities/util.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 import 'dart:async';

@@ -1,14 +1,19 @@
-use crate::{RUNTIME, RoomMessage};
+use crate::{RoomMessage, RUNTIME};
 
-use super::{Client, message::{sync_event_to_message, any_sync_event_to_message}};
-use anyhow::{Result, Context, bail};
-use matrix_sdk_ui::notification_client::{NotificationItem as SdkNotificationItem, NotificationClient, NotificationEvent};
+use super::{
+    message::{any_sync_event_to_message, sync_event_to_message},
+    Client,
+};
+use anyhow::{bail, Context, Result};
 use matrix_sdk::ruma::{
     api::client::push::{set_pusher, PusherIds, PusherInit, PusherKind},
     assign,
     push::HttpPusherData,
 };
-use ruma_common::{OwnedRoomId, OwnedEventId};
+use matrix_sdk_ui::notification_client::{
+    NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
+};
+use ruma_common::{OwnedEventId, OwnedRoomId};
 
 pub struct NotificationItem {
     inner: SdkNotificationItem,
@@ -70,24 +75,28 @@ impl NotificationItem {
     }
 }
 
-
 impl Client {
-
-    pub async fn get_notification_item(&self, room_id: String, event_id: String) -> Result<NotificationItem> {
+    pub async fn get_notification_item(
+        &self,
+        room_id: String,
+        event_id: String,
+    ) -> Result<NotificationItem> {
         let client = self.core.client().clone();
-        let room_id : OwnedRoomId = room_id.try_into()?;
-        let event_id : OwnedEventId = event_id.try_into()?;
+        let room_id: OwnedRoomId = room_id.try_into()?;
+        let event_id: OwnedEventId = event_id.try_into()?;
         RUNTIME
             .spawn(async move {
                 let notif_client = NotificationClient::builder(client).await?.build();
-                if let Some(notif) = notif_client.get_notification_with_context(&room_id, &event_id).await? {
+                if let Some(notif) = notif_client
+                    .get_notification_with_context(&room_id, &event_id)
+                    .await?
+                {
                     Ok(NotificationItem::new(notif, room_id))
                 } else {
                     bail!("(hidden notification)")
                 }
             })
             .await?
-
     }
 
     pub async fn add_pusher(
@@ -104,7 +113,7 @@ impl Client {
         let device_id = client.device_id().context("No Device ID given.")?;
         let push_data = if with_ios_defaults {
             assign!(HttpPusherData::new(server_url), {
-                    default_payload: serde_json::json!({
+                default_payload: serde_json::json!({
                         "aps": {
                             "mutable-content": 1,
                             "content-available": 1
@@ -114,7 +123,7 @@ impl Client {
             })
         } else {
             assign!(HttpPusherData::new(server_url), {
-                    default_payload: serde_json::json!({
+                default_payload: serde_json::json!({
                     "device_id": device_id,
                 })
             })

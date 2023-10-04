@@ -74,8 +74,8 @@ pub use message::{RoomEventItem, RoomMessage, RoomVirtualItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide};
 pub use notifications::{Notification, NotificationListResult};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
-pub use push::NotificationItem;
 pub use profile::{RoomProfile, UserProfile};
+pub use push::NotificationItem;
 pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{
     Member, MemberPermission, MembershipStatus, Room, SpaceHierarchyListResult,

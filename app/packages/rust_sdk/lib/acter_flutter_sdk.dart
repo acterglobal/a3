@@ -166,11 +166,11 @@ class ActerSdk {
     await prefs.setStringList(_sessionKey, []);
   }
 
-  Future<ffi.NotificationItem> getNotificationFor({
-    required String deviceId,
-    required String roomId,
-    required String eventId,
-  }) async {
+  static Future<ffi.NotificationItem> getNotificationFor(
+    String deviceId,
+    String roomId,
+    String eventId,
+  ) async {
     ffi.Client? client;
     for (final c in _clients) {
       if (c.deviceId().toString() == deviceId) {
@@ -179,7 +179,7 @@ class ActerSdk {
       }
     }
     if (client == null) {
-      throw "Unknown client $deviceId";
+      throw 'Unknown client $deviceId';
     }
 
     return await client.getNotificationItem(roomId, eventId);

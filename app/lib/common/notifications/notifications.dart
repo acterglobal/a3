@@ -3,8 +3,6 @@ import 'dart:convert';
 
 import 'package:convert/convert.dart';
 
-import 'package:acter/common/notifications/models.dart';
-import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,10 +34,10 @@ Future<void> initializeNotifications() async {
   // Handle notification launching app from terminated state
   Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data) {
     if (data == null) {
-      debugPrint("App was not launched by tapping a notification");
+      debugPrint('App was not launched by tapping a notification');
     } else {
       debugPrint('Notification tap launched app from terminated state:\n'
-          'RemoteMessage: ${data} \n');
+          'RemoteMessage: $data \n');
     }
     // notificationWhichLaunchedApp.value = data;
   });
@@ -47,29 +45,39 @@ Future<void> initializeNotifications() async {
   // Handle notification taps
   Push.instance.onNotificationTap.listen((data) {
     debugPrint('Notification was tapped:\n'
-        'Data: ${data} \n');
+        'Data: $data \n');
     // tappedNotificationPayloads.value += [data];
   });
 
   // Handle push notifications
-  Push.instance.onMessage.listen((message) {
-    debugPrint('RemoteMessage received while app is in foreground:\n'
-        'RemoteMessage.Notification: ${message.notification} \n'
-        ' title: ${message.notification?.title.toString()}\n'
-        ' body: ${message.notification?.body.toString()}\n'
-        'RemoteMessage.Data: ${message.data}');
-    // messagesReceived.value += [message];
+  Push.instance.onMessage.listen((message) async {
+    await handleMessage(message, background: true);
   });
 
-  // Handle push notifications from
-  Push.instance.onBackgroundMessage.listen((message) {
-    debugPrint('RemoteMessage received while app is in background:\n'
-        'RemoteMessage.Notification: ${message.notification} \n'
-        ' title: ${message.notification?.title.toString()}\n'
-        ' body: ${message.notification?.body.toString()}\n'
-        'RemoteMessage.Data: ${message.data}');
-    // backgroundMessagesReceived.value += [message];
+  // Handle push notifications on background
+  Push.instance.onBackgroundMessage.listen((message) async {
+    await handleMessage(message, background: true);
   });
+}
+
+Future<bool> handleMessage(RemoteMessage message, { bool background = false, }) async {
+    if (message.data == null) {
+      debugPrint('non-matrix push: $message');
+      return false;
+    }
+    final deviceId = message.data!['device_id'] as String;
+    final roomId = message.data!['room_id'] as String;
+    final eventId = message.data!['event_id'] as String;
+    try {
+      final notif = await ActerSdk.getNotificationFor(deviceId, roomId, eventId);
+      final isDm = notif.isDirectMessageRoom();
+      final roomDisplayName = notif.roomDisplayName();
+      debugPrint('got a matrix notification in $roomDisplayName ($isDm)');
+
+    } catch (e) {
+      debugPrint('Parsing Notification failed: $e');
+    }
+  return false;
 
 }
 
@@ -90,7 +98,7 @@ Future<bool> setupPushNotifications(
   // You should update your servers with this token
   Push.instance.onNewToken.listen((token) {
     // FIXME: how to identify which clients are connected to this?
-    debugPrint("Just got a new FCM registration token: ${token}");
+    debugPrint('Just got a new FCM registration token: $token');
     onNewToken(client, token);
   });
 
