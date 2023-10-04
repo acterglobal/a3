@@ -9,14 +9,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "59.0.0"
-  _flutterfire_internals:
-    dependency: transitive
-    description:
-      name: _flutterfire_internals
-      sha256: "2d8e8e123ca3675625917f535fcc0d3a50092eef44334168f9b18adc050d4c6e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.3.6"
   acter_avatar:
     dependency: "direct main"
     description:
@@ -33,15 +25,6 @@ packages:
       relative: true
     source: path
     version: "0.0.1"
-  acter_plain_notification_token:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: master
-      resolved-ref: "5f25436d46a7b2bf6857feea201898ec145a9ac0"
-      url: "https://github.com/acterglobal/acter_plain_notification_token"
-    source: git
-    version: "0.0.4"
   analyzer:
     dependency: transitive
     description:
@@ -82,30 +65,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.12"
-  awesome_notifications:
-    dependency: "direct main"
-    description:
-      name: awesome_notifications
-      sha256: "6ba98d73553c8a54e7b77f8dd8b95ce9d32a7839ef182b28cf2ad54ec28b1821"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.7.5-dev.3"
-  awesome_notifications_core:
-    dependency: "direct main"
-    description:
-      name: awesome_notifications_core
-      sha256: "0d67f3539aac87f9052b9eb204bdfbd00893a9d83b5975151098265428332bea"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.8.1"
-  awesome_notifications_fcm:
-    dependency: "direct main"
-    description:
-      name: awesome_notifications_fcm
-      sha256: "6e30d10f6490352493e3391e27254d215c4346da491db0b6500622fd86cf59d1"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.7.5-dev.3"
   boolean_selector:
     dependency: transitive
     description:
@@ -330,6 +289,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.17.3"
+  cupertino_icons:
+    dependency: transitive
+    description:
+      name: cupertino_icons
+      sha256: d57953e10f9f8327ce64a508a355f0b1ec902193f66288e8cb5070e7c47eeb2d
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.6"
   dart_style:
     dependency: transitive
     description:
@@ -458,46 +425,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.3"
-  firebase_core:
-    dependency: "direct main"
-    description:
-      name: firebase_core
-      sha256: "675c209c94a1817649137cbd113fc4c9ae85e48d03dd578629abbec6d8a4d93d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.16.0"
-  firebase_core_platform_interface:
-    dependency: transitive
-    description:
-      name: firebase_core_platform_interface
-      sha256: b63e3be6c96ef5c33bdec1aab23c91eb00696f6452f0519401d640938c94cba2
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.8.0"
-  firebase_core_web:
-    dependency: transitive
-    description:
-      name: firebase_core_web
-      sha256: e8c408923cd3a25bd342c576a114f2126769cd1a57106a4edeaa67ea4a84e962
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.8.0"
-  firebase_crashlytics:
-    dependency: transitive
-    description:
-      name: firebase_crashlytics
-      sha256: f4a4b046606e306b589bef5c1e268afbfab2e5fddde6de7e4340400465c8d231
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.3.6"
-  firebase_crashlytics_platform_interface:
-    dependency: transitive
-    description:
-      name: firebase_crashlytics_platform_interface
-      sha256: "8666b935e29b143297e2923dc8112663854f828d10954a92b8215e7249b55d59"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.6.6"
   fixnum:
     dependency: transitive
     description:
@@ -1296,6 +1223,46 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.3"
+  push:
+    dependency: "direct main"
+    description:
+      name: push
+      sha256: "7de94d9f956e8b2f6a7a8d5adc3ab69ffcea4cf8ac120bce083f531bc9f44750"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.5"
+  push_android:
+    dependency: transitive
+    description:
+      name: push_android
+      sha256: "1ae53ceee5d2c489102f7ae53ec1331e949dbba787cc4ff191ffe8b7b0965c17"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.1"
+  push_ios:
+    dependency: transitive
+    description:
+      name: push_ios
+      sha256: "3c57bdcedc3fef55e827fbfb88ffbf69f3603432c0a13cf282e294aa92246913"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.4"
+  push_macos:
+    dependency: transitive
+    description:
+      name: push_macos
+      sha256: "800997d1d6ca19aa957ab237a25074a732a7e36ef917ef4546fc75ec9aa1b9da"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1"
+  push_platform_interface:
+    dependency: transitive
+    description:
+      name: push_platform_interface
+      sha256: bcee018300ecf25d95fe55150f6c9ffe5a467a2c6df94e4c2e277c40282b95a0
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
   riverpod:
     dependency: "direct main"
     description:
