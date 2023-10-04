@@ -1,11 +1,18 @@
 import 'dart:io';
 import 'dart:convert';
+import 'dart:async';
 
+import 'package:acter/router/router.dart';
+import 'package:go_router/go_router.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:convert/convert.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:push/push.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
@@ -30,7 +37,175 @@ const pushServer = String.fromEnvironment(
 
 const pushServerUrl = 'https://$pushServer/_matrix/push/v1/notify';
 
+int id = 0;
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+/// Streams are created so that app can respond to notification-related events
+/// since the plugin is initialised in the `main` function
+final StreamController<ReceivedNotification> didReceiveLocalNotificationStream =
+    StreamController<ReceivedNotification>.broadcast();
+
+final StreamController<String?> selectNotificationStream =
+    StreamController<String?>.broadcast();
+
+const MethodChannel platform = MethodChannel('acter/push_notification');
+
+
+const String portName = 'notification_send_port';
+
+class ReceivedNotification {
+  ReceivedNotification({
+    required this.id,
+    required this.title,
+    required this.body,
+    required this.payload,
+  });
+
+  final int id;
+  final String? title;
+  final String? body;
+  final String? payload;
+}
+
+String? selectedNotificationPayload;
+
+/// A notification action which triggers a url launch event
+const String urlLaunchActionId = 'id_1';
+
+/// A notification action which triggers a App navigation event
+const String navigationActionId = 'id_3';
+
+/// Defines a iOS/MacOS notification category for text input actions.
+const String darwinNotificationCategoryText = 'textCategory';
+
+/// Defines a iOS/MacOS notification category for plain actions.
+const String darwinNotificationCategoryPlain = 'plainCategory';
+
+
+@pragma('vm:entry-point')
+void notificationTapBackground(NotificationResponse notificationResponse) {
+  // ignore: avoid_print
+  print('notification(${notificationResponse.id}) action tapped: '
+      '${notificationResponse.actionId} with'
+      ' payload: ${notificationResponse.payload}');
+  if (notificationResponse.input?.isNotEmpty ?? false) {
+    // ignore: avoid_print
+    print(
+        'notification action tapped with input: ${notificationResponse.input}');
+  }
+}
+
+
 Future<void> initializeNotifications() async {
+
+  final NotificationAppLaunchDetails? notificationAppLaunchDetails = !kIsWeb &&
+          Platform.isLinux
+      ? null
+      : await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+  if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
+    selectedNotificationPayload =
+        notificationAppLaunchDetails!.notificationResponse?.payload;
+  }
+
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('app_icon');
+
+  final List<DarwinNotificationCategory> darwinNotificationCategories =
+      <DarwinNotificationCategory>[
+    DarwinNotificationCategory(
+      darwinNotificationCategoryText,
+      actions: <DarwinNotificationAction>[
+        DarwinNotificationAction.text(
+          'text_1',
+          'Action 1',
+          buttonTitle: 'Send',
+          placeholder: 'Placeholder',
+        ),
+      ],
+    ),
+    DarwinNotificationCategory(
+      darwinNotificationCategoryPlain,
+      actions: <DarwinNotificationAction>[
+        DarwinNotificationAction.plain('id_1', 'Action 1'),
+        DarwinNotificationAction.plain(
+          'id_2',
+          'Action 2 (destructive)',
+          options: <DarwinNotificationActionOption>{
+            DarwinNotificationActionOption.destructive,
+          },
+        ),
+        DarwinNotificationAction.plain(
+          navigationActionId,
+          'Action 3 (foreground)',
+          options: <DarwinNotificationActionOption>{
+            DarwinNotificationActionOption.foreground,
+          },
+        ),
+        DarwinNotificationAction.plain(
+          'id_4',
+          'Action 4 (auth required)',
+          options: <DarwinNotificationActionOption>{
+            DarwinNotificationActionOption.authenticationRequired,
+          },
+        ),
+      ],
+      options: <DarwinNotificationCategoryOption>{
+        DarwinNotificationCategoryOption.hiddenPreviewShowTitle,
+      },
+    )
+  ];
+
+  /// Note: permissions aren't requested here just to demonstrate that can be
+  /// done later
+  final DarwinInitializationSettings initializationSettingsDarwin =
+      DarwinInitializationSettings(
+    requestAlertPermission: false,
+    requestBadgePermission: false,
+    requestSoundPermission: false,
+    onDidReceiveLocalNotification:
+        (int id, String? title, String? body, String? payload) async {
+      didReceiveLocalNotificationStream.add(
+        ReceivedNotification(
+          id: id,
+          title: title,
+          body: body,
+          payload: payload,
+        ),
+      );
+    },
+    notificationCategories: darwinNotificationCategories,
+  );
+  final LinuxInitializationSettings initializationSettingsLinux =
+      LinuxInitializationSettings(
+    defaultActionName: 'Open notification',
+    defaultIcon: AssetsLinuxIcon('icons/app_icon.png'),
+  );
+  final InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+    iOS: initializationSettingsDarwin,
+    macOS: initializationSettingsDarwin,
+    linux: initializationSettingsLinux,
+  );
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+    onDidReceiveNotificationResponse:
+        (NotificationResponse notificationResponse) {
+      switch (notificationResponse.notificationResponseType) {
+        case NotificationResponseType.selectedNotification:
+          selectNotificationStream.add(notificationResponse.payload);
+          break;
+        case NotificationResponseType.selectedNotificationAction:
+          if (notificationResponse.actionId == navigationActionId) {
+            selectNotificationStream.add(notificationResponse.payload);
+          }
+          break;
+      }
+    },
+    onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
+  );
+
   // Handle notification launching app from terminated state
   Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data) {
     if (data == null) {
@@ -46,6 +221,12 @@ Future<void> initializeNotifications() async {
   Push.instance.onNotificationTap.listen((data) {
     debugPrint('Notification was tapped:\n'
         'Data: $data \n');
+    final payload = data['payload'] as String?;
+    if (payload != null) {
+        debugPrint("asking to route to $payload");
+        rootNavKey.currentContext!.push(payload);
+      // we are 
+    }
     // tappedNotificationPayloads.value += [data];
   });
 
@@ -73,6 +254,39 @@ Future<bool> handleMessage(RemoteMessage message, { bool background = false, }) 
       final isDm = notif.isDirectMessageRoom();
       final roomDisplayName = notif.roomDisplayName();
       debugPrint('got a matrix notification in $roomDisplayName ($isDm)');
+      if (isDm) {
+        String body = '(new message)';
+        final roomMsg = notif.roomMessage();
+        if (roomMsg != null) {
+          final eventItem = roomMsg.eventItem();
+          if (eventItem != null) {
+            final textDesc = eventItem.textDesc();
+            if (textDesc != null) {
+              body = textDesc.body();
+            }
+          }
+        }
+
+        _showNotification(roomDisplayName, body, roomId, "/chat/$roomId");
+      } else {
+
+        String body = '(new message)';
+        final roomMsg = notif.roomMessage();
+        if (roomMsg != null) {
+          final eventItem = roomMsg.eventItem();
+          if (eventItem != null) {
+            final textDesc = eventItem.textDesc();
+            if (textDesc != null) {
+              body = textDesc.body();
+            }
+          }
+        }
+
+        final sender = notif.senderDisplayName();
+        // FIXME: we might not be a chat...
+        _showNotification(roomDisplayName, sender != null ? "$sender: $body" : body, roomId, "/chat/$roomId");
+
+      }
 
     } catch (e) {
       debugPrint('Parsing Notification failed: $e');
@@ -80,6 +294,27 @@ Future<bool> handleMessage(RemoteMessage message, { bool background = false, }) 
   return false;
 
 }
+
+  Future<void> _showNotification(
+    String title, String body, String threadId, String payload,
+  ) async {
+    final androidNotificationDetails =
+        AndroidNotificationDetails('messages', 'Messages',
+            channelDescription: 'Messages sent to you',
+            importance: Importance.max,
+            priority: Priority.high,
+            ticker: 'ticker');
+    final darwinDetails = DarwinNotificationDetails(threadIdentifier: threadId);
+    final notificationDetails = NotificationDetails(
+        android: androidNotificationDetails,
+        macOS: darwinDetails,
+        iOS: darwinDetails,
+    );
+    await flutterLocalNotificationsPlugin.show(
+        id++, title, body, notificationDetails,
+        payload: payload
+      );
+  }
 
 Future<bool> setupPushNotifications(
   Client client, {
