@@ -49,7 +49,6 @@ class _ActerState extends ConsumerState<Acter> {
   @override
   void initState() {
     super.initState();
-    setupNotificationsListeners();
   }
 
   @override

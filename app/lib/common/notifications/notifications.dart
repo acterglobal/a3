@@ -37,6 +37,8 @@ const pushServer = String.fromEnvironment(
 
 const pushServerUrl = 'https://$pushServer/_matrix/push/v1/notify';
 
+final supportedPlatforms  = Platform.isAndroid || Platform.isIOS; // || Platform.isMacOS;
+
 int id = 0;
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -99,6 +101,9 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
 
 
 Future<void> initializeNotifications() async {
+  if (!supportedPlatforms) {
+    return; // nothign for us to do here.
+  }
 
   final NotificationAppLaunchDetails? notificationAppLaunchDetails = !kIsWeb &&
           Platform.isLinux
@@ -320,9 +325,8 @@ Future<bool> setupPushNotifications(
   Client client, {
   forced = false,
 }) async {
-  if (!(Platform.isAndroid || Platform.isIOS)) {
-    // we are only supporting this on a limited set of platforms at the moment.
-    return false;
+  if (!supportedPlatforms) {
+    return false; // nothing for us to do here.
   }
   if (pushServer.isEmpty) {
     // no server given. Ignoring
@@ -395,8 +399,4 @@ Future<bool> onNewToken(Client client, String token) async {
   );
 
   return true;
-}
-
-Future<void> setupNotificationsListeners() async {
-  // Only after at least the action method is set, the notification events are delivered
 }
