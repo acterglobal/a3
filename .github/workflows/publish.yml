@@ -138,6 +138,14 @@ jobs:
         with:
           toolchain: stable
 
+      - uses: jlumbroso/free-disk-space@main
+        name: Free Disk Space (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          # this might remove tools that are actually needed,
+          # when set to "true" but frees about 6 GB
+          tool-cache: true
+
       - name: Cache Cargo
         id: cache-cargo
         uses: actions/cache@v2
