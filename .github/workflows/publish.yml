@@ -386,27 +386,38 @@ jobs:
         with:
           name: Changelog
 
-      # - name: "Generate docs"
-      #   run: |
-      #     echo "+++" > docs/content/releases/${{ needs.tags.outputs.tag }}.md
-      #     echo "title = \" Nightly ${{ needs.tags.outputs.tag }}\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-      #     echo "template = \"nightlies/release.html\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-      #     echo "date = ${{ needs.tags.outputs.tag }}" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-      #     echo "+++" >>docs/content/releases/${{ needs.tags.outputs.tag }}.md
-      #     echo "" >>docs/content/releases/${{ needs.tags.outputs.tag }}.md
-      #     cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+      - name: "Generate docs"
+        run: |
+          echo "+++" > docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "title = \" Nightly ${{ needs.tags.outputs.tag }}\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "template = \"nightlies/release.html\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "date = ${{ needs.tags.outputs.tag }}" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "+++" >>docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "" >>docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
 
-      # - name: Tag for release
-      #   run: |
-      #     git config --global user.name 'Sari'
-      #     git config --global user.email 'acter-sari@users.noreply.github.com'
-      #     git add "docs/content/releases/${{ needs.tags.outputs.tag }}.md"
-      #     echo "Add release ${{ needs.tags.outputs.tag }}"
-      #     git commit -m 
-      #     git tag v${{ needs.tags.outputs.tag }}
-      #     git tag -f release-latest
-      #     git push -f origin main v${{ needs.tags.outputs.tag }} release-latest
+      - name: Tag for release
+        run: |
+          git config --global user.name 'Sari'
+          git config --global user.email 'acter-sari@users.noreply.github.com'
+          git add "docs/content/releases/${{ needs.tags.outputs.tag }}.md"
+          echo "Add release ${{ needs.tags.outputs.tag }}"
+          git commit -m "Releasing v${{ needs.tags.outputs.tag }}"
+          git tag v${{ needs.tags.outputs.tag }}
+          git tag -f release-latest
+          git push -f origin main v${{ needs.tags.outputs.tag }} release-latest
 
+      - name: Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          # publish this nightly release now
+          draft: true
+          generate_release_notes: false
+          name: Acter ${{ needs.tags.outputs.tag }}
+          tag_name: v${{ needs.tags.outputs.tag }}
+          body_path: CHANGELOG.md
+          prerelease: true
       # publish this full release now
       - uses: eregon/publish-release@v1
         env:
