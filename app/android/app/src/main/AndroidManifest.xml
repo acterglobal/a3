@@ -10,6 +10,8 @@
         android:icon="@mipmap/ic_launcher"
 		android:roundIcon="@mipmap/ic_launcher_round"
         android:extractNativeLibs="true"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
         tools:replace="android:extractNativeLibs">
         <activity
             android:name=".MainActivity"

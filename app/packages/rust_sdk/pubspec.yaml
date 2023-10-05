@@ -23,6 +23,7 @@ dependencies:
   plugin_platform_interface: ^2.1.5
   logging: ^1.2.0
   meta: ^1.9.1
+  flutter_secure_storage: ^9.0.0
 
 dev_dependencies:
   flutter_test:

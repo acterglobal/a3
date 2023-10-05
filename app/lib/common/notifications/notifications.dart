@@ -4,13 +4,11 @@ import 'dart:async';
 
 import 'package:acter/router/router.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:convert/convert.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:push/push.dart';
@@ -95,7 +93,7 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
   if (notificationResponse.input?.isNotEmpty ?? false) {
     // ignore: avoid_print
     print(
-        'notification action tapped with input: ${notificationResponse.input}');
+        'notification action tapped with input: ${notificationResponse.input}',);
   }
 }
 
@@ -159,7 +157,7 @@ Future<void> initializeNotifications() async {
       options: <DarwinNotificationCategoryOption>{
         DarwinNotificationCategoryOption.hiddenPreviewShowTitle,
       },
-    )
+    ),
   ];
 
   /// Note: permissions aren't requested here just to demonstrate that can be
@@ -228,7 +226,7 @@ Future<void> initializeNotifications() async {
         'Data: $data \n');
     final payload = data['payload'] as String?;
     if (payload != null) {
-        debugPrint("asking to route to $payload");
+        debugPrint('asking to route to $payload');
         rootNavKey.currentContext!.push(payload);
       // we are 
     }
@@ -272,7 +270,7 @@ Future<bool> handleMessage(RemoteMessage message, { bool background = false, }) 
           }
         }
 
-        _showNotification(roomDisplayName, body, roomId, "/chat/$roomId");
+        _showNotification(roomDisplayName, body, roomId, '/chat/$roomId');
       } else {
 
         String body = '(new message)';
@@ -289,7 +287,7 @@ Future<bool> handleMessage(RemoteMessage message, { bool background = false, }) 
 
         final sender = notif.senderDisplayName();
         // FIXME: we might not be a chat...
-        _showNotification(roomDisplayName, sender != null ? "$sender: $body" : body, roomId, "/chat/$roomId");
+        _showNotification(roomDisplayName, sender != null ? '$sender: $body' : body, roomId, '/chat/$roomId');
 
       }
 
@@ -303,12 +301,12 @@ Future<bool> handleMessage(RemoteMessage message, { bool background = false, }) 
   Future<void> _showNotification(
     String title, String body, String threadId, String payload,
   ) async {
-    final androidNotificationDetails =
+    const androidNotificationDetails =
         AndroidNotificationDetails('messages', 'Messages',
             channelDescription: 'Messages sent to you',
             importance: Importance.max,
             priority: Priority.high,
-            ticker: 'ticker');
+            ticker: 'ticker',);
     final darwinDetails = DarwinNotificationDetails(threadIdentifier: threadId);
     final notificationDetails = NotificationDetails(
         android: androidNotificationDetails,
@@ -317,7 +315,7 @@ Future<bool> handleMessage(RemoteMessage message, { bool background = false, }) 
     );
     await flutterLocalNotificationsPlugin.show(
         id++, title, body, notificationDetails,
-        payload: payload
+        payload: payload,
       );
   }
 

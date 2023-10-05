@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:core';
+import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:ffi';
 import 'dart:io';
@@ -10,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 export './acter_flutter_sdk_ffi.dart' show Client;
@@ -35,6 +37,12 @@ const defaultSessionKey = String.fromEnvironment(
   'DEFAULT_ACTER_SESSION',
   defaultValue: 'sessions',
 );
+
+const appGroupName = String.fromEnvironment(
+  'iOS_APP_GROUP',
+  defaultValue: 'group.acter.a3',
+);
+
 
 // ex: a3-nightly or acter-linux
 const appName = String.fromEnvironment(
@@ -143,27 +151,42 @@ class ActerSdk {
   int _index = 0;
   static final List<ffi.Client> _clients = [];
   static const platform = MethodChannel('acter_flutter_sdk');
+  
+  static FlutterSecureStorage storage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(
+        encryptedSharedPreferences: true,
+        preferencesKeyPrefix: isDevBuild ? 'dev.flutter' : null,
+      ),
+      iOptions: IOSOptions(
+        accessibility: KeychainAccessibility.first_unlock,  // must have been unlocked since reboot
+        groupId: String.fromEnvironment(appGroupName),       // for sharing in the notification service
+      ),
+      mOptions: MacOsOptions(
+        accessibility: KeychainAccessibility.first_unlock,  // must have been unlocked since reboot
+        groupId: String.fromEnvironment(appGroupName),       // for sharing in the notification service
+        ),
+  );
 
   ActerSdk._(this._api);
 
   Future<void> _persistSessions() async {
     List<String> sessions = [];
     for (final c in _clients) {
+      String deviceId = c.deviceId().toString();
       String token = await c.restoreToken();
-      sessions.add(token);
+      await storage.write(key: deviceId, value: token);
+      sessions.add(deviceId);
     }
-    debugPrint('setting sessions: $sessions');
-    SharedPreferences prefs = await sharedPrefs();
-    await prefs.setStringList(_sessionKey, sessions);
-    await prefs.setInt('$_sessionKey::currentClientIdx', _index);
+    await storage.write(key: _sessionKey, value: json.encode(sessions));
+    await storage.write(key: '$_sessionKey::currentClientIdx', value: '$_index');
+    debugPrint('session stored: $sessions');
   }
 
   static Future<void> resetSessionsAndClients(String sessionKey) async {
     await _unrestoredInstance;
     _clients.clear();
     _sessionKey = sessionKey;
-    SharedPreferences prefs = await sharedPrefs();
-    await prefs.setStringList(_sessionKey, []);
+    await storage.write(key: _sessionKey, value: json.encode([]));
   }
 
   static Future<ffi.NotificationItem> getNotificationFor(
@@ -185,13 +208,7 @@ class ActerSdk {
     return await client.getNotificationItem(roomId, eventId);
   }
 
-  Future<void> _restore() async {
-    if (_clients.isNotEmpty) {
-      debugPrint('double restore. ignore');
-      return;
-    }
-    String appDocPath = await appDir();
-    debugPrint('loading configuration from $appDocPath');
+  Future<void> _maybeMigrateFromPrefs(appDocPath) async {
     SharedPreferences prefs = await sharedPrefs();
     List<String> sessions = (prefs.getStringList(_sessionKey) ?? []);
     for (final token in sessions) {
@@ -199,7 +216,38 @@ class ActerSdk {
       _clients.add(client);
     }
     _index = prefs.getInt('$_sessionKey::currentClientIdx') ?? 0;
-    debugPrint('Restored $_clients');
+    debugPrint('Migrated $_clients');
+
+    await _persistSessions();
+    // then destroy the old records.
+    await prefs.remove(_sessionKey);
+    await prefs.remove('$_sessionKey::currentClientIdx');
+  }
+
+  Future<void> _restore() async {
+    if (_clients.isNotEmpty) {
+      debugPrint('double restore. ignore');
+      return;
+    }
+    String appDocPath = await appDir();
+    final sessionsStr = await storage.read(key: _sessionKey);
+    if (sessionsStr == null) {
+      // not yet set. let's see if we maybe want to migrate instead:
+      await _maybeMigrateFromPrefs(appDocPath);
+      return;
+    }
+
+    final List<String> sessionKeys = json.decode(sessionsStr);
+    for (final deviceId in sessionKeys) {
+      final token = await storage.read(key: deviceId);
+      if (token != null) {
+        ffi.Client client = await _api.loginWithToken(appDocPath, token);
+        _clients.add(client);
+      }
+    }
+    _index = int.tryParse(await storage.read(key: '$_sessionKey::currentClientIdx') ?? '0') ?? 0;
+    debugPrint('loading configuration from $appDocPath');
+    debugPrint('restored $_clients');
   }
 
   ffi.Client? get currentClient {
