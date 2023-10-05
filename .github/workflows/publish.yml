@@ -145,6 +145,7 @@ jobs:
           # this might remove tools that are actually needed,
           # when set to "true" but frees about 6 GB
           tool-cache: true
+          android: false
 
       - name: Cache Cargo
         id: cache-cargo
