@@ -98,7 +98,7 @@ impl Client {
             })
             .await?
     }
-
+    #[allow(clippy::too_many_arguments)]
     pub async fn add_pusher(
         &self,
         app_id: String,

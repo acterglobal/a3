@@ -24,6 +24,7 @@ pub async fn destroy_local_data(base_path: String, home_dir: String) -> Result<b
 pub async fn new_client_config(
     base_path: String,
     home_dir: String,
+    db_passphrase: Option<String>,
     reset_if_existing: bool,
 ) -> Result<ClientBuilder> {
     RUNTIME
@@ -43,7 +44,7 @@ pub async fn new_client_config(
 
             std::fs::create_dir_all(&data_path)?;
 
-            let config = make_store_config(&data_path, None).await?;
+            let config = make_store_config(&data_path, db_passphrase.as_deref()).await?;
             let builder = Client::builder()
                 .store_config(config)
                 .user_agent(format!("acter-testing/{:}", env!("CARGO_PKG_VERSION")));

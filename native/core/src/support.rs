@@ -11,6 +11,8 @@ pub struct RestoreToken {
     pub homeurl: Url,
     /// Session to hand to client
     pub session: CustomAuthSession,
+    /// a passphrase for the underlying database
+    pub db_passphrase: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]

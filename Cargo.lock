@@ -45,6 +45,7 @@ dependencies = [
  "tracing-android",
  "tracing-wasm",
  "url",
+ "uuid 1.4.0",
  "wasm-bindgen-futures",
 ]
 
@@ -113,6 +114,7 @@ dependencies = [
  "anyhow",
  "env_logger",
  "futures",
+ "serde_json",
  "tempfile",
  "tokio",
  "tokio-retry",

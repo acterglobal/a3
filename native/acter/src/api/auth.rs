@@ -55,11 +55,13 @@ pub async fn destroy_local_data(
 pub async fn make_client_config(
     base_path: String,
     username: &str,
+    db_passphrase: Option<String>,
     default_homeserver_name: &str,
     default_homeserver_url: &str,
 ) -> Result<(ClientBuilder, OwnedUserId)> {
     let (user_id, fallback) = sanitize_user(username, default_homeserver_name).await?;
-    let builder = platform::new_client_config(base_path, user_id.to_string(), true).await?;
+    let builder =
+        platform::new_client_config(base_path, user_id.to_string(), db_passphrase, true).await?;
     if fallback {
         Ok((builder.homeserver_url(default_homeserver_url), user_id))
     } else {
@@ -74,9 +76,15 @@ pub async fn guest_client(
     default_homeserver_url: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    let config = platform::new_client_config(base_path, default_homeserver_name, true)
-        .await?
-        .homeserver_url(default_homeserver_url);
+    let db_passphrase = uuid::Uuid::new_v4().to_string();
+    let config = platform::new_client_config(
+        base_path,
+        default_homeserver_name,
+        Some(db_passphrase.clone()),
+        true,
+    )
+    .await?
+    .homeserver_url(default_homeserver_url);
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
@@ -100,7 +108,10 @@ pub async fn guest_client(
                 },
             };
             client.restore_session(auth_session).await?;
-            let state = ClientStateBuilder::default().is_guest(true).build()?;
+            let state = ClientStateBuilder::default()
+                .is_guest(true)
+                .db_passphrase(Some(db_passphrase))
+                .build()?;
             let c = Client::new(client, state).await?;
             info!("Successfully created guest login: {:?}", response.user_id);
             Ok(c)
@@ -110,14 +121,15 @@ pub async fn guest_client(
 
 // public for only integration test, not api.rsh
 pub async fn login_with_token_under_config(
-    restore_token: String,
+    restore_token: RestoreToken,
     config: ClientBuilder,
 ) -> Result<Client> {
     let RestoreToken {
         session,
         homeurl,
         is_guest,
-    } = serde_json::from_str(&restore_token)?;
+        db_passphrase,
+    } = restore_token;
     let user_id = session.user_id.to_string();
     RUNTIME
         .spawn(async move {
@@ -133,7 +145,10 @@ pub async fn login_with_token_under_config(
                 },
             };
             client.restore_session(auth_session).await?;
-            let state = ClientStateBuilder::default().is_guest(is_guest).build()?;
+            let state = ClientStateBuilder::default()
+                .is_guest(is_guest)
+                .db_passphrase(db_passphrase)
+                .build()?;
             let c = Client::new(client.clone(), state).await?;
             info!(
                 "Successfully logged in user {user_id}, device {:?} with token.",
@@ -145,19 +160,22 @@ pub async fn login_with_token_under_config(
 }
 
 pub async fn login_with_token(base_path: String, restore_token: String) -> Result<Client> {
-    let RestoreToken {
-        session,
-        homeurl,
-        is_guest,
-    } = serde_json::from_str(&restore_token)?;
-    let config = platform::new_client_config(base_path, session.user_id.to_string(), false).await?;
-    login_with_token_under_config(restore_token, config).await
+    let token: RestoreToken = serde_json::from_str(&restore_token)?;
+    let config = platform::new_client_config(
+        base_path,
+        token.session.user_id.to_string(),
+        token.db_passphrase.clone(),
+        false,
+    )
+    .await?;
+    login_with_token_under_config(token, config).await
 }
 
 async fn login_client(
     client: SdkClient,
     user_id: OwnedUserId,
     password: String,
+    db_passphrase: Option<String>,
     device_name: Option<String>,
 ) -> Result<Client> {
     let mut login_builder = client.matrix_auth().login_username(&user_id, &password);
@@ -167,7 +185,10 @@ async fn login_client(
         login_builder = login_builder.initial_device_display_name(name.as_str())
     };
     login_builder.send().await?;
-    let state = ClientStateBuilder::default().is_guest(false).build()?;
+    let state = ClientStateBuilder::default()
+        .is_guest(false)
+        .db_passphrase(db_passphrase)
+        .build()?;
     info!(
         "Successfully logged in user {user_id}, device {:?}",
         client.device_id(),
@@ -180,11 +201,19 @@ pub async fn login_new_client_under_config(
     config: ClientBuilder,
     user_id: OwnedUserId,
     password: String,
+    db_passphrase: Option<String>,
     device_name: Option<String>,
 ) -> Result<Client> {
     RUNTIME
         .spawn(async move {
-            login_client(config.build().await?, user_id, password, device_name).await
+            login_client(
+                config.build().await?,
+                user_id,
+                password,
+                db_passphrase,
+                device_name,
+            )
+            .await
         })
         .await?
 }
@@ -200,11 +229,12 @@ pub async fn smart_login(
     let (config, user_id) = make_client_config(
         base_path,
         &username,
+        None,
         &default_homeserver_name,
         &default_homeserver_url,
     )
     .await?;
-    login_new_client_under_config(config, user_id, password, device_name).await
+    login_new_client_under_config(config, user_id, password, None, device_name).await
 }
 
 pub async fn login_new_client(
@@ -215,14 +245,16 @@ pub async fn login_new_client(
     default_homeserver_url: String,
     device_name: Option<String>,
 ) -> Result<Client> {
+    let db_passphrase = uuid::Uuid::new_v4().to_string();
     let (config, user_id) = make_client_config(
         base_path,
         &username,
+        Some(db_passphrase.clone()),
         &default_homeserver_name,
         &default_homeserver_url,
     )
     .await?;
-    login_new_client_under_config(config, user_id, password, device_name).await
+    login_new_client_under_config(config, user_id, password, Some(db_passphrase), device_name).await
 }
 
 pub async fn register(
@@ -234,20 +266,23 @@ pub async fn register(
     default_homeserver_name: String,
     default_homeserver_url: String,
 ) -> Result<Client> {
+    let db_passphrase = uuid::Uuid::new_v4().to_string();
     let (config, user_id) = make_client_config(
         base_path,
         &username,
+        Some(db_passphrase.clone()),
         &default_homeserver_name,
         &default_homeserver_url,
     )
     .await?;
-    register_under_config(config, user_id, password, user_agent).await
+    register_under_config(config, user_id, password, Some(db_passphrase), user_agent).await
 }
 
 pub async fn register_under_config(
     config: ClientBuilder,
     user_id: OwnedUserId,
     password: String,
+    db_passphrase: Option<String>,
     user_agent: String,
 ) -> Result<Client> {
     RUNTIME
@@ -274,7 +309,7 @@ pub async fn register_under_config(
                 client.device_id(),
             );
 
-            login_client(client, user_id, password, Some(user_agent)).await
+            login_client(client, user_id, password, db_passphrase, Some(user_agent)).await
         })
         .await?
 }
@@ -288,21 +323,31 @@ pub async fn register_with_token(
     default_homeserver_url: String,
     user_agent: String,
 ) -> Result<Client> {
+    let db_passphrase = uuid::Uuid::new_v4().to_string();
     let (config, user_id) = make_client_config(
         base_path,
         &username,
+        Some(db_passphrase.clone()),
         &default_homeserver_name,
         &default_homeserver_url,
     )
     .await?;
-    register_with_token_under_config(config, user_id, password, user_agent, registration_token)
-        .await
+    register_with_token_under_config(
+        config,
+        user_id,
+        password,
+        Some(db_passphrase),
+        user_agent,
+        registration_token,
+    )
+    .await
 }
 
 pub async fn register_with_token_under_config(
     config: ClientBuilder,
     user_id: OwnedUserId,
     password: String,
+    db_passphrase: Option<String>,
     user_agent: String,
     registration_token: String,
 ) -> Result<Client> {
@@ -338,7 +383,7 @@ pub async fn register_with_token_under_config(
                 client
             };
 
-            login_client(client, user_id, password, Some(user_agent)).await
+            login_client(client, user_id, password, db_passphrase, Some(user_agent)).await
         })
         .await?
 }
@@ -353,6 +398,7 @@ impl Client {
                 let auth_data =
                     AuthData::Password(Password::new(account.user_id().into(), password.clone()));
                 account.deactivate(None, Some(auth_data)).await?;
+                // FIXME: remove local data, too!
                 Ok(true)
             })
             .await?

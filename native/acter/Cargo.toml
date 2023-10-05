@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 rust-version = "1.63"
 description = "SDK of the acter app"
-homepage = "https://effekto.org"
+homepage = "https://acter.global"
 repository = "https://github.com/acterglobal/a3"
 license-file = "../../LICENSE.txt"
 
@@ -45,6 +45,7 @@ tokio-stream = "0.1.14"
 tokio-retry = "0.3.0"
 tracing = { version = "0.1.29", default-features = false, features = ["log"] }
 url = "2.2.2"
+uuid = { version = "1.4.0", features = ["v4"] }
 
 # for markdown support.
 pulldown-cmark = { version = "0.9.1", default-features = false }

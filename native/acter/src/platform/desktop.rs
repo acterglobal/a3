@@ -10,9 +10,10 @@ pub async fn destroy_local_data(base_path: String, home_dir: String) -> Result<b
 pub async fn new_client_config(
     base_path: String,
     home_dir: String,
+    db_passphrase: Option<String>,
     reset_if_existing: bool,
 ) -> Result<ClientBuilder> {
-    let builder = native::new_client_config(base_path, home_dir, reset_if_existing)
+    let builder = native::new_client_config(base_path, home_dir, db_passphrase, reset_if_existing)
         .await?
         .user_agent(format!(
             "{:}/acter@{:}",

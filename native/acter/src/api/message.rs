@@ -2023,59 +2023,41 @@ pub(crate) fn any_sync_event_to_message(
     match event {
         AnySyncTimelineEvent::State(AnySyncStateEvent::PolicyRuleRoom(
             SyncStateEvent::Original(e),
-        )) => {
-            Some(RoomMessage::policy_rule_room_from_sync_event(e, room_id))
-        }
+        )) => Some(RoomMessage::policy_rule_room_from_sync_event(e, room_id)),
         AnySyncTimelineEvent::State(AnySyncStateEvent::PolicyRuleServer(
             SyncStateEvent::Original(e),
-        )) => {
-            Some(RoomMessage::policy_rule_server_from_sync_event(e, room_id))
-        }
+        )) => Some(RoomMessage::policy_rule_server_from_sync_event(e, room_id)),
         AnySyncTimelineEvent::State(AnySyncStateEvent::PolicyRuleUser(
             SyncStateEvent::Original(e),
-        )) => {
-            Some(RoomMessage::policy_rule_user_from_sync_event(e, room_id))
-        }
+        )) => Some(RoomMessage::policy_rule_user_from_sync_event(e, room_id)),
         AnySyncTimelineEvent::State(AnySyncStateEvent::RoomAliases(SyncStateEvent::Original(
             e,
-        ))) => {
-            Some(RoomMessage::room_aliases_from_sync_event(e, room_id))
-        }
+        ))) => Some(RoomMessage::room_aliases_from_sync_event(e, room_id)),
         AnySyncTimelineEvent::State(AnySyncStateEvent::RoomAvatar(SyncStateEvent::Original(e))) => {
             Some(RoomMessage::room_avatar_from_sync_event(e, room_id))
         }
         AnySyncTimelineEvent::State(AnySyncStateEvent::RoomCanonicalAlias(
             SyncStateEvent::Original(e),
-        )) => {
-            Some(RoomMessage::room_canonical_alias_from_sync_event(
-                e, room_id,
-            ))
-        }
+        )) => Some(RoomMessage::room_canonical_alias_from_sync_event(
+            e, room_id,
+        )),
         AnySyncTimelineEvent::State(AnySyncStateEvent::RoomCreate(SyncStateEvent::Original(e))) => {
             Some(RoomMessage::room_create_from_sync_event(e, room_id))
         }
         AnySyncTimelineEvent::State(AnySyncStateEvent::RoomEncryption(
             SyncStateEvent::Original(e),
-        )) => {
-            Some(RoomMessage::room_encryption_from_sync_event(e, room_id))
-        }
+        )) => Some(RoomMessage::room_encryption_from_sync_event(e, room_id)),
         AnySyncTimelineEvent::State(AnySyncStateEvent::RoomGuestAccess(
             SyncStateEvent::Original(e),
-        )) => {
-            Some(RoomMessage::room_guest_access_from_sync_event(e, room_id))
-        }
+        )) => Some(RoomMessage::room_guest_access_from_sync_event(e, room_id)),
         AnySyncTimelineEvent::State(AnySyncStateEvent::RoomHistoryVisibility(
             SyncStateEvent::Original(e),
-        )) => {
-            Some(RoomMessage::room_history_visibility_from_sync_event(
-                e, room_id,
-            ))
-        }
+        )) => Some(RoomMessage::room_history_visibility_from_sync_event(
+            e, room_id,
+        )),
         AnySyncTimelineEvent::State(AnySyncStateEvent::RoomJoinRules(
             SyncStateEvent::Original(e),
-        )) => {
-            Some(RoomMessage::room_join_rules_from_sync_event(e, room_id))
-        }
+        )) => Some(RoomMessage::room_join_rules_from_sync_event(e, room_id)),
         AnySyncTimelineEvent::State(AnySyncStateEvent::RoomMember(SyncStateEvent::Original(e))) => {
             Some(RoomMessage::room_member_from_sync_event(e, room_id))
         }
@@ -2084,31 +2066,21 @@ pub(crate) fn any_sync_event_to_message(
         }
         AnySyncTimelineEvent::State(AnySyncStateEvent::RoomPinnedEvents(
             SyncStateEvent::Original(e),
-        )) => {
-            Some(RoomMessage::room_pinned_events_from_sync_event(e, room_id))
-        }
+        )) => Some(RoomMessage::room_pinned_events_from_sync_event(e, room_id)),
         AnySyncTimelineEvent::State(AnySyncStateEvent::RoomPowerLevels(
             SyncStateEvent::Original(e),
-        )) => {
-            Some(RoomMessage::room_power_levels_from_sync_event(e, room_id))
-        }
+        )) => Some(RoomMessage::room_power_levels_from_sync_event(e, room_id)),
         AnySyncTimelineEvent::State(AnySyncStateEvent::RoomServerAcl(
             SyncStateEvent::Original(e),
-        )) => {
-            Some(RoomMessage::room_server_acl_from_sync_event(e, room_id))
-        }
+        )) => Some(RoomMessage::room_server_acl_from_sync_event(e, room_id)),
         AnySyncTimelineEvent::State(AnySyncStateEvent::RoomThirdPartyInvite(
             SyncStateEvent::Original(e),
-        )) => {
-            Some(RoomMessage::room_third_party_invite_from_sync_event(
-                e, room_id,
-            ))
-        }
+        )) => Some(RoomMessage::room_third_party_invite_from_sync_event(
+            e, room_id,
+        )),
         AnySyncTimelineEvent::State(AnySyncStateEvent::RoomTombstone(
             SyncStateEvent::Original(e),
-        )) => {
-            Some(RoomMessage::room_tombstone_from_sync_event(e, room_id))
-        }
+        )) => Some(RoomMessage::room_tombstone_from_sync_event(e, room_id)),
         AnySyncTimelineEvent::State(AnySyncStateEvent::RoomTopic(SyncStateEvent::Original(e))) => {
             Some(RoomMessage::room_topic_from_sync_event(e, room_id))
         }
@@ -2117,52 +2089,34 @@ pub(crate) fn any_sync_event_to_message(
         }
         AnySyncTimelineEvent::State(AnySyncStateEvent::SpaceParent(SyncStateEvent::Original(
             e,
-        ))) => {
-            Some(RoomMessage::space_parent_from_sync_event(e, room_id))
-        }
+        ))) => Some(RoomMessage::space_parent_from_sync_event(e, room_id)),
         AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::CallAnswer(
             SyncMessageLikeEvent::Original(a),
-        )) => {
-            Some(RoomMessage::call_answer_from_sync_event(a, room_id))
-        }
+        )) => Some(RoomMessage::call_answer_from_sync_event(a, room_id)),
         AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::CallCandidates(
             SyncMessageLikeEvent::Original(c),
-        )) => {
-            Some(RoomMessage::call_candidates_from_sync_event(c, room_id))
-        }
+        )) => Some(RoomMessage::call_candidates_from_sync_event(c, room_id)),
         AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::CallHangup(
             SyncMessageLikeEvent::Original(h),
-        )) => {
-            Some(RoomMessage::call_hangup_from_sync_event(h, room_id))
-        }
+        )) => Some(RoomMessage::call_hangup_from_sync_event(h, room_id)),
         AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::CallInvite(
             SyncMessageLikeEvent::Original(i),
-        )) => {
-            Some(RoomMessage::call_invite_from_sync_event(i, room_id))
-        }
+        )) => Some(RoomMessage::call_invite_from_sync_event(i, room_id)),
         AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::Reaction(
             SyncMessageLikeEvent::Original(r),
-        )) => {
-            Some(RoomMessage::reaction_from_sync_event(r, room_id))
-        }
+        )) => Some(RoomMessage::reaction_from_sync_event(r, room_id)),
         AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomEncrypted(
             SyncMessageLikeEvent::Original(e),
-        )) => {
-            Some(RoomMessage::room_encrypted_from_sync_event(e, room_id))
-        }
+        )) => Some(RoomMessage::room_encrypted_from_sync_event(e, room_id)),
         AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
             SyncMessageLikeEvent::Original(m),
-        )) => {
-            Some(RoomMessage::room_message_from_sync_event(m, room_id, false))
-        }
+        )) => Some(RoomMessage::room_message_from_sync_event(m, room_id, false)),
         AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomRedaction(r)) => {
             Some(RoomMessage::room_redaction_from_sync_event(r, room_id))
         }
         AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::Sticker(
             SyncMessageLikeEvent::Original(s),
-        )) => {
-            Some(RoomMessage::sticker_from_sync_event(s, room_id))
-        }
+        )) => Some(RoomMessage::sticker_from_sync_event(s, room_id)),
         _ => None,
     }
 }
