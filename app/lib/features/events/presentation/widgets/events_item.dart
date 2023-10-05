@@ -21,7 +21,10 @@ class EventItem extends StatelessWidget {
         ),
         onTap: () => context.pushNamed(
           Routes.calendarEvent.name,
-          pathParameters: {'calendarId': event.eventId().toString()},
+          pathParameters: {
+            'calendarId': event.eventId().toString(),
+          },
+          extra: event.roomIdStr(),
         ),
       ),
     );

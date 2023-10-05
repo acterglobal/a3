@@ -33,7 +33,6 @@ dependencies:
 
   # UI
   flutter_adaptive_scaffold: ^0.1.0
-  
   atlas_icons: ^0.0.12
   # stories_editor:
   #   path: "../../flutter_stories_editor"
@@ -41,6 +40,8 @@ dependencies:
     #   url: https://github.com/acterglobal/flutter_stories_editor.git
   flutter_chat_ui: ^1.6.9
   flutter_chat_types: ^3.3.2
+  table_calendar: ^3.0.9
+  omni_datetime_picker: ^1.0.9
   flutter_staggered_grid_view: ^0.7.0
   flutter_svg: ">=1.0.0"
   flutter_link_previewer: ^3.0.1
@@ -117,7 +118,6 @@ dependencies:
   logging: ^1.2.0
   args: ^2.4.2
   breadcrumbs: ^0.1.0
-  great_list_view: ^0.2.3
 
 dev_dependencies:
   flutter_test:

@@ -36,13 +36,12 @@ extension RefDebounceExtension on Ref {
 DateTime kFirstDay = DateTime.utc(2010, 10, 16);
 DateTime kLastDay = DateTime.utc(2050, 12, 31);
 
-List<CalendarEvent> eventsForDay(List<CalendarEvent> events, DateTime day) {
-  return events.where((e) {
-    final startDay = toDartDatetime(e.utcStart());
-    final endDay = toDartDatetime(e.utcEnd());
-    return (startDay.difference(day).inDays == 0) ||
-        (endDay.difference(day).inDays == 0);
-  }).toList();
+List<DateTime> daysInRange(DateTime first, DateTime last) {
+  final dayCount = last.difference(first).inDays + 1;
+  return List.generate(
+    dayCount,
+    (index) => DateTime.utc(first.year, first.month, first.day + index),
+  );
 }
 
 String formatDt(CalendarEvent e) {

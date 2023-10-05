@@ -7,11 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class EventsCalendar extends ConsumerWidget {
+class EventsList extends ConsumerWidget {
   final int? limit;
   final AsyncValue<List<CalendarEvent>> events;
 
-  const EventsCalendar({super.key, this.limit, required this.events});
+  const EventsList({super.key, this.limit, required this.events});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,10 +31,6 @@ class EventsCalendar extends ConsumerWidget {
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text(
-                          'Upcoming',
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
                         ListView.builder(
                           shrinkWrap: true,
                           itemCount: eventsLimit,

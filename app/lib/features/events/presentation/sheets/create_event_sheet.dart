@@ -5,20 +5,16 @@ import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/events/presentation/providers/providers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 
 final _titleProvider = StateProvider.autoDispose<String>((ref) => '');
-final _dateProvider =
-    StateProvider.autoDispose<DateTime>((ref) => DateTime.now());
-final _startTimeProvider =
-    StateProvider.autoDispose<TimeOfDay>((ref) => TimeOfDay.now());
-final _endTimeProvider = StateProvider.autoDispose<TimeOfDay>(
-  (ref) => TimeOfDay(
-    hour: TimeOfDay.now().hour + 1,
-    minute: TimeOfDay.now().minute,
-  ),
+final _startDateProvider = StateProvider.autoDispose<DateTime?>((ref) => null);
+final _endDateProvider = StateProvider.autoDispose<DateTime?>(
+  (ref) => null,
 );
 
 class CreateEventSheet extends ConsumerStatefulWidget {
@@ -50,6 +46,8 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   @override
   Widget build(BuildContext context) {
     final titleInput = ref.watch(_titleProvider);
+    final startDate = ref.watch(_startDateProvider);
+    final endDate = ref.watch(_endDateProvider);
     ref.listen(createEventProvider, (previous, next) {
       next.whenData(
         (event) {
@@ -104,7 +102,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                       InkWell(
                         focusColor: Colors.transparent,
                         hoverColor: Colors.transparent,
-                        onTap: _selectDate,
+                        onTap: _selectDateTime,
                         child: TextFormField(
                           enabled: false,
                           controller: _dateController,
@@ -140,7 +138,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                       InkWell(
                         focusColor: Colors.transparent,
                         hoverColor: Colors.transparent,
-                        onTap: _selectStartTime,
+                        onTap: _selectDateTime,
                         child: TextFormField(
                           enabled: false,
                           controller: _startTimeController,
@@ -176,7 +174,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                       InkWell(
                         focusColor: Colors.transparent,
                         hoverColor: Colors.transparent,
-                        onTap: _selectEndTime,
+                        onTap: _selectDateTime,
                         child: TextFormField(
                           enabled: false,
                           controller: _endTimeController,
@@ -232,50 +230,34 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       ),
       confirmActionTitle: 'Create Event',
       cancelActionTitle: 'Cancel',
-      confirmActionOnPressed: titleInput.isEmpty
-          ? null
-          : () async {
-              await _handleCreateEvent();
-            },
+      confirmActionOnPressed:
+          (titleInput.isEmpty || startDate == null || endDate == null)
+              ? null
+              : () async {
+                  await _handleCreateEvent();
+                },
       cancelActionOnPressed: () =>
           context.canPop() ? context.pop() : context.goNamed(Routes.main.name),
     );
   }
 
   Future<void> _handleCreateEvent() async {
-    final spaceId = ref.read(selectedSpaceIdProvider)!;
-    // pre fill values if user doesn't set date time.
-    if (_dateController.text.isEmpty) {
-      _dateController.text = DateFormat.yMd().format(DateTime.now().toUtc());
+    final spaceId = ref.read(selectedSpaceIdProvider);
+    if (spaceId == null) {
+      return;
     }
-    if (_startTimeController.text.isEmpty) {
-      final time = TimeOfDay.now().format(context);
-      _startTimeController.text = time;
+
+    final date = ref.read(_startDateProvider);
+    final endDate = ref.read(_endDateProvider);
+    if (date == null || endDate == null) {
+      EasyLoading.showInfo(
+        'Please Select Time',
+        duration: const Duration(seconds: 2),
+      );
+      return;
     }
-    if (_endTimeController.text.isEmpty) {
-      final time = TimeOfDay(
-        hour: TimeOfDay.now().hour + 1,
-        minute: TimeOfDay.now().minute,
-      ).format(context);
-      _endTimeController.text = time;
-    }
-    final date = ref.read(_dateProvider);
-    final startTime = ref.read(_startTimeProvider);
-    final endTime = ref.read(_endTimeProvider);
-    final utcStartDateTime = DateTime(
-      date.year,
-      date.month,
-      date.day,
-      startTime.hour,
-      startTime.minute,
-    ).toUtc().toIso8601String();
-    final utcEndDateTime = DateTime(
-      date.year,
-      date.month,
-      date.day,
-      endTime.hour,
-      endTime.minute,
-    ).toUtc().toIso8601String();
+    final utcStartDateTime = date.toUtc().toIso8601String();
+    final utcEndDateTime = endDate.toUtc().toIso8601String();
     await ref.read(createEventProvider.notifier).create(
           spaceId,
           _nameController.text.trim(),
@@ -285,46 +267,20 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
         );
   }
 
-  Future<void> _selectDate() async {
-    DateTime? picked = await showDatePicker(
+  void _selectDateTime() async {
+    await showOmniDateTimeRangePicker(
       context: context,
-      initialDate: DateTime.now(),
-      initialDatePickerMode: DatePickerMode.day,
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null) {
-      ref.read(_dateProvider.notifier).update((state) => picked);
-      _dateController.text = DateFormat.yMd().format(picked);
-    }
-  }
-
-  Future<void> _selectStartTime() async {
-    TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-
-    if (picked != null && context.mounted) {
-      final time = picked.format(context);
-      ref.read(_startTimeProvider.notifier).update((state) => picked);
-      _startTimeController.text = time;
-    }
-  }
-
-  Future<void> _selectEndTime() async {
-    TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay(
-        hour: TimeOfDay.now().hour + 1,
-        minute: TimeOfDay.now().minute,
-      ),
-    );
-
-    if (picked != null && context.mounted) {
-      final time = picked.format(context);
-      ref.read(_endTimeProvider.notifier).update((state) => picked);
-      _endTimeController.text = time;
-    }
+      startFirstDate: DateTime.now(),
+      startInitialDate: DateTime.now(),
+      borderRadius: BorderRadius.circular(12),
+    ).then((picked) {
+      if (picked != null) {
+        ref.read(_startDateProvider.notifier).update((state) => picked[0]);
+        ref.read(_endDateProvider.notifier).update((state) => picked[1]);
+        _dateController.text = DateFormat.yMd().format(picked[0]);
+        _startTimeController.text = DateFormat.jm().format(picked[0]);
+        _endTimeController.text = DateFormat.jm().format(picked[1]);
+      }
+    });
   }
 }

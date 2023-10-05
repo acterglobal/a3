@@ -112,6 +112,12 @@ class CalendarEventRepository implements EventRepositoryInterface {
     final eventId = await draft.send();
     final calendarEvent =
         await client.waitForCalendarEvent(eventId.toString(), null);
+
+    /// Event is created, set RSVP status to `Yes` by default for host.
+    final rsvpManager = await calendarEvent.rsvpManager();
+    final rsvpDraft = rsvpManager.rsvpDraft();
+    rsvpDraft.status('Yes');
+    await rsvpDraft.send();
     debugPrint('Created Calendar Event: ${eventId.toString()}');
     return right(calendarEvent);
   }

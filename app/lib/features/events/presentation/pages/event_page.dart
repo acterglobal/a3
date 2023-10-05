@@ -2,11 +2,13 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/events/presentation/providers/providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +19,10 @@ import 'package:jiffy/jiffy.dart';
 class CalendarEventPage extends ConsumerWidget {
   final String calendarId;
 
-  const CalendarEventPage({super.key, required this.calendarId});
+  const CalendarEventPage({
+    super.key,
+    required this.calendarId,
+  });
 
   Widget buildActions(
     BuildContext context,
@@ -126,6 +131,7 @@ class CalendarEventPage extends ConsumerWidget {
       });
     });
     final event = ref.watch(calendarEventProvider(calendarId));
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.neutral,
       body: CustomScrollView(
@@ -133,7 +139,7 @@ class CalendarEventPage extends ConsumerWidget {
           Consumer(
             builder: (context, ref, child) {
               return PageHeaderWidget(
-                title: event.hasValue ? event.value!.title() : 'Loading Event',
+                title: 'Calendar Event',
                 sectionDecoration: const BoxDecoration(
                   gradient: AppTheme.primaryGradient,
                 ),
@@ -149,11 +155,10 @@ class CalendarEventPage extends ConsumerWidget {
           ),
           event.when(
             data: (ev) {
-              String date = Jiffy.parseFromMillisecondsSinceEpoch(
-                ev.utcStart().timestampMillis(),
+              String date = Jiffy.parseFromDateTime(
+                toDartDatetime(ev.utcStart()).toLocal(),
               ).yMMMMEEEEd;
-              String time =
-                  '${Jiffy.parseFromMillisecondsSinceEpoch(ev.utcStart().timestampMillis()).jm} - ${Jiffy.parseFromMillisecondsSinceEpoch(ev.utcEnd().timestampMillis()).jm}';
+              String time = formatDt(ev);
               String description = '';
               TextMessageContent? content = ev.description();
 

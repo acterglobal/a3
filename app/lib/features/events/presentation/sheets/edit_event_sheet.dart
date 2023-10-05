@@ -75,7 +75,6 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
         (event) {
           if (event == null) return;
           context.pop();
-          context.pop();
         },
       );
     });
@@ -272,7 +271,7 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
       endTime.hour,
       endTime.minute,
     ).toUtc().toIso8601String();
-    await ref.read(editEventProvider.notifier).update(
+    ref.read(editEventProvider.notifier).update(
           spaceId,
           widget.calendarId!,
           _nameController.text.trim(),
