@@ -20,67 +20,28 @@ top = false
 
 #### Colors
 
-- Primary Brand Color: <span style="color: #EC2758; font-weight: bold"> #EC2758 </span>
-- Secondary Brand Color: <span style="color: #23AFC2; font-weight: bold"> #23AFC2 </span>
-- Tertiary Brand Color: <span style="color: #5C2A80; font-weight: bold"> #5C2A80 </span>
-- Background Color: <span style="color: #979797; font-weight: bold"> #979797 </span>
-- Dark Shade: <span style="color: #333540; font-weight: bold"> #333540 </span>
-- Secondary Dark Shade: <span style="color: #2F313E; font-weight: bold"> #2F313E </span>
-- Divider: <span style="color: #4A4A4A; font-weight: bold"> #4A4A4A </span>
-- Text Color: <span style="color: #FFFFFF; font-weight: bold"> #FFFFFF </span>
-- Text Shade: <span style="color: #FEFEFE; font-weight: bold"> #FEFEFE </span>
-- Text Shade 2: <span style="color: #F8F8F8; font-weight: bold"> #F8F8F8 </span>
-- Text Shade 3: <span style="color: #C2C1C0; font-weight: bold"> #C2C1C0 </span>
+Colors can be found in [`app/lib/common/themes/app_theme.dart`](https://github.com/acterglobal/a3/blob/main/app/lib/common/themes/app_theme.dart). Whenever possible the `AppTheme.brandColorScheme` should be used in the code base rather than any specific color. New color sets like gradients or changes to existing colors shall be added to that class (for easier customization later).
+
+- Primary Brand Color: <span style="color: #9CCAFF; font-weight: bold"> #9CCAFF </span>
+- Secondary Brand Color: <span style="color: #9ACBFF; font-weight: bold"> #9ACBFF </span>
+- Tertiary Brand Color: <span style="color: #FFB77B; font-weight: bold"> #FFB77B </span>
+- Background Color: <span style="color: #001B3D; font-weight: bold"> #001B3D </span>
+- Neutral: <span style="color: #121212; font-weight: bold"> #121212 </span>
+- Success: <span style="color: #67A24A; font-weight: bold"> #67A24A </span>
 
 #### Typeface
 
-- App-Wide Font: Roboto
-- Headlines: Roboto Semi-Bold
-- Regular Text: Robot Light
-- Font-Sizes:
-  - H1: 18/20
-  - H2: 16/Auto
-  - H3 subject: 15/20
-  - Body Text: 10/15
-  - H4 substitles: 10/15
-  - H5 Big Word: 20/25
-  - H6 legal: 10/auto
+- App-Wide Font: Inter
+- Emoji: System provided fond; on Linux: notoEmoji
 
 #### Icons
 
-We use clean, clear but slightly playful even childish Icons, to get away from a too steril style and keep things fun and social. Whenever possible we pick of [the vast library of existing icons](https://oblador.github.io/react-native-vector-icons/) that's already embedded in the app (via `flutter_icons_null_safety`, usage as in [flutter icons](https://pub.dev/packages/flutter_icons)).
+We use clean, clear but slightly playful even childish Icons, to get away from a too steril style and keep things fun and social. Whenever possible we use the closest matching [Atlas Icon](https://atlasicons.vectopus.com/) that's already embedded in the app (via `package:atlas_icons/atlas_icons.dart`).
 
 ```dart
 // Import package
-import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
-// After 1.1.0, the FlutterIcons class is provided to access all Icons
-// Icon name in the original basis added icon set abbreviation name as suffix
-// Hereinafter referred to as the following
-//Ant Design Icons -> ant,
-//Entypo Icons -> ent,
-//Evil Icons -> evi,
-//Feather Icons -> fea,
-//Font Awesome Icons -> faw,
-//Foundation Icons -> fou,
-//Ionicons Icons -> ion,
-//Material Community Icons -> mco,
-//Material Icons -> mdi,
-//Octicons Icons -> oct,
-//Simple Line Icons -> sli,
-//Zocial Icons -> zoc,
-//Weather Icons -> wea
-Icon(FlutterIcons.stepforward_ant)
-Icon(FlutterIcons.html5_faw)
+Icon(Atlas.audio_album, size: 24.0, )
 ```
-
-### [Brandguide as PDF](/styles/Acter-MVP-Design-Style.pdf)
-
-## Implementation Guide
-
-TBD
-
-## Themeing / Customisastion
-
-TBD
