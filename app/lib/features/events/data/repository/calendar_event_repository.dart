@@ -90,12 +90,6 @@ class CalendarEventRepository implements EventRepositoryInterface {
   }
 
   @override
-  Future<void> onDisposeSub() async {
-    debugPrint('disposing events sub');
-    _sub.cancel();
-  }
-
-  @override
   Future<Either<Failure, ffi.CalendarEvent>> createCalendarEvent(
     String spaceId,
     String title,
@@ -222,5 +216,11 @@ class CalendarEventRepository implements EventRepositoryInterface {
         .then((ffiList) => ffiList.toList());
     final userList = userIds.map((e) => e.toString()).toList();
     return right(userList);
+  }
+
+  @override
+  Future<void> onDisposeSub() async {
+    debugPrint('disposing events sub');
+    _sub.cancel();
   }
 }

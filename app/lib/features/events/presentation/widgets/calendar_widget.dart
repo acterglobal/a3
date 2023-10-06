@@ -1,6 +1,6 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/events/presentation/providers/providers.dart';
+import 'package:acter/features/events/providers.dart';
 import 'package:acter/features/events/presentation/widgets/events_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;

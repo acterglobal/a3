@@ -6,6 +6,7 @@ import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/spaces/space_info.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
+import 'package:acter/features/events/providers.dart';
 import 'package:acter/features/space/widgets/top_nav.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
@@ -31,6 +32,14 @@ class SpaceShell extends ConsumerStatefulWidget {
 }
 
 class _SpaceShellState extends ConsumerState<SpaceShell> {
+  @override
+  void dispose() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      await ref.read(calendarRepositoryProvider).onDisposeSub();
+    });
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     // get platform of context.

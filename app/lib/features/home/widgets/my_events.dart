@@ -1,4 +1,4 @@
-import 'package:acter/features/events/presentation/providers/providers.dart';
+import 'package:acter/features/events/providers.dart';
 import 'package:acter/features/events/presentation/widgets/calendar_widget.dart';
 import 'package:acter/features/events/presentation/widgets/events_list.dart';
 import 'package:flutter/material.dart';

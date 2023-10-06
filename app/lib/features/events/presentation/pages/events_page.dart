@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
-import 'package:acter/features/events/presentation/providers/providers.dart';
+import 'package:acter/features/events/providers.dart';
 import 'package:acter/features/events/presentation/widgets/events_item.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';

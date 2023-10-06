@@ -66,15 +66,18 @@ abstract class EventRepositoryInterface {
   /// get total rsvp responders count of calendar event
   Future<Either<Failure, int>> getRsvpCount(String calendarId);
 
+  /// get rsvp count at given status of calendar event
   Future<Either<Failure, int>> getRsvpCountAtStatus(
     String calendarId,
     String status,
   );
 
+  /// get users at given status of calendar event
   Future<Either<Failure, List<String>>> getUsersAtStatus(
     String calendarId,
     String status,
   );
 
+  /// disposing calendar event subscription
   Future<void> onDisposeSub();
 }

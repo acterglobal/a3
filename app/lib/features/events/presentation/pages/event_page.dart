@@ -5,7 +5,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
-import 'package:acter/features/events/presentation/providers/providers.dart';
+import 'package:acter/features/events/providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -121,15 +121,14 @@ class CalendarEventPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final myStatus = ref.watch(rsvpStatusProvider(calendarId));
     final participants = ref.watch(rsvpUsersProvider(calendarId));
+    var event = ref.watch(calendarEventProvider(calendarId));
     ref.listen(redactEventProvider, (previous, next) {
       next.whenData((res) {
         if (res == null) return null;
         context.pop();
         context.pop();
-        ref.invalidate(spaceEventsProvider);
       });
     });
-    final event = ref.watch(calendarEventProvider(calendarId));
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.neutral,
