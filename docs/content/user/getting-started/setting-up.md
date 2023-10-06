@@ -6,9 +6,41 @@ weight = 1
 template = "docs/page.html"
 +++
 
-## Installing latest
+## Installing Acter
 
-To install the latest built, head over to [the nightly build section](/nightly/) and download the corresponding package for your platform. Once the download finished unpack it and run the `Acter` executable. Be sure to note the following for your platform:
+Acter is published on the various app stores on a weekly basis. Just head on over to the app store of your platform and install acter:
+
+### Apple iOS AppStore
+
+<a href="https://apps.apple.com/us/app/acter/id6445989155?itsct=apps_box_badge&amp;itscg=30200">
+    <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1694390400" alt="Download on the App Store" style="border-radius: 13px; width: 250px; height: 83px;">
+</a>
+
+### Android Google Play Store
+
+<a href='https://play.google.com/store/apps/details?id=global.acter.a3&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+    <img alt='Get it on Google Play' width="250" src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/>
+</a>
+
+_FDroid is not yet supported_ [tracking issue here](https://github.com/acterglobal/a3/issues/1016) . But you can just the latest [nightly build](/nightly).
+
+### Windows Microsoft Store
+
+<a href="ms-windows-store://pdp/?ProductId=9NZLTDVTN203">
+    <img height="83" src="https://get.microsoft.com/images/en-us%20dark.svg" alt="Download Acter" />
+</a>
+
+### Apple Desktop App AppStore
+
+_not yet supported_ [tracking issue here](https://github.com/acterglobal/a3/issues/1016) . But you can just the latest [nightly build](/nightly)
+
+### Snapcraft Linux Store
+
+_not yet supported_ [tracking issue here](https://github.com/acterglobal/a3/issues/1016) . But you can just the latest [nightly build](/nightly).
+
+## Installing latest nightly
+
+To install the nightly latest built, head over to [the nightly build section](/nightly/) and download the corresponding package for your platform. Once the download finished unpack it and run the `Acter` executable. Be sure to note the following for your platform:
 
 <details>
 <summary><strong>Running on MacOS</strong></summary>
@@ -23,7 +55,7 @@ We are running this in a limited so called Ad-Hoc built at the moment, which req
 
 </details>
 
-## Nightly Platform support
+## Platform support
 
 ### Mobile
 
