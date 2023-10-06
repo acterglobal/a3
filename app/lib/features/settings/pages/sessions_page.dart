@@ -122,7 +122,7 @@ class SessionsPage extends ConsumerWidget {
               vertical: 15,
             ),
             child: Text(
-              'All your devices are verified. Your account is secure',
+              'All your devices are verified. Your account is secure.',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),

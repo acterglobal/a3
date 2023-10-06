@@ -49,9 +49,8 @@ mod verification;
 pub use account::Account;
 pub use acter_core::{
     events::{
-        news::NewsContent,
-        password_reset::{PasswordResetViaEmail, PasswordResetViaPhone},
-        Colorize, ObjRef, RefDetails, UtcDateTime,
+        news::NewsContent, password_reset::PasswordResetRecord, Colorize, ObjRef, RefDetails,
+        UtcDateTime,
     },
     models::{ActerModel, Color as EfkColor, Tag, TextMessageContent},
 };
@@ -77,7 +76,7 @@ pub use invitation::Invitation;
 pub use message::{RoomEventItem, RoomMessage, RoomVirtualItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide};
 pub use notifications::{Notification, NotificationListResult};
-pub use password_reset::{EmailTokenResponse, PasswordReset};
+pub use password_reset::PasswordResetManager;
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};

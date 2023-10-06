@@ -60,6 +60,7 @@ enum Routes {
   settingsLabs('/settings/labs'),
   settingSessions('/settings/sessions'),
   blockedUsers('/settings/blockedUsers'),
+  emailAddresses('/settings/emailAddresses'),
   info('/info'),
   licenses('/info/licenses'),
 

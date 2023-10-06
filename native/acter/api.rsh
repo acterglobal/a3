@@ -1644,46 +1644,32 @@ object Account {
     /// remove user_id from ignore list
     fn unignore_user(user_id: string) -> Future<Result<bool>>;
 
-    /// get email address from third party identifier
-    fn email_address() -> Future<Result<OptionString>>;
+    /// get intermediate info of password reset (via email and phone) from account data
+    fn password_reset_manager() -> PasswordResetManager;
+}
+
+object PasswordResetManager {
+    /// get email addresses from third party identifier
+    fn confirmed_email_addresses() -> Future<Result<Vec<string>>>;
+
+    /// get email addresses from third party identifier
+    fn unconfirmed_email_addresses() -> Future<Result<Vec<string>>>;
 
     /// Requests token via email and add email address to third party identifier.
     /// If password is not enough complex, homeserver may reject this request.
-    fn request_token_via_email(email_address: string, password: string) -> Future<Result<EmailTokenResponse>>;
+    fn request_token_via_email(email_address: string, password: string) -> Future<Result<bool>>;
 
     /// Submit token to finish password reset via email
-    fn submit_token_from_email(submit_url: string, session_id: string, password: string, token: string) -> Future<Result<bool>>;
+    fn submit_token_from_email(email_address: string, token: string) -> Future<Result<bool>>;
 
-    /// save intermediate info of password reset via email to account data
-    fn set_password_reset_via_email(submit_url: Option<string>, session_id: string, passphrase: string) -> Future<Result<bool>>;
-
-    /// save intermediate info of password reset via phone to account data
-    fn set_password_reset_via_phone(submit_url: Option<string>, session_id: string, passphrase: string) -> Future<Result<bool>>;
-
-    /// get intermediate info of password reset (via email and phone) from account data
-    fn get_password_reset() -> Future<Result<PasswordReset>>;
+    /// Remove email address from confirmed list or unconfirmed list
+    fn remove_email_address(email_address: string) -> Future<Result<bool>>;
 }
 
-object PasswordReset {
-    fn via_email() -> Option<PasswordResetViaEmail>;
-    fn via_phone() -> Option<PasswordResetViaPhone>;
-}
-
-object PasswordResetViaEmail {
+object PasswordResetRecord {
     fn submit_url() -> Option<string>;
     fn session_id() -> string;
     fn passphrase() -> string;
-}
-
-object PasswordResetViaPhone {
-    fn submit_url() -> Option<string>;
-    fn session_id() -> string;
-    fn passphrase() -> string;
-}
-
-object EmailTokenResponse {
-    fn session_id() -> string;
-    fn submit_url() -> Option<string>;
 }
 
 object SyncState {

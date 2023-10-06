@@ -31,6 +31,7 @@ import 'package:acter/features/profile/pages/my_profile_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/search/pages/search.dart';
 import 'package:acter/features/settings/pages/blocked_users.dart';
+import 'package:acter/features/settings/pages/email_addresses.dart';
 import 'package:acter/features/settings/pages/index_page.dart';
 import 'package:acter/features/settings/pages/info_page.dart';
 import 'package:acter/features/settings/pages/labs_page.dart';
@@ -422,6 +423,18 @@ List<RouteBase> makeRoutes(Ref ref) {
             return NoTransitionPage(
               key: state.pageKey,
               child: const SessionsPage(),
+            );
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: shellNavKey,
+          name: Routes.emailAddresses.name,
+          path: Routes.emailAddresses.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: const EmailAddressesPage(),
             );
           },
         ),

@@ -20,9 +20,8 @@ final loadingProvider = StateProvider<bool>((ref) => false);
 class AccountProfile {
   final Account account;
   final ProfileData profile;
-  final String? emailAddress; // for only user profile, not room profile
 
-  const AccountProfile(this.account, this.profile, this.emailAddress);
+  const AccountProfile(this.account, this.profile);
 }
 
 Future<ProfileData> getProfileData(Account account) async {
@@ -43,6 +42,24 @@ final accountProvider = FutureProvider((ref) async {
 final accountProfileProvider = FutureProvider((ref) async {
   final account = await ref.watch(accountProvider.future);
   final profile = await getProfileData(account);
-  final emailAddress = await account.emailAddress();
-  return AccountProfile(account, profile, emailAddress.text());
+  return AccountProfile(account, profile);
+});
+
+// Email addresses for password reset
+class EmailAddresses {
+  final List<String> confirmed;
+  final List<String> unconfirmed;
+
+  const EmailAddresses(this.confirmed, this.unconfirmed);
+}
+
+final emailAddressesProvider = FutureProvider((ref) async {
+  final account = await ref.watch(accountProvider.future);
+  final passwordResetManager = account.passwordResetManager();
+  final confirmed = await passwordResetManager.confirmedEmailAddresses();
+  final unconfirmed = await passwordResetManager.unconfirmedEmailAddresses();
+  return EmailAddresses(
+    asDartStringList(confirmed),
+    asDartStringList(unconfirmed),
+  );
 });
