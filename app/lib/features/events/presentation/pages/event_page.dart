@@ -1,20 +1,17 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/events/presentation/providers/providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jiffy/jiffy.dart';
 
 class CalendarEventPage extends ConsumerWidget {
   final String calendarId;
@@ -122,6 +119,8 @@ class CalendarEventPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final myStatus = ref.watch(rsvpStatusProvider(calendarId));
+    final participants = ref.watch(rsvpUsersProvider(calendarId));
     ref.listen(redactEventProvider, (previous, next) {
       next.whenData((res) {
         if (res == null) return null;
@@ -155,13 +154,8 @@ class CalendarEventPage extends ConsumerWidget {
           ),
           event.when(
             data: (ev) {
-              String date = Jiffy.parseFromDateTime(
-                toDartDatetime(ev.utcStart()).toLocal(),
-              ).yMMMMEEEEd;
-              String time = formatDt(ev);
               String description = '';
               TextMessageContent? content = ev.description();
-
               if (content != null && content.body().isNotEmpty) {
                 description = content.body();
               }
@@ -209,7 +203,7 @@ class CalendarEventPage extends ConsumerWidget {
                                     Flexible(
                                       flex: 2,
                                       child: Text(
-                                        date,
+                                        formatDt(ev),
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyMedium,
@@ -238,7 +232,7 @@ class CalendarEventPage extends ConsumerWidget {
                                     Flexible(
                                       flex: 2,
                                       child: Text(
-                                        time,
+                                        formatTime(ev),
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyMedium,
@@ -247,65 +241,77 @@ class CalendarEventPage extends ConsumerWidget {
                                   ],
                                 ),
                               ),
-                              Consumer(
-                                builder: (context, ref, child) {
-                                  // final profile = ref.watch(
-                                  //   spaceMemberProfileProvider(spaceMember),
-                                  // );
-                                  return Container(
-                                    alignment: Alignment.topLeft,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 15,
-                                      vertical: 5,
+                              Container(
+                                alignment: Alignment.topLeft,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                  vertical: 5,
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Host: ',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
                                     ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          'Host: ',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium,
-                                        ),
-                                        const SizedBox(width: 50),
-                                        // profile.when(
-                                        //   data: (data) => Flexible(
-                                        //     flex: 2,
-                                        //     child: Wrap(
-                                        //       spacing: 4.0,
-                                        //       children: [
-                                        //         Text(
-                                        //           data.displayName ??
-                                        //               spaceMember.userId,
-                                        //           style: Theme.of(context)
-                                        //               .textTheme
-                                        //               .bodyMedium,
-                                        //         ),
-                                        //         ActerAvatar(
-                                        //           uniqueId: spaceMember.userId,
-                                        //           mode: DisplayMode.User,
-                                        //           avatar: data.getAvatarImage(),
-                                        //         ),
-                                        //       ],
-                                        //     ),
-                                        //   ),
-                                        //   error: (err, st) => Flexible(
-                                        //     flex: 2,
-                                        //     child: Text(
-                                        //       'Error loading host profile: $err',
-                                        //     ),
-                                        //   ),
-                                        //   loading: () =>
-                                        //       const CircularProgressIndicator(),
-                                        // ),
-                                      ],
+                                    const SizedBox(width: 50),
+                                    Flexible(
+                                      flex: 2,
+                                      child: ActerAvatar(
+                                        uniqueId: ev.sender().toString(),
+                                        mode: DisplayMode.User,
+                                        size: 22,
+                                      ),
                                     ),
-                                  );
-                                },
+                                  ],
+                                ),
                               ),
-                              const SizedBox(height: 15),
+                              Container(
+                                alignment: Alignment.topLeft,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                  vertical: 5,
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Participants: ',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
+                                    ),
+                                    const SizedBox(width: 50),
+                                    participants.when(
+                                      data: (users) {
+                                        return Flexible(
+                                          flex: 2,
+                                          child: Wrap(
+                                            spacing: -4.0,
+                                            children: List.generate(
+                                              users.length,
+                                              (idx) => ActerAvatar(
+                                                uniqueId: users[idx],
+                                                mode: DisplayMode.User,
+                                                size: 22,
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      error: (e, st) => Text(
+                                        'Error loading participants $e',
+                                      ),
+                                      loading: () =>
+                                          const CircularProgressIndicator(),
+                                    ),
+                                  ],
+                                ),
+                              ),
                               Container(
                                 alignment: Alignment.topLeft,
                                 padding: const EdgeInsets.symmetric(
@@ -340,61 +346,54 @@ class CalendarEventPage extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 15),
-                    Flexible(
-                      flex: 1,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          DefaultButton(
-                            title: 'Invite',
-                            onPressed: () => onInvite(context),
-                            isOutlined: true,
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 18,
-                              ),
-                              side: BorderSide(
-                                color: Theme.of(context).colorScheme.success,
-                                width: 1.5,
-                              ),
-                            ),
-                          ),
-                          PopupMenuButton(
-                            tooltip: 'RSVP',
-                            offset: const Offset(80, 35),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: Theme.of(context).colorScheme.success,
-                              ),
-                              child: Text(
-                                'Join',
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                            ),
-                            itemBuilder: (BuildContext context) =>
-                                <PopupMenuEntry>[
-                              PopupMenuItem(
-                                onTap: () => onRsvp(context, ev, 'Yes'),
-                                child: const Text('Yes'),
-                              ),
-                              PopupMenuItem(
-                                onTap: () => onRsvp(context, ev, 'Maybe'),
-                                child: const Text('Maybe'),
-                              ),
-                              PopupMenuItem(
-                                onTap: () => onRsvp(context, ev, 'No'),
-                                child: const Text('No'),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                    ToggleButtons(
+                      isSelected: [
+                        myStatus.hasValue
+                            ? myStatus.value == 'No'
+                                ? true
+                                : false
+                            : false,
+                        myStatus.hasValue
+                            ? myStatus.value == 'Maybe'
+                                ? true
+                                : false
+                            : false,
+                        myStatus.hasValue
+                            ? myStatus.value == 'Yes'
+                                ? true
+                                : false
+                            : false,
+                      ],
+                      onPressed: (index) async {
+                        var status = '';
+                        if (index == 0) status = 'No';
+                        if (index == 1) status = 'Maybe';
+                        if (index == 2) status = 'Yes';
+                        ref
+                            .read(setRsvpProvider(calendarId).notifier)
+                            .setRsvp(status);
+                      },
+                      textStyle: Theme.of(context).textTheme.labelMedium,
+                      borderRadius: BorderRadius.circular(12),
+                      fillColor: Theme.of(context).colorScheme.success,
+                      borderColor: Theme.of(context).colorScheme.neutral6,
+                      borderWidth: 0.5,
+                      selectedBorderColor:
+                          Theme.of(context).colorScheme.neutral6,
+                      children: const <Widget>[
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('No'),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('Maybe'),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('Yes'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -410,36 +409,5 @@ class CalendarEventPage extends ConsumerWidget {
         ],
       ),
     );
-  }
-
-  void onDelete(BuildContext context) {
-    customMsgSnackbar(context, 'Delete Event is not implemented yet');
-  }
-
-  void onInvite(BuildContext context) {
-    customMsgSnackbar(context, 'Invite to event is not available yet');
-  }
-
-  void onJoin(BuildContext context) {
-    customMsgSnackbar(context, 'Join event is not available yet');
-  }
-
-  Future<void> onRsvp(
-    BuildContext context,
-    CalendarEvent event,
-    String status,
-  ) async {
-    final rsvpManager = await event.rsvpManager();
-    int count = rsvpManager.totalRsvpCount();
-    debugPrint('rsvp prev count: $count');
-
-    final draft = rsvpManager.rsvpDraft();
-    draft.status(status);
-    final rsvpId = await draft.send();
-    debugPrint('new rsvp id: $rsvpId');
-
-    // rsvpManager.subscribeStream();
-    // count = rsvpManager.totalRsvpCount();
-    // debugPrint('rsvp count: $count');
   }
 }

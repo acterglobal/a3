@@ -47,27 +47,20 @@ List<DateTime> daysInRange(DateTime first, DateTime last) {
 String formatDt(CalendarEvent e) {
   final start = toDartDatetime(e.utcStart()).toLocal();
   final end = toDartDatetime(e.utcEnd()).toLocal();
-  if (e.showWithoutTime()) {
-    final startFmt = DateFormat.yMMMd().format(start);
-    if (start.difference(end).inDays == 0) {
-      return startFmt;
-    } else {
-      final endFmt = DateFormat.yMMMd().format(end);
-      return '$startFmt - $endFmt';
-    }
+  final startFmt = DateFormat.yMMMd().format(start);
+  if (start.difference(end).inDays == 0) {
+    return startFmt;
   } else {
-    final startFmt = DateFormat.yMMMd().format(start);
-    final startTimeFmt = DateFormat('hh:mm a').format(start);
-    final endTimeFmt = DateFormat('hh:mm a').format(end);
-
-    if (start.difference(end).inDays == 0) {
-      return '$startFmt $startTimeFmt - $endTimeFmt';
-    } else {
-      final endFmt = DateFormat.yMMMd().format(end);
-      return '$startFmt $startTimeFmt - $endFmt $endTimeFmt';
-    }
+    final endFmt = DateFormat.yMMMd().format(end);
+    return '$startFmt - $endFmt';
   }
 }
+
+String formatTime(CalendarEvent e) => '${Jiffy.parseFromDateTime(
+      toDartDatetime(e.utcStart()).toLocal(),
+    ).jm} - ${Jiffy.parseFromDateTime(
+      toDartDatetime(e.utcEnd()).toLocal(),
+    ).jm}';
 
 String jiffyTime(int timeInterval) {
   final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);

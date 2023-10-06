@@ -49,5 +49,32 @@ abstract class EventRepositoryInterface {
     String? reason,
   );
 
+  /// Set Rsvp of calendar event
+  Future<Either<Failure, String>> setRsvpForEvent(
+    String calendarId,
+    String status,
+  );
+
+  /// get Rsvp responders of calendar event
+  Future<Either<Failure, List<ffi.Rsvp>>> getRsvpEntries(
+    String calendarId,
+  );
+
+  /// get user Rsvp status of calendar event
+  Future<Either<Failure, String>> getMyRsvpStatus(String calendarId);
+
+  /// get total rsvp responders count of calendar event
+  Future<Either<Failure, int>> getRsvpCount(String calendarId);
+
+  Future<Either<Failure, int>> getRsvpCountAtStatus(
+    String calendarId,
+    String status,
+  );
+
+  Future<Either<Failure, List<String>>> getUsersAtStatus(
+    String calendarId,
+    String status,
+  );
+
   Future<void> onDisposeSub();
 }

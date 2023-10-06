@@ -158,4 +158,69 @@ class CalendarEventRepository implements EventRepositoryInterface {
     debugPrint('Content from user:{$user flagged $res reason:$reason}');
     return right(res);
   }
+
+  @override
+  Future<Either<Failure, String>> setRsvpForEvent(
+    String calendarId,
+    String status,
+  ) async {
+    final event = await client.calendarEvent(calendarId);
+    final rsvpManager = await event.rsvpManager();
+    final draft = rsvpManager.rsvpDraft();
+    draft.status(status);
+    final res = await draft.send();
+    return right(res.toString());
+  }
+
+  @override
+  Future<Either<Failure, List<ffi.Rsvp>>> getRsvpEntries(
+    String calendarId,
+  ) async {
+    final event = await client.calendarEvent(calendarId);
+    final rsvpManager = await event.rsvpManager();
+    final entries =
+        await rsvpManager.rsvpEntries().then((ffiList) => ffiList.toList());
+    return right(entries);
+  }
+
+  @override
+  Future<Either<Failure, String>> getMyRsvpStatus(String calendarId) async {
+    final event = await client.calendarEvent(calendarId);
+    final rsvpManager = await event.rsvpManager();
+    final status = await rsvpManager.myStatus();
+    return right(status);
+  }
+
+  @override
+  Future<Either<Failure, int>> getRsvpCount(String calendarId) async {
+    final event = await client.calendarEvent(calendarId);
+    final rsvpManager = await event.rsvpManager();
+    final rsvpCount = rsvpManager.totalRsvpCount();
+    return right(rsvpCount);
+  }
+
+  @override
+  Future<Either<Failure, int>> getRsvpCountAtStatus(
+    String calendarId,
+    String status,
+  ) async {
+    final event = await client.calendarEvent(calendarId);
+    final rsvpManager = await event.rsvpManager();
+    final count = await rsvpManager.countAtStatus(status);
+    return right(count);
+  }
+
+  @override
+  Future<Either<Failure, List<String>>> getUsersAtStatus(
+    String calendarId,
+    String status,
+  ) async {
+    final event = await client.calendarEvent(calendarId);
+    final rsvpManager = await event.rsvpManager();
+    final userIds = await rsvpManager
+        .usersAtStatus(status)
+        .then((ffiList) => ffiList.toList());
+    final userList = userIds.map((e) => e.toString()).toList();
+    return right(userList);
+  }
 }
