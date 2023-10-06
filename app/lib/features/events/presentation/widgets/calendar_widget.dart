@@ -40,7 +40,7 @@ class _CalendarWidgetConsumerState extends ConsumerState<CalendarWidget> {
         calendarEvents.hasValue ? calendarEvents.value! : [];
 
     return events.where((ev) {
-      final evDay = toDartDatetime(ev.utcStart());
+      final evDay = toDartDatetime(ev.utcStart()).toLocal();
       return (evDay.eqvDay(day) && evDay.eqvMonth(day) && evDay.eqvYear(day));
     }).toList();
   }
