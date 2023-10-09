@@ -145,26 +145,32 @@ DateTime toDartDatetime(ffi.UtcDateTime dt) {
   return DateTime.fromMillisecondsSinceEpoch(dt.timestampMillis(), isUtc: true);
 }
 
+const aOptions = AndroidOptions(
+        encryptedSharedPreferences: true,
+        preferencesKeyPrefix: isDevBuild ? 'dev.flutter' : null,
+      );
+const iOptions = IOSOptions(
+        synchronizable: true,
+        accessibility: KeychainAccessibility.first_unlock,   // must have been unlocked since reboot
+        // groupId: String.fromEnvironment(appGroupName),       // for sharing in the notification service
+      );
+const mOptions = MacOsOptions(
+        synchronizable: true,
+        accessibility: KeychainAccessibility.first_unlock,   // must have been unlocked since reboot
+        // groupId: String.fromEnvironment(appGroupName),       // for sharing in the notification service
+        );
 class ActerSdk {
   late final ffi.Api _api;
   static String _sessionKey = defaultSessionKey;
   int _index = 0;
   static final List<ffi.Client> _clients = [];
   static const platform = MethodChannel('acter_flutter_sdk');
+
   
   static FlutterSecureStorage storage = const FlutterSecureStorage(
-    aOptions: AndroidOptions(
-        encryptedSharedPreferences: true,
-        preferencesKeyPrefix: isDevBuild ? 'dev.flutter' : null,
-      ),
-      iOptions: IOSOptions(
-        accessibility: KeychainAccessibility.first_unlock,  // must have been unlocked since reboot
-        groupId: String.fromEnvironment(appGroupName),       // for sharing in the notification service
-      ),
-      mOptions: MacOsOptions(
-        accessibility: KeychainAccessibility.first_unlock,  // must have been unlocked since reboot
-        groupId: String.fromEnvironment(appGroupName),       // for sharing in the notification service
-        ),
+    aOptions: aOptions,
+      iOptions: iOptions,
+      mOptions: mOptions,
   );
 
   ActerSdk._(this._api);
@@ -230,6 +236,16 @@ class ActerSdk {
       return;
     }
     String appDocPath = await appDir();
+    int delayedCounter = 0;
+    while (!await storage.isCupertinoProtectedDataAvailable()) {
+      if (delayedCounter > 10) {
+        throw 'Secure Store not available';
+      }
+      delayedCounter += 1;
+      debugPrint("Secure Storage isn't available yet. Delaying");
+      await Future.delayed(const Duration(milliseconds: 50));
+    }
+    debugPrint('Secure Storage is available. Attempting to read.');
     final sessionsStr = await storage.read(key: _sessionKey);
     if (sessionsStr == null) {
       // not yet set. let's see if we maybe want to migrate instead:
@@ -237,12 +253,14 @@ class ActerSdk {
       return;
     }
 
-    final List<String> sessionKeys = json.decode(sessionsStr);
+    final List<dynamic> sessionKeys = json.decode(sessionsStr);
     for (final deviceId in sessionKeys) {
-      final token = await storage.read(key: deviceId);
+      final token = await storage.read(key: deviceId as String);
       if (token != null) {
         ffi.Client client = await _api.loginWithToken(appDocPath, token);
         _clients.add(client);
+      } else {
+        debugPrint('$deviceId not found. despite in session list');
       }
     }
     _index = int.tryParse(await storage.read(key: '$_sessionKey::currentClientIdx') ?? '0') ?? 0;
