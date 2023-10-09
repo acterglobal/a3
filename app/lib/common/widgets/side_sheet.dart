@@ -56,6 +56,7 @@ class SideSheet extends StatelessWidget {
         margin: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
+        padding: const EdgeInsets.only(top: 12),
         child: CustomScrollView(
           shrinkWrap: true,
           slivers: [
