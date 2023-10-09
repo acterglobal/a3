@@ -1,3 +1,4 @@
+import 'package:acter/common/pages/fatal_fail.dart';
 import 'package:acter/common/widgets/dialog_page.dart';
 import 'package:acter/common/widgets/side_sheet_page.dart';
 import 'package:acter/common/providers/chat_providers.dart';
@@ -64,16 +65,24 @@ Future<String?> authGuardRedirect(
   BuildContext context,
   GoRouterState state,
 ) async {
-  final acterSdk = await ActerSdk.instance;
-  if (acterSdk.hasClients) {
-    // we are all fine, we have a client, do go on.
-    return null;
-  }
+  try {
+    final acterSdk = await ActerSdk.instance;
+    if (acterSdk.hasClients) {
+      // we are all fine, we have a client, do go on.
+      return null;
+    }
 
-  if (autoGuestLogin) {
-    // if compiled with auto-guest-login, create an account
-    await acterSdk.newGuestClient(setAsCurrent: true);
-    return null;
+    if (autoGuestLogin) {
+      // if compiled with auto-guest-login, create an account
+      await acterSdk.newGuestClient(setAsCurrent: true);
+      return null;
+    }
+  } catch (error, trace) {
+    // ignore: deprecated_member_use
+    return state.namedLocation(
+      Routes.fatalFail.name,
+      queryParameters: {'error': error.toString(), 'trace': trace.toString()},
+    );
   }
 
   // no client found yet, send user to fresh login
@@ -142,6 +151,12 @@ List<RouteBase> makeRoutes(Ref ref) {
           imagePath: state.uri.queryParameters['screenshot'],
         ),
       ),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.fatalFail.name,
+      path: Routes.fatalFail.route,
+      builder: (context, state) => FatalFailPage(error: state.uri.queryParameters['error']!, trace: state.uri.queryParameters['trace']!)
     ),
     GoRoute(
       parentNavigatorKey: rootNavKey,

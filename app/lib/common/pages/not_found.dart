@@ -6,9 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-class ErrorPage extends ConsumerWidget {
+class NotFoundPage extends ConsumerWidget {
   final GoRouterState routerState;
-  const ErrorPage({
+  const NotFoundPage({
     super.key,
     required this.routerState,
   });

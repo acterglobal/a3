@@ -73,7 +73,8 @@ enum Routes {
 
   // -- utils
   bugReport('/bug-report'),
-  quickJump('/quick-jump');
+  quickJump('/quick-jump'),
+  fatalFail('/error');
 
   const Routes(this.route);
   final String route;
