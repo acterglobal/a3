@@ -246,22 +246,28 @@ class _ShellHeader extends ConsumerWidget {
         }
         return Padding(
           padding: const EdgeInsets.only(left: 10),
-          child: Wrap(
-            direction: Axis.horizontal,
-            spacing: -12,
-            children: [
-              ...members.map(
-                (a) => MemberAvatar(member: a),
-              ),
-              if (membersCount > 5)
-                CircleAvatar(
-                  child: Text(
-                    '+${membersCount - 5}',
-                    textAlign: TextAlign.center,
-                    textScaleFactor: 0.8,
-                  ),
+          child: GestureDetector(
+            onTap: () => context.goNamed(
+              Routes.spaceMembers.name,
+              pathParameters: {'spaceId': spaceId},
+            ),
+            child: Wrap(
+              direction: Axis.horizontal,
+              spacing: -12,
+              children: [
+                ...members.map(
+                  (a) => MemberAvatar(member: a),
                 ),
-            ],
+                if (membersCount > 5)
+                  CircleAvatar(
+                    child: Text(
+                      '+${membersCount - 5}',
+                      textAlign: TextAlign.center,
+                      textScaleFactor: 0.8,
+                    ),
+                  ),
+              ],
+            ),
           ),
         );
       },
