@@ -35,6 +35,7 @@ use ruma_common::{
             user::{OriginalPolicyRuleUserEvent, OriginalSyncPolicyRuleUserEvent},
         },
         reaction::{OriginalReactionEvent, OriginalSyncReactionEvent},
+        receipt::Receipt,
         room::{
             aliases::{OriginalRoomAliasesEvent, OriginalSyncRoomAliasesEvent},
             avatar::{OriginalRoomAvatarEvent, OriginalSyncRoomAvatarEvent},
@@ -101,6 +102,7 @@ pub struct RoomEventItem {
     file_desc: Option<FileDesc>,
     location_desc: Option<LocationDesc>,
     in_reply_to: Option<OwnedEventId>,
+    read_receipts: HashMap<String, Receipt>,
     reactions: HashMap<String, Vec<ReactionRecord>>,
     editable: bool,
 }
@@ -120,6 +122,7 @@ impl RoomEventItem {
             file_desc: None,
             location_desc: None,
             in_reply_to: None,
+            read_receipts: Default::default(),
             reactions: Default::default(),
             editable: false,
         }
@@ -203,6 +206,29 @@ impl RoomEventItem {
 
     pub(crate) fn set_in_reply_to(&mut self, value: OwnedEventId) {
         self.in_reply_to = Some(value);
+    }
+
+    pub(crate) fn add_receipt(&mut self, user_id: String, receipt: Receipt) {
+        self.read_receipts.insert(user_id, receipt);
+    }
+
+    pub fn read_users(&self) -> Vec<String> {
+        // don't use cloned().
+        // create string vector to deallocate string item using toDartString().
+        // apply this way for only function that string vector is calculated indirectly.
+        let mut users = vec![];
+        for user_id in self.read_receipts.keys() {
+            users.push(user_id.to_string());
+        }
+        users
+    }
+
+    pub fn receipt_ts(&self, user_id: String) -> Option<u64> {
+        if self.read_receipts.contains_key(&user_id) {
+            self.read_receipts[&user_id].ts.map(|x| x.get().into())
+        } else {
+            None
+        }
     }
 
     pub(crate) fn add_reaction(&mut self, key: String, records: Vec<ReactionRecord>) {
@@ -1662,14 +1688,17 @@ impl RoomMessage {
             TimelineItemContent::Message(msg) => {
                 let msg_type = msg.msgtype();
                 let mut result = RoomEventItem::new(
-                    event_id,
+                    event_id.clone(),
                     sender,
                     origin_server_ts,
                     "m.room.message".to_string(),
                 );
                 result.set_msg_type(msg_type.msgtype().to_string());
-                for (key, value) in event.reactions().iter() {
-                    let records = value
+                for (user_id, receipt) in event.read_receipts().iter() {
+                    result.add_receipt(user_id.to_string(), receipt.clone());
+                }
+                for (key, reaction) in event.reactions().iter() {
+                    let records = reaction
                         .senders()
                         .map(|x| {
                             ReactionRecord::new(

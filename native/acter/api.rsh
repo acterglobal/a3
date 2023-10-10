@@ -483,6 +483,12 @@ object RoomEventItem {
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
+    /// the list of users that read this message
+    fn read_users() -> Vec<string>;
+
+    /// the details that users read this message
+    fn receipt_ts(user_id: string) -> Option<u64>;
+
     /// the emote key list that users reacted about this message
     fn reaction_keys() -> Vec<string>;
 
