@@ -16,7 +16,7 @@ class EventItem extends StatelessWidget {
         title:
             Text(event.title(), style: Theme.of(context).textTheme.bodyMedium),
         subtitle: Text(
-          formatDt(event),
+          '${formatDt(event)} (${formatTime(event)})',
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         onTap: () => context.pushNamed(

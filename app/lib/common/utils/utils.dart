@@ -36,39 +36,31 @@ extension RefDebounceExtension on Ref {
 DateTime kFirstDay = DateTime.utc(2010, 10, 16);
 DateTime kLastDay = DateTime.utc(2050, 12, 31);
 
-List<CalendarEvent> eventsForDay(List<CalendarEvent> events, DateTime day) {
-  return events.where((e) {
-    final startDay = toDartDatetime(e.utcStart());
-    final endDay = toDartDatetime(e.utcEnd());
-    return (startDay.difference(day).inDays == 0) ||
-        (endDay.difference(day).inDays == 0);
-  }).toList();
+List<DateTime> daysInRange(DateTime first, DateTime last) {
+  final dayCount = last.difference(first).inDays + 1;
+  return List.generate(
+    dayCount,
+    (index) => DateTime.utc(first.year, first.month, first.day + index),
+  );
 }
 
 String formatDt(CalendarEvent e) {
   final start = toDartDatetime(e.utcStart()).toLocal();
   final end = toDartDatetime(e.utcEnd()).toLocal();
-  if (e.showWithoutTime()) {
-    final startFmt = DateFormat.yMMMd().format(start);
-    if (start.difference(end).inDays == 0) {
-      return startFmt;
-    } else {
-      final endFmt = DateFormat.yMMMd().format(end);
-      return '$startFmt - $endFmt';
-    }
+  final startFmt = DateFormat.yMMMd().format(start);
+  if (start.difference(end).inDays == 0) {
+    return startFmt;
   } else {
-    final startFmt = DateFormat.yMMMd().format(start);
-    final startTimeFmt = DateFormat('hh:mm a').format(start);
-    final endTimeFmt = DateFormat('hh:mm a').format(end);
-
-    if (start.difference(end).inDays == 0) {
-      return '$startFmt $startTimeFmt - $endTimeFmt';
-    } else {
-      final endFmt = DateFormat.yMMMd().format(end);
-      return '$startFmt $startTimeFmt - $endFmt $endTimeFmt';
-    }
+    final endFmt = DateFormat.yMMMd().format(end);
+    return '$startFmt - $endFmt';
   }
 }
+
+String formatTime(CalendarEvent e) => '${Jiffy.parseFromDateTime(
+      toDartDatetime(e.utcStart()).toLocal(),
+    ).jm} - ${Jiffy.parseFromDateTime(
+      toDartDatetime(e.utcEnd()).toLocal(),
+    ).jm}';
 
 String jiffyTime(int timeInterval) {
   final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
@@ -156,6 +148,18 @@ extension DateHelpers on DateTime {
     return yesterday.day == day &&
         yesterday.month == month &&
         yesterday.year == year;
+  }
+
+  bool isAfterOrEqual(DateTime other) {
+    return isAtSameMomentAs(other) || isAfter(other);
+  }
+
+  bool isBeforeOrEqual(DateTime other) {
+    return isAtSameMomentAs(other) || isBefore(other);
+  }
+
+  bool isBetween({required DateTime from, required DateTime to}) {
+    return isAfterOrEqual(from) && isBeforeOrEqual(to);
   }
 }
 

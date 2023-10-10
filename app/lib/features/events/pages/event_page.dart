@@ -2,11 +2,11 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
-import 'package:acter/features/events/providers/events_provider.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -125,6 +125,22 @@ class CalendarEventPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final event = ref.watch(calendarEventProvider(calendarId));
+    final myRsvpStatus = ref.watch(myRsvpStatusProvider(calendarId));
+    final List<bool> rsvp = [false, false, false];
+    myRsvpStatus.maybeWhen(
+      data: (status) {
+        if (status == 'Yes') {
+          return rsvp.setAll(0, [false, false, true]);
+        }
+        if (status == 'Maybe') {
+          return rsvp.setAll(0, [false, true, false]);
+        }
+        if (status == 'No') {
+          return rsvp.setAll(0, [true, false, false]);
+        }
+      },
+      orElse: () => null,
+    );
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.neutral,
       body: CustomScrollView(
@@ -148,9 +164,7 @@ class CalendarEventPage extends ConsumerWidget {
           ),
           event.when(
             data: (ev) {
-              String date = Jiffy.parseFromMillisecondsSinceEpoch(
-                ev.utcStart().timestampMillis(),
-              ).yMMMMEEEEd;
+              String date = formatDt(ev);
               String time =
                   '${Jiffy.parseFromMillisecondsSinceEpoch(ev.utcStart().timestampMillis()).jm} - ${Jiffy.parseFromMillisecondsSinceEpoch(ev.utcEnd().timestampMillis()).jm}';
               String description = '';
@@ -334,61 +348,37 @@ class CalendarEventPage extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 15),
-                    Flexible(
-                      flex: 1,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          DefaultButton(
-                            title: 'Invite',
-                            onPressed: () => onInvite(context),
-                            isOutlined: true,
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 18,
-                              ),
-                              side: BorderSide(
-                                color: Theme.of(context).colorScheme.success,
-                                width: 1.5,
-                              ),
-                            ),
-                          ),
-                          PopupMenuButton(
-                            tooltip: 'RSVP',
-                            offset: const Offset(80, 35),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: Theme.of(context).colorScheme.success,
-                              ),
-                              child: Text(
-                                'Join',
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                            ),
-                            itemBuilder: (BuildContext context) =>
-                                <PopupMenuEntry>[
-                              PopupMenuItem(
-                                onTap: () => onRsvp(context, ev, 'Yes'),
-                                child: const Text('Yes'),
-                              ),
-                              PopupMenuItem(
-                                onTap: () => onRsvp(context, ev, 'Maybe'),
-                                child: const Text('Maybe'),
-                              ),
-                              PopupMenuItem(
-                                onTap: () => onRsvp(context, ev, 'No'),
-                                child: const Text('No'),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                    ToggleButtons(
+                      isSelected: rsvp,
+                      onPressed: (index) async {
+                        var status = '';
+                        if (index == 0) status = 'No';
+                        if (index == 1) status = 'Maybe';
+                        if (index == 2) status = 'Yes';
+                        await onRsvp(context, event.value!, status);
+                        ref.invalidate(myRsvpStatusProvider);
+                      },
+                      textStyle: Theme.of(context).textTheme.labelMedium,
+                      borderRadius: BorderRadius.circular(12),
+                      fillColor: Theme.of(context).colorScheme.success,
+                      borderColor: Theme.of(context).colorScheme.neutral6,
+                      borderWidth: 0.5,
+                      selectedBorderColor:
+                          Theme.of(context).colorScheme.neutral6,
+                      children: const <Widget>[
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('No'),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('Maybe'),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('Yes'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -424,16 +414,9 @@ class CalendarEventPage extends ConsumerWidget {
     String status,
   ) async {
     final rsvpManager = await event.rsvpManager();
-    int count = rsvpManager.totalRsvpCount();
-    debugPrint('rsvp prev count: $count');
-
     final draft = rsvpManager.rsvpDraft();
     draft.status(status);
     final rsvpId = await draft.send();
     debugPrint('new rsvp id: $rsvpId');
-
-    // rsvpManager.subscribeStream();
-    // count = rsvpManager.totalRsvpCount();
-    // debugPrint('rsvp count: $count');
   }
 }
