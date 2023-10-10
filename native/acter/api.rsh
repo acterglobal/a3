@@ -483,6 +483,12 @@ object RoomEventItem {
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
+    /// the list of users that read this message
+    fn read_users() -> Vec<string>;
+
+    /// the details that users read this message
+    fn receipt_ts(user_id: string) -> Option<u64>;
+
     /// the emote key list that users reacted about this message
     fn reaction_keys() -> Vec<string>;
 
@@ -731,6 +737,17 @@ object TimelineStream {
 
     /// modify the room message
     fn edit(new_msg: string, original_event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+
+    /// send single receipt
+    /// receipt_type: FullyRead | Read | ReadPrivate
+    /// thread: Main | Unthreaded
+    fn send_single_receipt(receipt_type: string, thread: string, event_id: string) -> Future<Result<bool>>;
+
+    /// modify the room message
+    /// full_read: optional event id
+    /// public_read_receipt: optional event id
+    /// private_read_receipt: optional event id
+    fn send_multiple_receipts(full_read: Option<string>, public_read_receipt: Option<string>, private_read_receipt: Option<string>) -> Future<Result<bool>>;
 }
 
 object Convo {

@@ -198,7 +198,7 @@ class AppTheme {
       useMaterial3: true,
     ).copyWith(
       scaffoldBackgroundColor: const Color(0x122334FF),
-      splashColor: Colors.transparent,
+      // splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       hoverColor: Colors.transparent,
       progressIndicatorTheme: const ProgressIndicatorThemeData(
