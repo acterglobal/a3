@@ -1,9 +1,9 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:quds_popup_menu/quds_popup_menu.dart';
 
 class ReceiptsBuilder extends ConsumerWidget {
   final List<String> seenList;
@@ -15,8 +15,8 @@ class ReceiptsBuilder extends ConsumerWidget {
         limit == seenList.length ? seenList : seenList.sublist(0, limit);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: GestureDetector(
-        onTap: () => _showSeenInfo(context, ref),
+      child: QudsPopupButton(
+        items: _showSeenInfo(context, ref),
         child: Wrap(
           spacing: -16,
           children: limit != seenList.length
@@ -105,70 +105,79 @@ class ReceiptsBuilder extends ConsumerWidget {
     );
   }
 
-  void _showSeenInfo(BuildContext ctx, WidgetRef ref) async {
-    showModalBottomSheet(
-      context: ctx,
-      builder: (ctx) => DefaultBottomSheet(
-        sheetDecoration: BoxDecoration(
-          color: Theme.of(ctx).colorScheme.neutral2,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        header: Text(
-          'Seen By',
-          style: Theme.of(ctx).textTheme.labelLarge,
-        ),
-        content: ListView.builder(
-          shrinkWrap: true,
-          itemCount: seenList.length,
-          itemBuilder: (ctx, index) {
-            final userId = seenList[index];
-            return Consumer(
-              builder: (context, ref, child) {
-                final member = ref.watch(memberProfileByIdProvider(userId));
-                return ListTile(
-                  leading: member.when(
-                    data: (profile) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: ActerAvatar(
-                          mode: DisplayMode.User,
-                          uniqueId: seenList[index],
-                          displayName: profile.displayName ?? userId,
-                          avatar: profile.getAvatarImage(),
-                          size: profile.hasAvatar() ? 8 : 16,
+  List<QudsPopupMenuBase> _showSeenInfo(BuildContext ctx, WidgetRef ref) {
+    return [
+      QudsPopupMenuWidget(
+        builder: (ctx) => Container(
+          decoration: BoxDecoration(
+            color: Theme.of(ctx).colorScheme.onPrimary,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child:
+                    Text('Seen By', style: Theme.of(ctx).textTheme.labelLarge),
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: seenList.length,
+                itemBuilder: (ctx, index) {
+                  final userId = seenList[index];
+                  return Consumer(
+                    builder: (context, ref, child) {
+                      final member =
+                          ref.watch(memberProfileByIdProvider(userId));
+                      return ListTile(
+                        leading: member.when(
+                          data: (profile) {
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: ActerAvatar(
+                                mode: DisplayMode.User,
+                                uniqueId: seenList[index],
+                                displayName: profile.displayName ?? userId,
+                                avatar: profile.getAvatarImage(),
+                                size: profile.hasAvatar() ? 8 : 16,
+                              ),
+                            );
+                          },
+                          error: (e, st) {
+                            debugPrint('ERROR loading avatar due to $e');
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: ActerAvatar(
+                                uniqueId: userId,
+                                displayName: userId,
+                                mode: DisplayMode.User,
+                                size: 16,
+                              ),
+                            );
+                          },
+                          loading: () => const CircularProgressIndicator(),
+                        ),
+                        title: Text(
+                          member.hasValue
+                              ? member.requireValue.displayName!
+                              : userId,
+                          style: Theme.of(ctx).textTheme.labelSmall,
+                        ),
+                        trailing: Text(
+                          userId,
+                          style: Theme.of(ctx).textTheme.labelSmall!.copyWith(
+                                color: Theme.of(context).colorScheme.neutral5,
+                              ),
                         ),
                       );
                     },
-                    error: (e, st) {
-                      debugPrint('ERROR loading avatar due to $e');
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: ActerAvatar(
-                          uniqueId: userId,
-                          displayName: userId,
-                          mode: DisplayMode.User,
-                          size: 16,
-                        ),
-                      );
-                    },
-                    loading: () => const CircularProgressIndicator(),
-                  ),
-                  title: Text(
-                    member.hasValue ? member.requireValue.displayName! : userId,
-                    style: Theme.of(ctx).textTheme.labelSmall,
-                  ),
-                  trailing: Text(
-                    userId,
-                    style: Theme.of(ctx).textTheme.labelSmall!.copyWith(
-                          color: Theme.of(context).colorScheme.neutral5,
-                        ),
-                  ),
-                );
-              },
-            );
-          },
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
-    );
+    ];
   }
 }
