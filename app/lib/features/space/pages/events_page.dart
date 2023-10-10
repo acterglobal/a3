@@ -18,11 +18,11 @@ class SpaceEventsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final space = ref.watch(spaceProvider(spaceIdOrAlias)).requireValue;
     final spaceEvents = ref.watch(spaceEventsProvider(space));
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: CustomScrollView(
-        slivers: <Widget>[
-          SliverToBoxAdapter(
+    return CustomScrollView(
+      slivers: <Widget>[
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
                 Text(
@@ -45,39 +45,38 @@ class SpaceEventsPage extends ConsumerWidget {
               ],
             ),
           ),
-          spaceEvents.when(
-            data: (events) {
-              final widthCount =
-                  (MediaQuery.of(context).size.width ~/ 600).toInt();
-              const int minCount = 2;
-              if (events.isEmpty) {
-                return const SliverToBoxAdapter(
-                  child: Center(
-                    child: Text(
-                      'Currently there are no events planned for this space',
-                    ),
+        ),
+        spaceEvents.when(
+          data: (events) {
+            final widthCount =
+                (MediaQuery.of(context).size.width ~/ 600).toInt();
+            const int minCount = 2;
+            if (events.isEmpty) {
+              return const SliverToBoxAdapter(
+                child: Center(
+                  child: Text(
+                    'Currently there are no events planned for this space',
                   ),
-                );
-              }
-              return SliverGrid.builder(
-                itemCount: events.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: max(1, min(widthCount, minCount)),
-                  childAspectRatio: 4.0,
                 ),
-                itemBuilder: (context, index) =>
-                    EventItem(event: events[index]),
               );
-            },
-            error: (error, stackTrace) => SliverToBoxAdapter(
-              child: Center(child: Text('Failed to load events due to $error')),
-            ),
-            loading: () => const SliverToBoxAdapter(
-              child: Center(child: CircularProgressIndicator()),
-            ),
+            }
+            return SliverGrid.builder(
+              itemCount: events.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: max(1, min(widthCount, minCount)),
+                childAspectRatio: 4.0,
+              ),
+              itemBuilder: (context, index) => EventItem(event: events[index]),
+            );
+          },
+          error: (error, stackTrace) => SliverToBoxAdapter(
+            child: Center(child: Text('Failed to load events due to $error')),
           ),
-        ],
-      ),
+          loading: () => const SliverToBoxAdapter(
+            child: Center(child: CircularProgressIndicator()),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter/features/spaces/dialogs/space_selector_sheet.dart';
+import 'package:acter/features/spaces/sheets/space_selector_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

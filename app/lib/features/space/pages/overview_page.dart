@@ -48,32 +48,29 @@ class SpaceOverview extends ConsumerWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: StaggeredGrid.count(
-              axisDirection: AxisDirection.down,
-              crossAxisCount: min(widthCount, minCount),
-              children: <Widget>[
-                AboutCard(spaceId: spaceIdOrAlias),
-                ActerSpaceChecker(
-                  spaceId: spaceIdOrAlias,
-                  expectation: (a) => a == null,
-                  child: NonActerSpaceCard(spaceId: spaceIdOrAlias),
-                ),
-                ActerSpaceChecker(
-                  spaceId: spaceIdOrAlias,
-                  expectation: (a) => a != null ? a.events().active() : false,
-                  child: EventsCard(spaceId: spaceIdOrAlias),
-                ),
-                ActerSpaceChecker(
-                  spaceId: spaceIdOrAlias,
-                  expectation: (a) => a != null ? a.pins().active() : false,
-                  child: LinksCard(spaceId: spaceIdOrAlias),
-                ),
-                ChatsCard(spaceId: spaceIdOrAlias),
-                RelatedSpacesCard(spaceId: spaceIdOrAlias),
-              ],
-            ),
+          StaggeredGrid.count(
+            axisDirection: AxisDirection.down,
+            crossAxisCount: min(widthCount, minCount),
+            children: <Widget>[
+              AboutCard(spaceId: spaceIdOrAlias),
+              ActerSpaceChecker(
+                spaceId: spaceIdOrAlias,
+                expectation: (a) => a == null,
+                child: NonActerSpaceCard(spaceId: spaceIdOrAlias),
+              ),
+              ActerSpaceChecker(
+                spaceId: spaceIdOrAlias,
+                expectation: (a) => a != null ? a.events().active() : false,
+                child: EventsCard(spaceId: spaceIdOrAlias),
+              ),
+              ActerSpaceChecker(
+                spaceId: spaceIdOrAlias,
+                expectation: (a) => a != null ? a.pins().active() : false,
+                child: LinksCard(spaceId: spaceIdOrAlias),
+              ),
+              ChatsCard(spaceId: spaceIdOrAlias),
+              RelatedSpacesCard(spaceId: spaceIdOrAlias),
+            ],
           ),
         ],
       ),

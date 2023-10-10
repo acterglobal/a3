@@ -17,7 +17,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 // interface data providers
-final _titleProvider = StateProvider<String>((ref) => '');
+final _titleProvider = StateProvider.autoDispose<String>((ref) => '');
 // upload avatar path
 final _avatarProvider = StateProvider.autoDispose<String>((ref) => '');
 
@@ -34,6 +34,7 @@ class CreateChatSheet extends ConsumerStatefulWidget {
 class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+
   // to determine whether the sheet is opened in space chat / chat
   // when true will restrict to create room in the space when sheet is opened
   bool isSpaceRoom = false;
@@ -138,53 +139,33 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
           ],
         ),
       ),
-      actions: [
-        ElevatedButton(
-          onPressed: () => context.canPop()
-              ? context.pop()
-              : context.goNamed(Routes.main.name),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.neutral,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
-            ),
-            side: BorderSide(
-              color: Theme.of(context).colorScheme.success,
-            ),
-            foregroundColor: Theme.of(context).colorScheme.neutral6,
-            textStyle: Theme.of(context).textTheme.bodySmall,
-          ),
-          child: const Text('Cancel'),
-        ),
-        const SizedBox(width: 10),
-        ElevatedButton(
-          onPressed: () async {
-            if (titleInput.isEmpty) {
-              customMsgSnackbar(context, 'Please enter conversation name');
-              return;
-            }
-            if (isSpaceRoom && currentParentSpace == null) {
-              return;
-            }
-            await _handleCreateConvo(
-              context,
-              titleInput,
-              _descriptionController.text.trim(),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: titleInput.isNotEmpty
-                ? Theme.of(context).colorScheme.success
-                : Theme.of(context).colorScheme.success.withOpacity(0.6),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
-            ),
-            foregroundColor: Theme.of(context).colorScheme.neutral6,
-            textStyle: Theme.of(context).textTheme.bodySmall,
-          ),
-          child: const Text('Create Chat'),
-        ),
-      ],
+      confirmActionTitle: 'Create Chat',
+      cancelActionTitle: 'Cancel',
+      confirmActionOnPressed: titleInput.trim().isEmpty
+          ? null
+          : () async {
+              if (isSpaceRoom && currentParentSpace == null) {
+                return;
+              }
+              showAdaptiveDialog(
+                barrierDismissible: false,
+                context: context,
+                builder: (context) => DefaultDialog(
+                  title: Text(
+                    'Creating Chat room',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  isLoader: true,
+                ),
+              );
+              _handleCreateConvo(
+                context,
+                titleInput,
+                _descriptionController.text.trim(),
+              );
+            },
+      cancelActionOnPressed: () =>
+          context.canPop() ? context.pop() : context.goNamed(Routes.main.name),
     );
   }
 
@@ -212,17 +193,6 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
     String description,
   ) async {
     try {
-      showAdaptiveDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) => DefaultDialog(
-          title: Text(
-            'Creating Chat room',
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-          isLoader: true,
-        ),
-      );
       final sdk = await ref.read(sdkProvider.future);
       final config = sdk.newConvoSettingsBuilder();
       config.setName(convoName);

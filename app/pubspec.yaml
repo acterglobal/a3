@@ -60,6 +60,7 @@ dependencies:
   flutter_slidable: ^3.0.0
   timelines: ^0.1.0
   photo_view: ^0.14.0
+  quds_popup_menu: ^0.0.1+1
   acter_avatar:
     # path: "../../acter-avatar"
     git:
@@ -131,7 +132,7 @@ dev_dependencies:
       ref: main
   gherkin: ^3.1.0
   msix: ^3.7.0
-  mockito: ^5.4.2
+  # mockito: ^5.4.2
 
 icons_launcher:
   image_path: "assets/icon/logo.png"

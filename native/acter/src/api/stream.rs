@@ -1,10 +1,14 @@
-use anyhow::{bail, Result};
-use eyeball_im::VectorDiff;
+use anyhow::{bail, Context, Result};
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::{room::Room, RoomState};
+use matrix_sdk::{
+    room::{Receipts, Room},
+    ruma::api::client::receipt::create_receipt::v3::ReceiptType,
+    RoomState,
+};
 use matrix_sdk_ui::timeline::{BackPaginationStatus, PaginationOptions, Timeline};
 use ruma_common::EventId;
 use ruma_events::{
+    receipt::ReceiptThread,
     relation::Replacement,
     room::message::{MessageType, Relation, RoomMessageEvent, RoomMessageEventContent},
 };
@@ -110,6 +114,87 @@ impl TimelineStream {
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
                 timeline.send(edited_content.into()).await;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn send_single_receipt(
+        &self,
+        receipt_type: String,
+        thread: String,
+        event_id: String,
+    ) -> Result<bool> {
+        let timeline = self.timeline.clone();
+        let receipt_type = match receipt_type.as_str() {
+            "FullyRead" => ReceiptType::FullyRead,
+            "Read" => ReceiptType::Read,
+            "ReadPrivate" => ReceiptType::ReadPrivate,
+            _ => {
+                bail!("Wrong receipt type")
+            }
+        };
+        let thread = match thread.as_str() {
+            "Main" => ReceiptThread::Main,
+            "Unthreaded" => ReceiptThread::Unthreaded,
+            _ => {
+                bail!("Wrong receipt thread")
+            }
+        };
+        let event_id = EventId::parse(event_id)?;
+
+        RUNTIME
+            .spawn(async move {
+                timeline
+                    .send_single_receipt(receipt_type, thread, event_id)
+                    .await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn send_multiple_receipts(
+        &self,
+        fully_read: Option<String>,
+        public_read_receipt: Option<String>,
+        private_read_receipt: Option<String>,
+    ) -> Result<bool> {
+        let timeline = self.timeline.clone();
+        let fully_read = match fully_read {
+            Some(x) => match EventId::parse(x) {
+                Ok(event_id) => Some(event_id),
+                Err(_) => {
+                    bail!("full read param should be event id")
+                }
+            },
+            None => None,
+        };
+        let public_read_receipt = match public_read_receipt {
+            Some(x) => match EventId::parse(x) {
+                Ok(event_id) => Some(event_id),
+                Err(_) => {
+                    bail!("public read receipt param should be event id")
+                }
+            },
+            None => None,
+        };
+        let private_read_receipt = match private_read_receipt {
+            Some(x) => match EventId::parse(x) {
+                Ok(event_id) => Some(event_id),
+                Err(_) => {
+                    bail!("private read receipt param should be event id")
+                }
+            },
+            None => None,
+        };
+
+        RUNTIME
+            .spawn(async move {
+                let receipts = Receipts::new()
+                    .fully_read_marker(fully_read)
+                    .public_read_receipt(public_read_receipt)
+                    .private_read_receipt(private_read_receipt);
+                timeline.send_multiple_receipts(receipts).await?;
                 Ok(true)
             })
             .await?

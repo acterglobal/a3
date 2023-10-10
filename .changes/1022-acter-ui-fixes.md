@@ -1,0 +1,6 @@
+- [fix] Remove double naming on crud side sheets (Spaces, Events, Pins).
+- [fix] Text overflow fixes on pins card.
+- [fix] Text overflow fixes on event card.
+- [fix] Text overflow fixes on found spaces card when searched (Join space section).
+- [fix] Replace `Redact` term with more known wording .i.e. `Delete/Remove`.
+- Login/Registration UI and theme updates.

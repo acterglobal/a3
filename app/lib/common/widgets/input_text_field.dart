@@ -6,14 +6,14 @@ class InputTextField extends StatefulWidget {
   final TextEditingController? controller;
   final int? maxLines;
   final void Function(String?)? onInputChanged;
-  final String? validatorString;
+  final String? Function(String?)? validator;
   final bool? readOnly;
   const InputTextField({
     required this.hintText,
     required this.textInputType,
     this.controller,
     this.maxLines,
-    this.validatorString,
+    this.validator,
     this.readOnly,
     this.onInputChanged,
     super.key,
@@ -33,12 +33,13 @@ class _InputTextFieldState extends State<InputTextField> {
       maxLines: widget.maxLines ?? 1,
       keyboardType: widget.textInputType,
       textInputAction: TextInputAction.next,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return widget.validatorString ?? 'Please enter some text';
-        }
-        return null;
-      },
+      validator: widget.validator ??
+          (value) {
+            if (value == null || value.isEmpty) {
+              'Field can\'t be empty';
+            }
+            return null;
+          },
       onChanged: widget.onInputChanged ?? (value) {},
       onFieldSubmitted: (value) {
         FocusNode().unfocus();

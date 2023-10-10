@@ -183,7 +183,7 @@ class ActionBox extends ConsumerWidget {
           onPressed: () => showAdaptiveDialog(
             context: context,
             builder: (context) => RedactContentWidget(
-              title: 'Redact this post',
+              title: 'Remove this post',
               eventId: news.eventId().toString(),
               onSuccess: () {
                 ref.invalidate(newsListProvider);
@@ -194,7 +194,7 @@ class ActionBox extends ConsumerWidget {
             ),
           ),
           icon: const Icon(Atlas.trash_thin),
-          label: const Text('Redact'),
+          label: const Text('Remove'),
         ),
       );
     }

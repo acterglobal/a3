@@ -427,14 +427,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     String eventId = eventItem.eventId();
 
     String? inReplyTo = eventItem.inReplyTo();
-    Map<String, dynamic> reactions = {};
-    for (var key in eventItem.reactionKeys()) {
-      String k = key.toDartString();
-      final records = eventItem.reactionRecords(k);
-      if (records != null) {
-        reactions[k] = records.toList();
-      }
-    }
     // state event
     switch (eventType) {
       case 'm.policy.rule.room':
@@ -518,6 +510,22 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
         break;
       case 'm.room.message':
+        Map<String, int> receipts = {};
+        for (var userId in eventItem.readUsers()) {
+          String id = userId.toDartString();
+          final ts = eventItem.receiptTs(id);
+          if (ts != null) {
+            receipts[id] = ts;
+          }
+        }
+        Map<String, dynamic> reactions = {};
+        for (var key in eventItem.reactionKeys()) {
+          String k = key.toDartString();
+          final records = eventItem.reactionRecords(k);
+          if (records != null) {
+            reactions[k] = records.toList();
+          }
+        }
         String? msgType = eventItem.msgType();
         switch (msgType) {
           case 'm.audio':
@@ -526,6 +534,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               Map<String, dynamic> metadata = {'base64': ''};
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
+              }
+              if (receipts.isNotEmpty) {
+                metadata['receipts'] = receipts;
               }
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
@@ -552,6 +563,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
+              if (receipts.isNotEmpty) {
+                metadata['receipts'] = receipts;
+              }
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
@@ -572,6 +586,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               Map<String, dynamic> metadata = {};
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
+              }
+              if (receipts.isNotEmpty) {
+                metadata['receipts'] = receipts;
               }
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
@@ -594,6 +611,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               Map<String, dynamic> metadata = {};
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
+              }
+              if (receipts.isNotEmpty) {
+                metadata['receipts'] = receipts;
               }
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
@@ -623,6 +643,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               };
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
+              }
+              if (receipts.isNotEmpty) {
+                metadata['receipts'] = receipts;
               }
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
@@ -701,6 +724,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
+              if (receipts.isNotEmpty) {
+                metadata['receipts'] = receipts;
+              }
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
@@ -722,6 +748,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
+              if (receipts.isNotEmpty) {
+                metadata['receipts'] = receipts;
+              }
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
@@ -741,6 +770,22 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
         break;
       case 'm.sticker':
+        Map<String, dynamic> receipts = {};
+        for (var userId in eventItem.readUsers()) {
+          String id = userId.toDartString();
+          final ts = eventItem.receiptTs(id);
+          if (ts != null) {
+            receipts[id] = ts;
+          }
+        }
+        Map<String, dynamic> reactions = {};
+        for (var key in eventItem.reactionKeys()) {
+          String k = key.toDartString();
+          final records = eventItem.reactionRecords(k);
+          if (records != null) {
+            reactions[k] = records.toList();
+          }
+        }
         ImageDesc? description = eventItem.imageDesc();
         if (description != null) {
           Map<String, dynamic> metadata = {
@@ -754,6 +799,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           };
           if (inReplyTo != null) {
             metadata['repliedTo'] = inReplyTo;
+          }
+          if (receipts.isNotEmpty) {
+            metadata['receipts'] = receipts;
           }
           if (reactions.isNotEmpty) {
             metadata['reactions'] = reactions;
