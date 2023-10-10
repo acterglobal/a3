@@ -53,9 +53,11 @@ class SideSheet extends StatelessWidget {
           minHeight: size.height,
           maxHeight: size.height,
         ),
+        // keep scrolling under effect if content overflows.
         margin: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
+        // keep space shell top bar to prevent us being covered by front-camera etc.
         padding: const EdgeInsets.only(top: 12),
         child: CustomScrollView(
           shrinkWrap: true,
