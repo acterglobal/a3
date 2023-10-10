@@ -110,7 +110,7 @@ class _ShellToolbar extends ConsumerWidget {
     );
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Row(
         children: [
           InkWell(
@@ -123,14 +123,17 @@ class _ShellToolbar extends ConsumerWidget {
             ),
           ),
           const Spacer(),
-          PopupMenuButton(
-            icon: Icon(
-              Icons.more_vert,
-              color: Theme.of(context).colorScheme.neutral5,
+          Padding(
+            padding: const EdgeInsets.only(top: 18),
+            child: PopupMenuButton(
+              icon: Icon(
+                Icons.more_vert,
+                color: Theme.of(context).colorScheme.neutral5,
+              ),
+              iconSize: 28,
+              color: Theme.of(context).colorScheme.surface,
+              itemBuilder: (BuildContext context) => submenu,
             ),
-            iconSize: 28,
-            color: Theme.of(context).colorScheme.surface,
-            itemBuilder: (BuildContext context) => submenu,
           ),
         ],
       ),
@@ -246,22 +249,28 @@ class _ShellHeader extends ConsumerWidget {
         }
         return Padding(
           padding: const EdgeInsets.only(left: 10),
-          child: Wrap(
-            direction: Axis.horizontal,
-            spacing: -12,
-            children: [
-              ...members.map(
-                (a) => MemberAvatar(member: a),
-              ),
-              if (membersCount > 5)
-                CircleAvatar(
-                  child: Text(
-                    '+${membersCount - 5}',
-                    textAlign: TextAlign.center,
-                    textScaleFactor: 0.8,
-                  ),
+          child: GestureDetector(
+            onTap: () => context.goNamed(
+              Routes.spaceMembers.name,
+              pathParameters: {'spaceId': spaceId},
+            ),
+            child: Wrap(
+              direction: Axis.horizontal,
+              spacing: -12,
+              children: [
+                ...members.map(
+                  (a) => MemberAvatar(member: a),
                 ),
-            ],
+                if (membersCount > 5)
+                  CircleAvatar(
+                    child: Text(
+                      '+${membersCount - 5}',
+                      textAlign: TextAlign.center,
+                      textScaleFactor: 0.8,
+                    ),
+                  ),
+              ],
+            ),
           ),
         );
       },

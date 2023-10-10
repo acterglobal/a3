@@ -15,8 +15,8 @@ on:
         description: 'The tag to compare the changelog to'
         type: string
 
-  # schedule:
-  #  - cron: 0 3 * * *
+  schedule:
+   - cron: 0 3 * * 4
 
 jobs:
   run_checker:
@@ -32,7 +32,7 @@ jobs:
         id: check-new-commits
         shell: bash
         run: |
-          if [ `git diff --name-only ${{ inputs.prev_tag || 'latest-release' }} -- app native .changes | wc -l` -ne 0 ]; then
+          if [ `git diff --name-only ${{ inputs.prev_tag || 'release-latest' }} -- app native .changes | wc -l` -ne 0 ]; then
             echo "has-new-commits=true"  >> $GITHUB_OUTPUT ;
           else
             echo "has-new-commits=false" >> $GITHUB_OUTPUT ;
@@ -44,7 +44,7 @@ jobs:
     outputs:
       tag: ${{ inputs.new_tag || steps.version.outputs.version }}
       build_num: ${{ steps.build_num.outputs.build_num }}
-      prev_tag: ${{ inputs.prev_tag || 'latest-release' }}
+      prev_tag: ${{ inputs.prev_tag || 'release-latest' }}
     steps:
       - id: version
         run: echo "version=`date +1.%y.%-m%d`" >> $GITHUB_OUTPUT
@@ -137,6 +137,15 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+
+      - uses: jlumbroso/free-disk-space@main
+        name: Free Disk Space (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          # this might remove tools that are actually needed,
+          # when set to "true" but frees about 6 GB
+          tool-cache: true
+          android: false
 
       - name: Cache Cargo
         id: cache-cargo
@@ -386,27 +395,38 @@ jobs:
         with:
           name: Changelog
 
-      # - name: "Generate docs"
-      #   run: |
-      #     echo "+++" > docs/content/releases/${{ needs.tags.outputs.tag }}.md
-      #     echo "title = \" Nightly ${{ needs.tags.outputs.tag }}\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-      #     echo "template = \"nightlies/release.html\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-      #     echo "date = ${{ needs.tags.outputs.tag }}" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-      #     echo "+++" >>docs/content/releases/${{ needs.tags.outputs.tag }}.md
-      #     echo "" >>docs/content/releases/${{ needs.tags.outputs.tag }}.md
-      #     cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+      - name: "Generate docs"
+        run: |
+          echo "+++" > docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "title = \" Nightly ${{ needs.tags.outputs.tag }}\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "template = \"nightlies/release.html\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "date = ${{ needs.tags.outputs.tag }}" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "+++" >>docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "" >>docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
 
-      # - name: Tag for release
-      #   run: |
-      #     git config --global user.name 'Sari'
-      #     git config --global user.email 'acter-sari@users.noreply.github.com'
-      #     git add "docs/content/releases/${{ needs.tags.outputs.tag }}.md"
-      #     echo "Add release ${{ needs.tags.outputs.tag }}"
-      #     git commit -m 
-      #     git tag v${{ needs.tags.outputs.tag }}
-      #     git tag -f release-latest
-      #     git push -f origin main v${{ needs.tags.outputs.tag }} release-latest
+      - name: Tag for release
+        run: |
+          git config --global user.name 'Sari'
+          git config --global user.email 'acter-sari@users.noreply.github.com'
+          git add "docs/content/releases/${{ needs.tags.outputs.tag }}.md"
+          echo "Add release ${{ needs.tags.outputs.tag }}"
+          git commit -m "Releasing v${{ needs.tags.outputs.tag }}"
+          git tag v${{ needs.tags.outputs.tag }}
+          git tag -f release-latest
+          git push -f origin main v${{ needs.tags.outputs.tag }} release-latest
 
+      - name: Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          # publish this nightly release now
+          draft: true
+          generate_release_notes: false
+          name: Acter ${{ needs.tags.outputs.tag }}
+          tag_name: v${{ needs.tags.outputs.tag }}
+          body_path: CHANGELOG.md
+          prerelease: true
       # publish this full release now
       - uses: eregon/publish-release@v1
         env:
