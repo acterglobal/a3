@@ -1688,7 +1688,7 @@ impl RoomMessage {
             TimelineItemContent::Message(msg) => {
                 let msg_type = msg.msgtype();
                 let mut result = RoomEventItem::new(
-                    event_id.clone(),
+                    event_id,
                     sender,
                     origin_server_ts,
                     "m.room.message".to_string(),

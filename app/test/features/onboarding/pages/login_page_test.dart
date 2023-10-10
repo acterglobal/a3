@@ -1,6 +1,6 @@
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
-import 'package:acter/features/onboarding/pages/register_page.dart';
+// import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
