@@ -151,7 +151,9 @@ impl TimelineStream {
 
         RUNTIME
             .spawn(async move {
-                timeline.send_single_receipt(receipt_type, thread, event_id).await?;
+                timeline
+                    .send_single_receipt(receipt_type, thread, event_id)
+                    .await?;
                 Ok(true)
             })
             .await?
@@ -170,8 +172,8 @@ impl TimelineStream {
                 Err(_) => {
                     bail!("full read param should be event id")
                 }
-            }
-            None => None
+            },
+            None => None,
         };
         let public_read_receipt = match public_read_receipt {
             Some(x) => match EventId::parse(x) {
@@ -179,8 +181,8 @@ impl TimelineStream {
                 Err(_) => {
                     bail!("public read receipt param should be event id")
                 }
-            }
-            None => None
+            },
+            None => None,
         };
         let private_read_receipt = match private_read_receipt {
             Some(x) => match EventId::parse(x) {
@@ -188,8 +190,8 @@ impl TimelineStream {
                 Err(_) => {
                     bail!("private read receipt param should be event id")
                 }
-            }
-            None => None
+            },
+            None => None,
         };
 
         RUNTIME
