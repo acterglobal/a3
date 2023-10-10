@@ -25,6 +25,7 @@ class ChatRoomLoadingState with _$ChatRoomLoadingState {
 class ChatRoomState with _$ChatRoomState {
   const factory ChatRoomState({
     @Default([]) List<Message> messages,
+    @Default({}) Map<String, List<String>> userReceipts,
     @Default(ChatRoomLoadingState.loading()) ChatRoomLoadingState loading,
     @Default(true) bool hasMore,
   }) = _ChatRoomState;

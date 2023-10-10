@@ -452,6 +452,8 @@ abstract class _ChatRoomLoadingStateError implements ChatRoomLoadingState {
 /// @nodoc
 mixin _$ChatRoomState {
   List<Message> get messages => throw _privateConstructorUsedError;
+  Map<String, List<String>> get userReceipts =>
+      throw _privateConstructorUsedError;
   ChatRoomLoadingState get loading => throw _privateConstructorUsedError;
   bool get hasMore => throw _privateConstructorUsedError;
 
@@ -467,7 +469,10 @@ abstract class $ChatRoomStateCopyWith<$Res> {
       _$ChatRoomStateCopyWithImpl<$Res, ChatRoomState>;
   @useResult
   $Res call(
-      {List<Message> messages, ChatRoomLoadingState loading, bool hasMore});
+      {List<Message> messages,
+      Map<String, List<String>> userReceipts,
+      ChatRoomLoadingState loading,
+      bool hasMore});
 
   $ChatRoomLoadingStateCopyWith<$Res> get loading;
 }
@@ -486,6 +491,7 @@ class _$ChatRoomStateCopyWithImpl<$Res, $Val extends ChatRoomState>
   @override
   $Res call({
     Object? messages = null,
+    Object? userReceipts = null,
     Object? loading = null,
     Object? hasMore = null,
   }) {
@@ -494,6 +500,10 @@ class _$ChatRoomStateCopyWithImpl<$Res, $Val extends ChatRoomState>
           ? _value.messages
           : messages // ignore: cast_nullable_to_non_nullable
               as List<Message>,
+      userReceipts: null == userReceipts
+          ? _value.userReceipts
+          : userReceipts // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<String>>,
       loading: null == loading
           ? _value.loading
           : loading // ignore: cast_nullable_to_non_nullable
@@ -523,7 +533,10 @@ abstract class _$$_ChatRoomStateCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {List<Message> messages, ChatRoomLoadingState loading, bool hasMore});
+      {List<Message> messages,
+      Map<String, List<String>> userReceipts,
+      ChatRoomLoadingState loading,
+      bool hasMore});
 
   @override
   $ChatRoomLoadingStateCopyWith<$Res> get loading;
@@ -541,6 +554,7 @@ class __$$_ChatRoomStateCopyWithImpl<$Res>
   @override
   $Res call({
     Object? messages = null,
+    Object? userReceipts = null,
     Object? loading = null,
     Object? hasMore = null,
   }) {
@@ -549,6 +563,10 @@ class __$$_ChatRoomStateCopyWithImpl<$Res>
           ? _value._messages
           : messages // ignore: cast_nullable_to_non_nullable
               as List<Message>,
+      userReceipts: null == userReceipts
+          ? _value._userReceipts
+          : userReceipts // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<String>>,
       loading: null == loading
           ? _value.loading
           : loading // ignore: cast_nullable_to_non_nullable
@@ -566,9 +584,11 @@ class __$$_ChatRoomStateCopyWithImpl<$Res>
 class _$_ChatRoomState implements _ChatRoomState {
   const _$_ChatRoomState(
       {final List<Message> messages = const [],
+      final Map<String, List<String>> userReceipts = const {},
       this.loading = const ChatRoomLoadingState.loading(),
       this.hasMore = true})
-      : _messages = messages;
+      : _messages = messages,
+        _userReceipts = userReceipts;
 
   final List<Message> _messages;
   @override
@@ -577,6 +597,15 @@ class _$_ChatRoomState implements _ChatRoomState {
     if (_messages is EqualUnmodifiableListView) return _messages;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_messages);
+  }
+
+  final Map<String, List<String>> _userReceipts;
+  @override
+  @JsonKey()
+  Map<String, List<String>> get userReceipts {
+    if (_userReceipts is EqualUnmodifiableMapView) return _userReceipts;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_userReceipts);
   }
 
   @override
@@ -588,7 +617,7 @@ class _$_ChatRoomState implements _ChatRoomState {
 
   @override
   String toString() {
-    return 'ChatRoomState(messages: $messages, loading: $loading, hasMore: $hasMore)';
+    return 'ChatRoomState(messages: $messages, userReceipts: $userReceipts, loading: $loading, hasMore: $hasMore)';
   }
 
   @override
@@ -597,13 +626,19 @@ class _$_ChatRoomState implements _ChatRoomState {
         (other.runtimeType == runtimeType &&
             other is _$_ChatRoomState &&
             const DeepCollectionEquality().equals(other._messages, _messages) &&
+            const DeepCollectionEquality()
+                .equals(other._userReceipts, _userReceipts) &&
             (identical(other.loading, loading) || other.loading == loading) &&
             (identical(other.hasMore, hasMore) || other.hasMore == hasMore));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType,
-      const DeepCollectionEquality().hash(_messages), loading, hasMore);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_messages),
+      const DeepCollectionEquality().hash(_userReceipts),
+      loading,
+      hasMore);
 
   @JsonKey(ignore: true)
   @override
@@ -615,11 +650,14 @@ class _$_ChatRoomState implements _ChatRoomState {
 abstract class _ChatRoomState implements ChatRoomState {
   const factory _ChatRoomState(
       {final List<Message> messages,
+      final Map<String, List<String>> userReceipts,
       final ChatRoomLoadingState loading,
       final bool hasMore}) = _$_ChatRoomState;
 
   @override
   List<Message> get messages;
+  @override
+  Map<String, List<String>> get userReceipts;
   @override
   ChatRoomLoadingState get loading;
   @override
