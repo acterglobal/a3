@@ -2862,6 +2862,94 @@ class Api {
     return tmp7;
   }
 
+  bool? __timelineStreamSendSingleReceiptFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _timelineStreamSendSingleReceiptFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __timelineStreamSendMultipleReceiptsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _timelineStreamSendMultipleReceiptsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   SpaceRelations? __convoSpaceRelationsFuturePoll(
     int boxed,
     int postCobject,
@@ -15051,6 +15139,70 @@ class Api {
         int,
         int,
       )>();
+  late final _timelineStreamSendSingleReceiptPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__TimelineStream_send_single_receipt");
+
+  late final _timelineStreamSendSingleReceipt =
+      _timelineStreamSendSingleReceiptPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _timelineStreamSendMultipleReceiptsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__TimelineStream_send_multiple_receipts");
+
+  late final _timelineStreamSendMultipleReceipts =
+      _timelineStreamSendMultipleReceiptsPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _convoGetProfilePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -22411,6 +22563,36 @@ class Api {
   late final _timelineStreamEditFuturePoll =
       _timelineStreamEditFuturePollPtr.asFunction<
           _TimelineStreamEditFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _timelineStreamSendSingleReceiptFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineStreamSendSingleReceiptFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__TimelineStream_send_single_receipt_future_poll");
+
+  late final _timelineStreamSendSingleReceiptFuturePoll =
+      _timelineStreamSendSingleReceiptFuturePollPtr.asFunction<
+          _TimelineStreamSendSingleReceiptFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _timelineStreamSendMultipleReceiptsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineStreamSendMultipleReceiptsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__TimelineStream_send_multiple_receipts_future_poll");
+
+  late final _timelineStreamSendMultipleReceiptsFuturePoll =
+      _timelineStreamSendMultipleReceiptsFuturePollPtr.asFunction<
+          _TimelineStreamSendMultipleReceiptsFuturePollReturn Function(
             int,
             int,
             int,
@@ -32861,6 +33043,167 @@ class TimelineStream {
     tmp17_1._finalizer = _api._registerFinalizer(tmp17_1);
     final tmp16 = _nativeFuture(tmp17_1, _api.__timelineStreamEditFuturePoll);
     return tmp16;
+  }
+
+  /// send single receipt
+  /// receipt_type: FullyRead | Read | ReadPrivate
+  /// thread: Main | Unthreaded
+  Future<bool> sendSingleReceipt(
+    String receiptType,
+    String thread,
+    String eventId,
+  ) {
+    final tmp1 = receiptType;
+    final tmp5 = thread;
+    final tmp9 = eventId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    final tmp13 = _api._timelineStreamSendSingleReceipt(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+    );
+    final tmp15 = tmp13;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 =
+        _Box(_api, tmp15_0, "__TimelineStream_send_single_receipt_future_drop");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp14 = _nativeFuture(
+        tmp15_1, _api.__timelineStreamSendSingleReceiptFuturePoll);
+    return tmp14;
+  }
+
+  /// modify the room message
+  /// full_read: optional event id
+  /// public_read_receipt: optional event id
+  /// private_read_receipt: optional event id
+  Future<bool> sendMultipleReceipts(
+    String? fullRead,
+    String? publicReadReceipt,
+    String? privateReadReceipt,
+  ) {
+    final tmp1 = fullRead;
+    final tmp7 = publicReadReceipt;
+    final tmp13 = privateReadReceipt;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
+    var tmp18 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      final tmp3_0 = utf8.encode(tmp3);
+      tmp5 = tmp3_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
+      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
+      tmp4_1.setAll(0, tmp3_0);
+      tmp4 = tmp4_0.address;
+      tmp6 = tmp5;
+    }
+    if (tmp7 == null) {
+      tmp8 = 0;
+    } else {
+      tmp8 = 1;
+      final tmp9 = tmp7;
+      final tmp9_0 = utf8.encode(tmp9);
+      tmp11 = tmp9_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+      final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+      tmp10_1.setAll(0, tmp9_0);
+      tmp10 = tmp10_0.address;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
+      tmp18 = tmp17;
+    }
+    final tmp19 = _api._timelineStreamSendMultipleReceipts(
+      tmp0,
+      tmp2,
+      tmp4,
+      tmp5,
+      tmp6,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp17,
+      tmp18,
+    );
+    final tmp21 = tmp19;
+    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
+    final tmp21_1 = _Box(
+        _api, tmp21_0, "__TimelineStream_send_multiple_receipts_future_drop");
+    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
+    final tmp20 = _nativeFuture(
+        tmp21_1, _api.__timelineStreamSendMultipleReceiptsFuturePoll);
+    return tmp20;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -49628,6 +49971,36 @@ class _TimelineStreamPaginateBackwardsFuturePollReturn extends ffi.Struct {
 }
 
 class _TimelineStreamEditFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _TimelineStreamSendSingleReceiptFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _TimelineStreamSendMultipleReceiptsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
