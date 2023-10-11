@@ -90,7 +90,7 @@ jobs:
           - name: iOS
             os: macos-latest
             target: ios
-            with_apple_certs: true
+            with_apple_cert: true
             cargo_make_setup: setup-ios
             cargo_make_args: ios
             flutter_build_args: "build ipa --export-options-plist=ios/exportOptions_release.plist --split-debug-info=debug_symbols"
@@ -102,7 +102,7 @@ jobs:
           - name: MacOS
             os: macos-12
             target: macos
-            with_apple_certs: true
+            with_apple_cert: true
             cargo_make_args: desktop
             flutter_config: "--enable-macos-desktop"
             flutter_build_args: "build macos --split-debug-info=debug_symbols"
@@ -202,7 +202,6 @@ jobs:
           brew install git-crypt
           echo "${{ secrets.GIT_CRYPT_KEY }}" | base64 --decode > .github/assets/git-crypt-key
           git-crypt unlock .github/assets/git-crypt-key
-          rm .github/assets/git-crypt-key
 
       # Install the Apple certificate and provisioning profile
       - name: Install the Apple certificates
@@ -234,7 +233,8 @@ jobs:
         if: matrix.with_apple_cert
         run: |
           echo "Installing provision profiles"
-          cp ".github/assets/provision_profiles/*" ~/Library/MobileDevice/Provisioning\ Profiles
+          mkdir -p "~/Library/MobileDevice/Provisioning Profiles"
+          cp .github/assets/provision_profiles/* "~/Library/MobileDevice/Provisioning Profiles"
 
       - name: Build Rust Lib
         run: cargo make --profile release ${{ matrix.cargo_make_args}}
@@ -269,10 +269,11 @@ jobs:
 
       # Important! Cleanup: remove the certificate and provisioning profile from the runner!
       - name: Clean up keychain and provisioning profile
-        if: ${{ always() && (matrix.target == 'ios' || matrix.target == 'macos') }}
+        if: ${{ always() && matrix.with_apple_cert }}
         run: |
           security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
-          rm ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/*
+          rm .github/assets/git-crypt-key
 
       - name: Generate manifest
         if: matrix.target == 'ios'
