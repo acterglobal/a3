@@ -89,6 +89,7 @@ jobs:
           - name: iOS
             os: macos-latest
             target: ios
+            with_apple_certs: true
             cargo_make_setup: setup-ios
             cargo_make_args: ios
             flutter_build_args: "build ipa --export-options-plist=ios/exportOptions_release.plist --split-debug-info=debug_symbols"
@@ -100,6 +101,7 @@ jobs:
           - name: MacOS
             os: macos-12
             target: macos
+            with_apple_certs: true
             cargo_make_args: desktop
             flutter_config: "--enable-macos-desktop"
             flutter_build_args: "build macos --split-debug-info=debug_symbols"
@@ -195,30 +197,25 @@ jobs:
         if: matrix.flutter_config
         run: flutter config ${{ matrix.flutter_config }}
 
-      - name: Install the Apple iOS certificate and provisioning profile
-        if: matrix.target == 'ios' || matrix.target == 'macos'
+      - name: Unlock git-crypt
+        if: matrix.with_apple_cert
+        uses: sliteteam/github-action-git-crypt-unlock@1.2.0
         env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
-          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
-          BUILD_PROVISION_PROFILE_IOS_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_IOS_BASE64 }}
-          BUILD_PROVISION_PROFILE_MACAPP_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_MACAPP_BASE64 }}
-          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+          GIT_CRYPT_KEY: ${{ secrets.GIT_CRYPT_KEY }}
+
+      # Install the Apple certificate and provisioning profile
+      - name: Install the Apple certificates
+        if: matrix.with_apple_cert
+        env:
+          P12_PASSWORD: ${{ secrets.BUILD_CERTS_P12_PASSWORD }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
           echo "starting in $RUNNER_TEMP"
           # create variables
-          CERTIFICATE_PATH="$RUNNER_TEMP/build_certificate.p12"
-          IOS_PP_PATH="$RUNNER_TEMP/ios_build_pp.mobileprovision"
-          PP_PATH="$RUNNER_TEMP/build_pp.mobileprovision"
-          MAC_PP_PATH="$RUNNER_TEMP/mac_build_pp.mobileprovision"
+          CERTIFICATE_PATH=".github/assets/build_certificates.p12"
           KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
           echo "vars set"
           # import certificate and provisioning profile from secrets
-          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode --output "$CERTIFICATE_PATH"
-          echo -n "$BUILD_PROVISION_PROFILE_IOS_BASE64" | base64 --decode --output "$IOS_PP_PATH"
-          echo -n "$BUILD_PROVISION_PROFILE_MACAPP_BASE64" | base64 --decode --output "$MAC_PP_PATH"
-          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode --output "$PP_PATH"
-          ls -ltash $RUNNER_TEMP/*
           # create temporary keychain
           echo "creating keychain"
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
@@ -231,14 +228,12 @@ jobs:
           security import "$CERTIFICATE_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
           echo "listing keychains"
           security list-keychain -d user -s "$KEYCHAIN_PATH"
-          # apply provisioning profile
-          echo "copying over"
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp $IOS_PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/Acter_iOS_App_Release.mobileprovision
-          cp $MAC_PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/Acter_MacApp_Release.provisionprofile
-          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/Acter_App_Release.mobileprovision
-          ls ~/Library/MobileDevice/Provisioning\ Profiles/
 
+      - name: Install the Apple provisioning profile
+        if: matrix.with_apple_cert
+        run: |
+          echo "Installing provision profiles"
+          cp ".github/assets/provision_profiles/*" ~/Library/MobileDevice/Provisioning\ Profiles
 
       - name: Build Rust Lib
         run: cargo make --profile release ${{ matrix.cargo_make_args}}
