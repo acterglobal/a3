@@ -78,6 +78,7 @@ jobs:
             artifact_path:  app/build/app/outputs/apk/release/
             extra_release_artifacts: app/build/app/outputs/apk/release/*.apk
           - name: Linux x64
+            target: linux
             os: ubuntu-latest
             apt_install: ninja-build libgtk-3-dev
             cargo_make_args: desktop
@@ -197,9 +198,11 @@ jobs:
 
       - name: Unlock git-crypt
         if: matrix.with_apple_cert
-        uses: sliteteam/github-action-git-crypt-unlock@1.2.0
-        env:
-          GIT_CRYPT_KEY: ${{ secrets.GIT_CRYPT_KEY }}
+        run: |
+          brew install git-crypt
+          echo "${{ secrets.GIT_CRYPT_KEY }}" | base64 --decode > .github/assets/git-crypt-key
+          git-crypt unlock .github/assets/git-crypt-key
+          rm .github/assets/git-crypt-key
 
       # Install the Apple certificate and provisioning profile
       - name: Install the Apple certificates
