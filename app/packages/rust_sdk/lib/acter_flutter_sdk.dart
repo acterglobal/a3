@@ -38,9 +38,11 @@ const defaultSessionKey = String.fromEnvironment(
   defaultValue: 'sessions',
 );
 
-const appGroupName = String.fromEnvironment(
-  'iOS_APP_GROUP',
-  defaultValue: 'group.acter.a3',
+// allows us to use a different AppGroup Section to store
+// the app group under
+const appleKeychainAppGroupName = String.fromEnvironment(
+  'APPLE_KEYCHAIN_APP_GROUP_NAME',
+  defaultValue: 'V45JGKTC6K.global.acter.a3',
 );
 
 
@@ -152,12 +154,12 @@ const aOptions = AndroidOptions(
 const iOptions = IOSOptions(
         synchronizable: true,
         accessibility: KeychainAccessibility.first_unlock,   // must have been unlocked since reboot
-        // groupId: String.fromEnvironment(appGroupName),       // for sharing in the notification service
+        groupId: appleKeychainAppGroupName,                  // to allow the background process to access the same store
       );
 const mOptions = MacOsOptions(
         synchronizable: true,
         accessibility: KeychainAccessibility.first_unlock,   // must have been unlocked since reboot
-        // groupId: String.fromEnvironment(appGroupName),       // for sharing in the notification service
+        groupId: appleKeychainAppGroupName,                  // to allow the background process to access the same store
         );
 class ActerSdk {
   late final ffi.Api _api;

@@ -26,6 +26,10 @@ extension UNNotificationRequest {
         content.userInfo[NotificationConstants.UserInfoKey.eventIdentifier] as? String
     }
 
+    var deviceId: String? {
+        content.userInfo[NotificationConstants.UserInfoKey.deviceIdentifier] as? String
+    }
+
     var unreadCount: Int? {
         content.userInfo[NotificationConstants.UserInfoKey.unreadCount] as? Int
     }

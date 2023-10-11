@@ -114,7 +114,11 @@ dependencies:
   device_info_plus: ^9.0.3
   great_list_view: ^0.2.3
   flutter_local_notifications: ^16.0.0
-  flutter_secure_storage: ^9.0.0
+  # flutter_secure_storage: # ^9.0.0
+  #   git:
+  #     url: https://github.com/bierbaumtim/flutter_secure_storage
+  #     ref: feature-cupertino-protected-data-availability
+  #     path: flutter_secure_storage/
 
 dev_dependencies:
   flutter_test:
