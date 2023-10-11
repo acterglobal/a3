@@ -129,6 +129,7 @@ pub async fn login_with_token_under_config(
         homeurl,
         is_guest,
         db_passphrase,
+        base_path,
     } = restore_token;
     let user_id = session.user_id.to_string();
     RUNTIME
@@ -148,6 +149,7 @@ pub async fn login_with_token_under_config(
             let state = ClientStateBuilder::default()
                 .is_guest(is_guest)
                 .db_passphrase(db_passphrase)
+                .base_path(base_path)
                 .build()?;
             let c = Client::new(client.clone(), state).await?;
             info!(
@@ -159,10 +161,10 @@ pub async fn login_with_token_under_config(
         .await?
 }
 
-pub async fn login_with_token(base_path: String, restore_token: String) -> Result<Client> {
+pub async fn login_with_token(restore_token: String) -> Result<Client> {
     let token: RestoreToken = serde_json::from_str(&restore_token)?;
     let config = platform::new_client_config(
-        base_path,
+        token.base_path.clone(),
         token.session.user_id.to_string(),
         token.db_passphrase.clone(),
         false,
