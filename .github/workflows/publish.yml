@@ -151,9 +151,9 @@ jobs:
 
       - uses: jlumbroso/free-disk-space@main
         name: Free Disk Space (Ubuntu)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-latest' && matrix.target != 'linux'
         with:
-          tool-cache: ${{ matrix.target != 'linux' }}
+          tool-cache: true
           android: ${{ matrix.target != 'android' }}
 
       - name: Cache Cargo
