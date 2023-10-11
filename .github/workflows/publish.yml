@@ -135,6 +135,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+ ######  ######## ######## ##     ## ########  
+##    ## ##          ##    ##     ## ##     ## 
+##       ##          ##    ##     ## ##     ## 
+ ######  ######      ##    ##     ## ########  
+      ## ##          ##    ##     ## ##        
+##    ## ##          ##    ##     ## ##        
+ ######  ########    ##     #######  ##      
+
       - name: Install supported toolchain
         id: rust_toolchain
         uses: actions-rs/toolchain@v1
@@ -178,10 +186,6 @@ jobs:
       - name: Install cargo-make
         if: steps.cache-cargo.outputs.cache-hit != 'true'
         uses: davidB/rust-cargo-make@v1
-
-      - name: Rust Setup
-        if: matrix.cargo_make_setup
-        run: cargo make ${{ matrix.cargo_make_setup }}
 
       - uses: subosito/flutter-action@v2
         name: Set up flutter
@@ -236,6 +240,18 @@ jobs:
           mkdir -p "~/Library/MobileDevice/Provisioning Profiles"
           cp .github/assets/provision_profiles/* "~/Library/MobileDevice/Provisioning Profiles"
 
+      - name: Rust Setup
+        if: matrix.cargo_make_setup
+        run: cargo make ${{ matrix.cargo_make_setup }}
+
+        ########  ##     ## #### ##       ########  
+        ##     ## ##     ##  ##  ##       ##     ## 
+        ##     ## ##     ##  ##  ##       ##     ## 
+        ########  ##     ##  ##  ##       ##     ## 
+        ##     ## ##     ##  ##  ##       ##     ## 
+        ##     ## ##     ##  ##  ##       ##     ## 
+        ########   #######  #### ######## ########  
+
       - name: Build Rust Lib
         run: cargo make --profile release ${{ matrix.cargo_make_args}}
 
@@ -261,6 +277,15 @@ jobs:
             --dart-define DEFAULT_HOMESERVER_NAME="${{vars.DEFAULT_HOMESERVER_NAME}}"
         working-directory: ./app
 
+           ######  ####  ######   ##    ## 
+          ##    ##  ##  ##    ##  ###   ## 
+          ##        ##  ##        ####  ## 
+           ######   ##  ##   #### ## ## ## 
+                ##  ##  ##    ##  ##  #### 
+          ##    ##  ##  ##    ##  ##   ### 
+           ######  ####  ######   ##    ## 
+
+
       # ignore codesign
       # - name: Sign Acter.app
       #   if: matrix.target == 'macos'
@@ -274,6 +299,14 @@ jobs:
           security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
           rm ~/Library/MobileDevice/Provisioning\ Profiles/*
           rm .github/assets/git-crypt-key
+
+        ########  ##    ##  ######   
+        ##     ## ##   ##  ##    ##  
+        ##     ## ##  ##   ##        
+        ########  #####    ##   #### 
+        ##        ##  ##   ##    ##  
+        ##        ##   ##  ##    ##  
+        ##        ##    ##  ######   
 
       - name: Generate manifest
         if: matrix.target == 'ios'
@@ -303,6 +336,14 @@ jobs:
         working-directory: ${{ matrix.artifact_path }}
         run: |
           7z a "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.zip" ${{ matrix.zip_files }}
+
+    ##     ## ########  ##        #######     ###    ########  
+    ##     ## ##     ## ##       ##     ##   ## ##   ##     ## 
+    ##     ## ##     ## ##       ##     ##  ##   ##  ##     ## 
+    ##     ## ########  ##       ##     ## ##     ## ##     ## 
+    ##     ## ##        ##       ##     ## ######### ##     ## 
+    ##     ## ##        ##       ##     ## ##     ## ##     ## 
+     #######  ##        ########  #######  ##     ## ########  
 
       - uses: actions/upload-artifact@v3
         name: "Upload artifacts"
@@ -373,6 +414,14 @@ jobs:
           generate_release_notes: false
           body_path: CHANGELOG.md
           files: CHANGELOG.md
+
+########  ##     ## ########  ##       ####  ######  ##     ## 
+##     ## ##     ## ##     ## ##        ##  ##    ## ##     ## 
+##     ## ##     ## ##     ## ##        ##  ##       ##     ## 
+########  ##     ## ########  ##        ##   ######  ######### 
+##        ##     ## ##     ## ##        ##        ## ##     ## 
+##        ##     ## ##     ## ##        ##  ##    ## ##     ## 
+##         #######  ########  ######## ####  ######  ##     ## 
 
   publish:
     environment: release

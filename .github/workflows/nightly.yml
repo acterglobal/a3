@@ -118,6 +118,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+ ######  ######## ######## ##     ## ########  
+##    ## ##          ##    ##     ## ##     ## 
+##       ##          ##    ##     ## ##     ## 
+ ######  ######      ##    ##     ## ########  
+      ## ##          ##    ##     ## ##        
+##    ## ##          ##    ##     ## ##        
+ ######  ########    ##     #######  ##      
+
       - name: Install supported toolchain
         id: rust_toolchain
         uses: actions-rs/toolchain@v1
@@ -162,10 +170,6 @@ jobs:
         if: steps.cache-cargo.outputs.cache-hit != 'true'
         uses: davidB/rust-cargo-make@v1
 
-      - name: Rust Setup
-        if: matrix.cargo_make_setup
-        run: cargo make ${{ matrix.cargo_make_setup }}
-
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
@@ -178,9 +182,6 @@ jobs:
       - name: Flutter config
         if: matrix.flutter_config
         run: flutter config ${{ matrix.flutter_config }}
-
-      - name: Build Rust Lib
-        run: cargo make --profile release ${{ matrix.cargo_make_args}}
 
       # - name: Ensure ffi-interface is up to date
       #   run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
@@ -230,6 +231,22 @@ jobs:
         working-directory: ./app/android
         run: echo "${{ secrets.ANDROID_KEYSTORE_JKS }}" | base64 --decode > key.jks
 
+      - name: Rust Setup
+        if: matrix.cargo_make_setup
+        run: cargo make ${{ matrix.cargo_make_setup }}
+
+        ########  ##     ## #### ##       ########  
+        ##     ## ##     ##  ##  ##       ##     ## 
+        ##     ## ##     ##  ##  ##       ##     ## 
+        ########  ##     ##  ##  ##       ##     ## 
+        ##     ## ##     ##  ##  ##       ##     ## 
+        ##     ## ##     ##  ##  ##       ##     ## 
+        ########   #######  #### ######## ########  
+
+
+      - name: Build Rust Lib
+        run: cargo make --profile release ${{ matrix.cargo_make_args}}
+
       - name: Flutter Build
         env:
           ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
@@ -245,6 +262,14 @@ jobs:
             --dart-define DEFAULT_HOMESERVER_NAME="${{vars.DEFAULT_HOMESERVER_NAME}}"
         working-directory: ./app
 
+           ######  ####  ######   ##    ## 
+          ##    ##  ##  ##    ##  ###   ## 
+          ##        ##  ##        ####  ## 
+           ######   ##  ##   #### ## ## ## 
+                ##  ##  ##    ##  ##  #### 
+          ##    ##  ##  ##    ##  ##   ### 
+           ######  ####  ######   ##    ## 
+
       - name: Sign Acter.app
         if: matrix.target == 'macos'
         working-directory: ${{ matrix.artifact_path }}
@@ -257,6 +282,14 @@ jobs:
           security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
           rm ~/Library/MobileDevice/Provisioning\ Profiles/*
           rm .github/assets/git-crypt-key
+
+        ########  ##    ##  ######   
+        ##     ## ##   ##  ##    ##  
+        ##     ## ##  ##   ##        
+        ########  #####    ##   #### 
+        ##        ##  ##   ##    ##  
+        ##        ##   ##  ##    ##  
+        ##        ##    ##  ######   
 
       - name: Generate manifest
         if: matrix.target == 'ios'
@@ -283,6 +316,14 @@ jobs:
         run: |
           7z a "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.zip" ${{ matrix.zip_files }}
 
+    ##     ## ########  ##        #######     ###    ########  
+    ##     ## ##     ## ##       ##     ##   ## ##   ##     ## 
+    ##     ## ##     ## ##       ##     ##  ##   ##  ##     ## 
+    ##     ## ########  ##       ##     ## ##     ## ##     ## 
+    ##     ## ##        ##       ##     ## ######### ##     ## 
+    ##     ## ##        ##       ##     ## ##     ## ##     ## 
+     #######  ##        ########  #######  ##     ## ########  
+
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
@@ -308,6 +349,14 @@ jobs:
           assignees: gnunicorn
           filename: .github/templates/failure-report-template.md.tmpl
           update_existing: false
+
+########  ##     ## ########  ##       ####  ######  ##     ## 
+##     ## ##     ## ##     ## ##        ##  ##    ## ##     ## 
+##     ## ##     ## ##     ## ##        ##  ##       ##     ## 
+########  ##     ## ########  ##        ##   ######  ######### 
+##        ##     ## ##     ## ##        ##        ## ##     ## 
+##        ##     ## ##     ## ##        ##  ##    ## ##     ## 
+##         #######  ########  ######## ####  ######  ##     ## 
 
   publish:
     environment: nightly
