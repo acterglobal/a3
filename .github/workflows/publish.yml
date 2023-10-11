@@ -237,8 +237,9 @@ jobs:
         if: matrix.with_apple_cert
         run: |
           echo "Installing provision profiles"
-          mkdir -p "~/Library/MobileDevice/Provisioning Profiles"
-          cp .github/assets/provision_profiles/* "~/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles/
+          cp .github/assets/provision_profiles/* ~/Library/MobileDevice/Provisioning\ Profiles/
+          ls -ltas ~/Library/MobileDevice/Provisioning\ Profiles/
 
       - name: Rust Setup
         if: matrix.cargo_make_setup
