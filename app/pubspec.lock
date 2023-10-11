@@ -65,15 +65,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.12"
-  awesome_notifications:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: acter-main
-      resolved-ref: "749cf41ddd1dfe24475fab5d4fa741a17115acd5"
-      url: "https://github.com/acterglobal/awesome_notifications"
-    source: git
-    version: "0.7.5-acter.main.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -314,14 +305,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.8"
-  desktop_notifications:
-    dependency: transitive
-    description:
-      name: desktop_notifications
-      sha256: "6d92694ad6e9297a862c5ff7dd6b8ff64c819972557754769f819d2209612927"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.6.3"
   diffutil_dart:
     dependency: transitive
     description:
