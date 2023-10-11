@@ -144,6 +144,13 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y ${{ matrix.apt_install }}
 
+      - uses: jlumbroso/free-disk-space@main
+        name: Free Disk Space (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          tool-cache: ${{ matrix.target != 'linux' }}
+          android: ${{ matrix.target != 'android' }}
+
       - uses: nttld/setup-ndk@v1
         id: setup-ndk
         if: matrix.with_ndk_version

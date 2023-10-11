@@ -144,10 +144,8 @@ jobs:
         name: Free Disk Space (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         with:
-          # this might remove tools that are actually needed,
-          # when set to "true" but frees about 6 GB
-          tool-cache: true
-          android: false
+          tool-cache: ${{ matrix.target != 'linux' }}
+          android: ${{ matrix.target != 'android' }}
 
       - name: Cache Cargo
         id: cache-cargo
