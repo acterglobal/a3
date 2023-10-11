@@ -174,24 +174,25 @@ jobs:
       # - name: Ensure ffi-interface is up to date
       #   run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
 
+      - name: Unlock git-crypt
+        if: matrix.with_apple_cert
+        uses: sliteteam/github-action-git-crypt-unlock@1.2.0
+        env:
+          GIT_CRYPT_KEY: ${{ secrets.GIT_CRYPT_KEY }}
+
       # Install the Apple certificate and provisioning profile
-      - name: Install the Apple certificate and provisioning profile
+      - name: Install the Apple certificates
         if: matrix.with_apple_cert
         env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.NIGHTLY_ADHOC_CERT_BASE64 }}
-          P12_PASSWORD: ${{ secrets.NIGHTLY_ADHOC_CERT_PASSWORD }}
-          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.NIGHTLY_MOBILEPROVISION_BASE64 }}
+          P12_PASSWORD: ${{ secrets.BUILD_CERTS_P12_PASSWORD }}
           KEYCHAIN_PASSWORD: ${{ secrets.NIGHTLY_KEYCHAIN_PASSWORD }}
         run: |
           echo "starting in $RUNNER_TEMP"
           # create variables
-          CERTIFICATE_PATH="$RUNNER_TEMP/build_certificate.p12"
-          PP_PATH="$RUNNER_TEMP/build_pp.mobileprovision"
+          CERTIFICATE_PATH=".github/assets/build_certificates.p12"
           KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
           echo "vars set"
           # import certificate and provisioning profile from secrets
-          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode --output "$CERTIFICATE_PATH"
-          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode --output "$PP_PATH"
           # create temporary keychain
           echo "creating keychain"
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
@@ -204,31 +205,17 @@ jobs:
           security import "$CERTIFICATE_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
           echo "listing keychains"
           security list-keychain -d user -s "$KEYCHAIN_PATH"
-          # apply provisioning profile
-          echo "copying over"
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
+      - name: Install the Apple provisioning profile
+        if: matrix.with_apple_cert
+        run: |
+          echo "Installing provision profiles"
+          cp ".github/assets/provision_profiles/*" ~/Library/MobileDevice/Provisioning\ Profiles
 
       - name: Expose JKS file
         if: matrix.target == 'android'
         working-directory: ./app/android
         run: echo "${{ secrets.ANDROID_KEYSTORE_JKS }}" | base64 --decode > key.jks
-
-      - name: Patch iOS Project data for nightly
-        if: matrix.target == 'ios'
-        working-directory: ./app/ios
-        run: |
-            /usr/libexec/PlistBuddy -c 'set objects:97C147071CF9000F007C117D:buildSettings:PROVISIONING_PROFILE_SPECIFIER ""' Runner.xcodeproj/project.pbxproj
-            /usr/libexec/PlistBuddy -c 'set objects:97C147071CF9000F007C117D:buildSettings:CODE_SIGN_IDENTITY Apple Development' Runner.xcodeproj/project.pbxproj
-            /usr/libexec/PlistBuddy -c 'delete objects:97C147071CF9000F007C117D:buildSettings:CODE_SIGN_ENTITLEMENTS' Runner.xcodeproj/project.pbxproj
-            /usr/libexec/PlistBuddy -c 'add objects:97C147071CF9000F007C117D:buildSettings:"CODE_SIGN_IDENTITY[sdk=iphoneos*]" string iPhone Distribution Apple Development' Runner.xcodeproj/project.pbxproj
-            /usr/libexec/PlistBuddy -c 'add objects:97C147071CF9000F007C117D:buildSettings:"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" string A3-Nightly-Internal' Runner.xcodeproj/project.pbxproj
-
-      - name: Patch MacOS Project data for nightly
-        if: matrix.target == 'macos'
-        working-directory: ./app/macos
-        run: |
-            /usr/libexec/PlistBuddy -c 'set objects:33CC10FD2044A3C60003C045:buildSettings:"CODE_SIGN_IDENTITY[sdk=macosx*]" -' Runner.xcodeproj/project.pbxproj
 
       - name: Flutter Build
         env:

@@ -1,1 +1,2 @@
 .github/assets/provision_profiles/** filter=git-crypt diff=git-crypt
+.github/assets/*.p12 filter=git-crypt diff=git-crypt
