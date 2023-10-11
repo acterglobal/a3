@@ -11,6 +11,9 @@ on:
         description: 'Provide the tag name for this scenario'
         required: true
         type: string
+      prev_tag:
+        description: 'The tag to compare the changelog to'
+        type: string
 
   schedule:
    - cron: 0 3 * * *
@@ -29,7 +32,7 @@ jobs:
         id: check-new-commits
         shell: bash
         run: |
-          if [ `git diff --name-only nightly-latest app native .changes | wc -l` -ne 0 ]; then
+          if [ `git diff --name-only  ${{ inputs.prev_tag || 'nightly-latest' }} app native .changes | wc -l` -ne 0 ]; then
             echo "has-new-commits=true"  >> $GITHUB_OUTPUT ;
           else
             echo "has-new-commits=false" >> $GITHUB_OUTPUT ;
@@ -65,6 +68,7 @@ jobs:
             rename_suffix: "apk"
           - name: Linux x64
             os: ubuntu-latest
+            target: linux
             apt_install: ninja-build libgtk-3-dev
             cargo_make_args: desktop
             flutter_config: "--enable-linux-desktop"
@@ -114,6 +118,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+ ######  ######## ######## ##     ## ########  
+##    ## ##          ##    ##     ## ##     ## 
+##       ##          ##    ##     ## ##     ## 
+ ######  ######      ##    ##     ## ########  
+      ## ##          ##    ##     ## ##        
+##    ## ##          ##    ##     ## ##        
+ ######  ########    ##     #######  ##      
+
       - name: Install supported toolchain
         id: rust_toolchain
         uses: actions-rs/toolchain@v1
@@ -141,6 +153,13 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y ${{ matrix.apt_install }}
 
+      - uses: jlumbroso/free-disk-space@main
+        name: Free Disk Space (Ubuntu)
+        if: matrix.os == 'ubuntu-latest' && matrix.target != 'linux'
+        with:
+          tool-cache: true
+          android: ${{ matrix.target != 'android' }}
+
       - uses: nttld/setup-ndk@v1
         id: setup-ndk
         if: matrix.with_ndk_version
@@ -150,10 +169,6 @@ jobs:
       - name: Install cargo-make
         if: steps.cache-cargo.outputs.cache-hit != 'true'
         uses: davidB/rust-cargo-make@v1
-
-      - name: Rust Setup
-        if: matrix.cargo_make_setup
-        run: cargo make ${{ matrix.cargo_make_setup }}
 
       - uses: subosito/flutter-action@v2
         name: Set up flutter
@@ -168,30 +183,29 @@ jobs:
         if: matrix.flutter_config
         run: flutter config ${{ matrix.flutter_config }}
 
-      - name: Build Rust Lib
-        run: cargo make --profile release ${{ matrix.cargo_make_args}}
-
       # - name: Ensure ffi-interface is up to date
       #   run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
 
+      - name: Unlock git-crypt
+        if: matrix.with_apple_cert
+        run: |
+          brew install git-crypt
+          echo "${{ secrets.GIT_CRYPT_KEY }}" | base64 --decode > .github/assets/git-crypt-key
+          git-crypt unlock .github/assets/git-crypt-key
+
       # Install the Apple certificate and provisioning profile
-      - name: Install the Apple certificate and provisioning profile
+      - name: Install the Apple certificates
         if: matrix.with_apple_cert
         env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.NIGHTLY_ADHOC_CERT_BASE64 }}
-          P12_PASSWORD: ${{ secrets.NIGHTLY_ADHOC_CERT_PASSWORD }}
-          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.NIGHTLY_MOBILEPROVISION_BASE64 }}
-          KEYCHAIN_PASSWORD: ${{ secrets.NIGHTLY_KEYCHAIN_PASSWORD }}
+          P12_PASSWORD: ${{ secrets.BUILD_CERTS_P12_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
           echo "starting in $RUNNER_TEMP"
           # create variables
-          CERTIFICATE_PATH="$RUNNER_TEMP/build_certificate.p12"
-          PP_PATH="$RUNNER_TEMP/build_pp.mobileprovision"
+          CERTIFICATE_PATH=".github/assets/build_certificates.p12"
           KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
           echo "vars set"
           # import certificate and provisioning profile from secrets
-          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode --output "$CERTIFICATE_PATH"
-          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode --output "$PP_PATH"
           # create temporary keychain
           echo "creating keychain"
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
@@ -204,31 +218,35 @@ jobs:
           security import "$CERTIFICATE_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
           echo "listing keychains"
           security list-keychain -d user -s "$KEYCHAIN_PATH"
-          # apply provisioning profile
-          echo "copying over"
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
+      - name: Install the Apple provisioning profile
+        if: matrix.with_apple_cert
+        run: |
+          echo "Installing provision profiles"
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles/
+          cp .github/assets/provision_profiles/* ~/Library/MobileDevice/Provisioning\ Profiles/
+          ls -ltas ~/Library/MobileDevice/Provisioning\ Profiles/
 
       - name: Expose JKS file
         if: matrix.target == 'android'
         working-directory: ./app/android
         run: echo "${{ secrets.ANDROID_KEYSTORE_JKS }}" | base64 --decode > key.jks
 
-      - name: Patch iOS Project data for nightly
-        if: matrix.target == 'ios'
-        working-directory: ./app/ios
-        run: |
-            /usr/libexec/PlistBuddy -c 'set objects:97C147071CF9000F007C117D:buildSettings:PROVISIONING_PROFILE_SPECIFIER ""' Runner.xcodeproj/project.pbxproj
-            /usr/libexec/PlistBuddy -c 'set objects:97C147071CF9000F007C117D:buildSettings:CODE_SIGN_IDENTITY Apple Development' Runner.xcodeproj/project.pbxproj
-            /usr/libexec/PlistBuddy -c 'delete objects:97C147071CF9000F007C117D:buildSettings:CODE_SIGN_ENTITLEMENTS' Runner.xcodeproj/project.pbxproj
-            /usr/libexec/PlistBuddy -c 'add objects:97C147071CF9000F007C117D:buildSettings:"CODE_SIGN_IDENTITY[sdk=iphoneos*]" string iPhone Distribution Apple Development' Runner.xcodeproj/project.pbxproj
-            /usr/libexec/PlistBuddy -c 'add objects:97C147071CF9000F007C117D:buildSettings:"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" string A3-Nightly-Internal' Runner.xcodeproj/project.pbxproj
+      - name: Rust Setup
+        if: matrix.cargo_make_setup
+        run: cargo make ${{ matrix.cargo_make_setup }}
 
-      - name: Patch MacOS Project data for nightly
-        if: matrix.target == 'macos'
-        working-directory: ./app/macos
-        run: |
-            /usr/libexec/PlistBuddy -c 'set objects:33CC10FD2044A3C60003C045:buildSettings:"CODE_SIGN_IDENTITY[sdk=macosx*]" -' Runner.xcodeproj/project.pbxproj
+        ########  ##     ## #### ##       ########  
+        ##     ## ##     ##  ##  ##       ##     ## 
+        ##     ## ##     ##  ##  ##       ##     ## 
+        ########  ##     ##  ##  ##       ##     ## 
+        ##     ## ##     ##  ##  ##       ##     ## 
+        ##     ## ##     ##  ##  ##       ##     ## 
+        ########   #######  #### ######## ########  
+
+
+      - name: Build Rust Lib
+        run: cargo make --profile release ${{ matrix.cargo_make_args}}
 
       - name: Flutter Build
         env:
@@ -245,6 +263,14 @@ jobs:
             --dart-define DEFAULT_HOMESERVER_NAME="${{vars.DEFAULT_HOMESERVER_NAME}}"
         working-directory: ./app
 
+           ######  ####  ######   ##    ## 
+          ##    ##  ##  ##    ##  ###   ## 
+          ##        ##  ##        ####  ## 
+           ######   ##  ##   #### ## ## ## 
+                ##  ##  ##    ##  ##  #### 
+          ##    ##  ##  ##    ##  ##   ### 
+           ######  ####  ######   ##    ## 
+
       - name: Sign Acter.app
         if: matrix.target == 'macos'
         working-directory: ${{ matrix.artifact_path }}
@@ -255,7 +281,16 @@ jobs:
         if: ${{ always() && matrix.with_apple_cert }}
         run: |
           security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
-          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/*
+          rm .github/assets/git-crypt-key
+
+        ########  ##    ##  ######   
+        ##     ## ##   ##  ##    ##  
+        ##     ## ##  ##   ##        
+        ########  #####    ##   #### 
+        ##        ##  ##   ##    ##  
+        ##        ##   ##  ##    ##  
+        ##        ##    ##  ######   
 
       - name: Generate manifest
         if: matrix.target == 'ios'
@@ -282,6 +317,14 @@ jobs:
         run: |
           7z a "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.zip" ${{ matrix.zip_files }}
 
+    ##     ## ########  ##        #######     ###    ########  
+    ##     ## ##     ## ##       ##     ##   ## ##   ##     ## 
+    ##     ## ##     ## ##       ##     ##  ##   ##  ##     ## 
+    ##     ## ########  ##       ##     ## ##     ## ##     ## 
+    ##     ## ##        ##       ##     ## ######### ##     ## 
+    ##     ## ##        ##       ##     ## ##     ## ##     ## 
+     #######  ##        ########  #######  ##     ## ########  
+
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
@@ -307,6 +350,14 @@ jobs:
           assignees: gnunicorn
           filename: .github/templates/failure-report-template.md.tmpl
           update_existing: false
+
+########  ##     ## ########  ##       ####  ######  ##     ## 
+##     ## ##     ## ##     ## ##        ##  ##    ## ##     ## 
+##     ## ##     ## ##     ## ##        ##  ##       ##     ## 
+########  ##     ## ########  ##        ##   ######  ######### 
+##        ##     ## ##     ## ##        ##        ## ##     ## 
+##        ##     ## ##     ## ##        ##  ##    ## ##     ## 
+##         #######  ########  ######## ####  ######  ##     ## 
 
   publish:
     environment: nightly
