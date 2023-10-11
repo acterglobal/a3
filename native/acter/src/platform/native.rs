@@ -3,7 +3,7 @@ use chrono::Local;
 use lazy_static::lazy_static;
 use log::{LevelFilter, Log, Metadata, Record};
 use matrix_sdk::{Client, ClientBuilder};
-use matrix_sdk_sqlite::make_store_config;
+use matrix_sdk_sqlite::{make_store_config, OpenStoreError};
 use parse_env_filter::eager::{filters, Filter};
 use std::{
     path::{Path, PathBuf},
@@ -27,24 +27,40 @@ pub async fn new_client_config(
     db_passphrase: Option<String>,
     reset_if_existing: bool,
 ) -> Result<ClientBuilder> {
+    let make_data_path = |
+    base_path: &str,
+    home_dir: &str, should_reset_if_existing| {
+        let data_path = sanitize(base_path, home_dir);
+
+        if should_reset_if_existing && Path::new(&data_path).try_exists()? {
+            let backup_path = sanitize(
+                &base_path,
+                &format!("{home_dir}_backup_{}", Local::now().to_rfc3339()),
+            );
+            tracing::warn!(
+                "{data_path:?} already existing. Moving to backup at {backup_path:?}."
+            );
+            std::fs::rename(&data_path, backup_path)?;
+        }
+        std::fs::create_dir_all(&data_path)?;
+        anyhow::Ok(data_path)
+    };
     RUNTIME
         .spawn(async move {
-            let data_path = sanitize(&base_path, &home_dir);
+            let data_path = make_data_path(&base_path, &home_dir, reset_if_existing)?;
 
-            if reset_if_existing && Path::new(&data_path).try_exists()? {
-                let backup_path = sanitize(
-                    &base_path,
-                    &format!("{home_dir}_backup_{}", Local::now().to_rfc3339()),
-                );
-                tracing::warn!(
-                    "{data_path:?} already existing. Moving to backup at {backup_path:?}."
-                );
-                std::fs::rename(&data_path, backup_path)?;
-            }
-
-            std::fs::create_dir_all(&data_path)?;
-
-            let config = make_store_config(&data_path, db_passphrase.as_deref()).await?;
+            let config = match make_store_config(&data_path, db_passphrase.as_deref()).await {
+                Err(OpenStoreError::InitCipher(e)) => {
+                    tracing::warn!("Failed to initialize cipher: {e}");
+                    let data_path = make_data_path(&base_path, &home_dir, true)?; // try resetting the path and do it again.
+                    make_store_config(&data_path, db_passphrase.as_deref()).await?
+                }
+                Err(e) => {
+                    tracing::warn!("Failed to open database: {e}");
+                    return Err(e.into());
+                }
+                Ok(config) => config
+            };
             let builder = Client::builder()
                 .store_config(config)
                 .user_agent(format!("acter-testing/{:}", env!("CARGO_PKG_VERSION")));
