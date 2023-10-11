@@ -14,6 +14,11 @@ pub mod platform;
 #[cfg(feature = "cbindgen")]
 pub mod api_generated;
 
+#[rustfmt::skip]
+#[cfg(feature = "uniffi")]
+uniffi::include_scaffolding!("acter_sdk");
+
+
 #[cfg(feature = "testing")]
 pub mod testing;
 

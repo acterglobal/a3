@@ -116,6 +116,7 @@ pub type UserId = ruma_common::OwnedUserId;
 #[cfg(all(not(doctest), feature = "dart"))]
 ffi_gen_macro::ffi_gen!("native/acter/api.rsh");
 
+
 #[cfg(not(all(not(doctest), feature = "dart")))]
 #[allow(clippy::module_inception)]
 mod api {

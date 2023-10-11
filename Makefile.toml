@@ -180,6 +180,7 @@ args = [
     "build",
     "--target",
     "${CARGO_BUILD_TARGET}",
+    "--features uniffi",
     "-Zbuild-std",
 ]
 
@@ -191,6 +192,7 @@ args = [
     "build",
     "--target",
     "${CARGO_BUILD_TARGET}",
+    "--features uniffi",
     "-Zbuild-std",
     "--release"
 ]

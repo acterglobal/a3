@@ -35,6 +35,10 @@ fn main() {
             .expect("Failure generating dart side of ffigen");
     }
 
+    if std::env::var("SKIP_UNIFFI").is_err() {
+        uniffi::generate_scaffolding("src/acter_sdk.udl").unwrap();
+    }
+
     if std::env::var("SKIP_CBINDGEN").is_err() {
         // once the setup is ready, let's create the c-headers
         // this needs the rust API to be generated first, as it

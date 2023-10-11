@@ -13,10 +13,12 @@ default = ["dart"]
 testing = ["dep:matrix-sdk-base"]
 cbindgen = []
 dart = []
+uniffi = ["dep:uniffi"]
 
 [build-dependencies]
 ffi-gen = { git = "https://github.com/acterglobal/ffi-gen", branch = "proc-macro2-unpin" }
 cbindgen = "0.24.3"
+uniffi = { version = "0.24.3", features = [ "build" ] }
 
 [dependencies]
 anyhow = "1.0.51"
@@ -49,6 +51,9 @@ uuid = { version = "1.4.0", features = ["v4"] }
 
 # for markdown support.
 pulldown-cmark = { version = "0.9.1", default-features = false }
+
+# for uniffi support
+uniffi = { version = "0.24.3", optional = true }
 
 [dev-dependencies]
 tempfile = "3.3.0"
