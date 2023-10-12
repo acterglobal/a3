@@ -3,6 +3,8 @@ import 'dart:core';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,14 +37,14 @@ class EmailAddressCard extends ConsumerWidget {
         trailing: PopupMenuButton(
           itemBuilder: (BuildContext ctx) => <PopupMenuEntry>[
             PopupMenuItem(
-              onTap: () async => await onWithdraw(ctx, ref),
+              onTap: () => onUnregister(ctx, ref),
               child: Row(
                 children: [
                   const Icon(Atlas.exit_thin),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
-                      'Withdraw',
+                      'Unregister',
                       style: Theme.of(ctx).textTheme.labelSmall,
                       softWrap: false,
                     ),
@@ -72,55 +74,43 @@ class EmailAddressCard extends ConsumerWidget {
     );
   }
 
-  Future<void> onWithdraw(BuildContext context, WidgetRef ref) async {
-    TextEditingController passwordController = TextEditingController();
-    final result = await showDialog<bool>(
+  void onUnregister(BuildContext context, WidgetRef ref) {
+    showAdaptiveDialog(
       context: context,
-      builder: (BuildContext ctx) {
-        return AlertDialog(
-          title: const Text('Authentication required'),
-          content: Wrap(
-            children: [
-              const Text(
-                'Please provide your user password to confirm you want to end that session.',
-              ),
-              TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(hintText: 'Password'),
-              ),
-            ],
+      builder: (context) => DefaultDialog(
+        title: const Text(
+          'Are you sure you want to unregister this email address? This action cannot be undone.',
+        ),
+        actions: <Widget>[
+          DefaultButton(
+            onPressed: () => Navigator.of(
+              context,
+              rootNavigator: true,
+            ).pop(),
+            title: 'No',
+            isOutlined: true,
           ),
-          actions: [
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                if (ctx.mounted) {
-                  Navigator.of(context).pop(false);
-                }
-              },
+          DefaultButton(
+            onPressed: () async {
+              final account = await ref.read(accountProvider.future);
+              final manager = account.passwordResetManager();
+              await manager.removeEmailAddress(emailAddress);
+              if (context.mounted) {
+                ref.invalidate(emailAddressesProvider);
+                Navigator.of(
+                  context,
+                  rootNavigator: true,
+                ).pop();
+              }
+            },
+            title: 'Yes',
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.onError,
             ),
-            TextButton(
-              child: const Text('Ok'),
-              onPressed: () {
-                if (passwordController.text.isEmpty) {
-                  return;
-                }
-                if (ctx.mounted) {
-                  Navigator.of(context).pop(true);
-                }
-              },
-            ),
-          ],
-        );
-      },
+          ),
+        ],
+      ),
     );
-    if (result != true) {
-      return;
-    }
-    final account = await ref.read(accountProvider.future);
-    final manager = account.passwordResetManager();
-    await manager.removeEmailAddress(emailAddress);
   }
 
   Future<void> onConfirm(BuildContext context, WidgetRef ref) async {

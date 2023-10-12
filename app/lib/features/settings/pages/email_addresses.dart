@@ -33,7 +33,7 @@ class _RequestTokenViaEmailState extends State<RequestTokenViaEmail> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text(
-        'Add email address',
+        'Register email address',
       ), // The token-reset path is just the process by which control over that email address is confirmed.
       content: Form(
         key: _formKey,
@@ -113,7 +113,7 @@ class EmailAddressesPage extends ConsumerWidget {
           centerTitle: true,
           actions: [
             IconButton(
-              onPressed: () => onAddEmailAddress(context, ref),
+              onPressed: () => onRegister(context, ref),
               icon: Icon(
                 Atlas.plus_circle_thin,
                 color: Theme.of(context).colorScheme.neutral5,
@@ -242,7 +242,7 @@ class EmailAddressesPage extends ConsumerWidget {
     );
   }
 
-  Future<void> onAddEmailAddress(BuildContext context, WidgetRef ref) async {
+  Future<void> onRegister(BuildContext context, WidgetRef ref) async {
     final account = await ref.read(accountProvider.future);
     if (!context.mounted) {
       return;
