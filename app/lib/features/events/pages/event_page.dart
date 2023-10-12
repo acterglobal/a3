@@ -1,5 +1,6 @@
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_button.dart';
@@ -25,7 +26,7 @@ class CalendarEventPage extends ConsumerWidget {
   ) {
     final spaceId = event.roomIdStr();
     List<PopupMenuEntry> actions = [];
-    final membership = ref.watch(spaceMembershipProvider(spaceId));
+    final membership = ref.watch(roomMembershipProvider(spaceId));
     if (membership.valueOrNull != null) {
       final memb = membership.requireValue!;
       if (memb.canString('CanPostEvent')) {
@@ -48,21 +49,25 @@ class CalendarEventPage extends ConsumerWidget {
 
       if (memb.canString('CanRedact') ||
           memb.userId().toString() == event.sender().toString()) {
+        final roomId = event.roomIdStr();
         actions.addAll([
           PopupMenuItem(
             onTap: () => showAdaptiveDialog(
               context: context,
               builder: (context) => RedactContentWidget(
-                title: 'Redact this post',
+                title: 'Remove this post',
                 eventId: event.eventId().toString(),
                 onSuccess: () {
                   ref.invalidate(calendarEventProvider);
                   if (context.mounted) {
-                    context.go('/');
+                    context.goNamed(
+                      Routes.spaceEvents.name,
+                      pathParameters: {'spaceId': roomId},
+                    );
                   }
                 },
                 senderId: event.sender().toString(),
-                roomId: event.roomIdStr(),
+                roomId: roomId,
                 isSpace: true,
               ),
             ),
@@ -73,7 +78,7 @@ class CalendarEventPage extends ConsumerWidget {
                   color: Theme.of(context).colorScheme.error,
                 ),
                 const SizedBox(width: 10),
-                const Text('Redact Event'),
+                const Text('Remove Event'),
               ],
             ),
           ),
@@ -126,7 +131,9 @@ class CalendarEventPage extends ConsumerWidget {
         slivers: <Widget>[
           PageHeaderWidget(
             title: event.hasValue ? event.value!.title() : 'Loading Event',
-            sectionColor: Colors.blue.shade200,
+            sectionDecoration: const BoxDecoration(
+              gradient: AppTheme.primaryGradient,
+            ),
             actions: [
               event.maybeWhen(
                 data: (event) => buildActions(context, ref, event),
@@ -143,76 +150,100 @@ class CalendarEventPage extends ConsumerWidget {
                 description = 'Description: ${content.body()}';
               }
               return SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Card(
-                    child: Container(
-                      margin: const EdgeInsets.all(10),
-                      child: Column(
-                        key: Key(calendarId),
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(ev.title()),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    key: Key(calendarId),
+                    children: [
+                      Flexible(
+                        flex: 1,
+                        child: Card(
+                          elevation: 0,
+                          child: Column(
                             children: [
-                              const SizedBox(height: 15),
-                              Text(dateTime),
-                              const SizedBox(height: 15),
-                              Text(description),
-                              const SizedBox(height: 15),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(
-                                height: 50,
-                                width: 100,
-                                child: DefaultButton(
-                                  title: 'Invite',
-                                  onPressed: () => onInvite(context),
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text(
+                                  ev.title(),
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
                                 ),
                               ),
-                              SizedBox(
-                                height: 50,
-                                width: 100,
-                                child: DefaultButton(
-                                  title: 'Join',
-                                  onPressed: () => onJoin(context),
-                                ),
+                              const SizedBox(height: 15),
+                              Container(
+                                alignment: Alignment.topLeft,
+                                padding: const EdgeInsets.all(8),
+                                child: Text(dateTime),
                               ),
-                              SizedBox(
-                                height: 50,
-                                width: 100,
-                                child: PopupMenuButton(
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    child: const Text('RSVP'),
-                                  ),
-                                  itemBuilder: (BuildContext context) =>
-                                      <PopupMenuEntry>[
-                                    PopupMenuItem(
-                                      onTap: () => onRsvp(context, ev, 'Yes'),
-                                      child: const Text('Yes'),
-                                    ),
-                                    PopupMenuItem(
-                                      onTap: () => onRsvp(context, ev, 'Maybe'),
-                                      child: const Text('Maybe'),
-                                    ),
-                                    PopupMenuItem(
-                                      onTap: () => onRsvp(context, ev, 'No'),
-                                      child: const Text('No'),
-                                    ),
-                                  ],
-                                ),
+                              const SizedBox(height: 15),
+                              Container(
+                                alignment: Alignment.topLeft,
+                                padding: const EdgeInsets.all(8),
+                                child: Text(description),
                               ),
                             ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
+                      Flexible(
+                        flex: 1,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            DefaultButton(
+                              title: 'Invite',
+                              onPressed: () => onInvite(context),
+                              isOutlined: true,
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 32,
+                                  vertical: 18,
+                                ),
+                                side: BorderSide(
+                                  color: Theme.of(context).colorScheme.success,
+                                  width: 1.5,
+                                ),
+                              ),
+                            ),
+                            PopupMenuButton(
+                              tooltip: 'RSVP',
+                              offset: const Offset(80, 35),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 32,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Theme.of(context).colorScheme.success,
+                                ),
+                                child: Text(
+                                  'Join',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ),
+                              itemBuilder: (BuildContext context) =>
+                                  <PopupMenuEntry>[
+                                PopupMenuItem(
+                                  onTap: () => onRsvp(context, ev, 'Yes'),
+                                  child: const Text('Yes'),
+                                ),
+                                PopupMenuItem(
+                                  onTap: () => onRsvp(context, ev, 'Maybe'),
+                                  child: const Text('Maybe'),
+                                ),
+                                PopupMenuItem(
+                                  onTap: () => onRsvp(context, ev, 'No'),
+                                  child: const Text('No'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               );

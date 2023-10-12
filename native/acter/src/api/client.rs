@@ -20,18 +20,16 @@ use matrix_sdk::{
     event_handler::EventHandlerHandle,
     media::{MediaFormat, MediaRequest},
     room::Room as SdkRoom,
-    ruma::{
-        api::client::{
-            error::{ErrorBody, ErrorKind},
-            push::get_notifications::v3::Notification as RumaNotification,
-            Error,
-        },
-        device_id,
-        events::room::MediaSource,
-        OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
-        OwnedServerName, OwnedUserId, RoomOrAliasId, UserId,
+    ruma::api::client::{
+        error::{ErrorBody, ErrorKind},
+        push::get_notifications::v3::Notification as RumaNotification,
+        Error,
     },
-    Client as SdkClient, LoopCtrl, RumaApiError,
+    Client as SdkClient, LoopCtrl, RoomState, RumaApiError,
+};
+use ruma_common::{
+    device_id, events::room::MediaSource, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId,
+    OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId, RoomOrAliasId, UserId,
 };
 use std::{
     collections::{BTreeMap, HashMap},
@@ -109,10 +107,10 @@ pub struct SpaceFilter {
 
 impl SpaceFilter {
     pub fn should_include(&self, room: &SdkRoom) -> bool {
-        match room {
-            SdkRoom::Joined(r) => self.include_joined,
-            SdkRoom::Left(r) => self.include_left,
-            SdkRoom::Invited(r) => self.include_invited,
+        match room.state() {
+            RoomState::Joined => self.include_joined,
+            RoomState::Left => self.include_left,
+            RoomState::Invited => self.include_invited,
         }
     }
 }
@@ -340,7 +338,7 @@ impl Client {
         futures::future::join_all(
             new_spaces
                 .into_iter()
-                .map(|room| Space::new(self.clone(), Room { room }))
+                .map(|room| Space::new(self.clone(), Room::new( self.core.clone(), room )))
                 .map(|mut space| {
                     let history = history.clone();
                     let room_handles = room_handles.clone();
@@ -354,7 +352,6 @@ impl Client {
                             }
                             history.set_loading(room_id, true);
                         }
-
 
                         let space_handles = space.setup_handles().await;
                         {
@@ -402,16 +399,14 @@ impl Client {
         let server_names = server_names
             .into_iter()
             .map(OwnedServerName::try_from)
-            .collect::<Result<Vec<OwnedServerName>, ruma::IdParseError>>()?;
+            .collect::<Result<Vec<OwnedServerName>, ruma_common::IdParseError>>()?;
         let c = self.clone();
         RUNTIME
             .spawn(async move {
                 let joined = c
                     .join_room_by_id_or_alias(alias.as_ref(), server_names.as_slice())
                     .await?;
-                Ok(Room {
-                    room: joined.into(),
-                })
+                Ok(Room::new(c.core.clone(), joined))
             })
             .await?
     }
@@ -458,10 +453,8 @@ impl Client {
             device_controller: DeviceController::new(),
             typing_controller: TypingController::new(),
             receipt_controller: ReceiptController::new(),
-
             notifications: Arc::new(channel(25).0),
         };
-
         cl.load_from_cache().await;
         Ok(cl)
     }
@@ -483,27 +476,27 @@ impl Client {
 
     async fn get_spaces_and_chats(&self, filter: Option<SpaceFilter>) -> (Vec<Room>, Vec<Room>) {
         let filter = filter.unwrap_or_default();
-        futures::stream::iter(self.rooms().into_iter())
-            .filter(|room| futures::future::ready(filter.should_include(room)))
+        let client = self.core.clone();
+        self.rooms()
+            .into_iter()
+            .filter(|room| filter.should_include(room))
             .fold(
                 (Vec::new(), Vec::new()),
-                async move |(mut spaces, mut convos), room| {
-                    if matches!(room, SdkRoom::Left(_)) {
+                move |(mut spaces, mut convos), room| {
+                    if matches!(room.state(), RoomState::Left) {
                         // ignore rooms we aren't in anymore ... maybe make them available somewhere else at some point
                         return (spaces, convos);
                     }
-                    let inner = Room { room };
+                    let inner = Room::new(client.clone(), room);
 
                     if inner.is_space() {
                         spaces.push(inner);
                     } else {
                         convos.push(inner);
                     }
-
                     (spaces, convos)
                 },
             )
-            .await
     }
 
     async fn refresh_rooms(&self, changed_rooms: Vec<&OwnedRoomId>) {
@@ -520,7 +513,7 @@ impl Client {
                     continue
                 };
 
-                if matches!(room, SdkRoom::Left(_)) {
+                if matches!(room.state(), RoomState::Left) {
                     // remove rooms we aren't in anymore
                     remove_from(&mut spaces, r_id);
                     remove_from_chat(&mut chats, r_id);
@@ -528,7 +521,7 @@ impl Client {
                     continue;
                 }
 
-                let inner = Room { room: room.clone() };
+                let inner = Room::new(self.core.clone(), room.clone());
 
                 if inner.is_space() {
                     if let Some(space_idx) = spaces.iter().position(|s| s.room_id() == r_id) {
@@ -562,7 +555,10 @@ impl Client {
     pub async fn resolve_room_alias(&self, alias_id: OwnedRoomAliasId) -> Result<OwnedRoomId> {
         let client = self.core.client().clone();
         RUNTIME
-            .spawn(async move { anyhow::Ok(client.resolve_room_alias(&alias_id).await?.room_id) })
+            .spawn(async move {
+                let response = client.resolve_room_alias(&alias_id).await?;
+                anyhow::Ok(response.room_id)
+            })
             .await?
     }
 
@@ -658,7 +654,7 @@ impl Client {
                     };
                     trace!(target: "acter::sync_response::full", "sync response: {:#?}", response);
 
-                    device_controller.process_device_lists(&client, &response);
+                    // device_controller.process_device_lists(&client, &response);
                     trace!("post device controller");
 
                     if initial.compare_exchange(true, false, Ordering::Relaxed, Ordering::Relaxed)
@@ -847,7 +843,7 @@ impl Client {
         self.core
             .client()
             .get_room(room_id)
-            .map(|room| Room { room })
+            .map(|room| Room::new(self.core.clone(), room))
     }
 
     pub async fn room_by_alias_typed(&self, room_alias: &OwnedRoomAliasId) -> Result<Room> {
@@ -855,12 +851,12 @@ impl Client {
             // looping locally first
             if let Some(con_alias) = r.canonical_alias() {
                 if &con_alias == room_alias {
-                    return Ok(Room { room: r });
+                    return Ok(Room::new(self.core.clone(), r));
                 }
             }
             for alt_alias in r.alt_aliases() {
                 if &alt_alias == room_alias {
-                    return Ok(Room { room: r });
+                    return Ok(Room::new(self.core.clone(), r));
                 }
             }
         }

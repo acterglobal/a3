@@ -60,7 +60,7 @@ class LoadingConvoCard extends ConsumerWidget {
                 onLongPress: onLongPress,
                 leading: showParent
                     ? SpaceParentBadge(
-                        spaceId: roomId,
+                        roomId: roomId,
                         badgeSize: 20,
                         child: avatar,
                       )

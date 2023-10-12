@@ -31,7 +31,11 @@ class QuickJump extends ConsumerWidget {
         children: List.from(
           [
             IconButton(
-              icon: const Icon(Atlas.construction_tools_thin),
+              iconSize: 48,
+              icon: const Icon(
+                Atlas.construction_tools_thin,
+                size: 32,
+              ),
               style: IconButton.styleFrom(
                 side: BorderSide(
                   color:
@@ -59,6 +63,23 @@ class QuickJump extends ConsumerWidget {
                     icon: const Icon(Atlas.pin_thin, size: 32),
                   )
                 : null,
+            isActive(LabsFeature.events)
+                ? IconButton(
+                    iconSize: 48,
+                    style: IconButton.styleFrom(
+                      side: BorderSide(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.12),
+                      ),
+                    ),
+                    onPressed: () {
+                      navigateTo(route: Routes.calendarEvents);
+                    },
+                    icon: const Icon(Atlas.calendar_dots_thin, size: 32),
+                  )
+                : null,
             isActive(LabsFeature.tasks)
                 ? IconButton(
                     iconSize: 48,
@@ -76,8 +97,8 @@ class QuickJump extends ConsumerWidget {
                     icon: SvgPicture.asset(
                       'assets/images/tasks.svg',
                       semanticsLabel: 'tasks',
-                      width: 32,
                       height: 32,
+                      width: 32,
                       colorFilter: ColorFilter.mode(
                         Theme.of(context).colorScheme.onSurface,
                         BlendMode.srcIn,
@@ -140,30 +161,32 @@ class QuickJump extends ConsumerWidget {
       body.add(QuickActionsBuilder(navigateTo: navigateTo));
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          TextField(
-            autofocus: true,
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              focusedBorder: UnderlineInputBorder(),
-              prefixIcon: Icon(
-                Atlas.magnifying_glass_thin,
-                color: Colors.white,
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            TextField(
+              autofocus: true,
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                focusedBorder: UnderlineInputBorder(),
+                prefixIcon: Icon(
+                  Atlas.magnifying_glass_thin,
+                  color: Colors.white,
+                ),
+                labelText: 'jump to',
               ),
-              labelText: 'jump to',
+              onChanged: (String value) async {
+                ref.read(searchValueProvider.notifier).state = value;
+              },
             ),
-            onChanged: (String value) async {
-              ref.read(searchValueProvider.notifier).state = value;
-            },
-          ),
-          ...body,
-        ],
-        // ),
+            ...body,
+          ],
+          // ),
+        ),
       ),
     );
   }

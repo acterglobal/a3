@@ -1,9 +1,10 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/widgets/default_page_header.dart';
+import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:go_router/go_router.dart';
 
@@ -19,23 +20,22 @@ class SpacesPage extends ConsumerStatefulWidget {
 class _SpacesPageState extends ConsumerState<SpacesPage> {
   @override
   Widget build(BuildContext context) {
-    final spaces = ref.watch(spaceItemsProvider);
+    final spaces = ref.watch(spacesProvider);
+    final widthCount = (MediaQuery.of(context).size.width ~/ 600).toInt();
+    const int minCount = 2;
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.center,
-            colors: <Color>[
-              Theme.of(context).colorScheme.background,
-              Theme.of(context).colorScheme.neutral,
-            ],
-          ),
+        decoration: const BoxDecoration(
+          gradient: AppTheme.primaryGradient,
         ),
         child: CustomScrollView(
           slivers: <Widget>[
-            SliverAppBar(
-              backgroundColor: Colors.transparent,
+            PageHeaderWidget(
+              centerTitle: true,
+              expandedHeight: 0,
+              sectionDecoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer,
+              ),
               actions: <Widget>[
                 PopupMenuButton(
                   icon: Icon(
@@ -68,59 +68,23 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                   ],
                 ),
               ],
-              title: const Text('Spaces'),
+              title: 'Spaces',
             ),
-            spaces.when(
-              data: (spaces) {
-                final widthCount =
-                    (MediaQuery.of(context).size.width ~/ 600).toInt();
-                const int minCount = 2;
-                // we have more than just the spaces screen, put them into a grid.
-                return SliverGrid.builder(
-                  itemCount: spaces.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: max(1, min(widthCount, minCount)),
-                    childAspectRatio: 4,
-                  ),
-                  itemBuilder: (context, index) {
-                    final space = spaces[index];
-                    final profile = space.spaceProfileData;
-                    final roomId = space.roomId;
-                    return Card(
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(
-                          color: Theme.of(context).colorScheme.inversePrimary,
-                          width: 1.5,
-                        ),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      color: Theme.of(context).colorScheme.surface,
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.all(15),
-                        onTap: () => context.go('/$roomId'),
-                        title: Text(
-                          profile.displayName ?? roomId,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        leading: ActerAvatar(
-                          mode: DisplayMode.Space,
-                          displayName: profile.displayName,
-                          uniqueId: roomId,
-                          avatar: profile.getAvatarImage(),
-                          size: 48,
-                        ),
-                        trailing: const Icon(Icons.more_vert),
-                      ),
-                    );
-                  },
+            // we have more than just the spaces screen, put them into a grid.
+            SliverGrid.builder(
+              itemCount: spaces.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: max(1, min(widthCount, minCount)),
+                childAspectRatio: 4,
+              ),
+              itemBuilder: (context, index) {
+                final space = spaces[index];
+                final roomId = space.getRoomIdStr();
+                return SpaceCard(
+                  onTap: () => context.go('/$roomId'),
+                  space: space,
                 );
               },
-              error: (error, stack) => SliverToBoxAdapter(
-                child: Text('Loading failed: $error'),
-              ),
-              loading: () => const SliverToBoxAdapter(
-                child: Text('Loading'),
-              ),
             ),
           ],
         ),

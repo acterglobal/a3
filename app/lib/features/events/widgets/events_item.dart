@@ -13,9 +13,11 @@ class EventItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        title: Text(event.title()),
+        title:
+            Text(event.title(), style: Theme.of(context).textTheme.bodyMedium),
         subtitle: Text(
           formatDt(event),
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
         onTap: () => context.pushNamed(
           Routes.calendarEvent.name,

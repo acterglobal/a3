@@ -148,7 +148,7 @@ class RegularSlide extends ConsumerWidget {
             children: [
               InkWell(
                 onTap: () {
-                  context.goNamed(
+                  context.pushNamed(
                     Routes.space.name,
                     pathParameters: {'spaceId': roomId},
                   );

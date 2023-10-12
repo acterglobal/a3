@@ -106,8 +106,8 @@ class SpaceWithProfileCard extends StatelessWidget {
     );
 
     return Card(
+      color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
       shape: renderShape(context),
-      color: Theme.of(context).colorScheme.surface,
       child: ListTile(
         contentPadding: contentPadding,
         onTap: onTap ?? () => context.go('/$roomId'),
@@ -120,7 +120,7 @@ class SpaceWithProfileCard extends StatelessWidget {
         subtitle: subtitle,
         leading: showParent
             ? SpaceParentBadge(
-                spaceId: roomId,
+                roomId: roomId,
                 badgeSize: avatarSize / 2,
                 child: avatar,
               )
@@ -137,7 +137,7 @@ class SpaceWithProfileCard extends StatelessWidget {
     if (withBorder) {
       return RoundedRectangleBorder(
         side: BorderSide(
-          color: Theme.of(context).colorScheme.inversePrimary,
+          color: Theme.of(context).colorScheme.onPrimary,
           width: 1.5,
         ),
         borderRadius: BorderRadius.circular(6),

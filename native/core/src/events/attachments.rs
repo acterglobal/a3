@@ -1,6 +1,6 @@
 use derive_builder::Builder;
 use derive_getters::Getters;
-use matrix_sdk::ruma::events::{
+use ruma_common::events::{
     macros::EventContent,
     room::message::{
         AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,

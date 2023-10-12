@@ -83,7 +83,7 @@ class NewsSideBar extends ConsumerWidget {
         const SizedBox(height: 10),
         InkWell(
           onTap: () {
-            context.goNamed(
+            context.pushNamed(
               Routes.space.name,
               pathParameters: {'spaceId': roomId},
             );
@@ -183,13 +183,10 @@ class ActionBox extends ConsumerWidget {
           onPressed: () => showAdaptiveDialog(
             context: context,
             builder: (context) => RedactContentWidget(
-              title: 'Redact this post',
+              title: 'Remove this post',
               eventId: news.eventId().toString(),
               onSuccess: () {
                 ref.invalidate(newsListProvider);
-                if (context.mounted) {
-                  context.pop();
-                }
               },
               senderId: senderId,
               roomId: roomId,
@@ -197,7 +194,7 @@ class ActionBox extends ConsumerWidget {
             ),
           ),
           icon: const Icon(Atlas.trash_thin),
-          label: const Text('Redact'),
+          label: const Text('Remove'),
         ),
       );
     }

@@ -6,6 +6,7 @@ import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -25,6 +26,36 @@ class SpaceChatsPage extends ConsumerWidget {
       padding: const EdgeInsets.all(20),
       child: CustomScrollView(
         slivers: <Widget>[
+          related.maybeWhen(
+            data: (spaces) {
+              bool checkPermission(String permission) {
+                if (spaces.membership != null) {
+                  return spaces.membership!.canString(permission);
+                }
+                return false;
+              }
+
+              if (!checkPermission('CanLinkSpaces')) {
+                return const SliverToBoxAdapter(child: SizedBox.shrink());
+              }
+
+              return SliverToBoxAdapter(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      onPressed: () => context.pushNamed(
+                        Routes.createChat.name,
+                        queryParameters: {'parentSpaceId': spaceIdOrAlias},
+                      ),
+                      icon: const Icon(Atlas.plus_circle_thin),
+                    ),
+                  ],
+                ),
+              );
+            },
+            orElse: () => const SliverToBoxAdapter(child: SizedBox.shrink()),
+          ),
           chats.when(
             data: (rooms) {
               if (rooms.isNotEmpty) {
@@ -35,7 +66,11 @@ class SpaceChatsPage extends ConsumerWidget {
                     child: ConvoCard(
                       room: rooms[index],
                       showParent: false,
-                      onTap: () => context.pushNamed(
+
+                      /// FIXME: push is broken for switching from subshell to subshell
+                      /// hence we are using `go` here.
+                      /// https://github.com/flutter/flutter/issues/125752
+                      onTap: () => context.goNamed(
                         Routes.chatroom.name,
                         pathParameters: {'roomId': rooms[index].getRoomIdStr()},
                       ),
@@ -43,7 +78,12 @@ class SpaceChatsPage extends ConsumerWidget {
                   ),
                 );
               }
-              return const SliverToBoxAdapter(child: SizedBox.shrink());
+              return const SliverToBoxAdapter(
+                child: Center(
+                  heightFactor: 5,
+                  child: Text('Chats are empty'),
+                ),
+              );
             },
             error: (error, stackTrace) => SliverToBoxAdapter(
               child: Center(child: Text('Failed to load events due to $error')),

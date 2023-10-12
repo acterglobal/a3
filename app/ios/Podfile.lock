@@ -54,8 +54,6 @@ PODS:
   - integration_test (0.0.1):
     - Flutter
   - IosAwnCore (0.7.5-dev.3)
-  - open_app_file (3.2.2):
-    - Flutter
   - package_info (0.0.1):
     - Flutter
   - path_provider_foundation (0.0.1):
@@ -89,7 +87,6 @@ DEPENDENCIES:
   - flutter_keyboard_visibility (from `.symlinks/plugins/flutter_keyboard_visibility/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
-  - open_app_file (from `.symlinks/plugins/open_app_file/ios`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
@@ -127,8 +124,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   integration_test:
     :path: ".symlinks/plugins/integration_test/ios"
-  open_app_file:
-    :path: ".symlinks/plugins/open_app_file/ios"
   package_info:
     :path: ".symlinks/plugins/package_info/ios"
   path_provider_foundation:
@@ -158,7 +153,6 @@ SPEC CHECKSUMS:
   image_picker_ios: 4a8aadfbb6dc30ad5141a2ce3832af9214a705b5
   integration_test: 13825b8a9334a850581300559b8839134b124670
   IosAwnCore: edf31913fd18960ebcde7c05912dc860ca2b63b2
-  open_app_file: 205f73051668bfbd68356005fef8a62e620f0a77
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
   permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6

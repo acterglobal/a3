@@ -1,4 +1,5 @@
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_button.dart';
@@ -38,24 +39,23 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
     return profileData.when(
       data: (profile) => Scaffold(
         backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: DecoratedBox(
-            decoration: const BoxDecoration(
-              gradient: AppTheme.primaryGradient,
-            ),
-            child: Column(
-              children: <Widget>[
-                _ShellToolbar(profile.space, widget.spaceIdOrAlias),
-                _ShellHeader(widget.spaceIdOrAlias, profile.profile),
-                TopNavBar(
-                  spaceId: widget.spaceIdOrAlias,
-                  key: Key('${widget.spaceIdOrAlias}::top-nav'),
-                ),
-                Expanded(
-                  child: widget.child,
-                ),
-              ],
-            ),
+        body: Container(
+          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
+          decoration: const BoxDecoration(
+            gradient: AppTheme.primaryGradient,
+          ),
+          child: Column(
+            children: <Widget>[
+              _ShellToolbar(profile.space, widget.spaceIdOrAlias),
+              _ShellHeader(widget.spaceIdOrAlias, profile.profile),
+              TopNavBar(
+                spaceId: widget.spaceIdOrAlias,
+                key: Key('${widget.spaceIdOrAlias}::top-nav'),
+              ),
+              Expanded(
+                child: widget.child,
+              ),
+            ],
           ),
         ),
       ),
@@ -72,7 +72,7 @@ class _ShellToolbar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final membership = ref.watch(spaceMembershipProvider(spaceId)).valueOrNull;
+    final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
     final List<PopupMenuEntry> submenu = [];
     if (membership != null) {
       if (membership.canString('CanSetName')) {
@@ -96,18 +96,6 @@ class _ShellToolbar extends ConsumerWidget {
           ),
         );
       }
-
-      if (membership.canString('CanInvite')) {
-        submenu.add(
-          PopupMenuItem(
-            onTap: () => context.pushNamed(
-              Routes.spaceInvite.name,
-              pathParameters: {'spaceId': spaceId},
-            ),
-            child: const Text('Invite Users'),
-          ),
-        );
-      }
     }
 
     if (submenu.isNotEmpty) {
@@ -122,7 +110,7 @@ class _ShellToolbar extends ConsumerWidget {
     );
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Row(
         children: [
           InkWell(
@@ -135,14 +123,17 @@ class _ShellToolbar extends ConsumerWidget {
             ),
           ),
           const Spacer(),
-          PopupMenuButton(
-            icon: Icon(
-              Icons.more_vert,
-              color: Theme.of(context).colorScheme.neutral5,
+          Padding(
+            padding: const EdgeInsets.only(top: 18),
+            child: PopupMenuButton(
+              icon: Icon(
+                Icons.more_vert,
+                color: Theme.of(context).colorScheme.neutral5,
+              ),
+              iconSize: 28,
+              color: Theme.of(context).colorScheme.surface,
+              itemBuilder: (BuildContext context) => submenu,
             ),
-            iconSize: 28,
-            color: Theme.of(context).colorScheme.surface,
-            itemBuilder: (BuildContext context) => submenu,
           ),
         ],
       ),
@@ -185,7 +176,7 @@ class _ShellToolbar extends ConsumerWidget {
                 return;
               }
               context.pop();
-              context.goNamed(Routes.dashboard.name);
+              context.pushNamed(Routes.dashboard.name);
             },
             title: 'Yes, Leave',
             style: ElevatedButton.styleFrom(
@@ -205,12 +196,12 @@ class _ShellHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    return Padding(
+      padding: const EdgeInsets.only(left: 10),
       child: Row(
         children: <Widget>[
           SpaceParentBadge(
-            spaceId: spaceId,
+            roomId: spaceId,
             badgeSize: 40,
             child: ActerAvatar(
               mode: DisplayMode.Space,
@@ -257,23 +248,29 @@ class _ShellHeader extends ConsumerWidget {
           members = members.sublist(0, 5);
         }
         return Padding(
-          padding: const EdgeInsets.only(left: 14),
-          child: Wrap(
-            direction: Axis.horizontal,
-            spacing: -6,
-            children: [
-              ...members.map(
-                (a) => MemberAvatar(member: a),
-              ),
-              if (membersCount > 5)
-                CircleAvatar(
-                  child: Text(
-                    '+${membersCount - 5}',
-                    textAlign: TextAlign.center,
-                    textScaleFactor: 0.8,
-                  ),
+          padding: const EdgeInsets.only(left: 10),
+          child: GestureDetector(
+            onTap: () => context.goNamed(
+              Routes.spaceMembers.name,
+              pathParameters: {'spaceId': spaceId},
+            ),
+            child: Wrap(
+              direction: Axis.horizontal,
+              spacing: -12,
+              children: [
+                ...members.map(
+                  (a) => MemberAvatar(member: a),
                 ),
-            ],
+                if (membersCount > 5)
+                  CircleAvatar(
+                    child: Text(
+                      '+${membersCount - 5}',
+                      textAlign: TextAlign.center,
+                      textScaleFactor: 0.8,
+                    ),
+                  ),
+              ],
+            ),
           ),
         );
       },

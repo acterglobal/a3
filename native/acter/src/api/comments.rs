@@ -5,10 +5,8 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use futures::stream::StreamExt;
-use matrix_sdk::{
-    room::{Joined, Room},
-    ruma::{events::room::message::TextMessageEventContent, OwnedEventId, OwnedUserId},
-};
+use matrix_sdk::{room::Room, RoomState};
+use ruma_common::{events::room::message::TextMessageEventContent, OwnedEventId, OwnedUserId};
 use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
@@ -57,13 +55,17 @@ impl Deref for Comment {
 }
 
 impl Comment {
+    fn is_joined(&self) -> bool {
+        matches!(self.room.state(), RoomState::Joined)
+    }
+
     pub fn reply_draft(&self) -> Result<CommentDraft> {
-        let Room::Joined(joined) = &self.room else {
+        if !self.is_joined() {
             bail!("Can only comment in joined rooms");
-        };
+        }
         Ok(CommentDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.room.clone(),
             inner: self.inner.reply_builder(),
         })
     }
@@ -105,7 +107,7 @@ impl Deref for CommentsManager {
 
 pub struct CommentDraft {
     client: Client,
-    room: Joined,
+    room: Room,
     inner: CommentBuilder,
 }
 
@@ -180,13 +182,17 @@ impl CommentsManager {
             .await?
     }
 
+    fn is_joined(&self) -> bool {
+        matches!(self.room.state(), RoomState::Joined)
+    }
+
     pub fn comment_draft(&self) -> Result<CommentDraft> {
-        let Room::Joined(joined) = &self.room else {
+        if !self.is_joined() {
             bail!("Can only comment in joined rooms");
-        };
+        }
         Ok(CommentDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.room.clone(),
             inner: self.inner.draft_builder(),
         })
     }

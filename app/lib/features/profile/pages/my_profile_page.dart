@@ -5,6 +5,7 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
+import 'package:acter/features/profile/widgets/profile_item_tile.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
@@ -13,6 +14,71 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+class ChangeDisplayName extends StatefulWidget {
+  final AccountProfile account;
+  const ChangeDisplayName({
+    Key? key,
+    required this.account,
+  }) : super(key: key);
+
+  @override
+  State<ChangeDisplayName> createState() => _ChangeDisplayNameState();
+}
+
+class _ChangeDisplayNameState extends State<ChangeDisplayName> {
+  final TextEditingController newUsername = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    newUsername.text = widget.account.profile.displayName ?? '';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final account = widget.account;
+    return AlertDialog(
+      title: const Text('Change your display name'),
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: TextFormField(
+                controller: newUsername,
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.pop(context, null),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              final currentUserName = account.profile.displayName;
+              final newDisplayName = newUsername.text;
+              if (currentUserName != newDisplayName) {
+                Navigator.pop(context, newDisplayName);
+              } else {
+                Navigator.pop(context, null);
+              }
+              return;
+            }
+          },
+          child: const Text('Submit'),
+        ),
+      ],
+    );
+  }
+}
 
 class MyProfile extends ConsumerWidget {
   const MyProfile({super.key});
@@ -96,34 +162,13 @@ class MyProfile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final account = ref.watch(accountProfileProvider);
+
     return account.when(
       data: (data) {
         final userId = data.account.userId().toString();
         return Scaffold(
           appBar: AppBar(
             title: const Text('My profile'),
-            actions: [
-              PopupMenuButton(
-                itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                  PopupMenuItem(
-                    onTap: () => logoutConfirmationDialog(context, ref),
-                    child: Row(
-                      children: [
-                        const Icon(Atlas.exit_thin),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: Text(
-                            AppLocalizations.of(context)!.logOut,
-                            style: Theme.of(context).textTheme.labelSmall,
-                            softWrap: false,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
           ),
           body: SingleChildScrollView(
             child: Column(
@@ -140,7 +185,8 @@ class MyProfile extends ConsumerWidget {
                   ),
                 ),
                 Container(
-                  width: MediaQuery.of(context).size.width - 100,
+                  constraints: const BoxConstraints(maxWidth: 400),
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
                   alignment: Alignment.center,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -159,7 +205,7 @@ class MyProfile extends ConsumerWidget {
                             uniqueId: userId,
                             avatar: data.profile.getAvatarImage(),
                             displayName: data.profile.displayName,
-                            size: 100,
+                            size: 80,
                           ),
                         ),
                       ),
@@ -195,40 +241,100 @@ class MyProfile extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 30),
-                      OutlinedButton.icon(
-                        icon: const Icon(Atlas.construction_tools_thin),
-                        onPressed: () =>
-                            context.pushNamed(Routes.settings.name),
-                        label: const Text('App Settings'),
+                      const SizedBox(height: 5),
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          children: [
+                            ProfileItemTile(
+                              icon: Atlas.check_shield,
+                              title: 'Linked Devices',
+                              onPressed: () => context
+                                  .pushNamed(Routes.settingSessions.name),
+                              color: Colors.white,
+                            ),
+                            const Divider(
+                              indent: 40,
+                              endIndent: 10,
+                            ),
+                            ProfileItemTile(
+                              icon: Atlas.gear,
+                              title: 'Settings',
+                              onPressed: () =>
+                                  context.pushNamed(Routes.settings.name),
+                              color: Colors.white,
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 10),
-                      OutlinedButton.icon(
-                        icon: const Icon(Atlas.laptop_screen_thin),
-                        onPressed: () =>
-                            context.pushNamed(Routes.settingSessions.name),
-                        label: const Text('Sessions'),
-                      ),
-                      const SizedBox(height: 30),
-                      OutlinedButton.icon(
-                        icon: const Icon(Atlas.exit_thin),
-                        onPressed: () => logoutConfirmationDialog(context, ref),
-                        label: const Text('Logout'),
-                      ),
-                      const SizedBox(height: 45),
-                      OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppTheme.brandColorScheme.error,
-                          backgroundColor: AppTheme.brandColorScheme.onError,
-                          side: BorderSide(
-                            width: 1,
-                            color: AppTheme.brandColorScheme.error,
+                      const SizedBox(height: 5),
+
+                      //Not implemented yet
+                      Visibility(
+                        visible: false,
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            children: [
+                              ProfileItemTile(
+                                icon: Atlas.bell_reminder,
+                                title: 'Notifications',
+                                onPressed: () => context
+                                    .pushNamed(Routes.settingSessions.name),
+                                color: Colors.white,
+                              ),
+                              const Divider(
+                                indent: 40,
+                                endIndent: 10,
+                              ),
+                              ProfileItemTile(
+                                icon: Icons.star_border_outlined,
+                                title: 'Rate us',
+                                onPressed: () =>
+                                    context.pushNamed(Routes.settings.name),
+                                color: Colors.white,
+                              ),
+                            ],
                           ),
                         ),
-                        icon: const Icon(Atlas.trash_can_thin),
-                        onPressed: () =>
-                            deactivationConfirmationDialog(context, ref),
-                        label: const Text('Deactivate account'),
+                      ),
+                      const SizedBox(height: 5),
+                      Container(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          'Danger Zone',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: AppTheme.brandColorScheme.onError,
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            ProfileItemTile(
+                              icon: Atlas.exit,
+                              title: 'Logout',
+                              onPressed: () =>
+                                  logoutConfirmationDialog(context, ref),
+                              color: Theme.of(context).colorScheme.error,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),

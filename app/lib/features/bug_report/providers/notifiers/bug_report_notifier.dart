@@ -4,7 +4,6 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/bug_report/models/bug_report.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart';
@@ -47,16 +46,19 @@ class BugReportStateNotifier extends StateNotifier<BugReport> {
       'app': appName, // should be same as one among github_project_mappings
       'version': versionName,
     });
-    request.fields.addIf(state.tags.isNotEmpty, 'label', state.tags.join(','));
-    request.files.addIf(
-      logFile.isNotEmpty,
-      http.MultipartFile.fromBytes(
-        'log',
-        File(logFile).readAsBytesSync(),
-        filename: basename(logFile),
-        contentType: MediaType('text', 'plain'),
-      ),
-    );
+    if (state.tags.isNotEmpty) {
+      request.fields.putIfAbsent('label', () => state.tags.join(','));
+    }
+    if (logFile.isNotEmpty) {
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'log',
+          File(logFile).readAsBytesSync(),
+          filename: basename(logFile),
+          contentType: MediaType('text', 'plain'),
+        ),
+      );
+    }
     if (screenshotPath != null) {
       request.files.add(
         http.MultipartFile.fromBytes(

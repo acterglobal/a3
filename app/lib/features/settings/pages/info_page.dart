@@ -33,61 +33,111 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
     return WithSidebar(
       sidebar: const SettingsMenu(),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Acter App Info')),
+        appBar: AppBar(
+          title: Text(
+            'Acter App Info',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
         body: SettingsList(
           sections: [
             SettingsSection(
-              title: const Text('App Defaults'),
+              title: Text(
+                'App Defaults',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge!
+                    .copyWith(color: Theme.of(context).colorScheme.primary),
+              ),
               tiles: <SettingsTile>[
                 SettingsTile(
-                  title: const Text('Homeserver Name'),
+                  title: Text(
+                    'Homeserver Name',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   value: const Text(defaultServerName),
                 ),
                 SettingsTile(
-                  title: const Text('Homeserver URL'),
+                  title: Text(
+                    'Homeserver URL',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   value: const Text(defaultServerUrl),
                 ),
                 SettingsTile(
-                  title: const Text('Session Token Name'),
+                  title: Text(
+                    'Session Token Name',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   value: const Text(defaultSessionKey),
                 ),
               ],
             ),
             SettingsSection(
-              title: const Text('Debug Info'),
+              title: Text(
+                'Debug Info',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge!
+                    .copyWith(color: Theme.of(context).colorScheme.primary),
+              ),
               tiles: <SettingsTile>[
                 SettingsTile(
-                  title: const Text('Version'),
+                  title: Text(
+                    'Version',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   value: const Text(versionName),
                 ),
                 isDevBuild
                     ? SettingsTile(
-                        title: const Text('Rageshake App Name'),
+                        title: Text(
+                          'Rageshake App Name',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
                         value: const Text(appName),
                       )
                     : SettingsTile(
-                        title: const Text('Rageshake App Name Digest'),
+                        title: Text(
+                          'Rageshake App Name Digest',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
                         value: Text('${sha1.convert(utf8.encode(appName))}'),
                       ),
                 isDevBuild
                     ? SettingsTile(
-                        title: const Text('Rageshake Target Url'),
+                        title: Text(
+                          'Rageshake Target Url',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
                         value: const Text(rageshakeUrl),
                       )
                     : SettingsTile(
-                        title: const Text('Rageshake Target Url Digest'),
+                        title: Text(
+                          'Rageshake Target Url Digest',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
                         value:
                             Text('${sha1.convert(utf8.encode(rageshakeUrl))}'),
                       ),
                 SettingsTile(
-                  title: const Text('Rust Log Settings'),
+                  title: Text(
+                    'Rust Log Settings',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   onPressed: _displayDebugLevelEditor,
                   value: Text(rustLogSetting),
                 ),
               ],
             ),
             SettingsSection(
-              title: const Text('3rd Party'),
+              title: Text(
+                '3rd Party',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge!
+                    .copyWith(color: Theme.of(context).colorScheme.primary),
+              ),
               tiles: [
                 SettingsTile.navigation(
                   title: const Text('Licenses'),

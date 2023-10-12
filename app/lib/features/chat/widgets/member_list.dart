@@ -1,7 +1,7 @@
 import 'dart:core';
 
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/member_list_entry.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -18,20 +18,21 @@ class MemberList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = convo.getRoomIdStr();
     final members = ref.watch(chatMembersProvider(roomId));
-    final myMembership = ref.watch(spaceMembershipProvider(roomId));
+    final myMembership = ref.watch(roomMembershipProvider(roomId));
 
     return members.when(
       data: (members) {
         if (members.isEmpty) {
-          return const SliverToBoxAdapter(
-            child: Center(
-              child: Text(
-                'No members found. How can that even be, you are here, aren\'t you?',
-              ),
+          return const Center(
+            child: Text(
+              'No members found. How can that even be, you are here, aren\'t you?',
             ),
           );
         }
-        return SliverList.builder(
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(vertical: 5),
           itemCount: members.length,
           itemBuilder: (context, index) {
             final member = members[index];
@@ -46,15 +47,11 @@ class MemberList extends ConsumerWidget {
           },
         );
       },
-      error: (error, stack) => SliverToBoxAdapter(
-        child: Center(
-          child: Text('Loading failed: $error'),
-        ),
+      error: (error, stack) => Center(
+        child: Text('Loading failed: $error'),
       ),
-      loading: () => const SliverToBoxAdapter(
-        child: Center(
-          child: Text('Loading'),
-        ),
+      loading: () => const Center(
+        child: Text('Loading'),
       ),
     );
   }

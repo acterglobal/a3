@@ -1,105 +1,67 @@
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/features/events/widgets/events_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show CalendarEvent;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:table_calendar/table_calendar.dart';
 
-// ignore: must_be_immutable
 class EventsCalendar extends ConsumerWidget {
-  final CalendarFormat _calendarFormat = CalendarFormat.month;
-  final RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
-      .toggledOff; // Can be toggled on/off by longpressing a date
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
-  DateTime? _rangeStart;
-  DateTime? _rangeEnd;
+  final int? limit;
   final AsyncValue<List<CalendarEvent>> events;
 
-  EventsCalendar({super.key, required this.events});
+  const EventsCalendar({super.key, this.limit, required this.events});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Wrap(
-      children: [
-        Text(
-          'Events',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        events.when(
-          error: (error, stackTrace) => Text(
-            'Loading calendars failed: $error',
+    return events.when(
+      error: (error, stackTrace) => Text(
+        'Loading events failed: $error',
+      ),
+      data: (events) {
+        int eventsLimit =
+            (limit != null && events.length > limit!) ? limit! : events.length;
+        return Padding(
+          padding: const EdgeInsets.only(left: 8, top: 5),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Events',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              events.isNotEmpty
+                  ? ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: eventsLimit,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, idx) =>
+                          EventItem(event: events[idx]),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'At this moment, you are not joining any upcoming events. To find out what events are scheduled, check your spaces.',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
+              eventsLimit != events.length
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: DefaultButton(
+                        onPressed: () =>
+                            context.pushNamed(Routes.calendarEvents.name),
+                        title: 'See all my ${events.length} events',
+                        isOutlined: true,
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ],
           ),
-          data: (events) {
-            return Column(
-              children: [
-                ...events.map(
-                  (e) => ListTile(
-                    onTap: () => context.pushNamed(
-                      Routes.calendarEvent.name,
-                      pathParameters: {'calendarId': e.eventId().toString()},
-                    ),
-                    title: Text(
-                      e.title(),
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    subtitle: Text(
-                      formatDt(e),
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TableCalendar<CalendarEvent>(
-                  firstDay: kFirstDay,
-                  lastDay: kLastDay,
-                  focusedDay: _focusedDay,
-                  selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                  rangeStartDay: _rangeStart,
-                  rangeEndDay: _rangeEnd,
-                  calendarFormat: _calendarFormat,
-                  rangeSelectionMode: _rangeSelectionMode,
-                  eventLoader: (targetDate) => eventsForDay(events, targetDate),
-                  startingDayOfWeek: StartingDayOfWeek.monday,
-                  calendarStyle: CalendarStyle(
-                    // Use `CalendarStyle` to customize the UI
-                    outsideDaysVisible: false,
-                    rangeHighlightColor: Theme.of(context).colorScheme.tertiary,
-                    markerDecoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.tertiary,
-                    ),
-                  ),
-                  // onDaySelected: _onDaySelected,
-                  // onRangeSelected: _onRangeSelected,
-                  // onFormatChanged: (format) {
-                  //   if (_calendarFormat != format && mounted) {
-                  //     setState(() => _calendarFormat = format);
-                  //   }
-                  // },
-                  onPageChanged: (focusedDay) {
-                    _focusedDay = focusedDay;
-                  },
-                ),
-              ],
-            );
-          },
-          loading: () => TableCalendar(
-            firstDay: kFirstDay,
-            lastDay: kLastDay,
-            focusedDay: _focusedDay,
-          ),
-        ),
-        // space.when(
-        //   data: (space) {
-        //     final topic = space.topic();
-        //     return Text(topic ?? 'no topic found');
-        //   },
-        //   error: (error, stack) => Text('Loading failed: $error'),
-        //   loading: () => const Text('Loading'),
-        // ),
-      ],
+        );
+      },
+      loading: () => const CircularProgressIndicator(),
     );
   }
 }

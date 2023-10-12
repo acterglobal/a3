@@ -80,17 +80,20 @@ pub use password_reset::PasswordResetManager;
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
-pub use room::{Member, MemberPermission, MembershipStatus, Room};
+pub use room::{
+    Member, MemberPermission, MembershipStatus, Room, SpaceHierarchyListResult,
+    SpaceHierarchyRoomInfo, SpaceRelation, SpaceRelations,
+};
 pub use rsvp::{Rsvp, RsvpDraft, RsvpManager};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
 pub use settings::{
     ActerAppSettings, ActerAppSettingsBuilder, EventsSettings, NewsSettings, PinsSettings,
-    RoomPowerLevels, SimpleSettingWithTurnOff, SimpleSettingWithTurnOffBuilder,
+    RoomPowerLevels, SimpleSettingWithTurnOff, SimpleSettingWithTurnOffBuilder, TasksSettings,
+    TasksSettingsBuilder,
 };
 pub use spaces::{
     new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
-    RelationTargetType, Space, SpaceDiff, SpaceHierarchyListResult, SpaceHierarchyRoomInfo,
-    SpaceRelation, SpaceRelations,
+    RelationTargetType, Space, SpaceDiff,
 };
 pub use stream::{TimelineDiff, TimelineStream};
 pub use tasks::{
@@ -100,11 +103,11 @@ pub use typing::TypingEvent;
 pub use utils::parse_markdown;
 pub use verification::{SessionManager, VerificationEmoji, VerificationEvent};
 
-pub type DeviceId = matrix_sdk::ruma::OwnedDeviceId;
-pub type EventId = matrix_sdk::ruma::OwnedEventId;
-pub type MxcUri = matrix_sdk::ruma::OwnedMxcUri;
-pub type RoomId = matrix_sdk::ruma::OwnedRoomId;
-pub type UserId = matrix_sdk::ruma::OwnedUserId;
+pub type DeviceId = ruma_common::OwnedDeviceId;
+pub type EventId = ruma_common::OwnedEventId;
+pub type MxcUri = ruma_common::OwnedMxcUri;
+pub type RoomId = ruma_common::OwnedRoomId;
+pub type UserId = ruma_common::OwnedUserId;
 
 #[cfg(all(not(doctest), feature = "dart"))]
 ffi_gen_macro::ffi_gen!("native/acter/api.rsh");

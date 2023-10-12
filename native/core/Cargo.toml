@@ -34,7 +34,7 @@ url = { version = "2.2.2", features = ["serde"] }
 
 # templates
 async-stream = "0.3.4"
-indexmap = { version = "1.9.2", optional = true }
+indexmap = { version = "2.0.0", optional = true }
 minijinja = { version = "0.30.5", optional = true, features = ["builtins"] }
 tokio-retry = { version = "0.3.0", optional = true }
 toml = { version = "0.7.2", optional = true, features = ["preserve_order"] }
@@ -43,6 +43,10 @@ toml = { version = "0.7.2", optional = true, features = ["preserve_order"] }
 workspace = true
 default-features = false
 features = ["rustls-tls", "markdown"]
+
+[dependencies.matrix-sdk-base]
+workspace = true
+default-features = false
 
 [dependencies.ruma-macros]
 workspace = true

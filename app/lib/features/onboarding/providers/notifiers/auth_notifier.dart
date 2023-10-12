@@ -13,13 +13,16 @@ class AuthStateNotifier extends StateNotifier<bool> {
   AuthStateNotifier(this.ref) : super(false);
 
   Future<String?> login(String username, String password) async {
+    state = true;
     final sdk = await ref.read(sdkProvider.future);
     try {
       final client = await sdk.login(username, password);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.read(clientProvider.notifier).state = client;
+      state = false;
       return null;
     } catch (e) {
+      state = false;
       debugPrint('$e');
       return e.toString();
     }
@@ -48,12 +51,13 @@ class AuthStateNotifier extends StateNotifier<bool> {
     String token,
     BuildContext context,
   ) async {
+    state = true;
     final sdk = await ref.read(sdkProvider.future);
     try {
       final client = await sdk.register(username, password, displayName, token);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.read(clientProvider.notifier).state = client;
-
+      state = false;
       // We are doing as expected, but the lints triggers.
       // ignore: use_build_context_synchronously
       if (context.mounted) {
@@ -61,6 +65,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
       }
       return null;
     } catch (e) {
+      state = false;
       return e.toString();
     }
   }

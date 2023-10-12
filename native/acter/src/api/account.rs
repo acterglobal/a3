@@ -1,8 +1,7 @@
 use anyhow::{bail, Context, Result};
-use matrix_sdk::{
-    media::MediaFormat,
-    ruma::{events::ignored_user_list::IgnoredUserListEventContent, OwnedMxcUri, OwnedUserId},
-    Account as SdkAccount,
+use matrix_sdk::{media::MediaFormat, Account as SdkAccount};
+use ruma_common::{
+    events::ignored_user_list::IgnoredUserListEventContent, OwnedMxcUri, OwnedUserId,
 };
 use std::{ops::Deref, path::PathBuf, str::FromStr};
 
