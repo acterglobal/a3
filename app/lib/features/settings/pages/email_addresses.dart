@@ -89,6 +89,7 @@ class _RequestTokenViaEmailState extends State<RequestTokenViaEmail> {
 
   void onSubmit(BuildContext context) {
     if (!_formKey.currentState!.validate()) {
+      customMsgSnackbar(context, 'Email or password seems to be not valid.');
       return;
     }
     // user can reset password under the same email address
@@ -136,10 +137,7 @@ class EmailAddressesPage extends ConsumerWidget {
     );
   }
 
-  Widget buildAddresses(
-    BuildContext context,
-    EmailAddresses addresses,
-  ) {
+  Widget buildAddresses(BuildContext context, EmailAddresses addresses) {
     if (addresses.unconfirmed.isNotEmpty) {
       final slivers = [
         SliverToBoxAdapter(
