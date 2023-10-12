@@ -32,7 +32,9 @@ class _RequestTokenViaEmailState extends State<RequestTokenViaEmail> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Reset your token via email address'),
+      title: const Text(
+        'Add email address',
+      ), // The token-reset path is just the process by which control over that email address is confirmed.
       content: Form(
         key: _formKey,
         child: Column(
