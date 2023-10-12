@@ -34,11 +34,11 @@ git = "https://github.com/ruma/ruma"
 rev = "f59652b94086a5733cc741cf8e21d90bd56e05b1"
 features = ["client-api-c", "compat-upload-signatures", "compat-user-id"]
 
-[workspace.dependencies.ruma-macros]
+[workspace.dependencies.ruma-common]
 git = "https://github.com/ruma/ruma"
 rev = "f59652b94086a5733cc741cf8e21d90bd56e05b1"
 
-[workspace.dependencies.ruma-common]
+[workspace.dependencies.ruma-macros]
 git = "https://github.com/ruma/ruma"
 rev = "f59652b94086a5733cc741cf8e21d90bd56e05b1"
 
