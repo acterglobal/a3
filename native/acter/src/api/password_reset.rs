@@ -44,7 +44,7 @@ impl PasswordResetManager {
             .await?
     }
 
-    pub async fn unconfirmed_email_addresses(&self) -> Result<Vec<String>> {
+    pub async fn requested_email_addresses(&self) -> Result<Vec<String>> {
         let account = self.account.clone();
         RUNTIME
             .spawn(async move {
@@ -119,7 +119,7 @@ impl PasswordResetManager {
                     warn!("Not found any password reset content");
                     return Ok(false);
                 };
-                let mut content = raw_content.deserialize()?;
+                let content = raw_content.deserialize()?;
                 let Some(record) = content.via_email.get(email_address.as_str()) else {
                     warn!("That email address was not requested for password reset");
                     return Ok(false);
@@ -153,13 +153,6 @@ impl PasswordResetManager {
                     return Ok(false);
                 }
                 let uiaa_response = account.add_3pid(&secret, &sid, None).await?;
-
-                // remove this record from custom data
-                content.via_email.remove(email_address.as_str());
-                account
-                    .set_account_data(content)
-                    .await
-                    .context("Setting account data failed")?;
 
                 Ok(true)
             })

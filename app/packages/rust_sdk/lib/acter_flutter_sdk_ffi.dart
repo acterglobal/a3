@@ -8360,7 +8360,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListFfiString? __passwordResetManagerUnconfirmedEmailAddressesFuturePoll(
+  FfiListFfiString? __passwordResetManagerRequestedEmailAddressesFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -8374,7 +8374,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _passwordResetManagerUnconfirmedEmailAddressesFuturePoll(
+    final tmp6 = _passwordResetManagerRequestedEmailAddressesFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -20330,14 +20330,14 @@ class Api {
           int Function(
             int,
           )>();
-  late final _passwordResetManagerUnconfirmedEmailAddressesPtr = _lookup<
+  late final _passwordResetManagerRequestedEmailAddressesPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__PasswordResetManager_unconfirmed_email_addresses");
+          )>>("__PasswordResetManager_requested_email_addresses");
 
-  late final _passwordResetManagerUnconfirmedEmailAddresses =
-      _passwordResetManagerUnconfirmedEmailAddressesPtr.asFunction<
+  late final _passwordResetManagerRequestedEmailAddresses =
+      _passwordResetManagerRequestedEmailAddressesPtr.asFunction<
           int Function(
             int,
           )>();
@@ -24667,21 +24667,20 @@ class Api {
             int,
             int,
           )>();
-  late final _passwordResetManagerUnconfirmedEmailAddressesFuturePollPtr =
+  late final _passwordResetManagerRequestedEmailAddressesFuturePollPtr =
       _lookup<
               ffi.NativeFunction<
-                  _PasswordResetManagerUnconfirmedEmailAddressesFuturePollReturn
+                  _PasswordResetManagerRequestedEmailAddressesFuturePollReturn
                       Function(
                     ffi.Int64,
                     ffi.Int64,
                     ffi.Int64,
                   )>>(
-          "__PasswordResetManager_unconfirmed_email_addresses_future_poll");
+          "__PasswordResetManager_requested_email_addresses_future_poll");
 
-  late final _passwordResetManagerUnconfirmedEmailAddressesFuturePoll =
-      _passwordResetManagerUnconfirmedEmailAddressesFuturePollPtr.asFunction<
-          _PasswordResetManagerUnconfirmedEmailAddressesFuturePollReturn
-              Function(
+  late final _passwordResetManagerRequestedEmailAddressesFuturePoll =
+      _passwordResetManagerRequestedEmailAddressesFuturePollPtr.asFunction<
+          _PasswordResetManagerRequestedEmailAddressesFuturePollReturn Function(
             int,
             int,
             int,
@@ -43362,20 +43361,20 @@ class PasswordResetManager {
     return tmp2;
   }
 
-  /// get email addresses from third party identifier
-  Future<FfiListFfiString> unconfirmedEmailAddresses() {
+  /// get email addresses that used for password reset
+  Future<FfiListFfiString> requestedEmailAddresses() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._passwordResetManagerUnconfirmedEmailAddresses(
+    final tmp1 = _api._passwordResetManagerRequestedEmailAddresses(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 = _Box(_api, tmp3_0,
-        "__PasswordResetManager_unconfirmed_email_addresses_future_drop");
+        "__PasswordResetManager_requested_email_addresses_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(
-        tmp3_1, _api.__passwordResetManagerUnconfirmedEmailAddressesFuturePoll);
+        tmp3_1, _api.__passwordResetManagerRequestedEmailAddressesFuturePoll);
     return tmp2;
   }
 
@@ -52516,7 +52515,7 @@ class _PasswordResetManagerConfirmedEmailAddressesFuturePollReturn
   external int arg5;
 }
 
-class _PasswordResetManagerUnconfirmedEmailAddressesFuturePollReturn
+class _PasswordResetManagerRequestedEmailAddressesFuturePollReturn
     extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;

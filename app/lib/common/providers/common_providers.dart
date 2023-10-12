@@ -5,6 +5,7 @@ import 'package:acter/common/providers/notifiers/network_notifier.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Network/Connectivity Providers
@@ -56,10 +57,17 @@ class EmailAddresses {
 final emailAddressesProvider = FutureProvider((ref) async {
   final account = await ref.watch(accountProvider.future);
   final passwordResetManager = account.passwordResetManager();
-  final confirmed = await passwordResetManager.confirmedEmailAddresses();
-  final unconfirmed = await passwordResetManager.unconfirmedEmailAddresses();
-  return EmailAddresses(
-    asDartStringList(confirmed),
-    asDartStringList(unconfirmed),
-  );
+  final confirmed =
+      asDartStringList(await passwordResetManager.confirmedEmailAddresses());
+  final requested =
+      asDartStringList(await passwordResetManager.requestedEmailAddresses());
+  final List<String> unconfirmed = [];
+  for (var i = 0; i < requested.length; i++) {
+    if (!confirmed.contains(requested[i])) {
+      unconfirmed.add(requested[i]);
+    }
+  }
+  debugPrint('confirmed email addresses: $confirmed');
+  debugPrint('unconfirmed email addresses: $unconfirmed');
+  return EmailAddresses(confirmed, unconfirmed);
 });

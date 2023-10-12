@@ -19,7 +19,7 @@ fn guest_client(basepath: string, default_homeserver_name: string, default_homes
 /// Create a new client from the registration token
 fn register_with_token(basepath: string, username: string, password: string, registration_token: string, default_homeserver_name: string, default_homeserver_url: string, device_name: string) -> Future<Result<Client>>;
 
-/// destroy the local data of a session 
+/// destroy the local data of a session
 fn destroy_local_data(basepath: string, userId: string, default_homeserver_name: string) -> Future<Result<bool>>;
 
 /// Representing a time frame
@@ -1624,7 +1624,7 @@ object Space {
 
     /// Whenever this is submitted;
     fn update_app_settings(new_settings: ActerAppSettingsBuilder) -> Future<Result<string>>;
-    
+
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
 
@@ -1733,8 +1733,8 @@ object PasswordResetManager {
     /// get email addresses from third party identifier
     fn confirmed_email_addresses() -> Future<Result<Vec<string>>>;
 
-    /// get email addresses from third party identifier
-    fn unconfirmed_email_addresses() -> Future<Result<Vec<string>>>;
+    /// get email addresses that used for password reset
+    fn requested_email_addresses() -> Future<Result<Vec<string>>>;
 
     /// Requests token via email and add email address to third party identifier.
     /// If password is not enough complex, homeserver may reject this request.
@@ -1874,7 +1874,7 @@ object CreateSpaceSettings {}
 /// Main entry point for `acter`.
 object Client {
 
-    // deactivate the account. This can not be reversed. The username will 
+    // deactivate the account. This can not be reversed. The username will
     // be blocked from any future usage, all personal data will be removed.
     fn deactivate(password: string) -> Future<Result<bool>>;
 
@@ -1922,7 +1922,7 @@ object Client {
 
     /// upload file and return remote url
     fn upload_media(uri: string) -> Future<Result<MxcUri>>;
-    
+
     /// Fires whenever the convo list changes (in order or number)
     /// fires immediately with the current state of convos
     fn convos_stream() -> Stream<ConvoDiff>;
