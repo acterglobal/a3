@@ -1,4 +1,4 @@
-use acter_core::events::three_pid::{PasswordResetContent, PasswordResetRecord};
+use acter_core::events::three_pid::{ThreePidContent, ThreePidRecord};
 use anyhow::{bail, Context, Result};
 use matrix_sdk::{
     reqwest::{ClientBuilder, StatusCode},
@@ -18,11 +18,11 @@ use tracing::warn;
 use super::{account::Account, RUNTIME};
 
 #[derive(Clone)]
-pub struct PasswordResetManager {
+pub struct ThreePidManager {
     account: SdkAccount,
 }
 
-impl PasswordResetManager {
+impl ThreePidManager {
     pub async fn confirmed_email_addresses(&self) -> Result<Vec<String>> {
         let account = self.account.clone();
         RUNTIME
@@ -48,7 +48,7 @@ impl PasswordResetManager {
         let account = self.account.clone();
         RUNTIME
             .spawn(async move {
-                let maybe_content = account.account_data::<PasswordResetContent>().await?;
+                let maybe_content = account.account_data::<ThreePidContent>().await?;
                 let Some(raw_content) = maybe_content else {
                     return Ok(vec![]);
                 };
@@ -73,12 +73,12 @@ impl PasswordResetManager {
                     .await?;
 
                 // add this record to custom data
-                let record = PasswordResetRecord::new(
+                let record = ThreePidRecord::new(
                     response.submit_url.clone(),
                     response.sid.to_string(),
                     password,
                 );
-                let maybe_content = account.account_data::<PasswordResetContent>().await?;
+                let maybe_content = account.account_data::<ThreePidContent>().await?;
                 let content = if let Some(raw_content) = maybe_content {
                     let mut content = raw_content.deserialize()?;
                     content
@@ -91,7 +91,7 @@ impl PasswordResetManager {
                     let mut via_email = BTreeMap::new();
                     via_email.insert(email_address, record);
                     let via_phone = BTreeMap::new();
-                    PasswordResetContent {
+                    ThreePidContent {
                         via_email,
                         via_phone,
                     }
@@ -114,7 +114,7 @@ impl PasswordResetManager {
         let account = self.account.clone();
         RUNTIME
             .spawn(async move {
-                let maybe_content = account.account_data::<PasswordResetContent>().await?;
+                let maybe_content = account.account_data::<ThreePidContent>().await?;
                 let Some(raw_content) = maybe_content else {
                     warn!("Not found any email registration content");
                     return Ok(false);
@@ -184,7 +184,7 @@ impl PasswordResetManager {
                 }
 
                 // find it among the unconfirmed email addresses
-                let maybe_content = account.account_data::<PasswordResetContent>().await?;
+                let maybe_content = account.account_data::<ThreePidContent>().await?;
                 let Some(raw_content) = maybe_content else {
                     return Ok(false);
                 };
@@ -205,9 +205,9 @@ impl PasswordResetManager {
 }
 
 impl Account {
-    pub fn three_pid_manager(&self) -> PasswordResetManager {
+    pub fn three_pid_manager(&self) -> ThreePidManager {
         let account = self.deref().clone();
-        PasswordResetManager { account }
+        ThreePidManager { account }
     }
 }
 

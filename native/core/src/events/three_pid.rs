@@ -3,16 +3,16 @@ use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct PasswordResetRecord {
+pub struct ThreePidRecord {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     submit_url: Option<String>,
     session_id: String,
     passphrase: String,
 }
 
-impl PasswordResetRecord {
+impl ThreePidRecord {
     pub fn new(submit_url: Option<String>, session_id: String, passphrase: String) -> Self {
-        PasswordResetRecord {
+        ThreePidRecord {
             submit_url,
             session_id,
             passphrase,
@@ -34,7 +34,7 @@ impl PasswordResetRecord {
 
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent)]
 #[ruma_event(type = "global.acter.dev.three_pid", kind = GlobalAccountData)]
-pub struct PasswordResetContent {
-    pub via_email: BTreeMap<String, PasswordResetRecord>,
-    pub via_phone: BTreeMap<String, PasswordResetRecord>,
+pub struct ThreePidContent {
+    pub via_email: BTreeMap<String, ThreePidRecord>,
+    pub via_phone: BTreeMap<String, ThreePidRecord>,
 }

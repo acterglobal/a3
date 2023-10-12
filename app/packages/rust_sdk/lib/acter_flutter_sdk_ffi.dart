@@ -8312,7 +8312,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListFfiString? __passwordResetManagerConfirmedEmailAddressesFuturePoll(
+  FfiListFfiString? __threePidManagerConfirmedEmailAddressesFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -8326,7 +8326,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _passwordResetManagerConfirmedEmailAddressesFuturePoll(
+    final tmp6 = _threePidManagerConfirmedEmailAddressesFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -8360,7 +8360,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListFfiString? __passwordResetManagerRequestedEmailAddressesFuturePoll(
+  FfiListFfiString? __threePidManagerRequestedEmailAddressesFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -8374,7 +8374,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _passwordResetManagerRequestedEmailAddressesFuturePoll(
+    final tmp6 = _threePidManagerRequestedEmailAddressesFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -8408,7 +8408,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __passwordResetManagerRequestTokenViaEmailFuturePoll(
+  bool? __threePidManagerRequestTokenViaEmailFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -8422,7 +8422,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _passwordResetManagerRequestTokenViaEmailFuturePoll(
+    final tmp6 = _threePidManagerRequestTokenViaEmailFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -8452,7 +8452,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __passwordResetManagerSubmitTokenFromEmailFuturePoll(
+  bool? __threePidManagerSubmitTokenFromEmailFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -8466,7 +8466,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _passwordResetManagerSubmitTokenFromEmailFuturePoll(
+    final tmp6 = _threePidManagerSubmitTokenFromEmailFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -8496,7 +8496,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __passwordResetManagerRemoveEmailAddressFuturePoll(
+  bool? __threePidManagerRemoveEmailAddressFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -8510,7 +8510,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _passwordResetManagerRemoveEmailAddressFuturePoll(
+    final tmp6 = _threePidManagerRemoveEmailAddressFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -20318,52 +20318,29 @@ class Api {
       int Function(
         int,
       )>();
-  late final _passwordResetManagerConfirmedEmailAddressesPtr = _lookup<
+  late final _threePidManagerConfirmedEmailAddressesPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__PasswordResetManager_confirmed_email_addresses");
+          )>>("__ThreePidManager_confirmed_email_addresses");
 
-  late final _passwordResetManagerConfirmedEmailAddresses =
-      _passwordResetManagerConfirmedEmailAddressesPtr.asFunction<
+  late final _threePidManagerConfirmedEmailAddresses =
+      _threePidManagerConfirmedEmailAddressesPtr.asFunction<
           int Function(
             int,
           )>();
-  late final _passwordResetManagerRequestedEmailAddressesPtr = _lookup<
+  late final _threePidManagerRequestedEmailAddressesPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__PasswordResetManager_requested_email_addresses");
+          )>>("__ThreePidManager_requested_email_addresses");
 
-  late final _passwordResetManagerRequestedEmailAddresses =
-      _passwordResetManagerRequestedEmailAddressesPtr.asFunction<
+  late final _threePidManagerRequestedEmailAddresses =
+      _threePidManagerRequestedEmailAddressesPtr.asFunction<
           int Function(
             int,
           )>();
-  late final _passwordResetManagerRequestTokenViaEmailPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__PasswordResetManager_request_token_via_email");
-
-  late final _passwordResetManagerRequestTokenViaEmail =
-      _passwordResetManagerRequestTokenViaEmailPtr.asFunction<
-          int Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _passwordResetManagerSubmitTokenFromEmailPtr = _lookup<
+  late final _threePidManagerRequestTokenViaEmailPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -20373,10 +20350,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__PasswordResetManager_submit_token_from_email");
+          )>>("__ThreePidManager_request_token_via_email");
 
-  late final _passwordResetManagerSubmitTokenFromEmail =
-      _passwordResetManagerSubmitTokenFromEmailPtr.asFunction<
+  late final _threePidManagerRequestTokenViaEmail =
+      _threePidManagerRequestTokenViaEmailPtr.asFunction<
           int Function(
             int,
             int,
@@ -20386,54 +20363,75 @@ class Api {
             int,
             int,
           )>();
-  late final _passwordResetManagerRemoveEmailAddressPtr = _lookup<
+  late final _threePidManagerSubmitTokenFromEmailPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__PasswordResetManager_remove_email_address");
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__ThreePidManager_submit_token_from_email");
 
-  late final _passwordResetManagerRemoveEmailAddress =
-      _passwordResetManagerRemoveEmailAddressPtr.asFunction<
+  late final _threePidManagerSubmitTokenFromEmail =
+      _threePidManagerSubmitTokenFromEmailPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _threePidManagerRemoveEmailAddressPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__ThreePidManager_remove_email_address");
+
+  late final _threePidManagerRemoveEmailAddress =
+      _threePidManagerRemoveEmailAddressPtr.asFunction<
           int Function(
             int,
             int,
             int,
             int,
           )>();
-  late final _passwordResetRecordSubmitUrlPtr = _lookup<
+  late final _threePidRecordSubmitUrlPtr = _lookup<
       ffi.NativeFunction<
-          _PasswordResetRecordSubmitUrlReturn Function(
+          _ThreePidRecordSubmitUrlReturn Function(
             ffi.Int64,
-          )>>("__PasswordResetRecord_submit_url");
+          )>>("__ThreePidRecord_submit_url");
 
-  late final _passwordResetRecordSubmitUrl =
-      _passwordResetRecordSubmitUrlPtr.asFunction<
-          _PasswordResetRecordSubmitUrlReturn Function(
-            int,
-          )>();
-  late final _passwordResetRecordSessionIdPtr = _lookup<
+  late final _threePidRecordSubmitUrl = _threePidRecordSubmitUrlPtr.asFunction<
+      _ThreePidRecordSubmitUrlReturn Function(
+        int,
+      )>();
+  late final _threePidRecordSessionIdPtr = _lookup<
       ffi.NativeFunction<
-          _PasswordResetRecordSessionIdReturn Function(
+          _ThreePidRecordSessionIdReturn Function(
             ffi.Int64,
-          )>>("__PasswordResetRecord_session_id");
+          )>>("__ThreePidRecord_session_id");
 
-  late final _passwordResetRecordSessionId =
-      _passwordResetRecordSessionIdPtr.asFunction<
-          _PasswordResetRecordSessionIdReturn Function(
-            int,
-          )>();
-  late final _passwordResetRecordPassphrasePtr = _lookup<
+  late final _threePidRecordSessionId = _threePidRecordSessionIdPtr.asFunction<
+      _ThreePidRecordSessionIdReturn Function(
+        int,
+      )>();
+  late final _threePidRecordPassphrasePtr = _lookup<
       ffi.NativeFunction<
-          _PasswordResetRecordPassphraseReturn Function(
+          _ThreePidRecordPassphraseReturn Function(
             ffi.Int64,
-          )>>("__PasswordResetRecord_passphrase");
+          )>>("__ThreePidRecord_passphrase");
 
-  late final _passwordResetRecordPassphrase =
-      _passwordResetRecordPassphrasePtr.asFunction<
-          _PasswordResetRecordPassphraseReturn Function(
+  late final _threePidRecordPassphrase =
+      _threePidRecordPassphrasePtr.asFunction<
+          _ThreePidRecordPassphraseReturn Function(
             int,
           )>();
   late final _syncStateFirstSyncedRxPtr = _lookup<
@@ -24648,83 +24646,77 @@ class Api {
             int,
             int,
           )>();
-  late final _passwordResetManagerConfirmedEmailAddressesFuturePollPtr =
-      _lookup<
-              ffi.NativeFunction<
-                  _PasswordResetManagerConfirmedEmailAddressesFuturePollReturn
-                      Function(
-                    ffi.Int64,
-                    ffi.Int64,
-                    ffi.Int64,
-                  )>>(
-          "__PasswordResetManager_confirmed_email_addresses_future_poll");
-
-  late final _passwordResetManagerConfirmedEmailAddressesFuturePoll =
-      _passwordResetManagerConfirmedEmailAddressesFuturePollPtr.asFunction<
-          _PasswordResetManagerConfirmedEmailAddressesFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _passwordResetManagerRequestedEmailAddressesFuturePollPtr =
-      _lookup<
-              ffi.NativeFunction<
-                  _PasswordResetManagerRequestedEmailAddressesFuturePollReturn
-                      Function(
-                    ffi.Int64,
-                    ffi.Int64,
-                    ffi.Int64,
-                  )>>(
-          "__PasswordResetManager_requested_email_addresses_future_poll");
-
-  late final _passwordResetManagerRequestedEmailAddressesFuturePoll =
-      _passwordResetManagerRequestedEmailAddressesFuturePollPtr.asFunction<
-          _PasswordResetManagerRequestedEmailAddressesFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _passwordResetManagerRequestTokenViaEmailFuturePollPtr = _lookup<
+  late final _threePidManagerConfirmedEmailAddressesFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _PasswordResetManagerRequestTokenViaEmailFuturePollReturn Function(
+          _ThreePidManagerConfirmedEmailAddressesFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__PasswordResetManager_request_token_via_email_future_poll");
+          )>>("__ThreePidManager_confirmed_email_addresses_future_poll");
 
-  late final _passwordResetManagerRequestTokenViaEmailFuturePoll =
-      _passwordResetManagerRequestTokenViaEmailFuturePollPtr.asFunction<
-          _PasswordResetManagerRequestTokenViaEmailFuturePollReturn Function(
+  late final _threePidManagerConfirmedEmailAddressesFuturePoll =
+      _threePidManagerConfirmedEmailAddressesFuturePollPtr.asFunction<
+          _ThreePidManagerConfirmedEmailAddressesFuturePollReturn Function(
             int,
             int,
             int,
           )>();
-  late final _passwordResetManagerSubmitTokenFromEmailFuturePollPtr = _lookup<
+  late final _threePidManagerRequestedEmailAddressesFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _PasswordResetManagerSubmitTokenFromEmailFuturePollReturn Function(
+          _ThreePidManagerRequestedEmailAddressesFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__PasswordResetManager_submit_token_from_email_future_poll");
+          )>>("__ThreePidManager_requested_email_addresses_future_poll");
 
-  late final _passwordResetManagerSubmitTokenFromEmailFuturePoll =
-      _passwordResetManagerSubmitTokenFromEmailFuturePollPtr.asFunction<
-          _PasswordResetManagerSubmitTokenFromEmailFuturePollReturn Function(
+  late final _threePidManagerRequestedEmailAddressesFuturePoll =
+      _threePidManagerRequestedEmailAddressesFuturePollPtr.asFunction<
+          _ThreePidManagerRequestedEmailAddressesFuturePollReturn Function(
             int,
             int,
             int,
           )>();
-  late final _passwordResetManagerRemoveEmailAddressFuturePollPtr = _lookup<
+  late final _threePidManagerRequestTokenViaEmailFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _PasswordResetManagerRemoveEmailAddressFuturePollReturn Function(
+          _ThreePidManagerRequestTokenViaEmailFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__PasswordResetManager_remove_email_address_future_poll");
+          )>>("__ThreePidManager_request_token_via_email_future_poll");
 
-  late final _passwordResetManagerRemoveEmailAddressFuturePoll =
-      _passwordResetManagerRemoveEmailAddressFuturePollPtr.asFunction<
-          _PasswordResetManagerRemoveEmailAddressFuturePollReturn Function(
+  late final _threePidManagerRequestTokenViaEmailFuturePoll =
+      _threePidManagerRequestTokenViaEmailFuturePollPtr.asFunction<
+          _ThreePidManagerRequestTokenViaEmailFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _threePidManagerSubmitTokenFromEmailFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ThreePidManagerSubmitTokenFromEmailFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ThreePidManager_submit_token_from_email_future_poll");
+
+  late final _threePidManagerSubmitTokenFromEmailFuturePoll =
+      _threePidManagerSubmitTokenFromEmailFuturePollPtr.asFunction<
+          _ThreePidManagerSubmitTokenFromEmailFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _threePidManagerRemoveEmailAddressFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ThreePidManagerRemoveEmailAddressFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ThreePidManager_remove_email_address_future_poll");
+
+  late final _threePidManagerRemoveEmailAddressFuturePoll =
+      _threePidManagerRemoveEmailAddressFuturePollPtr.asFunction<
+          _ThreePidManagerRemoveEmailAddressFuturePollReturn Function(
             int,
             int,
             int,
@@ -43317,7 +43309,7 @@ class Account {
   }
 
   /// get intermediate info of login (via email and phone) from account data
-  PasswordResetManager threePidManager() {
+  ThreePidManager threePidManager() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._accountThreePidManager(
@@ -43325,9 +43317,9 @@ class Account {
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PasswordResetManager");
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_ThreePidManager");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = PasswordResetManager._(_api, tmp3_1);
+    final tmp2 = ThreePidManager._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -43337,26 +43329,26 @@ class Account {
   }
 }
 
-class PasswordResetManager {
+class ThreePidManager {
   final Api _api;
   final _Box _box;
 
-  PasswordResetManager._(this._api, this._box);
+  ThreePidManager._(this._api, this._box);
 
   /// get email addresses from third party identifier
   Future<FfiListFfiString> confirmedEmailAddresses() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._passwordResetManagerConfirmedEmailAddresses(
+    final tmp1 = _api._threePidManagerConfirmedEmailAddresses(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 = _Box(_api, tmp3_0,
-        "__PasswordResetManager_confirmed_email_addresses_future_drop");
+        "__ThreePidManager_confirmed_email_addresses_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(
-        tmp3_1, _api.__passwordResetManagerConfirmedEmailAddressesFuturePoll);
+        tmp3_1, _api.__threePidManagerConfirmedEmailAddressesFuturePoll);
     return tmp2;
   }
 
@@ -43364,16 +43356,16 @@ class PasswordResetManager {
   Future<FfiListFfiString> requestedEmailAddresses() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._passwordResetManagerRequestedEmailAddresses(
+    final tmp1 = _api._threePidManagerRequestedEmailAddresses(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 = _Box(_api, tmp3_0,
-        "__PasswordResetManager_requested_email_addresses_future_drop");
+        "__ThreePidManager_requested_email_addresses_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(
-        tmp3_1, _api.__passwordResetManagerRequestedEmailAddressesFuturePoll);
+        tmp3_1, _api.__threePidManagerRequestedEmailAddressesFuturePoll);
     return tmp2;
   }
 
@@ -43409,7 +43401,7 @@ class PasswordResetManager {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9 = _api._passwordResetManagerRequestTokenViaEmail(
+    final tmp9 = _api._threePidManagerRequestTokenViaEmail(
       tmp0,
       tmp2,
       tmp3,
@@ -43420,11 +43412,11 @@ class PasswordResetManager {
     );
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0,
-        "__PasswordResetManager_request_token_via_email_future_drop");
+    final tmp11_1 = _Box(
+        _api, tmp11_0, "__ThreePidManager_request_token_via_email_future_drop");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
     final tmp10 = _nativeFuture(
-        tmp11_1, _api.__passwordResetManagerRequestTokenViaEmailFuturePoll);
+        tmp11_1, _api.__threePidManagerRequestTokenViaEmailFuturePoll);
     return tmp10;
   }
 
@@ -43459,7 +43451,7 @@ class PasswordResetManager {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9 = _api._passwordResetManagerSubmitTokenFromEmail(
+    final tmp9 = _api._threePidManagerSubmitTokenFromEmail(
       tmp0,
       tmp2,
       tmp3,
@@ -43470,11 +43462,11 @@ class PasswordResetManager {
     );
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0,
-        "__PasswordResetManager_submit_token_from_email_future_drop");
+    final tmp11_1 = _Box(
+        _api, tmp11_0, "__ThreePidManager_submit_token_from_email_future_drop");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
     final tmp10 = _nativeFuture(
-        tmp11_1, _api.__passwordResetManagerSubmitTokenFromEmailFuturePoll);
+        tmp11_1, _api.__threePidManagerSubmitTokenFromEmailFuturePoll);
     return tmp10;
   }
 
@@ -43496,7 +43488,7 @@ class PasswordResetManager {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._passwordResetManagerRemoveEmailAddress(
+    final tmp5 = _api._threePidManagerRemoveEmailAddress(
       tmp0,
       tmp2,
       tmp3,
@@ -43504,11 +43496,11 @@ class PasswordResetManager {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0,
-        "__PasswordResetManager_remove_email_address_future_drop");
+    final tmp7_1 = _Box(
+        _api, tmp7_0, "__ThreePidManager_remove_email_address_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(
-        tmp7_1, _api.__passwordResetManagerRemoveEmailAddressFuturePoll);
+        tmp7_1, _api.__threePidManagerRemoveEmailAddressFuturePoll);
     return tmp6;
   }
 
@@ -43518,16 +43510,16 @@ class PasswordResetManager {
   }
 }
 
-class PasswordResetRecord {
+class ThreePidRecord {
   final Api _api;
   final _Box _box;
 
-  PasswordResetRecord._(this._api, this._box);
+  ThreePidRecord._(this._api, this._box);
 
   String? submitUrl() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._passwordResetRecordSubmitUrl(
+    final tmp1 = _api._threePidRecordSubmitUrl(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -43560,7 +43552,7 @@ class PasswordResetRecord {
   String sessionId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._passwordResetRecordSessionId(
+    final tmp1 = _api._threePidRecordSessionId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -43589,7 +43581,7 @@ class PasswordResetRecord {
   String passphrase() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._passwordResetRecordPassphrase(
+    final tmp1 = _api._threePidRecordPassphrase(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -49826,7 +49818,7 @@ class _MemberMembershipStatusStrReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _PasswordResetRecordSubmitUrlReturn extends ffi.Struct {
+class _ThreePidRecordSubmitUrlReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -49837,7 +49829,7 @@ class _PasswordResetRecordSubmitUrlReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _PasswordResetRecordSessionIdReturn extends ffi.Struct {
+class _ThreePidRecordSessionIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -49846,7 +49838,7 @@ class _PasswordResetRecordSessionIdReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _PasswordResetRecordPassphraseReturn extends ffi.Struct {
+class _ThreePidRecordPassphraseReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -52498,7 +52490,7 @@ class _AccountUnignoreUserFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _PasswordResetManagerConfirmedEmailAddressesFuturePollReturn
+class _ThreePidManagerConfirmedEmailAddressesFuturePollReturn
     extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -52514,7 +52506,7 @@ class _PasswordResetManagerConfirmedEmailAddressesFuturePollReturn
   external int arg5;
 }
 
-class _PasswordResetManagerRequestedEmailAddressesFuturePollReturn
+class _ThreePidManagerRequestedEmailAddressesFuturePollReturn
     extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -52530,8 +52522,7 @@ class _PasswordResetManagerRequestedEmailAddressesFuturePollReturn
   external int arg5;
 }
 
-class _PasswordResetManagerRequestTokenViaEmailFuturePollReturn
-    extends ffi.Struct {
+class _ThreePidManagerRequestTokenViaEmailFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -52546,8 +52537,7 @@ class _PasswordResetManagerRequestTokenViaEmailFuturePollReturn
   external int arg5;
 }
 
-class _PasswordResetManagerSubmitTokenFromEmailFuturePollReturn
-    extends ffi.Struct {
+class _ThreePidManagerSubmitTokenFromEmailFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -52562,8 +52552,7 @@ class _PasswordResetManagerSubmitTokenFromEmailFuturePollReturn
   external int arg5;
 }
 
-class _PasswordResetManagerRemoveEmailAddressFuturePollReturn
-    extends ffi.Struct {
+class _ThreePidManagerRemoveEmailAddressFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

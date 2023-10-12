@@ -49,7 +49,7 @@ mod verification;
 pub use account::Account;
 pub use acter_core::{
     events::{
-        news::NewsContent, three_pid::PasswordResetRecord, Colorize, ObjRef, RefDetails,
+        news::NewsContent, three_pid::ThreePidRecord, Colorize, ObjRef, RefDetails,
         UtcDateTime,
     },
     models::{ActerModel, Color as EfkColor, Tag, TextMessageContent},
@@ -76,7 +76,6 @@ pub use invitation::Invitation;
 pub use message::{RoomEventItem, RoomMessage, RoomVirtualItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide};
 pub use notifications::{Notification, NotificationListResult};
-pub use three_pid::PasswordResetManager;
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
@@ -99,6 +98,7 @@ pub use stream::{TimelineDiff, TimelineStream};
 pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
+pub use three_pid::ThreePidManager;
 pub use typing::TypingEvent;
 pub use utils::parse_markdown;
 pub use verification::{SessionManager, VerificationEmoji, VerificationEvent};

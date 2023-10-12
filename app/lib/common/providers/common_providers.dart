@@ -56,11 +56,11 @@ class EmailAddresses {
 
 final emailAddressesProvider = FutureProvider((ref) async {
   final account = await ref.watch(accountProvider.future);
-  final passwordResetManager = account.threePidManager();
+  final threePidManager = account.threePidManager();
   final confirmed =
-      asDartStringList(await passwordResetManager.confirmedEmailAddresses());
+      asDartStringList(await threePidManager.confirmedEmailAddresses());
   final requested =
-      asDartStringList(await passwordResetManager.requestedEmailAddresses());
+      asDartStringList(await threePidManager.requestedEmailAddresses());
   final List<String> unconfirmed = [];
   for (var i = 0; i < requested.length; i++) {
     if (!confirmed.contains(requested[i])) {

@@ -1726,10 +1726,10 @@ object Account {
     fn unignore_user(user_id: string) -> Future<Result<bool>>;
 
     /// get intermediate info of login (via email and phone) from account data
-    fn three_pid_manager() -> PasswordResetManager;
+    fn three_pid_manager() -> ThreePidManager;
 }
 
-object PasswordResetManager {
+object ThreePidManager {
     /// get email addresses from third party identifier
     fn confirmed_email_addresses() -> Future<Result<Vec<string>>>;
 
@@ -1747,7 +1747,7 @@ object PasswordResetManager {
     fn remove_email_address(email_address: string) -> Future<Result<bool>>;
 }
 
-object PasswordResetRecord {
+object ThreePidRecord {
     fn submit_url() -> Option<string>;
     fn session_id() -> string;
     fn passphrase() -> string;
