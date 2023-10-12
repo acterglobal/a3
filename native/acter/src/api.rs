@@ -31,7 +31,6 @@ mod invitation;
 mod message;
 mod news;
 mod notifications;
-mod three_pid;
 mod pins;
 mod profile;
 mod receipt;
@@ -42,6 +41,7 @@ mod settings;
 mod spaces;
 mod stream;
 mod tasks;
+mod three_pid;
 mod typing;
 mod utils;
 mod verification;
@@ -49,8 +49,7 @@ mod verification;
 pub use account::Account;
 pub use acter_core::{
     events::{
-        news::NewsContent, three_pid::ThreePidRecord, Colorize, ObjRef, RefDetails,
-        UtcDateTime,
+        news::NewsContent, three_pid::ThreePidRecord, Colorize, ObjRef, RefDetails, UtcDateTime,
     },
     models::{ActerModel, Color as EfkColor, Tag, TextMessageContent},
 };
