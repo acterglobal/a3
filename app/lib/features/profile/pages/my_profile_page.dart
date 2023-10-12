@@ -1,4 +1,3 @@
-import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
@@ -11,12 +10,12 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class ChangeDisplayName extends StatefulWidget {
   final AccountProfile account;
+
   const ChangeDisplayName({
     Key? key,
     required this.account,
@@ -48,9 +47,7 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
           children: [
             Padding(
               padding: const EdgeInsets.all(5),
-              child: TextFormField(
-                controller: newUsername,
-              ),
+              child: TextFormField(controller: newUsername),
             ),
           ],
         ),
