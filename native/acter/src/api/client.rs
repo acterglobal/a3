@@ -769,7 +769,7 @@ impl Client {
 
     pub async fn restore_token(&self) -> Result<String> {
         let session = self.session().context("Missing session")?.clone();
-        let homeurl = self.homeserver().await;
+        let homeurl = self.homeserver();
         let is_guest = match self.state.try_read() {
             Ok(r) => r.is_guest,
             Err(e) => false,

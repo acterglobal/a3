@@ -159,10 +159,8 @@ impl Convo {
             }
             if (!event_found && !has_latest_msg) {
                 // let's trigger a backpagination in hope that helps us...
-                if let Err(error) = last_msg_tl
-                    .paginate_backwards(PaginationOptions::until_num_items(20, 10))
-                    .await
-                {
+                let options = PaginationOptions::until_num_items(20, 10);
+                if let Err(error) = last_msg_tl.paginate_backwards(options).await {
                     error!(?error, room_id=?latest_msg_room.room_id(), "backpagination failed");
                 }
             }
@@ -376,7 +374,7 @@ impl Client {
                 }
 
                 if let Some(parent) = settings.parent {
-                    let Some(Ok(homeserver)) = client.homeserver().await.host_str().map(|h|h.try_into()) else {
+                    let Some(Ok(homeserver)) = client.homeserver().host_str().map(|h|h.try_into()) else {
                       return Err(Error::HomeserverMissesHostname)?;
                     };
                     let parent_event = InitialStateEvent::<SpaceParentEventContent> {

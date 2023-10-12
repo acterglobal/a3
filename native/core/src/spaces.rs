@@ -229,7 +229,7 @@ impl CoreClient {
         };
 
         if let Some(parent) = parent {
-            let Some(Ok(homeserver)) = client.homeserver().await.host_str().map(|h|h.try_into()) else {
+            let Some(Ok(homeserver)) = client.homeserver().host_str().map(|h|h.try_into()) else {
                 return Err(Error::HomeserverMissesHostname);
             };
             let parent_event = InitialStateEvent::<SpaceParentEventContent> {

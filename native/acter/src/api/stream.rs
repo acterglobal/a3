@@ -60,9 +60,8 @@ impl TimelineStream {
             .spawn(async move {
                 let mut back_pagination_status = timeline.back_pagination_status();
                 let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
-                timeline
-                    .paginate_backwards(PaginationOptions::single_request(count))
-                    .await?;
+                let options = PaginationOptions::single_request(count);
+                timeline.paginate_backwards(options).await?;
                 loop {
                     if let Some(status) = back_pagination_status.next().await {
                         if status == BackPaginationStatus::Idle {
