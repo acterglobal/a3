@@ -172,7 +172,7 @@ class EmailAddressesPage extends ConsumerWidget {
               vertical: 15,
             ),
             child: Text(
-              "You have email addresses that requested password reset but aren't confirmed. This can be a security risk. Please ensure this is okay.",
+              "You have email addresses that were registered but aren't confirmed. This can be a security risk. Please ensure this is okay.",
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
@@ -247,7 +247,7 @@ class EmailAddressesPage extends ConsumerWidget {
     if (!context.mounted) {
       return;
     }
-    final manager = account.passwordResetManager();
+    final manager = account.threePidManager();
     final newValue = await showDialog<EmailPassword>(
       context: context,
       builder: (BuildContext context) => const RequestTokenViaEmail(),

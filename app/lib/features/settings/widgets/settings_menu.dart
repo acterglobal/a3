@@ -67,7 +67,7 @@ class SettingsMenu extends ConsumerWidget {
                   style: titleStylesSelected(Routes.emailAddresses),
                 ),
                 description: Text(
-                  'Used as login',
+                  'Used as third party identifier on login',
                   style: titleStylesSelected(Routes.emailAddresses),
                 ),
                 leading: Icon(

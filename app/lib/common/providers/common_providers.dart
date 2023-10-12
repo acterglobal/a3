@@ -46,7 +46,7 @@ final accountProfileProvider = FutureProvider((ref) async {
   return AccountProfile(account, profile);
 });
 
-// Email addresses for password reset
+// Email addresses that registered by user
 class EmailAddresses {
   final List<String> confirmed;
   final List<String> unconfirmed;
@@ -56,7 +56,7 @@ class EmailAddresses {
 
 final emailAddressesProvider = FutureProvider((ref) async {
   final account = await ref.watch(accountProvider.future);
-  final passwordResetManager = account.passwordResetManager();
+  final passwordResetManager = account.threePidManager();
   final confirmed =
       asDartStringList(await passwordResetManager.confirmedEmailAddresses());
   final requested =

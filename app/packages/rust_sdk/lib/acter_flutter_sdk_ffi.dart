@@ -20308,17 +20308,16 @@ class Api {
         int,
         int,
       )>();
-  late final _accountPasswordResetManagerPtr = _lookup<
+  late final _accountThreePidManagerPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__Account_password_reset_manager");
+          )>>("__Account_three_pid_manager");
 
-  late final _accountPasswordResetManager =
-      _accountPasswordResetManagerPtr.asFunction<
-          int Function(
-            int,
-          )>();
+  late final _accountThreePidManager = _accountThreePidManagerPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _passwordResetManagerConfirmedEmailAddressesPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -43317,11 +43316,11 @@ class Account {
     return tmp6;
   }
 
-  /// get intermediate info of password reset (via email and phone) from account data
-  PasswordResetManager passwordResetManager() {
+  /// get intermediate info of login (via email and phone) from account data
+  PasswordResetManager threePidManager() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._accountPasswordResetManager(
+    final tmp1 = _api._accountThreePidManager(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -43361,7 +43360,7 @@ class PasswordResetManager {
     return tmp2;
   }
 
-  /// get email addresses that used for password reset
+  /// get email addresses that were registered
   Future<FfiListFfiString> requestedEmailAddresses() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -43429,7 +43428,7 @@ class PasswordResetManager {
     return tmp10;
   }
 
-  /// Submit token to finish password reset via email
+  /// Submit token to finish email register
   Future<bool> submitTokenFromEmail(
     String emailAddress,
     String token,

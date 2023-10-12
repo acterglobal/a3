@@ -33,7 +33,7 @@ impl PasswordResetRecord {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent)]
-#[ruma_event(type = "global.acter.dev.password_reset", kind = GlobalAccountData)]
+#[ruma_event(type = "global.acter.dev.three_pid", kind = GlobalAccountData)]
 pub struct PasswordResetContent {
     pub via_email: BTreeMap<String, PasswordResetRecord>,
     pub via_phone: BTreeMap<String, PasswordResetRecord>,

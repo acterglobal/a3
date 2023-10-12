@@ -1725,22 +1725,22 @@ object Account {
     /// remove user_id from ignore list
     fn unignore_user(user_id: string) -> Future<Result<bool>>;
 
-    /// get intermediate info of password reset (via email and phone) from account data
-    fn password_reset_manager() -> PasswordResetManager;
+    /// get intermediate info of login (via email and phone) from account data
+    fn three_pid_manager() -> PasswordResetManager;
 }
 
 object PasswordResetManager {
     /// get email addresses from third party identifier
     fn confirmed_email_addresses() -> Future<Result<Vec<string>>>;
 
-    /// get email addresses that used for password reset
+    /// get email addresses that were registered
     fn requested_email_addresses() -> Future<Result<Vec<string>>>;
 
     /// Requests token via email and add email address to third party identifier.
     /// If password is not enough complex, homeserver may reject this request.
     fn request_token_via_email(email_address: string, password: string) -> Future<Result<bool>>;
 
-    /// Submit token to finish password reset via email
+    /// Submit token to finish email register
     fn submit_token_from_email(email_address: string, token: string) -> Future<Result<bool>>;
 
     /// Remove email address from confirmed list or unconfirmed list

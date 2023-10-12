@@ -93,7 +93,7 @@ class EmailAddressCard extends ConsumerWidget {
           DefaultButton(
             onPressed: () async {
               final account = await ref.read(accountProvider.future);
-              final manager = account.passwordResetManager();
+              final manager = account.threePidManager();
               await manager.removeEmailAddress(emailAddress);
               if (context.mounted) {
                 ref.invalidate(emailAddressesProvider);
@@ -136,7 +136,7 @@ class EmailAddressCard extends ConsumerWidget {
 
     if (token != null && context.mounted) {
       final account = await ref.read(accountProvider.future);
-      final manager = account.passwordResetManager();
+      final manager = account.threePidManager();
       await manager.submitTokenFromEmail(emailAddress, token);
 
       if (!context.mounted) {
@@ -145,7 +145,7 @@ class EmailAddressCard extends ConsumerWidget {
       Navigator.of(context, rootNavigator: true).pop();
       customMsgSnackbar(
         context,
-        'Confirmed this email address for password reset',
+        'Confirmed this email address',
       );
     }
   }

@@ -1,4 +1,4 @@
-use acter_core::events::password_reset::{PasswordResetContent, PasswordResetRecord};
+use acter_core::events::three_pid::{PasswordResetContent, PasswordResetRecord};
 use anyhow::{bail, Context, Result};
 use matrix_sdk::{
     reqwest::{ClientBuilder, StatusCode},
@@ -116,16 +116,16 @@ impl PasswordResetManager {
             .spawn(async move {
                 let maybe_content = account.account_data::<PasswordResetContent>().await?;
                 let Some(raw_content) = maybe_content else {
-                    warn!("Not found any password reset content");
+                    warn!("Not found any email registration content");
                     return Ok(false);
                 };
                 let content = raw_content.deserialize()?;
                 let Some(record) = content.via_email.get(email_address.as_str()) else {
-                    warn!("That email address was not requested for password reset");
+                    warn!("That email address was not registered");
                     return Ok(false);
                 };
                 let Some(submit_url) = record.submit_url() else {
-                    warn!("The submit url for password reset confirmation was not given");
+                    warn!("The submit url for email confirmation was not given");
                     return Ok(false);
                 };
                 let session_id = record.session_id();
@@ -205,7 +205,7 @@ impl PasswordResetManager {
 }
 
 impl Account {
-    pub fn password_reset_manager(&self) -> PasswordResetManager {
+    pub fn three_pid_manager(&self) -> PasswordResetManager {
         let account = self.deref().clone();
         PasswordResetManager { account }
     }
