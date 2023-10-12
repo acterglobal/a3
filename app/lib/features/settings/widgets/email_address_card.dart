@@ -5,7 +5,6 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class EmailAddressCard extends ConsumerWidget {
@@ -36,14 +35,14 @@ class EmailAddressCard extends ConsumerWidget {
         trailing: PopupMenuButton(
           itemBuilder: (BuildContext ctx) => <PopupMenuEntry>[
             PopupMenuItem(
-              onTap: () async => await onDelete(ctx, ref),
+              onTap: () async => await onWithdraw(ctx, ref),
               child: Row(
                 children: [
                   const Icon(Atlas.exit_thin),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
-                      AppLocalizations.of(ctx)!.logOut,
+                      'Withdraw',
                       style: Theme.of(ctx).textTheme.labelSmall,
                       softWrap: false,
                     ),
@@ -59,7 +58,7 @@ class EmailAddressCard extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
-                      AppLocalizations.of(ctx)!.verifySession,
+                      'Confirm',
                       style: Theme.of(ctx).textTheme.labelSmall,
                       softWrap: false,
                     ),
@@ -73,7 +72,7 @@ class EmailAddressCard extends ConsumerWidget {
     );
   }
 
-  Future<void> onDelete(BuildContext context, WidgetRef ref) async {
+  Future<void> onWithdraw(BuildContext context, WidgetRef ref) async {
     TextEditingController passwordController = TextEditingController();
     final result = await showDialog<bool>(
       context: context,
