@@ -16,19 +16,21 @@ use matrix_sdk_ui::notification_client::{
 use ruma_common::{OwnedEventId, OwnedRoomId};
 
 pub struct NotificationItem {
-    inner: SdkNotificationItem,
-    room_id: OwnedRoomId,
+    pub(crate) inner: SdkNotificationItem,
+    pub(crate) room_id: OwnedRoomId,
 }
 
 impl NotificationItem {
     fn new(inner: SdkNotificationItem, room_id: OwnedRoomId) -> Self {
         NotificationItem { inner, room_id }
     }
+}
 
+impl NotificationItem {
     pub fn is_invite(&self) -> bool {
         matches!(self.inner.event, NotificationEvent::Invite(_))
     }
-
+    
     pub fn room_message(&self) -> Option<RoomMessage> {
         let NotificationEvent::Timeline(s) = &self.inner.event else {
             return None;

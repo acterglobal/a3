@@ -245,16 +245,16 @@ class ActerSdk {
       return;
     }
     String appDocPath = await appDir();
-    int delayedCounter = 0;
-    while (!await storage.isCupertinoProtectedDataAvailable()) {
-      if (delayedCounter > 10) {
-        throw 'Secure Store not available';
-      }
-      delayedCounter += 1;
-      debugPrint("Secure Storage isn't available yet. Delaying");
-      await Future.delayed(const Duration(milliseconds: 50));
-    }
-    debugPrint('Secure Storage is available. Attempting to read.');
+    // int delayedCounter = 0;
+    // while (!await storage.isCupertinoProtectedDataAvailable()) {
+    //   if (delayedCounter > 10) {
+    //     throw 'Secure Store not available';
+    //   }
+    //   delayedCounter += 1;
+    //   debugPrint("Secure Storage isn't available yet. Delaying");
+    //   await Future.delayed(const Duration(milliseconds: 50));
+    // }
+    // debugPrint('Secure Storage is available. Attempting to read.');
     final sessionsStr = await storage.read(key: _sessionKey);
     if (sessionsStr == null) {
       // not yet set. let's see if we maybe want to migrate instead:

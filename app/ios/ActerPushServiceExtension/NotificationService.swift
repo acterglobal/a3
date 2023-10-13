@@ -22,30 +22,82 @@ class NotificationService: UNNotificationServiceExtension {
         guard let roomId = request.roomId,
             let eventId = request.eventId,
             let deviceId = request.deviceId else {
-                Logger.push.log("not a matrix push ...");
-                // FIXME: forward to awesome_notifications_fcm?!?
-                return contentHandler(request.content)
+                Logger.push.error("not a matrix push ... \(request.content)");
+                return discard()
             }
 
         Logger.push.log("read from store following... for \(deviceId, privacy: .public)");
-        let sessionKey = read_from_store(key: deviceId, groupId: "V45JGKTC6K.global.acter.a3", accountName: nil, synchronizable: true);
-        Logger.push.log("Session found: \(sessionKey ?? "(none)", privacy: .public)");
-
-        
-        if let bestAttemptContent = bestAttemptContent {
-            // Modify the notification content here...
-            bestAttemptContent.body = "New message received"
-            
-            contentHandler(bestAttemptContent)
+        guard let sessionKey = read_from_store(key: deviceId, groupId: "V45JGKTC6K.global.acter.a3", accountName: nil, synchronizable: true) else {
+            Logger.push.error("active session \(deviceId, privacy: .public) not found for push. ignoring");
+            return discard()
         }
+
+        Task {
+            await handle(session: sessionKey,
+                          roomId: roomId,
+                          eventId: eventId,
+                          unreadCount: request.unreadCount)
+        }
+    }
+
+
+    private func handle(session: String,
+                        roomId: String,
+                        eventId: String,
+                        unreadCount: Int?) async {
+
+        do {
+            Logger.push.log("Session found: \(session, privacy: .public)");
+            let notification = try await getNotificationItem(session, roomId, eventId);
+            
+            
+            if let bestAttemptContent = bestAttemptContent {
+                bestAttemptContent.title = notification.roomDisplayName
+                if (notification.isInvite) {
+                    bestAttemptContent.body = "invited by \(notification.senderDisplayName)"
+                } else if (notification.unsupported) {
+                    bestAttemptContent.body = "??? by \(notification.senderDisplayName)"
+                } else {
+                    if (notification.isDirectMessageRoom) {
+                        bestAttemptContent.body = notification.shortMsg;
+                    } else {
+                        bestAttemptContent.body = "\(notification.senderDisplayName) : \(notification.shortMsg)"
+                    }
+                }
+                notify()
+            } else {
+                discard()
+            }
+        } catch {
+            Logger.push.error("NSE run error: \(error)")
+            return discard()
+        }
+    }
+
+    private func notify() {
+        guard let bestAttemptContent else {
+            Logger.push.info("notify: no modified content")
+            return discard()
+        }
+
+        contentHandler?(bestAttemptContent)
+        cleanUp()
+    }
+
+    private func discard() {
+        contentHandler?(UNMutableNotificationContent())
+        cleanUp()
+    }
+
+    private func cleanUp() {
+        contentHandler = nil
+        bestAttemptContent = nil
     }
     
     override func serviceExtensionTimeWillExpire() {
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
-        if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
-            contentHandler(bestAttemptContent)
-        }
+        notify()
     }
 
     private func baseQuery(key: String?, groupId: String?, accountName: String?, synchronizable: Bool?, returnData: Bool?) -> Dictionary<CFString, Any> {
@@ -83,7 +135,6 @@ class NotificationService: UNNotificationServiceExtension {
         )
         
         if (status == noErr) {
-            var value: String? = nil
             return String(data: ref as! Data, encoding: .utf8)
         }
 

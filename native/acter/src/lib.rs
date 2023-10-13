@@ -5,6 +5,10 @@
 #![feature(box_into_inner)]
 #![allow(unused, dead_code, clippy::transmutes_expressible_as_ptr_casts)]
 
+#[rustfmt::skip]
+#[cfg(feature = "uniffi")]
+uniffi::include_scaffolding!("acter");
+
 pub use matrix_sdk;
 
 pub mod api;
@@ -13,11 +17,6 @@ pub mod platform;
 #[rustfmt::skip]
 #[cfg(feature = "cbindgen")]
 pub mod api_generated;
-
-#[rustfmt::skip]
-#[cfg(feature = "uniffi")]
-uniffi::include_scaffolding!("acter_sdk");
-
 
 #[cfg(feature = "testing")]
 pub mod testing;

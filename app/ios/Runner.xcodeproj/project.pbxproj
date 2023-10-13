@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
+		385D65F39030B66CD3086F75 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B989526A51D9C2DBEBDD984 /* Pods_Runner.framework */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
@@ -15,10 +16,12 @@
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		A2701571CECDAC4F7B65236C /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B989526A51D9C2DBEBDD984 /* Pods_Runner.framework */; };
 		B54833C52AC704740098868B /* ActerPushServiceExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B54833BE2AC704740098868B /* ActerPushServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B5614A4D2AD972A6002C73F5 /* acter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5614A4C2AD972A6002C73F5 /* acter.swift */; };
 		B5AF87EB2ACC825700AAC606 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5AF87EA2ACC825700AAC606 /* NotificationService.swift */; };
 		B5AF87EF2ACC828700AAC606 /* ActerLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5AF87EE2ACC828700AAC606 /* ActerLogger.swift */; };
 		B5AF87F12ACC829000AAC606 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5AF87F02ACC828F00AAC606 /* Constants.swift */; };
 		B5AF87F32ACC829200AAC606 /* UNNotificationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5AF87F22ACC829200AAC606 /* UNNotificationRequest.swift */; };
+		B5E0B4522AD9756D000C87CD /* libacter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B5E0B4512AD9756D000C87CD /* libacter.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,10 +79,12 @@
 		B54833C22AC704740098868B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B54833CA2AC707FA0098868B /* ActerPushServiceExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ActerPushServiceExtension.entitlements; sourceTree = "<group>"; };
 		B55C7BF92A9CACCE00293ABE /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
+		B5614A4C2AD972A6002C73F5 /* acter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = acter.swift; sourceTree = "<group>"; };
 		B5AF87EA2ACC825700AAC606 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		B5AF87EE2ACC828700AAC606 /* ActerLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActerLogger.swift; sourceTree = "<group>"; };
 		B5AF87F02ACC828F00AAC606 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		B5AF87F22ACC829200AAC606 /* UNNotificationRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UNNotificationRequest.swift; sourceTree = "<group>"; };
+		B5E0B4512AD9756D000C87CD /* libacter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libacter.a; path = .symlinks/plugins/acter_flutter_sdk/ios/libacter.a; sourceTree = "<group>"; };
 		D875D8CE9EF84D9947B5064A /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -89,6 +94,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A2701571CECDAC4F7B65236C /* Pods_Runner.framework in Frameworks */,
+				385D65F39030B66CD3086F75 /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,6 +102,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5E0B4522AD9756D000C87CD /* libacter.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,6 +122,7 @@
 		9327AC90C3C56A9DD6BAC505 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B5E0B4512AD9756D000C87CD /* libacter.a */,
 				7B989526A51D9C2DBEBDD984 /* Pods_Runner.framework */,
 			);
 			name = Frameworks;
@@ -134,6 +142,7 @@
 		97C146E51CF9000F007C117D = {
 			isa = PBXGroup;
 			children = (
+				B5614A392AD87326002C73F5 /* Packages */,
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
 				B54833BF2AC704740098868B /* ActerPushServiceExtension */,
@@ -171,6 +180,7 @@
 		B54833BF2AC704740098868B /* ActerPushServiceExtension */ = {
 			isa = PBXGroup;
 			children = (
+				B5614A4C2AD972A6002C73F5 /* acter.swift */,
 				B5AF87EE2ACC828700AAC606 /* ActerLogger.swift */,
 				B5AF87F02ACC828F00AAC606 /* Constants.swift */,
 				B5AF87F22ACC829200AAC606 /* UNNotificationRequest.swift */,
@@ -179,6 +189,13 @@
 				B54833C22AC704740098868B /* Info.plist */,
 			);
 			path = ActerPushServiceExtension;
+			sourceTree = "<group>";
+		};
+		B5614A392AD87326002C73F5 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Packages;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -371,6 +388,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5614A4D2AD972A6002C73F5 /* acter.swift in Sources */,
 				B5AF87EB2ACC825700AAC606 /* NotificationService.swift in Sources */,
 				B5AF87F32ACC829200AAC606 /* UNNotificationRequest.swift in Sources */,
 				B5AF87EF2ACC828700AAC606 /* ActerLogger.swift in Sources */,
@@ -705,6 +723,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = V45JGKTC6K;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ActerPushServiceExtension/Info.plist;
@@ -716,6 +735,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = "$(inherited) $(SRCROOT)/.symlinks/plugins/acter_flutter_sdk/ios/";
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -725,6 +745,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/acterFFI $(SRCROOT)/.symlinks/plugins/acter_flutter_sdk/ios/";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -750,6 +771,7 @@
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = V45JGKTC6K;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ActerPushServiceExtension/Info.plist;
@@ -761,6 +783,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = "$(inherited) $(SRCROOT)/.symlinks/plugins/acter_flutter_sdk/ios/";
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = global.acter.a3.ActerPushServiceExtension;
@@ -769,6 +792,7 @@
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Acter Push Service App Store";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/acterFFI";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -793,6 +817,7 @@
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = V45JGKTC6K;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ActerPushServiceExtension/Info.plist;
@@ -804,6 +829,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = "$(inherited) $(SRCROOT)/.symlinks/plugins/acter_flutter_sdk/ios/";
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = global.acter.a3.ActerPushServiceExtension;
@@ -812,6 +838,7 @@
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Acter Push Service App Store";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/acterFFI $(SRCROOT)/.symlinks/plugins/acter_flutter_sdk/ios/";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
