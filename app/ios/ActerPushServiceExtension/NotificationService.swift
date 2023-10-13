@@ -68,6 +68,9 @@ class NotificationService: UNNotificationServiceExtension {
             } else {
                 discard()
             }
+        } catch ActerError.Anyhow(let message) {
+            Logger.push.error("NSE run error in rust: \(message, privacy: .public)")
+            return discard()
         } catch {
             Logger.push.error("NSE run error: \(error)")
             return discard()
