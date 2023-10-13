@@ -13,6 +13,7 @@ use matrix_sdk::{
 };
 use ruma_common::OwnedUserId;
 use tracing::{error, info};
+use std::backtrace::Backtrace;
 
 use super::{
     client::{Client, ClientStateBuilder},
@@ -78,7 +79,7 @@ pub async fn guest_client(
 ) -> Result<Client> {
     let db_passphrase = uuid::Uuid::new_v4().to_string();
     let config = platform::new_client_config(
-        base_path,
+        base_path.clone(),
         default_homeserver_name,
         Some(db_passphrase.clone()),
         true,
@@ -110,6 +111,7 @@ pub async fn guest_client(
             client.restore_session(auth_session).await?;
             let state = ClientStateBuilder::default()
                 .is_guest(true)
+                .base_path(base_path)
                 .db_passphrase(Some(db_passphrase))
                 .build()?;
             let c = Client::new(client, state).await?;
@@ -163,13 +165,21 @@ pub async fn login_with_token_under_config(
 
 pub async fn login_with_token(restore_token: String) -> Result<Client> {
     let token: RestoreToken = serde_json::from_str(&restore_token)?;
-    let config = platform::new_client_config(
+    print!("seeing {restore_token}: {token:?}");
+    let config = match platform::new_client_config(
         token.base_path.clone(),
         token.session.user_id.to_string(),
         token.db_passphrase.clone(),
         false,
     )
-    .await?;
+    .await {
+        Err(e) => {
+            println!("{e} {:#?}", e.backtrace());
+            return Err(e)
+        }
+        Ok(e) => e
+    };
+    print!("post config");
     login_with_token_under_config(token, config).await
 }
 

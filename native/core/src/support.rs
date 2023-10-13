@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 /// Extensive Restore Token for Acter Sessions
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct RestoreToken {
     /// Was this registered per guest-account?
     pub is_guest: bool,
@@ -49,7 +49,7 @@ pub fn convert_old_restore_token(restore_token: String, base_path: String) -> cr
     Ok(serde_json::to_string(&token.into_token(base_path))?)
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct CustomAuthSession {
     /// user id for login
     pub user_id: OwnedUserId,
