@@ -378,7 +378,9 @@ impl Client {
                       return Err(Error::HomeserverMissesHostname)?;
                     };
                     let parent_event = InitialStateEvent::<SpaceParentEventContent> {
-                        content: SpaceParentEventContent::new(vec![homeserver]),
+                        content: assign!(SpaceParentEventContent::new(vec![homeserver]), {
+                            canonical: true,
+                        }),
                         state_key: parent.clone(),
                     };
                     initial_states.push(parent_event.to_raw_any());
