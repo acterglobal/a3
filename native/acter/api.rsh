@@ -314,6 +314,8 @@ object CalendarEvent {
     fn update_builder() -> Result<CalendarEventUpdateBuilder>;
     /// get RSVP manager
     fn rsvp_manager() -> Future<Result<RsvpManager>>;
+    /// get my RSVP status, one of Yes/Maybe/No/Pending
+    fn my_rsvp_status() -> Future<Result<string>>;
 }
 
 object CalendarEventUpdateBuilder {
@@ -377,13 +379,13 @@ object RsvpManager {
     /// get rsvp entries
     fn rsvp_entries() -> Future<Result<Vec<Rsvp>>>;
 
-    /// get Yes/Maybe/No/None for the user's own status
-    fn my_status() -> Future<Result<OptionString>>;
+    /// get Yes/Maybe/No/Pending for the user's own status
+    fn my_status() -> Future<Result<string>>;
 
     /// get the count of Yes/Maybe/No
     fn count_at_status(status: string) -> Future<Result<u32>>;
 
-    /// get the user-ids that have responded said way for each status
+    /// get the user-ids that have responded for Yes/Maybe/No
     fn users_at_status(status: string) -> Future<Result<Vec<UserId>>>;
 
     /// create rsvp draft
@@ -484,6 +486,12 @@ object RoomEventItem {
 
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
+
+    /// the list of users that read this message
+    fn read_users() -> Vec<string>;
+
+    /// the details that users read this message
+    fn receipt_ts(user_id: string) -> Option<u64>;
 
     /// the emote key list that users reacted about this message
     fn reaction_keys() -> Vec<string>;
@@ -733,6 +741,17 @@ object TimelineStream {
 
     /// modify the room message
     fn edit(new_msg: string, original_event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+
+    /// send single receipt
+    /// receipt_type: FullyRead | Read | ReadPrivate
+    /// thread: Main | Unthreaded
+    fn send_single_receipt(receipt_type: string, thread: string, event_id: string) -> Future<Result<bool>>;
+
+    /// modify the room message
+    /// full_read: optional event id
+    /// public_read_receipt: optional event id
+    /// private_read_receipt: optional event id
+    fn send_multiple_receipts(full_read: Option<string>, public_read_receipt: Option<string>, private_read_receipt: Option<string>) -> Future<Result<bool>>;
 }
 
 object Convo {
@@ -2016,6 +2035,15 @@ object Client {
 
     /// getting a notification item from the notification data;
     fn get_notification_item(room_id: string, event_id: string) -> Future<Result<NotificationItem>>;
+    /// get all upcoming events, whether I responded or not
+    fn all_upcoming_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
+
+    /// get only upcoming events that I responded as rsvp
+    fn my_upcoming_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
+
+    /// get only past events that I responded as rsvp
+    fn my_past_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
+
 }
 
 object OptionString {

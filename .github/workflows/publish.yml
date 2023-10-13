@@ -15,8 +15,8 @@ on:
         description: 'The tag to compare the changelog to'
         type: string
 
-  # schedule:
-  #  - cron: 0 3 * * *
+  schedule:
+   - cron: 0 3 * * 4
 
 jobs:
   run_checker:
@@ -32,7 +32,7 @@ jobs:
         id: check-new-commits
         shell: bash
         run: |
-          if [ `git diff --name-only ${{ inputs.prev_tag || 'latest-release' }} -- app native .changes | wc -l` -ne 0 ]; then
+          if [ `git diff --name-only ${{ inputs.prev_tag || 'release-latest' }} -- app native .changes | wc -l` -ne 0 ]; then
             echo "has-new-commits=true"  >> $GITHUB_OUTPUT ;
           else
             echo "has-new-commits=false" >> $GITHUB_OUTPUT ;
@@ -44,7 +44,7 @@ jobs:
     outputs:
       tag: ${{ inputs.new_tag || steps.version.outputs.version }}
       build_num: ${{ steps.build_num.outputs.build_num }}
-      prev_tag: ${{ inputs.prev_tag || 'latest-release' }}
+      prev_tag: ${{ inputs.prev_tag || 'release-latest' }}
     steps:
       - id: version
         run: echo "version=`date +1.%y.%-m%d`" >> $GITHUB_OUTPUT
@@ -78,6 +78,7 @@ jobs:
             artifact_path:  app/build/app/outputs/apk/release/
             extra_release_artifacts: app/build/app/outputs/apk/release/*.apk
           - name: Linux x64
+            target: linux
             os: ubuntu-latest
             apt_install: ninja-build libgtk-3-dev
             cargo_make_args: desktop
@@ -89,6 +90,7 @@ jobs:
           - name: iOS
             os: macos-latest
             target: ios
+            with_apple_cert: true
             cargo_make_setup: setup-ios
             cargo_make_args: ios
             flutter_build_args: "build ipa --export-options-plist=ios/exportOptions_release.plist --split-debug-info=debug_symbols"
@@ -100,6 +102,7 @@ jobs:
           - name: MacOS
             os: macos-12
             target: macos
+            with_apple_cert: true
             cargo_make_args: desktop
             flutter_config: "--enable-macos-desktop"
             flutter_build_args: "build macos --split-debug-info=debug_symbols"
@@ -132,11 +135,26 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+ ######  ######## ######## ##     ## ########  
+##    ## ##          ##    ##     ## ##     ## 
+##       ##          ##    ##     ## ##     ## 
+ ######  ######      ##    ##     ## ########  
+      ## ##          ##    ##     ## ##        
+##    ## ##          ##    ##     ## ##        
+ ######  ########    ##     #######  ##      
+
       - name: Install supported toolchain
         id: rust_toolchain
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+
+      - uses: jlumbroso/free-disk-space@main
+        name: Free Disk Space (Ubuntu)
+        if: matrix.os == 'ubuntu-latest' && matrix.target != 'linux'
+        with:
+          tool-cache: true
+          android: ${{ matrix.target != 'android' }}
 
       - name: Cache Cargo
         id: cache-cargo
@@ -169,10 +187,6 @@ jobs:
         if: steps.cache-cargo.outputs.cache-hit != 'true'
         uses: davidB/rust-cargo-make@v1
 
-      - name: Rust Setup
-        if: matrix.cargo_make_setup
-        run: cargo make ${{ matrix.cargo_make_setup }}
-
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
@@ -186,30 +200,26 @@ jobs:
         if: matrix.flutter_config
         run: flutter config ${{ matrix.flutter_config }}
 
-      - name: Install the Apple iOS certificate and provisioning profile
-        if: matrix.target == 'ios' || matrix.target == 'macos'
+      - name: Unlock git-crypt
+        if: matrix.with_apple_cert
+        run: |
+          brew install git-crypt
+          echo "${{ secrets.GIT_CRYPT_KEY }}" | base64 --decode > .github/assets/git-crypt-key
+          git-crypt unlock .github/assets/git-crypt-key
+
+      # Install the Apple certificate and provisioning profile
+      - name: Install the Apple certificates
+        if: matrix.with_apple_cert
         env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
-          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
-          BUILD_PROVISION_PROFILE_IOS_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_IOS_BASE64 }}
-          BUILD_PROVISION_PROFILE_MACAPP_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_MACAPP_BASE64 }}
-          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.BUILD_CERTS_P12_PASSWORD }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
           echo "starting in $RUNNER_TEMP"
           # create variables
-          CERTIFICATE_PATH="$RUNNER_TEMP/build_certificate.p12"
-          IOS_PP_PATH="$RUNNER_TEMP/ios_build_pp.mobileprovision"
-          PP_PATH="$RUNNER_TEMP/build_pp.mobileprovision"
-          MAC_PP_PATH="$RUNNER_TEMP/mac_build_pp.mobileprovision"
+          CERTIFICATE_PATH=".github/assets/build_certificates.p12"
           KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
           echo "vars set"
           # import certificate and provisioning profile from secrets
-          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode --output "$CERTIFICATE_PATH"
-          echo -n "$BUILD_PROVISION_PROFILE_IOS_BASE64" | base64 --decode --output "$IOS_PP_PATH"
-          echo -n "$BUILD_PROVISION_PROFILE_MACAPP_BASE64" | base64 --decode --output "$MAC_PP_PATH"
-          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode --output "$PP_PATH"
-          ls -ltash $RUNNER_TEMP/*
           # create temporary keychain
           echo "creating keychain"
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
@@ -222,14 +232,26 @@ jobs:
           security import "$CERTIFICATE_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
           echo "listing keychains"
           security list-keychain -d user -s "$KEYCHAIN_PATH"
-          # apply provisioning profile
-          echo "copying over"
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp $IOS_PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/Acter_iOS_App_Release.mobileprovision
-          cp $MAC_PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/Acter_MacApp_Release.provisionprofile
-          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/Acter_App_Release.mobileprovision
-          ls ~/Library/MobileDevice/Provisioning\ Profiles/
 
+      - name: Install the Apple provisioning profile
+        if: matrix.with_apple_cert
+        run: |
+          echo "Installing provision profiles"
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles/
+          cp .github/assets/provision_profiles/* ~/Library/MobileDevice/Provisioning\ Profiles/
+          ls -ltas ~/Library/MobileDevice/Provisioning\ Profiles/
+
+      - name: Rust Setup
+        if: matrix.cargo_make_setup
+        run: cargo make ${{ matrix.cargo_make_setup }}
+
+        ########  ##     ## #### ##       ########  
+        ##     ## ##     ##  ##  ##       ##     ## 
+        ##     ## ##     ##  ##  ##       ##     ## 
+        ########  ##     ##  ##  ##       ##     ## 
+        ##     ## ##     ##  ##  ##       ##     ## 
+        ##     ## ##     ##  ##  ##       ##     ## 
+        ########   #######  #### ######## ########  
 
       - name: Build Rust Lib
         run: cargo make --profile release ${{ matrix.cargo_make_args}}
@@ -256,6 +278,15 @@ jobs:
             --dart-define DEFAULT_HOMESERVER_NAME="${{vars.DEFAULT_HOMESERVER_NAME}}"
         working-directory: ./app
 
+           ######  ####  ######   ##    ## 
+          ##    ##  ##  ##    ##  ###   ## 
+          ##        ##  ##        ####  ## 
+           ######   ##  ##   #### ## ## ## 
+                ##  ##  ##    ##  ##  #### 
+          ##    ##  ##  ##    ##  ##   ### 
+           ######  ####  ######   ##    ## 
+
+
       # ignore codesign
       # - name: Sign Acter.app
       #   if: matrix.target == 'macos'
@@ -264,10 +295,19 @@ jobs:
 
       # Important! Cleanup: remove the certificate and provisioning profile from the runner!
       - name: Clean up keychain and provisioning profile
-        if: ${{ always() && (matrix.target == 'ios' || matrix.target == 'macos') }}
+        if: ${{ always() && matrix.with_apple_cert }}
         run: |
           security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
-          rm ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/*
+          rm .github/assets/git-crypt-key
+
+        ########  ##    ##  ######   
+        ##     ## ##   ##  ##    ##  
+        ##     ## ##  ##   ##        
+        ########  #####    ##   #### 
+        ##        ##  ##   ##    ##  
+        ##        ##   ##  ##    ##  
+        ##        ##    ##  ######   
 
       - name: Generate manifest
         if: matrix.target == 'ios'
@@ -297,6 +337,14 @@ jobs:
         working-directory: ${{ matrix.artifact_path }}
         run: |
           7z a "${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.zip" ${{ matrix.zip_files }}
+
+    ##     ## ########  ##        #######     ###    ########  
+    ##     ## ##     ## ##       ##     ##   ## ##   ##     ## 
+    ##     ## ##     ## ##       ##     ##  ##   ##  ##     ## 
+    ##     ## ########  ##       ##     ## ##     ## ##     ## 
+    ##     ## ##        ##       ##     ## ######### ##     ## 
+    ##     ## ##        ##       ##     ## ##     ## ##     ## 
+     #######  ##        ########  #######  ##     ## ########  
 
       - uses: actions/upload-artifact@v3
         name: "Upload artifacts"
@@ -368,6 +416,14 @@ jobs:
           body_path: CHANGELOG.md
           files: CHANGELOG.md
 
+########  ##     ## ########  ##       ####  ######  ##     ## 
+##     ## ##     ## ##     ## ##        ##  ##    ## ##     ## 
+##     ## ##     ## ##     ## ##        ##  ##       ##     ## 
+########  ##     ## ########  ##        ##   ######  ######### 
+##        ##     ## ##     ## ##        ##        ## ##     ## 
+##        ##     ## ##     ## ##        ##  ##    ## ##     ## 
+##         #######  ########  ######## ####  ######  ##     ## 
+
   publish:
     environment: release
     runs-on: ubuntu-latest
@@ -386,27 +442,38 @@ jobs:
         with:
           name: Changelog
 
-      # - name: "Generate docs"
-      #   run: |
-      #     echo "+++" > docs/content/releases/${{ needs.tags.outputs.tag }}.md
-      #     echo "title = \" Nightly ${{ needs.tags.outputs.tag }}\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-      #     echo "template = \"nightlies/release.html\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-      #     echo "date = ${{ needs.tags.outputs.tag }}" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-      #     echo "+++" >>docs/content/releases/${{ needs.tags.outputs.tag }}.md
-      #     echo "" >>docs/content/releases/${{ needs.tags.outputs.tag }}.md
-      #     cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+      - name: "Generate docs"
+        run: |
+          echo "+++" > docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "title = \" Nightly ${{ needs.tags.outputs.tag }}\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "template = \"nightlies/release.html\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "date = ${{ needs.tags.outputs.tag }}" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "+++" >>docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "" >>docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
 
-      # - name: Tag for release
-      #   run: |
-      #     git config --global user.name 'Sari'
-      #     git config --global user.email 'acter-sari@users.noreply.github.com'
-      #     git add "docs/content/releases/${{ needs.tags.outputs.tag }}.md"
-      #     echo "Add release ${{ needs.tags.outputs.tag }}"
-      #     git commit -m 
-      #     git tag v${{ needs.tags.outputs.tag }}
-      #     git tag -f release-latest
-      #     git push -f origin main v${{ needs.tags.outputs.tag }} release-latest
+      - name: Tag for release
+        run: |
+          git config --global user.name 'Sari'
+          git config --global user.email 'acter-sari@users.noreply.github.com'
+          git add "docs/content/releases/${{ needs.tags.outputs.tag }}.md"
+          echo "Add release ${{ needs.tags.outputs.tag }}"
+          git commit -m "Releasing v${{ needs.tags.outputs.tag }}"
+          git tag v${{ needs.tags.outputs.tag }}
+          git tag -f release-latest
+          git push -f origin main v${{ needs.tags.outputs.tag }} release-latest
 
+      - name: Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          # publish this nightly release now
+          draft: true
+          generate_release_notes: false
+          name: Acter ${{ needs.tags.outputs.tag }}
+          tag_name: v${{ needs.tags.outputs.tag }}
+          body_path: CHANGELOG.md
+          prerelease: true
       # publish this full release now
       - uses: eregon/publish-release@v1
         env:

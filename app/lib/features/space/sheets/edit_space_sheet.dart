@@ -4,7 +4,6 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
@@ -148,30 +147,6 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                 ),
               ],
             ),
-            // const SizedBox(height: 15),
-            // const Text('Wallpaper'),
-            // GestureDetector(
-            //   onTap: () => customMsgSnackbar(
-            //     context,
-            //     'Wallpaper uploading feature isn\'t available yet',
-            //   ),
-            //   child: Container(
-            //     margin: const EdgeInsets.only(top: 15),
-            //     padding: const EdgeInsets.all(10),
-            //     height: 75,
-            //     decoration: BoxDecoration(
-            //       color: Theme.of(context).colorScheme.primaryContainer,
-            //       borderRadius: BorderRadius.circular(12),
-            //     ),
-            //     child: Align(
-            //       alignment: Alignment.centerLeft,
-            //       child: Icon(
-            //         Atlas.up_arrow_from_bracket_thin,
-            //         color: Theme.of(context).colorScheme.neutral4,
-            //       ),
-            //     ),
-            //   ),
-            // ),
             const SizedBox(height: 15),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,96 +165,52 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
           ],
         ),
       ),
-      actions: [
-        ElevatedButton(
-          onPressed: () => context.canPop()
-              ? context.pop()
-              : context.goNamed(Routes.main.name),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.neutral,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
-            ),
-            side: BorderSide(
-              color: Theme.of(context).colorScheme.success,
-            ),
-            foregroundColor: Theme.of(context).colorScheme.neutral6,
-            textStyle: Theme.of(context).textTheme.bodySmall,
-          ),
-          child: const Text('Cancel'),
-        ),
-        const SizedBox(width: 10),
-        ElevatedButton(
-          onPressed: () async {
-            if (titleInput.isEmpty) {
-              customMsgSnackbar(
-                context,
-                'Please enter space name',
-              );
-              return;
-            }
-            // check permissions before updating space
-            bool havePermission = await permissionCheck();
-            // We are doing as expected, but the lints triggers.
-            // ignore: use_build_context_synchronously
-            if (!context.mounted) {
-              return;
-            }
-            if (!havePermission) {
-              showAdaptiveDialog(
-                context: context,
-                builder: (context) => DefaultDialog(
-                  title: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Icon(
-                      Atlas.block_prohibited,
-                      size: 28,
-                      color: Theme.of(context).colorScheme.onError,
+      confirmActionTitle: 'Save Changes',
+      cancelActionTitle: 'Cancel',
+      confirmActionOnPressed: titleInput.trim().isEmpty
+          ? null
+          : () async {
+              // check permissions before updating space
+              bool havePermission = await permissionCheck();
+              if (!havePermission) {
+                // ignore: use_build_context_synchronously
+                customMsgSnackbar(
+                  context,
+                  'Cannot edit space with no permissions',
+                );
+                return;
+              }
+              if (context.mounted) {
+                showAdaptiveDialog(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (context) => DefaultDialog(
+                    title: Text(
+                      'Updating Space',
+                      style: Theme.of(context).textTheme.titleSmall,
                     ),
+                    isLoader: true,
                   ),
-                  subtitle: const Text('Cannot edit space with no permissions'),
-                  actions: <Widget>[
-                    DefaultButton(
-                      onPressed: () => context.pop(),
-                      title: 'Okay',
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                          Theme.of(context).colorScheme.success,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-              return;
-            }
-            final roomId = await _handleUpdateSpace(context);
-            debugPrint('Space Updated: $roomId');
-            // We are doing as expected, but the lints triggers.
-            // ignore: use_build_context_synchronously
-            if (!context.mounted) {
-              return;
-            }
-            context.pushNamed(
-              Routes.space.name,
-              pathParameters: {
-                'spaceId': roomId.toString(),
-              },
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: titleInput.isNotEmpty
-                ? Theme.of(context).colorScheme.success
-                : Theme.of(context).colorScheme.success.withOpacity(0.6),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
-            ),
-            foregroundColor: Theme.of(context).colorScheme.neutral6,
-            textStyle: Theme.of(context).textTheme.bodySmall,
-          ),
-          child: const Text('Save changes'),
-        ),
-      ],
+                );
+                final roomId = await _handleUpdateSpace(context);
+                debugPrint('Space Updated: $roomId');
+                // We are doing as expected, but the lints triggers.
+                // ignore: use_build_context_synchronously
+                if (!context.mounted) {
+                  return;
+                }
+                context.pop(); // pop the loading screen
+                context.pop(); // pop the edit sheet
+                context.pushNamed(
+                  Routes.space.name,
+                  pathParameters: {
+                    'spaceId': roomId.toString(),
+                  },
+                );
+              }
+            },
+      cancelActionOnPressed: () =>
+          context.canPop() ? context.pop() : context.goNamed(Routes.main.name),
     );
   }
 
@@ -341,18 +272,6 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
 
   // update space handler
   Future<RoomId> _handleUpdateSpace(BuildContext context) async {
-    showAdaptiveDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) => DefaultDialog(
-        title: Text(
-          'Updating Space',
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        isLoader: true,
-      ),
-    );
-
     final space = await ref.read(spaceProvider(widget.spaceId!).future);
     // update space name
     String title = ref.read(editTitleProvider);
