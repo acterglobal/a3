@@ -9,7 +9,7 @@ use matrix_sdk::{
         },
         assign,
     },
-    Client as SdkClient, ClientBuilder, SessionMeta, SessionTokens,
+    Client as SdkClient, ClientBuilder, SessionMeta,
 };
 use ruma_common::OwnedUserId;
 use tracing::{error, info};
