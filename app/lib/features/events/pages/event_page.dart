@@ -10,6 +10,7 @@ import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jiffy/jiffy.dart';
@@ -124,19 +125,20 @@ class CalendarEventPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final event = ref.watch(calendarEventProvider(calendarId));
-    final myRsvpStatus = ref.watch(myRsvpStatusProvider(calendarId));
-    final List<bool> rsvp = [false, false, false];
+    var event = ref.watch(calendarEventProvider(calendarId));
+    AsyncValue<String> myRsvpStatus =
+        ref.watch(myRsvpStatusProvider(calendarId));
+    Set<RSVP> rsvp = <RSVP>{RSVP.Pending};
     myRsvpStatus.maybeWhen(
       data: (status) {
         if (status == 'Yes') {
-          return rsvp.setAll(0, [false, false, true]);
-        }
-        if (status == 'Maybe') {
-          return rsvp.setAll(0, [false, true, false]);
-        }
-        if (status == 'No') {
-          return rsvp.setAll(0, [true, false, false]);
+          rsvp = <RSVP>{RSVP.Yes};
+        } else if (status == 'Maybe') {
+          rsvp = <RSVP>{RSVP.Maybe};
+        } else if (status == 'No') {
+          rsvp = <RSVP>{RSVP.No};
+        } else {
+          rsvp = <RSVP>{RSVP.Pending};
         }
       },
       orElse: () => null,
@@ -257,9 +259,6 @@ class CalendarEventPage extends ConsumerWidget {
                               ),
                               Consumer(
                                 builder: (context, ref, child) {
-                                  // final profile = ref.watch(
-                                  //   spaceMemberProfileProvider(spaceMember),
-                                  // );
                                   return Container(
                                     alignment: Alignment.topLeft,
                                     padding: const EdgeInsets.symmetric(
@@ -278,36 +277,6 @@ class CalendarEventPage extends ConsumerWidget {
                                               .bodyMedium,
                                         ),
                                         const SizedBox(width: 50),
-                                        // profile.when(
-                                        //   data: (data) => Flexible(
-                                        //     flex: 2,
-                                        //     child: Wrap(
-                                        //       spacing: 4.0,
-                                        //       children: [
-                                        //         Text(
-                                        //           data.displayName ??
-                                        //               spaceMember.userId,
-                                        //           style: Theme.of(context)
-                                        //               .textTheme
-                                        //               .bodyMedium,
-                                        //         ),
-                                        //         ActerAvatar(
-                                        //           uniqueId: spaceMember.userId,
-                                        //           mode: DisplayMode.User,
-                                        //           avatar: data.getAvatarImage(),
-                                        //         ),
-                                        //       ],
-                                        //     ),
-                                        //   ),
-                                        //   error: (err, st) => Flexible(
-                                        //     flex: 2,
-                                        //     child: Text(
-                                        //       'Error loading host profile: $err',
-                                        //     ),
-                                        //   ),
-                                        //   loading: () =>
-                                        //       const CircularProgressIndicator(),
-                                        // ),
                                       ],
                                     ),
                                   );
@@ -348,37 +317,30 @@ class CalendarEventPage extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 15),
-                    ToggleButtons(
-                      isSelected: rsvp,
-                      onPressed: (index) async {
-                        var status = '';
-                        if (index == 0) status = 'No';
-                        if (index == 1) status = 'Maybe';
-                        if (index == 2) status = 'Yes';
-                        await onRsvp(context, event.value!, status);
-                        ref.invalidate(myRsvpStatusProvider);
+                    SegmentedButton<RSVP>(
+                      multiSelectionEnabled: false,
+                      emptySelectionAllowed: false,
+                      showSelectedIcon: false,
+                      selected: rsvp,
+                      onSelectionChanged: (Set<RSVP> rsvp) async {
+                        await onRsvp(
+                          context,
+                          event.requireValue,
+                          rsvp.first.name,
+                        );
+                        // refresh rsvp state and event
+                        myRsvpStatus =
+                            ref.refresh(myRsvpStatusProvider(calendarId));
+                        event = ref.refresh(calendarEventProvider(calendarId));
+                        EasyLoading.dismiss();
                       },
-                      textStyle: Theme.of(context).textTheme.labelMedium,
-                      borderRadius: BorderRadius.circular(12),
-                      fillColor: Theme.of(context).colorScheme.success,
-                      borderColor: Theme.of(context).colorScheme.neutral6,
-                      borderWidth: 0.5,
-                      selectedBorderColor:
-                          Theme.of(context).colorScheme.neutral6,
-                      children: const <Widget>[
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('No'),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Maybe'),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('Yes'),
-                        ),
-                      ],
+                      segments: rsvpOptions
+                          .map<ButtonSegment<RSVP>>(((RSVP, String) rsvp) {
+                        return ButtonSegment<RSVP>(
+                          value: rsvp.$1,
+                          label: Text(rsvp.$2),
+                        );
+                      }).toList(),
                     ),
                   ],
                 ),
@@ -410,12 +372,21 @@ class CalendarEventPage extends ConsumerWidget {
 
   Future<void> onRsvp(
     BuildContext context,
-    CalendarEvent event,
+    CalendarEvent? event,
     String status,
   ) async {
+    EasyLoading.show(status: 'Updating RSVP', dismissOnTap: false);
+    if (event == null) {
+      EasyLoading.showError(
+        'Error fetching event details',
+        duration: const Duration(seconds: 2),
+      );
+      return;
+    }
     final rsvpManager = await event.rsvpManager();
     final draft = rsvpManager.rsvpDraft();
     draft.status(status);
+
     final rsvpId = await draft.send();
     debugPrint('new rsvp id: $rsvpId');
   }

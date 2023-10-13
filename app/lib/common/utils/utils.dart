@@ -255,3 +255,13 @@ enum LabsFeature {
   static List<LabsFeature> get defaults =>
       [LabsFeature.events, LabsFeature.pins];
 }
+
+// ignore: constant_identifier_names
+enum RSVP { Yes, Maybe, No, Pending }
+
+const List<(RSVP, String)> rsvpOptions = <(RSVP, String)>[
+  (RSVP.No, 'No'),
+  (RSVP.Maybe, 'Maybe'),
+  (RSVP.Yes, 'Yes'),
+  (RSVP.Pending, 'Pending'),
+];

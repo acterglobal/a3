@@ -61,30 +61,83 @@ class AsyncCalendarEventNotifier
   }
 }
 
-final allUpcomingEventsProvider =
-    FutureProvider.autoDispose<List<ffi.CalendarEvent>>((ref) async {
-  final client = ref.watch(clientProvider);
-  if (client == null) throw UnimplementedError('Client is not available');
-  // FIXME: how to get informed about updates??
-  return (await client.allUpcomingEvents(null)).toList();
-});
+final allUpcomingEventsProvider = AsyncNotifierProvider.autoDispose<
+    AsyncUpcomingEventsNotifier,
+    List<ffi.CalendarEvent>>(() => AsyncUpcomingEventsNotifier());
 
-final myUpcomingEventsProvider =
-    FutureProvider.autoDispose<List<ffi.CalendarEvent>>((ref) async {
-  final client = ref.watch(clientProvider);
-  if (client == null) throw UnimplementedError('Client is not available');
-  // FIXME: how to get informed about updates??
-  return (await client.myUpcomingEvents(null)).toList();
-});
+class AsyncUpcomingEventsNotifier
+    extends AutoDisposeAsyncNotifier<List<ffi.CalendarEvent>> {
+  late Stream<void> _listener;
+  Future<List<ffi.CalendarEvent>> _getAllUpcoming() async {
+    final client = ref.watch(clientProvider);
+    if (client == null) throw UnimplementedError('Client is not available');
+    return (await client.allUpcomingEvents(null)).toList();
+    // this might throw internally
+  }
 
-final myPastEventsProvider =
-    FutureProvider.autoDispose<List<ffi.CalendarEvent>>((ref) async {
-  final client = ref.watch(clientProvider);
-  if (client == null) throw UnimplementedError('Client is not available');
+  @override
+  Future<List<ffi.CalendarEvent>> build() async {
+    final client = ref.watch(clientProvider);
+    if (client == null) throw UnimplementedError('Client is not available');
+    _listener = client.subscribeStream('calendar'); // stay up to date
+    _listener.forEach((e) async {
+      state = await AsyncValue.guard(() => _getAllUpcoming());
+    });
+    return _getAllUpcoming();
+  }
+}
 
-  // FIXME: how to get informed about updates??
-  return (await client.myPastEvents(null)).toList();
-});
+final myUpcomingEventsProvider = AsyncNotifierProvider.autoDispose<
+    AsyncMyUpcomingEventsNotifier,
+    List<ffi.CalendarEvent>>(() => AsyncMyUpcomingEventsNotifier());
+
+class AsyncMyUpcomingEventsNotifier
+    extends AutoDisposeAsyncNotifier<List<ffi.CalendarEvent>> {
+  late Stream<void> _listener;
+  Future<List<ffi.CalendarEvent>> _getMyUpcoming() async {
+    final client = ref.watch(clientProvider);
+    if (client == null) throw UnimplementedError('Client is not available');
+    return (await client.myUpcomingEvents(null)).toList();
+    // this might throw internally
+  }
+
+  @override
+  Future<List<ffi.CalendarEvent>> build() async {
+    final client = ref.watch(clientProvider);
+    if (client == null) throw UnimplementedError('Client is not available');
+    _listener = client.subscribeStream('calendar'); // stay up to date
+    _listener.forEach((e) async {
+      state = await AsyncValue.guard(() => _getMyUpcoming());
+    });
+    return _getMyUpcoming();
+  }
+}
+
+final myPastEventsProvider = AsyncNotifierProvider.autoDispose<
+    AsyncMyPastEventsNotifier,
+    List<ffi.CalendarEvent>>(() => AsyncMyPastEventsNotifier());
+
+class AsyncMyPastEventsNotifier
+    extends AutoDisposeAsyncNotifier<List<ffi.CalendarEvent>> {
+  late Stream<void> _listener;
+  Future<List<ffi.CalendarEvent>> _getMyPast() async {
+    final client = ref.watch(clientProvider);
+    if (client == null) throw UnimplementedError('Client is not available');
+    return (await client.myPastEvents(null)).toList();
+    // this might throw internally
+  }
+
+  @override
+  Future<List<ffi.CalendarEvent>> build() async {
+    final client = ref.watch(clientProvider);
+    if (client == null) throw UnimplementedError('Client is not available');
+    _listener = client.subscribeStream('calendar'); // stay up to date
+    _listener.forEach((e) async {
+      state = await AsyncValue.guard(() => _getMyPast());
+    });
+    return _getMyPast();
+  }
+}
 
 final myRsvpStatusProvider =
     FutureProvider.family.autoDispose<String, String>((ref, calendarId) async {

@@ -44,7 +44,7 @@ class EventsCard extends ConsumerWidget {
                       : Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
-                            'At this moment, you are not joining any upcoming events. To find out what events are scheduled, check your spaces.',
+                            'There are no events scheduled',
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ),

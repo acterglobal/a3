@@ -10,7 +10,7 @@ class MyEventsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final upcoming = ref.watch(myUpcomingEventsProvider);
+    final upcoming = ref.watch(allUpcomingEventsProvider);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(

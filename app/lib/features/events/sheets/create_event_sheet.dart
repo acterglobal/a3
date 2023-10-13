@@ -48,8 +48,6 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   Widget build(BuildContext context) {
     final titleInput = ref.watch(_titleProvider);
     final startDate = ref.watch(_startDateProvider);
-    final endDate = ref.watch(_endDateProvider);
-
     return SideSheet(
       header: 'Create new event',
       addActions: true,
@@ -218,12 +216,11 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       ),
       confirmActionTitle: 'Create Event',
       cancelActionTitle: 'Cancel',
-      confirmActionOnPressed:
-          (titleInput.isEmpty || startDate == null || endDate == null)
-              ? null
-              : () async {
-                  await _handleCreateEvent();
-                },
+      confirmActionOnPressed: (titleInput.isEmpty || startDate == null)
+          ? null
+          : () async {
+              await _handleCreateEvent();
+            },
       cancelActionOnPressed: () =>
           context.canPop() ? context.pop() : context.goNamed(Routes.main.name),
     );
@@ -234,6 +231,10 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     try {
       final spaceId = ref.read(selectedSpaceIdProvider);
       if (spaceId == null) {
+        EasyLoading.showError(
+          'Please select space',
+          duration: const Duration(seconds: 2),
+        );
         return;
       }
 
@@ -241,7 +242,12 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       final endDate = ref.read(_endDateProvider);
 
       final utcStartDateTime = date!.toUtc().toIso8601String();
-      final utcEndDateTime = endDate!.toUtc().toIso8601String();
+      String? utcEndDateTime;
+      if (endDate == null) {
+        utcEndDateTime = date.toUtc().toIso8601String();
+      } else {
+        utcEndDateTime = endDate.toUtc().toIso8601String();
+      }
       final space = await ref.read(spaceProvider(spaceId).future);
       final draft = space.calendarEventDraft();
       final title = ref.read(_titleProvider);
@@ -260,11 +266,15 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       final rsvpDraft = rsvpManager.rsvpDraft();
       rsvpDraft.status('Yes');
       await rsvpDraft.send();
-      debugPrint('Updated Calendar Event: ${eventId.toString()}');
+      debugPrint('Created Calendar Event: ${eventId.toString()}');
       EasyLoading.dismiss();
       if (context.mounted) {
         ref.invalidate(calendarEventProvider);
         context.pop();
+        context.pushNamed(
+          Routes.calendarEvent.name,
+          pathParameters: {'calendarId': eventId.toString()},
+        );
       }
     } catch (e) {
       EasyLoading.dismiss();
@@ -279,6 +289,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       startFirstDate: DateTime.now(),
       startInitialDate: DateTime.now(),
       borderRadius: BorderRadius.circular(12),
+      isForce2Digits: true,
     ).then((picked) {
       if (picked != null) {
         ref.read(_startDateProvider.notifier).update((state) => picked[0]);

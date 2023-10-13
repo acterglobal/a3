@@ -38,33 +38,25 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
 
   // apply existing data to fields
   void _editEventData() async {
-    final calendarEvent = ref.read(
-      calendarEventProvider(widget.calendarId!),
+    final calendarEvent = await ref.read(
+      calendarEventProvider(widget.calendarId!).future,
     );
-    calendarEvent.whenData(
-      (event) {
-        _nameController.text = event.title();
-        _descriptionController.text =
-            event.description() == null ? '' : event.description()!.body();
-        final dartDateTime = toDartDatetime(event.utcStart());
-        final dartEndTime = toDartDatetime(event.utcEnd());
-        _dateController.text = DateFormat.yMd().format(dartDateTime.toLocal());
-        _startTimeController.text =
-            DateFormat.jm().format(dartDateTime.toLocal());
-        _endTimeController.text = DateFormat.jm().format(dartEndTime.toLocal());
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          ref
-              .read(_titleProvider.notifier)
-              .update((state) => _nameController.text);
-          ref
-              .read(_startDateProvider.notifier)
-              .update((state) => dartDateTime.toLocal());
-          ref
-              .read(_endDateProvider.notifier)
-              .update((state) => dartEndTime.toLocal());
-        });
-      },
-    );
+    _nameController.text = calendarEvent.title();
+    _descriptionController.text = calendarEvent.description() == null
+        ? ''
+        : calendarEvent.description()!.body();
+    final dartDateTime = toDartDatetime(calendarEvent.utcStart());
+    final dartEndTime = toDartDatetime(calendarEvent.utcEnd());
+    _dateController.text = DateFormat.yMd().format(dartDateTime.toLocal());
+    _startTimeController.text = DateFormat.jm().format(dartDateTime.toLocal());
+    _endTimeController.text = DateFormat.jm().format(dartEndTime.toLocal());
+    ref.read(_titleProvider.notifier).update((state) => _nameController.text);
+    ref
+        .read(_startDateProvider.notifier)
+        .update((state) => dartDateTime.toLocal());
+    ref
+        .read(_endDateProvider.notifier)
+        .update((state) => dartEndTime.toLocal());
   }
 
   @override
@@ -254,13 +246,6 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
       // We always have calendar object at this stage.
       final startDate = ref.read(_startDateProvider);
       final endDate = ref.read(_endDateProvider);
-      if (startDate == null && endDate == null) {
-        EasyLoading.showInfo(
-          'Please Select time',
-          duration: const Duration(seconds: 2),
-        );
-        return;
-      }
       final utcStartDateTime = startDate!.toUtc().toIso8601String();
       final utcEndDateTime = endDate!.toUtc().toIso8601String();
       final title = ref.read(_titleProvider);
@@ -272,9 +257,9 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
       updateBuilder.descriptionText(description);
       final eventId = await updateBuilder.send();
       debugPrint('Calendar Event updated $eventId');
+
       EasyLoading.dismiss();
       if (context.mounted) {
-        ref.invalidate(calendarEventProvider);
         context.pop();
       }
     } catch (e) {
