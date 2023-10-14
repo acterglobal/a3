@@ -76,6 +76,7 @@ Color convertColor(ffi.EfkColor? primary, Color fallback) {
 
 Completer<SharedPreferences>? _sharedPrefCompl;
 Completer<String>? _appDirCompl;
+Completer<ActerSdk>? _unrestoredInstanceCompl;
 Completer<ActerSdk>? _instanceCompl;
 
 Future<String> appDir() async {
@@ -352,6 +353,29 @@ class ActerSdk {
     }
   }
 
+  static Future<void> nuke() async {
+    final instance = await _unrestoredInstance;
+    await instance._nuke();
+  }
+
+  Future<void> _nuke() async {
+    String appDocPath = await appDir();
+    for (var cl in _clients) {
+      try {
+        final userId = cl.userId().toString();
+        await cl.logout();
+        await _api.destroyLocalData(appDocPath, userId, defaultServerName);
+      } catch (e) {
+        debugPrint('Error logging out: $e');
+      }
+    }
+
+    _clients.clear();
+    await _persistSessions();
+    // and destroy everything that is left.
+    Directory(appDocPath).delete(recursive: true);
+  }
+
   static Future<ActerSdk> _unrestoredInstanceInner() async {
     final api = Platform.isAndroid
         ? ffi.Api(await _getAndroidDynLib('libacter.so'))
@@ -370,21 +394,36 @@ class ActerSdk {
       );
     }
     final instance = ActerSdk._(api);
-    await instance._restore();
     return instance;
   }
 
   static Future<ActerSdk> get _unrestoredInstance async {
-    if (_instanceCompl == null) {
+    if (_unrestoredInstanceCompl == null) {
       Completer<ActerSdk> completer = Completer();
       completer.complete(_unrestoredInstanceInner());
+      _unrestoredInstanceCompl = completer;
+    }
+    return _unrestoredInstanceCompl!.future;
+  }
+
+  static Future<ActerSdk> _restoredInstanceInner() async {
+    final instance = await _unrestoredInstance;
+    await instance._restore();
+    return instance;
+  }
+
+  static Future<ActerSdk> get _restoredInstance async {
+    if (_instanceCompl == null) {
+      Completer<ActerSdk> completer = Completer();
+      completer.complete(_restoredInstanceInner());
       _instanceCompl = completer;
     }
     return _instanceCompl!.future;
   }
 
+
   static Future<ActerSdk> get instance async {
-    return await _unrestoredInstance;
+    return await _restoredInstance;
   }
 
   Future<ffi.Client> login(String username, String password) async {

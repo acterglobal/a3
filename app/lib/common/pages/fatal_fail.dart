@@ -1,5 +1,7 @@
 
 import 'package:acter/common/dialogs/logout_confirmation.dart';
+import 'package:acter/common/dialogs/nuke_confirmation.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -35,13 +37,12 @@ class FatalFailPage extends ConsumerWidget {
               alignment: MainAxisAlignment.center,
               children: [
                 OutlinedButton.icon(
-                  icon:  Icon(Atlas.exit, 
-                    color: Theme.of(context).colorScheme.error),
-                  label: Text('Force Logout', 
+                  icon:  Icon(Atlas.bomb_thin,
+                    color: Theme.of(context).colorScheme.error,),
+                  label: Text('Nuke local data',
                     style: TextStyle(color: Theme.of(context).colorScheme.error),),
-                  onPressed: () =>
-                      logoutConfirmationDialog(context, ref),
-                              
+                  onPressed: () => customMsgSnackbar(context, 'long press to activate'),
+                  onLongPress: () => nukeConfirmationDialog(context, ref),
                 ),
                 OutlinedButton.icon(
                   icon: const Icon(Atlas.bug_clipboard_thin),
