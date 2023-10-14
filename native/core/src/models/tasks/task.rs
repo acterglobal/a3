@@ -1,4 +1,5 @@
-use ruma_common::{events::OriginalMessageLikeEvent, EventId, OwnedUserId, RoomId};
+use ruma_common::{EventId, OwnedUserId, RoomId};
+use ruma_events::OriginalMessageLikeEvent;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 

@@ -44,7 +44,7 @@ class CrossSigning {
   Client client;
   bool acceptingRequest = false;
   bool waitForMatch = false;
-  late StreamSubscription<DeviceChangedEvent>? _deviceChangedPoller;
+  late StreamSubscription<DeviceNewEvent>? _deviceNewPoller;
   late StreamSubscription<VerificationEvent>? _verificationPoller;
   final Map<String, VerificationProcess> _processMap = {};
   bool _mounted = true;
@@ -57,12 +57,12 @@ class CrossSigning {
 
   void dispose() {
     _mounted = false;
-    _deviceChangedPoller?.cancel();
+    _deviceNewPoller?.cancel();
     _verificationPoller?.cancel();
   }
 
   void _installDeviceEvent() {
-    _deviceChangedPoller = client.deviceChangedEventRx()?.listen((event) async {
+    _deviceNewPoller = client.deviceNewEventRx()?.listen((event) async {
       final records = await event.deviceRecords(false);
       for (var record in records) {
         debugPrint('found device id: ${record.deviceId()}');
@@ -85,7 +85,7 @@ class CrossSigning {
 
   bool _shouldShowNewDevicePopup() {
     // between `m.key.verification.mac` event and `m.key.verification.done` event,
-    // device changed event occurs automatically.
+    // device new event occurs automatically.
     // on this event, `New device` popup must not appear.
     // thus skip this event.
     bool result = true;

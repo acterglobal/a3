@@ -344,6 +344,32 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
           ],
         );
+      case 'm.poll.start':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  '${simplifyUserId(sender)}: ',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .copyWith(fontWeight: FontWeight.w700),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            Flexible(
+              child: Text(
+                eventItem.textDesc()!.body(),
+                style: Theme.of(context).textTheme.bodySmall,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
     }
     return const SizedBox.shrink();
   }

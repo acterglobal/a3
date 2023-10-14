@@ -11492,7 +11492,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListDeviceRecord? __deviceChangedEventDeviceRecordsFuturePoll(
+  FfiListDeviceRecord? __deviceNewEventDeviceRecordsFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -11506,7 +11506,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _deviceChangedEventDeviceRecordsFuturePoll(
+    final tmp6 = _deviceNewEventDeviceRecordsFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -11540,7 +11540,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __deviceChangedEventRequestVerificationToUserFuturePoll(
+  bool? __deviceNewEventRequestVerificationToUserFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -11554,7 +11554,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _deviceChangedEventRequestVerificationToUserFuturePoll(
+    final tmp6 = _deviceNewEventRequestVerificationToUserFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -11584,7 +11584,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __deviceChangedEventRequestVerificationToDeviceFuturePoll(
+  bool? __deviceNewEventRequestVerificationToDeviceFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -11598,7 +11598,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _deviceChangedEventRequestVerificationToDeviceFuturePoll(
+    final tmp6 = _deviceNewEventRequestVerificationToDeviceFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -11628,7 +11628,51 @@ class Api {
     return tmp7;
   }
 
-  bool? __deviceChangedEventRequestVerificationToUserWithMethodsFuturePoll(
+  bool? __deviceNewEventRequestVerificationToUserWithMethodsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _deviceNewEventRequestVerificationToUserWithMethodsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __deviceNewEventRequestVerificationToDeviceWithMethodsFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -11643,7 +11687,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 =
-        _deviceChangedEventRequestVerificationToUserWithMethodsFuturePoll(
+        _deviceNewEventRequestVerificationToDeviceWithMethodsFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -11673,7 +11717,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __deviceChangedEventRequestVerificationToDeviceWithMethodsFuturePoll(
+  FfiListDeviceRecord? __deviceChangedEventDeviceRecordsFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -11687,52 +11731,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 =
-        _deviceChangedEventRequestVerificationToDeviceWithMethodsFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
-  FfiListDeviceRecord? __deviceLeftEventDeviceRecordsFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _deviceLeftEventDeviceRecordsFuturePoll(
+    final tmp6 = _deviceChangedEventDeviceRecordsFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -12161,6 +12160,42 @@ class Api {
     return tmp9;
   }
 
+  DeviceNewEvent? __clientDeviceNewEventRxStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _clientDeviceNewEventRxStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_DeviceNewEvent");
+    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
+    final tmp9 = DeviceNewEvent._(this, tmp11_1);
+    return tmp9;
+  }
+
   DeviceChangedEvent? __clientDeviceChangedEventRxStreamPoll(
     int boxed,
     int postCobject,
@@ -12194,42 +12229,6 @@ class Api {
     final tmp11_1 = _Box(this, tmp11_0, "drop_box_DeviceChangedEvent");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
     final tmp9 = DeviceChangedEvent._(this, tmp11_1);
-    return tmp9;
-  }
-
-  DeviceLeftEvent? __clientDeviceLeftEventRxStreamPoll(
-    int boxed,
-    int postCobject,
-    int port,
-    int done,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    final tmp6 = done;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    var tmp7 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    tmp7 = tmp6;
-    final tmp8 = _clientDeviceLeftEventRxStreamPoll(
-      tmp1,
-      tmp3,
-      tmp5,
-      tmp7,
-    );
-    final tmp10 = tmp8.arg0;
-    final tmp11 = tmp8.arg1;
-    if (tmp10 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_DeviceLeftEvent");
-    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp9 = DeviceLeftEvent._(this, tmp11_1);
     return tmp9;
   }
 
@@ -15347,18 +15346,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
           )>>("__TimelineStream_edit");
 
   late final _timelineStreamEdit = _timelineStreamEditPtr.asFunction<
       int Function(
-        int,
-        int,
-        int,
-        int,
         int,
         int,
         int,
@@ -19489,7 +19480,6 @@ class Api {
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -19497,7 +19487,6 @@ class Api {
 
   late final _spaceSetName = _spaceSetNamePtr.asFunction<
       int Function(
-        int,
         int,
         int,
         int,
@@ -21374,6 +21363,16 @@ class Api {
       int Function(
         int,
       )>();
+  late final _clientDeviceNewEventRxPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientDeviceNewEventRxReturn Function(
+            ffi.Int64,
+          )>>("__Client_device_new_event_rx");
+
+  late final _clientDeviceNewEventRx = _clientDeviceNewEventRxPtr.asFunction<
+      _ClientDeviceNewEventRxReturn Function(
+        int,
+      )>();
   late final _clientDeviceChangedEventRxPtr = _lookup<
       ffi.NativeFunction<
           _ClientDeviceChangedEventRxReturn Function(
@@ -21385,16 +21384,6 @@ class Api {
           _ClientDeviceChangedEventRxReturn Function(
             int,
           )>();
-  late final _clientDeviceLeftEventRxPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientDeviceLeftEventRxReturn Function(
-            ffi.Int64,
-          )>>("__Client_device_left_event_rx");
-
-  late final _clientDeviceLeftEventRx = _clientDeviceLeftEventRxPtr.asFunction<
-      _ClientDeviceLeftEventRxReturn Function(
-        int,
-      )>();
   late final _clientTypingEventRxPtr = _lookup<
       ffi.NativeFunction<
           _ClientTypingEventRxReturn Function(
@@ -22245,6 +22234,100 @@ class Api {
       _ReceiptRecordTsReturn Function(
         int,
       )>();
+  late final _deviceNewEventDeviceIdPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__DeviceNewEvent_device_id");
+
+  late final _deviceNewEventDeviceId = _deviceNewEventDeviceIdPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _deviceNewEventDeviceRecordsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint8,
+          )>>("__DeviceNewEvent_device_records");
+
+  late final _deviceNewEventDeviceRecords =
+      _deviceNewEventDeviceRecordsPtr.asFunction<
+          int Function(
+            int,
+            int,
+          )>();
+  late final _deviceNewEventRequestVerificationToUserPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__DeviceNewEvent_request_verification_to_user");
+
+  late final _deviceNewEventRequestVerificationToUser =
+      _deviceNewEventRequestVerificationToUserPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _deviceNewEventRequestVerificationToDevicePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__DeviceNewEvent_request_verification_to_device");
+
+  late final _deviceNewEventRequestVerificationToDevice =
+      _deviceNewEventRequestVerificationToDevicePtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _deviceNewEventRequestVerificationToUserWithMethodsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__DeviceNewEvent_request_verification_to_user_with_methods");
+
+  late final _deviceNewEventRequestVerificationToUserWithMethods =
+      _deviceNewEventRequestVerificationToUserWithMethodsPtr.asFunction<
+          int Function(
+            int,
+            int,
+          )>();
+  late final _deviceNewEventRequestVerificationToDeviceWithMethodsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+          )>>("__DeviceNewEvent_request_verification_to_device_with_methods");
+
+  late final _deviceNewEventRequestVerificationToDeviceWithMethods =
+      _deviceNewEventRequestVerificationToDeviceWithMethodsPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _deviceChangedEventDeviceIdPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__DeviceChangedEvent_device_id");
+
+  late final _deviceChangedEventDeviceId =
+      _deviceChangedEventDeviceIdPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _deviceChangedEventDeviceRecordsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -22254,83 +22337,6 @@ class Api {
 
   late final _deviceChangedEventDeviceRecords =
       _deviceChangedEventDeviceRecordsPtr.asFunction<
-          int Function(
-            int,
-            int,
-          )>();
-  late final _deviceChangedEventRequestVerificationToUserPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__DeviceChangedEvent_request_verification_to_user");
-
-  late final _deviceChangedEventRequestVerificationToUser =
-      _deviceChangedEventRequestVerificationToUserPtr.asFunction<
-          int Function(
-            int,
-          )>();
-  late final _deviceChangedEventRequestVerificationToDevicePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__DeviceChangedEvent_request_verification_to_device");
-
-  late final _deviceChangedEventRequestVerificationToDevice =
-      _deviceChangedEventRequestVerificationToDevicePtr.asFunction<
-          int Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _deviceChangedEventRequestVerificationToUserWithMethodsPtr =
-      _lookup<
-              ffi.NativeFunction<
-                  ffi.Int64 Function(
-                    ffi.Int64,
-                    ffi.Int64,
-                  )>>(
-          "__DeviceChangedEvent_request_verification_to_user_with_methods");
-
-  late final _deviceChangedEventRequestVerificationToUserWithMethods =
-      _deviceChangedEventRequestVerificationToUserWithMethodsPtr.asFunction<
-          int Function(
-            int,
-            int,
-          )>();
-  late final _deviceChangedEventRequestVerificationToDeviceWithMethodsPtr =
-      _lookup<
-              ffi.NativeFunction<
-                  ffi.Int64 Function(
-                    ffi.Int64,
-                    ffi.Int64,
-                    ffi.Uint64,
-                    ffi.Uint64,
-                    ffi.Int64,
-                  )>>(
-          "__DeviceChangedEvent_request_verification_to_device_with_methods");
-
-  late final _deviceChangedEventRequestVerificationToDeviceWithMethods =
-      _deviceChangedEventRequestVerificationToDeviceWithMethodsPtr.asFunction<
-          int Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _deviceLeftEventDeviceRecordsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Uint8,
-          )>>("__DeviceLeftEvent_device_records");
-
-  late final _deviceLeftEventDeviceRecords =
-      _deviceLeftEventDeviceRecordsPtr.asFunction<
           int Function(
             int,
             int,
@@ -25664,6 +25670,91 @@ class Api {
             int,
             int,
           )>();
+  late final _deviceNewEventDeviceRecordsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _DeviceNewEventDeviceRecordsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__DeviceNewEvent_device_records_future_poll");
+
+  late final _deviceNewEventDeviceRecordsFuturePoll =
+      _deviceNewEventDeviceRecordsFuturePollPtr.asFunction<
+          _DeviceNewEventDeviceRecordsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _deviceNewEventRequestVerificationToUserFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _DeviceNewEventRequestVerificationToUserFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__DeviceNewEvent_request_verification_to_user_future_poll");
+
+  late final _deviceNewEventRequestVerificationToUserFuturePoll =
+      _deviceNewEventRequestVerificationToUserFuturePollPtr.asFunction<
+          _DeviceNewEventRequestVerificationToUserFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _deviceNewEventRequestVerificationToDeviceFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _DeviceNewEventRequestVerificationToDeviceFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__DeviceNewEvent_request_verification_to_device_future_poll");
+
+  late final _deviceNewEventRequestVerificationToDeviceFuturePoll =
+      _deviceNewEventRequestVerificationToDeviceFuturePollPtr.asFunction<
+          _DeviceNewEventRequestVerificationToDeviceFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _deviceNewEventRequestVerificationToUserWithMethodsFuturePollPtr =
+      _lookup<
+              ffi.NativeFunction<
+                  _DeviceNewEventRequestVerificationToUserWithMethodsFuturePollReturn
+                      Function(
+                    ffi.Int64,
+                    ffi.Int64,
+                    ffi.Int64,
+                  )>>(
+          "__DeviceNewEvent_request_verification_to_user_with_methods_future_poll");
+
+  late final _deviceNewEventRequestVerificationToUserWithMethodsFuturePoll =
+      _deviceNewEventRequestVerificationToUserWithMethodsFuturePollPtr
+          .asFunction<
+              _DeviceNewEventRequestVerificationToUserWithMethodsFuturePollReturn
+                  Function(
+                int,
+                int,
+                int,
+              )>();
+  late final _deviceNewEventRequestVerificationToDeviceWithMethodsFuturePollPtr =
+      _lookup<
+              ffi.NativeFunction<
+                  _DeviceNewEventRequestVerificationToDeviceWithMethodsFuturePollReturn
+                      Function(
+                    ffi.Int64,
+                    ffi.Int64,
+                    ffi.Int64,
+                  )>>(
+          "__DeviceNewEvent_request_verification_to_device_with_methods_future_poll");
+
+  late final _deviceNewEventRequestVerificationToDeviceWithMethodsFuturePoll =
+      _deviceNewEventRequestVerificationToDeviceWithMethodsFuturePollPtr
+          .asFunction<
+              _DeviceNewEventRequestVerificationToDeviceWithMethodsFuturePollReturn
+                  Function(
+                int,
+                int,
+                int,
+              )>();
   late final _deviceChangedEventDeviceRecordsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _DeviceChangedEventDeviceRecordsFuturePollReturn Function(
@@ -25675,98 +25766,6 @@ class Api {
   late final _deviceChangedEventDeviceRecordsFuturePoll =
       _deviceChangedEventDeviceRecordsFuturePollPtr.asFunction<
           _DeviceChangedEventDeviceRecordsFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _deviceChangedEventRequestVerificationToUserFuturePollPtr =
-      _lookup<
-              ffi.NativeFunction<
-                  _DeviceChangedEventRequestVerificationToUserFuturePollReturn
-                      Function(
-                    ffi.Int64,
-                    ffi.Int64,
-                    ffi.Int64,
-                  )>>(
-          "__DeviceChangedEvent_request_verification_to_user_future_poll");
-
-  late final _deviceChangedEventRequestVerificationToUserFuturePoll =
-      _deviceChangedEventRequestVerificationToUserFuturePollPtr.asFunction<
-          _DeviceChangedEventRequestVerificationToUserFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _deviceChangedEventRequestVerificationToDeviceFuturePollPtr =
-      _lookup<
-              ffi.NativeFunction<
-                  _DeviceChangedEventRequestVerificationToDeviceFuturePollReturn
-                      Function(
-                    ffi.Int64,
-                    ffi.Int64,
-                    ffi.Int64,
-                  )>>(
-          "__DeviceChangedEvent_request_verification_to_device_future_poll");
-
-  late final _deviceChangedEventRequestVerificationToDeviceFuturePoll =
-      _deviceChangedEventRequestVerificationToDeviceFuturePollPtr.asFunction<
-          _DeviceChangedEventRequestVerificationToDeviceFuturePollReturn
-              Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _deviceChangedEventRequestVerificationToUserWithMethodsFuturePollPtr =
-      _lookup<
-              ffi.NativeFunction<
-                  _DeviceChangedEventRequestVerificationToUserWithMethodsFuturePollReturn
-                      Function(
-                    ffi.Int64,
-                    ffi.Int64,
-                    ffi.Int64,
-                  )>>(
-          "__DeviceChangedEvent_request_verification_to_user_with_methods_future_poll");
-
-  late final _deviceChangedEventRequestVerificationToUserWithMethodsFuturePoll =
-      _deviceChangedEventRequestVerificationToUserWithMethodsFuturePollPtr
-          .asFunction<
-              _DeviceChangedEventRequestVerificationToUserWithMethodsFuturePollReturn
-                  Function(
-                int,
-                int,
-                int,
-              )>();
-  late final _deviceChangedEventRequestVerificationToDeviceWithMethodsFuturePollPtr =
-      _lookup<
-              ffi.NativeFunction<
-                  _DeviceChangedEventRequestVerificationToDeviceWithMethodsFuturePollReturn
-                      Function(
-                    ffi.Int64,
-                    ffi.Int64,
-                    ffi.Int64,
-                  )>>(
-          "__DeviceChangedEvent_request_verification_to_device_with_methods_future_poll");
-
-  late final _deviceChangedEventRequestVerificationToDeviceWithMethodsFuturePoll =
-      _deviceChangedEventRequestVerificationToDeviceWithMethodsFuturePollPtr
-          .asFunction<
-              _DeviceChangedEventRequestVerificationToDeviceWithMethodsFuturePollReturn
-                  Function(
-                int,
-                int,
-                int,
-              )>();
-  late final _deviceLeftEventDeviceRecordsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _DeviceLeftEventDeviceRecordsFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__DeviceLeftEvent_device_records_future_poll");
-
-  late final _deviceLeftEventDeviceRecordsFuturePoll =
-      _deviceLeftEventDeviceRecordsFuturePollPtr.asFunction<
-          _DeviceLeftEventDeviceRecordsFuturePollReturn Function(
             int,
             int,
             int,
@@ -25958,6 +25957,23 @@ class Api {
             int,
             int,
           )>();
+  late final _clientDeviceNewEventRxStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientDeviceNewEventRxStreamPollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_device_new_event_rx_stream_poll");
+
+  late final _clientDeviceNewEventRxStreamPoll =
+      _clientDeviceNewEventRxStreamPollPtr.asFunction<
+          _ClientDeviceNewEventRxStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _clientDeviceChangedEventRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
           _ClientDeviceChangedEventRxStreamPollReturn Function(
@@ -25970,23 +25986,6 @@ class Api {
   late final _clientDeviceChangedEventRxStreamPoll =
       _clientDeviceChangedEventRxStreamPollPtr.asFunction<
           _ClientDeviceChangedEventRxStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _clientDeviceLeftEventRxStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientDeviceLeftEventRxStreamPollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_device_left_event_rx_stream_poll");
-
-  late final _clientDeviceLeftEventRxStreamPoll =
-      _clientDeviceLeftEventRxStreamPollPtr.asFunction<
-          _ClientDeviceLeftEventRxStreamPollReturn Function(
             int,
             int,
             int,
@@ -33406,11 +33405,9 @@ class TimelineStream {
   Future<bool> edit(
     String newMsg,
     String originalEventId,
-    String? txnId,
   ) {
     final tmp1 = newMsg;
     final tmp5 = originalEventId;
-    final tmp9 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -33418,10 +33415,6 @@ class TimelineStream {
     var tmp6 = 0;
     var tmp7 = 0;
     var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
-    var tmp13 = 0;
-    var tmp14 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -33439,21 +33432,7 @@ class TimelineStream {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      final tmp11_0 = utf8.encode(tmp11);
-      tmp13 = tmp11_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-      tmp12_1.setAll(0, tmp11_0);
-      tmp12 = tmp12_0.address;
-      tmp14 = tmp13;
-    }
-    final tmp15 = _api._timelineStreamEdit(
+    final tmp9 = _api._timelineStreamEdit(
       tmp0,
       tmp2,
       tmp3,
@@ -33461,17 +33440,13 @@ class TimelineStream {
       tmp6,
       tmp7,
       tmp8,
-      tmp10,
-      tmp12,
-      tmp13,
-      tmp14,
     );
-    final tmp17 = tmp15;
-    final ffi.Pointer<ffi.Void> tmp17_0 = ffi.Pointer.fromAddress(tmp17);
-    final tmp17_1 = _Box(_api, tmp17_0, "__TimelineStream_edit_future_drop");
-    tmp17_1._finalizer = _api._registerFinalizer(tmp17_1);
-    final tmp16 = _nativeFuture(tmp17_1, _api.__timelineStreamEditFuturePoll);
-    return tmp16;
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "__TimelineStream_edit_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(tmp11_1, _api.__timelineStreamEditFuturePoll);
+    return tmp10;
   }
 
   /// send single receipt
@@ -41571,42 +41546,34 @@ class Space {
 
   /// set name of the room
   Future<EventId> setName(
-    String? name,
+    String name,
   ) {
     final tmp1 = name;
     var tmp0 = 0;
     var tmp2 = 0;
+    var tmp3 = 0;
     var tmp4 = 0;
-    var tmp5 = 0;
-    var tmp6 = 0;
     tmp0 = _box.borrow();
-    if (tmp1 == null) {
-      tmp2 = 0;
-    } else {
-      tmp2 = 1;
-      final tmp3 = tmp1;
-      final tmp3_0 = utf8.encode(tmp3);
-      tmp5 = tmp3_0.length;
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
-      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
-      tmp4_1.setAll(0, tmp3_0);
-      tmp4 = tmp4_0.address;
-      tmp6 = tmp5;
-    }
-    final tmp7 = _api._spaceSetName(
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._spaceSetName(
       tmp0,
       tmp2,
+      tmp3,
       tmp4,
-      tmp5,
-      tmp6,
     );
-    final tmp9 = tmp7;
-    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
-    final tmp9_1 = _Box(_api, tmp9_0, "__Space_set_name_future_drop");
-    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
-    final tmp8 = _nativeFuture(tmp9_1, _api.__spaceSetNameFuturePoll);
-    return tmp8;
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Space_set_name_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__spaceSetNameFuturePoll);
+    return tmp6;
   }
 
   /// the members currently in the space
@@ -45529,6 +45496,26 @@ class Client {
     return tmp2;
   }
 
+  /// Return the event handler of device new
+  Stream<DeviceNewEvent>? deviceNewEventRx() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientDeviceNewEventRx(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 =
+        _Box(_api, tmp4_0, "__Client_device_new_event_rx_stream_drop");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = _nativeStream(tmp4_1, _api.__clientDeviceNewEventRxStreamPoll);
+    return tmp2;
+  }
+
   /// Return the event handler of device changed
   Stream<DeviceChangedEvent>? deviceChangedEventRx() {
     var tmp0 = 0;
@@ -45547,27 +45534,6 @@ class Client {
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 =
         _nativeStream(tmp4_1, _api.__clientDeviceChangedEventRxStreamPoll);
-    return tmp2;
-  }
-
-  /// Return the event handler of device left
-  Stream<DeviceLeftEvent>? deviceLeftEventRx() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._clientDeviceLeftEventRx(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 =
-        _Box(_api, tmp4_0, "__Client_device_left_event_rx_stream_drop");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 =
-        _nativeStream(tmp4_1, _api.__clientDeviceLeftEventRxStreamPoll);
     return tmp2;
   }
 
@@ -47373,12 +47339,27 @@ class ReceiptRecord {
   }
 }
 
-/// Deliver devices changed event from rust to flutter
-class DeviceChangedEvent {
+/// Deliver devices new event from rust to flutter
+class DeviceNewEvent {
   final Api _api;
   final _Box _box;
 
-  DeviceChangedEvent._(this._api, this._box);
+  DeviceNewEvent._(this._api, this._box);
+
+  /// get device id
+  DeviceId deviceId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._deviceNewEventDeviceId(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_DeviceId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = DeviceId._(_api, tmp3_1);
+    return tmp2;
+  }
 
   /// Get the device list, excluding verified ones
   Future<FfiListDeviceRecord> deviceRecords(
@@ -47389,17 +47370,17 @@ class DeviceChangedEvent {
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1 ? 1 : 0;
-    final tmp3 = _api._deviceChangedEventDeviceRecords(
+    final tmp3 = _api._deviceNewEventDeviceRecords(
       tmp0,
       tmp2,
     );
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
     final tmp5_1 =
-        _Box(_api, tmp5_0, "__DeviceChangedEvent_device_records_future_drop");
+        _Box(_api, tmp5_0, "__DeviceNewEvent_device_records_future_drop");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
     final tmp4 =
-        _nativeFuture(tmp5_1, _api.__deviceChangedEventDeviceRecordsFuturePoll);
+        _nativeFuture(tmp5_1, _api.__deviceNewEventDeviceRecordsFuturePoll);
     return tmp4;
   }
 
@@ -47407,16 +47388,16 @@ class DeviceChangedEvent {
   Future<bool> requestVerificationToUser() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._deviceChangedEventRequestVerificationToUser(
+    final tmp1 = _api._deviceNewEventRequestVerificationToUser(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 = _Box(_api, tmp3_0,
-        "__DeviceChangedEvent_request_verification_to_user_future_drop");
+        "__DeviceNewEvent_request_verification_to_user_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(
-        tmp3_1, _api.__deviceChangedEventRequestVerificationToUserFuturePoll);
+        tmp3_1, _api.__deviceNewEventRequestVerificationToUserFuturePoll);
     return tmp2;
   }
 
@@ -47438,7 +47419,7 @@ class DeviceChangedEvent {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._deviceChangedEventRequestVerificationToDevice(
+    final tmp5 = _api._deviceNewEventRequestVerificationToDevice(
       tmp0,
       tmp2,
       tmp3,
@@ -47447,10 +47428,10 @@ class DeviceChangedEvent {
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
     final tmp7_1 = _Box(_api, tmp7_0,
-        "__DeviceChangedEvent_request_verification_to_device_future_drop");
+        "__DeviceNewEvent_request_verification_to_device_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(
-        tmp7_1, _api.__deviceChangedEventRequestVerificationToDeviceFuturePoll);
+        tmp7_1, _api.__deviceNewEventRequestVerificationToDeviceFuturePoll);
     return tmp6;
   }
 
@@ -47463,17 +47444,17 @@ class DeviceChangedEvent {
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    final tmp3 = _api._deviceChangedEventRequestVerificationToUserWithMethods(
+    final tmp3 = _api._deviceNewEventRequestVerificationToUserWithMethods(
       tmp0,
       tmp2,
     );
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
     final tmp5_1 = _Box(_api, tmp5_0,
-        "__DeviceChangedEvent_request_verification_to_user_with_methods_future_drop");
+        "__DeviceNewEvent_request_verification_to_user_with_methods_future_drop");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
     final tmp4 = _nativeFuture(tmp5_1,
-        _api.__deviceChangedEventRequestVerificationToUserWithMethodsFuturePoll);
+        _api.__deviceNewEventRequestVerificationToUserWithMethodsFuturePoll);
     return tmp4;
   }
 
@@ -47499,7 +47480,7 @@ class DeviceChangedEvent {
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
     tmp6 = tmp5._box.move();
-    final tmp7 = _api._deviceChangedEventRequestVerificationToDeviceWithMethods(
+    final tmp7 = _api._deviceNewEventRequestVerificationToDeviceWithMethods(
       tmp0,
       tmp2,
       tmp3,
@@ -47509,10 +47490,10 @@ class DeviceChangedEvent {
     final tmp9 = tmp7;
     final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
     final tmp9_1 = _Box(_api, tmp9_0,
-        "__DeviceChangedEvent_request_verification_to_device_with_methods_future_drop");
+        "__DeviceNewEvent_request_verification_to_device_with_methods_future_drop");
     tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
     final tmp8 = _nativeFuture(tmp9_1,
-        _api.__deviceChangedEventRequestVerificationToDeviceWithMethodsFuturePoll);
+        _api.__deviceNewEventRequestVerificationToDeviceWithMethodsFuturePoll);
     return tmp8;
   }
 
@@ -47522,12 +47503,27 @@ class DeviceChangedEvent {
   }
 }
 
-/// Deliver devices left event from rust to flutter
-class DeviceLeftEvent {
+/// Deliver devices changed event from rust to flutter
+class DeviceChangedEvent {
   final Api _api;
   final _Box _box;
 
-  DeviceLeftEvent._(this._api, this._box);
+  DeviceChangedEvent._(this._api, this._box);
+
+  /// get device id
+  DeviceId deviceId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._deviceChangedEventDeviceId(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_DeviceId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = DeviceId._(_api, tmp3_1);
+    return tmp2;
+  }
 
   /// Get the device list, including deleted ones
   Future<FfiListDeviceRecord> deviceRecords(
@@ -47538,17 +47534,17 @@ class DeviceLeftEvent {
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1 ? 1 : 0;
-    final tmp3 = _api._deviceLeftEventDeviceRecords(
+    final tmp3 = _api._deviceChangedEventDeviceRecords(
       tmp0,
       tmp2,
     );
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
     final tmp5_1 =
-        _Box(_api, tmp5_0, "__DeviceLeftEvent_device_records_future_drop");
+        _Box(_api, tmp5_0, "__DeviceChangedEvent_device_records_future_drop");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
     final tmp4 =
-        _nativeFuture(tmp5_1, _api.__deviceLeftEventDeviceRecordsFuturePoll);
+        _nativeFuture(tmp5_1, _api.__deviceChangedEventDeviceRecordsFuturePoll);
     return tmp4;
   }
 
@@ -50055,14 +50051,14 @@ class _ClientVerificationEventRxReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ClientDeviceChangedEventRxReturn extends ffi.Struct {
+class _ClientDeviceNewEventRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
 }
 
-class _ClientDeviceLeftEventRxReturn extends ffi.Struct {
+class _ClientDeviceChangedEventRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -53529,86 +53525,86 @@ class _SessionManagerRequestVerificationFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _DeviceNewEventDeviceRecordsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _DeviceNewEventRequestVerificationToUserFuturePollReturn
+    extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _DeviceNewEventRequestVerificationToDeviceFuturePollReturn
+    extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _DeviceNewEventRequestVerificationToUserWithMethodsFuturePollReturn
+    extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _DeviceNewEventRequestVerificationToDeviceWithMethodsFuturePollReturn
+    extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _DeviceChangedEventDeviceRecordsFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _DeviceChangedEventRequestVerificationToUserFuturePollReturn
-    extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
-class _DeviceChangedEventRequestVerificationToDeviceFuturePollReturn
-    extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
-class _DeviceChangedEventRequestVerificationToUserWithMethodsFuturePollReturn
-    extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
-class _DeviceChangedEventRequestVerificationToDeviceWithMethodsFuturePollReturn
-    extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
-class _DeviceLeftEventDeviceRecordsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -53697,14 +53693,14 @@ class _ClientVerificationEventRxStreamPollReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ClientDeviceChangedEventRxStreamPollReturn extends ffi.Struct {
+class _ClientDeviceNewEventRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
 }
 
-class _ClientDeviceLeftEventRxStreamPollReturn extends ffi.Struct {
+class _ClientDeviceChangedEventRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

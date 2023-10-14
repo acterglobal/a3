@@ -65,6 +65,9 @@ dependencies:
     # path: "../../acter-avatar"
     git:
       url: https://github.com/acterglobal/acter-avatar
+  table_calendar: ^3.0.9
+  omni_datetime_picker: ^1.0.9
+  flutter_easyloading: ^3.0.5
 
   # Code Generation
   flutter_localizations:

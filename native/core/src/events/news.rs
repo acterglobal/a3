@@ -1,14 +1,12 @@
 use derive_builder::Builder;
 use derive_getters::Getters;
-use ruma_common::{
-    events::{
-        macros::EventContent,
-        room::message::{
-            AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
-            LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
-        },
+use ruma_common::OwnedMxcUri;
+use ruma_events::{
+    macros::EventContent,
+    room::message::{
+        AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
+        LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
     },
-    OwnedMxcUri,
 };
 use serde::{Deserialize, Serialize};
 

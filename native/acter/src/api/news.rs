@@ -15,16 +15,14 @@ use matrix_sdk::{
     ruma::{assign, UInt},
     RoomState,
 };
-use ruma_common::{
-    events::room::{
-        message::{
-            AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-            ImageMessageEventContent, LocationMessageEventContent, TextMessageEventContent,
-            VideoInfo, VideoMessageEventContent,
-        },
-        ImageInfo,
+use ruma_common::{MxcUri, OwnedEventId, OwnedRoomId, OwnedUserId};
+use ruma_events::room::{
+    message::{
+        AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
+        ImageMessageEventContent, LocationMessageEventContent, TextMessageEventContent, VideoInfo,
+        VideoMessageEventContent,
     },
-    MxcUri, OwnedEventId, OwnedRoomId, OwnedUserId,
+    ImageInfo,
 };
 use std::{
     collections::{hash_map::Entry, HashMap},

@@ -1,11 +1,9 @@
 use acter_core::models::TextMessageContent;
 use core::time::Duration;
-use ruma_common::{
-    events::room::{
-        message::{AudioInfo, FileInfo, TextMessageEventContent, VideoInfo},
-        ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
-    },
-    MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedUserId,
+use ruma_common::{MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedUserId};
+use ruma_events::room::{
+    message::{AudioInfo, FileInfo, TextMessageEventContent, VideoInfo},
+    ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
 };
 use serde::{Deserialize, Serialize};
 

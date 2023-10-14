@@ -24,6 +24,9 @@ derive_builder = "0.11.2"
 enum_dispatch = "0.3.10"
 futures = "0.3.24"
 mime_guess = "2.0.4"
+ruma-common = { workspace = true }
+ruma-events = { workspace = true }
+ruma-macros = { workspace = true }
 serde = "1.0.136"
 serde_json = "1.0.82"
 serde_repr = "0.1"
@@ -48,12 +51,6 @@ features = ["rustls-tls", "markdown"]
 workspace = true
 default-features = false
 
-[dependencies.ruma-macros]
-workspace = true
-
-[dependencies.ruma-common]
-workspace = true
-
 [dev-dependencies]
 anyhow = "1.0.69"
 env_logger = "0.10.0"
@@ -67,4 +64,3 @@ default-features = false
 [dev-dependencies.matrix-sdk-base]
 workspace = true
 default-features = false
-

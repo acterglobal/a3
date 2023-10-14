@@ -6,13 +6,11 @@ use matrix_sdk::{
     RoomState,
 };
 use matrix_sdk_ui::timeline::{BackPaginationStatus, PaginationOptions, Timeline};
-use ruma_common::{
-    events::{
-        receipt::ReceiptThread,
-        relation::Replacement,
-        room::message::{MessageType, Relation, RoomMessageEvent, RoomMessageEventContent},
-    },
-    EventId,
+use ruma_common::EventId;
+use ruma_events::{
+    receipt::ReceiptThread,
+    relation::Replacement,
+    room::message::{MessageType, Relation, RoomMessageEvent, RoomMessageEventContent},
 };
 use std::sync::Arc;
 use tracing::{error, info};
@@ -44,7 +42,10 @@ impl TimelineStream {
             let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
             yield TimelineDiff::current_items(timeline_items.clone().into_iter().map(|x| RoomMessage::from((x, room.clone()))).collect());
 
-            let mut remap = timeline_stream.map(|diff| remap_for_diff(diff, |x| RoomMessage::from((x, room.clone()))));
+            let mut remap = timeline_stream.map(|diff| remap_for_diff(
+                diff,
+                |x| RoomMessage::from((x, room.clone())),
+            ));
 
             while let Some(d) = remap.next().await {
                 yield d
@@ -59,9 +60,8 @@ impl TimelineStream {
             .spawn(async move {
                 let mut back_pagination_status = timeline.back_pagination_status();
                 let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
-                timeline
-                    .paginate_backwards(PaginationOptions::single_request(count))
-                    .await?;
+                let options = PaginationOptions::single_request(count);
+                timeline.paginate_backwards(options).await?;
                 loop {
                     if let Some(status) = back_pagination_status.next().await {
                         if status == BackPaginationStatus::Idle {
@@ -80,12 +80,7 @@ impl TimelineStream {
         matches!(self.room.state(), RoomState::Joined)
     }
 
-    pub async fn edit(
-        &self,
-        new_msg: String,
-        original_event_id: String,
-        txn_id: Option<String>,
-    ) -> Result<bool> {
+    pub async fn edit(&self, new_msg: String, original_event_id: String) -> Result<bool> {
         if !self.is_joined() {
             bail!("Can't edit message from a room we are not in");
         }
@@ -117,9 +112,7 @@ impl TimelineStream {
                 let mut edited_content = RoomMessageEventContent::text_markdown(new_msg);
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
-                timeline
-                    .send(edited_content.into(), txn_id.as_deref().map(Into::into))
-                    .await;
+                timeline.send(edited_content.into()).await;
                 Ok(true)
             })
             .await?

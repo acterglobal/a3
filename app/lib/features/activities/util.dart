@@ -62,6 +62,7 @@ NotificationBrief briefForChat(ffi.Notification notification) {
     case 'm.reaction':
     case 'm.sticker':
     case 'm.room.member':
+    case 'm.poll.start':
       return NotificationBrief.fromTextDesc(eventItem.textDesc(), route);
     case 'm.room.redaction':
       return const NotificationBrief(title: 'Message deleted', route: route);
