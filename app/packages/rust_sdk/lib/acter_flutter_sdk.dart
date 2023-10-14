@@ -148,19 +148,19 @@ DateTime toDartDatetime(ffi.UtcDateTime dt) {
 }
 
 const aOptions = AndroidOptions(
-        encryptedSharedPreferences: true,
-        preferencesKeyPrefix: isDevBuild ? 'dev.flutter' : null,
-      );
+  encryptedSharedPreferences: true,
+  preferencesKeyPrefix: isDevBuild ? 'dev.flutter' : null,
+);
 const iOptions = IOSOptions(
-        synchronizable: true,
-        accessibility: KeychainAccessibility.first_unlock,   // must have been unlocked since reboot
-        groupId: appleKeychainAppGroupName,                  // to allow the background process to access the same store
-      );
+  synchronizable: true,
+  accessibility: KeychainAccessibility.first_unlock,   // must have been unlocked since reboot
+  groupId: appleKeychainAppGroupName,                  // to allow the background process to access the same store
+);
 const mOptions = MacOsOptions(
-        synchronizable: true,
-        accessibility: KeychainAccessibility.first_unlock,   // must have been unlocked since reboot
-        groupId: appleKeychainAppGroupName,                  // to allow the background process to access the same store
-        );
+  synchronizable: true,
+  accessibility: KeychainAccessibility.first_unlock,   // must have been unlocked since reboot
+  groupId: appleKeychainAppGroupName,                  // to allow the background process to access the same store
+);
 class ActerSdk {
   late final ffi.Api _api;
   static String _sessionKey = defaultSessionKey;
@@ -245,41 +245,43 @@ class ActerSdk {
       return;
     }
     String appDocPath = await appDir();
-    // int delayedCounter = 0;
-    // while (!await storage.isCupertinoProtectedDataAvailable()) {
-    //   if (delayedCounter > 10) {
-    //     throw 'Secure Store not available';
-    //   }
-    //   delayedCounter += 1;
-    //   debugPrint("Secure Storage isn't available yet. Delaying");
-    //   await Future.delayed(const Duration(milliseconds: 50));
-    // }
-    // debugPrint('Secure Storage is available. Attempting to read.');
-    final sessionsStr = await storage.read(key: _sessionKey);
-    if (sessionsStr == null) {
+    int delayedCounter = 0;
+    while (!await storage.isCupertinoProtectedDataAvailable()) {
+      if (delayedCounter > 10) {
+        throw 'Secure Store not available';
+      }
+      delayedCounter += 1;
+      debugPrint("Secure Storage isn't available yet. Delaying");
+      await Future.delayed(const Duration(milliseconds: 50));
+    }
+    debugPrint('Secure Storage is available. Attempting to read.');
+    if (!await storage.containsKey(key: _sessionKey)) {
       // not yet set. let's see if we maybe want to migrate instead:
       await _maybeMigrateFromPrefs(appDocPath);
       return;
     }
 
+    final sessionsStr = await storage.read(key: _sessionKey);
+    if (sessionsStr != null) {
     final List<dynamic> sessionKeys = json.decode(sessionsStr);
-    for (final deviceId in sessionKeys) {
-      final token = await storage.read(key: deviceId as String);
-      if (token != null) {
-        try {
-          ffi.Client client = await _api.loginWithToken(token);
-          _clients.add(client);
-        } catch (e) {
-          debugPrint('Login with token failed. trying if conversion saves us: $e');
-          String convToken = _api.convertOldRestoreToken(token, appDocPath);
-          ffi.Client client = await _api.loginWithToken(convToken);
-          _clients.add(client);
+      for (final deviceId in sessionKeys) {
+        final token = await storage.read(key: deviceId as String);
+        if (token != null) {
+          try {
+            ffi.Client client = await _api.loginWithToken(token);
+            _clients.add(client);
+          } catch (e) {
+            debugPrint('Login with token failed. trying if conversion saves us: $e');
+            String convToken = _api.convertOldRestoreToken(token, appDocPath);
+            ffi.Client client = await _api.loginWithToken(convToken);
+            _clients.add(client);
+          }
+        } else {
+          debugPrint('$deviceId not found. despite in session list');
         }
-      } else {
-        debugPrint('$deviceId not found. despite in session list');
       }
+      _index = int.tryParse(await storage.read(key: '$_sessionKey::currentClientIdx') ?? '0') ?? 0;
     }
-    _index = int.tryParse(await storage.read(key: '$_sessionKey::currentClientIdx') ?? '0') ?? 0;
     debugPrint('loading configuration from $appDocPath');
     debugPrint('restored $_clients');
   }
