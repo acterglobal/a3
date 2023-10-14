@@ -167,5 +167,12 @@ where
             index: None,
             value: None,
         },
+        // Truncate the vector to `len` elements and notify subscribers
+        VectorDiff::Truncate { length } => ApiVectorDiff {
+            action: "Truncate".to_string(),
+            values: None,
+            index: Some(length),
+            value: None,
+        },
     }
 }

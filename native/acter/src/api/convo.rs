@@ -22,21 +22,21 @@ use matrix_sdk_ui::{
     Timeline,
 };
 use ruma_common::{
-    events::{
-        receipt::{ReceiptThread, ReceiptType},
-        room::{
-            avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
-            encrypted::OriginalSyncRoomEncryptedEvent,
-            join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
-            member::{MembershipState, OriginalSyncRoomMemberEvent},
-            message::OriginalSyncRoomMessageEvent,
-            redaction::SyncRoomRedactionEvent,
-        },
-        space::parent::SpaceParentEventContent,
-        AnySyncTimelineEvent, InitialStateEvent,
+    serde::Raw, MxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId, OwnedUserId, RoomId,
+    UserId,
+};
+use ruma_events::{
+    receipt::{ReceiptThread, ReceiptType},
+    room::{
+        avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
+        encrypted::OriginalSyncRoomEncryptedEvent,
+        join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
+        member::{MembershipState, OriginalSyncRoomMemberEvent},
+        message::OriginalSyncRoomMessageEvent,
+        redaction::SyncRoomRedactionEvent,
     },
-    serde::Raw,
-    MxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId, OwnedUserId, RoomId, UserId,
+    space::parent::SpaceParentEventContent,
+    AnySyncTimelineEvent, InitialStateEvent,
 };
 use std::{
     ops::Deref,
@@ -159,10 +159,8 @@ impl Convo {
             }
             if (!event_found && !has_latest_msg) {
                 // let's trigger a backpagination in hope that helps us...
-                if let Err(error) = last_msg_tl
-                    .paginate_backwards(PaginationOptions::until_num_items(20, 10))
-                    .await
-                {
+                let options = PaginationOptions::until_num_items(20, 10);
+                if let Err(error) = last_msg_tl.paginate_backwards(options).await {
                     error!(?error, room_id=?latest_msg_room.room_id(), "backpagination failed");
                 }
             }
@@ -376,12 +374,12 @@ impl Client {
                 }
 
                 if let Some(parent) = settings.parent {
-                    let Some(Ok(homeserver)) = client.homeserver().await.host_str().map(|h|h.try_into()) else {
+                    let Some(Ok(homeserver)) = client.homeserver().host_str().map(|h|h.try_into()) else {
                       return Err(Error::HomeserverMissesHostname)?;
                     };
                     let parent_event = InitialStateEvent::<SpaceParentEventContent> {
-                        content: assign!(SpaceParentEventContent::new(true), {
-                            via: Some(vec![homeserver]),
+                        content: assign!(SpaceParentEventContent::new(vec![homeserver]), {
+                            canonical: true,
                         }),
                         state_key: parent.clone(),
                     };
@@ -503,7 +501,7 @@ impl Client {
                     locked.subscribe(),
                 )
             };
-            let mut remap = stream.map(move |diff| remap_for_diff(diff, |x| x));
+            let mut remap = stream.into_stream().map(move |diff| remap_for_diff(diff, |x| x));
             yield current_items;
 
             while let Some(d) = remap.next().await {

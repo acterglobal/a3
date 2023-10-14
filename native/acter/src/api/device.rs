@@ -1,12 +1,11 @@
 use anyhow::{Context, Result};
 use futures::{
     channel::mpsc::{channel, Receiver, Sender},
+    pin_mut,
     stream::StreamExt,
 };
-use matrix_sdk::{
-    ruma::api::client::sync::sync_events::v3::Response as SyncResponse, Client as SdkClient,
-};
-use ruma_common::device_id;
+use matrix_sdk::{executor::JoinHandle, Client as SdkClient};
+use ruma_common::{device_id, OwnedDeviceId};
 use std::{
     sync::Arc,
     time::{Duration, SystemTime, UNIX_EPOCH},
@@ -17,19 +16,25 @@ use tracing::{error, info};
 use super::{client::Client, common::DeviceRecord, RUNTIME};
 
 #[derive(Clone, Debug)]
-pub struct DeviceChangedEvent {
+pub struct DeviceNewEvent {
     client: SdkClient,
+    device_id: OwnedDeviceId,
 }
 
-impl DeviceChangedEvent {
-    pub(crate) fn new(client: &SdkClient) -> Self {
-        DeviceChangedEvent {
+impl DeviceNewEvent {
+    pub(crate) fn new(client: &SdkClient, device_id: OwnedDeviceId) -> Self {
+        DeviceNewEvent {
             client: client.clone(),
+            device_id,
         }
     }
 
     pub(crate) fn client(&self) -> SdkClient {
         self.client.clone()
+    }
+
+    pub fn device_id(&self) -> OwnedDeviceId {
+        self.device_id.clone()
     }
 
     pub async fn device_records(&self, verified: bool) -> Result<Vec<DeviceRecord>> {
@@ -94,15 +99,21 @@ impl DeviceChangedEvent {
 }
 
 #[derive(Clone, Debug)]
-pub struct DeviceLeftEvent {
+pub struct DeviceChangedEvent {
     client: SdkClient,
+    device_id: OwnedDeviceId,
 }
 
-impl DeviceLeftEvent {
-    pub(crate) fn new(client: &SdkClient) -> Self {
-        DeviceLeftEvent {
+impl DeviceChangedEvent {
+    pub(crate) fn new(client: &SdkClient, device_id: OwnedDeviceId) -> Self {
+        DeviceChangedEvent {
             client: client.clone(),
+            device_id,
         }
+    }
+
+    pub fn device_id(&self) -> OwnedDeviceId {
+        self.device_id.clone()
     }
 
     pub async fn device_records(&self, deleted: bool) -> Result<Vec<DeviceRecord>> {
@@ -171,71 +182,72 @@ impl DeviceLeftEvent {
 
 #[derive(Clone, Debug)]
 pub(crate) struct DeviceController {
-    changed_event_tx: Sender<DeviceChangedEvent>,
+    new_event_rx: Arc<Mutex<Option<Receiver<DeviceNewEvent>>>>,
     changed_event_rx: Arc<Mutex<Option<Receiver<DeviceChangedEvent>>>>,
-    left_event_tx: Sender<DeviceLeftEvent>,
-    left_event_rx: Arc<Mutex<Option<Receiver<DeviceLeftEvent>>>>,
+    listener: Arc<JoinHandle<()>>,
 }
 
 impl DeviceController {
-    pub fn new() -> Self {
-        let (changed_event_tx, changed_event_rx) = channel::<DeviceChangedEvent>(10); // dropping after more than 10 items queued
-        let (left_event_tx, left_event_rx) = channel::<DeviceLeftEvent>(10); // dropping after more than 10 items queued
+    pub fn new(client: SdkClient) -> Self {
+        let (mut new_event_tx, new_event_rx) = channel::<DeviceNewEvent>(10); // dropping after more than 10 items queued
+        let (mut changed_event_tx, changed_event_rx) = channel::<DeviceChangedEvent>(10); // dropping after more than 10 items queued
+
+        let listener = RUNTIME.spawn(async move {
+            let devices_stream = client
+                .encryption()
+                .devices_stream()
+                .await
+                .expect("We have to get devices stream");
+            let my_user_id = client
+                .user_id()
+                .expect("We should know our user id afte we have logged in");
+            pin_mut!(devices_stream);
+
+            while let Some(device_updates) = devices_stream.next().await {
+                if !client.logged_in() {
+                    break;
+                }
+                if let Some(user_devices) = device_updates.new.get(my_user_id) {
+                    for device in user_devices.values() {
+                        let dev_id = device.device_id().to_owned();
+                        info!("device-new device id: {}", dev_id);
+                        let evt = DeviceNewEvent::new(&client, dev_id);
+                        if let Err(e) = new_event_tx.try_send(evt) {
+                            error!("Dropping devices new event: {}", e);
+                        }
+                    }
+                }
+                if let Some(user_devices) = device_updates.changed.get(my_user_id) {
+                    for device in user_devices.values() {
+                        let dev_id = device.device_id().to_owned();
+                        info!("device-changed device id: {}", dev_id);
+                        let evt = DeviceChangedEvent::new(&client, dev_id);
+                        if let Err(e) = changed_event_tx.try_send(evt) {
+                            error!("Dropping devices changed event: {}", e);
+                        }
+                    }
+                }
+            }
+        });
+
         DeviceController {
-            changed_event_tx,
+            new_event_rx: Arc::new(Mutex::new(Some(new_event_rx))),
             changed_event_rx: Arc::new(Mutex::new(Some(changed_event_rx))),
-            left_event_tx,
-            left_event_rx: Arc::new(Mutex::new(Some(left_event_rx))),
-        }
-    }
-
-    pub fn process_device_lists(&mut self, client: &SdkClient, response: &SyncResponse) {
-        info!("process device lists: {:?}", response);
-
-        // avoid device changed event in case that user joined room
-        if response.rooms.join.is_empty() {
-            let current_user_id = client
-                .user_id()
-                .expect("guest user cannot handle the device changed event");
-            // for user_id in response.device_lists.changed.clone().into_iter() {
-            //     info!("device-changed user_id: {}", user_id);
-            //     if *user_id == *current_user_id {
-            //         let evt = DeviceChangedEvent::new(client);
-            //         if let Err(e) = self.changed_event_tx.try_send(evt) {
-            //             error!("Dropping devices changed event: {}", e);
-            //         }
-            //     }
-            // }
-        }
-
-        // avoid device left event in case that user left room
-        if response.rooms.leave.is_empty() {
-            let current_user_id = client
-                .user_id()
-                .expect("guest user cannot handle the device left event");
-            // for user_id in response.device_lists.left.clone().into_iter() {
-            //     info!("device-left user_id: {}", user_id);
-            //     if *user_id == *current_user_id {
-            //         let evt = DeviceLeftEvent::new(client);
-            //         if let Err(e) = self.left_event_tx.try_send(evt) {
-            //             error!("Dropping devices left event: {}", e);
-            //         }
-            //     }
-            // }
+            listener: Arc::new(listener),
         }
     }
 }
 
 impl Client {
-    pub fn device_changed_event_rx(&self) -> Option<Receiver<DeviceChangedEvent>> {
-        match self.device_controller.changed_event_rx.try_lock() {
+    pub fn device_new_event_rx(&self) -> Option<Receiver<DeviceNewEvent>> {
+        match self.device_controller.new_event_rx.try_lock() {
             Ok(mut r) => r.take(),
             Err(e) => None,
         }
     }
 
-    pub fn device_left_event_rx(&self) -> Option<Receiver<DeviceLeftEvent>> {
-        match self.device_controller.left_event_rx.try_lock() {
+    pub fn device_changed_event_rx(&self) -> Option<Receiver<DeviceChangedEvent>> {
+        match self.device_controller.changed_event_rx.try_lock() {
             Ok(mut r) => r.take(),
             Err(e) => None,
         }

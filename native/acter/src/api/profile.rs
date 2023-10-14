@@ -11,7 +11,8 @@ use matrix_sdk::{
     },
     Account, Client, DisplayName,
 };
-use ruma_common::{events::room::MediaSource, OwnedRoomId, OwnedUserId};
+use ruma_common::{OwnedRoomId, OwnedUserId};
+use ruma_events::room::MediaSource;
 
 use super::{
     api::FfiBuffer,

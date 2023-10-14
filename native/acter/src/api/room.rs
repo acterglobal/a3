@@ -38,31 +38,27 @@ use matrix_sdk::{
     Client, RoomMemberships, RoomState,
 };
 use ruma_common::{
-    events::{
-        reaction::ReactionEventContent,
-        receipt::ReceiptThread,
-        relation::{Annotation, Replacement},
-        room::{
-            avatar::ImageInfo as AvatarImageInfo,
-            join_rules::{AllowRule, JoinRule},
-            message::{
-                AddMentions, AudioInfo, AudioMessageEventContent, FileInfo,
-                FileMessageEventContent, ForwardThread, ImageMessageEventContent,
-                LocationMessageEventContent, MessageType, Relation, RoomMessageEvent,
-                RoomMessageEventContent, TextMessageEventContent, VideoInfo,
-                VideoMessageEventContent,
-            },
-            ImageInfo, MediaSource,
+    room::RoomType, serde::Raw, space::SpaceRoomJoinRule, EventId, OwnedEventId, OwnedMxcUri,
+    OwnedRoomAliasId, OwnedRoomId, OwnedUserId, TransactionId, UserId,
+};
+use ruma_events::{
+    reaction::ReactionEventContent,
+    receipt::ReceiptThread,
+    relation::{Annotation, Replacement},
+    room::{
+        avatar::ImageInfo as AvatarImageInfo,
+        join_rules::{AllowRule, JoinRule},
+        message::{
+            AddMentions, AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
+            ForwardThread, ImageMessageEventContent, LocationMessageEventContent, MessageType,
+            Relation, RoomMessageEvent, RoomMessageEventContent, TextMessageEventContent,
+            VideoInfo, VideoMessageEventContent,
         },
-        space::child::HierarchySpaceChildEvent,
-        AnyMessageLikeEvent, AnyStateEvent, AnyTimelineEvent, MessageLikeEvent,
-        MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
+        ImageInfo, MediaSource,
     },
-    room::RoomType,
-    serde::Raw,
-    space::SpaceRoomJoinRule,
-    EventId, OwnedEventId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedUserId, TransactionId,
-    UserId,
+    space::child::HierarchySpaceChildEvent,
+    AnyMessageLikeEvent, AnyStateEvent, AnyTimelineEvent, MessageLikeEvent, MessageLikeEventType,
+    StateEvent, StateEventType, StaticEventContent,
 };
 use std::{io::Write, ops::Deref, path::PathBuf};
 use tracing::{error, info};
@@ -394,8 +390,7 @@ impl SpaceHierarchyRoomInfo {
     pub fn via_server_name(&self) -> Option<String> {
         for v in &self.chunk.children_state {
             let Ok(h) = v.deserialize() else { continue };
-            let Some(via) = h.content.via else { continue };
-            if let Some(v) = via.into_iter().next() {
+            if let Some(v) = h.content.via.into_iter().next() {
                 return Some(v.to_string());
             }
         }
@@ -645,7 +640,7 @@ impl Room {
             .await?
     }
 
-    pub async fn set_name(&self, name: Option<String>) -> Result<OwnedEventId> {
+    pub async fn set_name(&self, name: String) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't set name to a room we are not in");
         }

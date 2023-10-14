@@ -1,5 +1,6 @@
 use derive_getters::Getters;
-use ruma_common::{events::OriginalMessageLikeEvent, EventId, OwnedEventId, OwnedUserId};
+use ruma_common::{EventId, OwnedEventId, OwnedUserId};
+use ruma_events::OriginalMessageLikeEvent;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Deref};
 use tracing::{error, trace};

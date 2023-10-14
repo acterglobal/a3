@@ -736,7 +736,7 @@ object TimelineStream {
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
 
     /// modify the room message
-    fn edit(new_msg: string, original_event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+    fn edit(new_msg: string, original_event_id: string) -> Future<Result<bool>>;
 
     /// send single receipt
     /// receipt_type: FullyRead | Read | ReadPrivate
@@ -1510,7 +1510,7 @@ object Space {
     fn set_topic(topic: string) -> Future<Result<EventId>>;
 
     /// set name of the room
-    fn set_name(name: Option<string>) -> Future<Result<EventId>>;
+    fn set_name(name: string) -> Future<Result<EventId>>;
 
     /// the members currently in the space
     fn active_members() -> Future<Result<Vec<Member>>>;
@@ -1943,11 +1943,11 @@ object Client {
     /// Get session manager that returns all/verified/unverified/inactive session list
     fn session_manager() -> SessionManager;
 
+    /// Return the event handler of device new
+    fn device_new_event_rx() -> Option<Stream<DeviceNewEvent>>;
+
     /// Return the event handler of device changed
     fn device_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
-
-    /// Return the event handler of device left
-    fn device_left_event_rx() -> Option<Stream<DeviceLeftEvent>>;
 
     /// Return the typing event receiver
     fn typing_event_rx() -> Option<Stream<TypingEvent>>;
@@ -2174,8 +2174,11 @@ object ReceiptRecord {
     fn ts() -> Option<u64>;
 }
 
-/// Deliver devices changed event from rust to flutter
-object DeviceChangedEvent {
+/// Deliver devices new event from rust to flutter
+object DeviceNewEvent {
+    /// get device id
+    fn device_id() -> DeviceId;
+
     /// Get the device list, excluding verified ones
     fn device_records(verified: bool) -> Future<Result<Vec<DeviceRecord>>>;
 
@@ -2192,8 +2195,11 @@ object DeviceChangedEvent {
     fn request_verification_to_device_with_methods(dev_id: string, methods: Vec<string>) -> Future<Result<bool>>;
 }
 
-/// Deliver devices left event from rust to flutter
-object DeviceLeftEvent {
+/// Deliver devices changed event from rust to flutter
+object DeviceChangedEvent {
+    /// get device id
+    fn device_id() -> DeviceId;
+
     /// Get the device list, including deleted ones
     fn device_records(deleted: bool) -> Future<Result<Vec<DeviceRecord>>>;
 }

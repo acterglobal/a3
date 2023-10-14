@@ -1,6 +1,6 @@
 use derive_builder::Builder;
 use derive_getters::Getters;
-use ruma_common::events::{
+use ruma_events::{
     macros::EventContent,
     room::message::{
         AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
