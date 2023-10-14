@@ -265,7 +265,7 @@ class EmailAddressesPage extends ConsumerWidget {
         newValue.emailAddress,
         newValue.password,
       );
-      ref.invalidate(accountProfileProvider);
+      ref.invalidate(emailAddressesProvider);
 
       if (!context.mounted) {
         return;
