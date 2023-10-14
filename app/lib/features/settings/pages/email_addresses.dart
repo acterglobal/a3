@@ -3,6 +3,7 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/widgets/email_address_card.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -241,11 +242,8 @@ class EmailAddressesPage extends ConsumerWidget {
   }
 
   Future<void> onRegister(BuildContext context, WidgetRef ref) async {
-    final account = await ref.read(accountProvider.future);
-    if (!context.mounted) {
-      return;
-    }
-    final manager = account.threePidManager();
+    final client = ref.read(clientProvider);
+    final manager = client!.threePidManager();
     final newValue = await showDialog<EmailPassword>(
       context: context,
       builder: (BuildContext context) => const RequestTokenViaEmail(),

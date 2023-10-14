@@ -5,6 +5,7 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -92,16 +93,18 @@ class EmailAddressCard extends ConsumerWidget {
           ),
           DefaultButton(
             onPressed: () async {
-              final account = await ref.read(accountProvider.future);
-              final manager = account.threePidManager();
+              final client = ref.read(clientProvider);
+              final manager = client!.threePidManager();
               await manager.removeEmailAddress(emailAddress);
-              if (context.mounted) {
-                ref.invalidate(emailAddressesProvider);
-                Navigator.of(
-                  context,
-                  rootNavigator: true,
-                ).pop();
+              ref.invalidate(emailAddressesProvider);
+
+              if (!context.mounted) {
+                return;
               }
+              Navigator.of(
+                context,
+                rootNavigator: true,
+              ).pop();
             },
             title: 'Yes',
             style: ElevatedButton.styleFrom(
@@ -134,19 +137,23 @@ class EmailAddressCard extends ConsumerWidget {
       ),
     );
 
-    if (token != null && context.mounted) {
-      final account = await ref.read(accountProvider.future);
-      final manager = account.threePidManager();
-      await manager.submitTokenFromEmail(emailAddress, token);
-
-      if (!context.mounted) {
-        return;
-      }
-      Navigator.of(context, rootNavigator: true).pop();
-      customMsgSnackbar(
-        context,
-        'Confirmed this email address',
-      );
+    if (token == null) {
+      return;
     }
+    if (!context.mounted) {
+      return;
+    }
+    final client = ref.read(clientProvider);
+    final manager = client!.threePidManager();
+    await manager.submitTokenFromEmail(emailAddress, token);
+    ref.invalidate(emailAddressesProvider);
+
+    if (!context.mounted) {
+      return;
+    }
+    customMsgSnackbar(
+      context,
+      'Confirmed this email address',
+    );
   }
 }

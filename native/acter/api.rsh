@@ -1724,9 +1724,6 @@ object Account {
 
     /// remove user_id from ignore list
     fn unignore_user(user_id: string) -> Future<Result<bool>>;
-
-    /// get intermediate info of login (via email and phone) from account data
-    fn three_pid_manager() -> ThreePidManager;
 }
 
 object ThreePidManager {
@@ -1748,7 +1745,6 @@ object ThreePidManager {
 }
 
 object ThreePidRecord {
-    fn submit_url() -> Option<string>;
     fn session_id() -> string;
     fn passphrase() -> string;
 }
@@ -2044,6 +2040,9 @@ object Client {
 
     /// get only past events that I responded as rsvp
     fn my_past_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
+
+    /// get intermediate info of login (via email and phone) from account data
+    fn three_pid_manager() -> Result<ThreePidManager>;
 
 }
 

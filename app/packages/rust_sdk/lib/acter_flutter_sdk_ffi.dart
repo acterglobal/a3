@@ -20297,16 +20297,6 @@ class Api {
         int,
         int,
       )>();
-  late final _accountThreePidManagerPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__Account_three_pid_manager");
-
-  late final _accountThreePidManager = _accountThreePidManagerPtr.asFunction<
-      int Function(
-        int,
-      )>();
   late final _threePidManagerConfirmedEmailAddressesPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -20392,16 +20382,6 @@ class Api {
             int,
             int,
           )>();
-  late final _threePidRecordSubmitUrlPtr = _lookup<
-      ffi.NativeFunction<
-          _ThreePidRecordSubmitUrlReturn Function(
-            ffi.Int64,
-          )>>("__ThreePidRecord_submit_url");
-
-  late final _threePidRecordSubmitUrl = _threePidRecordSubmitUrlPtr.asFunction<
-      _ThreePidRecordSubmitUrlReturn Function(
-        int,
-      )>();
   late final _threePidRecordSessionIdPtr = _lookup<
       ffi.NativeFunction<
           _ThreePidRecordSessionIdReturn Function(
@@ -21732,6 +21712,16 @@ class Api {
       int Function(
         int,
         int,
+        int,
+      )>();
+  late final _clientThreePidManagerPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientThreePidManagerReturn Function(
+            ffi.Int64,
+          )>>("__Client_three_pid_manager");
+
+  late final _clientThreePidManager = _clientThreePidManagerPtr.asFunction<
+      _ClientThreePidManagerReturn Function(
         int,
       )>();
   late final _optionStringTextPtr = _lookup<
@@ -43275,21 +43265,6 @@ class Account {
     return tmp6;
   }
 
-  /// get intermediate info of login (via email and phone) from account data
-  ThreePidManager threePidManager() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._accountThreePidManager(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_ThreePidManager");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = ThreePidManager._(_api, tmp3_1);
-    return tmp2;
-  }
-
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -43482,39 +43457,6 @@ class ThreePidRecord {
   final _Box _box;
 
   ThreePidRecord._(this._api, this._box);
-
-  String? submitUrl() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._threePidRecordSubmitUrl(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
-    return tmp2;
-  }
 
   String sessionId() {
     var tmp0 = 0;
@@ -46260,6 +46202,37 @@ class Client {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__clientMyPastEventsFuturePoll);
     return tmp6;
+  }
+
+  /// get intermediate info of login (via email and phone) from account data
+  ThreePidManager threePidManager() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientThreePidManager(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 =
+          utf8.decode(tmp4_0.asTypedList(tmp5), allowMalformed: true);
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_ThreePidManager");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = ThreePidManager._(_api, tmp7_1);
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -49814,17 +49787,6 @@ class _MemberMembershipStatusStrReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ThreePidRecordSubmitUrlReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-}
-
 class _ThreePidRecordSessionIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -50077,6 +50039,19 @@ class _ClientReceiptEventRxReturn extends ffi.Struct {
   external int arg0;
   @ffi.Int64()
   external int arg1;
+}
+
+class _ClientThreePidManagerReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
 }
 
 class _OptionStringTextReturn extends ffi.Struct {

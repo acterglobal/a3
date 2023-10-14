@@ -4,22 +4,23 @@ use matrix_sdk::{
     reqwest::{ClientBuilder, StatusCode},
     ruma::{
         api::client::account::ThirdPartyIdRemovalStatus, thirdparty::Medium, uint, ClientSecret,
-        OwnedSessionId, SessionId,
+        SessionId,
     },
-    Account as SdkAccount,
+    Account, Client as SdkClient,
 };
 use serde::Deserialize;
 use std::{
-    collections::{BTreeMap, HashMap},
+    collections::BTreeMap,
     ops::Deref,
 };
 use tracing::warn;
 
-use super::{account::Account, RUNTIME};
+use super::{client::Client, RUNTIME};
 
 #[derive(Clone)]
 pub struct ThreePidManager {
-    account: SdkAccount,
+    account: Account,
+    client: SdkClient,
 }
 
 impl ThreePidManager {
@@ -74,7 +75,6 @@ impl ThreePidManager {
 
                 // add this record to custom data
                 let record = ThreePidRecord::new(
-                    response.submit_url.clone(),
                     response.sid.to_string(),
                     password,
                 );
@@ -112,8 +112,10 @@ impl ThreePidManager {
         token: String,
     ) -> Result<bool> {
         let account = self.account.clone();
+        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
+                let server_url = client.homeserver().to_string();
                 let maybe_content = account.account_data::<ThreePidContent>().await?;
                 let Some(raw_content) = maybe_content else {
                     warn!("Not found any email registration content");
@@ -124,23 +126,27 @@ impl ThreePidManager {
                     warn!("That email address was not registered");
                     return Ok(false);
                 };
-                let Some(submit_url) = record.submit_url() else {
-                    warn!("The submit url for email confirmation was not given");
-                    return Ok(false);
-                };
                 let session_id = record.session_id();
                 let password = record.passphrase();
                 let sid =
                     SessionId::parse(session_id.clone()).context("Session id parsing failed")?;
-                let secret = ClientSecret::parse(password).context("Password parsing failed")?;
+                let secret = ClientSecret::parse(password.clone()).context("Password parsing failed")?;
+                let submit_url = format!(
+                    "{}/_matrix/client/unstable/add_threepid/email/submit_token",
+                    client.homeserver(),
+                );
 
                 // send confirmation
                 let http_client = ClientBuilder::new().build()?;
-                let mut params: HashMap<String, String> = HashMap::new();
-                params.insert("sid".to_string(), session_id.clone());
-                params.insert("client_secret".to_string(), secret.to_string());
-                params.insert("token".to_string(), token);
-                let submit_response = http_client.post(submit_url).form(&params).send().await?;
+                let submit_response = http_client
+                    .get(submit_url)
+                    .query(&[
+                        ("token", token),
+                        ("client_secret", password),
+                        ("sid", session_id),
+                    ])
+                    .send()
+                    .await?;
                 if submit_response.status() != StatusCode::OK {
                     return Ok(false);
                 }
@@ -204,10 +210,13 @@ impl ThreePidManager {
     }
 }
 
-impl Account {
-    pub fn three_pid_manager(&self) -> ThreePidManager {
-        let account = self.deref().clone();
-        ThreePidManager { account }
+impl Client {
+    pub fn three_pid_manager(&self) -> Result<ThreePidManager> {
+        let account = self.account().context("Third party identifier needs account")?;
+        Ok(ThreePidManager {
+            account: account.deref().clone(),
+            client: self.core.client().clone(),
+        })
     }
 }
 

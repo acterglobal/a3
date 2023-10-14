@@ -55,8 +55,8 @@ class EmailAddresses {
 }
 
 final emailAddressesProvider = FutureProvider((ref) async {
-  final account = await ref.watch(accountProvider.future);
-  final threePidManager = account.threePidManager();
+  final client = ref.watch(clientProvider);
+  final threePidManager = client!.threePidManager();
   final confirmed =
       asDartStringList(await threePidManager.confirmedEmailAddresses());
   final requested =
