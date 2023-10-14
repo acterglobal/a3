@@ -65,6 +65,9 @@ dependencies:
     # path: "../../acter-avatar"
     git:
       url: https://github.com/acterglobal/acter-avatar
+  table_calendar: ^3.0.9
+  omni_datetime_picker: ^1.0.9
+  flutter_easyloading: ^3.0.5
 
   # Code Generation
   flutter_localizations:
@@ -107,11 +110,6 @@ dependencies:
   flutter_onboarding_slider: ^1.0.9
   riverpod_infinite_scroll: ^1.0.9
   infinite_scroll_pagination: ^3.2.0
-  awesome_notifications:
-    # path: "../../awesome_notifications"
-    git:
-      url: https://github.com/acterglobal/awesome_notifications
-      ref: acter-main
   logging: ^1.2.0
   args: ^2.4.2
   breadcrumbs: ^0.1.0

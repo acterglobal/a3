@@ -3,16 +3,17 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
-import 'package:acter/features/events/providers/events_provider.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jiffy/jiffy.dart';
 
 class CalendarEventPage extends ConsumerWidget {
   final String calendarId;
@@ -124,41 +125,68 @@ class CalendarEventPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final event = ref.watch(calendarEventProvider(calendarId));
-
+    var event = ref.watch(calendarEventProvider(calendarId));
+    AsyncValue<String> myRsvpStatus =
+        ref.watch(myRsvpStatusProvider(calendarId));
+    Set<RSVP> rsvp = <RSVP>{RSVP.Pending};
+    myRsvpStatus.maybeWhen(
+      data: (status) {
+        if (status == 'Yes') {
+          rsvp = <RSVP>{RSVP.Yes};
+        } else if (status == 'Maybe') {
+          rsvp = <RSVP>{RSVP.Maybe};
+        } else if (status == 'No') {
+          rsvp = <RSVP>{RSVP.No};
+        } else {
+          rsvp = <RSVP>{RSVP.Pending};
+        }
+      },
+      orElse: () => null,
+    );
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.neutral,
       body: CustomScrollView(
         slivers: <Widget>[
-          PageHeaderWidget(
-            title: event.hasValue ? event.value!.title() : 'Loading Event',
-            sectionDecoration: const BoxDecoration(
-              gradient: AppTheme.primaryGradient,
-            ),
-            actions: [
-              event.maybeWhen(
-                data: (event) => buildActions(context, ref, event),
-                orElse: () => const SizedBox.shrink(),
-              ),
-            ],
+          Consumer(
+            builder: (context, ref, child) {
+              return PageHeaderWidget(
+                title: event.hasValue ? event.value!.title() : 'Loading Event',
+                sectionDecoration: const BoxDecoration(
+                  gradient: AppTheme.primaryGradient,
+                ),
+                expandedHeight: 0,
+                actions: [
+                  event.maybeWhen(
+                    data: (event) => buildActions(context, ref, event),
+                    orElse: () => const SizedBox.shrink(),
+                  ),
+                ],
+              );
+            },
           ),
           event.when(
             data: (ev) {
-              String dateTime = 'Date and Time: ${formatDt(ev)}';
+              String date = formatDt(ev);
+              String time =
+                  '${Jiffy.parseFromMillisecondsSinceEpoch(ev.utcStart().timestampMillis()).jm} - ${Jiffy.parseFromMillisecondsSinceEpoch(ev.utcEnd().timestampMillis()).jm}';
               String description = '';
               TextMessageContent? content = ev.description();
-              if (content != null) {
-                description = 'Description: ${content.body()}';
+
+              if (content != null && content.body().isNotEmpty) {
+                description = content.body();
               }
               return SliverToBoxAdapter(
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    key: Key(calendarId),
-                    children: [
-                      Flexible(
-                        flex: 1,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  key: Key(calendarId),
+                  children: [
+                    const SizedBox(height: 50),
+                    Flexible(
+                      flex: 1,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width * 0.8,
+                        ),
                         child: Card(
                           elevation: 0,
                           child: Column(
@@ -167,84 +195,154 @@ class CalendarEventPage extends ConsumerWidget {
                                 padding: const EdgeInsets.all(8),
                                 child: Text(
                                   ev.title(),
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
+                                  style: Theme.of(context).textTheme.titleLarge,
                                 ),
                               ),
                               const SizedBox(height: 15),
                               Container(
                                 alignment: Alignment.topLeft,
-                                padding: const EdgeInsets.all(8),
-                                child: Text(dateTime),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                  vertical: 5,
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Date: ',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
+                                    ),
+                                    const SizedBox(width: 50),
+                                    Flexible(
+                                      flex: 2,
+                                      child: Text(
+                                        date,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                alignment: Alignment.topLeft,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                  vertical: 5,
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Time: ',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
+                                    ),
+                                    const SizedBox(width: 50),
+                                    Flexible(
+                                      flex: 2,
+                                      child: Text(
+                                        time,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Consumer(
+                                builder: (context, ref, child) {
+                                  return Container(
+                                    alignment: Alignment.topLeft,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 5,
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          'Host: ',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
+                                        ),
+                                        const SizedBox(width: 50),
+                                      ],
+                                    ),
+                                  );
+                                },
                               ),
                               const SizedBox(height: 15),
                               Container(
                                 alignment: Alignment.topLeft,
-                                padding: const EdgeInsets.all(8),
-                                child: Text(description),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                  vertical: 5,
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Description: ',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
+                                    ),
+                                    Flexible(
+                                      flex: 2,
+                                      child: Text(
+                                        description,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
+                              const SizedBox(height: 15),
                             ],
                           ),
                         ),
                       ),
-                      Flexible(
-                        flex: 1,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            DefaultButton(
-                              title: 'Invite',
-                              onPressed: () => onInvite(context),
-                              isOutlined: true,
-                              style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 32,
-                                  vertical: 18,
-                                ),
-                                side: BorderSide(
-                                  color: Theme.of(context).colorScheme.success,
-                                  width: 1.5,
-                                ),
-                              ),
-                            ),
-                            PopupMenuButton(
-                              tooltip: 'RSVP',
-                              offset: const Offset(80, 35),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 32,
-                                  vertical: 8,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: Theme.of(context).colorScheme.success,
-                                ),
-                                child: Text(
-                                  'Join',
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              ),
-                              itemBuilder: (BuildContext context) =>
-                                  <PopupMenuEntry>[
-                                PopupMenuItem(
-                                  onTap: () => onRsvp(context, ev, 'Yes'),
-                                  child: const Text('Yes'),
-                                ),
-                                PopupMenuItem(
-                                  onTap: () => onRsvp(context, ev, 'Maybe'),
-                                  child: const Text('Maybe'),
-                                ),
-                                PopupMenuItem(
-                                  onTap: () => onRsvp(context, ev, 'No'),
-                                  child: const Text('No'),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 15),
+                    SegmentedButton<RSVP>(
+                      multiSelectionEnabled: false,
+                      emptySelectionAllowed: false,
+                      showSelectedIcon: false,
+                      selected: rsvp,
+                      onSelectionChanged: (Set<RSVP> rsvp) async {
+                        await onRsvp(
+                          context,
+                          event.requireValue,
+                          rsvp.first.name,
+                        );
+                        // refresh rsvp state and event
+                        myRsvpStatus =
+                            ref.refresh(myRsvpStatusProvider(calendarId));
+                        event = ref.refresh(calendarEventProvider(calendarId));
+                        EasyLoading.dismiss();
+                      },
+                      segments: rsvpOptions
+                          .map<ButtonSegment<RSVP>>(((RSVP, String) rsvp) {
+                        return ButtonSegment<RSVP>(
+                          value: rsvp.$1,
+                          label: Text(rsvp.$2),
+                        );
+                      }).toList(),
+                    ),
+                  ],
                 ),
               );
             },
@@ -274,20 +372,22 @@ class CalendarEventPage extends ConsumerWidget {
 
   Future<void> onRsvp(
     BuildContext context,
-    CalendarEvent event,
+    CalendarEvent? event,
     String status,
   ) async {
+    EasyLoading.show(status: 'Updating RSVP', dismissOnTap: false);
+    if (event == null) {
+      EasyLoading.showError(
+        'Error fetching event details',
+        duration: const Duration(seconds: 2),
+      );
+      return;
+    }
     final rsvpManager = await event.rsvpManager();
-    int count = rsvpManager.totalRsvpCount();
-    debugPrint('rsvp prev count: $count');
-
     final draft = rsvpManager.rsvpDraft();
     draft.status(status);
+
     final rsvpId = await draft.send();
     debugPrint('new rsvp id: $rsvpId');
-
-    // rsvpManager.subscribeStream();
-    // count = rsvpManager.totalRsvpCount();
-    // debugPrint('rsvp count: $count');
   }
 }

@@ -5,6 +5,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,6 +17,7 @@ class RedactContentWidget extends ConsumerWidget {
   final String senderId;
   final String roomId;
   final bool isSpace;
+  final void Function()? onRemove;
   final Function()? onSuccess;
   const RedactContentWidget({
     super.key,
@@ -26,6 +28,7 @@ class RedactContentWidget extends ConsumerWidget {
     required this.senderId,
     this.isSpace = false,
     this.onSuccess,
+    this.onRemove,
   });
 
   @override
@@ -68,7 +71,8 @@ class RedactContentWidget extends ConsumerWidget {
           isOutlined: true,
         ),
         DefaultButton(
-          onPressed: () => redactContent(context, ref, textController.text),
+          onPressed: onRemove ??
+              () => redactContent(context, ref, textController.text),
           title: 'Remove',
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.errorContainer,
@@ -91,11 +95,16 @@ class RedactContentWidget extends ConsumerWidget {
       if (isSpace) {
         final space = await ref.read(spaceProvider(roomId).future);
         res = await space.redactContent(eventId, reason);
-        debugPrint('Content from user:{$senderId flagged $res reason:$reason}');
+        debugPrint(
+          'Content from user:{$senderId redacted $res reason:$reason}',
+        );
       } else {
         final room = await ref.read(chatProvider(roomId).future);
         res = await room.redactContent(eventId, reason);
-        debugPrint('Content from user:{$senderId flagged $res reason:$reason}');
+        ref.invalidate(spaceEventsProvider);
+        debugPrint(
+          'Content from user:{$senderId redacted $res reason:$reason}',
+        );
       }
 
       if (res) {
