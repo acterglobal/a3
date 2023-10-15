@@ -111,7 +111,6 @@ pub async fn guest_client(
             client.restore_session(auth_session).await?;
             let state = ClientStateBuilder::default()
                 .is_guest(true)
-                .base_path(base_path)
                 .db_passphrase(Some(db_passphrase))
                 .build()?;
             let c = Client::new(client, state).await?;
@@ -131,7 +130,6 @@ pub async fn login_with_token_under_config(
         homeurl,
         is_guest,
         db_passphrase,
-        base_path,
     } = restore_token;
     let user_id = session.user_id.to_string();
     RUNTIME
@@ -151,7 +149,6 @@ pub async fn login_with_token_under_config(
             let state = ClientStateBuilder::default()
                 .is_guest(is_guest)
                 .db_passphrase(db_passphrase)
-                .base_path(base_path)
                 .build()?;
             let c = Client::new(client.clone(), state).await?;
             info!(
@@ -163,23 +160,14 @@ pub async fn login_with_token_under_config(
         .await?
 }
 
-pub async fn login_with_token(restore_token: String) -> Result<Client> {
+pub async fn login_with_token(base_path: String, restore_token: String) -> Result<Client> {
     let token: RestoreToken = serde_json::from_str(&restore_token)?;
-    print!("seeing {restore_token}: {token:?}");
-    let config = match platform::new_client_config(
-        token.base_path.clone(),
+    let config = platform::new_client_config(
+        base_path,
         token.session.user_id.to_string(),
         token.db_passphrase.clone(),
         false,
-    )
-    .await {
-        Err(e) => {
-            println!("{e} {:#?}", e.backtrace());
-            return Err(e)
-        }
-        Ok(e) => e
-    };
-    print!("post config");
+    ).await?;
     login_with_token_under_config(token, config).await
 }
 
@@ -188,7 +176,6 @@ async fn login_client(
     user_id: OwnedUserId,
     password: String,
     db_passphrase: Option<String>,
-    base_path: String,
     device_name: Option<String>,
 ) -> Result<Client> {
     let mut login_builder = client.matrix_auth().login_username(&user_id, &password);
@@ -200,7 +187,6 @@ async fn login_client(
     login_builder.send().await?;
     let state = ClientStateBuilder::default()
         .is_guest(false)
-        .base_path(base_path)
         .db_passphrase(db_passphrase)
         .build()?;
     info!(
@@ -216,7 +202,6 @@ pub async fn login_new_client_under_config(
     user_id: OwnedUserId,
     password: String,
     db_passphrase: Option<String>,
-    base_path: String,
     device_name: Option<String>,
 ) -> Result<Client> {
     RUNTIME
@@ -226,7 +211,6 @@ pub async fn login_new_client_under_config(
                 user_id,
                 password,
                 db_passphrase,
-                base_path,
                 device_name,
             )
             .await
@@ -243,14 +227,14 @@ pub async fn smart_login(
     device_name: Option<String>,
 ) -> Result<Client> {
     let (config, user_id) = make_client_config(
-        base_path.clone(),
+        base_path,
         &username,
         None,
         &default_homeserver_name,
         &default_homeserver_url,
     )
     .await?;
-    login_new_client_under_config(config, user_id, password, None, base_path, device_name).await
+    login_new_client_under_config(config, user_id, password, None, device_name).await
 }
 
 pub async fn login_new_client(
@@ -263,14 +247,14 @@ pub async fn login_new_client(
 ) -> Result<Client> {
     let db_passphrase = uuid::Uuid::new_v4().to_string();
     let (config, user_id) = make_client_config(
-        base_path.clone(),
+        base_path,
         &username,
         Some(db_passphrase.clone()),
         &default_homeserver_name,
         &default_homeserver_url,
     )
     .await?;
-    login_new_client_under_config(config, user_id, password, Some(db_passphrase), base_path, device_name).await
+    login_new_client_under_config(config, user_id, password, Some(db_passphrase), device_name).await
 }
 
 pub async fn register(
@@ -284,14 +268,14 @@ pub async fn register(
 ) -> Result<Client> {
     let db_passphrase = uuid::Uuid::new_v4().to_string();
     let (config, user_id) = make_client_config(
-        base_path.clone(),
+        base_path,
         &username,
         Some(db_passphrase.clone()),
         &default_homeserver_name,
         &default_homeserver_url,
     )
     .await?;
-    register_under_config(config, user_id, password, Some(db_passphrase),  base_path,user_agent).await
+    register_under_config(config, user_id, password, Some(db_passphrase), user_agent).await
 }
 
 pub async fn register_under_config(
@@ -299,7 +283,6 @@ pub async fn register_under_config(
     user_id: OwnedUserId,
     password: String,
     db_passphrase: Option<String>,
-    base_path: String,
     user_agent: String,
 ) -> Result<Client> {
     RUNTIME
@@ -326,7 +309,7 @@ pub async fn register_under_config(
                 client.device_id(),
             );
 
-            login_client(client, user_id, password, db_passphrase, base_path, Some(user_agent)).await
+            login_client(client, user_id, password, db_passphrase, Some(user_agent)).await
         })
         .await?
 }
@@ -342,7 +325,7 @@ pub async fn register_with_token(
 ) -> Result<Client> {
     let db_passphrase = uuid::Uuid::new_v4().to_string();
     let (config, user_id) = make_client_config(
-        base_path.clone(),
+        base_path,
         &username,
         Some(db_passphrase.clone()),
         &default_homeserver_name,
@@ -351,7 +334,6 @@ pub async fn register_with_token(
     .await?;
     register_with_token_under_config(
         config,
-        base_path,
         user_id,
         password,
         Some(db_passphrase),
@@ -363,7 +345,6 @@ pub async fn register_with_token(
 
 pub async fn register_with_token_under_config(
     config: ClientBuilder,
-    base_path: String,
     user_id: OwnedUserId,
     password: String,
     db_passphrase: Option<String>,
@@ -402,7 +383,7 @@ pub async fn register_with_token_under_config(
                 client
             };
 
-            login_client(client, user_id, password, db_passphrase, base_path, Some(user_agent)).await
+            login_client(client, user_id, password, db_passphrase, Some(user_agent)).await
         })
         .await?
 }

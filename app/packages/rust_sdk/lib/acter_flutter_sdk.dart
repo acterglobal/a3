@@ -221,15 +221,8 @@ class ActerSdk {
     SharedPreferences prefs = await sharedPrefs();
     List<String> sessions = (prefs.getStringList(_sessionKey) ?? []);
     for (final token in sessions) {
-      try {
-        ffi.Client client = await _api.loginWithToken(token);
-        _clients.add(client);
-      } catch (e) {
-        debugPrint('Login with token failed. trying if conversion saves us: $e');
-        String convToken = _api.convertOldRestoreToken(token, appDocPath);
-        ffi.Client client = await _api.loginWithToken(convToken);
-        _clients.add(client);
-      }
+      ffi.Client client = await _api.loginWithToken(appDocPath, token);
+      _clients.add(client);
     }
     _index = prefs.getInt('$_sessionKey::currentClientIdx') ?? 0;
     debugPrint('Migrated $_clients');
@@ -264,19 +257,12 @@ class ActerSdk {
 
     final sessionsStr = await storage.read(key: _sessionKey);
     if (sessionsStr != null) {
-    final List<dynamic> sessionKeys = json.decode(sessionsStr);
+      final List<dynamic> sessionKeys = json.decode(sessionsStr);
       for (final deviceId in sessionKeys) {
         final token = await storage.read(key: deviceId as String);
         if (token != null) {
-          try {
-            ffi.Client client = await _api.loginWithToken(token);
-            _clients.add(client);
-          } catch (e) {
-            debugPrint('Login with token failed. trying if conversion saves us: $e');
-            String convToken = _api.convertOldRestoreToken(token, appDocPath);
-            ffi.Client client = await _api.loginWithToken(convToken);
-            _clients.add(client);
-          }
+          ffi.Client client = await _api.loginWithToken(appDocPath, token);
+          _clients.add(client);
         } else {
           debugPrint('$deviceId not found. despite in session list');
         }

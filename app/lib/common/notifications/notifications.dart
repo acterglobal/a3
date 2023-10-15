@@ -235,7 +235,7 @@ Future<void> initializeNotifications() async {
 
   // Handle push notifications
   Push.instance.onMessage.listen((message) async {
-    await handleMessage(message, background: true);
+    await handleMessage(message, background: false);
   });
 
   // Handle push notifications on background

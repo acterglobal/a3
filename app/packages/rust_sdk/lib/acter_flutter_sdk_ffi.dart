@@ -809,41 +809,11 @@ class Api {
 
   /// Create a new client from the restore token
   Future<Client> loginWithToken(
+    String basepath,
     String restoreToken,
   ) {
-    final tmp0 = restoreToken;
-    var tmp1 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    final tmp0_0 = utf8.encode(tmp0);
-    tmp2 = tmp0_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
-    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
-    tmp1_1.setAll(0, tmp0_0);
-    tmp1 = tmp1_0.address;
-    tmp3 = tmp2;
-    final tmp4 = _loginWithToken(
-      tmp1,
-      tmp2,
-      tmp3,
-    );
-    final tmp6 = tmp4;
-    final ffi.Pointer<ffi.Void> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
-    final tmp6_1 = _Box(this, tmp6_0, "__login_with_token_future_drop");
-    tmp6_1._finalizer = this._registerFinalizer(tmp6_1);
-    final tmp5 = _nativeFuture(tmp6_1, this.__loginWithTokenFuturePoll);
-    return tmp5;
-  }
-
-  /// does the login_with_token fail with a serialization error? Try converting it with
-  /// this and try that new string.
-  String convertOldRestoreToken(
-    String restoreToken,
-    String basePath,
-  ) {
-    final tmp0 = restoreToken;
-    final tmp4 = basePath;
+    final tmp0 = basepath;
+    final tmp4 = restoreToken;
     var tmp1 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -866,7 +836,7 @@ class Api {
     tmp5_1.setAll(0, tmp4_0);
     tmp5 = tmp5_0.address;
     tmp7 = tmp6;
-    final tmp8 = _convertOldRestoreToken(
+    final tmp8 = _loginWithToken(
       tmp1,
       tmp2,
       tmp3,
@@ -874,42 +844,11 @@ class Api {
       tmp6,
       tmp7,
     );
-    final tmp10 = tmp8.arg0;
-    final tmp11 = tmp8.arg1;
-    final tmp12 = tmp8.arg2;
-    final tmp13 = tmp8.arg3;
-    final tmp14 = tmp8.arg4;
-    final tmp15 = tmp8.arg5;
-    final tmp16 = tmp8.arg6;
-    if (tmp10 == 0) {
-      debugAllocation("handle error", tmp11, tmp12);
-      final ffi.Pointer<ffi.Uint8> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-      final tmp10_0 =
-          utf8.decode(tmp11_0.asTypedList(tmp12), allowMalformed: true);
-      if (tmp12 > 0) {
-        final ffi.Pointer<ffi.Void> tmp11_0;
-        tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-        this.__deallocate(tmp11_0, tmp13, 1);
-      }
-      throw tmp10_0;
-    }
-    if (tmp15 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp14_ptr = ffi.Pointer.fromAddress(tmp14);
-    List<int> tmp14_buf = [];
-    final tmp14_precast = tmp14_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp15; i++) {
-      int char = tmp14_precast.elementAt(i).value;
-      tmp14_buf.add(char);
-    }
-    final tmp9 = utf8.decode(tmp14_buf, allowMalformed: true);
-    if (tmp16 > 0) {
-      final ffi.Pointer<ffi.Void> tmp14_0;
-      tmp14_0 = ffi.Pointer.fromAddress(tmp14);
-      this.__deallocate(tmp14_0, tmp16 * 1, 1);
-    }
+    final tmp10 = tmp8;
+    final ffi.Pointer<ffi.Void> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+    final tmp10_1 = _Box(this, tmp10_0, "__login_with_token_future_drop");
+    tmp10_1._finalizer = this._registerFinalizer(tmp10_1);
+    final tmp9 = _nativeFuture(tmp10_1, this.__loginWithTokenFuturePoll);
     return tmp9;
   }
 
@@ -12396,27 +12335,13 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
           )>>("__login_with_token");
 
   late final _loginWithToken = _loginWithTokenPtr.asFunction<
       int Function(
-        int,
-        int,
-        int,
-      )>();
-  late final _convertOldRestoreTokenPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvertOldRestoreTokenReturn Function(
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__convert_old_restore_token");
-
-  late final _convertOldRestoreToken = _convertOldRestoreTokenPtr.asFunction<
-      _ConvertOldRestoreTokenReturn Function(
         int,
         int,
         int,
@@ -48127,23 +48052,6 @@ class _WriteLogReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-}
-
-class _ConvertOldRestoreTokenReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Int64()
-  external int arg4;
-  @ffi.Uint64()
-  external int arg5;
-  @ffi.Uint64()
-  external int arg6;
 }
 
 class _ParseMarkdownReturn extends ffi.Struct {

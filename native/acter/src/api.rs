@@ -52,17 +52,17 @@ mod uniffi_api;
 #[cfg(feature = "uniffi")]
 pub use uniffi_api::*;
 
+
 pub use account::Account;
 pub use acter_core::{
     events::{news::NewsContent, Colorize, ObjRef, RefDetails, UtcDateTime},
     models::{ActerModel, Color as EfkColor, Tag, TextMessageContent},
-    support::convert_old_restore_token,
 };
 pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use auth::{
     destroy_local_data, guest_client, login_new_client, login_new_client_under_config,
     login_with_token, login_with_token_under_config, make_client_config, register_under_config,
-    register_with_token, register_with_token_under_config, sanitize_user, 
+    register_with_token, register_with_token_under_config, sanitize_user,
 };
 pub use calendar_events::{CalendarEvent, CalendarEventDraft, CalendarEventUpdateBuilder};
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};

@@ -131,7 +131,7 @@ impl From<ApiNotificationItem> for NotificationItem {
 }
 
 #[uniffi::export]
-pub async fn get_notification_item(restore_token: String, room_id: String, event_id: String) -> uniffi::Result<NotificationItem, ActerError> {
-    let client = login_with_token(restore_token).await?;
+pub async fn get_notification_item(base_path: String, restore_token: String, room_id: String, event_id: String) -> uniffi::Result<NotificationItem, ActerError> {
+    let client = login_with_token(base_path, restore_token).await?;
     Ok(client.get_notification_item(room_id, event_id).await?.into())
 }
