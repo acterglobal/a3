@@ -28,9 +28,10 @@ use matrix_sdk::{
     Client as SdkClient, LoopCtrl, RoomState, RumaApiError,
 };
 use ruma_common::{
-    device_id, events::room::MediaSource, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId,
-    OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId, RoomOrAliasId, UserId,
+    device_id, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
+    OwnedServerName, OwnedUserId, RoomOrAliasId, UserId,
 };
+use ruma_events::room::MediaSource;
 use std::{
     collections::{BTreeMap, HashMap},
     ops::Deref,
@@ -445,7 +446,7 @@ fn insert_to_chat(target: &mut RwLockWriteGuard<ObservableVector<Convo>>, convo:
 // external API
 impl Client {
     pub async fn new(client: SdkClient, state: ClientState) -> Result<Self> {
-        let core = CoreClient::new(client).await?;
+        let core = CoreClient::new(client.clone()).await?;
         let mut cl = Client {
             core,
             state: Arc::new(RwLock::new(state)),
@@ -453,7 +454,7 @@ impl Client {
             convos: Default::default(),
             invitation_controller: InvitationController::new(),
             verification_controller: VerificationController::new(),
-            device_controller: DeviceController::new(),
+            device_controller: DeviceController::new(client),
             typing_controller: TypingController::new(),
             receipt_controller: ReceiptController::new(),
             notifications: Arc::new(channel(25).0),
@@ -657,9 +658,6 @@ impl Client {
                     };
                     trace!(target: "acter::sync_response::full", "sync response: {:#?}", response);
 
-                    // device_controller.process_device_lists(&client, &response);
-                    trace!("post device controller");
-
                     if initial.compare_exchange(true, false, Ordering::Relaxed, Ordering::Relaxed)
                         == Ok(true)
                     {
@@ -773,8 +771,8 @@ impl Client {
     }
 
     pub async fn restore_token(&self) -> Result<String> {
-        let session = self.session().context("Missing session")?.clone();
-        let homeurl = self.homeserver().await;
+        let session = self.session().context("Missing session")?;
+        let homeurl = self.homeserver();
         let (is_guest, db_passphrase) = {
             let state = self.state.try_read()?;
             (state.is_guest, state.db_passphrase.clone())

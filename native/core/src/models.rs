@@ -23,12 +23,11 @@ pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
 pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
 use ruma_common::{
-    events::{
-        room::redaction::RoomRedactionEventContent, AnySyncTimelineEvent, AnyTimelineEvent,
-        MessageLikeEvent, StaticEventContent, UnsignedRoomRedactionEvent,
-    },
-    serde::Raw,
-    EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId,
+    serde::Raw, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId,
+};
+use ruma_events::{
+    room::redaction::RoomRedactionEventContent, AnySyncTimelineEvent, AnyTimelineEvent,
+    MessageLikeEvent, StaticEventContent, UnsignedRoomRedactionEvent,
 };
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;

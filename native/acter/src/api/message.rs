@@ -5,80 +5,74 @@ use matrix_sdk_ui::timeline::{
     EventSendState, EventTimelineItem, MembershipChange, TimelineItem, TimelineItemContent,
     TimelineItemKind, VirtualTimelineItem,
 };
-use ruma_common::{
-    events::{
-        call::{
-            answer::{OriginalCallAnswerEvent, OriginalSyncCallAnswerEvent},
-            candidates::{OriginalCallCandidatesEvent, OriginalSyncCallCandidatesEvent},
-            hangup::{OriginalCallHangupEvent, OriginalSyncCallHangupEvent},
-            invite::{OriginalCallInviteEvent, OriginalSyncCallInviteEvent},
-        },
-        key::verification::{
-            accept::{
-                AcceptMethod, OriginalKeyVerificationAcceptEvent,
-                OriginalSyncKeyVerificationAcceptEvent,
-            },
-            cancel::{OriginalKeyVerificationCancelEvent, OriginalSyncKeyVerificationCancelEvent},
-            done::{OriginalKeyVerificationDoneEvent, OriginalSyncKeyVerificationDoneEvent},
-            key::{OriginalKeyVerificationKeyEvent, OriginalSyncKeyVerificationKeyEvent},
-            mac::{OriginalKeyVerificationMacEvent, OriginalSyncKeyVerificationMacEvent},
-            ready::{OriginalKeyVerificationReadyEvent, OriginalSyncKeyVerificationReadyEvent},
-            start::{
-                OriginalKeyVerificationStartEvent, OriginalSyncKeyVerificationStartEvent,
-                StartMethod,
-            },
-            VerificationMethod,
-        },
-        policy::rule::{
-            room::{OriginalPolicyRuleRoomEvent, OriginalSyncPolicyRuleRoomEvent},
-            server::{OriginalPolicyRuleServerEvent, OriginalSyncPolicyRuleServerEvent},
-            user::{OriginalPolicyRuleUserEvent, OriginalSyncPolicyRuleUserEvent},
-        },
-        reaction::{OriginalReactionEvent, OriginalSyncReactionEvent},
-        receipt::Receipt,
-        room::{
-            aliases::{OriginalRoomAliasesEvent, OriginalSyncRoomAliasesEvent},
-            avatar::{OriginalRoomAvatarEvent, OriginalSyncRoomAvatarEvent},
-            canonical_alias::{
-                OriginalRoomCanonicalAliasEvent, OriginalSyncRoomCanonicalAliasEvent,
-            },
-            create::{OriginalRoomCreateEvent, OriginalSyncRoomCreateEvent},
-            encrypted::{
-                EncryptedEventScheme, OriginalRoomEncryptedEvent, OriginalSyncRoomEncryptedEvent,
-            },
-            encryption::{OriginalRoomEncryptionEvent, OriginalSyncRoomEncryptionEvent},
-            guest_access::{OriginalRoomGuestAccessEvent, OriginalSyncRoomGuestAccessEvent},
-            history_visibility::{
-                OriginalRoomHistoryVisibilityEvent, OriginalSyncRoomHistoryVisibilityEvent,
-            },
-            join_rules::{OriginalRoomJoinRulesEvent, OriginalSyncRoomJoinRulesEvent},
-            member::{MembershipState, OriginalRoomMemberEvent, OriginalSyncRoomMemberEvent},
-            message::{
-                AudioInfo, FileInfo, MessageFormat, MessageType, OriginalRoomMessageEvent,
-                OriginalSyncRoomMessageEvent, VideoInfo,
-            },
-            name::{OriginalRoomNameEvent, OriginalSyncRoomNameEvent},
-            pinned_events::{OriginalRoomPinnedEventsEvent, OriginalSyncRoomPinnedEventsEvent},
-            power_levels::{OriginalRoomPowerLevelsEvent, OriginalSyncRoomPowerLevelsEvent},
-            redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
-            server_acl::{OriginalRoomServerAclEvent, OriginalSyncRoomServerAclEvent},
-            third_party_invite::{
-                OriginalRoomThirdPartyInviteEvent, OriginalSyncRoomThirdPartyInviteEvent,
-            },
-            tombstone::{OriginalRoomTombstoneEvent, OriginalSyncRoomTombstoneEvent},
-            topic::{OriginalRoomTopicEvent, OriginalSyncRoomTopicEvent},
-            ImageInfo, MediaSource,
-        },
-        space::{
-            child::{OriginalSpaceChildEvent, OriginalSyncSpaceChildEvent},
-            parent::{OriginalSpaceParentEvent, OriginalSyncSpaceParentEvent},
-        },
-        sticker::{OriginalStickerEvent, OriginalSyncStickerEvent},
-        AnySyncMessageLikeEvent, AnySyncStateEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
-        SyncStateEvent,
+use ruma_common::{serde::Raw, OwnedEventId, OwnedRoomId, OwnedUserId};
+use ruma_events::{
+    call::{
+        answer::{OriginalCallAnswerEvent, OriginalSyncCallAnswerEvent},
+        candidates::{OriginalCallCandidatesEvent, OriginalSyncCallCandidatesEvent},
+        hangup::{OriginalCallHangupEvent, OriginalSyncCallHangupEvent},
+        invite::{OriginalCallInviteEvent, OriginalSyncCallInviteEvent},
     },
-    serde::Raw,
-    OwnedEventId, OwnedRoomId, OwnedUserId,
+    key::verification::{
+        accept::{
+            AcceptMethod, OriginalKeyVerificationAcceptEvent,
+            OriginalSyncKeyVerificationAcceptEvent,
+        },
+        cancel::{OriginalKeyVerificationCancelEvent, OriginalSyncKeyVerificationCancelEvent},
+        done::{OriginalKeyVerificationDoneEvent, OriginalSyncKeyVerificationDoneEvent},
+        key::{OriginalKeyVerificationKeyEvent, OriginalSyncKeyVerificationKeyEvent},
+        mac::{OriginalKeyVerificationMacEvent, OriginalSyncKeyVerificationMacEvent},
+        ready::{OriginalKeyVerificationReadyEvent, OriginalSyncKeyVerificationReadyEvent},
+        start::{
+            OriginalKeyVerificationStartEvent, OriginalSyncKeyVerificationStartEvent, StartMethod,
+        },
+        VerificationMethod,
+    },
+    policy::rule::{
+        room::{OriginalPolicyRuleRoomEvent, OriginalSyncPolicyRuleRoomEvent},
+        server::{OriginalPolicyRuleServerEvent, OriginalSyncPolicyRuleServerEvent},
+        user::{OriginalPolicyRuleUserEvent, OriginalSyncPolicyRuleUserEvent},
+    },
+    reaction::{OriginalReactionEvent, OriginalSyncReactionEvent},
+    receipt::Receipt,
+    room::{
+        aliases::{OriginalRoomAliasesEvent, OriginalSyncRoomAliasesEvent},
+        avatar::{OriginalRoomAvatarEvent, OriginalSyncRoomAvatarEvent},
+        canonical_alias::{OriginalRoomCanonicalAliasEvent, OriginalSyncRoomCanonicalAliasEvent},
+        create::{OriginalRoomCreateEvent, OriginalSyncRoomCreateEvent},
+        encrypted::{
+            EncryptedEventScheme, OriginalRoomEncryptedEvent, OriginalSyncRoomEncryptedEvent,
+        },
+        encryption::{OriginalRoomEncryptionEvent, OriginalSyncRoomEncryptionEvent},
+        guest_access::{OriginalRoomGuestAccessEvent, OriginalSyncRoomGuestAccessEvent},
+        history_visibility::{
+            OriginalRoomHistoryVisibilityEvent, OriginalSyncRoomHistoryVisibilityEvent,
+        },
+        join_rules::{OriginalRoomJoinRulesEvent, OriginalSyncRoomJoinRulesEvent},
+        member::{MembershipState, OriginalRoomMemberEvent, OriginalSyncRoomMemberEvent},
+        message::{
+            AudioInfo, FileInfo, MessageFormat, MessageType, OriginalRoomMessageEvent,
+            OriginalSyncRoomMessageEvent, VideoInfo,
+        },
+        name::{OriginalRoomNameEvent, OriginalSyncRoomNameEvent},
+        pinned_events::{OriginalRoomPinnedEventsEvent, OriginalSyncRoomPinnedEventsEvent},
+        power_levels::{OriginalRoomPowerLevelsEvent, OriginalSyncRoomPowerLevelsEvent},
+        redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
+        server_acl::{OriginalRoomServerAclEvent, OriginalSyncRoomServerAclEvent},
+        third_party_invite::{
+            OriginalRoomThirdPartyInviteEvent, OriginalSyncRoomThirdPartyInviteEvent,
+        },
+        tombstone::{OriginalRoomTombstoneEvent, OriginalSyncRoomTombstoneEvent},
+        topic::{OriginalRoomTopicEvent, OriginalSyncRoomTopicEvent},
+        ImageInfo, MediaSource,
+    },
+    space::{
+        child::{OriginalSpaceChildEvent, OriginalSyncSpaceChildEvent},
+        parent::{OriginalSpaceParentEvent, OriginalSyncSpaceParentEvent},
+    },
+    sticker::{OriginalStickerEvent, OriginalSyncStickerEvent},
+    AnySyncMessageLikeEvent, AnySyncStateEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
+    SyncStateEvent,
 };
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Deref, sync::Arc};
@@ -1278,10 +1272,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.name".to_string(),
         );
-        let body = match event.content.name {
-            Some(name) => format!("changed name to {name}"),
-            None => "changed name".to_string(),
-        };
+        let body = format!("changed name to {}", event.content.name);
         let text_desc = TextDesc::new(body, None);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1296,10 +1287,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.name".to_string(),
         );
-        let body = match event.content.name {
-            Some(name) => format!("changed name to {name}"),
-            None => "changed name".to_string(),
-        };
+        let body = format!("changed name to {}", event.content.name);
         let text_desc = TextDesc::new(body, None);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
@@ -1609,16 +1597,16 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.space.parent".to_string(),
         );
-        let body = match event.content.via {
-            Some(via) => format!(
-                "changed parent to {}",
-                via.iter()
-                    .map(|x| x.to_string())
-                    .collect::<Vec<String>>()
-                    .join(", "),
-            ),
-            None => "".to_string(),
-        };
+        let body = format!(
+            "changed parent to {}",
+            event
+                .content
+                .via
+                .iter()
+                .map(|x| x.to_string())
+                .collect::<Vec<String>>()
+                .join(", "),
+        );
         let text_desc = TextDesc::new(body, None);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
@@ -1634,16 +1622,16 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.space.parent".to_string(),
         );
-        let body = match event.content.via {
-            Some(via) => format!(
-                "changed parent to {}",
-                via.iter()
-                    .map(|x| x.to_string())
-                    .collect::<Vec<String>>()
-                    .join(", "),
-            ),
-            None => "".to_string(),
-        };
+        let body = format!(
+            "changed parent to {}",
+            event
+                .content
+                .via
+                .iter()
+                .map(|x| x.to_string())
+                .collect::<Vec<String>>()
+                .join(", "),
+        );
         let text_desc = TextDesc::new(body, None);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
@@ -1970,6 +1958,20 @@ impl RoomMessage {
             } => {
                 info!("Edit event applies to state that couldn't be parsed, discarding");
                 RoomEventItem::new(event_id, sender, origin_server_ts, event_type.to_string())
+            }
+            TimelineItemContent::Poll(s) => {
+                info!("Edit event applies to a poll state, discarding");
+                let mut result = RoomEventItem::new(
+                    event_id,
+                    sender,
+                    origin_server_ts,
+                    "m.poll.start".to_string(),
+                );
+                if let Some(fallback) = s.fallback_text() {
+                    let text_desc = TextDesc::new(fallback, None);
+                    result.set_text_desc(text_desc);
+                }
+                result
             }
         };
         RoomMessage::new_event_item(room_id, event_item)

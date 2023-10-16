@@ -143,6 +143,29 @@ class CustomMessageBuilder extends StatelessWidget {
             fit: BoxFit.cover,
           ),
         );
+      case 'm.poll.start':
+        String? body = message.metadata?['body'];
+        if (body == null) {
+          return const SizedBox.shrink();
+        }
+        return Container(
+          padding: const EdgeInsets.only(left: 10, bottom: 5),
+          child: RichText(
+            text: TextSpan(
+              text: message.author.id,
+              style: Theme.of(context).textTheme.bodySmall,
+              children: [
+                const WidgetSpan(
+                  child: SizedBox(width: 3),
+                ),
+                TextSpan(
+                  text: body,
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+              ],
+            ),
+          ),
+        );
     }
 
     return const SizedBox();

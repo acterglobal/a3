@@ -6,10 +6,8 @@ use matrix_sdk::{
     ruma::api::client::user_directory::search_users::v3::User,
     Client as SdkClient, RoomMemberships, RoomState,
 };
-use ruma_common::{
-    events::room::member::{MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent},
-    OwnedRoomId, OwnedUserId, RoomId,
-};
+use ruma_common::{OwnedRoomId, OwnedUserId, RoomId};
+use ruma_events::room::member::{MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::time::{sleep, Duration};
 use tracing::{error, info};

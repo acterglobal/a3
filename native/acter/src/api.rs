@@ -74,7 +74,7 @@ pub use convo::{
     new_convo_settings_builder, Convo, ConvoDiff, CreateConvoSettings, CreateConvoSettingsBuilder,
 };
 pub use core::time::Duration as EfkDuration;
-pub use device::{DeviceChangedEvent, DeviceLeftEvent};
+pub use device::{DeviceChangedEvent, DeviceNewEvent};
 pub use invitation::Invitation;
 pub use message::{RoomEventItem, RoomMessage, RoomVirtualItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide};

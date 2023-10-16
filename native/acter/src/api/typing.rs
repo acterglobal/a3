@@ -7,7 +7,8 @@ use matrix_sdk::{
     room::Room,
     Client as SdkClient,
 };
-use ruma_common::{events::typing::SyncTypingEvent, OwnedRoomId, OwnedUserId};
+use ruma_common::{OwnedRoomId, OwnedUserId};
+use ruma_events::typing::SyncTypingEvent;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tracing::{error, info};
