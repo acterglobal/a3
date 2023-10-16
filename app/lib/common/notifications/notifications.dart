@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
 
+import 'package:acter/main.dart';
 import 'package:acter/router/router.dart';
 import 'package:go_router/go_router.dart';
 import 'package:convert/convert.dart';
@@ -97,6 +98,10 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
   }
 }
 
+String makeForward({required String roomId, required String deviceId, required String eventId}) {
+  return '/forward?roomId=${Uri.encodeComponent(roomId)}&eventId=${Uri.encodeComponent(eventId)}&deviceId=${Uri.encodeComponent(deviceId)}';
+}
+
 
 Future<void> initializeNotifications() async {
   if (!supportedPlatforms) {
@@ -164,7 +169,7 @@ Future<void> initializeNotifications() async {
   /// done later
   final DarwinInitializationSettings initializationSettingsDarwin =
       DarwinInitializationSettings(
-    requestAlertPermission: false,
+    requestAlertPermission: true,
     requestBadgePermission: false,
     requestSoundPermission: false,
     onDidReceiveLocalNotification:
@@ -222,15 +227,22 @@ Future<void> initializeNotifications() async {
 
   // Handle notification taps
   Push.instance.onNotificationTap.listen((data) {
-    debugPrint('Notification was tapped:\n'
-        'Data: $data \n');
-    final payload = data['payload'] as String?;
-    if (payload != null) {
-        debugPrint('asking to route to $payload');
-        rootNavKey.currentContext!.push(payload);
-      // we are 
+    debugPrint('Notification was tapped. Data: \n $data');
+    final uri = data['payload'] as String?;
+    if (uri != null) {
+      debugPrint('Uri found $uri');
+      rootNavKey.currentContext!.push(uri);
+      return;
     }
-    // tappedNotificationPayloads.value += [data];
+    
+    final roomId = data['room_id'] as String?;
+    final eventId = data['event_id'] as String?;
+    final deviceId = data['device_id'] as String?;
+    if (roomId == null || eventId == null || deviceId == null) {
+      debugPrint('Not our kind of push event. $roomId, $eventId, $deviceId');
+      return;
+    }
+    rootNavKey.currentContext!.push(makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId));
   });
 
   // Handle push notifications
@@ -238,10 +250,13 @@ Future<void> initializeNotifications() async {
     await handleMessage(message, background: false);
   });
 
-  // Handle push notifications on background
-  Push.instance.onBackgroundMessage.listen((message) async {
-    await handleMessage(message, background: true);
-  });
+  // Handle push notifications on background - in iOS we are doing that in
+  // the other instance.
+  if (!Platform.isIOS) {
+    Push.instance.onBackgroundMessage.listen((message) async {
+      await handleMessage(message, background: true);
+    });
+    }
 }
 
 Future<bool> handleMessage(RemoteMessage message, { bool background = false, }) async {
@@ -252,8 +267,10 @@ Future<bool> handleMessage(RemoteMessage message, { bool background = false, }) 
     final deviceId = message.data!['device_id'] as String;
     final roomId = message.data!['room_id'] as String;
     final eventId = message.data!['event_id'] as String;
+    final payload = makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId);
     try {
-      final notif = await ActerSdk.getNotificationFor(deviceId, roomId, eventId);
+      final instance = await ActerSdk.instance;
+      final notif = await instance.getNotificationFor(deviceId, roomId, eventId);
       final isDm = notif.isDirectMessageRoom();
       final roomDisplayName = notif.roomDisplayName();
       debugPrint('got a matrix notification in $roomDisplayName ($isDm)');
@@ -270,7 +287,7 @@ Future<bool> handleMessage(RemoteMessage message, { bool background = false, }) 
           }
         }
 
-        _showNotification(roomDisplayName, body, roomId, '/chat/$roomId');
+        _showNotification(roomDisplayName, body, roomId, payload);
       } else {
 
         String body = '(new message)';
@@ -287,7 +304,7 @@ Future<bool> handleMessage(RemoteMessage message, { bool background = false, }) 
 
         final sender = notif.senderDisplayName();
         // FIXME: we might not be a chat...
-        _showNotification(roomDisplayName, sender != null ? '$sender: $body' : body, roomId, '/chat/$roomId');
+        _showNotification(roomDisplayName, sender != null ? '$sender: $body' : body, roomId, payload);
 
       }
 
@@ -307,7 +324,7 @@ Future<bool> handleMessage(RemoteMessage message, { bool background = false, }) 
             importance: Importance.max,
             priority: Priority.high,
             ticker: 'ticker',);
-    final darwinDetails = DarwinNotificationDetails(threadIdentifier: threadId);
+    final darwinDetails = DarwinNotificationDetails(threadIdentifier: threadId,);
     final notificationDetails = NotificationDetails(
         android: androidNotificationDetails,
         macOS: darwinDetails,

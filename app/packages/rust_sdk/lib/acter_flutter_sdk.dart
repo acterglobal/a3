@@ -198,10 +198,9 @@ class ActerSdk {
     await storage.write(key: _sessionKey, value: json.encode([]));
   }
 
-  static Future<ffi.NotificationItem> getNotificationFor(
+
+  Future<ffi.Client> getClientWithDeviceId(
     String deviceId,
-    String roomId,
-    String eventId,
   ) async {
     ffi.Client? client;
     for (final c in _clients) {
@@ -214,6 +213,15 @@ class ActerSdk {
       throw 'Unknown client $deviceId';
     }
 
+    return client;
+  }
+
+  Future<ffi.NotificationItem> getNotificationFor(
+    String deviceId,
+    String roomId,
+    String eventId,
+  ) async {
+    final client = await getClientWithDeviceId(deviceId);
     return await client.getNotificationItem(roomId, eventId);
   }
 

@@ -484,6 +484,14 @@ impl Client {
             .await?
     }
 
+    pub async fn has_convo(&self, room_id: String) -> bool {
+        self.convos
+            .read()
+            .await
+            .iter()
+            .any(|s| s.room_id().to_string() == room_id)
+    }
+
     pub async fn convo_typed(&self, room_id: &OwnedRoomId) -> Option<Convo> {
         self.convos
             .read()

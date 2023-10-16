@@ -90,7 +90,7 @@ impl Client {
             .spawn(async move {
                 let notif_client = NotificationClient::builder(client).await?.build();
                 if let Some(notif) = notif_client
-                    .get_notification_with_context(&room_id, &event_id)
+                    .get_notification(&room_id, &event_id)
                     .await?
                 {
                     Ok(NotificationItem::new(notif, room_id))

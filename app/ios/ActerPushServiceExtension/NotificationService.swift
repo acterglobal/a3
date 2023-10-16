@@ -18,8 +18,8 @@ class NotificationService: UNNotificationServiceExtension {
     override func didReceive(_ request: UNNotificationRequest,
                             withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
-        Logger.push.log("Push received!")
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
+        Logger.push.log("Push received: \(self.bestAttemptContent, privacy: .public)")
 
         guard let roomId = request.roomId,
             let eventId = request.eventId,
@@ -27,6 +27,10 @@ class NotificationService: UNNotificationServiceExtension {
                 Logger.push.error("not a matrix push ... \(request.content)");
                 return discard()
             }
+
+        if let bestAttemptContent = bestAttemptContent {
+            bestAttemptContent.body = "(new message)"
+        }
 
         Logger.push.log("read from store following... for \(deviceId, privacy: .public)");
         guard let sessionKey = read_from_store(key: deviceId, groupId: "V45JGKTC6K.global.acter.a3", accountName: nil, synchronizable: true) else {
@@ -59,7 +63,6 @@ class NotificationService: UNNotificationServiceExtension {
         do {
             Logger.push.log("Session found: \(session, privacy: .public); BasePath: \(basePath, privacy: .public)");
             let notification = try await getNotificationItem(basePath, session, roomId, eventId);
-            
             
             if let bestAttemptContent = bestAttemptContent {
                 bestAttemptContent.title = notification.roomDisplayName

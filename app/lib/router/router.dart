@@ -97,6 +97,36 @@ Future<String?> authGuardRedirect(
   );
 }
 
+Future<String?> forwardRedirect(
+  BuildContext context,
+  GoRouterState state,
+) async {
+  try {
+    final acterSdk = await ActerSdk.instance;
+    if (!acterSdk.hasClients) {
+      // we are not logged in. 
+      return null;
+    }
+    final deviceId = state.uri.queryParameters['deviceId'];
+    final roomId = state.uri.queryParameters['roomId'];
+    final client = await acterSdk.getClientWithDeviceId(deviceId!);
+    if (await client.hasConvo(roomId!)) {
+      // this is a chat
+      return state.namedLocation(Routes.chatroom.name, pathParameters: {'roomId': roomId!});
+    } else  {
+      // final eventId = state.uri.queryParameters['eventId'];
+      // with the event ID or further information we could figure out the specific action 
+      return state.namedLocation(Routes.space.name, pathParameters: {'roomId': roomId!});
+    }
+  } catch (error, trace) {
+    // ignore: deprecated_member_use
+    return state.namedLocation(
+      Routes.fatalFail.name,
+      queryParameters: {'error': error.toString(), 'trace': trace.toString()},
+    );
+  }
+}
+
 final GlobalKey<NavigatorState> rootNavKey = GlobalKey<NavigatorState>(
   debugLabel: 'root',
 );
@@ -117,6 +147,12 @@ List<RouteBase> makeRoutes(Ref ref) {
   final tabKeyNotifier = ref.watch(selectedTabKeyProvider.notifier);
   final selectedChatNotifier = ref.watch(selectedChatIdProvider.notifier);
   return [
+    GoRoute(
+      name: Routes.forward.name,
+      path: Routes.forward.route,
+      redirect: forwardRedirect,
+    ),
+    
     GoRoute(
       name: Routes.intro.name,
       path: Routes.intro.route,

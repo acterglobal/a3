@@ -1904,6 +1904,9 @@ object Client {
     /// get convo room
     fn convo(room_id_or_alias: string) -> Future<Result<Convo>>;
 
+    /// has convo room
+    fn has_convo(room_id: string) -> Future<bool>;
+
     /// get convo room of retry 250ms for retry times
     fn convo_with_retry(room_id_or_alias: string, retry: u8) -> Future<Result<Convo>>;
 
