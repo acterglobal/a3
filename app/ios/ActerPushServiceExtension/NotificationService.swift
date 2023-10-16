@@ -83,10 +83,10 @@ class NotificationService: UNNotificationServiceExtension {
             }
         } catch ActerError.Anyhow(let message) {
             Logger.push.error("NSE run error in rust: \(message, privacy: .public)")
-            return discard()
+            return notify()
         } catch {
             Logger.push.error("NSE run error: \(error)")
-            return discard()
+            return notify()
         }
     }
 
@@ -120,7 +120,6 @@ class NotificationService: UNNotificationServiceExtension {
         var keychainQuery: [CFString: Any] = [kSecClass : kSecClassGenericPassword]
         if (key != nil) {
             keychainQuery[kSecAttrAccount] = key
-            
         }
         
         if (groupId != nil) {

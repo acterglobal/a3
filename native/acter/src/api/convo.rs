@@ -489,7 +489,7 @@ impl Client {
             .read()
             .await
             .iter()
-            .any(|s| s.room_id().to_string() == room_id)
+            .any(|s| *s.room_id() == room_id)
     }
 
     pub async fn convo_typed(&self, room_id: &OwnedRoomId) -> Option<Convo> {

@@ -30,7 +30,7 @@ impl NotificationItem {
     pub fn is_invite(&self) -> bool {
         matches!(self.inner.event, NotificationEvent::Invite(_))
     }
-    
+
     pub fn room_message(&self) -> Option<RoomMessage> {
         let NotificationEvent::Timeline(s) = &self.inner.event else {
             return None;
@@ -89,10 +89,7 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let notif_client = NotificationClient::builder(client).await?.build();
-                if let Some(notif) = notif_client
-                    .get_notification(&room_id, &event_id)
-                    .await?
-                {
+                if let Some(notif) = notif_client.get_notification(&room_id, &event_id).await? {
                     Ok(NotificationItem::new(notif, room_id))
                 } else {
                     bail!("(hidden notification)")

@@ -52,7 +52,6 @@ mod uniffi_api;
 #[cfg(feature = "uniffi")]
 pub use uniffi_api::*;
 
-
 pub use account::Account;
 pub use acter_core::{
     events::{news::NewsContent, Colorize, ObjRef, RefDetails, UtcDateTime},
@@ -115,7 +114,6 @@ pub type UserId = ruma_common::OwnedUserId;
 
 #[cfg(all(not(doctest), feature = "dart"))]
 ffi_gen_macro::ffi_gen!("native/acter/api.rsh");
-
 
 #[cfg(not(all(not(doctest), feature = "dart")))]
 #[allow(clippy::module_inception)]

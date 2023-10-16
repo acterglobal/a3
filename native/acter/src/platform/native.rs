@@ -27,19 +27,15 @@ pub async fn new_client_config(
     db_passphrase: Option<String>,
     reset_if_existing: bool,
 ) -> Result<ClientBuilder> {
-    let make_data_path = |
-    base_path: &str,
-    home_dir: &str, should_reset_if_existing| {
+    let make_data_path = |base_path: &str, home_dir: &str, should_reset_if_existing| {
         let data_path = sanitize(base_path, home_dir);
 
         if should_reset_if_existing && Path::new(&data_path).try_exists()? {
             let backup_path = sanitize(
-                &base_path,
+                base_path,
                 &format!("{home_dir}_backup_{}", Local::now().to_rfc3339()),
             );
-            tracing::warn!(
-                "{data_path:?} already existing. Moving to backup at {backup_path:?}."
-            );
+            tracing::warn!("{data_path:?} already existing. Moving to backup at {backup_path:?}.");
             std::fs::rename(&data_path, backup_path)?;
         }
         std::fs::create_dir_all(&data_path)?;
@@ -59,7 +55,7 @@ pub async fn new_client_config(
                     tracing::warn!("Failed to open database: {e}");
                     return Err(e.into());
                 }
-                Ok(config) => config
+                Ok(config) => config,
             };
             let builder = Client::builder()
                 .store_config(config)

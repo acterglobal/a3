@@ -112,11 +112,11 @@ Future<String?> forwardRedirect(
     final client = await acterSdk.getClientWithDeviceId(deviceId!);
     if (await client.hasConvo(roomId!)) {
       // this is a chat
-      return state.namedLocation(Routes.chatroom.name, pathParameters: {'roomId': roomId!});
+      return state.namedLocation(Routes.chatroom.name, pathParameters: {'roomId': roomId});
     } else  {
       // final eventId = state.uri.queryParameters['eventId'];
       // with the event ID or further information we could figure out the specific action 
-      return state.namedLocation(Routes.space.name, pathParameters: {'roomId': roomId!});
+      return state.namedLocation(Routes.space.name, pathParameters: {'roomId': roomId});
     }
   } catch (error, trace) {
     // ignore: deprecated_member_use
@@ -192,7 +192,7 @@ List<RouteBase> makeRoutes(Ref ref) {
       parentNavigatorKey: rootNavKey,
       name: Routes.fatalFail.name,
       path: Routes.fatalFail.route,
-      builder: (context, state) => FatalFailPage(error: state.uri.queryParameters['error']!, trace: state.uri.queryParameters['trace']!)
+      builder: (context, state) => FatalFailPage(error: state.uri.queryParameters['error']!, trace: state.uri.queryParameters['trace']!),
     ),
     GoRoute(
       parentNavigatorKey: rootNavKey,

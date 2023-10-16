@@ -1,8 +1,8 @@
 use crate::{api::NotificationItem as ApiNotificationItem, login_with_token};
+use matrix_sdk::ruma::events::room::message::MessageType;
 use matrix_sdk::ruma::events::AnySyncMessageLikeEvent;
 use matrix_sdk::ruma::events::AnySyncTimelineEvent;
 use matrix_sdk::ruma::events::SyncMessageLikeEvent;
-use matrix_sdk::ruma::events::room::message::MessageType;
 
 use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
@@ -19,8 +19,7 @@ pub enum ActerError {
     Anyhow(#[from] anyhow::Error),
 }
 
-#[derive(Debug)]
-#[derive(uniffi::Record)]
+#[derive(Debug, uniffi::Record)]
 pub struct NotificationItem {
     pub room_id: String,
     /// Underlying Ruma event.
@@ -52,23 +51,26 @@ pub struct NotificationItem {
     ///
     /// It is set if and only if the push actions could be determined.
     pub is_noisy: Option<bool>,
-
 }
 
 impl From<ApiNotificationItem> for NotificationItem {
     fn from(value: ApiNotificationItem) -> NotificationItem {
         let ApiNotificationItem {
             room_id,
-            inner: SdkNotificationItem {
-                event,
-                sender_display_name,
-                room_display_name, 
-                sender_avatar_url,
-                room_avatar_url, room_canonical_alias,
-                is_room_encrypted,  is_direct_message_room, 
-                joined_members_count, is_noisy,
-                ..
-            }
+            inner:
+                SdkNotificationItem {
+                    event,
+                    sender_display_name,
+                    room_display_name,
+                    sender_avatar_url,
+                    room_avatar_url,
+                    room_canonical_alias,
+                    is_room_encrypted,
+                    is_direct_message_room,
+                    joined_members_count,
+                    is_noisy,
+                    ..
+                },
         } = value;
 
         let mut is_invite = false;
@@ -107,10 +109,7 @@ impl From<ApiNotificationItem> for NotificationItem {
             _ => {
                 unsupported = true;
             }
-            
         }
-
-
 
         NotificationItem {
             // event,
@@ -118,20 +117,29 @@ impl From<ApiNotificationItem> for NotificationItem {
             is_invite,
             unsupported,
             sender_display_name,
-            room_display_name, 
+            room_display_name,
             sender_avatar_url,
-            room_avatar_url, room_canonical_alias,
-            is_room_encrypted,  is_direct_message_room, 
-            joined_members_count, is_noisy,
+            room_avatar_url,
+            room_canonical_alias,
+            is_room_encrypted,
+            is_direct_message_room,
+            joined_members_count,
+            is_noisy,
             room_id: room_id.to_string(),
-
         }
-
     }
 }
 
 #[uniffi::export]
-pub async fn get_notification_item(base_path: String, restore_token: String, room_id: String, event_id: String) -> uniffi::Result<NotificationItem, ActerError> {
+pub async fn get_notification_item(
+    base_path: String,
+    restore_token: String,
+    room_id: String,
+    event_id: String,
+) -> uniffi::Result<NotificationItem, ActerError> {
     let client = login_with_token(base_path, restore_token).await?;
-    Ok(client.get_notification_item(room_id, event_id).await?.into())
+    Ok(client
+        .get_notification_item(room_id, event_id)
+        .await?
+        .into())
 }

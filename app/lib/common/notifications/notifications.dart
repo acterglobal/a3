@@ -2,7 +2,8 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
 
-import 'package:acter/main.dart';
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/router.dart';
 import 'package:go_router/go_router.dart';
 import 'package:convert/convert.dart';
@@ -274,8 +275,11 @@ Future<bool> handleMessage(RemoteMessage message, { bool background = false, }) 
       final isDm = notif.isDirectMessageRoom();
       final roomDisplayName = notif.roomDisplayName();
       debugPrint('got a matrix notification in $roomDisplayName ($isDm)');
+
+      String body = '(new message)';
+      String title = roomDisplayName;
+
       if (isDm) {
-        String body = '(new message)';
         final roomMsg = notif.roomMessage();
         if (roomMsg != null) {
           final eventItem = roomMsg.eventItem();
@@ -286,11 +290,7 @@ Future<bool> handleMessage(RemoteMessage message, { bool background = false, }) 
             }
           }
         }
-
-        _showNotification(roomDisplayName, body, roomId, payload);
       } else {
-
-        String body = '(new message)';
         final roomMsg = notif.roomMessage();
         if (roomMsg != null) {
           final eventItem = roomMsg.eventItem();
@@ -303,10 +303,24 @@ Future<bool> handleMessage(RemoteMessage message, { bool background = false, }) 
         }
 
         final sender = notif.senderDisplayName();
-        // FIXME: we might not be a chat...
-        _showNotification(roomDisplayName, sender != null ? '$sender: $body' : body, roomId, payload);
-
+        body = sender != null ? '$sender: $body' : body;
       }
+
+      try {
+        // ignore: use_build_context_synchronously
+        final currentBase = rootNavKey.currentContext!.read(currentRoutingLocation);
+        final isInChat = currentBase == '/chat/${Uri.encodeComponent(roomId)}';
+        debugPrint('current path: $currentBase == /chat/$roomId : $isInChat');
+        if (isInChat) {
+          debugPrint('We are already in the chatroom. Not showing notification.');
+          return false;
+        }
+      } catch (e) {
+        // ignore this
+      }
+
+      _showNotification(title, body, roomId, payload);
+      return true;
 
     } catch (e) {
       debugPrint('Parsing Notification failed: $e');
@@ -390,7 +404,7 @@ Future<bool> onNewToken(Client client, String token) async {
   late String name;
   late String appId;
   if (Platform.isIOS) {
-    // FIXME sygnal expects token as a base64 encoded string, but we have a HEX from the plugin
+    // sygnal expects token as a base64 encoded string, but we have a HEX from the plugin
     token = base64.encode(hex.decode(token));
 
     final iOsInfo = await deviceInfo.iosInfo;

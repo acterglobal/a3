@@ -1,5 +1,4 @@
 
-import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/dialogs/nuke_confirmation.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';

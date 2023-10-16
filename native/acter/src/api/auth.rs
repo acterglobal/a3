@@ -12,8 +12,8 @@ use matrix_sdk::{
     Client as SdkClient, ClientBuilder, SessionMeta,
 };
 use ruma_common::OwnedUserId;
-use tracing::{error, info};
 use std::backtrace::Backtrace;
+use tracing::{error, info};
 
 use super::{
     client::{Client, ClientStateBuilder},
@@ -167,7 +167,8 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
         token.session.user_id.to_string(),
         token.db_passphrase.clone(),
         false,
-    ).await?;
+    )
+    .await?;
     login_with_token_under_config(token, config).await
 }
 
