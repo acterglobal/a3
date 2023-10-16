@@ -1,0 +1,3 @@
+- [Labs] New Push Notifications Feature for mobile Devices
+  on iOS and Android, you can now opt into receiving push notifications for new chat messages. You can activate it at Settings -> Labs -> Push Notifications. Don't forget to restart after activating it.
+- Encrypted at rest: All Registrations / logins happening from this point forward will automatically encrypt the database and store the session data in the secure enclave of your device ("Keychain" or "Secure Store"). Rendering it impossible for you or others to read any of the data without access to the secured enclave.
