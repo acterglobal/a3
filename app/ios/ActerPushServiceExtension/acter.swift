@@ -686,10 +686,11 @@ fileprivate func uniffiInitContinuationCallback() {
     ffi_acter_rust_future_continuation_callback_set(uniffiFutureContinuationCallback)
 }
 
-public func getNotificationItem(_ restoreToken: String, _ roomId: String, _ eventId: String) async throws -> NotificationItem {
+public func getNotificationItem(_ basePath: String, _ restoreToken: String, _ roomId: String, _ eventId: String) async throws -> NotificationItem {
     return try  await uniffiRustCallAsync(
         rustFutureFunc: {
             uniffi_acter_fn_func_get_notification_item(
+                FfiConverterString.lower(basePath),
                 FfiConverterString.lower(restoreToken),
                 FfiConverterString.lower(roomId),
                 FfiConverterString.lower(eventId)
@@ -720,7 +721,7 @@ private var initializationResult: InitializationResult {
     if bindings_contract_version != scaffolding_contract_version {
         return InitializationResult.contractVersionMismatch
     }
-    if (uniffi_acter_checksum_func_get_notification_item() != 42771) {
+    if (uniffi_acter_checksum_func_get_notification_item() != 33076) {
         return InitializationResult.apiChecksumMismatch
     }
 

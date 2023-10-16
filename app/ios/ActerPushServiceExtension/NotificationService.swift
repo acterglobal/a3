@@ -7,6 +7,8 @@
 import UserNotifications
 import os.log
 
+import Foundation
+
 @available(iOS 10.0, *)
 class NotificationService: UNNotificationServiceExtension {
 
@@ -31,24 +33,32 @@ class NotificationService: UNNotificationServiceExtension {
             Logger.push.error("active session \(deviceId, privacy: .public) not found for push. ignoring");
             return discard()
         }
+        guard let basePath = getAppDirectoryPath() else {
+            Logger.push.error("Couldn't get base application dir")
+            return discard()
+        }
 
         Task {
-            await handle(session: sessionKey,
-                          roomId: roomId,
-                          eventId: eventId,
-                          unreadCount: request.unreadCount)
+            await handle(basePath: basePath,
+                         session: sessionKey,
+                         roomId: roomId,
+                         eventId: eventId,
+                         unreadCount: request.unreadCount
+                        )
         }
     }
 
 
-    private func handle(session: String,
+    private func handle(basePath: String,
+                        session: String,
                         roomId: String,
                         eventId: String,
-                        unreadCount: Int?) async {
+                        unreadCount: Int?
+    ) async {
 
         do {
-            Logger.push.log("Session found: \(session, privacy: .public)");
-            let notification = try await getNotificationItem(session, roomId, eventId);
+            Logger.push.log("Session found: \(session, privacy: .public); BasePath: \(basePath, privacy: .public)");
+            let notification = try await getNotificationItem(basePath, session, roomId, eventId);
             
             
             if let bestAttemptContent = bestAttemptContent {
@@ -143,6 +153,14 @@ class NotificationService: UNNotificationServiceExtension {
 
         Logger.push.log("Failed to read from store: \(status)")
         return nil
+    }
+
+    internal func getAppDirectoryPath() -> String? {
+        let paths = NSSearchPathForDirectoriesInDomains(
+            FileManager.SearchPathDirectory.documentDirectory,
+            FileManager.SearchPathDomainMask.userDomainMask,
+            true)
+        return paths.first
     }
 
 }
