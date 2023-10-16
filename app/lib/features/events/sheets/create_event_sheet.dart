@@ -14,9 +14,7 @@ import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 
 final _titleProvider = StateProvider.autoDispose<String>((ref) => '');
 final _startDateProvider = StateProvider.autoDispose<DateTime?>((ref) => null);
-final _endDateProvider = StateProvider.autoDispose<DateTime?>(
-  (ref) => null,
-);
+final _endDateProvider = StateProvider.autoDispose<DateTime?>((ref) => null);
 
 class CreateEventSheet extends ConsumerStatefulWidget {
   final String? initialSelectedSpace;
@@ -31,9 +29,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
-  final TextEditingController _startTimeController = TextEditingController();
-  final TextEditingController _endTimeController = TextEditingController();
-  final TextEditingController _linkController = TextEditingController();
+  final TextEditingController _timeController = TextEditingController();
 
   @override
   void initState() {
@@ -48,6 +44,10 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   Widget build(BuildContext context) {
     final titleInput = ref.watch(_titleProvider);
     final startDate = ref.watch(_startDateProvider);
+    // keeping it here as provider doesn't seem to acknowledge state change
+    // without it...
+    // ignore: unused_local_variable
+    final endDate = ref.watch(_endDateProvider);
     return SideSheet(
       header: 'Create new event',
       addActions: true,
@@ -119,7 +119,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                     children: <Widget>[
                       const Padding(
                         padding: EdgeInsets.only(bottom: 5),
-                        child: Text('Start Time'),
+                        child: Text('Time'),
                       ),
                       InkWell(
                         focusColor: Colors.transparent,
@@ -127,43 +127,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                         onTap: _selectDateTime,
                         child: TextFormField(
                           enabled: false,
-                          controller: _startTimeController,
-                          keyboardType: TextInputType.datetime,
-                          style: Theme.of(context).textTheme.labelLarge,
-                          decoration: InputDecoration(
-                            fillColor:
-                                Theme.of(context).colorScheme.primaryContainer,
-                            filled: true,
-                            hintText: 'Select Time',
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 5),
-                        child: Text('End Time'),
-                      ),
-                      InkWell(
-                        focusColor: Colors.transparent,
-                        hoverColor: Colors.transparent,
-                        onTap: _selectDateTime,
-                        child: TextFormField(
-                          enabled: false,
-                          controller: _endTimeController,
+                          controller: _timeController,
                           keyboardType: TextInputType.datetime,
                           style: Theme.of(context).textTheme.labelLarge,
                           decoration: InputDecoration(
@@ -199,15 +163,6 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                   maxLines: 10,
                 ),
                 const SizedBox(height: 15),
-                const Text('Link'),
-                const SizedBox(height: 15),
-                InputTextField(
-                  controller: _linkController,
-                  hintText: 'https://',
-                  textInputType: TextInputType.url,
-                  maxLines: 1,
-                ),
-                const SizedBox(height: 15),
                 const SelectSpaceFormField(canCheck: 'CanPostEvent'),
               ],
             ),
@@ -240,14 +195,11 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
 
       final date = ref.read(_startDateProvider);
       final endDate = ref.read(_endDateProvider);
+      debugPrint('endDATE = $endDate');
 
       final utcStartDateTime = date!.toUtc().toIso8601String();
-      String? utcEndDateTime;
-      if (endDate == null) {
-        utcEndDateTime = date.toUtc().toIso8601String();
-      } else {
-        utcEndDateTime = endDate.toUtc().toIso8601String();
-      }
+      final utcEndDateTime = endDate!.toUtc().toIso8601String();
+
       final space = await ref.read(spaceProvider(spaceId).future);
       final draft = space.calendarEventDraft();
       final title = ref.read(_titleProvider);
@@ -284,19 +236,32 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   }
 
   void _selectDateTime() async {
+    final selectedStartDate = ref.watch(_startDateProvider);
+    final selectedEndDate = ref.watch(_endDateProvider);
     await showOmniDateTimeRangePicker(
       context: context,
       startFirstDate: DateTime.now(),
-      startInitialDate: DateTime.now(),
+      startInitialDate: selectedStartDate ?? DateTime.now(),
+      endInitialDate: selectedEndDate ?? DateTime.now(),
+      endFirstDate: DateTime.now(),
       borderRadius: BorderRadius.circular(12),
       isForce2Digits: true,
     ).then((picked) {
       if (picked != null) {
+        if (picked[0].isAfter(picked[1])) {
+          EasyLoading.showError(
+            'Invalid Date Time Range. Please select valid dates.',
+            duration: const Duration(seconds: 2),
+          );
+          return;
+        }
+        _dateController.text =
+            '${DateFormat.yMd().format(picked[0])} - ${DateFormat.yMd().format(picked[1])}';
+        _timeController.text =
+            '${DateFormat.jm().format(picked[0])} - ${DateFormat.jm().format(picked[1])}';
+
         ref.read(_startDateProvider.notifier).update((state) => picked[0]);
         ref.read(_endDateProvider.notifier).update((state) => picked[1]);
-        _dateController.text = DateFormat.yMd().format(picked[0]);
-        _startTimeController.text = DateFormat.jm().format(picked[0]);
-        _endTimeController.text = DateFormat.jm().format(picked[1]);
       }
     });
   }
