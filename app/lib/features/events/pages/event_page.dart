@@ -59,7 +59,7 @@ class CalendarEventPage extends ConsumerWidget {
                 title: 'Remove this post',
                 eventId: event.eventId().toString(),
                 onSuccess: () {
-                  ref.invalidate(calendarEventProvider(calendarId));
+                  ref.invalidate(calendarEventProvider);
                   if (context.mounted) {
                     context.goNamed(
                       Routes.spaceEvents.name,
@@ -125,7 +125,8 @@ class CalendarEventPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final event = ref.watch(calendarEventProvider(calendarId));
+    AsyncValue<CalendarEvent> event =
+        ref.watch(calendarEventProvider(calendarId));
     AsyncValue<String> myRsvpStatus =
         ref.watch(myRsvpStatusProvider(calendarId));
     Set<RSVP> rsvp = <RSVP>{RSVP.Pending};
@@ -328,8 +329,7 @@ class CalendarEventPage extends ConsumerWidget {
                           rsvp.first.name,
                           ref,
                         );
-                        ref.invalidate(myRsvpStatusProvider);
-                        ref.invalidate(calendarEventProvider);
+                        event = ref.refresh(calendarEventProvider(calendarId));
                       },
                       segments: rsvpOptions
                           .map<ButtonSegment<RSVP>>(((RSVP, String) rsvp) {

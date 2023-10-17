@@ -163,7 +163,6 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
                     ],
                   ),
                 ),
-                const SizedBox(width: 15),
               ],
             ),
             const SizedBox(height: 15),
