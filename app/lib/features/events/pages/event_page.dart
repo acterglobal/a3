@@ -59,7 +59,7 @@ class CalendarEventPage extends ConsumerWidget {
                 title: 'Remove this post',
                 eventId: event.eventId().toString(),
                 onSuccess: () {
-                  ref.invalidate(calendarEventProvider);
+                  ref.invalidate(calendarEventProvider(calendarId));
                   if (context.mounted) {
                     context.goNamed(
                       Routes.spaceEvents.name,
@@ -125,7 +125,7 @@ class CalendarEventPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var event = ref.watch(calendarEventProvider(calendarId));
+    final event = ref.watch(calendarEventProvider(calendarId));
     AsyncValue<String> myRsvpStatus =
         ref.watch(myRsvpStatusProvider(calendarId));
     Set<RSVP> rsvp = <RSVP>{RSVP.Pending};
@@ -325,14 +325,11 @@ class CalendarEventPage extends ConsumerWidget {
                       onSelectionChanged: (Set<RSVP> rsvp) async {
                         await onRsvp(
                           context,
-                          event.requireValue,
                           rsvp.first.name,
+                          ref,
                         );
-                        // refresh rsvp state and event
-                        myRsvpStatus =
-                            ref.refresh(myRsvpStatusProvider(calendarId));
-                        event = ref.refresh(calendarEventProvider(calendarId));
-                        EasyLoading.dismiss();
+                        ref.invalidate(myRsvpStatusProvider);
+                        ref.invalidate(calendarEventProvider);
                       },
                       segments: rsvpOptions
                           .map<ButtonSegment<RSVP>>(((RSVP, String) rsvp) {
@@ -372,22 +369,16 @@ class CalendarEventPage extends ConsumerWidget {
 
   Future<void> onRsvp(
     BuildContext context,
-    CalendarEvent? event,
     String status,
+    WidgetRef ref,
   ) async {
     EasyLoading.show(status: 'Updating RSVP', dismissOnTap: false);
-    if (event == null) {
-      EasyLoading.showError(
-        'Error fetching event details',
-        duration: const Duration(seconds: 2),
-      );
-      return;
-    }
+    final event = await ref.read(calendarEventProvider(calendarId).future);
     final rsvpManager = await event.rsvpManager();
     final draft = rsvpManager.rsvpDraft();
     draft.status(status);
-
     final rsvpId = await draft.send();
+    EasyLoading.dismiss();
     debugPrint('new rsvp id: $rsvpId');
   }
 }
