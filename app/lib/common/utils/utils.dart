@@ -263,5 +263,4 @@ const List<(RSVP, String)> rsvpOptions = <(RSVP, String)>[
   (RSVP.No, 'No'),
   (RSVP.Maybe, 'Maybe'),
   (RSVP.Yes, 'Yes'),
-  (RSVP.Pending, 'Pending'),
 ];
