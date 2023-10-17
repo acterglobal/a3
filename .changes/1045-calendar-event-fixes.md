@@ -1,0 +1,5 @@
+- Calendar Events
+  - fix bug where end date shows same as start date when event is created.
+  - Remove pending status button from event rsvp selection. Events would still show their status as pending if not selected (Yes/Maybe/No).
+  - Merge the start/end time and date textfields from create/edit event sheets. Now the date and time textfields will show ranged date and time after selection.
+  - Remove unused link input textfields from create/edit event sheets.
