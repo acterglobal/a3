@@ -679,10 +679,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_riverpod
-      sha256: b04d4e9435a563673746ccb328d22018c6c9496bb547e11dd56c1b0cc9829fe5
+      sha256: bdba94be666ecb1beeb0f5a748d96cdd6a37215f27e6b48c7673b95cecb800c8
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.10"
+    version: "2.4.4"
   flutter_secure_storage:
     dependency: "direct overridden"
     description:
@@ -1377,10 +1377,10 @@ packages:
     dependency: "direct main"
     description:
       name: riverpod
-      sha256: "6c0a2c30c04206ac05494bcccd8148b76866e1a9248a5a8c84ca7b16fbcb3f6a"
+      sha256: "2af3d127a6e4e34b89b8f1f018086f5ded04b8e538174f0510bba3e4c0d878b1"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.10"
+    version: "2.4.4"
   riverpod_infinite_scroll:
     dependency: "direct main"
     description:

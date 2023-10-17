@@ -26,9 +26,9 @@ jobs:
 
       - uses: jlumbroso/free-disk-space@main
         name: Free Disk Space (Ubuntu)
-        if: matrix.os == 'ubuntu-latest' && matrix.target != 'linux'
         with:
           tool-cache: false
+          large-packages: false # keep clang around
 
       - uses: actions/setup-python@v4
         with:

@@ -67,6 +67,21 @@ class BubbleBuilder extends ConsumerWidget {
                           chatInputNotifier.setReplyWidget(child);
                         }
                       },
+                onRightSwipe: isAuthor
+                    ? null
+                    : () {
+                        if (chatInputState.emojiRowVisible) {
+                          chatInputNotifier.emojiRowVisible(false);
+
+                          chatInputNotifier.setRepliedToMessage(message);
+                          chatInputNotifier.toggleReplyView(true);
+                          chatInputNotifier.setReplyWidget(child);
+                        } else {
+                          chatInputNotifier.toggleReplyView(true);
+                          chatInputNotifier.setRepliedToMessage(message);
+                          chatInputNotifier.setReplyWidget(child);
+                        }
+                      },
                 child: _ChatBubble(
                   convo: convo,
                   message: message,

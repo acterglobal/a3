@@ -26,9 +26,7 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
-  final TextEditingController _startTimeController = TextEditingController();
-  final TextEditingController _endTimeController = TextEditingController();
-  final TextEditingController _linkController = TextEditingController();
+  final TextEditingController _timeController = TextEditingController();
 
   @override
   void initState() {
@@ -47,9 +45,10 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
         : calendarEvent.description()!.body();
     final dartDateTime = toDartDatetime(calendarEvent.utcStart());
     final dartEndTime = toDartDatetime(calendarEvent.utcEnd());
-    _dateController.text = DateFormat.yMd().format(dartDateTime.toLocal());
-    _startTimeController.text = DateFormat.jm().format(dartDateTime.toLocal());
-    _endTimeController.text = DateFormat.jm().format(dartEndTime.toLocal());
+    _dateController.text =
+        '${DateFormat.yMd().format(dartDateTime)} - ${DateFormat.yMd().format(dartEndTime)}';
+    _timeController.text =
+        '${DateFormat.jm().format(dartDateTime)} - ${DateFormat.jm().format(dartEndTime)}';
     ref.read(_titleProvider.notifier).update((state) => _nameController.text);
     ref
         .read(_startDateProvider.notifier)
@@ -135,7 +134,7 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
                     children: <Widget>[
                       const Padding(
                         padding: EdgeInsets.only(bottom: 5),
-                        child: Text('Start Time'),
+                        child: Text('Time'),
                       ),
                       InkWell(
                         focusColor: Colors.transparent,
@@ -143,43 +142,7 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
                         onTap: _selectDateTime,
                         child: TextFormField(
                           enabled: false,
-                          controller: _startTimeController,
-                          keyboardType: TextInputType.datetime,
-                          style: Theme.of(context).textTheme.labelLarge,
-                          decoration: InputDecoration(
-                            fillColor:
-                                Theme.of(context).colorScheme.primaryContainer,
-                            filled: true,
-                            hintText: 'Select Time',
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 5),
-                        child: Text('End Time'),
-                      ),
-                      InkWell(
-                        focusColor: Colors.transparent,
-                        hoverColor: Colors.transparent,
-                        onTap: _selectDateTime,
-                        child: TextFormField(
-                          enabled: false,
-                          controller: _endTimeController,
+                          controller: _timeController,
                           keyboardType: TextInputType.datetime,
                           style: Theme.of(context).textTheme.labelLarge,
                           decoration: InputDecoration(
@@ -215,14 +178,6 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
                   maxLines: 10,
                 ),
                 const SizedBox(height: 15),
-                const Text('Link'),
-                const SizedBox(height: 15),
-                InputTextField(
-                  controller: _linkController,
-                  hintText: 'https://',
-                  textInputType: TextInputType.url,
-                  maxLines: 1,
-                ),
               ],
             ),
           ],
@@ -272,18 +227,20 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
   void _selectDateTime() async {
     await showOmniDateTimeRangePicker(
       context: context,
-      startFirstDate: DateTime.now(),
+      startFirstDate: ref.watch(_startDateProvider),
       startInitialDate: ref.watch(_startDateProvider),
       endInitialDate: ref.watch(_endDateProvider),
+      endFirstDate: ref.watch(_endDateProvider),
       borderRadius: BorderRadius.circular(12),
       isForce2Digits: true,
     ).then((picked) {
       if (picked != null) {
         ref.read(_startDateProvider.notifier).update((state) => picked[0]);
         ref.read(_endDateProvider.notifier).update((state) => picked[1]);
-        _dateController.text = DateFormat.yMd().format(picked[0]);
-        _startTimeController.text = DateFormat.jm().format(picked[0]);
-        _endTimeController.text = DateFormat.jm().format(picked[1]);
+        _dateController.text =
+            '${DateFormat.yMd().format(picked[0])} - ${DateFormat.yMd().format(picked[1])}';
+        _timeController.text =
+            '${DateFormat.jm().format(picked[0])} - ${DateFormat.jm().format(picked[1])}';
       }
     });
   }
