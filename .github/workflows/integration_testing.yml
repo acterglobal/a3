@@ -24,6 +24,12 @@ jobs:
           toolchain: nightly-2023-04-10
           override: true
 
+      - uses: jlumbroso/free-disk-space@main
+        name: Free Disk Space (Ubuntu)
+        if: matrix.os == 'ubuntu-latest' && matrix.target != 'linux'
+        with:
+          tool-cache: false
+
       - uses: actions/setup-python@v4
         with:
           python-version: 3.8
