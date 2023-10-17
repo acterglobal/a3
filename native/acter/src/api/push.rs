@@ -11,7 +11,8 @@ use matrix_sdk::ruma::{
     push::HttpPusherData,
 };
 use matrix_sdk_ui::notification_client::{
-    NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem, NotificationProcessSetup
+    NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
+    NotificationProcessSetup,
 };
 use ruma_common::{OwnedEventId, OwnedRoomId};
 
@@ -88,7 +89,12 @@ impl Client {
         let event_id: OwnedEventId = event_id.try_into()?;
         RUNTIME
             .spawn(async move {
-                let notif_client = NotificationClient::builder(client, NotificationProcessSetup::MultipleProcesses).await?.build();
+                let notif_client = NotificationClient::builder(
+                    client,
+                    NotificationProcessSetup::MultipleProcesses,
+                )
+                .await?
+                .build();
                 if let Some(notif) = notif_client.get_notification(&room_id, &event_id).await? {
                     Ok(NotificationItem::new(notif, room_id))
                 } else {

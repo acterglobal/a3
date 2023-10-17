@@ -33,7 +33,7 @@ class SettingsLabsPage extends ConsumerWidget {
                 SettingsTile.switchTile(
                   title: const Text('Push Notifications'),
                   description: Text(
-                    !supportedPlatforms ? 'Only supported on mobile (iOS & Android) right now': 'Needs App restart to activate'
+                    !supportedPlatforms ? 'Only supported on mobile (iOS & Android) right now': 'Needs App restart to activate',
                   ),
                   initialValue: supportedPlatforms && isActive(LabsFeature.showNotifications),
                   enabled: supportedPlatforms,
@@ -42,7 +42,7 @@ class SettingsLabsPage extends ConsumerWidget {
                       if (newVal) {
                         customMsgSnackbar(context, 'Push enabled. Please restart to activate');
                       }
-                  }
+                  },
                 ),
               ],
             ),
