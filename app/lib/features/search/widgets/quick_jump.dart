@@ -168,20 +168,25 @@ class QuickJump extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            TextField(
-              autofocus: true,
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                focusedBorder: UnderlineInputBorder(),
-                prefixIcon: Icon(
-                  Atlas.magnifying_glass_thin,
-                  color: Colors.white,
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+              child: TextField(
+                autofocus: true,
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                  prefixIcon: Icon(
+                    Atlas.magnifying_glass_thin,
+                    color: Colors.white,
+                  ),
+                  labelText: 'jump to',
                 ),
-                labelText: 'jump to',
+                onChanged: (String value) async {
+                  ref.read(searchValueProvider.notifier).state = value;
+                },
               ),
-              onChanged: (String value) async {
-                ref.read(searchValueProvider.notifier).state = value;
-              },
             ),
             ...body,
           ],
