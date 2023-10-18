@@ -13,9 +13,22 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:settings_ui/settings_ui.dart';
+
+String? notifToText(String curNotifStatus) {
+  if (curNotifStatus == 'muted') {
+    return 'Muted';
+  } else if (curNotifStatus == 'mentions') {
+    return 'Only on mentions and keywords';
+  } else if (curNotifStatus == 'all') {
+    return 'All Messages';
+  } else {
+    return null;
+  }
+}
 
 class RoomProfilePage extends ConsumerWidget {
   final String roomId;
@@ -30,6 +43,11 @@ class RoomProfilePage extends ConsumerWidget {
     final isExpanded = ref.watch(hasExpandedPanel);
     final convo = ref.watch(chatProvider(roomId));
     final convoProfile = ref.watch(chatProfileDataProviderById(roomId));
+    final notificationStatus =
+        ref.watch(roomNotificationStatusProvider(roomId));
+    final defaultNotificationStatus =
+        ref.watch(roomDefaultNotificationStatusProvider(roomId));
+    final curNotifStatus = notificationStatus.valueOrNull;
     final members = ref.watch(chatMembersProvider(roomId));
     final myMembership = ref.watch(roomMembershipProvider(roomId));
     final tileTextTheme = Theme.of(context).textTheme.bodySmall;
@@ -155,6 +173,94 @@ class RoomProfilePage extends ConsumerWidget {
               sections: [
                 SettingsSection(
                   tiles: [
+                    SettingsTile(
+                      onPressed: (ctx) {
+                        Clipboard.setData(
+                          ClipboardData(
+                            text: roomId,
+                          ),
+                        );
+                        customMsgSnackbar(
+                          context,
+                          'Room ID: $roomId copied to clipboard',
+                        );
+                      },
+                      title: Text(
+                        'Copy Room ID',
+                        style: tileTextTheme,
+                      ),
+                      leading: const Icon(Atlas.chain_link_thin, size: 18),
+                      trailing: Icon(
+                        Atlas.pages_thin,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.success,
+                      ),
+                    ),
+                    SettingsTile(
+                      title: Text(
+                        'Notifications',
+                        style: tileTextTheme,
+                      ),
+                      description: Text(
+                        notifToText(curNotifStatus ?? '') ??
+                            'Default (${notifToText(defaultNotificationStatus.valueOrNull ?? '') ?? 'undefined'})',
+                      ),
+                      leading: curNotifStatus == 'muted'
+                          ? const Icon(Atlas.bell_dash_bold, size: 18)
+                          : const Icon(Atlas.bell_thin, size: 18),
+                      trailing: PopupMenuButton<String>(
+                        initialValue: curNotifStatus,
+                        // Callback that sets the selected popup menu item.
+                        onSelected: (String newMode) async {
+                          debugPrint('new value: $newMode');
+                          final room =
+                              await ref.read(maybeRoomProvider(roomId).future);
+                          if (room == null) {
+                            // ignore: use_build_context_synchronously
+                            customMsgSnackbar(context, 'Room not found');
+                            return;
+                          }
+                          EasyLoading.showProgress(0);
+                          // '' is a special case resetting to default.
+                          if (await room.setNotificationMode(
+                              newMode == '' ? null : newMode,)) {
+                            EasyLoading.dismiss();
+                            // ignore: use_build_context_synchronously
+                            customMsgSnackbar(
+                              context,
+                              'Notification status submitted',
+                            );
+                            await Future.delayed(const Duration(seconds: 1),
+                                () {
+                              // FIXME: we want to refresh the view but don't know
+                              //        when the event was confirmed form sync :(
+                              // let's hope that a second delay is reasonable enough
+                              ref.invalidate(maybeRoomProvider(roomId));
+                            });
+                          }
+                        },
+                        itemBuilder: (BuildContext context) =>
+                            <PopupMenuEntry<String>>[
+                          const PopupMenuItem<String>(
+                            value: 'all',
+                            child: Text('All Messages'),
+                          ),
+                          const PopupMenuItem<String>(
+                            value: 'mentions',
+                            child: Text('Mentions and Keywords only'),
+                          ),
+                          const PopupMenuItem<String>(
+                            value: 'muted',
+                            child: Text('Muted'),
+                          ),
+                          PopupMenuItem<String>(
+                            value: '',
+                            child: Text(
+                                'Default (${notifToText(defaultNotificationStatus.valueOrNull ?? '') ?? 'unedefined'})',),
+                          ),
+                        ],
+                      ),
+                    ),
                     myMembership.when(
                       data: (membership) => SettingsTile.navigation(
                         onPressed: (ctx) {
@@ -185,33 +291,6 @@ class RoomProfilePage extends ConsumerWidget {
                         title: const Text('Loading'),
                       ),
                     ),
-                    SettingsTile(
-                      onPressed: (ctx) {
-                        Clipboard.setData(
-                          ClipboardData(
-                            text: roomId,
-                          ),
-                        );
-                        customMsgSnackbar(
-                          context,
-                          'Room ID: $roomId copied to clipboard',
-                        );
-                      },
-                      title: Text(
-                        'Copy Room ID',
-                        style: tileTextTheme,
-                      ),
-                      leading: const Icon(Atlas.chain_link_thin, size: 18),
-                      trailing: Icon(
-                        Atlas.pages_thin,
-                        size: 18,
-                        color: Theme.of(context).colorScheme.success,
-                      ),
-                    ),
-                  ],
-                ),
-                SettingsSection(
-                  tiles: [
                     SettingsTile(
                       onPressed: (ctx) async {
                         await showAdaptiveDialog(
