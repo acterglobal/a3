@@ -707,6 +707,9 @@ object Room {
 
     /// default RoomNotificationMode for this type of room
     fn default_notification_mode() -> Future<string>;
+
+    /// Unset the `mute` for this room.
+    fn unmute() -> Future<Result<bool>>;
     
     /// set the RoomNotificationMode
     fn set_notification_mode(new_mode: Option<string>) -> Future<Result<bool>>; 
