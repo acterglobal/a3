@@ -26,15 +26,20 @@ class QuickJump extends ConsumerWidget {
     final provider = ref.watch(featuresProvider);
     bool isActive(f) => provider.isActive(f);
     return [
-      ButtonBar(
-        alignment: MainAxisAlignment.spaceEvenly,
+      Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 10,
+        runSpacing: 10,
         children: List.from(
           [
             IconButton(
-              iconSize: 48,
-              icon: const Icon(
-                Atlas.construction_tools_thin,
-                size: 32,
+              icon: const Padding(
+                padding: EdgeInsets.all(5),
+                child: Icon(
+                  Atlas.construction_tools_thin,
+                  size: 24,
+                ),
               ),
               style: IconButton.styleFrom(
                 side: BorderSide(
@@ -48,7 +53,6 @@ class QuickJump extends ConsumerWidget {
             ),
             isActive(LabsFeature.pins)
                 ? IconButton(
-                    iconSize: 48,
                     style: IconButton.styleFrom(
                       side: BorderSide(
                         color: Theme.of(context)
@@ -60,12 +64,14 @@ class QuickJump extends ConsumerWidget {
                     onPressed: () {
                       navigateTo(route: Routes.pins);
                     },
-                    icon: const Icon(Atlas.pin_thin, size: 32),
+                    icon: const Padding(
+                      padding: EdgeInsets.all(5),
+                      child: Icon(Atlas.pin_thin, size: 24),
+                    ),
                   )
                 : null,
             isActive(LabsFeature.events)
                 ? IconButton(
-                    iconSize: 48,
                     style: IconButton.styleFrom(
                       side: BorderSide(
                         color: Theme.of(context)
@@ -77,12 +83,14 @@ class QuickJump extends ConsumerWidget {
                     onPressed: () {
                       navigateTo(route: Routes.calendarEvents);
                     },
-                    icon: const Icon(Atlas.calendar_dots_thin, size: 32),
+                    icon: const Padding(
+                      padding: EdgeInsets.all(5),
+                      child: Icon(Atlas.calendar_dots_thin, size: 24),
+                    ),
                   )
                 : null,
             isActive(LabsFeature.tasks)
                 ? IconButton(
-                    iconSize: 48,
                     style: IconButton.styleFrom(
                       side: BorderSide(
                         color: Theme.of(context)
@@ -94,20 +102,23 @@ class QuickJump extends ConsumerWidget {
                     onPressed: () {
                       navigateTo(route: Routes.tasks);
                     },
-                    icon: SvgPicture.asset(
-                      'assets/images/tasks.svg',
-                      semanticsLabel: 'tasks',
-                      height: 32,
-                      width: 32,
-                      colorFilter: ColorFilter.mode(
-                        Theme.of(context).colorScheme.onSurface,
-                        BlendMode.srcIn,
+                    // this is slightly differently sized and padded to look the same as the others
+                    icon: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: SvgPicture.asset(
+                        'assets/images/tasks.svg',
+                        semanticsLabel: 'tasks',
+                        height: 28,
+                        width: 28,
+                        colorFilter: ColorFilter.mode(
+                          Theme.of(context).colorScheme.onSurface,
+                          BlendMode.srcIn,
+                        ),
                       ),
                     ),
                   )
                 : null,
             IconButton(
-              iconSize: 48,
               style: IconButton.styleFrom(
                 side: BorderSide(
                   color:
@@ -117,13 +128,15 @@ class QuickJump extends ConsumerWidget {
               onPressed: () {
                 navigateTo(route: Routes.chat);
               },
-              icon: const Icon(
-                Atlas.chats_thin,
-                size: 32,
+              icon: const Padding(
+                padding: EdgeInsets.all(5),
+                child: Icon(
+                  Atlas.chats_thin,
+                  size: 24,
+                ),
               ),
             ),
             IconButton(
-              iconSize: 48,
               style: IconButton.styleFrom(
                 side: BorderSide(
                   color:
@@ -133,7 +146,10 @@ class QuickJump extends ConsumerWidget {
               onPressed: () {
                 navigateTo(route: Routes.activities);
               },
-              icon: const Icon(Atlas.audio_wave_thin, size: 32),
+              icon: const Padding(
+                padding: EdgeInsets.all(5),
+                child: Icon(Atlas.audio_wave_thin, size: 24),
+              ),
             ),
           ].where((element) => element != null),
         ),
