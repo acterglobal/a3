@@ -2774,6 +2774,158 @@ class Api {
     return tmp7;
   }
 
+  String? __roomNotificationModeFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _roomNotificationModeFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
+    return tmp7;
+  }
+
+  String? __roomDefaultNotificationModeFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _roomDefaultNotificationModeFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp10 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp9_ptr = ffi.Pointer.fromAddress(tmp9);
+    List<int> tmp9_buf = [];
+    final tmp9_precast = tmp9_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp10; i++) {
+      int char = tmp9_precast.elementAt(i).value;
+      tmp9_buf.add(char);
+    }
+    final tmp7 = utf8.decode(tmp9_buf, allowMalformed: true);
+    if (tmp11 > 0) {
+      final ffi.Pointer<ffi.Void> tmp9_0;
+      tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+      this.__deallocate(tmp9_0, tmp11 * 1, 1);
+    }
+    return tmp7;
+  }
+
+  bool? __roomSetNotificationModeFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _roomSetNotificationModeFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   bool? __timelineStreamPaginateBackwardsFuturePoll(
     int boxed,
     int postCobject,
@@ -15004,6 +15156,45 @@ class Api {
         int,
         int,
       )>();
+  late final _roomNotificationModePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Room_notification_mode");
+
+  late final _roomNotificationMode = _roomNotificationModePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _roomDefaultNotificationModePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Room_default_notification_mode");
+
+  late final _roomDefaultNotificationMode =
+      _roomDefaultNotificationModePtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _roomSetNotificationModePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Room_set_notification_mode");
+
+  late final _roomSetNotificationMode = _roomSetNotificationModePtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _convoDiffActionPtr = _lookup<
       ffi.NativeFunction<
           _ConvoDiffActionReturn Function(
@@ -22539,6 +22730,51 @@ class Api {
   late final _roomInviteUserFuturePoll =
       _roomInviteUserFuturePollPtr.asFunction<
           _RoomInviteUserFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _roomNotificationModeFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomNotificationModeFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Room_notification_mode_future_poll");
+
+  late final _roomNotificationModeFuturePoll =
+      _roomNotificationModeFuturePollPtr.asFunction<
+          _RoomNotificationModeFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _roomDefaultNotificationModeFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomDefaultNotificationModeFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Room_default_notification_mode_future_poll");
+
+  late final _roomDefaultNotificationModeFuturePoll =
+      _roomDefaultNotificationModeFuturePollPtr.asFunction<
+          _RoomDefaultNotificationModeFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _roomSetNotificationModeFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomSetNotificationModeFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Room_set_notification_mode_future_poll");
+
+  late final _roomSetNotificationModeFuturePoll =
+      _roomSetNotificationModeFuturePollPtr.asFunction<
+          _RoomSetNotificationModeFuturePollReturn Function(
             int,
             int,
             int,
@@ -32723,6 +32959,80 @@ class Room {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__roomInviteUserFuturePoll);
     return tmp6;
+  }
+
+  /// RoomNotificationMode for this room
+  Future<String> notificationMode() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomNotificationMode(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Room_notification_mode_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__roomNotificationModeFuturePoll);
+    return tmp2;
+  }
+
+  /// default RoomNotificationMode for this type of room
+  Future<String> defaultNotificationMode() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomDefaultNotificationMode(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Room_default_notification_mode_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__roomDefaultNotificationModeFuturePoll);
+    return tmp2;
+  }
+
+  /// set the RoomNotificationMode
+  Future<bool> setNotificationMode(
+    String? newMode,
+  ) {
+    final tmp1 = newMode;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      final tmp3_0 = utf8.encode(tmp3);
+      tmp5 = tmp3_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
+      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
+      tmp4_1.setAll(0, tmp3_0);
+      tmp4 = tmp4_0.address;
+      tmp6 = tmp5;
+    }
+    final tmp7 = _api._roomSetNotificationMode(
+      tmp0,
+      tmp2,
+      tmp4,
+      tmp5,
+      tmp6,
+    );
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 =
+        _Box(_api, tmp9_0, "__Room_set_notification_mode_future_drop");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 =
+        _nativeFuture(tmp9_1, _api.__roomSetNotificationModeFuturePoll);
+    return tmp8;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -49937,6 +50247,51 @@ class _RoomGetMemberFuturePollReturn extends ffi.Struct {
 }
 
 class _RoomInviteUserFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _RoomNotificationModeFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
+}
+
+class _RoomDefaultNotificationModeFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _RoomSetNotificationModeFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
