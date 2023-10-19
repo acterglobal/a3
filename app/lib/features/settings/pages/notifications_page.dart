@@ -10,8 +10,10 @@ import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:email_validator/email_validator.dart';
 
 class AddEmail extends StatefulWidget {
   const AddEmail({
@@ -39,11 +41,10 @@ class _AddEmailState extends State<AddEmail> {
               padding: const EdgeInsets.all(5),
               child: TextFormField(
                 controller: emailAddr,
-                validator: (value) => value != null &&
-                        value.startsWith('@') &&
-                        value.contains(':')
-                    ? null
-                    : 'Format must be @user:server.tld',
+                validator: (value) =>
+                    value == null || !EmailValidator.validate(value)
+                        ? 'Format must an Email'
+                        : null,
               ),
             ),
           ],
@@ -131,33 +132,52 @@ class NotificationsSettingsPage extends ConsumerWidget {
   ) {
     return SettingsSectionWithTitleActions(
       title: const Text('Notification Targets'),
-      actions: [
-        IconButton(
-          icon: Icon(
-            Atlas.plus_circle_thin,
-            color: Theme.of(context).colorScheme.neutral5,
-          ),
-          iconSize: 20,
-          color: Theme.of(context).colorScheme.surface,
-          onPressed: () async {
-            final emailToAdd = await showDialog<String?>(
-              context: context,
-              builder: (BuildContext context) => const AddEmail(),
-            );
-            if (emailToAdd != null) {
-              final client = ref.read(
-                  clientProvider,); // is guaranteed because of the ignoredUsersProvider using it
-
-              // await client.addEmailPusher(emailToAdd);
-              if (context.mounted) {
-                customMsgSnackbar(
-                  context,
-                  '$emailToAdd added to block list. UI might take a bit too update',
-                );
-              }
-            }
-          },
-        ),
+      actions: const [
+        // FIXME: enable once we have 3pid support
+        // IconButton(
+        //   icon: Icon(
+        //     Atlas.plus_circle_thin,
+        //     color: Theme.of(context).colorScheme.neutral5,
+        //   ),
+        //   iconSize: 20,
+        //   color: Theme.of(context).colorScheme.surface,
+        //   onPressed: () async {
+        //     final emailToAdd = await showDialog<String?>(
+        //       context: context,
+        //       builder: (BuildContext context) => const AddEmail(),
+        //     );
+        //     if (emailToAdd != null) {
+        //       EasyLoading.show();
+        //       final client = ref.read(
+        //         clientProvider,
+        //       ); // is guaranteed because of the ignoredUsersProvider using it
+        //       try {
+        //         await client!.addEmailPusher(
+        //           appIdPrefix,
+        //           (await deviceName()),
+        //           emailToAdd,
+        //           null,
+        //         );
+        //       } catch (e) {
+        //         EasyLoading.dismiss();
+        //         // ignore: use_build_context_synchronously
+        //         customMsgSnackbar(
+        //           context,
+        //           'Failed to add $emailToAdd: $e',
+        //         );
+        //         return;
+        //       }
+        //       EasyLoading.dismiss();
+        //       if (context.mounted) {
+        //         customMsgSnackbar(
+        //           context,
+        //           '$emailToAdd added to pusher list. UI might take a bit too update',
+        //         );
+        //         ref.invalidate(pushersProvider);
+        //       }
+        //     }
+        //   },
+        // ),
       ],
       tiles: ref.watch(pushersProvider).when(
             data: (items) {
@@ -192,6 +212,39 @@ class NotificationsSettingsPage extends ConsumerWidget {
     return SettingsTile(
       title: Text(item.deviceDisplayName()),
       description: Text(item.appDisplayName()),
+      trailing: MenuAnchor(
+        builder:
+            (BuildContext context, MenuController controller, Widget? child) {
+          return IconButton(
+            onPressed: () {
+              if (controller.isOpen) {
+                controller.close();
+              } else {
+                controller.open();
+              }
+            },
+            icon: const Icon(Icons.more_vert),
+            tooltip: 'Show menu',
+          );
+        },
+        menuChildren: [
+          MenuItemButton(
+            onPressed: () {
+              // alert dialog with details;
+            },
+            child: const Text('Details'),
+          ),
+          MenuItemButton(
+            onPressed: () async {
+              EasyLoading.show();
+              await item.delete();
+              EasyLoading.dismiss();
+              ref.invalidate(pushersProvider);
+            },
+            child: const Text('Delete Pusher'),
+          ),
+        ],
+      ),
     );
   }
 }

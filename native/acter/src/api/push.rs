@@ -14,7 +14,7 @@ use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
     NotificationProcessSetup,
 };
-use ruma::api::client::push::get_pushers;
+use ruma::api::client::push::{get_pushers, EmailPusherData};
 use ruma_common::{OwnedEventId, OwnedRoomId};
 
 pub struct NotificationItem {
@@ -116,6 +116,20 @@ impl Pusher {
     pub fn profile_tag(&self) -> Option<String> {
         self.inner.profile_tag.clone()
     }
+
+    pub async fn delete(&self) -> Result<bool> {
+        let client = self.client.core.client().clone();
+        let app_id = self.app_id();
+        let pushkey = self.pushkey();
+        RUNTIME
+            .spawn(async move {
+                // FIXME: how to set `append = true` for single-device-multi-user-support...?!?
+                let request = set_pusher::v3::Request::delete(PusherIds::new(pushkey, app_id));
+                client.send(request, None).await?;
+                Ok(false)
+            })
+            .await?
+    }
 }
 
 impl Client {
@@ -158,6 +172,32 @@ impl Client {
                     .into_iter()
                     .map(|inner| Pusher::new(inner, client.clone()))
                     .collect())
+            })
+            .await?
+    }
+
+    pub async fn add_email_pusher(
+        &self,
+        device_name: String,
+        app_name: String,
+        email: String,
+        lang: Option<String>,
+    ) -> Result<bool> {
+        let pusher_data = PusherInit {
+            ids: PusherIds::new(email, "m.email".to_owned()),
+            kind: PusherKind::Email(EmailPusherData::new()),
+            app_display_name: app_name,
+            device_display_name: device_name,
+            profile_tag: None,
+            lang: lang.unwrap_or("en".to_owned()),
+        };
+        let client = self.core.client().clone();
+        RUNTIME
+            .spawn(async move {
+                // FIXME: how to set `append = true` for single-device-multi-user-support...?!?
+                let request = set_pusher::v3::Request::post(pusher_data.into());
+                client.send(request, None).await?;
+                Ok(false)
             })
             .await?
     }

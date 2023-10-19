@@ -37,7 +37,8 @@ const pushServer = String.fromEnvironment(
 
 const pushServerUrl = 'https://$pushServer/_matrix/push/v1/notify';
 
-final supportedPlatforms  = Platform.isAndroid || Platform.isIOS; // || Platform.isMacOS;
+final supportedPlatforms =
+    Platform.isAndroid || Platform.isIOS; // || Platform.isMacOS;
 
 int id = 0;
 
@@ -53,7 +54,6 @@ final StreamController<String?> selectNotificationStream =
     StreamController<String?>.broadcast();
 
 const MethodChannel platform = MethodChannel('acter/push_notification');
-
 
 const String portName = 'notification_send_port';
 
@@ -85,7 +85,6 @@ const String darwinNotificationCategoryText = 'textCategory';
 /// Defines a iOS/MacOS notification category for plain actions.
 const String darwinNotificationCategoryPlain = 'plainCategory';
 
-
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse notificationResponse) {
   // ignore: avoid_print
@@ -95,14 +94,17 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
   if (notificationResponse.input?.isNotEmpty ?? false) {
     // ignore: avoid_print
     print(
-        'notification action tapped with input: ${notificationResponse.input}',);
+      'notification action tapped with input: ${notificationResponse.input}',
+    );
   }
 }
 
-String makeForward({required String roomId, required String deviceId, required String eventId}) {
+String makeForward(
+    {required String roomId,
+    required String deviceId,
+    required String eventId}) {
   return '/forward?roomId=${Uri.encodeComponent(roomId)}&eventId=${Uri.encodeComponent(eventId)}&deviceId=${Uri.encodeComponent(deviceId)}';
 }
-
 
 Future<void> initializeNotifications() async {
   if (!supportedPlatforms) {
@@ -235,7 +237,7 @@ Future<void> initializeNotifications() async {
       rootNavKey.currentContext!.push(uri);
       return;
     }
-    
+
     final roomId = data['room_id'] as String?;
     final eventId = data['event_id'] as String?;
     final deviceId = data['device_id'] as String?;
@@ -243,7 +245,8 @@ Future<void> initializeNotifications() async {
       debugPrint('Not our kind of push event. $roomId, $eventId, $deviceId');
       return;
     }
-    rootNavKey.currentContext!.push(makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId));
+    rootNavKey.currentContext!.push(
+        makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId));
   });
 
   // Handle push notifications
@@ -257,98 +260,111 @@ Future<void> initializeNotifications() async {
     Push.instance.onBackgroundMessage.listen((message) async {
       await handleMessage(message, background: true);
     });
-    }
-}
-
-Future<bool> handleMessage(RemoteMessage message, { bool background = false, }) async {
-    if (message.data == null) {
-      debugPrint('non-matrix push: $message');
-      return false;
-    }
-    final deviceId = message.data!['device_id'] as String;
-    final roomId = message.data!['room_id'] as String;
-    final eventId = message.data!['event_id'] as String;
-    final payload = makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId);
-    try {
-      final instance = await ActerSdk.instance;
-      final notif = await instance.getNotificationFor(deviceId, roomId, eventId);
-      final isDm = notif.isDirectMessageRoom();
-      final roomDisplayName = notif.roomDisplayName();
-      debugPrint('got a matrix notification in $roomDisplayName ($isDm)');
-
-      String body = '(new message)';
-      String title = roomDisplayName;
-
-      if (isDm) {
-        final roomMsg = notif.roomMessage();
-        if (roomMsg != null) {
-          final eventItem = roomMsg.eventItem();
-          if (eventItem != null) {
-            final textDesc = eventItem.textDesc();
-            if (textDesc != null) {
-              body = textDesc.body();
-            }
-          }
-        }
-      } else {
-        final roomMsg = notif.roomMessage();
-        if (roomMsg != null) {
-          final eventItem = roomMsg.eventItem();
-          if (eventItem != null) {
-            final textDesc = eventItem.textDesc();
-            if (textDesc != null) {
-              body = textDesc.body();
-            }
-          }
-        }
-
-        final sender = notif.senderDisplayName();
-        body = sender != null ? '$sender: $body' : body;
-      }
-
-      try {
-        // ignore: use_build_context_synchronously
-        final currentBase = rootNavKey.currentContext!.read(currentRoutingLocation);
-        final isInChat = currentBase == '/chat/${Uri.encodeComponent(roomId)}';
-        debugPrint('current path: $currentBase == /chat/$roomId : $isInChat');
-        if (isInChat) {
-          debugPrint('We are already in the chatroom. Not showing notification.');
-          return false;
-        }
-      } catch (e) {
-        // ignore this
-      }
-
-      _showNotification(title, body, roomId, payload);
-      return true;
-
-    } catch (e) {
-      debugPrint('Parsing Notification failed: $e');
-    }
-  return false;
-
-}
-
-  Future<void> _showNotification(
-    String title, String body, String threadId, String payload,
-  ) async {
-    const androidNotificationDetails =
-        AndroidNotificationDetails('messages', 'Messages',
-            channelDescription: 'Messages sent to you',
-            importance: Importance.max,
-            priority: Priority.high,
-            ticker: 'ticker',);
-    final darwinDetails = DarwinNotificationDetails(threadIdentifier: threadId,);
-    final notificationDetails = NotificationDetails(
-        android: androidNotificationDetails,
-        macOS: darwinDetails,
-        iOS: darwinDetails,
-    );
-    await flutterLocalNotificationsPlugin.show(
-        id++, title, body, notificationDetails,
-        payload: payload,
-      );
   }
+}
+
+Future<bool> handleMessage(
+  RemoteMessage message, {
+  bool background = false,
+}) async {
+  if (message.data == null) {
+    debugPrint('non-matrix push: $message');
+    return false;
+  }
+  final deviceId = message.data!['device_id'] as String;
+  final roomId = message.data!['room_id'] as String;
+  final eventId = message.data!['event_id'] as String;
+  final payload =
+      makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId);
+  try {
+    final instance = await ActerSdk.instance;
+    final notif = await instance.getNotificationFor(deviceId, roomId, eventId);
+    final isDm = notif.isDirectMessageRoom();
+    final roomDisplayName = notif.roomDisplayName();
+    debugPrint('got a matrix notification in $roomDisplayName ($isDm)');
+
+    String body = '(new message)';
+    String title = roomDisplayName;
+
+    if (isDm) {
+      final roomMsg = notif.roomMessage();
+      if (roomMsg != null) {
+        final eventItem = roomMsg.eventItem();
+        if (eventItem != null) {
+          final textDesc = eventItem.textDesc();
+          if (textDesc != null) {
+            body = textDesc.body();
+          }
+        }
+      }
+    } else {
+      final roomMsg = notif.roomMessage();
+      if (roomMsg != null) {
+        final eventItem = roomMsg.eventItem();
+        if (eventItem != null) {
+          final textDesc = eventItem.textDesc();
+          if (textDesc != null) {
+            body = textDesc.body();
+          }
+        }
+      }
+
+      final sender = notif.senderDisplayName();
+      body = sender != null ? '$sender: $body' : body;
+    }
+
+    try {
+      // ignore: use_build_context_synchronously
+      final currentBase =
+          rootNavKey.currentContext!.read(currentRoutingLocation);
+      final isInChat = currentBase == '/chat/${Uri.encodeComponent(roomId)}';
+      debugPrint('current path: $currentBase == /chat/$roomId : $isInChat');
+      if (isInChat) {
+        debugPrint('We are already in the chatroom. Not showing notification.');
+        return false;
+      }
+    } catch (e) {
+      // ignore this
+    }
+
+    _showNotification(title, body, roomId, payload);
+    return true;
+  } catch (e) {
+    debugPrint('Parsing Notification failed: $e');
+  }
+  return false;
+}
+
+Future<void> _showNotification(
+  String title,
+  String body,
+  String threadId,
+  String payload,
+) async {
+  const androidNotificationDetails = AndroidNotificationDetails(
+    'messages',
+    'Messages',
+    channelDescription: 'Messages sent to you',
+    importance: Importance.max,
+    priority: Priority.high,
+    ticker: 'ticker',
+  );
+  final darwinDetails = DarwinNotificationDetails(
+    threadIdentifier: threadId,
+  );
+  final notificationDetails = NotificationDetails(
+    android: androidNotificationDetails,
+    macOS: darwinDetails,
+    iOS: darwinDetails,
+  );
+  await flutterLocalNotificationsPlugin.show(
+    id++,
+    title,
+    body,
+    notificationDetails,
+    payload: payload,
+  );
+}
 
 Future<bool> setupPushNotifications(
   Client client, {
@@ -400,32 +416,47 @@ Future<bool> setupPushNotifications(
 }
 
 Future<bool> onNewToken(Client client, String token) async {
-
-  late String name;
+  final String name = await deviceName();
   late String appId;
   if (Platform.isIOS) {
     // sygnal expects token as a base64 encoded string, but we have a HEX from the plugin
     token = base64.encode(hex.decode(token));
-
-    final iOsInfo = await deviceInfo.iosInfo;
-    name = iOsInfo.name;
     if (isProduction) {
       appId = '$appIdPrefix.ios';
     } else {
       appId = '$appIdPrefix.ios.dev';
     }
   } else if (Platform.isAndroid) {
-    final androidInfo = await deviceInfo.androidInfo;
-    name =
-        androidInfo.device; // FIXME: confirm this is what we actually want?!?
     appId = '$appIdPrefix.android';
   }
 
-  await client.addPusher(appId, token, name, appName, pushServerUrl, Platform.isIOS, null);
+  await client.addPusher(
+      appId, token, name, appName, pushServerUrl, Platform.isIOS, null);
 
   debugPrint(
     ' ---- notification pusher sent: $appName ($appId) on $name ($token) to $pushServerUrl',
   );
 
   return true;
+}
+
+Future<String> deviceName() async {
+  if (Platform.isIOS) {
+    final iOsInfo = await deviceInfo.iosInfo;
+    return iOsInfo.name;
+  } else if (Platform.isAndroid) {
+    final androidInfo = await deviceInfo.androidInfo;
+    return androidInfo.device;
+  } else if (Platform.isMacOS) {
+    final info = await deviceInfo.macOsInfo;
+    return info.computerName;
+  } else if (Platform.isLinux) {
+    final info = await deviceInfo.linuxInfo;
+    return info.prettyName;
+  } else if (Platform.isWindows) {
+    final info = await deviceInfo.windowsInfo;
+    return info.computerName;
+  } else {
+    return '(unknown)';
+  }
 }
