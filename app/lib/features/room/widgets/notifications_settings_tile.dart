@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -53,8 +52,9 @@ class _NotificationSettingsTile extends ConsumerWidget {
           debugPrint('new value: $newMode');
           final room = await ref.read(maybeRoomProvider(roomId).future);
           if (room == null) {
-            // ignore: use_build_context_synchronously
-            customMsgSnackbar(context, 'Room not found');
+            EasyLoading.showError(
+              'Room not found',
+            );
             return;
           }
           EasyLoading.showProgress(0);
@@ -62,10 +62,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
           if (await room.setNotificationMode(
             newMode == '' ? null : newMode,
           )) {
-            EasyLoading.dismiss();
-            // ignore: use_build_context_synchronously
-            customMsgSnackbar(
-              context,
+            EasyLoading.showSuccess(
               'Notification status submitted',
             );
             await Future.delayed(const Duration(seconds: 1), () {

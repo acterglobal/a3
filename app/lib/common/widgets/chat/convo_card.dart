@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
@@ -10,6 +9,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -68,7 +68,6 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
           children: [
             latestMsg != null
                 ? _TrailingWidget(
-                    // controller: receiptController,
                     room: widget.room,
                     latestMessage: latestMsg,
                     activeMembers: activeMembers,
@@ -105,17 +104,13 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
                                   .future,
                             );
                             if (room == null) {
-                              // ignore: use_build_context_synchronously
-                              customMsgSnackbar(
-                                context,
+                              EasyLoading.showError(
                                 'Room not found',
                               );
                               return;
                             }
                             await room.unmute();
-                            // ignore: use_build_context_synchronously
-                            customMsgSnackbar(
-                              context,
+                            EasyLoading.showSuccess(
                               'Notifications unmuted',
                             );
                             await Future.delayed(const Duration(seconds: 1),
