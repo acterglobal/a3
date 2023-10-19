@@ -393,7 +393,7 @@ impl NewsEntryDraft {
         let text_content = TextMessageEventContent::markdown(body);
         self.slides.push(NewsSlide {
             client: self.client.clone(),
-            room: self.room.clone().into(),
+            room: self.room.clone(),
             inner: news::NewsSlide::new_text(text_content),
         });
         self
@@ -487,7 +487,7 @@ impl NewsEntryDraft {
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
-            room: self.room.clone().into(),
+            room: self.room.clone(),
             inner: news::NewsSlide::new_audio(audio_content),
         });
         Ok(true)
@@ -538,7 +538,7 @@ impl NewsEntryDraft {
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
-            room: self.room.clone().into(),
+            room: self.room.clone(),
             inner: news::NewsSlide::new_video(video_content),
         });
         Ok(true)
@@ -577,7 +577,7 @@ impl NewsEntryDraft {
 
         self.slides.push(NewsSlide {
             client: self.client.clone(),
-            room: self.room.clone().into(),
+            room: self.room.clone(),
             inner: news::NewsSlide::new_file(file_content),
         });
         Ok(true)
