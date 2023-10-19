@@ -102,7 +102,7 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
 String makeForward(
     {required String roomId,
     required String deviceId,
-    required String eventId}) {
+    required String eventId,}) {
   return '/forward?roomId=${Uri.encodeComponent(roomId)}&eventId=${Uri.encodeComponent(eventId)}&deviceId=${Uri.encodeComponent(deviceId)}';
 }
 
@@ -246,7 +246,7 @@ Future<void> initializeNotifications() async {
       return;
     }
     rootNavKey.currentContext!.push(
-        makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId));
+        makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId),);
   });
 
   // Handle push notifications
@@ -431,7 +431,7 @@ Future<bool> onNewToken(Client client, String token) async {
   }
 
   await client.addPusher(
-      appId, token, name, appName, pushServerUrl, Platform.isIOS, null);
+      appId, token, name, appName, pushServerUrl, Platform.isIOS, null,);
 
   debugPrint(
     ' ---- notification pusher sent: $appName ($appId) on $name ($token) to $pushServerUrl',

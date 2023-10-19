@@ -2,10 +2,8 @@ import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/features/settings/widgets/settings_section_with_title_actions.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -210,40 +208,67 @@ class NotificationsSettingsPage extends ConsumerWidget {
 
   SettingsTile _pusherTile(BuildContext context, WidgetRef ref, Pusher item) {
     return SettingsTile(
+      leading: item.isEmailPusher()
+          ? const Icon(Atlas.email_thin)
+          : const Icon(Atlas.mobile_portrait_thin),
       title: Text(item.deviceDisplayName()),
       description: Text(item.appDisplayName()),
-      trailing: MenuAnchor(
-        builder:
-            (BuildContext context, MenuController controller, Widget? child) {
-          return IconButton(
-            onPressed: () {
-              if (controller.isOpen) {
-                controller.close();
-              } else {
-                controller.open();
-              }
-            },
-            icon: const Icon(Icons.more_vert),
-            tooltip: 'Show menu',
-          );
-        },
-        menuChildren: [
-          MenuItemButton(
-            onPressed: () {
-              // alert dialog with details;
-            },
-            child: const Text('Details'),
+      trailing: const Icon(Atlas.dots_vertical_thin),
+      onPressed: (context) => showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Target Details'),
+          content: SizedBox(
+            width: 300,
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                ListTile(
+                  title: const Text('AppId'),
+                  subtitle: Text(item.appId()),
+                ),
+                ListTile(
+                  title: const Text('App Name'),
+                  subtitle: Text(item.appDisplayName()),
+                ),
+                ListTile(
+                  title: const Text('Device Name'),
+                  subtitle: Text(item.deviceDisplayName()),
+                ),
+                ListTile(
+                  title: const Text('Language'),
+                  subtitle: Text(item.lang()),
+                ),
+              ],
+            ),
+            // alert dialog with details;
           ),
-          MenuItemButton(
-            onPressed: () async {
-              EasyLoading.show();
-              await item.delete();
-              EasyLoading.dismiss();
-              ref.invalidate(pushersProvider);
-            },
-            child: const Text('Delete Pusher'),
-          ),
-        ],
+          actions: <Widget>[
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.red,
+                border: Border.all(color: Colors.red),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: TextButton(
+                onPressed: () async {
+                  EasyLoading.show();
+                  await item.delete();
+                  EasyLoading.dismiss();
+                  ref.invalidate(pushersProvider);
+                },
+                child: const Text(
+                  'Delete Target',
+                  style: TextStyle(color: Colors.white, fontSize: 17),
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, null),
+              child: const Text('Close Dialog'),
+            ),
+          ],
+        ),
       ),
     );
   }
