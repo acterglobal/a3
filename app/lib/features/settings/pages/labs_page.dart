@@ -13,14 +13,6 @@ class SettingsLabsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final provider = ref.watch(featuresProvider);
-    bool isActive(f) => provider.isActive(f);
-    bool updateFeatureState(f, value) {
-      debugPrint('setting $f to $value');
-      ref.read(featuresProvider.notifier).setActive(f, value);
-      return value;
-    }
-
     return WithSidebar(
       sidebar: const SettingsMenu(),
       child: Scaffold(
@@ -33,15 +25,27 @@ class SettingsLabsPage extends ConsumerWidget {
                 SettingsTile.switchTile(
                   title: const Text('Push Notifications'),
                   description: Text(
-                    !supportedPlatforms ? 'Only supported on mobile (iOS & Android) right now': 'Needs App restart to activate',
+                    !supportedPlatforms
+                        ? 'Only supported on mobile (iOS & Android) right now'
+                        : 'Needs App restart to activate',
                   ),
-                  initialValue: supportedPlatforms && isActive(LabsFeature.showNotifications),
+                  initialValue: supportedPlatforms &&
+                      ref.watch(
+                        isActiveProvider(LabsFeature.showNotifications),
+                      ),
                   enabled: supportedPlatforms,
                   onToggle: (newVal) {
-                      updateFeatureState(LabsFeature.showNotifications, newVal);
-                      if (newVal) {
-                        customMsgSnackbar(context, 'Push enabled. Please restart to activate');
-                      }
+                    updateFeatureState(
+                      ref,
+                      LabsFeature.showNotifications,
+                      newVal,
+                    );
+                    if (newVal) {
+                      customMsgSnackbar(
+                        context,
+                        'Push enabled. Please restart to activate',
+                      );
+                    }
                   },
                 ),
               ],
@@ -64,9 +68,9 @@ class SettingsLabsPage extends ConsumerWidget {
                 SettingsTile.switchTile(
                   title: const Text('Events'),
                   description: const Text('Shared Calendar and events'),
-                  initialValue: isActive(LabsFeature.events),
+                  initialValue: ref.watch(isActiveProvider(LabsFeature.events)),
                   onToggle: (newVal) =>
-                      updateFeatureState(LabsFeature.events, newVal),
+                      updateFeatureState(ref, LabsFeature.events, newVal),
                 ),
                 SettingsTile.switchTile(
                   title: const Text('Tasks'),
@@ -74,22 +78,24 @@ class SettingsLabsPage extends ConsumerWidget {
                       const Text('Manage Tasks lists and ToDos together'),
                   initialValue: false,
                   onToggle: (newVal) =>
-                      updateFeatureState(LabsFeature.tasks, newVal),
+                      updateFeatureState(ref, LabsFeature.tasks, newVal),
                 ),
                 SettingsTile.switchTile(
                   title: const Text('Polls'),
                   description: const Text('Polls and Surveys'),
-                  initialValue: isActive(LabsFeature.polls),
+                  initialValue: ref.watch(isActiveProvider(LabsFeature.polls)),
                   onToggle: (newVal) =>
-                      updateFeatureState(LabsFeature.polls, newVal),
+                      updateFeatureState(ref, LabsFeature.polls, newVal),
                   enabled: false,
                 ),
                 SettingsTile.switchTile(
                   title: const Text('CoBudget'),
                   description: const Text('Manage budgets cooperatively'),
-                  initialValue: isActive(LabsFeature.cobudget),
+                  initialValue: ref.watch(
+                    isActiveProvider(LabsFeature.cobudget),
+                  ),
                   onToggle: (newVal) =>
-                      updateFeatureState(LabsFeature.cobudget, newVal),
+                      updateFeatureState(ref, LabsFeature.cobudget, newVal),
                   enabled: false,
                 ),
               ],

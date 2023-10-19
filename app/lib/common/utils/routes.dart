@@ -66,6 +66,7 @@ enum Routes {
   settings('/settings'),
   settingsLabs('/settings/labs'),
   settingSessions('/settings/sessions'),
+  settingNotifications('/settings/notifications'),
   blockedUsers('/settings/blockedUsers'),
   info('/info'),
   licenses('/info/licenses'),
