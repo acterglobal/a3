@@ -71,6 +71,7 @@ use super::{
     api::FfiBuffer,
     message::RoomMessage,
     profile::{RoomProfile, UserProfile},
+    push::{notification_mode_from_input, room_notification_mode_name},
     RUNTIME,
 };
 
@@ -479,24 +480,6 @@ impl SpaceRelations {
             .await?
     }
 }
-
-fn room_notification_mode_name(input: &RoomNotificationMode) -> String {
-    match input {
-        RoomNotificationMode::AllMessages => "all".to_owned(),
-        RoomNotificationMode::MentionsAndKeywordsOnly => "mentions".to_owned(),
-        RoomNotificationMode::Mute => "muted".to_owned(),
-    }
-}
-
-fn notification_mode_from_input(input: &str) -> Option<RoomNotificationMode> {
-    match input.trim().to_lowercase().as_str() {
-        "all" => Some(RoomNotificationMode::AllMessages),
-        "mentions" => Some(RoomNotificationMode::MentionsAndKeywordsOnly),
-        "muted" => Some(RoomNotificationMode::Mute),
-        _ => None,
-    }
-}
-
 #[derive(Clone, Debug)]
 pub struct Room {
     pub(crate) core: CoreClient,

@@ -2068,8 +2068,15 @@ object Client {
     /// add another http pusher to the notification system
     fn add_email_pusher(device_name: string, app_name: string, email: string, lang: Option<string>) -> Future<Result<bool>>;
 
+    /// default RoomNotificationMode for the selected features
+    fn default_notification_mode(is_encrypted: bool, is_one_on_one: bool) -> Future<Result<string>>;
+
+    /// set default RoomNotificationMode for this combination
+    fn set_default_notification_mode(is_encrypted: bool, is_one_on_one: bool, mode: string) -> Future<Result<bool>>;
+    
     /// getting a notification item from the notification data;
     fn get_notification_item(room_id: string, event_id: string) -> Future<Result<NotificationItem>>;
+    
     /// get all upcoming events, whether I responded or not
     fn all_upcoming_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
 

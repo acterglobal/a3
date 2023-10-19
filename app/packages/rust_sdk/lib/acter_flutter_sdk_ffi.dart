@@ -10376,6 +10376,112 @@ class Api {
     return tmp7;
   }
 
+  String? __clientDefaultNotificationModeFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientDefaultNotificationModeFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
+    return tmp7;
+  }
+
+  bool? __clientSetDefaultNotificationModeFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientSetDefaultNotificationModeFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   NotificationItem? __clientGetNotificationItemFuturePoll(
     int boxed,
     int postCobject,
@@ -22150,6 +22256,42 @@ class Api {
         int,
         int,
       )>();
+  late final _clientDefaultNotificationModePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint8,
+            ffi.Uint8,
+          )>>("__Client_default_notification_mode");
+
+  late final _clientDefaultNotificationMode =
+      _clientDefaultNotificationModePtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _clientSetDefaultNotificationModePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint8,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Client_set_default_notification_mode");
+
+  late final _clientSetDefaultNotificationMode =
+      _clientSetDefaultNotificationModePtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _clientGetNotificationItemPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -25779,6 +25921,36 @@ class Api {
   late final _clientAddEmailPusherFuturePoll =
       _clientAddEmailPusherFuturePollPtr.asFunction<
           _ClientAddEmailPusherFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _clientDefaultNotificationModeFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientDefaultNotificationModeFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_default_notification_mode_future_poll");
+
+  late final _clientDefaultNotificationModeFuturePoll =
+      _clientDefaultNotificationModeFuturePollPtr.asFunction<
+          _ClientDefaultNotificationModeFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _clientSetDefaultNotificationModeFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSetDefaultNotificationModeFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_set_default_notification_mode_future_poll");
+
+  late final _clientSetDefaultNotificationModeFuturePoll =
+      _clientSetDefaultNotificationModeFuturePollPtr.asFunction<
+          _ClientSetDefaultNotificationModeFuturePollReturn Function(
             int,
             int,
             int,
@@ -47295,6 +47467,78 @@ class Client {
     return tmp20;
   }
 
+  /// default RoomNotificationMode for the selected features
+  Future<String> defaultNotificationMode(
+    bool isEncrypted,
+    bool isOneOnOne,
+  ) {
+    final tmp1 = isEncrypted;
+    final tmp3 = isOneOnOne;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    tmp4 = tmp3 ? 1 : 0;
+    final tmp5 = _api._clientDefaultNotificationMode(
+      tmp0,
+      tmp2,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__Client_default_notification_mode_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__clientDefaultNotificationModeFuturePoll);
+    return tmp6;
+  }
+
+  /// set default RoomNotificationMode for this combination
+  Future<bool> setDefaultNotificationMode(
+    bool isEncrypted,
+    bool isOneOnOne,
+    String mode,
+  ) {
+    final tmp1 = isEncrypted;
+    final tmp3 = isOneOnOne;
+    final tmp5 = mode;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    tmp4 = tmp3 ? 1 : 0;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._clientSetDefaultNotificationMode(
+      tmp0,
+      tmp2,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(
+        _api, tmp11_0, "__Client_set_default_notification_mode_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(
+        tmp11_1, _api.__clientSetDefaultNotificationModeFuturePoll);
+    return tmp10;
+  }
+
   /// getting a notification item from the notification data;
   Future<NotificationItem> getNotificationItem(
     String roomId,
@@ -54402,6 +54646,40 @@ class _ClientAddPusherFuturePollReturn extends ffi.Struct {
 }
 
 class _ClientAddEmailPusherFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _ClientDefaultNotificationModeFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
+}
+
+class _ClientSetDefaultNotificationModeFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

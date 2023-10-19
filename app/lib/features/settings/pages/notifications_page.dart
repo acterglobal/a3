@@ -1,4 +1,7 @@
 import 'package:acter/common/notifications/notifications.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
+import 'package:acter/features/settings/providers/notifications_mode_provider.dart';
 import 'package:acter/features/settings/widgets/settings_section_with_title_actions.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
@@ -115,11 +118,117 @@ class NotificationsSettingsPage extends ConsumerWidget {
                     ),
                   ],
                 ),
+                SettingsSection(
+                  title: const Text('Default Modes'),
+                  tiles: [
+                    _notifSection(
+                      context,
+                      ref,
+                      'Regular Space or Chat',
+                      false,
+                      false,
+                    ),
+                    _notifSection(
+                      context,
+                      ref,
+                      'Encrypted Space or Chat',
+                      true,
+                      false,
+                    ),
+                    _notifSection(
+                      context,
+                      ref,
+                      'One-on-one Space or Chat',
+                      false,
+                      true,
+                    ),
+                    _notifSection(
+                      context,
+                      ref,
+                      'Encrypted One-on-one Space or Chat',
+                      true,
+                      true,
+                    ),
+                  ],
+                ),
                 _pushTargets(context, ref),
               ],
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  SettingsTile _notifSection(
+    BuildContext context,
+    WidgetRef ref,
+    String title,
+    bool isEncrypted,
+    bool isOneToOne,
+  ) {
+    final curNotifStatus = ref
+            .watch(
+              currentNotificationModeProvider(
+                NotificationConfiguration(isEncrypted, isOneToOne),
+              ),
+            )
+            .valueOrNull ??
+        '';
+    return SettingsTile(
+      title: Text(
+        title,
+      ),
+      description: Text(
+        notifToText(curNotifStatus) ?? '(unset)',
+      ),
+      trailing: PopupMenuButton<String>(
+        initialValue: curNotifStatus,
+        // Callback that sets the selected popup menu item.
+        onSelected: (String newMode) async {
+          debugPrint('new value: $newMode');
+          final client = ref.read(clientProvider);
+          if (client == null) {
+            // ignore: use_build_context_synchronously
+            EasyLoading.showError('client not found');
+            return;
+          }
+          EasyLoading.show();
+          try {
+            await client.setDefaultNotificationMode(
+              isEncrypted,
+              isOneToOne,
+              newMode,
+            );
+            EasyLoading.showSuccess(
+              'Notification status submitted',
+            );
+            ref.invalidate(
+              currentNotificationModeProvider(
+                NotificationConfiguration(isEncrypted, isOneToOne),
+              ),
+            );
+          } catch (e) {
+            EasyLoading.showError(
+              'Notification status update failed: $e',
+              duration: const Duration(seconds: 3),
+            );
+          }
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+          const PopupMenuItem<String>(
+            value: 'all',
+            child: Text('All Messages'),
+          ),
+          const PopupMenuItem<String>(
+            value: 'mentions',
+            child: Text('Mentions and Keywords only'),
+          ),
+          const PopupMenuItem<String>(
+            value: 'muted',
+            child: Text('Muted'),
+          ),
+        ],
       ),
     );
   }
