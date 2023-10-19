@@ -1310,7 +1310,7 @@ object SpaceHierarchyRoomInfo {
     //fn room_id() -> OwnedRoomId;
     fn room_id_str() -> string;
     fn topic() -> Option<string>;
-    fn num_joined_members() -> u64;
+    fn num_joined_members() -> u32;
     fn world_readable() -> bool;
     fn guest_can_join() -> bool;
     fn is_space() -> bool;
@@ -1606,7 +1606,7 @@ object Member {
     fn membership_status_str() -> string;
 
     /// the power level this user has
-    fn power_level() -> u64;
+    fn power_level() -> u32;
 
     /// Whether this user is allowed to perform the given action
     //fn can(permission: MemberPermission) -> bool;
@@ -1667,7 +1667,7 @@ object PublicSearchResultItem {
     fn guest_can_join() -> bool;
     // fn canonical_alias() -> Option<OwnedRoomAliasId>;
     fn canonical_alias_str() -> Option<string>;
-    fn num_joined_members() -> u64;
+    fn num_joined_members() -> u32;
     // fn room_id() -> OwnedRoomId;
     fn room_id_str() -> string;
     // fn avatar_url() -> Option<OwnedMxcUri>;
@@ -1684,7 +1684,7 @@ object PublicSearchResult {
     /// to get the previous page
     fn prev_batch() -> Option<string>;
     /// an estimated total of matches
-    fn total_room_count_estimate() -> Option<u64>;
+    fn total_room_count_estimate() -> Option<u32>;
     /// get the chunk of items in this response
     fn chunks() -> Vec<PublicSearchResultItem>;
 }

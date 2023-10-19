@@ -474,8 +474,12 @@ impl SpaceHierarchyRoomInfo {
     }
 
     /// The number of members joined to the room.
-    pub fn num_joined_members(&self) -> u64 {
-        self.chunk.num_joined_members.into()
+    pub fn num_joined_members(&self) -> u32 {
+        let count = u64::from(self.chunk.num_joined_members);
+        if count > u32::MAX as u64 {
+            panic!("count of joined members overflowed");
+        }
+        count as u32
     }
 
     /// The ID of the room.

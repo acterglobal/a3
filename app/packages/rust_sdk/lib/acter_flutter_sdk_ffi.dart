@@ -17534,7 +17534,7 @@ class Api {
           )>();
   late final _spaceHierarchyRoomInfoNumJoinedMembersPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint64 Function(
+          ffi.Uint32 Function(
             ffi.Int64,
           )>>("__SpaceHierarchyRoomInfo_num_joined_members");
 
@@ -18770,7 +18770,7 @@ class Api {
           )>();
   late final _memberPowerLevelPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint64 Function(
+          ffi.Uint32 Function(
             ffi.Int64,
           )>>("__Member_power_level");
 
@@ -19015,7 +19015,7 @@ class Api {
           )>();
   late final _publicSearchResultItemNumJoinedMembersPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint64 Function(
+          ffi.Uint32 Function(
             ffi.Int64,
           )>>("__PublicSearchResultItem_num_joined_members");
 
@@ -46263,7 +46263,7 @@ class _PublicSearchResultPrevBatchReturn extends ffi.Struct {
 class _PublicSearchResultTotalRoomCountEstimateReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint64()
+  @ffi.Uint32()
   external int arg1;
 }
 

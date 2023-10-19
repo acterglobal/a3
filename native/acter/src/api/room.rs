@@ -153,6 +153,14 @@ impl Member {
         self.membership_status().to_string()
     }
 
+    pub fn power_level(&self) -> u32 {
+        let level = self.deref().power_level();
+        if level > u32::MAX as i64 {
+            panic!("power level of member overflowed");
+        }
+        level as u32
+    }
+
     pub fn can(&self, permission: MemberPermission) -> bool {
         let tester: PermissionTest = match permission {
             MemberPermission::CanBan => return self.member.can_ban(),
