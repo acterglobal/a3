@@ -583,6 +583,20 @@ impl NewsEntryDraft {
         Ok(true)
     }
 
+    pub fn add_location_slide(
+        &mut self,
+        body: String,
+        geo_uri: String,
+    ) -> &mut Self {
+        let location_content = LocationMessageEventContent::new(body, geo_uri);
+        self.slides.push(NewsSlide {
+            client: self.client.clone(),
+            room: self.room.clone(),
+            inner: news::NewsSlide::new_location(location_content),
+        });
+        self
+    }
+
     pub fn unset_slides(&mut self) -> &mut Self {
         self.slides.clear();
         self

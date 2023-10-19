@@ -150,6 +150,9 @@ object NewsEntryDraft {
     /// create news slide for file msg
     fn add_file_slide(body: string, uri: string) -> Future<Result<bool>>;
 
+    /// create news slide for location msg
+    fn add_location_slide(body: string, geo_uri: string);
+
     /// clear slides
     fn unset_slides();
 
