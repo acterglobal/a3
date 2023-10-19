@@ -1,18 +1,45 @@
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
+use matrix_sdk::{
+    notification_settings::{IsEncrypted, IsOneToOne, RoomNotificationMode},
+    ruma::{
+        api::client::push::{
+            get_pushers, set_pusher, EmailPusherData, Pusher as RumaPusher, PusherIds, PusherInit,
+            PusherKind,
+        },
+        assign,
+        push::HttpPusherData,
+    },
+};
+
 use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
     NotificationProcessSetup,
 };
-use ruma::{assign, push::HttpPusherData};
-use ruma_client_api::push::{
-    get_pushers, set_pusher, EmailPusherData, Pusher as RumaPusher, PusherIds, PusherInit,
-    PusherKind,
-};
 use ruma_common::{EventId, OwnedRoomId, RoomId};
 
-use super::{message::any_sync_event_to_message, Client};
+use super::{
+    message::{any_sync_event_to_message, sync_event_to_message},
+    Client,
+};
 
 use crate::{RoomMessage, RUNTIME};
+
+pub(crate) fn room_notification_mode_name(input: &RoomNotificationMode) -> String {
+    match input {
+        RoomNotificationMode::AllMessages => "all".to_owned(),
+        RoomNotificationMode::MentionsAndKeywordsOnly => "mentions".to_owned(),
+        RoomNotificationMode::Mute => "muted".to_owned(),
+    }
+}
+
+pub(crate) fn notification_mode_from_input(input: &str) -> Option<RoomNotificationMode> {
+    match input.trim().to_lowercase().as_str() {
+        "all" => Some(RoomNotificationMode::AllMessages),
+        "mentions" => Some(RoomNotificationMode::MentionsAndKeywordsOnly),
+        "muted" => Some(RoomNotificationMode::Mute),
+        _ => None,
+    }
+}
 
 pub struct NotificationItem {
     pub(crate) inner: SdkNotificationItem,
@@ -129,6 +156,8 @@ impl Pusher {
     }
 }
 
+pub struct NotificationsSettings {}
+
 impl Client {
     pub async fn get_notification_item(
         &self,
@@ -152,6 +181,52 @@ impl Client {
                     .await?
                     .context("(hidden notification)")?;
                 Ok(NotificationItem::new(notif, room_id))
+            })
+            .await?
+    }
+
+    pub async fn default_notification_mode(
+        &self,
+        is_encrypted: bool,
+        is_one_to_one: bool,
+    ) -> Result<String> {
+        let client = self.core.client().clone();
+        RUNTIME
+            .spawn(async move {
+                let mode = client
+                    .notification_settings()
+                    .await
+                    .get_default_room_notification_mode(
+                        IsEncrypted::from(is_encrypted),
+                        IsOneToOne::from(is_one_to_one),
+                    )
+                    .await;
+                Ok(room_notification_mode_name(&mode))
+            })
+            .await?
+    }
+
+    pub async fn set_default_notification_mode(
+        &self,
+        is_encrypted: bool,
+        is_one_to_one: bool,
+        mode: String,
+    ) -> Result<bool> {
+        let new_level =
+            notification_mode_from_input(&mode).context("Unknown Notification Level")?;
+        let client = self.core.client().clone();
+        RUNTIME
+            .spawn(async move {
+                client
+                    .notification_settings()
+                    .await
+                    .set_default_room_notification_mode(
+                        IsEncrypted::from(is_encrypted),
+                        IsOneToOne::from(is_one_to_one),
+                        new_level,
+                    )
+                    .await?;
+                Ok(true)
             })
             .await?
     }
