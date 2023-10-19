@@ -667,6 +667,12 @@ object TimelineDiff {
     fn value() -> Option<RoomMessage>;
 }
 
+// enum RoomNotificationMode {
+//    all,
+//    mentions,
+//    mute
+// }
+
 /// Generic Room Properties
 object Room {
     /// the RoomId as a String
@@ -695,6 +701,18 @@ object Room {
 
     /// invite the new user to this room
     fn invite_user(user_id: string) -> Future<Result<bool>>;
+
+    /// RoomNotificationMode for this room
+    fn notification_mode() -> Future<Result<string>>;
+
+    /// default RoomNotificationMode for this type of room
+    fn default_notification_mode() -> Future<string>;
+
+    /// Unset the `mute` for this room.
+    fn unmute() -> Future<Result<bool>>;
+    
+    /// set the RoomNotificationMode
+    fn set_notification_mode(new_mode: Option<string>) -> Future<Result<bool>>; 
 
 }
 
