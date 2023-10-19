@@ -71,7 +71,7 @@ class SettingsMenu extends ConsumerWidget {
                   style: titleStylesSelected(Routes.settingNotifications),
                 ),
                 leading: Icon(
-                  Atlas.key_monitor_thin,
+                  Atlas.bell_mobile_thin,
                   color: colorSelected(Routes.settingNotifications),
                 ),
                 onPressed: (context) {
