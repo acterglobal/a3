@@ -6,19 +6,17 @@ use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use futures::stream::StreamExt;
 use matrix_sdk::{
-    room::{Joined, Room},
-    ruma::{
-        assign,
-        events::room::{
-            message::{
-                AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-                ImageMessageEventContent, LocationMessageEventContent, VideoInfo,
-                VideoMessageEventContent,
-            },
-            ImageInfo,
-        },
-        MxcUri, OwnedEventId, OwnedUserId, UInt,
+    room::Room,
+    ruma::{assign, UInt},
+    RoomState,
+};
+use ruma_common::{MxcUri, OwnedEventId, OwnedUserId};
+use ruma_events::room::{
+    message::{
+        AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
+        ImageMessageEventContent, LocationMessageEventContent, VideoInfo, VideoMessageEventContent,
     },
+    ImageInfo,
 };
 use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
@@ -162,7 +160,7 @@ impl Deref for AttachmentsManager {
 
 pub struct AttachmentDraft {
     client: Client,
-    room: Joined,
+    room: Room,
     inner: AttachmentBuilder,
 }
 
@@ -226,13 +224,17 @@ impl AttachmentsManager {
             .await?
     }
 
+    fn is_joined(&self) -> bool {
+        matches!(self.room.state(), RoomState::Joined)
+    }
+
     pub fn attachment_draft(&self) -> Result<AttachmentDraft> {
-        let Room::Joined(joined) = &self.room else {
+        if !self.is_joined() {
             bail!("Can only attachment in joined rooms");
-        };
+        }
         Ok(AttachmentDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.room.clone(),
             inner: self.inner.draft_builder(),
         })
     }
@@ -248,9 +250,9 @@ impl AttachmentsManager {
         height: Option<u32>,
         blurhash: Option<String>,
     ) -> Result<AttachmentDraft> {
-        let Room::Joined(joined) = &self.room else {
+        if !self.is_joined() {
             bail!("Can only attachment in joined rooms");
-        };
+        }
         let info = assign!(ImageInfo::new(), {
             mimetype,
             size: size.map(UInt::from),
@@ -266,7 +268,7 @@ impl AttachmentsManager {
         builder.content(AttachmentContent::Image(image_content));
         Ok(AttachmentDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.room.clone(),
             inner: builder,
         })
     }
@@ -279,9 +281,9 @@ impl AttachmentsManager {
         size: Option<u32>,
         secs: Option<u32>,
     ) -> Result<AttachmentDraft> {
-        let Room::Joined(joined) = &self.room else {
+        if !self.is_joined() {
             bail!("Can only attachment in joined rooms");
-        };
+        }
         let info = assign!(AudioInfo::new(), {
             mimetype,
             size: size.map(UInt::from),
@@ -295,7 +297,7 @@ impl AttachmentsManager {
         builder.content(AttachmentContent::Audio(audio_content));
         Ok(AttachmentDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.room.clone(),
             inner: builder,
         })
     }
@@ -312,9 +314,9 @@ impl AttachmentsManager {
         height: Option<u32>,
         blurhash: Option<String>,
     ) -> Result<AttachmentDraft> {
-        let Room::Joined(joined) = &self.room else {
+        if !self.is_joined() {
             bail!("Can only attachment in joined rooms");
-        };
+        }
         let info = assign!(VideoInfo::new(), {
             mimetype,
             size: size.map(UInt::from),
@@ -331,7 +333,7 @@ impl AttachmentsManager {
         builder.content(AttachmentContent::Video(video_content));
         Ok(AttachmentDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.room.clone(),
             inner: builder,
         })
     }
@@ -343,9 +345,9 @@ impl AttachmentsManager {
         mimetype: Option<String>,
         size: Option<u32>,
     ) -> Result<AttachmentDraft> {
-        let Room::Joined(joined) = &self.room else {
+        if !self.is_joined() {
             bail!("Can only attachment in joined rooms");
-        };
+        }
         let mut builder = self.inner.draft_builder();
         let size = size.map(UInt::from);
         let info = assign!(FileInfo::new(), { mimetype, size });
@@ -354,7 +356,7 @@ impl AttachmentsManager {
         builder.content(AttachmentContent::File(file_content));
         Ok(AttachmentDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.room.clone(),
             inner: builder,
         })
     }

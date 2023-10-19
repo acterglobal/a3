@@ -1,17 +1,17 @@
 use acter_core::RestoreToken;
 use anyhow::{bail, Context, Result};
 use matrix_sdk::{
-    matrix_auth::{Session, SessionTokens},
+    matrix_auth::{MatrixSession, MatrixSessionTokens},
     ruma::{
         api::client::{
             account::register::{v3::Request as RegisterRequest, RegistrationKind},
-            uiaa::{AuthData, Dummy, RegistrationToken},
+            uiaa::{AuthData, Dummy, Password, RegistrationToken},
         },
-        assign, OwnedUserId,
+        assign,
     },
     Client as SdkClient, ClientBuilder, SessionMeta,
 };
-use ruma::api::client::uiaa::Password;
+use ruma_common::OwnedUserId;
 use tracing::{error, info};
 
 use super::{
@@ -89,12 +89,12 @@ pub async fn guest_client(
                 .device_id
                 .clone()
                 .context("device id is given by server")?;
-            let auth_session = Session {
+            let auth_session = MatrixSession {
                 meta: SessionMeta {
                     user_id: response.user_id.clone(),
                     device_id,
                 },
-                tokens: SessionTokens {
+                tokens: MatrixSessionTokens {
                     access_token: response.access_token.context("no access token given")?,
                     refresh_token: response.refresh_token.clone(),
                 },
@@ -122,12 +122,12 @@ pub async fn login_with_token_under_config(
     RUNTIME
         .spawn(async move {
             let client = config.homeserver_url(homeurl).build().await?;
-            let auth_session = Session {
+            let auth_session = MatrixSession {
                 meta: SessionMeta {
                     user_id: session.user_id.clone(),
                     device_id: session.device_id.clone(),
                 },
-                tokens: SessionTokens {
+                tokens: MatrixSessionTokens {
                     access_token: session.access_token.clone(),
                     refresh_token: None,
                 },

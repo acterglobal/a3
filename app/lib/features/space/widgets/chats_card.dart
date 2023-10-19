@@ -17,7 +17,7 @@ class ChatsCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final chats = ref.watch(relatedChatsProvider(spaceId));
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -45,7 +45,11 @@ class ChatsCard extends ConsumerWidget {
                     itemBuilder: (context, index) => ConvoCard(
                       room: chats[index],
                       showParent: false,
-                      onTap: () => context.pushNamed(
+
+                      /// FIXME: push is broken for switching from subshell to subshell
+                      /// hence we are using `go` here.
+                      /// https://github.com/flutter/flutter/issues/125752
+                      onTap: () => context.goNamed(
                         Routes.chatroom.name,
                         pathParameters: {
                           'roomId': chats[index].getRoomIdStr(),

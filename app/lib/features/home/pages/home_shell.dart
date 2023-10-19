@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:acter/common/dialogs/logout_confirmation.dart';
+import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/activities/providers/notifications_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -10,6 +11,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -64,6 +66,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     // desktop notifications if configured.
     // ignore: unused_local_variable
     final notifications = ref.watch(notificationsListProvider);
+    final keyboardVisibility = ref.watch(keyboardVisibleProvider);
 
     if (errorMsg != null) {
       final softLogout = errorMsg == 'SoftLogout';
@@ -147,73 +150,78 @@ class _HomeShellState extends ConsumerState<HomeShell> {
           context.pushNamed(Routes.quickJump.name);
         },
       },
-      child: Scaffold(
-        body: Screenshot(
-          controller: screenshotController,
-          child: AdaptiveLayout(
-            key: _key,
-            topNavigation: !hasFirstSynced
-                ? SlotLayout(
-                    config: <Breakpoint, SlotLayoutConfig?>{
-                      Breakpoints.smallAndUp: SlotLayout.from(
-                        key: const Key('LoadingIndictor'),
-                        builder: (BuildContext ctx) =>
-                            const LinearProgressIndicator(
-                          semanticsLabel: 'Loading first sync',
+      child: KeyboardDismissOnTap(
+        // close keyboard if clicking somewhere else
+        child: Scaffold(
+          body: Screenshot(
+            controller: screenshotController,
+            child: AdaptiveLayout(
+              key: _key,
+              topNavigation: !hasFirstSynced
+                  ? SlotLayout(
+                      config: <Breakpoint, SlotLayoutConfig?>{
+                        Breakpoints.smallAndUp: SlotLayout.from(
+                          key: const Key('LoadingIndictor'),
+                          builder: (BuildContext ctx) =>
+                              const LinearProgressIndicator(
+                            semanticsLabel: 'Loading first sync',
+                          ),
                         ),
-                      ),
-                    },
-                  )
-                : null,
-            primaryNavigation: isDesktop
-                ? SlotLayout(
-                    config: <Breakpoint, SlotLayoutConfig?>{
-                      // adapt layout according to platform.
-                      Breakpoints.small: SlotLayout.from(
-                        key: const Key('primaryNavigation'),
-                        builder: (BuildContext ctx) => const SidebarWidget(
-                          labelType: NavigationRailLabelType.selected,
+                      },
+                    )
+                  : null,
+              primaryNavigation: isDesktop
+                  ? SlotLayout(
+                      config: <Breakpoint, SlotLayoutConfig?>{
+                        // adapt layout according to platform.
+                        Breakpoints.small: SlotLayout.from(
+                          key: const Key('primaryNavigation'),
+                          builder: (BuildContext ctx) => const SidebarWidget(
+                            labelType: NavigationRailLabelType.selected,
+                          ),
                         ),
-                      ),
-                      Breakpoints.mediumAndUp: SlotLayout.from(
-                        key: const Key('primaryNavigation'),
-                        builder: (BuildContext ctx) => const SidebarWidget(
-                          labelType: NavigationRailLabelType.all,
+                        Breakpoints.mediumAndUp: SlotLayout.from(
+                          key: const Key('primaryNavigation'),
+                          builder: (BuildContext ctx) => const SidebarWidget(
+                            labelType: NavigationRailLabelType.all,
+                          ),
                         ),
-                      ),
-                    },
-                  )
-                : null,
-            body: SlotLayout(
-              config: <Breakpoint, SlotLayoutConfig>{
-                Breakpoints.smallAndUp: SlotLayout.from(
-                  key: const Key('Body Small'),
-                  builder: (BuildContext ctx) => widget.child,
-                ),
-              },
+                      },
+                    )
+                  : null,
+              body: SlotLayout(
+                config: <Breakpoint, SlotLayoutConfig>{
+                  Breakpoints.smallAndUp: SlotLayout.from(
+                    key: const Key('Body Small'),
+                    builder: (BuildContext ctx) => widget.child,
+                  ),
+                },
+              ),
+              bottomNavigation: !isDesktop &&
+                      keyboardVisibility.valueOrNull !=
+                          true // and the keyboard is not visible.
+                  ? SlotLayout(
+                      config: <Breakpoint, SlotLayoutConfig>{
+                        //In desktop, we have ability to adjust windows res,
+                        // adjust to navbar as primary to smaller views.
+                        Breakpoints.smallAndUp: SlotLayout.from(
+                          key: const Key('Bottom Navigation Small'),
+                          inAnimation: AdaptiveScaffold.bottomToTop,
+                          outAnimation: AdaptiveScaffold.topToBottom,
+                          builder: (BuildContext ctx) => BottomNavigationBar(
+                            showSelectedLabels: false,
+                            showUnselectedLabels: false,
+                            currentIndex: bottomBarIdx,
+                            onTap: (index) =>
+                                context.go(bottomBarNav[index].initialLocation),
+                            items: bottomBarNav,
+                            type: BottomNavigationBarType.fixed,
+                          ),
+                        ),
+                      },
+                    )
+                  : null,
             ),
-            bottomNavigation: !isDesktop
-                ? SlotLayout(
-                    config: <Breakpoint, SlotLayoutConfig>{
-                      //In desktop, we have ability to adjust windows res,
-                      // adjust to navbar as primary to smaller views.
-                      Breakpoints.smallAndUp: SlotLayout.from(
-                        key: const Key('Bottom Navigation Small'),
-                        inAnimation: AdaptiveScaffold.bottomToTop,
-                        outAnimation: AdaptiveScaffold.topToBottom,
-                        builder: (BuildContext ctx) => BottomNavigationBar(
-                          showSelectedLabels: false,
-                          showUnselectedLabels: false,
-                          currentIndex: bottomBarIdx,
-                          onTap: (index) =>
-                              context.go(bottomBarNav[index].initialLocation),
-                          items: bottomBarNav,
-                          type: BottomNavigationBarType.fixed,
-                        ),
-                      ),
-                    },
-                  )
-                : null,
           ),
         ),
       ),

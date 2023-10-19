@@ -1,10 +1,9 @@
+use acter_core::models::TextMessageContent;
 use core::time::Duration;
-use matrix_sdk::ruma::{
-    events::room::{
-        message::{AudioInfo, FileInfo, VideoInfo},
-        ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
-    },
-    MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedUserId,
+use ruma_common::{MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedUserId};
+use ruma_events::room::{
+    message::{AudioInfo, FileInfo, TextMessageEventContent, VideoInfo},
+    ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
 };
 use serde::{Deserialize, Serialize};
 
@@ -127,6 +126,15 @@ impl TextDesc {
     }
     pub fn has_formatted(&self) -> bool {
         self.formatted_body.is_some()
+    }
+}
+
+impl From<&TextMessageEventContent> for TextDesc {
+    fn from(value: &TextMessageEventContent) -> Self {
+        Self {
+            body: value.body.clone(),
+            formatted_body: value.formatted.as_ref().map(|x| x.body.clone()),
+        }
     }
 }
 

@@ -5,7 +5,6 @@ import 'dart:math';
 import 'dart:async';
 
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:flutter/rendering.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -37,39 +36,31 @@ extension RefDebounceExtension on Ref {
 DateTime kFirstDay = DateTime.utc(2010, 10, 16);
 DateTime kLastDay = DateTime.utc(2050, 12, 31);
 
-List<CalendarEvent> eventsForDay(List<CalendarEvent> events, DateTime day) {
-  return events.where((e) {
-    final startDay = toDartDatetime(e.utcStart());
-    final endDay = toDartDatetime(e.utcEnd());
-    return (startDay.difference(day).inDays == 0) ||
-        (endDay.difference(day).inDays == 0);
-  }).toList();
+List<DateTime> daysInRange(DateTime first, DateTime last) {
+  final dayCount = last.difference(first).inDays + 1;
+  return List.generate(
+    dayCount,
+    (index) => DateTime.utc(first.year, first.month, first.day + index),
+  );
 }
 
 String formatDt(CalendarEvent e) {
   final start = toDartDatetime(e.utcStart()).toLocal();
   final end = toDartDatetime(e.utcEnd()).toLocal();
-  if (e.showWithoutTime()) {
-    final startFmt = DateFormat.yMMMd().format(start);
-    if (start.difference(end).inDays == 0) {
-      return startFmt;
-    } else {
-      final endFmt = DateFormat.yMMMd().format(end);
-      return '$startFmt - $endFmt';
-    }
+  final startFmt = DateFormat.yMMMd().format(start);
+  if (start.difference(end).inDays == 0) {
+    return startFmt;
   } else {
-    final startFmt = DateFormat.yMMMd().format(start);
-    final startTimeFmt = DateFormat('hh:mm a').format(start);
-    final endTimeFmt = DateFormat('hh:mm a').format(end);
-
-    if (start.difference(end).inDays == 0) {
-      return '$startFmt $startTimeFmt - $endTimeFmt';
-    } else {
-      final endFmt = DateFormat.yMMMd().format(end);
-      return '$startFmt $startTimeFmt - $endFmt $endTimeFmt';
-    }
+    final endFmt = DateFormat.yMMMd().format(end);
+    return '$startFmt - $endFmt';
   }
 }
+
+String formatTime(CalendarEvent e) => '${Jiffy.parseFromDateTime(
+      toDartDatetime(e.utcStart()).toLocal(),
+    ).jm} - ${Jiffy.parseFromDateTime(
+      toDartDatetime(e.utcEnd()).toLocal(),
+    ).jm}';
 
 String jiffyTime(int timeInterval) {
   final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
@@ -157,6 +148,18 @@ extension DateHelpers on DateTime {
     return yesterday.day == day &&
         yesterday.month == month &&
         yesterday.year == year;
+  }
+
+  bool isAfterOrEqual(DateTime other) {
+    return isAtSameMomentAs(other) || isAfter(other);
+  }
+
+  bool isBeforeOrEqual(DateTime other) {
+    return isAtSameMomentAs(other) || isBefore(other);
+  }
+
+  bool isBetween({required DateTime from, required DateTime to}) {
+    return isAfterOrEqual(from) && isBeforeOrEqual(to);
   }
 }
 
@@ -253,68 +256,11 @@ enum LabsFeature {
       [LabsFeature.events, LabsFeature.pins];
 }
 
-class SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight
-    extends SliverGridDelegate {
-  /// Creates a delegate that makes grid layouts with a fixed number of tiles in
-  /// the cross axis.
-  ///
-  /// All of the arguments must not be null. The `mainAxisSpacing` and
-  /// `crossAxisSpacing` arguments must not be negative. The `crossAxisCount`
-  /// and `childAspectRatio` arguments must be greater than zero.
-  const SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight({
-    required this.crossAxisCount,
-    this.mainAxisSpacing = 0.0,
-    this.crossAxisSpacing = 0.0,
-    this.height = 56.0,
-  })  : assert(crossAxisCount != null && crossAxisCount > 0),
-        assert(mainAxisSpacing != null && mainAxisSpacing >= 0),
-        assert(crossAxisSpacing != null && crossAxisSpacing >= 0),
-        assert(height != null && height > 0);
+// ignore: constant_identifier_names
+enum RSVP { Yes, Maybe, No, Pending }
 
-  /// The number of children in the cross axis.
-  final int crossAxisCount;
-
-  /// The number of logical pixels between each child along the main axis.
-  final double mainAxisSpacing;
-
-  /// The number of logical pixels between each child along the cross axis.
-  final double crossAxisSpacing;
-
-  /// The height of the crossAxis.
-  final double height;
-
-  bool _debugAssertIsValid() {
-    assert(crossAxisCount > 0);
-    assert(mainAxisSpacing >= 0.0);
-    assert(crossAxisSpacing >= 0.0);
-    assert(height > 0.0);
-    return true;
-  }
-
-  @override
-  SliverGridLayout getLayout(SliverConstraints constraints) {
-    assert(_debugAssertIsValid());
-    final double usableCrossAxisExtent =
-        constraints.crossAxisExtent - crossAxisSpacing * (crossAxisCount - 1);
-    final double childCrossAxisExtent = usableCrossAxisExtent / crossAxisCount;
-    final double childMainAxisExtent = height;
-    return SliverGridRegularTileLayout(
-      crossAxisCount: crossAxisCount,
-      mainAxisStride: childMainAxisExtent + mainAxisSpacing,
-      crossAxisStride: childCrossAxisExtent + crossAxisSpacing,
-      childMainAxisExtent: childMainAxisExtent,
-      childCrossAxisExtent: childCrossAxisExtent,
-      reverseCrossAxis: axisDirectionIsReversed(constraints.crossAxisDirection),
-    );
-  }
-
-  @override
-  bool shouldRelayout(
-    SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight oldDelegate,
-  ) {
-    return oldDelegate.crossAxisCount != crossAxisCount ||
-        oldDelegate.mainAxisSpacing != mainAxisSpacing ||
-        oldDelegate.crossAxisSpacing != crossAxisSpacing ||
-        oldDelegate.height != height;
-  }
-}
+const List<(RSVP, String)> rsvpOptions = <(RSVP, String)>[
+  (RSVP.No, 'No'),
+  (RSVP.Maybe, 'Maybe'),
+  (RSVP.Yes, 'Yes'),
+];

@@ -11,18 +11,18 @@ use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     ruma::{
         api::client::uiaa::{AuthData, Password, UserIdentifier},
-        assign, device_id,
-        events::{
-            key::verification::{accept::AcceptMethod, start::StartMethod, VerificationMethod},
-            room::{
-                encrypted::OriginalSyncRoomEncryptedEvent,
-                message::{MessageType, OriginalSyncRoomMessageEvent},
-            },
-            AnyToDeviceEvent, EventContent,
-        },
-        OwnedDeviceId, OwnedEventId, OwnedTransactionId, OwnedUserId,
+        assign,
     },
     Client as SdkClient,
+};
+use ruma_common::{device_id, OwnedDeviceId, OwnedEventId, OwnedTransactionId, OwnedUserId};
+use ruma_events::{
+    key::verification::{accept::AcceptMethod, start::StartMethod, VerificationMethod},
+    room::{
+        encrypted::OriginalSyncRoomEncryptedEvent,
+        message::{MessageType, OriginalSyncRoomMessageEvent},
+    },
+    AnyToDeviceEvent, EventContent,
 };
 use std::{
     collections::HashMap,
@@ -32,7 +32,7 @@ use std::{
 use tokio::sync::Mutex;
 use tracing::{error, info};
 
-use super::{client::Client, common::DeviceRecord, device::DeviceChangedEvent, RUNTIME};
+use super::{client::Client, common::DeviceRecord, device::DeviceNewEvent, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct VerificationEvent {
@@ -1290,7 +1290,7 @@ impl Client {
     }
 }
 
-impl DeviceChangedEvent {
+impl DeviceNewEvent {
     pub async fn request_verification_to_user(&self) -> Result<bool> {
         let client = self.client();
         RUNTIME

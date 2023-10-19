@@ -43,7 +43,6 @@ class SidebarWidget extends ConsumerWidget {
 
       // configuration
       labelType: labelType,
-      backgroundColor: Theme.of(context).navigationRailTheme.backgroundColor!,
       selectedIconTheme: const IconThemeData(size: 18, color: Colors.white),
       unselectedIconTheme: const IconThemeData(size: 18, color: Colors.white),
       padding: const EdgeInsets.all(0),
@@ -61,7 +60,11 @@ class SidebarWidget extends ConsumerWidget {
               ),
             ),
           ),
-          const Divider(indent: 18, endIndent: 18),
+          Container(
+            height: 1,
+            margin: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+            color: Theme.of(context).colorScheme.primaryContainer,
+          ),
         ],
       ),
       trailing: Expanded(

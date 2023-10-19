@@ -52,10 +52,19 @@ extension CustomColorScheme on ColorScheme {
   Color get neutral5 => const Color(0xFFB7B7B7);
   Color get neutral6 => const Color(0xFFE5E5E5);
   Color get m3Primary => const Color(0xFFD0BCFF);
+  Color get navBarBackground => const Color(0xFF122D46);
+
+  Color get error => const Color(0xFFFF0000);
 
   Color get badgeUnread => const Color(0xFF67A24A);
   Color get badgeImportant => const Color(0xFFFFC333);
   Color get badgeUrgent => const Color(0xFF93000A);
+
+  // tasks
+  Color get tasksBG => const Color(0xFF67A200);
+  Color get tasksFG => const Color(0xFFD0E4FF);
+  Color get taskOverdueBG => AppTheme.brandColorScheme.errorContainer;
+  Color get taskOverdueFG => AppTheme.brandColorScheme.error;
 }
 
 class AppTheme {
@@ -94,12 +103,25 @@ class AppTheme {
   );
 
   static const primaryGradient = LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.center,
+    begin: AlignmentDirectional(-1.5, -2.0),
+    end: AlignmentDirectional(-1.5, 0.5),
     colors: <Color>[
       Color(0xFF001B3D),
       Color(0xFF121212),
     ],
+  );
+
+  static const introGradient = LinearGradient(
+    colors: [
+      Color(0xff121F2B),
+      Color(0xff122334),
+      Color(0xff121315),
+      Color(0xff121315),
+    ],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    stops: [0.0, 0.6, 0.8, 1.0],
+    tileMode: TileMode.decal,
   );
 
   static MaterialStateProperty<Color?> dangerState =
@@ -176,7 +198,7 @@ class AppTheme {
       useMaterial3: true,
     ).copyWith(
       scaffoldBackgroundColor: const Color(0x122334FF),
-      splashColor: Colors.transparent,
+      // splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       hoverColor: Colors.transparent,
       progressIndicatorTheme: const ProgressIndicatorThemeData(
@@ -185,9 +207,12 @@ class AppTheme {
       ),
       dividerColor: const Color(0xFFDDEDFC),
       cardTheme: CardTheme(
-        color: brandColorScheme.primaryContainer,
+        color: brandColorScheme.secondaryContainer,
         elevation: 0,
-        margin: const EdgeInsets.all(8),
+        margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+      ),
+      listTileTheme: const ListTileThemeData(
+        contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
       ),
       dialogTheme: DialogTheme(
         iconColor: const Color(0xFF67A24A),
@@ -196,6 +221,12 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           side: BorderSide.none,
           borderRadius: BorderRadius.circular(6),
+        ),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: brandColorScheme.neutral,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -219,6 +250,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(12),
           ),
           foregroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
         ),
       ),
       dividerTheme: const DividerThemeData(
@@ -243,41 +275,41 @@ class AppTheme {
           fontSize: 14,
         ),
       ),
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Color(0xff1D293E),
-        unselectedLabelStyle: TextStyle(
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: brandColorScheme.navBarBackground,
+        unselectedLabelStyle: const TextStyle(
           color: Colors.white,
           fontSize: 12,
           fontWeight: FontWeight.w400,
         ),
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white,
-        selectedLabelStyle: TextStyle(
+        selectedLabelStyle: const TextStyle(
           color: Colors.white,
           fontSize: 12,
           fontWeight: FontWeight.w400,
           height: 1.5,
         ),
-        selectedIconTheme: IconThemeData(color: Colors.white, size: 18),
-        unselectedIconTheme: IconThemeData(color: Colors.white, size: 18),
+        selectedIconTheme: const IconThemeData(color: Colors.white, size: 18),
+        unselectedIconTheme: const IconThemeData(color: Colors.white, size: 18),
         type: BottomNavigationBarType.fixed,
         elevation: 0,
       ),
-      navigationRailTheme: const NavigationRailThemeData(
-        backgroundColor: Color(0xff1D293E),
-        indicatorColor: Color(0xff1E4E7B),
-        unselectedLabelTextStyle: TextStyle(
+      navigationRailTheme: NavigationRailThemeData(
+        backgroundColor: brandColorScheme.navBarBackground,
+        indicatorColor: const Color(0xff1E4E7B),
+        unselectedLabelTextStyle: const TextStyle(
           color: Colors.white,
           fontSize: 12,
           fontWeight: FontWeight.w400,
         ),
-        selectedLabelTextStyle: TextStyle(
+        selectedLabelTextStyle: const TextStyle(
           color: Colors.white,
           fontSize: 12,
           fontWeight: FontWeight.w400,
         ),
-        selectedIconTheme: IconThemeData(color: Colors.white, size: 18),
-        unselectedIconTheme: IconThemeData(color: Colors.white, size: 18),
+        selectedIconTheme: const IconThemeData(color: Colors.white, size: 18),
+        unselectedIconTheme: const IconThemeData(color: Colors.white, size: 18),
       ),
     );
   }

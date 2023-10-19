@@ -9,12 +9,9 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use futures::stream::StreamExt;
-use matrix_sdk::{
-    room::{Joined, Room},
-    ruma::{
-        events::room::message::TextMessageEventContent, OwnedEventId, OwnedRoomId, OwnedUserId,
-    },
-};
+use matrix_sdk::{room::Room, RoomState};
+use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
+use ruma_events::room::message::TextMessageEventContent;
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
@@ -286,13 +283,17 @@ impl Pin {
             .await?
     }
 
+    fn is_joined(&self) -> bool {
+        matches!(self.room.state(), RoomState::Joined)
+    }
+
     pub fn update_builder(&self) -> Result<PinUpdateBuilder> {
-        let Room::Joined(joined) = &self.room else {
+        if !self.is_joined() {
             bail!("Can only update pins in joined rooms");
-        };
+        }
         Ok(PinUpdateBuilder {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.room.clone(),
             content: self.content.updater(),
         })
     }
@@ -340,7 +341,7 @@ impl Pin {
 #[derive(Clone)]
 pub struct PinDraft {
     client: Client,
-    room: Joined,
+    room: Room,
     content: PinBuilder,
 }
 
@@ -392,7 +393,7 @@ impl PinDraft {
 #[derive(Clone)]
 pub struct PinUpdateBuilder {
     client: Client,
-    room: Joined,
+    room: Room,
     content: pins::PinUpdateBuilder,
 }
 
@@ -459,23 +460,23 @@ impl PinUpdateBuilder {
 
 impl Space {
     pub fn pin_draft(&self) -> Result<PinDraft> {
-        let Room::Joined(joined) = &self.inner.room else {
-            bail!("You can't create pins for spaces we are not part on")
-        };
+        if !self.is_joined() {
+            bail!("You can't create pins for spaces we are not part on");
+        }
         Ok(PinDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.inner.room.clone(),
             content: Default::default(),
         })
     }
 
     pub fn pin_draft_with_builder(&self, content: PinBuilder) -> Result<PinDraft> {
-        let Room::Joined(joined) = &self.inner.room else {
-            bail!("You can't create pins for spaces we are not part on")
-        };
+        if !self.is_joined() {
+            bail!("You can't create pins for spaces we are not part on");
+        }
         Ok(PinDraft {
             client: self.client.clone(),
-            room: joined.clone(),
+            room: self.inner.room.clone(),
             content,
         })
     }

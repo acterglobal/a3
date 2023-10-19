@@ -32,6 +32,7 @@ class SpacesBuilder extends ConsumerWidget {
                   child: Column(
                     children: [
                       e.icon,
+                      const SizedBox(height: 3),
                       Text(e.name),
                     ],
                   ),

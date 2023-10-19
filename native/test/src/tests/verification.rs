@@ -62,7 +62,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     // we have two devices logged in
 
     // sync both up to ensure they've seen the other device
-    let mut alice_device_changed_rx = alice.device_changed_event_rx().unwrap();
+    let mut alice_device_new_rx = alice.device_new_event_rx().unwrap();
     let syncer = alice.start_sync();
     let mut first_synced = syncer.first_synced_rx();
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
@@ -84,7 +84,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
 
     // Alice gets notified that new device (Bob) was logged in
     loop {
-        if let Ok(Some(event)) = alice_device_changed_rx.try_next() {
+        if let Ok(Some(event)) = alice_device_new_rx.try_next() {
             if let Ok(_devices) = event.device_records(false).await {
                 // Alice sends a verification request with her desired methods to Bob
                 event

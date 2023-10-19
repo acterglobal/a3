@@ -1,4 +1,5 @@
-use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId, UserId};
+use ruma_common::{EventId, RoomId, UserId};
+use ruma_events::OriginalMessageLikeEvent;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 

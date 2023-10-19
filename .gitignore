@@ -11,3 +11,4 @@ app/packages/rust_sdk/**/libacter.a
 native/acter/src/api_generated.rs
 native/acter/bindings.h
 native/acter/bindings.dart
+.github/assets/git-crypt-key

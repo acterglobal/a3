@@ -1,5 +1,5 @@
 use dashmap::{mapref::entry::Entry, DashMap};
-use ruma_common::events::UnsignedRoomRedactionEvent;
+use ruma_events::UnsignedRoomRedactionEvent;
 use std::sync::Arc;
 use tokio::sync::broadcast::{channel, Receiver, Sender};
 use tracing::{error, trace, trace_span};
@@ -134,11 +134,10 @@ mod tests {
         Result,
     };
     use env_logger;
-    use matrix_sdk::{
-        ruma::{api::MatrixVersion, event_id, events::room::message::TextMessageEventContent},
-        Client,
-    };
+    use matrix_sdk::Client;
     use matrix_sdk_base::store::{MemoryStore, StoreConfig};
+    use ruma_common::{api::MatrixVersion, event_id};
+    use ruma_events::room::message::TextMessageEventContent;
 
     async fn fresh_executor() -> Result<Executor> {
         let config = StoreConfig::default().state_store(MemoryStore::new());

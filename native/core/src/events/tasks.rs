@@ -2,10 +2,8 @@ use chrono_tz::Tz;
 use core::result::Result as CoreResult;
 use derive_builder::Builder;
 use derive_getters::Getters;
-use matrix_sdk::ruma::{
-    events::{macros::EventContent, room::message::TextMessageEventContent},
-    OwnedUserId,
-};
+use ruma_common::OwnedUserId;
+use ruma_events::{macros::EventContent, room::message::TextMessageEventContent};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use tracing::trace;

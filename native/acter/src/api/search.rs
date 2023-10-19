@@ -4,6 +4,8 @@ use matrix_sdk::ruma::{
         Request as FilteredRequest, Response as FilteredResponse,
     },
     assign,
+};
+use ruma_common::{
     directory::{Filter, PublicRoomJoinRule, PublicRoomsChunk, RoomNetwork, RoomTypeFilter},
     room::RoomType,
     OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedServerName,

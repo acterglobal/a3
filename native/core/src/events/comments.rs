@@ -1,6 +1,6 @@
 use derive_builder::Builder;
 use derive_getters::Getters;
-use matrix_sdk::ruma::events::{macros::EventContent, room::message::TextMessageEventContent};
+use ruma_events::{macros::EventContent, room::message::TextMessageEventContent};
 use serde::{Deserialize, Serialize};
 
 use super::{BelongsTo, References, Update};

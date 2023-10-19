@@ -12,7 +12,8 @@ pub use common::{
     BelongsTo, BrandIcon, Color, Colorize, Icon, Labels, ObjRef, Position, RefDetails, Reference,
     References, Update, UtcDateTime,
 };
-use ruma_common::{events::StaticEventContent, exports::serde::de::Error as SerdeDeError};
+use ruma_common::exports::serde::de::Error as SerdeDeError;
+use ruma_events::StaticEventContent;
 
 #[derive(Clone, Debug)]
 pub enum AnyActerEvent {
@@ -48,7 +49,7 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
     {
         let json =
             Box::<::ruma_common::exports::serde_json::value::RawValue>::deserialize(deserializer)?;
-        let ::ruma_common::events::EventTypeDeHelper { ev_type, .. } =
+        let ::ruma_events::EventTypeDeHelper { ev_type, .. } =
             ::ruma_common::serde::from_raw_json_value(&json)?;
         match &*ev_type {
             calendar::CalendarEventEventContent::TYPE => {

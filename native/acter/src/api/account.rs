@@ -1,9 +1,7 @@
 use anyhow::{bail, Context, Result};
-use matrix_sdk::{
-    media::MediaFormat,
-    ruma::{OwnedMxcUri, OwnedUserId},
-    Account as SdkAccount,
-};
+use matrix_sdk::{media::MediaFormat, Account as SdkAccount};
+use ruma_common::{OwnedMxcUri, OwnedUserId};
+use ruma_events::ignored_user_list::IgnoredUserListEventContent;
 use std::{ops::Deref, path::PathBuf, str::FromStr};
 
 use super::{
@@ -11,7 +9,6 @@ use super::{
     common::{OptionBuffer, OptionString},
     RUNTIME,
 };
-use matrix_sdk::ruma::events::ignored_user_list::IgnoredUserListEventContent;
 
 #[derive(Clone, Debug)]
 pub struct Account {

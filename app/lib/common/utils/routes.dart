@@ -1,6 +1,7 @@
 enum Routes {
   // primary & quickjump actions
-  actionAddTask('/actions/addTask'),
+  // actionAddTask('/actions/addTask'),
+  actionAddTaskList('/actions/addTaskList'),
   actionAddPin('/actions/addPin'),
   actionAddEvent('/actions/addEvent'),
   actionAddUpdate('/actions/addUpdate'),
@@ -21,13 +22,17 @@ enum Routes {
   updates('/updates'),
   search('/search'),
   activities('/activities'),
-  tasks('/tasks'),
 
   // --- chat
   chat('/chat'),
   createChat('/chat/create'),
   chatroom('/chat/:roomId([!#][^/]+)'), // !roomId, #roomName
   chatProfile('/chat/:roomId([!#][^/]+)/profile'),
+  chatInvite('/:roomId([!#][^/]+)/invite'),
+
+  tasks('/tasks'),
+  task('/tasks/:taskListId([!#][^/]+)/:taskId([!#][^/]+)'),
+  taskList('/tasks/:taskListId([!#][^/]+)'),
 
   // -- spaces
   spaces('/spaces'),
@@ -41,6 +46,7 @@ enum Routes {
   spacePins('/:spaceId([!#][^/]+)/pins'),
   spaceEvents('/:spaceId([!#][^/]+)/events'),
   spaceChats('/:spaceId([!#][^/]+)/chats'),
+  spaceTasks('/:spaceId([!#][^/]+)/tasks'),
   // -- space Settings
   spaceSettings('/:spaceId([!#][^/]+)/settings'),
   spaceSettingsApps('/:spaceId([!#][^/]+)/settings/app'),

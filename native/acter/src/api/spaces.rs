@@ -15,7 +15,6 @@ use acter_core::{
     },
     executor::Executor,
     models::AnyActerModel,
-    spaces::is_acter_space,
     statics::default_acter_space_states,
     templates::Engine,
 };
@@ -31,31 +30,28 @@ use matrix_sdk::{
                 get_hierarchy::v1::{
                     Request as GetHierarchyRequest, Response as GetHierarchyResponse,
                 },
-                SpaceHierarchyRoomsChunk, SpaceRoomJoinRule,
+                SpaceHierarchyRoomsChunk,
             },
             state::send_state_event::v3::Request as SendStateEventRequest,
         },
         assign,
-        directory::RoomTypeFilter,
-        events::{
-            room::MediaSource,
-            space::child::{HierarchySpaceChildEvent, SpaceChildEventContent},
-            AnyStateEventContent, MessageLikeEvent, StateEventType,
-        },
-        room::RoomType,
-        serde::Raw,
-        OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
     },
-    Client as SdkClient,
+    RoomState,
 };
-use ruma::OwnedRoomOrAliasId;
+use ruma_common::{
+    directory::RoomTypeFilter, room::RoomType, serde::Raw, space::SpaceRoomJoinRule, OwnedMxcUri,
+    OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
+};
+use ruma_events::{
+    room::MediaSource,
+    space::child::{HierarchySpaceChildEvent, SpaceChildEventContent},
+    AnyStateEventContent, MessageLikeEvent, StateEventType,
+};
 use serde::{Deserialize, Serialize};
-use std::{ops::Deref, thread::JoinHandle};
+use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::{error, trace, warn};
-
-use crate::RoomId;
 
 use super::{
     client::Client,
@@ -446,189 +442,12 @@ impl Space {
     }
 }
 
-pub struct SpaceRelations {
-    core: CoreSpaceRelations,
-    space: Space,
-}
-
-impl Deref for SpaceRelations {
-    type Target = CoreSpaceRelations;
-    fn deref(&self) -> &Self::Target {
-        &self.core
-    }
-}
-
-pub struct SpaceHierarchyRoomInfo {
-    chunk: SpaceHierarchyRoomsChunk,
-    client: Client,
-}
-
-impl SpaceHierarchyRoomInfo {
-    pub fn canonical_alias(&self) -> Option<OwnedRoomAliasId> {
-        self.chunk.canonical_alias.clone()
-    }
-
-    /// The name of the room, if any.
-    pub fn name(&self) -> Option<String> {
-        self.chunk.name.clone()
-    }
-
-    /// The number of members joined to the room.
-    pub fn num_joined_members(&self) -> u32 {
-        let count = u64::from(self.chunk.num_joined_members);
-        if count > u32::MAX as u64 {
-            panic!("count of joined members overflowed");
-        }
-        count as u32
-    }
-
-    /// The ID of the room.
-    pub fn room_id(&self) -> OwnedRoomId {
-        self.chunk.room_id.clone()
-    }
-
-    pub fn room_id_str(&self) -> String {
-        self.room_id().to_string()
-    }
-
-    pub fn topic(&self) -> Option<String> {
-        self.chunk.topic.clone()
-    }
-
-    /// Whether the room may be viewed by guest users without joining.
-    pub fn world_readable(&self) -> bool {
-        self.chunk.world_readable
-    }
-
-    pub fn guest_can_join(&self) -> bool {
-        self.chunk.guest_can_join
-    }
-
-    pub fn avatar_url(&self) -> Option<OwnedMxcUri> {
-        self.chunk.avatar_url.clone()
-    }
-
-    pub fn avatar_url_str(&self) -> Option<String> {
-        self.avatar_url().map(|a| a.to_string())
-    }
-
-    /// The join rule of the room.
-    pub fn join_rule(&self) -> SpaceRoomJoinRule {
-        self.chunk.join_rule.clone()
-    }
-
-    pub fn join_rule_str(&self) -> String {
-        self.join_rule().to_string()
-    }
-
-    /// The type of room from `m.room.create`, if any.
-    pub fn room_type(&self) -> Option<RoomType> {
-        self.chunk.room_type.clone()
-    }
-
-    pub fn is_space(&self) -> bool {
-        matches!(self.chunk.room_type, Some(RoomType::Space))
-    }
-
-    /// The stripped `m.space.child` events of the space-room.
-    ///
-    /// If the room is not a space-room, this should be empty.
-    pub fn children_state(&self) -> Vec<Raw<HierarchySpaceChildEvent>> {
-        self.chunk.children_state.clone()
-    }
-
-    pub fn has_avatar(&self) -> bool {
-        self.chunk.avatar_url.is_some()
-    }
-
-    pub fn via_server_name(&self) -> Option<String> {
-        for v in &self.chunk.children_state {
-            let Ok(h) = v.deserialize() else { continue };
-            let Some(via) = h.content.via else { continue };
-            if let Some(v) = via.into_iter().next() {
-                return Some(v.to_string());
-            }
-        }
-        None
-    }
-
-    pub async fn get_avatar(&self) -> Result<OptionBuffer> {
-        let client = self.client.clone();
-        if let Some(url) = self.chunk.avatar_url.clone() {
-            return RUNTIME
-                .spawn(async move {
-                    let request = MediaRequest {
-                        source: MediaSource::Plain(url),
-                        format: MediaFormat::File,
-                    };
-                    let buf = client.media().get_media_content(&request, true).await?;
-                    Ok(OptionBuffer::new(Some(buf)))
-                })
-                .await?;
-        }
-        Ok(OptionBuffer::new(None))
-    }
-}
-
-impl SpaceHierarchyRoomInfo {
-    pub(crate) async fn new(chunk: SpaceHierarchyRoomsChunk, client: Client) -> Self {
-        SpaceHierarchyRoomInfo { chunk, client }
-    }
-}
-
-pub struct SpaceHierarchyListResult {
-    resp: GetHierarchyResponse,
-    client: Client,
-}
-
-impl SpaceHierarchyListResult {
-    pub fn next_batch(&self) -> Option<String> {
-        self.resp.next_batch.clone()
-    }
-
-    pub async fn rooms(&self) -> Result<Vec<SpaceHierarchyRoomInfo>> {
-        let client = self.client.clone();
-        let chunks = self.resp.rooms.clone();
-        RUNTIME
-            .spawn(async move {
-                let iter = chunks
-                    .into_iter()
-                    .map(|chunk| SpaceHierarchyRoomInfo::new(chunk, client.clone()));
-                Ok(futures::future::join_all(iter).await)
-            })
-            .await?
-    }
-}
-
-impl SpaceRelations {
-    pub fn room_id(&self) -> OwnedRoomId {
-        self.space.room_id().to_owned()
-    }
-
-    pub fn room_id_str(&self) -> String {
-        self.space.room_id().to_string()
-    }
-
-    pub async fn query_hierarchy(&self, from: Option<String>) -> Result<SpaceHierarchyListResult> {
-        let c = self.space.client.clone();
-        let room_id = self.space.room_id().to_owned();
-        RUNTIME
-            .spawn(async move {
-                let request = assign!(GetHierarchyRequest::new(room_id), { from, max_depth: Some(1u32.into()) });
-                let resp = c.send(request, None).await?;
-                Ok(SpaceHierarchyListResult { resp, client: c.clone() })
-            })
-            .await?
-    }
-}
-
 // External API
 
 impl Space {
     pub fn new(client: Client, inner: Room) -> Self {
         Space { client, inner }
     }
-
     pub async fn create_onboarding_data(&self) -> Result<()> {
         let mut engine = Engine::with_template(std::include_str!("../templates/onboarding.toml"))?;
         engine
@@ -666,16 +485,16 @@ impl Space {
     }
 
     pub async fn set_acter_space_states(&self) -> Result<bool> {
+        if !self.inner.is_joined() {
+            bail!("You can't convert a space you didn't join");
+        }
         let room = self.inner.room.clone();
         RUNTIME
             .spawn(async move {
-                let SdkRoom::Joined(ref joined) = room else {
-                    bail!("You can't convert a space you didn't join");
-                };
-                let client = joined.client();
+                let client = room.client();
                 let my_id = client.user_id().context("User not found")?.to_owned();
-                let room_id = joined.room_id().to_owned();
-                let member = joined
+                let room_id = room.room_id().to_owned();
+                let member = room
                     .get_member(&my_id)
                     .await?
                     .context("Couldn't find me among room members")?;
@@ -721,37 +540,24 @@ impl Space {
         {
             bail!("You don't have permissions to add child-spaces");
         }
-        let SdkRoom::Joined(joined) = &self.inner.room else {
+        if !self.inner.is_joined() {
             bail!("You can't update a space you aren't part of");
-        };
-        let room = joined.clone();
+        }
+        let room = self.inner.room.clone();
         let client = self.client.clone();
 
         RUNTIME
             .spawn(async move {
-                let Some(Ok(homeserver)) = client.homeserver().await.host_str().map(|h|h.try_into()) else {
+                let Some(Ok(homeserver)) = client.homeserver().host_str().map(|h|h.try_into()) else {
                     return Err(Error::HomeserverMissesHostname)?;
                 };
                 let response = room
                     .send_state_event_for_key(
                         &room_id,
-                        assign!(SpaceChildEventContent::new(), {
-                            via: Some(vec![homeserver]),
-                        }),
+                        SpaceChildEventContent::new(vec![homeserver]),
                     )
                     .await?;
                 Ok(response.event_id.to_string())
-            })
-            .await?
-    }
-
-    pub async fn space_relations(&self) -> Result<SpaceRelations> {
-        let c = self.client.core.clone();
-        let me = self.clone();
-        RUNTIME
-            .spawn(async move {
-                let core = c.space_relations(&me.room).await?;
-                Ok(SpaceRelations { core, space: me })
             })
             .await?
     }
@@ -838,14 +644,14 @@ impl Client {
     pub fn spaces_stream(&self) -> impl Stream<Item = SpaceDiff> {
         let spaces = self.spaces.clone();
         async_stream::stream! {
-        let (current_items, stream) = {
-            let locked = spaces.read().await;
-            (
-                SpaceDiff::current_items(locked.clone().into_iter().collect()),
-                locked.subscribe(),
-            )
-        };
-            let mut remap = stream.map(move |diff| remap_for_diff(diff, |x| x));
+            let (current_items, stream) = {
+                let locked = spaces.read().await;
+                (
+                    SpaceDiff::current_items(locked.clone().into_iter().collect()),
+                    locked.subscribe(),
+                )
+            };
+            let mut remap = stream.into_stream().map(move |diff| remap_for_diff(diff, |x| x));
             yield current_items;
 
             while let Some(d) = remap.next().await {

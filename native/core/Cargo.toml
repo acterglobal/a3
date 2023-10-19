@@ -24,6 +24,9 @@ derive_builder = "0.11.2"
 enum_dispatch = "0.3.10"
 futures = "0.3.24"
 mime_guess = "2.0.4"
+ruma-common = { workspace = true }
+ruma-events = { workspace = true }
+ruma-macros = { workspace = true }
 serde = "1.0.136"
 serde_json = "1.0.82"
 serde_repr = "0.1"
@@ -34,7 +37,7 @@ url = { version = "2.2.2", features = ["serde"] }
 
 # templates
 async-stream = "0.3.4"
-indexmap = { version = "1.9.2", optional = true }
+indexmap = { version = "2.0.0", optional = true }
 minijinja = { version = "0.30.5", optional = true, features = ["builtins"] }
 tokio-retry = { version = "0.3.0", optional = true }
 toml = { version = "0.7.2", optional = true, features = ["preserve_order"] }
@@ -44,11 +47,9 @@ workspace = true
 default-features = false
 features = ["rustls-tls", "markdown"]
 
-[dependencies.ruma-macros]
+[dependencies.matrix-sdk-base]
 workspace = true
-
-[dependencies.ruma-common]
-workspace = true
+default-features = false
 
 [dev-dependencies]
 anyhow = "1.0.69"
@@ -63,4 +64,3 @@ default-features = false
 [dev-dependencies.matrix-sdk-base]
 workspace = true
 default-features = false
-

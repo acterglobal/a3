@@ -66,7 +66,11 @@ class SpaceChatsPage extends ConsumerWidget {
                     child: ConvoCard(
                       room: rooms[index],
                       showParent: false,
-                      onTap: () => context.pushNamed(
+
+                      /// FIXME: push is broken for switching from subshell to subshell
+                      /// hence we are using `go` here.
+                      /// https://github.com/flutter/flutter/issues/125752
+                      onTap: () => context.goNamed(
                         Routes.chatroom.name,
                         pathParameters: {'roomId': rooms[index].getRoomIdStr()},
                       ),

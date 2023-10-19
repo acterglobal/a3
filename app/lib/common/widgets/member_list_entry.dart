@@ -403,9 +403,9 @@ class MemberListEntry extends ConsumerWidget {
           isLoader: true,
         ),
       );
-      space != null
-          ? convo?.updatePowerLevel(userId, newPowerlevel)
-          : space?.updatePowerLevel(userId, newPowerlevel);
+      space == null
+          ? await convo?.updatePowerLevel(userId, newPowerlevel)
+          : await space?.updatePowerLevel(userId, newPowerlevel);
 
       // We are doing as expected, but the lints triggers.
       // ignore: use_build_context_synchronously

@@ -1,4 +1,5 @@
-use matrix_sdk::{ruma::events::UnsignedRoomRedactionEvent, Error as MatrixError, HttpError};
+use matrix_sdk::{Error as MatrixError, HttpError};
+use ruma_events::UnsignedRoomRedactionEvent;
 
 use crate::models::EventMeta;
 

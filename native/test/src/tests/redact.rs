@@ -35,6 +35,6 @@ async fn message_redaction() -> Result<()> {
         bail!("This should be m.room.redaction event");
     };
 
-    assert_eq!(e.redacts, event_id);
+    assert_eq!(e.redacts, Some(event_id));
     Ok(())
 }

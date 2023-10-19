@@ -7,11 +7,12 @@ use matrix_sdk::{
             media::get_content_thumbnail::v3::Method as ThumbnailMethod,
             user_directory::search_users::v3::User,
         },
-        events::room::MediaSource,
-        OwnedRoomId, OwnedUserId, UInt,
+        UInt,
     },
     Account, Client, DisplayName,
 };
+use ruma_common::{OwnedRoomId, OwnedUserId};
+use ruma_events::room::MediaSource;
 
 use super::{
     api::FfiBuffer,

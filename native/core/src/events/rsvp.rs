@@ -1,5 +1,5 @@
 use derive_builder::Builder;
-use matrix_sdk::ruma::events::macros::EventContent;
+use ruma_events::macros::EventContent;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use strum::Display;

@@ -1,9 +1,15 @@
+pub use acter_core::spaces::{
+    CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, SpaceRelation,
+    SpaceRelations as CoreSpaceRelations,
+};
 use acter_core::{
+    client::CoreClient,
     events::{
         calendar::CalendarEventEventContent,
         news::{NewsContent, NewsEntryEvent, NewsEntryEventContent},
         pins::PinEventContent,
         settings::{ActerAppSettings, ActerAppSettingsContent},
+        tasks::{TaskEventContent, TaskListEventContent},
     },
     spaces::is_acter_space,
     statics::PURPOSE_FIELD_DEV,
@@ -21,33 +27,44 @@ use matrix_sdk::{
         api::client::{
             receipt::create_receipt::v3::ReceiptType as CreateReceiptType,
             room::report_content::v3::Request as ReportContentRequest,
-        },
-        assign,
-        events::{
-            reaction::ReactionEventContent,
-            receipt::ReceiptThread,
-            relation::{Annotation, Replacement},
-            room::{
-                avatar::ImageInfo as AvatarImageInfo,
-                join_rules::{AllowRule, JoinRule},
-                message::{
-                    AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-                    ForwardThread, ImageMessageEventContent, LocationMessageEventContent,
-                    MessageType, Relation, RoomMessageEvent, RoomMessageEventContent,
-                    TextMessageEventContent, VideoInfo, VideoMessageEventContent,
+            space::{
+                get_hierarchy::v1::{
+                    Request as GetHierarchyRequest, Response as GetHierarchyResponse,
                 },
-                ImageInfo,
+                SpaceHierarchyRoomsChunk,
             },
-            AnyMessageLikeEvent, AnyStateEvent, AnyTimelineEvent, MessageLikeEvent,
-            MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
         },
-        room::RoomType,
-        EventId, Int, OwnedEventId, OwnedMxcUri, OwnedUserId, TransactionId, UInt, UserId,
+        assign, Int, UInt,
     },
     Client, RoomMemberships, RoomState,
 };
+use ruma_common::{
+    room::RoomType, serde::Raw, space::SpaceRoomJoinRule, EventId, OwnedEventId, OwnedMxcUri,
+    OwnedRoomAliasId, OwnedRoomId, OwnedUserId, TransactionId, UserId,
+};
+use ruma_events::{
+    reaction::ReactionEventContent,
+    receipt::ReceiptThread,
+    relation::{Annotation, Replacement},
+    room::{
+        avatar::ImageInfo as AvatarImageInfo,
+        join_rules::{AllowRule, JoinRule},
+        message::{
+            AddMentions, AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
+            ForwardThread, ImageMessageEventContent, LocationMessageEventContent, MessageType,
+            Relation, RoomMessageEvent, RoomMessageEventContent, TextMessageEventContent,
+            VideoInfo, VideoMessageEventContent,
+        },
+        ImageInfo, MediaSource,
+    },
+    space::child::HierarchySpaceChildEvent,
+    AnyMessageLikeEvent, AnyStateEvent, AnyTimelineEvent, MessageLikeEvent, MessageLikeEventType,
+    StateEvent, StateEventType, StaticEventContent,
+};
 use std::{io::Write, ops::Deref, path::PathBuf};
 use tracing::{error, info};
+
+use crate::OptionBuffer;
 
 use super::{
     account::Account,
@@ -77,6 +94,8 @@ pub enum MemberPermission {
     CanPostNews,
     CanPostPin,
     CanPostEvent,
+    CanPostTaskList,
+    CanPostTask,
     // moderation tools
     CanBan,
     CanInvite,
@@ -226,6 +245,36 @@ impl Member {
                     return false;
                 }
             }
+            MemberPermission::CanPostTaskList => {
+                if self
+                    .acter_app_settings
+                    .as_ref()
+                    .map(|s| s.tasks().active())
+                    .unwrap_or_default()
+                {
+                    PermissionTest::Message(MessageLikeEventType::from(
+                        <TaskListEventContent as StaticEventContent>::TYPE,
+                    ))
+                } else {
+                    // Not an acter space or Pins are not activated..
+                    return false;
+                }
+            }
+            MemberPermission::CanPostTask => {
+                if self
+                    .acter_app_settings
+                    .as_ref()
+                    .map(|s| s.tasks().active())
+                    .unwrap_or_default()
+                {
+                    PermissionTest::Message(MessageLikeEventType::from(
+                        <TaskEventContent as StaticEventContent>::TYPE,
+                    ))
+                } else {
+                    // Not an acter space or Pins are not activated..
+                    return false;
+                }
+            }
             MemberPermission::CanUpgradeToActerSpace => {
                 if self.acter_app_settings.is_some() {
                     return false; // already an acter space
@@ -268,12 +317,188 @@ impl Member {
     }
 }
 
+pub struct SpaceHierarchyRoomInfo {
+    chunk: SpaceHierarchyRoomsChunk,
+    client: CoreClient,
+}
+
+impl SpaceHierarchyRoomInfo {
+    pub fn canonical_alias(&self) -> Option<OwnedRoomAliasId> {
+        self.chunk.canonical_alias.clone()
+    }
+
+    /// The name of the room, if any.
+    pub fn name(&self) -> Option<String> {
+        self.chunk.name.clone()
+    }
+
+    /// The number of members joined to the room.
+    pub fn num_joined_members(&self) -> u64 {
+        self.chunk.num_joined_members.into()
+    }
+
+    /// The ID of the room.
+    pub fn room_id(&self) -> OwnedRoomId {
+        self.chunk.room_id.clone()
+    }
+
+    pub fn room_id_str(&self) -> String {
+        self.room_id().to_string()
+    }
+
+    pub fn topic(&self) -> Option<String> {
+        self.chunk.topic.clone()
+    }
+
+    /// Whether the room may be viewed by guest users without joining.
+    pub fn world_readable(&self) -> bool {
+        self.chunk.world_readable
+    }
+
+    pub fn guest_can_join(&self) -> bool {
+        self.chunk.guest_can_join
+    }
+
+    pub fn avatar_url(&self) -> Option<OwnedMxcUri> {
+        self.chunk.avatar_url.clone()
+    }
+
+    pub fn avatar_url_str(&self) -> Option<String> {
+        self.avatar_url().map(|a| a.to_string())
+    }
+
+    /// The join rule of the room.
+    pub fn join_rule(&self) -> SpaceRoomJoinRule {
+        self.chunk.join_rule.clone()
+    }
+
+    pub fn join_rule_str(&self) -> String {
+        self.join_rule().to_string()
+    }
+
+    /// The type of room from `m.room.create`, if any.
+    pub fn room_type(&self) -> Option<RoomType> {
+        self.chunk.room_type.clone()
+    }
+
+    pub fn is_space(&self) -> bool {
+        matches!(self.chunk.room_type, Some(RoomType::Space))
+    }
+
+    /// The stripped `m.space.child` events of the space-room.
+    ///
+    /// If the room is not a space-room, this should be empty.
+    pub fn children_state(&self) -> Vec<Raw<HierarchySpaceChildEvent>> {
+        self.chunk.children_state.clone()
+    }
+
+    pub fn has_avatar(&self) -> bool {
+        self.chunk.avatar_url.is_some()
+    }
+
+    pub fn via_server_name(&self) -> Option<String> {
+        for v in &self.chunk.children_state {
+            let Ok(h) = v.deserialize() else { continue };
+            if let Some(v) = h.content.via.into_iter().next() {
+                return Some(v.to_string());
+            }
+        }
+        None
+    }
+
+    pub async fn get_avatar(&self) -> Result<OptionBuffer> {
+        let client = self.client.client().clone();
+        if let Some(url) = self.chunk.avatar_url.clone() {
+            return RUNTIME
+                .spawn(async move {
+                    let request = MediaRequest {
+                        source: MediaSource::Plain(url),
+                        format: MediaFormat::File,
+                    };
+                    let buf = client.media().get_media_content(&request, true).await?;
+                    Ok(OptionBuffer::new(Some(buf)))
+                })
+                .await?;
+        }
+        Ok(OptionBuffer::new(None))
+    }
+}
+
+impl SpaceHierarchyRoomInfo {
+    pub(crate) async fn new(chunk: SpaceHierarchyRoomsChunk, client: CoreClient) -> Self {
+        SpaceHierarchyRoomInfo { chunk, client }
+    }
+}
+
+pub struct SpaceHierarchyListResult {
+    resp: GetHierarchyResponse,
+    client: CoreClient,
+}
+
+impl SpaceHierarchyListResult {
+    pub fn next_batch(&self) -> Option<String> {
+        self.resp.next_batch.clone()
+    }
+
+    pub async fn rooms(&self) -> Result<Vec<SpaceHierarchyRoomInfo>> {
+        let client = self.client.clone();
+        let chunks = self.resp.rooms.clone();
+        RUNTIME
+            .spawn(async move {
+                let iter = chunks
+                    .into_iter()
+                    .map(|chunk| SpaceHierarchyRoomInfo::new(chunk, client.clone()));
+                Ok(futures::future::join_all(iter).await)
+            })
+            .await?
+    }
+}
+
+pub struct SpaceRelations {
+    pub(crate) core: CoreSpaceRelations,
+    pub(crate) room: Room,
+}
+
+impl Deref for SpaceRelations {
+    type Target = CoreSpaceRelations;
+    fn deref(&self) -> &Self::Target {
+        &self.core
+    }
+}
+
+impl SpaceRelations {
+    pub fn room_id(&self) -> OwnedRoomId {
+        self.room.room_id().to_owned()
+    }
+
+    pub fn room_id_str(&self) -> String {
+        self.room.room_id().to_string()
+    }
+
+    pub async fn query_hierarchy(&self, from: Option<String>) -> Result<SpaceHierarchyListResult> {
+        let c = self.room.core.clone();
+        let room_id = self.room.room_id().to_owned();
+        RUNTIME
+            .spawn(async move {
+                let request = assign!(GetHierarchyRequest::new(room_id), { from, max_depth: Some(1u32.into()) });
+                let resp = c.client().send(request, None).await?;
+                Ok(SpaceHierarchyListResult { resp, client: c.clone() })
+            })
+            .await?
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct Room {
+    pub(crate) core: CoreClient,
     pub(crate) room: SdkRoom,
 }
 
 impl Room {
+    pub fn new(core: CoreClient, room: SdkRoom) -> Self {
+        Room { core, room }
+    }
+
     pub async fn is_acter_space(&self) -> Result<bool> {
         let inner = self.room.clone();
         let result = RUNTIME
@@ -282,12 +507,22 @@ impl Room {
         Ok(result)
     }
 
+    pub async fn space_relations(&self) -> Result<SpaceRelations> {
+        let c = self.core.clone();
+        let me = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let core = c.space_relations(&me.room).await?;
+                Ok(SpaceRelations { core, room: me })
+            })
+            .await?
+    }
+
     pub async fn get_my_membership(&self) -> Result<Member> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Not a room we have joined")
-        };
+        if !self.is_joined() {
+            bail!("Not a room we have joined");
+        }
+        let room = self.room.clone();
 
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
@@ -319,11 +554,10 @@ impl Room {
     }
 
     pub async fn upload_avatar(&self, uri: String) -> Result<OwnedMxcUri> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't upload avatar to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't upload avatar to a room we are not in");
+        }
+        let room = self.room.clone();
 
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
@@ -356,11 +590,10 @@ impl Room {
     }
 
     pub async fn remove_avatar(&self) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't remove avatar to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't remove avatar to a room we are not in");
+        }
+        let room = self.room.clone();
 
         let my_id = room
             .client()
@@ -387,11 +620,10 @@ impl Room {
     }
 
     pub async fn set_topic(&self, topic: String) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't set topic to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't set topic to a room we are not in");
+        }
+        let room = self.room.clone();
 
         let my_id = room
             .client()
@@ -417,12 +649,11 @@ impl Room {
             .await?
     }
 
-    pub async fn set_name(&self, name: Option<String>) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't set name to a room we are not in")
-        };
+    pub async fn set_name(&self, name: String) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Can't set name to a room we are not in");
+        }
+        let room = self.room.clone();
 
         let my_id = room
             .client()
@@ -549,11 +780,10 @@ impl Room {
     }
 
     pub async fn typing_notice(&self, typing: bool) -> Result<bool> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't send typing notice to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't send typing notice to a room we are not in");
+        }
+        let room = self.room.clone();
 
         let my_id = room
             .client()
@@ -577,11 +807,10 @@ impl Room {
     }
 
     pub async fn read_receipt(&self, event_id: String) -> Result<bool> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't send read_receipt to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't send read_receipt to a room we are not in");
+        }
+        let room = self.room.clone();
 
         let event_id = EventId::parse(event_id)?;
 
@@ -599,11 +828,10 @@ impl Room {
     }
 
     pub async fn send_plain_message(&self, message: String) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't send message as plain text to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't send message as plain text to a room we are not in");
+        }
+        let room = self.room.clone();
 
         let my_id = room
             .client()
@@ -633,11 +861,10 @@ impl Room {
         event_id: String,
         new_msg: String,
     ) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't edit message as plain text to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't edit message as plain text to a room we are not in");
+        }
+        let room = self.room.clone();
         let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
 
@@ -675,7 +902,7 @@ impl Room {
 
                 let replacement = Replacement::new(
                     event_id.to_owned(),
-                    MessageType::text_plain(new_msg.to_string()),
+                    MessageType::text_plain(new_msg.to_string()).into(),
                 );
                 let mut edited_content = RoomMessageEventContent::text_markdown(new_msg);
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
@@ -688,11 +915,10 @@ impl Room {
     }
 
     pub async fn send_formatted_message(&self, markdown: String) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't send message as formatted text to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't send message as formatted text to a room we are not in");
+        }
+        let room = self.room.clone();
 
         let my_id = room
             .client()
@@ -722,11 +948,10 @@ impl Room {
         event_id: String,
         new_msg: String,
     ) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't edit message as formatted text to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't edit message as formatted text to a room we are not in");
+        }
+        let room = self.room.clone();
         let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
 
@@ -764,7 +989,7 @@ impl Room {
 
                 let replacement = Replacement::new(
                     event_id.to_owned(),
-                    MessageType::text_markdown(new_msg.to_string()),
+                    MessageType::text_markdown(new_msg.to_string()).into(),
                 );
                 let mut edited_content = RoomMessageEventContent::text_markdown(new_msg);
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
@@ -777,11 +1002,10 @@ impl Room {
     }
 
     pub async fn send_reaction(&self, event_id: String, key: String) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't send message to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't send message to a room we are not in");
+        }
+        let room = self.room.clone();
 
         let my_id = room
             .client()
@@ -817,11 +1041,10 @@ impl Room {
         height: Option<u32>,
         blurhash: Option<String>,
     ) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
+        if !self.is_joined() {
             bail!("Can't send message as image to a room we are not in")
-        };
+        }
+        let room = self.room.clone();
 
         let my_id = room
             .client()
@@ -859,11 +1082,10 @@ impl Room {
     }
 
     pub async fn image_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't read message as image from a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't read message as image from a room we are not in");
+        }
+        let room = self.room.clone();
         let client = self.room.client();
 
         let event_id = EventId::parse(event_id)?;
@@ -897,11 +1119,10 @@ impl Room {
         width: Option<u32>,
         height: Option<u32>,
     ) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't edit message as image to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't edit message as image to a room we are not in");
+        }
+        let room = self.room.clone();
         let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
 
@@ -956,8 +1177,10 @@ impl Room {
                 image_content.info = Some(Box::new(info));
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::Image(image_content.clone()));
-                let replacement =
-                    Replacement::new(event_id.to_owned(), MessageType::Image(image_content));
+                let replacement = Replacement::new(
+                    event_id.to_owned(),
+                    MessageType::Image(image_content).into(),
+                );
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
                 let txn_id = TransactionId::new();
@@ -973,11 +1196,10 @@ impl Room {
         name: String,
         secs: Option<u32>,
     ) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't send message as audio to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't send message as audio to a room we are not in");
+        }
+        let room = self.room.clone();
 
         let my_id = room
             .client()
@@ -1013,11 +1235,10 @@ impl Room {
     }
 
     pub async fn audio_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't read message as audio from a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't read message as audio from a room we are not in");
+        }
+        let room = self.room.clone();
         let client = self.room.client();
 
         let event_id = EventId::parse(event_id)?;
@@ -1050,11 +1271,10 @@ impl Room {
         name: String,
         secs: Option<u32>,
     ) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't edit message as audio to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't edit message as audio to a room we are not in");
+        }
+        let room = self.room.clone();
         let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
 
@@ -1108,8 +1328,10 @@ impl Room {
                 audio_content.info = Some(Box::new(info));
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::Audio(audio_content.clone()));
-                let replacement =
-                    Replacement::new(event_id.to_owned(), MessageType::Audio(audio_content));
+                let replacement = Replacement::new(
+                    event_id.to_owned(),
+                    MessageType::Audio(audio_content).into(),
+                );
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
                 let txn_id = TransactionId::new();
@@ -1128,11 +1350,10 @@ impl Room {
         height: Option<u32>,
         blurhash: Option<String>,
     ) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't send message as video to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't send message as video to a room we are not in");
+        }
+        let room = self.room.clone();
 
         let my_id = room
             .client()
@@ -1171,11 +1392,10 @@ impl Room {
     }
 
     pub async fn video_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't read message as video from a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't read message as video from a room we are not in");
+        }
+        let room = self.room.clone();
         let client = self.room.client();
 
         let event_id = EventId::parse(event_id)?;
@@ -1210,11 +1430,10 @@ impl Room {
         width: Option<u32>,
         height: Option<u32>,
     ) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't edit message as video to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't edit message as video to a room we are not in");
+        }
+        let room = self.room.clone();
         let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
 
@@ -1270,8 +1489,10 @@ impl Room {
                 video_content.info = Some(Box::new(info));
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::Video(video_content.clone()));
-                let replacement =
-                    Replacement::new(event_id.to_owned(), MessageType::Video(video_content));
+                let replacement = Replacement::new(
+                    event_id.to_owned(),
+                    MessageType::Video(video_content).into(),
+                );
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
                 let txn_id = TransactionId::new();
@@ -1282,11 +1503,10 @@ impl Room {
     }
 
     pub async fn send_file_message(&self, uri: String, name: String) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't send message as file to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't send message as file to a room we are not in");
+        }
+        let room = self.room.clone();
 
         let my_id = room
             .client()
@@ -1321,11 +1541,10 @@ impl Room {
     }
 
     pub async fn file_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't read message as file from a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't read message as file from a room we are not in");
+        }
+        let room = self.room.clone();
         let client = self.room.client();
 
         let event_id = EventId::parse(event_id)?;
@@ -1357,11 +1576,10 @@ impl Room {
         uri: String,
         name: String,
     ) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't edit message as file to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't edit message as file to a room we are not in");
+        }
+        let room = self.room.clone();
         let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
 
@@ -1415,7 +1633,7 @@ impl Room {
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::File(file_content.clone()));
                 let replacement =
-                    Replacement::new(event_id.to_owned(), MessageType::File(file_content));
+                    Replacement::new(event_id.to_owned(), MessageType::File(file_content).into());
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
                 let txn_id = TransactionId::new();
@@ -1430,11 +1648,10 @@ impl Room {
         body: String,
         geo_uri: String,
     ) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't send message as location to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't send message as location to a room we are not in");
+        }
+        let room = self.room.clone();
 
         let my_id = room
             .client()
@@ -1466,11 +1683,10 @@ impl Room {
         body: String,
         geo_uri: String,
     ) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't edit message as location to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't edit message as location to a room we are not in");
+        }
+        let room = self.room.clone();
         let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
 
@@ -1509,8 +1725,10 @@ impl Room {
                 let location_content = LocationMessageEventContent::new(body, geo_uri);
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::Location(location_content.clone()));
-                let replacement =
-                    Replacement::new(event_id.to_owned(), MessageType::Location(location_content));
+                let replacement = Replacement::new(
+                    event_id.to_owned(),
+                    MessageType::Location(location_content).into(),
+                );
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
                 let txn_id = TransactionId::new();
@@ -1528,16 +1746,27 @@ impl Room {
         }
     }
 
+    fn is_invited(&self) -> bool {
+        matches!(self.room.state(), RoomState::Invited)
+    }
+
     pub fn is_joined(&self) -> bool {
-        matches!(self.room, SdkRoom::Joined(_))
+        matches!(self.room.state(), RoomState::Joined)
+    }
+
+    fn is_left(&self) -> bool {
+        matches!(self.room.state(), RoomState::Left)
+    }
+
+    pub fn room_id_str(&self) -> String {
+        self.room.room_id().to_string()
     }
 
     pub async fn invite_user(&self, user_id: String) -> Result<bool> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't send message to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't send message to a room we are not in");
+        }
+        let room = self.room.clone();
 
         let my_id = room
             .client()
@@ -1563,11 +1792,10 @@ impl Room {
     }
 
     pub async fn join(&self) -> Result<bool> {
-        let room = if let SdkRoom::Left(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't join a room we are not left")
-        };
+        if !self.is_left() {
+            bail!("Can't join a room we are not left");
+        }
+        let room = self.room.clone();
 
         RUNTIME
             .spawn(async move {
@@ -1578,11 +1806,10 @@ impl Room {
     }
 
     pub async fn leave(&self) -> Result<bool> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't leave a room we are not joined")
-        };
+        if !self.is_joined() {
+            bail!("Can't leave a room we are not joined");
+        }
+        let room = self.room.clone();
 
         RUNTIME
             .spawn(async move {
@@ -1594,11 +1821,10 @@ impl Room {
 
     pub async fn get_invitees(&self) -> Result<Vec<Member>> {
         let my_client = self.room.client();
-        let room = if let SdkRoom::Invited(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't get a room we are not invited")
-        };
+        if !self.is_invited() {
+            bail!("Can't get a room we are not invited");
+        }
+        let room = self.room.clone();
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
             Some(self.app_settings_content().await?)
@@ -1627,11 +1853,10 @@ impl Room {
     }
 
     pub async fn download_media(&self, event_id: String, dir_path: String) -> Result<String> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't read message from a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't read message from a room we are not in");
+        }
+        let room = self.room.clone();
         let client = self.room.client();
 
         let eid = EventId::parse(event_id.clone())?;
@@ -1699,11 +1924,10 @@ impl Room {
     }
 
     pub async fn media_path(&self, event_id: String) -> Result<String> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't read message from a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't read message from a room we are not in");
+        }
+        let room = self.room.clone();
         let client = self.room.client();
 
         let eid = EventId::parse(event_id.clone())?;
@@ -1740,11 +1964,10 @@ impl Room {
     }
 
     pub async fn is_encrypted(&self) -> Result<bool> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't know if a room we are not in is encrypted")
-        };
+        if !self.is_joined() {
+            bail!("Can't know if a room we are not in is encrypted");
+        }
+        let room = self.room.clone();
 
         RUNTIME
             .spawn(async move {
@@ -1781,11 +2004,10 @@ impl Room {
     }
 
     pub async fn get_message(&self, event_id: String) -> Result<RoomMessage> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't read message from a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't read message from a room we are not in");
+        }
+        let room = self.room.clone();
         let r = self.room.clone();
 
         let event_id = EventId::parse(event_id)?;
@@ -2011,11 +2233,10 @@ impl Room {
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't send reply as text to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't send reply as text to a room we are not in");
+        }
+        let room = self.room.clone();
 
         let my_id = room
             .client()
@@ -2045,7 +2266,7 @@ impl Room {
 
                 let text_content = TextMessageEventContent::markdown(msg);
                 let content = RoomMessageEventContent::new(MessageType::Text(text_content))
-                    .make_reply_to(original_message, ForwardThread::Yes);
+                    .make_reply_to(original_message, ForwardThread::Yes, AddMentions::No);
 
                 let response = room
                     .send(content, txn_id.as_deref().map(Into::into))
@@ -2064,11 +2285,10 @@ impl Room {
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't send reply as image to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't send reply as image to a room we are not in");
+        }
+        let room = self.room.clone();
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
 
@@ -2110,7 +2330,7 @@ impl Room {
                 let mut image_content = ImageMessageEventContent::plain(name, response.content_uri);
                 image_content.info = Some(Box::new(info));
                 let content = RoomMessageEventContent::new(MessageType::Image(image_content))
-                    .make_reply_to(original_message, ForwardThread::Yes);
+                    .make_reply_to(original_message, ForwardThread::Yes, AddMentions::No);
 
                 let response = room
                     .send(content, txn_id.as_deref().map(Into::into))
@@ -2128,11 +2348,10 @@ impl Room {
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't send reply as audio to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't send reply as audio to a room we are not in");
+        }
+        let room = self.room.clone();
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
 
@@ -2173,7 +2392,7 @@ impl Room {
                 let mut audio_content = AudioMessageEventContent::plain(name, response.content_uri);
                 audio_content.info = Some(Box::new(info));
                 let content = RoomMessageEventContent::new(MessageType::Audio(audio_content))
-                    .make_reply_to(original_message, ForwardThread::Yes);
+                    .make_reply_to(original_message, ForwardThread::Yes, AddMentions::No);
 
                 let response = room
                     .send(content, txn_id.as_deref().map(Into::into))
@@ -2195,11 +2414,10 @@ impl Room {
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't send reply as video to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't send reply as video to a room we are not in");
+        }
+        let room = self.room.clone();
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
 
@@ -2243,7 +2461,7 @@ impl Room {
                 let mut video_content = VideoMessageEventContent::plain(name, response.content_uri);
                 video_content.info = Some(Box::new(info));
                 let content = RoomMessageEventContent::new(MessageType::Video(video_content))
-                    .make_reply_to(original_message, ForwardThread::Yes);
+                    .make_reply_to(original_message, ForwardThread::Yes, AddMentions::No);
 
                 let response = room
                     .send(content, txn_id.as_deref().map(Into::into))
@@ -2260,11 +2478,10 @@ impl Room {
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't send reply as file to a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't send reply as file to a room we are not in");
+        }
+        let room = self.room.clone();
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
 
@@ -2304,7 +2521,7 @@ impl Room {
                 let mut file_content = FileMessageEventContent::plain(name, response.content_uri);
                 file_content.info = Some(Box::new(info));
                 let content = RoomMessageEventContent::new(MessageType::File(file_content))
-                    .make_reply_to(original_message, ForwardThread::Yes);
+                    .make_reply_to(original_message, ForwardThread::Yes, AddMentions::No);
 
                 let response = room
                     .send(content, txn_id.as_deref().map(Into::into))
@@ -2320,11 +2537,10 @@ impl Room {
         reason: Option<String>,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't redact any message from a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't redact any message from a room we are not in");
+        }
+        let room = self.room.clone();
 
         let my_id = room
             .client()
@@ -2352,11 +2568,10 @@ impl Room {
     }
 
     pub async fn update_power_level(&self, user_id: String, level: i32) -> Result<OwnedEventId> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't update power level in a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't update power level in a room we are not in");
+        }
+        let room = self.room.clone();
 
         let my_id = room
             .client()
@@ -2389,11 +2604,10 @@ impl Room {
         score: Option<i32>,
         reason: Option<String>,
     ) -> Result<bool> {
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't block content in a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't block content in a room we are not in");
+        }
+        let room = self.room.clone();
         let event_id = EventId::parse(event_id)?;
         let int_score = score.map(|value| value.into());
 
@@ -2413,11 +2627,10 @@ impl Room {
 
     pub async fn redact_content(&self, event_id: String, reason: Option<String>) -> Result<bool> {
         let event_id = EventId::parse(event_id)?;
-        let room = if let SdkRoom::Joined(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't redact content in a room we are not in")
-        };
+        if !self.is_joined() {
+            bail!("Can't redact content in a room we are not in");
+        }
+        let room = self.room.clone();
 
         RUNTIME
             .spawn(async move {

@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/pins/widgets/pin_list_item.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:flutter/material.dart';
@@ -21,11 +20,11 @@ class SpacePinsPage extends ConsumerWidget {
     final space = ref.watch(spaceProvider(spaceIdOrAlias)).requireValue;
     final pins = ref.watch(spacePinsProvider(space));
     // get platform of context.
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
                 Expanded(
@@ -49,44 +48,43 @@ class SpacePinsPage extends ConsumerWidget {
               ],
             ),
           ),
-          pins.when(
-            data: (pins) {
-              final widthCount =
-                  (MediaQuery.of(context).size.width ~/ 600).toInt();
-              const int minCount = 2;
-              if (pins.isEmpty) {
-                return const SliverToBoxAdapter(
-                  child: Center(
-                    child: Text('there is nothing pinned yet'),
-                  ),
-                );
-              }
-              return SliverGrid.builder(
-                itemCount: pins.length,
-                gridDelegate:
-                    SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
-                  crossAxisCount: max(1, min(widthCount, minCount)),
-                  height: MediaQuery.of(context).size.height * 0.1,
+        ),
+        pins.when(
+          data: (pins) {
+            final widthCount =
+                (MediaQuery.of(context).size.width ~/ 600).toInt();
+            const int minCount = 2;
+            if (pins.isEmpty) {
+              return const SliverToBoxAdapter(
+                child: Center(
+                  child: Text('there is nothing pinned yet'),
                 ),
-                itemBuilder: (context, index) {
-                  final pin = pins[index];
-                  return PinListItem(pin: pin);
-                },
               );
-            },
-            error: (error, stack) => SliverToBoxAdapter(
-              child: Center(
-                child: Text('Loading failed: $error'),
+            }
+            return SliverGrid.builder(
+              itemCount: pins.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: max(1, min(widthCount, minCount)),
+                childAspectRatio: 4.0,
               ),
-            ),
-            loading: () => const SliverToBoxAdapter(
-              child: Center(
-                child: Text('Loading'),
-              ),
+              itemBuilder: (context, index) {
+                final pin = pins[index];
+                return PinListItem(pin: pin);
+              },
+            );
+          },
+          error: (error, stack) => SliverToBoxAdapter(
+            child: Center(
+              child: Text('Loading failed: $error'),
             ),
           ),
-        ],
-      ),
+          loading: () => const SliverToBoxAdapter(
+            child: Center(
+              child: Text('Loading'),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -7,18 +7,18 @@ use matrix_sdk::{
             Visibility,
         },
         assign,
-        events::{
-            room::{
-                avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
-                join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
-            },
-            space::{child::SpaceChildEventContent, parent::SpaceParentEventContent},
-            InitialStateEvent,
-        },
-        room::RoomType,
-        serde::Raw,
-        MxcUri, OwnedRoomId, OwnedServerName, OwnedUserId, RoomId, UserId,
     },
+};
+use ruma_common::{
+    room::RoomType, serde::Raw, MxcUri, OwnedRoomId, OwnedServerName, OwnedUserId, RoomId, UserId,
+};
+use ruma_events::{
+    room::{
+        avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
+        join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
+    },
+    space::{child::SpaceChildEventContent, parent::SpaceParentEventContent},
+    InitialStateEvent,
 };
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -229,12 +229,12 @@ impl CoreClient {
         };
 
         if let Some(parent) = parent {
-            let Some(Ok(homeserver)) = client.homeserver().await.host_str().map(|h|h.try_into()) else {
+            let Some(Ok(homeserver)) = client.homeserver().host_str().map(|h|h.try_into()) else {
                 return Err(Error::HomeserverMissesHostname);
             };
             let parent_event = InitialStateEvent::<SpaceParentEventContent> {
-                content: assign!(SpaceParentEventContent::new(true), {
-                    via: Some(vec![homeserver]),
+                content: assign!(SpaceParentEventContent::new(vec![homeserver]), {
+                    canonical: true,
                 }),
                 state_key: parent.clone(),
             };
@@ -289,7 +289,7 @@ impl CoreClient {
                 }
             };
 
-            let Some(original) = ev.original_content() else {
+            let Some(original) = ev.as_sync().and_then(|x| x.as_original()) else {
                 // FIXME: handle redactions
                 continue
             };
@@ -311,10 +311,10 @@ impl CoreClient {
                 target_type,
                 room_id: target.to_owned(),
                 suggested: false,
-                via: original.via.clone().unwrap_or(vec![]),
+                via: original.content.via.clone(),
             };
 
-            if original.canonical {
+            if original.content.canonical {
                 if let Some(prev_canonical) = main_parent.take() {
                     // maybe replacing according to spec
                     if me.room_id < prev_canonical.room_id {
@@ -346,7 +346,7 @@ impl CoreClient {
                 }
             };
 
-            let Some(original) = ev.original_content() else {
+            let Some(original) = ev.as_sync().and_then(|x| x.as_original()) else {
                 // FIXME: handle redactions
                 continue
             };
@@ -364,12 +364,16 @@ impl CoreClient {
                 RelationTargetType::Unknown
             };
 
-            let order = original.order.clone().unwrap_or_else(|| target.to_string());
+            let order = original
+                .content
+                .order
+                .clone()
+                .unwrap_or_else(|| target.to_string());
             let me = SpaceRelation {
                 target_type,
                 room_id: target.to_owned(),
-                suggested: original.suggested,
-                via: original.via.clone().unwrap_or(vec![]),
+                suggested: original.content.suggested,
+                via: original.content.via.clone(),
             };
             children.push((order, me))
         }

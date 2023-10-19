@@ -162,6 +162,11 @@ class SpaceListNotifier extends StateNotifier<List<Space>> {
       case 'Reset':
         state = diff.values()!.toList();
         break;
+      case 'Truncate':
+        final length = diff.index()!;
+        final newList = listCopy();
+        state = newList.take(length).toList();
+        break;
       default:
         break;
     }

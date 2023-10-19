@@ -1,0 +1,1 @@
+- fixes the swipe reply bug on chat messages where right swipe wasn't working before.

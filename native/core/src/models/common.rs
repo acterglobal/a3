@@ -1,4 +1,4 @@
-use matrix_sdk::ruma::events::room::message::TextMessageEventContent;
+use ruma_events::room::message::TextMessageEventContent;
 
 pub struct TextMessageContent {
     inner: TextMessageEventContent,

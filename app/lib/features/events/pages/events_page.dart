@@ -1,12 +1,10 @@
 import 'dart:core';
 import 'dart:math';
 
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/events_item.dart';
-import 'package:acter/features/home/providers/events.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,9 +16,9 @@ class EventsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // ignore: unused_local_variable
-    final account = ref.watch(accountProfileProvider);
-    final events = ref.watch(myEventsProvider);
+    final upcoming = ref.watch(myUpcomingEventsProvider);
+    final past = ref.watch(myPastEventsProvider);
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.neutral,
       body: CustomScrollView(
@@ -41,11 +39,23 @@ class EventsPage extends ConsumerWidget {
                 onPressed: () => context.pushNamed(Routes.createEvent.name),
               ),
             ],
-            expandedContent: const Text(
-              'Calendar events from all the Spaces you are part of',
+            expandedContent: size.width <= 600
+                ? null
+                : Text(
+                    'Calendar events from all the Spaces you are part of',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+            sliver: SliverToBoxAdapter(
+              child: Text(
+                'Upcoming',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
             ),
           ),
-          events.when(
+          upcoming.when(
             data: (events) {
               final widthCount =
                   (MediaQuery.of(context).size.width ~/ 600).toInt();
@@ -59,10 +69,55 @@ class EventsPage extends ConsumerWidget {
               }
               return SliverGrid.builder(
                 itemCount: events.length,
-                gridDelegate:
-                    SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: max(1, min(widthCount, minCount)),
-                  height: MediaQuery.of(context).size.height * 0.1,
+                  childAspectRatio: 4,
+                ),
+                itemBuilder: (context, index) {
+                  final event = events[index];
+                  return EventItem(
+                    event: event,
+                  );
+                },
+              );
+            },
+            error: (error, stack) => SliverToBoxAdapter(
+              child: Center(
+                child: Text('Loading failed: $error'),
+              ),
+            ),
+            loading: () => const SliverToBoxAdapter(
+              child: Center(
+                child: Text('Loading'),
+              ),
+            ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+            sliver: SliverToBoxAdapter(
+              child: Text(
+                'Past',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+          ),
+          past.when(
+            data: (events) {
+              final widthCount =
+                  (MediaQuery.of(context).size.width ~/ 600).toInt();
+              const int minCount = 2;
+              if (events.isEmpty) {
+                return const SliverToBoxAdapter(
+                  child: Center(
+                    child: Text('There\'s nothing scheduled yet'),
+                  ),
+                );
+              }
+              return SliverGrid.builder(
+                itemCount: events.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: max(1, min(widthCount, minCount)),
+                  childAspectRatio: 4,
                 ),
                 itemBuilder: (context, index) {
                   final event = events[index];

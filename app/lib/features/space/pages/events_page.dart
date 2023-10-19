@@ -1,10 +1,7 @@
 import 'dart:math';
-
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/events/providers/events_provider.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/events_item.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -17,13 +14,12 @@ class SpaceEventsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final space = ref.watch(spaceProvider(spaceIdOrAlias)).requireValue;
-    final spaceEvents = ref.watch(spaceEventsProvider(space));
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: CustomScrollView(
-        slivers: <Widget>[
-          SliverToBoxAdapter(
+    final spaceEvents = ref.watch(spaceEventsProvider(spaceIdOrAlias));
+    return CustomScrollView(
+      slivers: <Widget>[
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
                 Text(
@@ -46,40 +42,38 @@ class SpaceEventsPage extends ConsumerWidget {
               ],
             ),
           ),
-          spaceEvents.when(
-            data: (events) {
-              final widthCount =
-                  (MediaQuery.of(context).size.width ~/ 600).toInt();
-              const int minCount = 2;
-              if (events.isEmpty) {
-                return const SliverToBoxAdapter(
-                  child: Center(
-                    child: Text(
-                      'Currently there are no events planned for this space',
-                    ),
+        ),
+        spaceEvents.when(
+          data: (events) {
+            final widthCount =
+                (MediaQuery.of(context).size.width ~/ 600).toInt();
+            const int minCount = 2;
+            if (events.isEmpty) {
+              return const SliverToBoxAdapter(
+                child: Center(
+                  child: Text(
+                    'Currently there are no events planned for this space',
                   ),
-                );
-              }
-              return SliverGrid.builder(
-                itemCount: events.length,
-                gridDelegate:
-                    SliverGridDelegateWithFixedCrossAxisCountAndFixedHeight(
-                  crossAxisCount: max(1, min(widthCount, minCount)),
-                  height: MediaQuery.of(context).size.height * 0.1,
                 ),
-                itemBuilder: (context, index) =>
-                    EventItem(event: events[index]),
               );
-            },
-            error: (error, stackTrace) => SliverToBoxAdapter(
-              child: Center(child: Text('Failed to load events due to $error')),
-            ),
-            loading: () => const SliverToBoxAdapter(
-              child: Center(child: CircularProgressIndicator()),
-            ),
+            }
+            return SliverGrid.builder(
+              itemCount: events.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: max(1, min(widthCount, minCount)),
+                childAspectRatio: 4.0,
+              ),
+              itemBuilder: (context, index) => EventItem(event: events[index]),
+            );
+          },
+          error: (error, stackTrace) => SliverToBoxAdapter(
+            child: Center(child: Text('Failed to load events due to $error')),
           ),
-        ],
-      ),
+          loading: () => const SliverToBoxAdapter(
+            child: Center(child: CircularProgressIndicator()),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -5,9 +5,10 @@ use futures::{
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     room::Room,
-    ruma::{events::typing::SyncTypingEvent, OwnedRoomId, OwnedUserId},
     Client as SdkClient,
 };
+use ruma_common::{OwnedRoomId, OwnedUserId};
+use ruma_events::typing::SyncTypingEvent;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tracing::{error, info};
