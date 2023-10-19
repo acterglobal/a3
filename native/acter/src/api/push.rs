@@ -6,7 +6,7 @@ use super::{
 };
 use anyhow::{bail, Context, Result};
 use matrix_sdk::ruma::{
-    api::client::push::{set_pusher, PusherIds, PusherInit, PusherKind},
+    api::client::push::{set_pusher, Pusher as RumaPusher, PusherIds, PusherInit, PusherKind},
     assign,
     push::HttpPusherData,
 };
@@ -14,6 +14,7 @@ use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
     NotificationProcessSetup,
 };
+use ruma::api::client::push::get_pushers;
 use ruma_common::{OwnedEventId, OwnedRoomId};
 
 pub struct NotificationItem {
@@ -78,6 +79,45 @@ impl NotificationItem {
     }
 }
 
+pub struct Pusher {
+    inner: RumaPusher,
+    client: Client,
+}
+
+impl Pusher {
+    fn new(inner: RumaPusher, client: Client) -> Self {
+        Pusher { inner, client }
+    }
+
+    pub fn is_email_pusher(&self) -> bool {
+        matches!(self.inner.kind, PusherKind::Email(_))
+    }
+
+    pub fn pushkey(&self) -> String {
+        self.inner.ids.pushkey.clone()
+    }
+
+    pub fn app_id(&self) -> String {
+        self.inner.ids.app_id.clone()
+    }
+
+    pub fn app_display_name(&self) -> String {
+        self.inner.app_display_name.clone()
+    }
+
+    pub fn device_display_name(&self) -> String {
+        self.inner.device_display_name.clone()
+    }
+
+    pub fn lang(&self) -> String {
+        self.inner.lang.clone()
+    }
+
+    pub fn profile_tag(&self) -> Option<String> {
+        self.inner.profile_tag.clone()
+    }
+}
+
 impl Client {
     pub async fn get_notification_item(
         &self,
@@ -103,6 +143,25 @@ impl Client {
             })
             .await?
     }
+
+    pub async fn pushers(&self) -> Result<Vec<Pusher>> {
+        let client = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let resp = client
+                    .core
+                    .client()
+                    .send(get_pushers::v3::Request::new(), None)
+                    .await?;
+                Ok(resp
+                    .pushers
+                    .into_iter()
+                    .map(|inner| Pusher::new(inner, client.clone()))
+                    .collect())
+            })
+            .await?
+    }
+
     #[allow(clippy::too_many_arguments)]
     pub async fn add_pusher(
         &self,

@@ -1799,7 +1799,17 @@ object NotificationItem {
     fn is_direct_message_room() -> bool;
     fn is_noisy() -> Option<bool>;
     fn joined_members_count() -> u64;
+}
 
+/// The pusher we sent notifications via to the user
+object Pusher {
+    fn is_email_pusher() -> bool;
+    fn pushkey() -> string;
+    fn app_id() -> string;
+    fn app_display_name() -> string;
+    fn device_display_name() -> string;
+    fn lang() -> string;
+    fn profile_tag() -> Option<string>;
 }
 
 /// make convo settings builder
@@ -2031,6 +2041,9 @@ object Client {
 
     /// add another http pusher to the notification system
     fn add_pusher(app_id: string, token: string, device_name: string, app_name: string, server_url: string, with_ios_default: bool, lang: Option<string>) -> Future<Result<bool>>;
+
+    /// list of pushers
+    fn pushers() -> Future<Result<Vec<Pusher>>>;
 
     /// getting a notification item from the notification data;
     fn get_notification_item(room_id: string, event_id: string) -> Future<Result<NotificationItem>>;

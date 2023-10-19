@@ -10044,6 +10044,54 @@ class Api {
     return tmp7;
   }
 
+  FfiListPusher? __clientPushersFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientPushersFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListPusher");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListPusher._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   NotificationItem? __clientGetNotificationItemFuturePoll(
     int boxed,
     int postCobject,
@@ -20595,6 +20643,76 @@ class Api {
           int Function(
             int,
           )>();
+  late final _pusherIsEmailPusherPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__Pusher_is_email_pusher");
+
+  late final _pusherIsEmailPusher = _pusherIsEmailPusherPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _pusherPushkeyPtr = _lookup<
+      ffi.NativeFunction<
+          _PusherPushkeyReturn Function(
+            ffi.Int64,
+          )>>("__Pusher_pushkey");
+
+  late final _pusherPushkey = _pusherPushkeyPtr.asFunction<
+      _PusherPushkeyReturn Function(
+        int,
+      )>();
+  late final _pusherAppIdPtr = _lookup<
+      ffi.NativeFunction<
+          _PusherAppIdReturn Function(
+            ffi.Int64,
+          )>>("__Pusher_app_id");
+
+  late final _pusherAppId = _pusherAppIdPtr.asFunction<
+      _PusherAppIdReturn Function(
+        int,
+      )>();
+  late final _pusherAppDisplayNamePtr = _lookup<
+      ffi.NativeFunction<
+          _PusherAppDisplayNameReturn Function(
+            ffi.Int64,
+          )>>("__Pusher_app_display_name");
+
+  late final _pusherAppDisplayName = _pusherAppDisplayNamePtr.asFunction<
+      _PusherAppDisplayNameReturn Function(
+        int,
+      )>();
+  late final _pusherDeviceDisplayNamePtr = _lookup<
+      ffi.NativeFunction<
+          _PusherDeviceDisplayNameReturn Function(
+            ffi.Int64,
+          )>>("__Pusher_device_display_name");
+
+  late final _pusherDeviceDisplayName = _pusherDeviceDisplayNamePtr.asFunction<
+      _PusherDeviceDisplayNameReturn Function(
+        int,
+      )>();
+  late final _pusherLangPtr = _lookup<
+      ffi.NativeFunction<
+          _PusherLangReturn Function(
+            ffi.Int64,
+          )>>("__Pusher_lang");
+
+  late final _pusherLang = _pusherLangPtr.asFunction<
+      _PusherLangReturn Function(
+        int,
+      )>();
+  late final _pusherProfileTagPtr = _lookup<
+      ffi.NativeFunction<
+          _PusherProfileTagReturn Function(
+            ffi.Int64,
+          )>>("__Pusher_profile_tag");
+
+  late final _pusherProfileTag = _pusherProfileTagPtr.asFunction<
+      _PusherProfileTagReturn Function(
+        int,
+      )>();
   late final _createConvoSettingsBuilderSetNamePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -21641,6 +21759,16 @@ class Api {
         int,
         int,
         int,
+        int,
+      )>();
+  late final _clientPushersPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Client_pushers");
+
+  late final _clientPushers = _clientPushersPtr.asFunction<
+      int Function(
         int,
       )>();
   late final _clientGetNotificationItemPtr = _lookup<
@@ -25174,6 +25302,20 @@ class Api {
             int,
             int,
           )>();
+  late final _clientPushersFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientPushersFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_pushers_future_poll");
+
+  late final _clientPushersFuturePoll = _clientPushersFuturePollPtr.asFunction<
+      _ClientPushersFuturePollReturn Function(
+        int,
+        int,
+        int,
+      )>();
   late final _clientGetNotificationItemFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientGetNotificationItemFuturePollReturn Function(
@@ -26694,6 +26836,55 @@ class Api {
   late final _ffiListPublicSearchResultItemInsert =
       _ffiListPublicSearchResultItemInsertPtr
           .asFunction<void Function(int, int, int)>();
+  FfiListPusher createFfiListPusher() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListPusherCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListPusher");
+    return FfiListPusher._(this, list_box);
+  }
+
+  late final _ffiListPusherCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListPusherCreate");
+
+  late final _ffiListPusherCreate =
+      _ffiListPusherCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListPusherLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListPusherLen");
+
+  late final _ffiListPusherLen =
+      _ffiListPusherLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListPusherElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListPusherElementAt");
+
+  late final _ffiListPusherElementAt =
+      _ffiListPusherElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListPusherRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListPusherRemove");
+
+  late final _ffiListPusherRemove =
+      _ffiListPusherRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListPusherAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListPusherAdd");
+
+  late final _ffiListPusherAdd =
+      _ffiListPusherAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListPusherInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListPusherInsert");
+
+  late final _ffiListPusherInsert =
+      _ffiListPusherInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListReactionRecord createFfiListReactionRecord() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListReactionRecordCreate());
@@ -44102,6 +44293,208 @@ class NotificationItem {
   }
 }
 
+/// The pusher we sent notifications via to the user
+class Pusher {
+  final Api _api;
+  final _Box _box;
+
+  Pusher._(this._api, this._box);
+
+  bool isEmailPusher() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._pusherIsEmailPusher(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  String pushkey() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._pusherPushkey(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String appId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._pusherAppId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String appDisplayName() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._pusherAppDisplayName(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String deviceDisplayName() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._pusherDeviceDisplayName(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String lang() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._pusherLang(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? profileTag() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._pusherProfileTag(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class CreateConvoSettingsBuilder {
   final Api _api;
   final _Box _box;
@@ -46226,6 +46619,21 @@ class Client {
     tmp31_1._finalizer = _api._registerFinalizer(tmp31_1);
     final tmp30 = _nativeFuture(tmp31_1, _api.__clientAddPusherFuturePoll);
     return tmp30;
+  }
+
+  /// list of pushers
+  Future<FfiListPusher> pushers() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientPushers(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_pushers_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__clientPushersFuturePoll);
+    return tmp2;
   }
 
   /// getting a notification item from the notification data;
@@ -50121,6 +50529,62 @@ class _NotificationItemIsNoisyReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _PusherPushkeyReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _PusherAppIdReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _PusherAppDisplayNameReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _PusherDeviceDisplayNameReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _PusherLangReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _PusherProfileTagReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
 class _CreateConvoSettingsBuilderAddInviteeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -53188,6 +53652,21 @@ class _ClientAddPusherFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ClientPushersFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _ClientGetNotificationItemFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -54682,6 +55161,65 @@ class FfiListPublicSearchResultItem extends Iterable<PublicSearchResultItem>
   void insert(int index, PublicSearchResultItem element) {
     _api._ffiListPublicSearchResultItemInsert(
         _box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListPusher extends Iterable<Pusher> implements CustomIterable<Pusher> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListPusher._(this._api, this._box);
+
+  @override
+  Iterator<Pusher> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListPusherLen(_box.borrow());
+  }
+
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  Pusher elementAt(int index) {
+    final address = _api._ffiListPusherElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return Pusher._(_api, reference);
+  }
+
+  Pusher operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  Pusher remove(int index) {
+    final address = _api._ffiListPusherRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_Pusher");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return Pusher._(_api, reference);
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void add(Pusher element) {
+    _api._ffiListPusherAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, Pusher element) {
+    _api._ffiListPusherInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 
