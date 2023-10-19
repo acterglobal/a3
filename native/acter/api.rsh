@@ -421,11 +421,11 @@ object ThumbnailInfo {
     /// thumbnail mimetype
     fn mimetype() -> Option<string>;
     /// thumbnail size
-    fn size() -> Option<u32>;
+    fn size() -> Option<u64>;
     /// thumbnail width
-    fn width() -> Option<u32>;
+    fn width() -> Option<u64>;
     /// thumbnail height
-    fn height() -> Option<u32>;
+    fn height() -> Option<u64>;
 }
 
 object DeviceId {
@@ -547,13 +547,13 @@ object ImageDesc {
     fn mimetype() -> Option<string>;
 
     /// file size in bytes
-    fn size() -> Option<u32>;
+    fn size() -> Option<u64>;
 
     /// image width
-    fn width() -> Option<u32>;
+    fn width() -> Option<u64>;
 
     /// image height
-    fn height() -> Option<u32>;
+    fn height() -> Option<u64>;
 
     /// thumbnail info
     fn thumbnail_info() -> Option<ThumbnailInfo>;
@@ -573,10 +573,10 @@ object AudioDesc {
     fn mimetype() -> Option<string>;
 
     /// file size in bytes
-    fn size() -> Option<u32>;
+    fn size() -> Option<u64>;
 
     /// duration in seconds
-    fn duration() -> Option<u32>;
+    fn duration() -> Option<u64>;
 }
 
 object VideoDesc {
@@ -590,19 +590,19 @@ object VideoDesc {
     fn mimetype() -> Option<string>;
 
     /// file size in bytes
-    fn size() -> Option<u32>;
+    fn size() -> Option<u64>;
 
     /// image width
-    fn width() -> Option<u32>;
+    fn width() -> Option<u64>;
 
     /// image height
-    fn height() -> Option<u32>;
+    fn height() -> Option<u64>;
 
     /// blurhash
     fn blurhash() -> Option<string>;
 
     /// duration in seconds
-    fn duration() -> Option<u32>;
+    fn duration() -> Option<u64>;
 
     /// thumbnail info
     fn thumbnail_info() -> Option<ThumbnailInfo>;
@@ -622,7 +622,7 @@ object FileDesc {
     fn mimetype() -> Option<string>;
 
     /// file size in bytes
-    fn size() -> Option<u32>;
+    fn size() -> Option<u64>;
 
     /// thumbnail info
     fn thumbnail_info() -> Option<ThumbnailInfo>;

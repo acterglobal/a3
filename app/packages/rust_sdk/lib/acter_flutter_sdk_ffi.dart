@@ -47326,21 +47326,21 @@ class _ThumbnailInfoMimetypeReturn extends ffi.Struct {
 class _ThumbnailInfoSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _ThumbnailInfoWidthReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _ThumbnailInfoHeightReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
@@ -47580,21 +47580,21 @@ class _ImageDescMimetypeReturn extends ffi.Struct {
 class _ImageDescSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _ImageDescWidthReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _ImageDescHeightReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
@@ -47635,14 +47635,14 @@ class _AudioDescMimetypeReturn extends ffi.Struct {
 class _AudioDescSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _AudioDescDurationReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
@@ -47669,21 +47669,21 @@ class _VideoDescMimetypeReturn extends ffi.Struct {
 class _VideoDescSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _VideoDescWidthReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _VideoDescHeightReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
@@ -47701,7 +47701,7 @@ class _VideoDescBlurhashReturn extends ffi.Struct {
 class _VideoDescDurationReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
@@ -47742,7 +47742,7 @@ class _FileDescMimetypeReturn extends ffi.Struct {
 class _FileDescSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
