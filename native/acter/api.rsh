@@ -650,7 +650,7 @@ object ReactionRecord {
     fn sender_id() -> UserId;
 
     /// when reaction was sent
-    fn ts() -> u64;
+    fn timestamp() -> u64;
 
     /// whether I am the sender of this reaction
     fn sent_by_me() -> bool;
@@ -2174,7 +2174,7 @@ object ReceiptRecord {
     fn seen_by() -> string;
 
     /// Get time that this user read message from peer in milliseconds
-    fn ts() -> Option<u64>;
+    fn timestamp() -> Option<u64>;
 }
 
 /// Deliver devices new event from rust to flutter

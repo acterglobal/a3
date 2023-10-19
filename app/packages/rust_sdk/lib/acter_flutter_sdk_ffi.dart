@@ -14951,13 +14951,13 @@ class Api {
       int Function(
         int,
       )>();
-  late final _reactionRecordTsPtr = _lookup<
+  late final _reactionRecordTimestampPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint64 Function(
             ffi.Int64,
-          )>>("__ReactionRecord_ts");
+          )>>("__ReactionRecord_timestamp");
 
-  late final _reactionRecordTs = _reactionRecordTsPtr.asFunction<
+  late final _reactionRecordTimestamp = _reactionRecordTimestampPtr.asFunction<
       int Function(
         int,
       )>();
@@ -21823,14 +21823,14 @@ class Api {
       _ReceiptRecordSeenByReturn Function(
         int,
       )>();
-  late final _receiptRecordTsPtr = _lookup<
+  late final _receiptRecordTimestampPtr = _lookup<
       ffi.NativeFunction<
-          _ReceiptRecordTsReturn Function(
+          _ReceiptRecordTimestampReturn Function(
             ffi.Int64,
-          )>>("__ReceiptRecord_ts");
+          )>>("__ReceiptRecord_timestamp");
 
-  late final _receiptRecordTs = _receiptRecordTsPtr.asFunction<
-      _ReceiptRecordTsReturn Function(
+  late final _receiptRecordTimestamp = _receiptRecordTimestampPtr.asFunction<
+      _ReceiptRecordTimestampReturn Function(
         int,
       )>();
   late final _deviceNewEventDeviceIdPtr = _lookup<
@@ -32333,10 +32333,10 @@ class ReactionRecord {
   }
 
   /// when reaction was sent
-  int ts() {
+  int timestamp() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._reactionRecordTs(
+    final tmp1 = _api._reactionRecordTimestamp(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -46064,10 +46064,10 @@ class ReceiptRecord {
   }
 
   /// Get time that this user read message from peer in milliseconds
-  int? ts() {
+  int? timestamp() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._receiptRecordTs(
+    final tmp1 = _api._receiptRecordTimestamp(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -48901,7 +48901,7 @@ class _ReceiptRecordSeenByReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ReceiptRecordTsReturn extends ffi.Struct {
+class _ReceiptRecordTimestampReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint64()

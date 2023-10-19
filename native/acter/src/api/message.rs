@@ -83,19 +83,19 @@ use super::common::{AudioDesc, FileDesc, ImageDesc, LocationDesc, TextDesc, Vide
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ReactionRecord {
     sender_id: OwnedUserId,
-    ts: MilliSecondsSinceUnixEpoch,
+    timestamp: MilliSecondsSinceUnixEpoch,
     sent_by_me: bool,
 }
 
 impl ReactionRecord {
     pub(crate) fn new(
         sender_id: OwnedUserId,
-        ts: MilliSecondsSinceUnixEpoch,
+        timestamp: MilliSecondsSinceUnixEpoch,
         sent_by_me: bool,
     ) -> Self {
         ReactionRecord {
             sender_id,
-            ts,
+            timestamp,
             sent_by_me,
         }
     }
@@ -108,8 +108,8 @@ impl ReactionRecord {
         self.sent_by_me
     }
 
-    pub fn ts(&self) -> u64 {
-        self.ts.get().into()
+    pub fn timestamp(&self) -> u64 {
+        self.timestamp.get().into()
     }
 }
 
