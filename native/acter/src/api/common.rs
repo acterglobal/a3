@@ -440,39 +440,6 @@ impl LocationDesc {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct ReactionRecord {
-    sender_id: OwnedUserId,
-    ts: MilliSecondsSinceUnixEpoch,
-    sent_by_me: bool,
-}
-
-impl ReactionRecord {
-    pub(crate) fn new(
-        sender_id: OwnedUserId,
-        ts: MilliSecondsSinceUnixEpoch,
-        sent_by_me: bool,
-    ) -> Self {
-        ReactionRecord {
-            sender_id,
-            ts,
-            sent_by_me,
-        }
-    }
-
-    pub fn sender_id(&self) -> OwnedUserId {
-        self.sender_id.clone()
-    }
-
-    pub fn sent_by_me(&self) -> bool {
-        self.sent_by_me
-    }
-
-    pub fn ts(&self) -> u64 {
-        self.ts.get().into()
-    }
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct DeviceRecord {
     device_id: OwnedDeviceId,
     display_name: Option<String>,
