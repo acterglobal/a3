@@ -21,6 +21,7 @@ use matrix_sdk::{
         AttachmentConfig, AttachmentInfo, BaseAudioInfo, BaseFileInfo, BaseImageInfo, BaseVideoInfo,
     },
     media::{MediaFormat, MediaRequest},
+    notification_settings::{IsEncrypted, IsOneToOne, RoomNotificationMode},
     room::{Room as SdkRoom, RoomMember},
     ruma::{
         api::client::{
@@ -479,6 +480,23 @@ impl SpaceRelations {
     }
 }
 
+fn room_notification_mode_name(input: &RoomNotificationMode) -> String {
+    match input {
+        RoomNotificationMode::AllMessages => "all".to_owned(),
+        RoomNotificationMode::MentionsAndKeywordsOnly => "mentions".to_owned(),
+        RoomNotificationMode::Mute => "muted".to_owned(),
+    }
+}
+
+fn notification_mode_from_input(input: &str) -> Option<RoomNotificationMode> {
+    match input.trim().to_lowercase().as_str() {
+        "all" => Some(RoomNotificationMode::AllMessages),
+        "mentions" => Some(RoomNotificationMode::MentionsAndKeywordsOnly),
+        "muted" => Some(RoomNotificationMode::Mute),
+        _ => None,
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct Room {
     pub(crate) core: CoreClient,
@@ -766,6 +784,85 @@ impl Room {
                     member,
                     acter_app_settings: acter_app_settings.clone(),
                 })
+            })
+            .await?
+    }
+
+    pub async fn notification_mode(&self) -> Result<String> {
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                room.user_defined_notification_mode()
+                    .await
+                    .map(|x| room_notification_mode_name(&x))
+            })
+            .await?
+            .context("Mode not set")
+    }
+
+    pub async fn default_notification_mode(&self) -> String {
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let notification_settings = room.client().notification_settings().await;
+                let is_encrypted = room.is_encrypted().await.unwrap_or_default();
+                // Otherwise, if encrypted status is available, get the default mode for this
+                // type of room.
+                // From the point of view of notification settings, a `one-to-one` room is one
+                // that involves exactly two people.
+                let is_one_to_one = IsOneToOne::from(room.active_members_count() == 2);
+                let default_mode = notification_settings
+                    .get_default_room_notification_mode(
+                        IsEncrypted::from(is_encrypted),
+                        is_one_to_one,
+                    )
+                    .await;
+                room_notification_mode_name(&default_mode)
+            })
+            .await
+            .unwrap_or_default()
+    }
+
+    pub async fn unmute(&self) -> Result<bool> {
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let notification_settings = room.client().notification_settings().await;
+                let is_encrypted = room.is_encrypted().await.unwrap_or_default();
+                // Otherwise, if encrypted status is available, get the default mode for this
+                // type of room.
+                // From the point of view of notification settings, a `one-to-one` room is one
+                // that involves exactly two people.
+                let is_one_to_one = IsOneToOne::from(room.active_members_count() == 2);
+                notification_settings
+                    .unmute_room(
+                        room.room_id(),
+                        IsEncrypted::from(is_encrypted),
+                        is_one_to_one,
+                    )
+                    .await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn set_notification_mode(&self, new_mode: Option<String>) -> Result<bool> {
+        let room = self.room.clone();
+        let mode = new_mode.and_then(|s| notification_mode_from_input(&s));
+        RUNTIME
+            .spawn(async move {
+                let notification_settings = room.client().notification_settings().await;
+                let room_id = room.room_id();
+                if let Some(mode) = mode {
+                    notification_settings
+                        .set_room_notification_mode(room_id, mode)
+                        .await?;
+                } else {
+                    notification_settings
+                        .delete_user_defined_room_rules(room_id)
+                        .await?;
+                }
+                Ok(true)
             })
             .await?
     }

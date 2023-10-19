@@ -9,6 +9,7 @@ import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
+import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -155,6 +156,30 @@ class RoomProfilePage extends ConsumerWidget {
               sections: [
                 SettingsSection(
                   tiles: [
+                    SettingsTile(
+                      onPressed: (ctx) {
+                        Clipboard.setData(
+                          ClipboardData(
+                            text: roomId,
+                          ),
+                        );
+                        customMsgSnackbar(
+                          context,
+                          'Room ID: $roomId copied to clipboard',
+                        );
+                      },
+                      title: Text(
+                        'Copy Room ID',
+                        style: tileTextTheme,
+                      ),
+                      leading: const Icon(Atlas.chain_link_thin, size: 18),
+                      trailing: Icon(
+                        Atlas.pages_thin,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.success,
+                      ),
+                    ),
+                    NotificationsSettingsTile(roomId: roomId),
                     myMembership.when(
                       data: (membership) => SettingsTile.navigation(
                         onPressed: (ctx) {
@@ -185,33 +210,6 @@ class RoomProfilePage extends ConsumerWidget {
                         title: const Text('Loading'),
                       ),
                     ),
-                    SettingsTile(
-                      onPressed: (ctx) {
-                        Clipboard.setData(
-                          ClipboardData(
-                            text: roomId,
-                          ),
-                        );
-                        customMsgSnackbar(
-                          context,
-                          'Room ID: $roomId copied to clipboard',
-                        );
-                      },
-                      title: Text(
-                        'Copy Room ID',
-                        style: tileTextTheme,
-                      ),
-                      leading: const Icon(Atlas.chain_link_thin, size: 18),
-                      trailing: Icon(
-                        Atlas.pages_thin,
-                        size: 18,
-                        color: Theme.of(context).colorScheme.success,
-                      ),
-                    ),
-                  ],
-                ),
-                SettingsSection(
-                  tiles: [
                     SettingsTile(
                       onPressed: (ctx) async {
                         await showAdaptiveDialog(
