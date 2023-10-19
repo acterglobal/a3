@@ -394,10 +394,7 @@ impl NewsEntryDraft {
         self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
-            inner: news::NewsSlide {
-                content: NewsContent::Text(text_content),
-                references: Default::default(),
-            },
+            inner: news::NewsSlide::new_text(text_content),
         });
         self
     }
@@ -446,10 +443,7 @@ impl NewsEntryDraft {
         self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone(),
-            inner: news::NewsSlide {
-                content: NewsContent::Image(image_content),
-                references: Default::default(),
-            },
+            inner: news::NewsSlide::new_image(image_content),
         });
         Ok(true)
     }
@@ -494,10 +488,7 @@ impl NewsEntryDraft {
         self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
-            inner: news::NewsSlide {
-                content: NewsContent::Audio(audio_content),
-                references: Default::default(),
-            },
+            inner: news::NewsSlide::new_audio(audio_content),
         });
         Ok(true)
     }
@@ -548,10 +539,7 @@ impl NewsEntryDraft {
         self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
-            inner: news::NewsSlide {
-                content: NewsContent::Video(video_content),
-                references: Default::default(),
-            },
+            inner: news::NewsSlide::new_video(video_content),
         });
         Ok(true)
     }
@@ -590,10 +578,7 @@ impl NewsEntryDraft {
         self.slides.push(NewsSlide {
             client: self.client.clone(),
             room: self.room.clone().into(),
-            inner: news::NewsSlide {
-                content: NewsContent::File(file_content),
-                references: Default::default(),
-            },
+            inner: news::NewsSlide::new_file(file_content),
         });
         Ok(true)
     }

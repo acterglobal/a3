@@ -98,6 +98,50 @@ pub struct NewsSlide {
     pub references: Vec<ObjRef>,
 }
 
+impl NewsSlide {
+    pub fn new_text(content: TextMessageEventContent) -> Self {
+        NewsSlide {
+            content: NewsContent::Text(content),
+            references: vec![],
+        }
+    }
+
+    pub fn new_image(content: ImageMessageEventContent) -> Self {
+        NewsSlide {
+            content: NewsContent::Image(content),
+            references: vec![],
+        }
+    }
+
+    pub fn new_audio(content: AudioMessageEventContent) -> Self {
+        NewsSlide {
+            content: NewsContent::Audio(content),
+            references: vec![],
+        }
+    }
+
+    pub fn new_video(content: VideoMessageEventContent) -> Self {
+        NewsSlide {
+            content: NewsContent::Video(content),
+            references: vec![],
+        }
+    }
+
+    pub fn new_file(content: FileMessageEventContent) -> Self {
+        NewsSlide {
+            content: NewsContent::File(content),
+            references: vec![],
+        }
+    }
+
+    pub fn new_location(content: LocationMessageEventContent) -> Self {
+        NewsSlide {
+            content: NewsContent::Location(content),
+            references: vec![],
+        }
+    }
+}
+
 /// The payload for our news creation event.
 #[derive(Clone, Debug, Builder, Deserialize, Serialize, Getters, EventContent)]
 #[ruma_event(type = "global.acter.dev.news", kind = MessageLike)]
