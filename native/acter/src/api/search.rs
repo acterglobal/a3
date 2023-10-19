@@ -43,12 +43,8 @@ impl PublicSearchResultItem {
         self.chunk.canonical_alias.as_ref().map(|a| a.to_string())
     }
 
-    pub fn num_joined_members(&self) -> u32 {
-        let count = u64::from(self.chunk.num_joined_members);
-        if count > u32::MAX as u64 {
-            panic!("count of joined members overflowed");
-        }
-        count as u32
+    pub fn num_joined_members(&self) -> u64 {
+        self.chunk.num_joined_members.into()
     }
 
     pub fn room_id(&self) -> OwnedRoomId {
@@ -105,14 +101,8 @@ impl PublicSearchResult {
         self.resp.prev_batch.clone()
     }
 
-    pub fn total_room_count_estimate(&self) -> Option<u32> {
-        self.resp.total_room_count_estimate.map(|x| {
-            let count = u64::from(x);
-            if count > u32::MAX as u64 {
-                panic!("count of total rooms overflowed");
-            }
-            count as u32
-        })
+    pub fn total_room_count_estimate(&self) -> Option<u64> {
+        self.resp.total_room_count_estimate.map(Into::into)
     }
 
     pub fn chunks(&self) -> Vec<PublicSearchResultItem> {
