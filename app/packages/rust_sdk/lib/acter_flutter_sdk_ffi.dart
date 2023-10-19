@@ -14928,13 +14928,13 @@ class Api {
       int Function(
         int,
       )>();
-  late final _reactionRecordTimestampPtr = _lookup<
+  late final _reactionRecordTsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint64 Function(
             ffi.Int64,
-          )>>("__ReactionRecord_timestamp");
+          )>>("__ReactionRecord_ts");
 
-  late final _reactionRecordTimestamp = _reactionRecordTimestampPtr.asFunction<
+  late final _reactionRecordTs = _reactionRecordTsPtr.asFunction<
       int Function(
         int,
       )>();
@@ -32267,10 +32267,10 @@ class ReactionRecord {
   }
 
   /// when reaction was sent
-  int timestamp() {
+  int ts() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._reactionRecordTimestamp(
+    final tmp1 = _api._reactionRecordTs(
       tmp0,
     );
     final tmp3 = tmp1;

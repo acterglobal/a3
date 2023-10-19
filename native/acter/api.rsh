@@ -647,7 +647,7 @@ object ReactionRecord {
     fn sender_id() -> UserId;
 
     /// when reaction was sent
-    fn timestamp() -> u64;
+    fn ts() -> u64;
 
     /// whether I am the sender of this reaction
     fn sent_by_me() -> bool;

@@ -442,19 +442,19 @@ impl LocationDesc {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ReactionRecord {
     sender_id: OwnedUserId,
-    timestamp: MilliSecondsSinceUnixEpoch,
+    ts: MilliSecondsSinceUnixEpoch,
     sent_by_me: bool,
 }
 
 impl ReactionRecord {
     pub(crate) fn new(
         sender_id: OwnedUserId,
-        timestamp: MilliSecondsSinceUnixEpoch,
+        ts: MilliSecondsSinceUnixEpoch,
         sent_by_me: bool,
     ) -> Self {
         ReactionRecord {
             sender_id,
-            timestamp,
+            ts,
             sent_by_me,
         }
     }
@@ -467,8 +467,8 @@ impl ReactionRecord {
         self.sent_by_me
     }
 
-    pub fn timestamp(&self) -> u64 {
-        self.timestamp.get().into()
+    pub fn ts(&self) -> u64 {
+        self.ts.get().into()
     }
 }
 
