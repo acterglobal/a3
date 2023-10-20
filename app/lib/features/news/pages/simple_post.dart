@@ -140,8 +140,6 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                     await draft.addImageSlide(
                       caption,
                       file.path,
-                      mimeType,
-                      bytes.length,
                       decodedImage.width,
                       decodedImage.height,
                       null,
