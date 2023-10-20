@@ -243,7 +243,7 @@ impl AttachmentsManager {
     pub fn image_attachment_draft(
         &self,
         body: String,
-        url: String, // used as http in integration test
+        url: String, // integration test supposes it is remote url
         mimetype: Option<String>,
         size: Option<u64>,
         width: Option<u64>,
@@ -276,7 +276,7 @@ impl AttachmentsManager {
     pub fn audio_attachment_draft(
         &self,
         body: String,
-        url: String, // used as http in integration test
+        url: String, // integration test supposes it is remote url
         mimetype: Option<String>,
         size: Option<u64>,
         secs: Option<u64>,
@@ -306,7 +306,7 @@ impl AttachmentsManager {
     pub fn video_attachment_draft(
         &self,
         body: String,
-        url: String, // used as http in integration test
+        url: String, // integration test supposes it is remote url
         mimetype: Option<String>,
         size: Option<u64>,
         secs: Option<u64>,
@@ -341,7 +341,7 @@ impl AttachmentsManager {
     pub fn file_attachment_draft(
         &self,
         body: String,
-        url: String, // used as http in integration test
+        url: String, // integration test supposes it is remote url
         mimetype: Option<String>,
         size: Option<u64>,
     ) -> Result<AttachmentDraft> {
