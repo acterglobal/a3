@@ -20953,6 +20953,22 @@ class Api {
         int,
         int,
       )>();
+  late final _clientDmWithUserPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientDmWithUserReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Client_dm_with_user");
+
+  late final _clientDmWithUser = _clientDmWithUserPtr.asFunction<
+      _ClientDmWithUserReturn Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _clientGetUserProfilePtr = _lookup<
       ffi.NativeFunction<
           _ClientGetUserProfileReturn Function(
@@ -44114,6 +44130,54 @@ class Client {
     return tmp8;
   }
 
+  /// get the room id of dm from user id
+  OptionString dmWithUser(
+    String userId,
+  ) {
+    final tmp1 = userId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._clientDmWithUser(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 =
+          utf8.decode(tmp8_0.asTypedList(tmp9), allowMalformed: true);
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_OptionString");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = OptionString._(_api, tmp11_1);
+    return tmp6;
+  }
+
   /// get the user profile that contains avatar and display name
   UserProfile getUserProfile() {
     var tmp0 = 0;
@@ -49129,6 +49193,19 @@ class _ClientDeviceIdReturn extends ffi.Struct {
 }
 
 class _ClientUserIdReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
+class _ClientDmWithUserReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
