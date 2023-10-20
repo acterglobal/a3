@@ -403,8 +403,8 @@ impl NewsEntryDraft {
         &mut self,
         body: String,
         uri: String,
-        width: Option<u32>,
-        height: Option<u32>,
+        width: Option<u64>,
+        height: Option<u64>,
         blurhash: Option<String>,
     ) -> Result<bool> {
         trace!("add image slide");
@@ -434,8 +434,8 @@ impl NewsEntryDraft {
         let info = assign!(ImageInfo::new(), {
             mimetype,
             size: UInt::new(size),
-            width: width.map(UInt::from),
-            height: height.map(UInt::from),
+            width: width.and_then(UInt::new),
+            height: height.and_then(UInt::new),
             blurhash,
         });
         image_content.info = Some(Box::new(info));
@@ -452,7 +452,7 @@ impl NewsEntryDraft {
         &mut self,
         body: String,
         uri: String,
-        secs: Option<u32>,
+        secs: Option<u64>,
     ) -> Result<bool> {
         trace!("add audio slide");
         let client = self.client.clone();
@@ -481,7 +481,7 @@ impl NewsEntryDraft {
         let info = assign!(AudioInfo::new(), {
             mimetype,
             size: UInt::new(size),
-            duration: secs.map(|x| Duration::from_secs(x as u64)),
+            duration: secs.map(Duration::from_secs),
         });
         audio_content.info = Some(Box::new(info));
 
@@ -498,9 +498,9 @@ impl NewsEntryDraft {
         &mut self,
         body: String,
         uri: String,
-        secs: Option<u32>,
-        width: Option<u32>,
-        height: Option<u32>,
+        secs: Option<u64>,
+        width: Option<u64>,
+        height: Option<u64>,
         blurhash: Option<String>,
     ) -> Result<bool> {
         trace!("add video slide");
@@ -530,9 +530,9 @@ impl NewsEntryDraft {
         let info = assign!(VideoInfo::new(), {
             mimetype,
             size: UInt::new(size),
-            duration: secs.map(|x| Duration::from_secs(x as u64)),
-            width: width.map(UInt::from),
-            height: height.map(UInt::from),
+            duration: secs.map(Duration::from_secs),
+            width: width.and_then(UInt::new),
+            height: height.and_then(UInt::new),
         });
         video_content.info = Some(Box::new(info));
 

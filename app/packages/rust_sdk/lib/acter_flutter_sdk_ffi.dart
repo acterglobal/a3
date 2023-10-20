@@ -12938,9 +12938,9 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -12977,7 +12977,7 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__NewsEntryDraft_add_audio_slide");
 
   late final _newsEntryDraftAddAudioSlide =
@@ -13004,11 +13004,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -15610,9 +15610,9 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -15667,9 +15667,9 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__Convo_edit_image_message");
 
   late final _convoEditImageMessage = _convoEditImageMessagePtr.asFunction<
@@ -15700,7 +15700,7 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__Convo_send_audio_message");
 
   late final _convoSendAudioMessage = _convoSendAudioMessagePtr.asFunction<
@@ -15745,7 +15745,7 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__Convo_edit_audio_message");
 
   late final _convoEditAudioMessage = _convoEditAudioMessagePtr.asFunction<
@@ -15774,11 +15774,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -15835,11 +15835,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__Convo_edit_video_message");
 
   late final _convoEditVideoMessage = _convoEditVideoMessagePtr.asFunction<
@@ -16170,9 +16170,9 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -16214,7 +16214,7 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -16254,11 +16254,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -16769,11 +16769,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -16820,9 +16820,9 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__AttachmentsManager_audio_attachment_draft");
 
   late final _attachmentsManagerAudioAttachmentDraft =
@@ -16859,13 +16859,13 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -16914,7 +16914,7 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__AttachmentsManager_file_attachment_draft");
 
   late final _attachmentsManagerFileAttachmentDraft =
@@ -19507,9 +19507,9 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -19561,7 +19561,7 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__Space_send_audio_message");
 
   late final _spaceSendAudioMessage = _spaceSendAudioMessagePtr.asFunction<
@@ -19603,11 +19603,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -21387,8 +21387,8 @@ class Api {
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-            ffi.Uint32,
-            ffi.Uint32,
+            ffi.Uint64,
+            ffi.Uint64,
           )>>("__UserProfile_get_thumbnail");
 
   late final _userProfileGetThumbnail = _userProfileGetThumbnailPtr.asFunction<
@@ -21432,8 +21432,8 @@ class Api {
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-            ffi.Uint32,
-            ffi.Uint32,
+            ffi.Uint64,
+            ffi.Uint64,
           )>>("__RoomProfile_get_thumbnail");
 
   late final _roomProfileGetThumbnail = _roomProfileGetThumbnailPtr.asFunction<

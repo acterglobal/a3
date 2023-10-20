@@ -243,11 +243,11 @@ impl AttachmentsManager {
     pub fn image_attachment_draft(
         &self,
         body: String,
-        url: String,
+        url: String, // used as http in integration test
         mimetype: Option<String>,
-        size: Option<u32>,
-        width: Option<u32>,
-        height: Option<u32>,
+        size: Option<u64>,
+        width: Option<u64>,
+        height: Option<u64>,
         blurhash: Option<String>,
     ) -> Result<AttachmentDraft> {
         if !self.is_joined() {
@@ -255,9 +255,9 @@ impl AttachmentsManager {
         }
         let info = assign!(ImageInfo::new(), {
             mimetype,
-            size: size.map(UInt::from),
-            width: width.map(UInt::from),
-            height: height.map(UInt::from),
+            size: size.and_then(UInt::new),
+            width: width.and_then(UInt::new),
+            height: height.and_then(UInt::new),
             blurhash,
         });
         let url = Box::<MxcUri>::from(url.as_str());
@@ -276,18 +276,18 @@ impl AttachmentsManager {
     pub fn audio_attachment_draft(
         &self,
         body: String,
-        url: String,
+        url: String, // used as http in integration test
         mimetype: Option<String>,
-        size: Option<u32>,
-        secs: Option<u32>,
+        size: Option<u64>,
+        secs: Option<u64>,
     ) -> Result<AttachmentDraft> {
         if !self.is_joined() {
             bail!("Can only attachment in joined rooms");
         }
         let info = assign!(AudioInfo::new(), {
             mimetype,
-            size: size.map(UInt::from),
-            duration: secs.map(|x| Duration::from_secs(x as u64)),
+            size: size.and_then(UInt::new),
+            duration: secs.map(Duration::from_secs),
         });
         let url = Box::<MxcUri>::from(url.as_str());
         let mut builder = self.inner.draft_builder();
@@ -306,12 +306,12 @@ impl AttachmentsManager {
     pub fn video_attachment_draft(
         &self,
         body: String,
-        url: String,
+        url: String, // used as http in integration test
         mimetype: Option<String>,
-        size: Option<u32>,
-        secs: Option<u32>,
-        width: Option<u32>,
-        height: Option<u32>,
+        size: Option<u64>,
+        secs: Option<u64>,
+        width: Option<u64>,
+        height: Option<u64>,
         blurhash: Option<String>,
     ) -> Result<AttachmentDraft> {
         if !self.is_joined() {
@@ -319,10 +319,10 @@ impl AttachmentsManager {
         }
         let info = assign!(VideoInfo::new(), {
             mimetype,
-            size: size.map(UInt::from),
-            duration: secs.map(|x| Duration::from_secs(x as u64)),
-            width: width.map(UInt::from),
-            height: height.map(UInt::from),
+            size: size.and_then(UInt::new),
+            duration: secs.map(Duration::from_secs),
+            width: width.and_then(UInt::new),
+            height: height.and_then(UInt::new),
             blurhash,
         });
         let url = Box::<MxcUri>::from(url.as_str());
@@ -341,15 +341,15 @@ impl AttachmentsManager {
     pub fn file_attachment_draft(
         &self,
         body: String,
-        url: String,
+        url: String, // used as http in integration test
         mimetype: Option<String>,
-        size: Option<u32>,
+        size: Option<u64>,
     ) -> Result<AttachmentDraft> {
         if !self.is_joined() {
             bail!("Can only attachment in joined rooms");
         }
         let mut builder = self.inner.draft_builder();
-        let size = size.map(UInt::from);
+        let size = size.and_then(UInt::new);
         let info = assign!(FileInfo::new(), { mimetype, size });
         let mut file_content = FileMessageEventContent::plain(body, url.into());
         file_content.info = Some(Box::new(info));
