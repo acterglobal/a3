@@ -1,5 +1,6 @@
 use acter::{
-    matrix_sdk::{config::StoreConfig, ruma::OwnedRoomId},
+    matrix_sdk::config::StoreConfig,
+    ruma_common::OwnedRoomId,
     testing::ensure_user,
     Client, CreateSpaceSettingsBuilder, SyncState,
 };
