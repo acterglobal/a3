@@ -1,4 +1,4 @@
-use acter::matrix_sdk::ruma::events::{AnyMessageLikeEvent, AnyTimelineEvent};
+use acter::ruma_events::{AnyMessageLikeEvent, AnyTimelineEvent};
 use anyhow::{bail, Result};
 use futures::stream::StreamExt;
 
