@@ -1,21 +1,21 @@
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/features/profile/widgets/profile_item_tile.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/services.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:acter/common/widgets/default_dialog.dart';
-
 class ChangeDisplayName extends StatefulWidget {
   final AccountProfile account;
+
   const ChangeDisplayName({
     Key? key,
     required this.account,
@@ -47,9 +47,7 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
           children: [
             Padding(
               padding: const EdgeInsets.all(5),
-              child: TextFormField(
-                controller: newUsername,
-              ),
+              child: TextFormField(controller: newUsername),
             ),
           ],
         ),
@@ -87,26 +85,47 @@ class MyProfile extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
-    final newUsername = await showDialog<String?>(
+    final TextEditingController newName = TextEditingController();
+    newName.text = profile.profile.displayName ?? '';
+
+    final newText = await showDialog<String>(
       context: context,
-      builder: (BuildContext context) => ChangeDisplayName(account: profile),
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Change your display name'),
+        content: TextField(controller: newName),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              if (profile.profile.displayName != newName.text) {
+                Navigator.pop(context, newName.text);
+              } else {
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('Submit'),
+          ),
+        ],
+      ),
     );
-    if (newUsername != null && context.mounted) {
+
+    if (newText != null && context.mounted) {
       showAdaptiveDialog(
         context: context,
         builder: (context) => DefaultDialog(
           title: Text(
-            'Updating Displayname',
+            'Updating Display Name',
             style: Theme.of(context).textTheme.titleSmall,
           ),
           isLoader: true,
         ),
       );
-      await profile.account.setDisplayName(newUsername);
+      await profile.account.setDisplayName(newText);
       ref.invalidate(accountProfileProvider);
 
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
       if (!context.mounted) {
         return;
       }
@@ -115,7 +134,7 @@ class MyProfile extends ConsumerWidget {
     }
   }
 
-  void _handleAvatarUpload(
+  Future<void> updateAvatar(
     AccountProfile profile,
     BuildContext context,
     WidgetRef ref,
@@ -127,8 +146,7 @@ class MyProfile extends ConsumerWidget {
     if (result != null) {
       final file = result.files.first;
       await profile.account.uploadAvatar(file.path!);
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
+
       if (!context.mounted) {
         return;
       }
@@ -172,11 +190,7 @@ class MyProfile extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: () => _handleAvatarUpload(
-                          data,
-                          context,
-                          ref,
-                        ),
+                        onTap: () => updateAvatar(data, context, ref),
                         child: Container(
                           margin: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
@@ -200,11 +214,7 @@ class MyProfile extends ConsumerWidget {
                             iconSize: 14,
                             icon: const Icon(Atlas.pencil_edit_thin),
                             onPressed: () async {
-                              await updateDisplayName(
-                                data,
-                                context,
-                                ref,
-                              );
+                              await updateDisplayName(data, context, ref);
                             },
                           ),
                         ],
@@ -216,7 +226,7 @@ class MyProfile extends ConsumerWidget {
                           IconButton(
                             iconSize: 14,
                             icon: const Icon(Atlas.pages),
-                            onPressed: () async {
+                            onPressed: () {
                               Clipboard.setData(
                                 ClipboardData(text: userId),
                               );

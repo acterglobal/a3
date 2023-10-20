@@ -19,7 +19,7 @@ fn guest_client(basepath: string, default_homeserver_name: string, default_homes
 /// Create a new client from the registration token
 fn register_with_token(basepath: string, username: string, password: string, registration_token: string, default_homeserver_name: string, default_homeserver_url: string, device_name: string) -> Future<Result<Client>>;
 
-/// destroy the local data of a session 
+/// destroy the local data of a session
 fn destroy_local_data(basepath: string, userId: string, default_homeserver_name: string) -> Future<Result<bool>>;
 
 /// Representing a time frame
@@ -1642,7 +1642,7 @@ object Space {
 
     /// Whenever this is submitted;
     fn update_app_settings(new_settings: ActerAppSettingsBuilder) -> Future<Result<string>>;
-    
+
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
 
@@ -1742,6 +1742,27 @@ object Account {
 
     /// remove user_id from ignore list
     fn unignore_user(user_id: string) -> Future<Result<bool>>;
+}
+
+object ThreePidManager {
+    /// get email addresses from third party identifier
+    fn confirmed_email_addresses() -> Future<Result<Vec<string>>>;
+
+    /// get email addresses that were registered
+    fn requested_email_addresses() -> Future<Result<Vec<string>>>;
+
+    /// Requests token via email and add email address to third party identifier.
+    /// If password is not enough complex, homeserver may reject this request.
+    fn request_token_via_email(email_address: string) -> Future<Result<bool>>;
+
+    /// Submit token to finish email register
+    fn submit_token_from_email(email_address: string, token: string, password: string) -> Future<Result<bool>>;
+
+    /// Submit token to finish email register
+    fn try_confirm_email_status(email_address: string, password: string) -> Future<Result<bool>>;
+
+    /// Remove email address from confirmed list or unconfirmed list
+    fn remove_email_address(email_address: string) -> Future<Result<bool>>;
 }
 
 object SyncState {
@@ -1894,7 +1915,7 @@ object CreateSpaceSettings {}
 /// Main entry point for `acter`.
 object Client {
 
-    // deactivate the account. This can not be reversed. The username will 
+    // deactivate the account. This can not be reversed. The username will
     // be blocked from any future usage, all personal data will be removed.
     fn deactivate(password: string) -> Future<Result<bool>>;
 
@@ -1945,7 +1966,7 @@ object Client {
 
     /// upload file and return remote url
     fn upload_media(uri: string) -> Future<Result<MxcUri>>;
-    
+
     /// Fires whenever the convo list changes (in order or number)
     /// fires immediately with the current state of convos
     fn convos_stream() -> Stream<ConvoDiff>;
@@ -2078,6 +2099,9 @@ object Client {
 
     /// get only past events that I responded as rsvp
     fn my_past_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
+
+    /// get intermediate info of login (via email and phone) from account data
+    fn three_pid_manager() -> Result<ThreePidManager>;
 
 }
 

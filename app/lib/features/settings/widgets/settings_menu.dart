@@ -1,10 +1,10 @@
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/router/providers/router_providers.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/material.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/providers/router_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:settings_ui/settings_ui.dart';
 
@@ -78,6 +78,25 @@ class SettingsMenu extends ConsumerWidget {
                   shouldGoNotNamed
                       ? context.goNamed(Routes.settingNotifications.name)
                       : context.pushNamed(Routes.settingNotifications.name);
+                },
+              ),
+              SettingsTile.navigation(
+                title: Text(
+                  'Email Addresses',
+                  style: titleStylesSelected(Routes.emailAddresses),
+                ),
+                description: Text(
+                  'Connected to your account',
+                  style: titleStylesSelected(Routes.emailAddresses),
+                ),
+                leading: Icon(
+                  Atlas.envelope_paper_email_thin,
+                  color: colorSelected(Routes.emailAddresses),
+                ),
+                onPressed: (context) {
+                  shouldGoNotNamed
+                      ? context.goNamed(Routes.emailAddresses.name)
+                      : context.pushNamed(Routes.emailAddresses.name);
                 },
               ),
               SettingsTile.navigation(

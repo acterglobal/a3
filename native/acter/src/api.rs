@@ -42,6 +42,7 @@ mod settings;
 mod spaces;
 mod stream;
 mod tasks;
+mod three_pid;
 mod typing;
 mod utils;
 mod verification;
@@ -54,7 +55,9 @@ pub use uniffi_api::*;
 
 pub use account::Account;
 pub use acter_core::{
-    events::{news::NewsContent, Colorize, ObjRef, RefDetails, UtcDateTime},
+    events::{
+        news::NewsContent, three_pid::ThreePidRecord, Colorize, ObjRef, RefDetails, UtcDateTime,
+    },
     models::{ActerModel, Color as EfkColor, Tag, TextMessageContent},
 };
 pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
@@ -102,6 +105,7 @@ pub use stream::{TimelineDiff, TimelineStream};
 pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
+pub use three_pid::ThreePidManager;
 pub use typing::TypingEvent;
 pub use utils::parse_markdown;
 pub use verification::{SessionManager, VerificationEmoji, VerificationEvent};

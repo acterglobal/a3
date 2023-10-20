@@ -7,6 +7,7 @@ pub mod pins;
 pub mod rsvp;
 pub mod settings;
 pub mod tasks;
+pub mod three_pid;
 
 pub use common::{
     BelongsTo, BrandIcon, Color, Colorize, Icon, Labels, ObjRef, Position, RefDetails, Reference,
