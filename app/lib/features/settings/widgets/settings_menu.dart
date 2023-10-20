@@ -67,11 +67,11 @@ class SettingsMenu extends ConsumerWidget {
                   style: titleStylesSelected(Routes.emailAddresses),
                 ),
                 description: Text(
-                  'Used as third party identifier on login',
+                  'Connected to your account',
                   style: titleStylesSelected(Routes.emailAddresses),
                 ),
                 leading: Icon(
-                  Atlas.email_thin,
+                  Atlas.envelope_paper_email_thin,
                   color: colorSelected(Routes.emailAddresses),
                 ),
                 onPressed: (context) {

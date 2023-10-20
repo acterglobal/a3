@@ -1,15 +1,16 @@
 use matrix_sdk::ruma::events::macros::EventContent;
+use ruma_common::OwnedClientSecret;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ThreePidRecord {
     session_id: String,
-    passphrase: String,
+    passphrase: OwnedClientSecret,
 }
 
 impl ThreePidRecord {
-    pub fn new(session_id: String, passphrase: String) -> Self {
+    pub fn new(session_id: String, passphrase: OwnedClientSecret) -> Self {
         ThreePidRecord {
             session_id,
             passphrase,
@@ -20,7 +21,7 @@ impl ThreePidRecord {
         self.session_id.clone()
     }
 
-    pub fn passphrase(&self) -> String {
+    pub fn passphrase(&self) -> OwnedClientSecret {
         self.passphrase.clone()
     }
 }

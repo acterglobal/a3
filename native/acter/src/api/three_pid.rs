@@ -3,16 +3,17 @@ use anyhow::{bail, Context, Result};
 use matrix_sdk::{
     reqwest::{ClientBuilder, StatusCode},
     ruma::{
-        api::client::account::ThirdPartyIdRemovalStatus, thirdparty::Medium, uint, ClientSecret,
-        SessionId,
+        api::client::{
+            account::ThirdPartyIdRemovalStatus,
+            uiaa::{AuthData, Password, UserIdentifier},
+        },
+        thirdparty::Medium,
+        uint, ClientSecret, SessionId,
     },
     Account, Client as SdkClient,
 };
 use serde::Deserialize;
-use std::{
-    collections::BTreeMap,
-    ops::Deref,
-};
+use std::{collections::BTreeMap, ops::Deref};
 use tracing::warn;
 
 use super::{client::Client, RUNTIME};
@@ -60,13 +61,9 @@ impl ThreePidManager {
             .await?
     }
 
-    pub async fn request_token_via_email(
-        &self,
-        email_address: String,
-        password: String,
-    ) -> Result<bool> {
+    pub async fn request_token_via_email(&self, email_address: String) -> Result<bool> {
         let account = self.account.clone();
-        let secret = ClientSecret::parse(password.clone()).context("Password parsing failed")?;
+        let secret = ClientSecret::new();
         RUNTIME
             .spawn(async move {
                 let response = account
@@ -74,10 +71,7 @@ impl ThreePidManager {
                     .await?;
 
                 // add this record to custom data
-                let record = ThreePidRecord::new(
-                    response.sid.to_string(),
-                    password,
-                );
+                let record = ThreePidRecord::new(response.sid.to_string(), secret);
                 let maybe_content = account.account_data::<ThreePidContent>().await?;
                 let content = if let Some(raw_content) = maybe_content {
                     let mut content = raw_content.deserialize()?;
@@ -106,10 +100,62 @@ impl ThreePidManager {
             .await?
     }
 
+    pub async fn try_confirm_email_status(
+        &self,
+        email_address: String,
+        password: String,
+    ) -> Result<bool> {
+        let account = self.account.clone();
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let maybe_content = account.account_data::<ThreePidContent>().await?;
+                let Some(raw_content) = maybe_content else {
+                    bail!("Not found any email registration content");
+                };
+                let content = raw_content.deserialize()?;
+                let Some(record) = content.via_email.get(email_address.as_str()) else {
+                    bail!("That email address was not registered");
+                };
+                let user_id = client
+                    .user_id()
+                    .expect("user must be logged in")
+                    .to_string();
+                let session_id = record.session_id();
+                let passphrase = record.passphrase();
+                let sid =
+                    SessionId::parse(session_id.clone()).context("Session id parsing failed")?;
+                let secret =
+                    ClientSecret::parse(passphrase.clone()).context("Password parsing failed")?;
+                // try again with password
+                // FIXME: this shouldn't be hardcoded but use an Actual IUAA-flow
+                let auth_data = AuthData::Password(Password::new(
+                    UserIdentifier::UserIdOrLocalpart(user_id),
+                    password,
+                ));
+
+                if let Err(e) = account
+                    .add_3pid(&secret, &sid, Some(auth_data.clone()))
+                    .await
+                {
+                    if let Some(a) = e.as_uiaa_response() {
+                        if let Some(std_err) = &a.auth_error {
+                            bail!("{0}: {1}", std_err.kind, std_err.message);
+                        }
+                    }
+                    return Err(e.into());
+                }
+
+                Ok(true)
+            })
+            .await?
+    }
+
     pub async fn submit_token_from_email(
         &self,
         email_address: String,
         token: String,
+        password: String,
     ) -> Result<bool> {
         let account = self.account.clone();
         let client = self.client.clone();
@@ -118,19 +164,18 @@ impl ThreePidManager {
                 let server_url = client.homeserver().to_string();
                 let maybe_content = account.account_data::<ThreePidContent>().await?;
                 let Some(raw_content) = maybe_content else {
-                    warn!("Not found any email registration content");
-                    return Ok(false);
+                    bail!("Not found any email registration content");
                 };
                 let content = raw_content.deserialize()?;
                 let Some(record) = content.via_email.get(email_address.as_str()) else {
-                    warn!("That email address was not registered");
-                    return Ok(false);
+                    bail!("That email address was not registered");
                 };
                 let session_id = record.session_id();
-                let password = record.passphrase();
+                let secret = record.passphrase();
                 let sid =
                     SessionId::parse(session_id.clone()).context("Session id parsing failed")?;
-                let secret = ClientSecret::parse(password.clone()).context("Password parsing failed")?;
+                let secret =
+                    ClientSecret::parse(secret.clone()).context("Password parsing failed")?;
                 let submit_url = format!(
                     "{}/_matrix/client/unstable/add_threepid/email/submit_token",
                     client.homeserver(),
@@ -142,7 +187,7 @@ impl ThreePidManager {
                     .get(submit_url)
                     .query(&[
                         ("token", token),
-                        ("client_secret", password),
+                        ("client_secret", secret.to_string()),
                         ("sid", session_id),
                     ])
                     .send()
@@ -158,7 +203,25 @@ impl ThreePidManager {
                 if !success {
                     return Ok(false);
                 }
-                let uiaa_response = account.add_3pid(&secret, &sid, None).await?;
+                let user_id = client
+                    .user_id()
+                    .expect("user must be logged in")
+                    .to_string();
+                // try again with password
+                // FIXME: this shouldn't be hardcoded but use an Actual IUAA-flow
+                let auth_data = AuthData::Password(Password::new(
+                    UserIdentifier::UserIdOrLocalpart(user_id),
+                    password,
+                ));
+
+                if let Err(e) = account.add_3pid(&secret, &sid, Some(auth_data)).await {
+                    if let Some(a) = e.as_uiaa_response() {
+                        if let Some(std_err) = &a.auth_error {
+                            bail!("{0}: {1}", std_err.kind, std_err.message);
+                        }
+                    }
+                    return Err(e.into());
+                }
 
                 Ok(true)
             })
@@ -212,7 +275,9 @@ impl ThreePidManager {
 
 impl Client {
     pub fn three_pid_manager(&self) -> Result<ThreePidManager> {
-        let account = self.account().context("Third party identifier needs account")?;
+        let account = self
+            .account()
+            .context("Third party identifier needs account")?;
         Ok(ThreePidManager {
             account: account.deref().clone(),
             client: self.core.client().clone(),

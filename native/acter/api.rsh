@@ -1735,18 +1735,16 @@ object ThreePidManager {
 
     /// Requests token via email and add email address to third party identifier.
     /// If password is not enough complex, homeserver may reject this request.
-    fn request_token_via_email(email_address: string, password: string) -> Future<Result<bool>>;
+    fn request_token_via_email(email_address: string) -> Future<Result<bool>>;
 
     /// Submit token to finish email register
-    fn submit_token_from_email(email_address: string, token: string) -> Future<Result<bool>>;
+    fn submit_token_from_email(email_address: string, token: string, password: string) -> Future<Result<bool>>;
+
+    /// Submit token to finish email register
+    fn try_confirm_email_status(email_address: string, password: string) -> Future<Result<bool>>;
 
     /// Remove email address from confirmed list or unconfirmed list
     fn remove_email_address(email_address: string) -> Future<Result<bool>>;
-}
-
-object ThreePidRecord {
-    fn session_id() -> string;
-    fn passphrase() -> string;
 }
 
 object SyncState {

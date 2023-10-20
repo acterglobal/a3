@@ -1,32 +1,24 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/widgets/email_address_card.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class EmailPassword {
-  String emailAddress;
-  String password;
-
-  EmailPassword(this.emailAddress, this.password);
-}
-
-class RequestTokenViaEmail extends StatefulWidget {
-  const RequestTokenViaEmail({Key? key}) : super(key: key);
+class AddEmailAddr extends StatefulWidget {
+  const AddEmailAddr({Key? key}) : super(key: key);
 
   @override
-  State<RequestTokenViaEmail> createState() => _RequestTokenViaEmailState();
+  State<AddEmailAddr> createState() => _AddEmailAddrState();
 }
 
-class _RequestTokenViaEmailState extends State<RequestTokenViaEmail> {
+class _AddEmailAddrState extends State<AddEmailAddr> {
   final TextEditingController newEmailAddress = TextEditingController();
-  final TextEditingController newPassword = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool passwordVisible = false;
 
@@ -34,7 +26,7 @@ class _RequestTokenViaEmailState extends State<RequestTokenViaEmail> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text(
-        'Register email address',
+        'Add email address',
       ), // The token-reset path is just the process by which control over that email address is confirmed.
       content: Form(
         key: _formKey,
@@ -45,25 +37,8 @@ class _RequestTokenViaEmailState extends State<RequestTokenViaEmail> {
               padding: const EdgeInsets.all(5),
               child: TextFormField(
                 controller: newEmailAddress,
+                // FIXME: should have an email-addres-validator ,
                 decoration: const InputDecoration(hintText: 'Email Address'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5),
-              child: TextFormField(
-                controller: newPassword,
-                decoration: InputDecoration(
-                  hintText: 'Password',
-                  suffixIcon: IconButton(
-                    onPressed: togglePassword,
-                    icon: Icon(
-                      passwordVisible ? Icons.visibility : Icons.visibility_off,
-                    ),
-                  ),
-                ),
-                obscureText: !passwordVisible,
-                enableSuggestions: false,
-                autocorrect: false,
               ),
             ),
           ],
@@ -82,20 +57,12 @@ class _RequestTokenViaEmailState extends State<RequestTokenViaEmail> {
     );
   }
 
-  void togglePassword() {
-    setState(() {
-      passwordVisible = !passwordVisible;
-    });
-  }
-
   void onSubmit(BuildContext context) {
     if (!_formKey.currentState!.validate()) {
       customMsgSnackbar(context, 'Email or password seems to be not valid.');
       return;
     }
-    // user can reset password under the same email address
-    final result = EmailPassword(newEmailAddress.text, newPassword.text);
-    Navigator.pop(context, result);
+    Navigator.pop(context, newEmailAddress.text);
   }
 }
 
@@ -115,7 +82,16 @@ class EmailAddressesPage extends ConsumerWidget {
           centerTitle: true,
           actions: [
             IconButton(
-              onPressed: () => onRegister(context, ref),
+              onPressed: () {
+                ref.invalidate(emailAddressesProvider);
+              },
+              icon: Icon(
+                Atlas.refresh_account_arrows_thin,
+                color: Theme.of(context).colorScheme.neutral5,
+              ),
+            ),
+            IconButton(
+              onPressed: () => addEmailAddress(context, ref),
               icon: Icon(
                 Atlas.plus_circle_thin,
                 color: Theme.of(context).colorScheme.neutral5,
@@ -149,15 +125,14 @@ class EmailAddressesPage extends ConsumerWidget {
             ),
             child: Row(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 10),
+                const Padding(
+                  padding: EdgeInsets.only(right: 10),
                   child: Icon(
-                    Atlas.shield_exclamation_thin,
-                    color: Theme.of(context).colorScheme.error,
+                    Atlas.envelope_question_thin,
                   ),
                 ),
                 Text(
-                  'Unconfirmed Email Addresses',
+                  'Awaiting confirmation',
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ],
@@ -171,7 +146,7 @@ class EmailAddressesPage extends ConsumerWidget {
               vertical: 15,
             ),
             child: Text(
-              "You have email addresses that were registered but aren't confirmed. This can be a security risk. Please ensure this is okay.",
+              "You added these email addresses but didn't confirm them yet. Once you confirmed them please acknowledge it here and they will be added to your confirmed addresses.",
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
@@ -223,7 +198,7 @@ class EmailAddressesPage extends ConsumerWidget {
               vertical: 15,
             ),
             child: Text(
-              'All your email addresses are confirmed.',
+              'Confirmed emails addresses connected to your account:',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
@@ -241,38 +216,29 @@ class EmailAddressesPage extends ConsumerWidget {
     );
   }
 
-  Future<void> onRegister(BuildContext context, WidgetRef ref) async {
+  Future<void> addEmailAddress(BuildContext context, WidgetRef ref) async {
     final client = ref.read(clientProvider);
     final manager = client!.threePidManager();
-    final newValue = await showDialog<EmailPassword>(
+    final newValue = await showDialog<String>(
       context: context,
-      builder: (BuildContext context) => const RequestTokenViaEmail(),
+      builder: (BuildContext context) => const AddEmailAddr(),
     );
-    if (newValue != null && context.mounted) {
-      showAdaptiveDialog(
-        context: context,
-        builder: (context) => DefaultDialog(
-          title: Text(
-            'Requesting token via email',
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-          isLoader: true,
-        ),
-      );
-      await manager.requestTokenViaEmail(
-        newValue.emailAddress,
-        newValue.password,
-      );
-      ref.invalidate(emailAddressesProvider);
-
-      if (!context.mounted) {
-        return;
+    if (newValue != null) {
+      EasyLoading.show(status: 'Requesting token via email');
+      try {
+        await manager.requestTokenViaEmail(
+          newValue,
+        );
+        ref.invalidate(emailAddressesProvider);
+        EasyLoading.showSuccess(
+          'Please check your inbox for the validation email',
+        );
+      } catch (e) {
+        EasyLoading.showSuccess(
+          'Failed to submit email: $e',
+          duration: const Duration(seconds: 3),
+        );
       }
-      Navigator.of(context, rootNavigator: true).pop();
-      customMsgSnackbar(
-        context,
-        'Requested token via email. If you get email for confirmation, please submit token from email to finish this process.',
-      );
     }
   }
 }
