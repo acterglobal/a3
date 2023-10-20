@@ -55,7 +55,7 @@ use tracing::{error, info, trace, warn};
 use crate::Notification;
 
 use super::{
-    account::Account, api::FfiBuffer, convo::Convo, device::DeviceController,
+    account::Account, api::FfiBuffer, common::OptionString, convo::Convo, device::DeviceController,
     invitation::InvitationController, profile::UserProfile, receipt::ReceiptController, room::Room,
     spaces::Space, typing::TypingController, verification::VerificationController, RUNTIME,
 };
@@ -862,6 +862,12 @@ impl Client {
         let response = self.core.client().resolve_room_alias(room_alias).await?;
         self.room_by_id_typed(&response.room_id)
             .context("Room not found")
+    }
+
+    pub fn dm_with_user(&self, user_id: String) -> Result<OptionString> {
+        let user_id = UserId::parse(user_id).context("Invalid user id")?;
+        let room_id = self.core.client().get_dm_room(&user_id).map(|x| x.room_id().to_string());
+        Ok(OptionString::new(room_id))
     }
 
     pub fn notifications_stream(&self) -> impl Stream<Item = Notification> {
