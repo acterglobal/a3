@@ -866,7 +866,11 @@ impl Client {
 
     pub fn dm_with_user(&self, user_id: String) -> Result<OptionString> {
         let user_id = UserId::parse(user_id).context("Invalid user id")?;
-        let room_id = self.core.client().get_dm_room(&user_id).map(|x| x.room_id().to_string());
+        let room_id = self
+            .core
+            .client()
+            .get_dm_room(&user_id)
+            .map(|x| x.room_id().to_string());
         Ok(OptionString::new(room_id))
     }
 

@@ -1,8 +1,6 @@
 use acter::{
-    matrix_sdk::config::StoreConfig,
-    ruma_common::OwnedRoomId,
-    testing::ensure_user,
-    Client, CreateSpaceSettingsBuilder, SyncState,
+    matrix_sdk::config::StoreConfig, ruma_common::OwnedRoomId, testing::ensure_user, Client,
+    CreateSpaceSettingsBuilder, SyncState,
 };
 use acter_core::templates::Engine;
 use anyhow::Result;
