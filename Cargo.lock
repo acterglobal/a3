@@ -17,6 +17,7 @@ dependencies = [
  "fern",
  "ffi-gen",
  "ffi-gen-macro",
+ "filesize",
  "futures",
  "futures-signals",
  "lazy_static",
@@ -418,7 +419,7 @@ dependencies = [
  "log",
  "parking",
  "polling",
- "rustix 0.37.22",
+ "rustix 0.37.25",
  "slab",
  "socket2 0.4.9",
  "waker-fn",
@@ -452,7 +453,7 @@ dependencies = [
  "cfg-if",
  "event-listener 2.5.3",
  "futures-lite",
- "rustix 0.37.22",
+ "rustix 0.37.25",
  "signal-hook",
  "windows-sys 0.48.0",
 ]
@@ -1759,6 +1760,15 @@ name = "fiat-crypto"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d0870c84016d4b481be5c9f323c24f65e31e901ae618f0e80f4308fb00de1d2d"
+
+[[package]]
+name = "filesize"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "12d741e2415d4e2e5bd1c1d00409d1a8865a57892c2d689b504365655d237d43"
+dependencies = [
+ "winapi",
+]
 
 [[package]]
 name = "flagset"
@@ -4590,9 +4600,9 @@ dependencies = [
 
 [[package]]
 name = "rustix"
-version = "0.37.22"
+version = "0.37.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8818fa822adcc98b18fedbb3632a6a33213c070556b5aa7c4c8cc21cff565c4c"
+checksum = "d4eb579851244c2c03e7c24f501c3432bed80b8f720af1d6e5b0e0f01555a035"
 dependencies = [
  "bitflags 1.3.2",
  "errno",
@@ -5196,7 +5206,7 @@ dependencies = [
  "cfg-if",
  "fastrand",
  "redox_syscall 0.3.5",
- "rustix 0.37.22",
+ "rustix 0.37.25",
  "windows-sys 0.48.0",
 ]
 
@@ -5237,7 +5247,7 @@ version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8e6bf6f19e9f8ed8d4048dc22981458ebcf406d67e94cd422e5ecd73d63b3237"
 dependencies = [
- "rustix 0.37.22",
+ "rustix 0.37.25",
  "windows-sys 0.48.0",
 ]
 
