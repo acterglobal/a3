@@ -127,9 +127,7 @@ class EmailAddressesPage extends ConsumerWidget {
               children: [
                 const Padding(
                   padding: EdgeInsets.only(right: 10),
-                  child: Icon(
-                    Atlas.envelope_question_thin,
-                  ),
+                  child: Icon(Atlas.envelope_question_thin),
                 ),
                 Text(
                   'Awaiting confirmation',
@@ -226,9 +224,7 @@ class EmailAddressesPage extends ConsumerWidget {
     if (newValue != null) {
       EasyLoading.show(status: 'Requesting token via email');
       try {
-        await manager.requestTokenViaEmail(
-          newValue,
-        );
+        await manager.requestTokenViaEmail(newValue);
         ref.invalidate(emailAddressesProvider);
         EasyLoading.showSuccess(
           'Please check your inbox for the validation email',

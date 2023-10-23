@@ -63,7 +63,7 @@ impl ThreePidManager {
 
     pub async fn request_token_via_email(&self, email_address: String) -> Result<bool> {
         let account = self.account.clone();
-        let secret = ClientSecret::new();
+        let secret = ClientSecret::new(); // make random string that will be exposed to confirmation email
         RUNTIME
             .spawn(async move {
                 let response = account

@@ -62,9 +62,7 @@ class EmailAddressCard extends ConsumerWidget {
                   children: [
                     IconButton(
                       onPressed: () => alreadyConfirmedAddress(context, ref),
-                      icon: const Icon(
-                        Atlas.envelope_check_thin,
-                      ),
+                      icon: const Icon(Atlas.envelope_check_thin),
                     ),
                     PopupMenuButton(
                       itemBuilder: (BuildContext ctx) => <PopupMenuEntry>[
@@ -98,8 +96,9 @@ class EmailAddressCard extends ConsumerWidget {
                             children: [
                               const Icon(Atlas.trash_can_thin),
                               Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                ),
                                 child: Text(
                                   'Remove',
                                   style: Theme.of(ctx).textTheme.labelSmall,
@@ -144,10 +143,7 @@ class EmailAddressCard extends ConsumerWidget {
               if (!context.mounted) {
                 return;
               }
-              Navigator.of(
-                context,
-                rootNavigator: true,
-              ).pop();
+              Navigator.of(context, rootNavigator: true).pop();
             },
             title: 'Yes',
             style: ElevatedButton.styleFrom(
@@ -174,9 +170,7 @@ class EmailAddressCard extends ConsumerWidget {
       try {
         await manager.tryConfirmEmailStatus(emailAddress, newValue);
         ref.invalidate(emailAddressesProvider);
-        EasyLoading.showSuccess(
-          'Looks good. Address confirmed.',
-        );
+        EasyLoading.showSuccess('Looks good. Address confirmed.');
       } catch (e) {
         EasyLoading.showError(
           'Failed to confirm token: $e',
@@ -205,9 +199,7 @@ class EmailAddressCard extends ConsumerWidget {
           newValue.password,
         );
         ref.invalidate(emailAddressesProvider);
-        EasyLoading.showSuccess(
-          'Looks good',
-        );
+        EasyLoading.showSuccess('Looks good');
       } catch (e) {
         EasyLoading.showError(
           'Failed to confirm token: $e',
