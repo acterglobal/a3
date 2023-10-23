@@ -6,7 +6,7 @@ use super::{
 };
 use anyhow::{bail, Context, Result};
 use matrix_sdk::ruma::{
-    api::client::push::{set_pusher, PusherIds, PusherInit, PusherKind},
+    api::client::push::{set_pusher, Pusher as RumaPusher, PusherIds, PusherInit, PusherKind},
     assign,
     push::HttpPusherData,
 };
@@ -14,6 +14,7 @@ use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
     NotificationProcessSetup,
 };
+use ruma::api::client::push::{get_pushers, EmailPusherData};
 use ruma_common::{OwnedEventId, OwnedRoomId};
 
 pub struct NotificationItem {
@@ -78,6 +79,59 @@ impl NotificationItem {
     }
 }
 
+pub struct Pusher {
+    inner: RumaPusher,
+    client: Client,
+}
+
+impl Pusher {
+    fn new(inner: RumaPusher, client: Client) -> Self {
+        Pusher { inner, client }
+    }
+
+    pub fn is_email_pusher(&self) -> bool {
+        matches!(self.inner.kind, PusherKind::Email(_))
+    }
+
+    pub fn pushkey(&self) -> String {
+        self.inner.ids.pushkey.clone()
+    }
+
+    pub fn app_id(&self) -> String {
+        self.inner.ids.app_id.clone()
+    }
+
+    pub fn app_display_name(&self) -> String {
+        self.inner.app_display_name.clone()
+    }
+
+    pub fn device_display_name(&self) -> String {
+        self.inner.device_display_name.clone()
+    }
+
+    pub fn lang(&self) -> String {
+        self.inner.lang.clone()
+    }
+
+    pub fn profile_tag(&self) -> Option<String> {
+        self.inner.profile_tag.clone()
+    }
+
+    pub async fn delete(&self) -> Result<bool> {
+        let client = self.client.core.client().clone();
+        let app_id = self.app_id();
+        let pushkey = self.pushkey();
+        RUNTIME
+            .spawn(async move {
+                // FIXME: how to set `append = true` for single-device-multi-user-support...?!?
+                let request = set_pusher::v3::Request::delete(PusherIds::new(pushkey, app_id));
+                client.send(request, None).await?;
+                Ok(false)
+            })
+            .await?
+    }
+}
+
 impl Client {
     pub async fn get_notification_item(
         &self,
@@ -103,6 +157,51 @@ impl Client {
             })
             .await?
     }
+
+    pub async fn pushers(&self) -> Result<Vec<Pusher>> {
+        let client = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let resp = client
+                    .core
+                    .client()
+                    .send(get_pushers::v3::Request::new(), None)
+                    .await?;
+                Ok(resp
+                    .pushers
+                    .into_iter()
+                    .map(|inner| Pusher::new(inner, client.clone()))
+                    .collect())
+            })
+            .await?
+    }
+
+    pub async fn add_email_pusher(
+        &self,
+        device_name: String,
+        app_name: String,
+        email: String,
+        lang: Option<String>,
+    ) -> Result<bool> {
+        let pusher_data = PusherInit {
+            ids: PusherIds::new(email, "m.email".to_owned()),
+            kind: PusherKind::Email(EmailPusherData::new()),
+            app_display_name: app_name,
+            device_display_name: device_name,
+            profile_tag: None,
+            lang: lang.unwrap_or("en".to_owned()),
+        };
+        let client = self.core.client().clone();
+        RUNTIME
+            .spawn(async move {
+                // FIXME: how to set `append = true` for single-device-multi-user-support...?!?
+                let request = set_pusher::v3::Request::post(pusher_data.into());
+                client.send(request, None).await?;
+                Ok(false)
+            })
+            .await?
+    }
+
     #[allow(clippy::too_many_arguments)]
     pub async fn add_pusher(
         &self,

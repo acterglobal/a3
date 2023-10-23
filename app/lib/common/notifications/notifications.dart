@@ -99,10 +99,11 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
   }
 }
 
-String makeForward(
-    {required String roomId,
-    required String deviceId,
-    required String eventId,}) {
+String makeForward({
+  required String roomId,
+  required String deviceId,
+  required String eventId,
+}) {
   return '/forward?roomId=${Uri.encodeComponent(roomId)}&eventId=${Uri.encodeComponent(eventId)}&deviceId=${Uri.encodeComponent(deviceId)}';
 }
 
@@ -246,7 +247,8 @@ Future<void> initializeNotifications() async {
       return;
     }
     rootNavKey.currentContext!.push(
-        makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId),);
+      makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId),
+    );
   });
 
   // Handle push notifications
@@ -416,32 +418,54 @@ Future<bool> setupPushNotifications(
 }
 
 Future<bool> onNewToken(Client client, String token) async {
-  late String name;
+  final String name = await deviceName();
   late String appId;
   if (Platform.isIOS) {
     // sygnal expects token as a base64 encoded string, but we have a HEX from the plugin
     token = base64.encode(hex.decode(token));
-
-    final iOsInfo = await deviceInfo.iosInfo;
-    name = iOsInfo.name;
     if (isProduction) {
       appId = '$appIdPrefix.ios';
     } else {
       appId = '$appIdPrefix.ios.dev';
     }
   } else if (Platform.isAndroid) {
-    final androidInfo = await deviceInfo.androidInfo;
-    name =
-        androidInfo.device; // FIXME: confirm this is what we actually want?!?
     appId = '$appIdPrefix.android';
   }
 
   await client.addPusher(
-      appId, token, name, appName, pushServerUrl, Platform.isIOS, null,);
+    appId,
+    token,
+    name,
+    appName,
+    pushServerUrl,
+    Platform.isIOS,
+    null,
+  );
 
   debugPrint(
     ' ---- notification pusher sent: $appName ($appId) on $name ($token) to $pushServerUrl',
   );
 
   return true;
+}
+
+Future<String> deviceName() async {
+  if (Platform.isIOS) {
+    final iOsInfo = await deviceInfo.iosInfo;
+    return iOsInfo.name;
+  } else if (Platform.isAndroid) {
+    final androidInfo = await deviceInfo.androidInfo;
+    return androidInfo.device;
+  } else if (Platform.isMacOS) {
+    final info = await deviceInfo.macOsInfo;
+    return info.computerName;
+  } else if (Platform.isLinux) {
+    final info = await deviceInfo.linuxInfo;
+    return info.prettyName;
+  } else if (Platform.isWindows) {
+    final info = await deviceInfo.windowsInfo;
+    return info.computerName;
+  } else {
+    return '(unknown)';
+  }
 }

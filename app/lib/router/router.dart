@@ -39,6 +39,7 @@ import 'package:acter/features/settings/pages/index_page.dart';
 import 'package:acter/features/settings/pages/info_page.dart';
 import 'package:acter/features/settings/pages/labs_page.dart';
 import 'package:acter/features/settings/pages/licenses_page.dart';
+import 'package:acter/features/settings/pages/notifications_page.dart';
 import 'package:acter/features/settings/pages/sessions_page.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/pages/events_page.dart';
@@ -113,8 +114,10 @@ Future<String?> forwardRedirect(
     final client = await acterSdk.getClientWithDeviceId(deviceId!);
     if (await client.hasConvo(roomId!)) {
       // this is a chat
-      return state.namedLocation(Routes.chatroom.name,
-          pathParameters: {'roomId': roomId});
+      return state.namedLocation(
+        Routes.chatroom.name,
+        pathParameters: {'roomId': roomId},
+      );
     } else {
       // final eventId = state.uri.queryParameters['eventId'];
       // with the event ID or further information we could figure out the specific action
@@ -196,8 +199,9 @@ List<RouteBase> makeRoutes(Ref ref) {
       name: Routes.fatalFail.name,
       path: Routes.fatalFail.route,
       builder: (context, state) => FatalFailPage(
-          error: state.uri.queryParameters['error']!,
-          trace: state.uri.queryParameters['trace']!),
+        error: state.uri.queryParameters['error']!,
+        trace: state.uri.queryParameters['trace']!,
+      ),
     ),
     GoRoute(
       parentNavigatorKey: rootNavKey,
@@ -707,6 +711,17 @@ List<RouteBase> makeRoutes(Ref ref) {
             return NoTransitionPage(
               key: state.pageKey,
               child: const SettingsLabsPage(),
+            );
+          },
+        ),
+        GoRoute(
+          name: Routes.settingNotifications.name,
+          path: Routes.settingNotifications.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: const NotificationsSettingsPage(),
             );
           },
         ),
