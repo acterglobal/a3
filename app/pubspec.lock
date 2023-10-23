@@ -705,9 +705,9 @@ packages:
     dependency: "direct overridden"
     description:
       path: flutter_secure_storage_macos
-      ref: patch-1
-      resolved-ref: "5afb6d061325a9682214ada625a616e54b6cfb0e"
-      url: "https://github.com/gnunicorn/flutter_secure_storage"
+      ref: develop
+      resolved-ref: "3bb93366161a787b07c45d8ce98c7405b40fbf1f"
+      url: "https://github.com/mogol/flutter_secure_storage"
     source: git
     version: "3.0.1"
   flutter_secure_storage_platform_interface:
