@@ -111,7 +111,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     trailing:
                         currentPw != null ? Text(pwText) : Text(defaultDesc),
                     onPressed: (context) async {
-                      final newPowerLevel = await showDialog<int>(
+                      final newPowerLevel = await showDialog<int?>(
                         context: context,
                         builder: (BuildContext context) => ChangePowerLevel(
                           featureName: 'Updates',
@@ -164,7 +164,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     trailing:
                         currentPw != null ? Text(pwText) : Text(defaultDesc),
                     onPressed: (context) async {
-                      final newPowerLevel = await showDialog<int>(
+                      final newPowerLevel = await showDialog<int?>(
                         context: context,
                         builder: (BuildContext context) => ChangePowerLevel(
                           featureName: 'Pin',
@@ -217,7 +217,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     trailing:
                         currentPw != null ? Text(pwText) : Text(defaultDesc),
                     onPressed: (context) async {
-                      final newPowerLevel = await showDialog<int>(
+                      final newPowerLevel = await showDialog<int?>(
                         context: context,
                         builder: (BuildContext context) => ChangePowerLevel(
                           featureName: 'Calendar Events',
@@ -446,6 +446,7 @@ class ChangePowerLevel extends StatefulWidget {
   final String featureName;
   final int? currentPowerLevel;
   final String currentPowerLevelName;
+
   const ChangePowerLevel({
     Key? key,
     required this.featureName,
