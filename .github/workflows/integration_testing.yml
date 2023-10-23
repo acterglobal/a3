@@ -24,6 +24,12 @@ jobs:
           toolchain: nightly-2023-04-10
           override: true
 
+      - uses: jlumbroso/free-disk-space@main
+        name: Free Disk Space (Ubuntu)
+        with:
+          tool-cache: false
+          large-packages: false # keep clang around
+
       - uses: actions/setup-python@v4
         with:
           python-version: 3.8

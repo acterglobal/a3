@@ -73,6 +73,9 @@ pub struct ClientState {
 
     #[builder(default)]
     pub should_stop_syncing: bool,
+
+    #[builder(default)]
+    pub db_passphrase: Option<String>,
 }
 
 #[derive(Clone, Debug)]
@@ -770,9 +773,9 @@ impl Client {
     pub async fn restore_token(&self) -> Result<String> {
         let session = self.session().context("Missing session")?;
         let homeurl = self.homeserver();
-        let is_guest = match self.state.try_read() {
-            Ok(r) => r.is_guest,
-            Err(e) => false,
+        let (is_guest, db_passphrase) = {
+            let state = self.state.try_read()?;
+            (state.is_guest, state.db_passphrase.clone())
         };
         let result = serde_json::to_string(&RestoreToken {
             session: CustomAuthSession {
@@ -782,6 +785,7 @@ impl Client {
             },
             homeurl,
             is_guest,
+            db_passphrase,
         })?;
         Ok(result)
     }

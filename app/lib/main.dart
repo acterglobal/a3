@@ -40,9 +40,6 @@ Future<void> startAppInner() async {
 }
 
 class Acter extends ConsumerStatefulWidget {
-  static const String name = 'Awesome Notifications - Example App';
-  static const Color mainColor = Colors.deepPurple;
-
   const Acter({super.key});
 
   @override
@@ -53,13 +50,11 @@ class _ActerState extends ConsumerState<Acter> {
   @override
   void initState() {
     super.initState();
-    setupNotificationsListeners();
   }
 
   @override
   Widget build(BuildContext context) {
     final appRouter = ref.watch(goRouterProvider);
-    requestNotificationsPermissions();
     return Portal(
       child: OverlaySupport.global(
         child: MaterialApp.router(

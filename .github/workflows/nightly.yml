@@ -256,6 +256,7 @@ jobs:
         run: |
           flutter ${{ matrix.flutter_build_args }} \
             --dart-define VERSION_NAME="Nightly+${{ needs.tags.outputs.tag }}" \
+            --dart-define PUSH_SERVER="${{ secrets.PUSH_SERVER }}" \
             --dart-define RAGESHAKE_URL="${{ secrets.RAGESHAKE_URL }}" \
             --dart-define RAGESHAKE_APP_NAME="${{ secrets.RAGESHAKE_APP_NAME_NIGHTLY }}" \
             --dart-define RAGESHAKE_APP_VERSION="Nightly-${{ needs.tags.outputs.tag }}/${{ matrix.name }}" \

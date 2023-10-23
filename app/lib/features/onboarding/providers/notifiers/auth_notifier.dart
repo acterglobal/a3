@@ -3,6 +3,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -11,6 +12,21 @@ class AuthStateNotifier extends StateNotifier<bool> {
   final Ref ref;
 
   AuthStateNotifier(this.ref) : super(false);
+
+  Future<void> nuke(BuildContext context) async {
+    await ActerSdk.nuke();
+
+    final loggedInNotifier = ref.read(isLoggedInProvider.notifier);
+
+    loggedInNotifier.update((state) => false);
+    ref.invalidate(spacesProvider);
+
+    // We are doing as expected, but the lints triggers.
+    // ignore: use_build_context_synchronously
+    if (context.mounted) {
+      context.goNamed(Routes.main.name);
+    }
+  }
 
   Future<String?> login(String username, String password) async {
     state = true;

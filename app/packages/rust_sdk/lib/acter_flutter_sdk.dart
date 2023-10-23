@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:core';
+import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:ffi';
 import 'dart:io';
@@ -10,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 export './acter_flutter_sdk_ffi.dart' show Client;
@@ -18,7 +20,7 @@ const rustLogKey = 'RUST_LOG';
 
 const defaultServerUrl = String.fromEnvironment(
   'DEFAULT_HOMESERVER_URL',
-  defaultValue: 'https://m-1.acter.global',
+  defaultValue: 'https://matrix.m-1.acter.global',
 );
 
 const defaultServerName = String.fromEnvironment(
@@ -35,6 +37,14 @@ const defaultSessionKey = String.fromEnvironment(
   'DEFAULT_ACTER_SESSION',
   defaultValue: 'sessions',
 );
+
+// allows us to use a different AppGroup Section to store
+// the app group under
+const appleKeychainAppGroupName = String.fromEnvironment(
+  'APPLE_KEYCHAIN_APP_GROUP_NAME',
+  defaultValue: 'V45JGKTC6K.global.acter.a3',
+);
+
 
 // ex: a3-nightly or acter-linux
 const appName = String.fromEnvironment(
@@ -66,6 +76,7 @@ Color convertColor(ffi.EfkColor? primary, Color fallback) {
 
 Completer<SharedPreferences>? _sharedPrefCompl;
 Completer<String>? _appDirCompl;
+Completer<ActerSdk>? _unrestoredInstanceCompl;
 Completer<ActerSdk>? _instanceCompl;
 
 Future<String> appDir() async {
@@ -137,6 +148,20 @@ DateTime toDartDatetime(ffi.UtcDateTime dt) {
   return DateTime.fromMillisecondsSinceEpoch(dt.timestampMillis(), isUtc: true);
 }
 
+const aOptions = AndroidOptions(
+  encryptedSharedPreferences: true,
+  preferencesKeyPrefix: isDevBuild ? 'dev.flutter' : null,
+);
+const iOptions = IOSOptions(
+  synchronizable: true,
+  accessibility: KeychainAccessibility.first_unlock,   // must have been unlocked since reboot
+  groupId: appleKeychainAppGroupName,                  // to allow the background process to access the same store
+);
+const mOptions = MacOsOptions(
+  synchronizable: true,
+  accessibility: KeychainAccessibility.first_unlock,   // must have been unlocked since reboot
+  groupId: appleKeychainAppGroupName,                  // to allow the background process to access the same store
+);
 class ActerSdk {
   late final ffi.Api _api;
   static String _sessionKey = defaultSessionKey;
@@ -144,26 +169,76 @@ class ActerSdk {
   static final List<ffi.Client> _clients = [];
   static const platform = MethodChannel('acter_flutter_sdk');
 
+  
+  static FlutterSecureStorage storage = const FlutterSecureStorage(
+    aOptions: aOptions,
+      iOptions: iOptions,
+      mOptions: mOptions,
+  );
+
   ActerSdk._(this._api);
 
   Future<void> _persistSessions() async {
     List<String> sessions = [];
     for (final c in _clients) {
+      String deviceId = c.deviceId().toString();
       String token = await c.restoreToken();
-      sessions.add(token);
+      await storage.write(key: deviceId, value: token);
+      sessions.add(deviceId);
     }
-    debugPrint('setting sessions: $sessions');
-    SharedPreferences prefs = await sharedPrefs();
-    await prefs.setStringList(_sessionKey, sessions);
-    await prefs.setInt('$_sessionKey::currentClientIdx', _index);
+    await storage.write(key: _sessionKey, value: json.encode(sessions));
+    await storage.write(key: '$_sessionKey::currentClientIdx', value: '$_index');
+    debugPrint('session stored: $sessions');
   }
 
   static Future<void> resetSessionsAndClients(String sessionKey) async {
     await _unrestoredInstance;
     _clients.clear();
     _sessionKey = sessionKey;
+    await storage.write(key: _sessionKey, value: json.encode([]));
+  }
+
+
+  Future<ffi.Client> getClientWithDeviceId(
+    String deviceId,
+  ) async {
+    ffi.Client? client;
+    for (final c in _clients) {
+      if (c.deviceId().toString() == deviceId) {
+        client = c;
+        break;
+      }
+    }
+    if (client == null) {
+      throw 'Unknown client $deviceId';
+    }
+
+    return client;
+  }
+
+  Future<ffi.NotificationItem> getNotificationFor(
+    String deviceId,
+    String roomId,
+    String eventId,
+  ) async {
+    final client = await getClientWithDeviceId(deviceId);
+    return await client.getNotificationItem(roomId, eventId);
+  }
+
+  Future<void> _maybeMigrateFromPrefs(appDocPath) async {
     SharedPreferences prefs = await sharedPrefs();
-    await prefs.setStringList(_sessionKey, []);
+    List<String> sessions = (prefs.getStringList(_sessionKey) ?? []);
+    for (final token in sessions) {
+      ffi.Client client = await _api.loginWithToken(appDocPath, token);
+      _clients.add(client);
+    }
+    _index = prefs.getInt('$_sessionKey::currentClientIdx') ?? 0;
+    debugPrint('Migrated $_clients');
+
+    await _persistSessions();
+    // then destroy the old records.
+    await prefs.remove(_sessionKey);
+    await prefs.remove('$_sessionKey::currentClientIdx');
   }
 
   Future<void> _restore() async {
@@ -172,15 +247,38 @@ class ActerSdk {
       return;
     }
     String appDocPath = await appDir();
-    debugPrint('loading configuration from $appDocPath');
-    SharedPreferences prefs = await sharedPrefs();
-    List<String> sessions = (prefs.getStringList(_sessionKey) ?? []);
-    for (final token in sessions) {
-      ffi.Client client = await _api.loginWithToken(appDocPath, token);
-      _clients.add(client);
+    int delayedCounter = 0;
+    while (!await storage.isCupertinoProtectedDataAvailable()) {
+      if (delayedCounter > 10) {
+        throw 'Secure Store not available';
+      }
+      delayedCounter += 1;
+      debugPrint("Secure Storage isn't available yet. Delaying");
+      await Future.delayed(const Duration(milliseconds: 50));
     }
-    _index = prefs.getInt('$_sessionKey::currentClientIdx') ?? 0;
-    debugPrint('Restored $_clients');
+    debugPrint('Secure Storage is available. Attempting to read.');
+    if (!await storage.containsKey(key: _sessionKey)) {
+      // not yet set. let's see if we maybe want to migrate instead:
+      await _maybeMigrateFromPrefs(appDocPath);
+      return;
+    }
+
+    final sessionsStr = await storage.read(key: _sessionKey);
+    if (sessionsStr != null) {
+      final List<dynamic> sessionKeys = json.decode(sessionsStr);
+      for (final deviceId in sessionKeys) {
+        final token = await storage.read(key: deviceId as String);
+        if (token != null) {
+          ffi.Client client = await _api.loginWithToken(appDocPath, token);
+          _clients.add(client);
+        } else {
+          debugPrint('$deviceId not found. despite in session list');
+        }
+      }
+      _index = int.tryParse(await storage.read(key: '$_sessionKey::currentClientIdx') ?? '0') ?? 0;
+    }
+    debugPrint('loading configuration from $appDocPath');
+    debugPrint('restored $_clients');
   }
 
   ffi.Client? get currentClient {
@@ -249,6 +347,29 @@ class ActerSdk {
     }
   }
 
+  static Future<void> nuke() async {
+    final instance = await _unrestoredInstance;
+    await instance._nuke();
+  }
+
+  Future<void> _nuke() async {
+    String appDocPath = await appDir();
+    for (var cl in _clients) {
+      try {
+        final userId = cl.userId().toString();
+        await cl.logout();
+        await _api.destroyLocalData(appDocPath, userId, defaultServerName);
+      } catch (e) {
+        debugPrint('Error logging out: $e');
+      }
+    }
+
+    _clients.clear();
+    await _persistSessions();
+    // and destroy everything that is left.
+    Directory(appDocPath).delete(recursive: true);
+  }
+
   static Future<ActerSdk> _unrestoredInstanceInner() async {
     final api = Platform.isAndroid
         ? ffi.Api(await _getAndroidDynLib('libacter.so'))
@@ -267,21 +388,36 @@ class ActerSdk {
       );
     }
     final instance = ActerSdk._(api);
-    await instance._restore();
     return instance;
   }
 
   static Future<ActerSdk> get _unrestoredInstance async {
-    if (_instanceCompl == null) {
+    if (_unrestoredInstanceCompl == null) {
       Completer<ActerSdk> completer = Completer();
       completer.complete(_unrestoredInstanceInner());
+      _unrestoredInstanceCompl = completer;
+    }
+    return _unrestoredInstanceCompl!.future;
+  }
+
+  static Future<ActerSdk> _restoredInstanceInner() async {
+    final instance = await _unrestoredInstance;
+    await instance._restore();
+    return instance;
+  }
+
+  static Future<ActerSdk> get _restoredInstance async {
+    if (_instanceCompl == null) {
+      Completer<ActerSdk> completer = Completer();
+      completer.complete(_restoredInstanceInner());
       _instanceCompl = completer;
     }
     return _instanceCompl!.future;
   }
 
+
   static Future<ActerSdk> get instance async {
-    return await _unrestoredInstance;
+    return await _restoredInstance;
   }
 
   Future<ffi.Client> login(String username, String password) async {

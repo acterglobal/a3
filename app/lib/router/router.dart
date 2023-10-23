@@ -1,4 +1,5 @@
 import 'package:acter/common/dialogs/invite_to_room_dialog.dart';
+import 'package:acter/common/pages/fatal_fail.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
@@ -65,16 +66,24 @@ Future<String?> authGuardRedirect(
   BuildContext context,
   GoRouterState state,
 ) async {
-  final acterSdk = await ActerSdk.instance;
-  if (acterSdk.hasClients) {
-    // we are all fine, we have a client, do go on.
-    return null;
-  }
+  try {
+    final acterSdk = await ActerSdk.instance;
+    if (acterSdk.hasClients) {
+      // we are all fine, we have a client, do go on.
+      return null;
+    }
 
-  if (autoGuestLogin) {
-    // if compiled with auto-guest-login, create an account
-    await acterSdk.newGuestClient(setAsCurrent: true);
-    return null;
+    if (autoGuestLogin) {
+      // if compiled with auto-guest-login, create an account
+      await acterSdk.newGuestClient(setAsCurrent: true);
+      return null;
+    }
+  } catch (error, trace) {
+    // ignore: deprecated_member_use
+    return state.namedLocation(
+      Routes.fatalFail.name,
+      queryParameters: {'error': error.toString(), 'trace': trace.toString()},
+    );
   }
 
   // no client found yet, send user to fresh login
@@ -87,6 +96,38 @@ Future<String?> authGuardRedirect(
     Routes.start.name,
     queryParameters: {'next': next},
   );
+}
+
+Future<String?> forwardRedirect(
+  BuildContext context,
+  GoRouterState state,
+) async {
+  try {
+    final acterSdk = await ActerSdk.instance;
+    if (!acterSdk.hasClients) {
+      // we are not logged in.
+      return null;
+    }
+    final deviceId = state.uri.queryParameters['deviceId'];
+    final roomId = state.uri.queryParameters['roomId'];
+    final client = await acterSdk.getClientWithDeviceId(deviceId!);
+    if (await client.hasConvo(roomId!)) {
+      // this is a chat
+      return state.namedLocation(Routes.chatroom.name,
+          pathParameters: {'roomId': roomId});
+    } else {
+      // final eventId = state.uri.queryParameters['eventId'];
+      // with the event ID or further information we could figure out the specific action
+      return state
+          .namedLocation(Routes.space.name, pathParameters: {'roomId': roomId});
+    }
+  } catch (error, trace) {
+    // ignore: deprecated_member_use
+    return state.namedLocation(
+      Routes.fatalFail.name,
+      queryParameters: {'error': error.toString(), 'trace': trace.toString()},
+    );
+  }
 }
 
 final GlobalKey<NavigatorState> rootNavKey = GlobalKey<NavigatorState>(
@@ -109,6 +150,12 @@ List<RouteBase> makeRoutes(Ref ref) {
   final tabKeyNotifier = ref.watch(selectedTabKeyProvider.notifier);
   final selectedChatNotifier = ref.watch(selectedChatIdProvider.notifier);
   return [
+    GoRoute(
+      name: Routes.forward.name,
+      path: Routes.forward.route,
+      redirect: forwardRedirect,
+    ),
+
     GoRoute(
       name: Routes.intro.name,
       path: Routes.intro.route,
@@ -143,6 +190,14 @@ List<RouteBase> makeRoutes(Ref ref) {
           imagePath: state.uri.queryParameters['screenshot'],
         ),
       ),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.fatalFail.name,
+      path: Routes.fatalFail.route,
+      builder: (context, state) => FatalFailPage(
+          error: state.uri.queryParameters['error']!,
+          trace: state.uri.queryParameters['trace']!),
     ),
     GoRoute(
       parentNavigatorKey: rootNavKey,

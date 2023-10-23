@@ -1827,6 +1827,23 @@ object NotificationListResult {
     fn notifications() -> Future<Result<Vec<Notification>>>;
 }
 
+// converting a room_id+event_id into the notification item to show
+// from push context.
+object NotificationItem {
+    fn is_invite() -> bool;
+    fn room_message() -> Option<RoomMessage>;
+    fn sender_display_name() -> Option<string>;
+    fn sender_avatar_url() -> Option<string>;
+    fn room_display_name() -> string;
+    fn room_avatar_url() -> Option<string>;
+    fn room_canonical_alias() -> Option<string>;
+    fn is_room_encrypted() -> Option<bool>;
+    fn is_direct_message_room() -> bool;
+    fn is_noisy() -> Option<bool>;
+    fn joined_members_count() -> u64;
+
+}
+
 /// make convo settings builder
 fn new_convo_settings_builder() -> CreateConvoSettingsBuilder;
 
@@ -1928,6 +1945,9 @@ object Client {
 
     /// get convo room
     fn convo(room_id_or_alias: string) -> Future<Result<Convo>>;
+
+    /// has convo room
+    fn has_convo(room_id: string) -> Future<bool>;
 
     /// get convo room of retry 250ms for retry times
     fn convo_with_retry(room_id_or_alias: string, retry: u8) -> Future<Result<Convo>>;
@@ -2054,6 +2074,11 @@ object Client {
     /// listen to incoming notifications
     fn notifications_stream() -> Stream<Notification>;
 
+    /// add another http pusher to the notification system
+    fn add_pusher(app_id: string, token: string, device_name: string, app_name: string, server_url: string, with_ios_default: bool, lang: Option<string>) -> Future<Result<bool>>;
+
+    /// getting a notification item from the notification data;
+    fn get_notification_item(room_id: string, event_id: string) -> Future<Result<NotificationItem>>;
     /// get all upcoming events, whether I responded or not
     fn all_upcoming_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
 
