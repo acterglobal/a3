@@ -48,9 +48,7 @@ mod verification;
 
 pub use account::Account;
 pub use acter_core::{
-    events::{
-        news::NewsContent, three_pid::ThreePidRecord, Colorize, ObjRef, RefDetails, UtcDateTime,
-    },
+    events::{news::NewsContent, Colorize, ObjRef, RefDetails, UtcDateTime},
     models::{ActerModel, Color as EfkColor, Tag, TextMessageContent},
 };
 pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
