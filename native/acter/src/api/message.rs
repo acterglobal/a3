@@ -5,7 +5,7 @@ use matrix_sdk_ui::timeline::{
     EventSendState, EventTimelineItem, MembershipChange, TimelineItem, TimelineItemContent,
     TimelineItemKind, VirtualTimelineItem,
 };
-use ruma_common::{serde::Raw, OwnedEventId, OwnedRoomId, OwnedUserId};
+use ruma_common::{serde::Raw, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId};
 use ruma_events::{
     call::{
         answer::{OriginalCallAnswerEvent, OriginalSyncCallAnswerEvent},
@@ -78,9 +78,40 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Deref, sync::Arc};
 use tracing::info;
 
-use super::common::{
-    AudioDesc, FileDesc, ImageDesc, LocationDesc, ReactionRecord, TextDesc, VideoDesc,
-};
+use super::common::{AudioDesc, FileDesc, ImageDesc, LocationDesc, TextDesc, VideoDesc};
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ReactionRecord {
+    sender_id: OwnedUserId,
+    timestamp: MilliSecondsSinceUnixEpoch,
+    sent_by_me: bool,
+}
+
+impl ReactionRecord {
+    pub(crate) fn new(
+        sender_id: OwnedUserId,
+        timestamp: MilliSecondsSinceUnixEpoch,
+        sent_by_me: bool,
+    ) -> Self {
+        ReactionRecord {
+            sender_id,
+            timestamp,
+            sent_by_me,
+        }
+    }
+
+    pub fn sender_id(&self) -> OwnedUserId {
+        self.sender_id.clone()
+    }
+
+    pub fn sent_by_me(&self) -> bool {
+        self.sent_by_me
+    }
+
+    pub fn timestamp(&self) -> u64 {
+        self.timestamp.get().into()
+    }
+}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct RoomEventItem {
