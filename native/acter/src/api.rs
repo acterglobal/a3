@@ -33,6 +33,7 @@ mod news;
 mod notifications;
 mod pins;
 mod profile;
+mod push;
 mod receipt;
 mod room;
 mod rsvp;
@@ -44,6 +45,12 @@ mod tasks;
 mod typing;
 mod utils;
 mod verification;
+
+#[cfg(feature = "uniffi")]
+mod uniffi_api;
+
+#[cfg(feature = "uniffi")]
+pub use uniffi_api::*;
 
 pub use account::Account;
 pub use acter_core::{
@@ -74,6 +81,7 @@ pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide};
 pub use notifications::{Notification, NotificationListResult};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
+pub use push::{NotificationItem, Pusher};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{
     Member, MemberPermission, MembershipStatus, Room, SpaceHierarchyListResult,

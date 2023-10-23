@@ -110,10 +110,52 @@ dependencies:
   flutter_onboarding_slider: ^1.0.9
   riverpod_infinite_scroll: ^1.0.9
   infinite_scroll_pagination: ^3.2.0
+  convert: ^3.1.1
+  push: ^1.0.5
   logging: ^1.2.0
   args: ^2.4.2
   breadcrumbs: ^0.1.0
+  device_info_plus: ^9.0.3
   great_list_view: ^0.2.3
+  flutter_local_notifications: ^16.0.0
+  email_validator: ^2.1.17
+
+
+# FIXME keep until a new version has been published
+dependency_overrides:
+  flutter_secure_storage:
+    git:
+      url: https://github.com/mogol/flutter_secure_storage
+      path: flutter_secure_storage
+      ref: develop
+  flutter_secure_storage_linux:
+    git:
+      url: https://github.com/mogol/flutter_secure_storage
+      path: flutter_secure_storage_linux
+      ref: develop
+
+  flutter_secure_storage_web:
+    git:
+      url: https://github.com/mogol/flutter_secure_storage
+      path: flutter_secure_storage_web
+      ref: develop
+
+  flutter_secure_storage_windows:
+    git:
+      url: https://github.com/mogol/flutter_secure_storage
+      path: flutter_secure_storage_windows
+      ref: develop
+  flutter_secure_storage_macos:
+    git:
+      url: https://github.com/mogol/flutter_secure_storage
+      path: flutter_secure_storage_macos
+      ref: develop
+
+  flutter_secure_storage_platform_interface:
+    git:
+      url: https://github.com/mogol/flutter_secure_storage
+      path: flutter_secure_storage_platform_interface
+      ref: develop
 
 dev_dependencies:
   flutter_test:

@@ -92,13 +92,14 @@ async fn kyra_can_restore() -> Result<()> {
     let tmp_dir = TempDir::new()?;
     let base_path = tmp_dir.path().to_str().expect("always works").to_string();
     let (config, user_id) =
-        make_client_config(base_path, "@kyra", &homeserver_name, &homeserver_url).await?;
+        make_client_config(base_path, "@kyra", None, &homeserver_name, &homeserver_url).await?;
 
     let (token, user_id) = {
         let client = login_new_client_under_config(
             config.clone(),
             user_id,
             default_user_password("kyra"),
+            None,
             Some("KYRA_DEV".to_string()),
         )
         .await?;
@@ -106,7 +107,7 @@ async fn kyra_can_restore() -> Result<()> {
         let user_id = client
             .user_id()
             .expect("username missing after login. weird");
-        (token, user_id)
+        (serde_json::from_str(&token)?, user_id)
     };
 
     let client = login_with_token_under_config(token, config).await?;
@@ -117,6 +118,50 @@ async fn kyra_can_restore() -> Result<()> {
     Ok(())
 }
 
+#[tokio::test]
+async fn kyra_can_restore_with_db_passphrase() -> Result<()> {
+    let _ = env_logger::try_init();
+    let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME")
+        .unwrap_or("localhost")
+        .to_string();
+    let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL")
+        .unwrap_or("http://localhost:8118")
+        .to_string();
+    let tmp_dir = TempDir::new()?;
+    let base_path = tmp_dir.path().to_str().expect("always works").to_string();
+    let db_passphrase = uuid::Uuid::new_v4().to_string();
+    let (config, user_id) = make_client_config(
+        base_path,
+        "@kyra",
+        Some(db_passphrase.clone()),
+        &homeserver_name,
+        &homeserver_url,
+    )
+    .await?;
+
+    let (token, user_id) = {
+        let client = login_new_client_under_config(
+            config.clone(),
+            user_id,
+            default_user_password("kyra"),
+            Some(db_passphrase),
+            Some("KYRA_DEV".to_string()),
+        )
+        .await?;
+        let token = client.restore_token().await?;
+        let user_id = client
+            .user_id()
+            .expect("username missing after login. weird");
+        (serde_json::from_str(&token)?, user_id)
+    };
+
+    let client = login_with_token_under_config(token, config).await?;
+    let uid = client
+        .user_id()
+        .expect("Login by token with db_passphrase seems to be not working");
+    assert_eq!(uid, user_id);
+    Ok(())
+}
 #[tokio::test]
 async fn can_deactivate_user() -> Result<()> {
     let _ = env_logger::try_init();

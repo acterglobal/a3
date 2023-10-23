@@ -1,4 +1,4 @@
-import 'package:acter/common/widgets/error.dart';
+import 'package:acter/common/pages/not_found.dart';
 import 'package:acter/router/providers/notifiers/router_notifier.dart';
 import 'package:acter/router/router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,7 +12,7 @@ final routerNotifierProvider = AsyncNotifierProvider<RouterNotifier, void>(() {
 final goRouterProvider = Provider<GoRouter>((ref) {
   final notifier = ref.watch(routerNotifierProvider.notifier);
   return GoRouter(
-    errorBuilder: (context, state) => ErrorPage(routerState: state),
+    errorBuilder: (context, state) => NotFoundPage(routerState: state),
     navigatorKey: rootNavKey,
     refreshListenable: notifier,
     initialLocation: '/',

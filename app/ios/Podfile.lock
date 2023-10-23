@@ -1,12 +1,11 @@
 PODS:
   - acter_flutter_sdk (0.0.1):
     - Flutter
-  - awesome_notifications (0.7.5-acter.main.0):
-    - Flutter
-    - IosAwnCore (= 0.7.5-dev.3)
   - connectivity_plus (0.0.1):
     - Flutter
     - ReachabilitySwift
+  - device_info_plus (0.0.1):
+    - Flutter
   - DKImagePickerController/Core (4.3.4):
     - DKImagePickerController/ImageDataManager
     - DKImagePickerController/Resource
@@ -46,6 +45,10 @@ PODS:
   - Flutter (1.0.0)
   - flutter_keyboard_visibility (0.0.1):
     - Flutter
+  - flutter_local_notifications (0.0.1):
+    - Flutter
+  - flutter_secure_storage (6.0.0):
+    - Flutter
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
@@ -53,13 +56,12 @@ PODS:
     - Flutter
   - integration_test (0.0.1):
     - Flutter
-  - IosAwnCore (0.7.5-dev.3)
   - package_info (0.0.1):
     - Flutter
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - permission_handler_apple (9.1.1):
+  - push_ios (0.0.1):
     - Flutter
   - ReachabilitySwift (5.0.0)
   - SDWebImage (5.13.0):
@@ -79,17 +81,19 @@ PODS:
 
 DEPENDENCIES:
   - acter_flutter_sdk (from `.symlinks/plugins/acter_flutter_sdk/ios`)
-  - awesome_notifications (from `.symlinks/plugins/awesome_notifications/ios`)
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
+  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - emoji_picker_flutter (from `.symlinks/plugins/emoji_picker_flutter/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
   - flutter_keyboard_visibility (from `.symlinks/plugins/flutter_keyboard_visibility/ios`)
+  - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
+  - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
-  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - push_ios (from `.symlinks/plugins/push_ios/ios`)
   - sensors_plus (from `.symlinks/plugins/sensors_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
@@ -100,7 +104,6 @@ SPEC REPOS:
     - DKImagePickerController
     - DKPhotoGallery
     - FMDB
-    - IosAwnCore
     - ReachabilitySwift
     - SDWebImage
     - SwiftyGif
@@ -108,10 +111,10 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   acter_flutter_sdk:
     :path: ".symlinks/plugins/acter_flutter_sdk/ios"
-  awesome_notifications:
-    :path: ".symlinks/plugins/awesome_notifications/ios"
   connectivity_plus:
     :path: ".symlinks/plugins/connectivity_plus/ios"
+  device_info_plus:
+    :path: ".symlinks/plugins/device_info_plus/ios"
   emoji_picker_flutter:
     :path: ".symlinks/plugins/emoji_picker_flutter/ios"
   file_picker:
@@ -120,6 +123,10 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_keyboard_visibility:
     :path: ".symlinks/plugins/flutter_keyboard_visibility/ios"
+  flutter_local_notifications:
+    :path: ".symlinks/plugins/flutter_local_notifications/ios"
+  flutter_secure_storage:
+    :path: ".symlinks/plugins/flutter_secure_storage/ios"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   integration_test:
@@ -128,8 +135,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/package_info/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
-  permission_handler_apple:
-    :path: ".symlinks/plugins/permission_handler_apple/ios"
+  push_ios:
+    :path: ".symlinks/plugins/push_ios/ios"
   sensors_plus:
     :path: ".symlinks/plugins/sensors_plus/ios"
   shared_preferences_foundation:
@@ -141,21 +148,22 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   acter_flutter_sdk: e60481171e46975418babb7d0ec8809eaacaaa03
-  awesome_notifications: c22a6c114c5417757db76120dc845876308b67dc
   connectivity_plus: 07c49e96d7fc92bc9920617b83238c4d178b446a
+  device_info_plus: 7545d84d8d1b896cb16a4ff98c19f07ec4b298ea
   DKImagePickerController: b512c28220a2b8ac7419f21c491fc8534b7601ac
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
   emoji_picker_flutter: df19dac03a2b39ac667dc8d1da939ef3a9e21347
   file_picker: ce3938a0df3cc1ef404671531facef740d03f920
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
+  flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
+  flutter_secure_storage: 23fc622d89d073675f2eaa109381aefbcf5a49be
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   image_picker_ios: 4a8aadfbb6dc30ad5141a2ce3832af9214a705b5
   integration_test: 13825b8a9334a850581300559b8839134b124670
-  IosAwnCore: edf31913fd18960ebcde7c05912dc860ca2b63b2
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
-  permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
+  push_ios: 2bd1b4d3f782209da1f571db1250af236957e807
   ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
   SDWebImage: 0327043dbb9533e75f2eff8445b3df0f2ceca6ac
   sensors_plus: 5717760720f7e6acd96fdbd75b7428f5ad755ec2
@@ -166,4 +174,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: ef19549a9bc3046e7bb7d2fab4d021637c0c58a3
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.13.0
