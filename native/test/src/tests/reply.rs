@@ -1,6 +1,6 @@
 use acter::{
     api::login_new_client,
-    matrix_sdk::ruma::events::{AnyMessageLikeEvent, AnyTimelineEvent, MessageLikeEvent},
+    ruma_events::{AnyMessageLikeEvent, AnyTimelineEvent, MessageLikeEvent},
 };
 use anyhow::{bail, Result};
 use futures::stream::StreamExt;

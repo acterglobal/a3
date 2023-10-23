@@ -1,12 +1,15 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
 import 'package:acter/common/widgets/chat/loading_convo_card.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -44,6 +47,8 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
     final client = ref.watch(clientProvider);
     String roomId = widget.room.getRoomIdStr();
     final convoProfile = ref.watch(chatProfileDataProvider(widget.room));
+    final mutedStatus =
+        ref.watch(roomIsMutedProvider(widget.room.getRoomIdStr()));
     final latestMsg = ref.watch(latestMessageProvider(widget.room));
     // ToDo: UnreadCounter
     return convoProfile.when(
@@ -58,15 +63,71 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
                 latestMessage: latestMsg,
               )
             : const SizedBox.shrink(),
-        trailing: latestMsg != null
-            ? _TrailingWidget(
-                // controller: receiptController,
-                room: widget.room,
-                latestMessage: latestMsg,
-                activeMembers: activeMembers,
-                userId: client!.userId().toString(),
-              )
-            : const SizedBox.shrink(),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            latestMsg != null
+                ? _TrailingWidget(
+                    room: widget.room,
+                    latestMessage: latestMsg,
+                    activeMembers: activeMembers,
+                    userId: client!.userId().toString(),
+                  )
+                : const SizedBox.shrink(),
+            mutedStatus.valueOrNull == true
+                ? Expanded(
+                    child: MenuAnchor(
+                      builder: (
+                        BuildContext context,
+                        MenuController controller,
+                        Widget? child,
+                      ) {
+                        return IconButton(
+                          padding: EdgeInsets.zero,
+                          iconSize: 14,
+                          onPressed: () {
+                            if (controller.isOpen) {
+                              controller.close();
+                            } else {
+                              controller.open();
+                            }
+                          },
+                          icon: const Icon(Atlas.bell_dash_bold),
+                        );
+                      },
+                      menuChildren: [
+                        MenuItemButton(
+                          child: const Text('Unmute'),
+                          onPressed: () async {
+                            final room = await ref.read(
+                              maybeRoomProvider(widget.room.getRoomIdStr())
+                                  .future,
+                            );
+                            if (room == null) {
+                              EasyLoading.showError(
+                                'Room not found',
+                              );
+                              return;
+                            }
+                            await room.unmute();
+                            EasyLoading.showSuccess(
+                              'Notifications unmuted',
+                            );
+                            await Future.delayed(const Duration(seconds: 1),
+                                () {
+                              // FIXME: we want to refresh the view but don't know
+                              //        when the event was confirmed form sync :(
+                              // let's hope that a second delay is reasonable enough
+                              ref.invalidate(maybeRoomProvider(roomId));
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ],
+        ),
       ),
       error: (error, stackTrace) => LoadingConvoCard(
         roomId: roomId,
@@ -276,7 +337,7 @@ class _SubtitleWidget extends ConsumerWidget {
         );
       case 'm.room.encrypted':
         return Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.max,
           children: [
             Flexible(
               child: Padding(
@@ -291,7 +352,7 @@ class _SubtitleWidget extends ConsumerWidget {
                 ),
               ),
             ),
-            Flexible(
+            Expanded(
               child: Text(
                 'Failed to decrypt message. Re-request session keys',
                 style: Theme.of(context).textTheme.bodySmall!.copyWith(
@@ -407,14 +468,9 @@ class _TrailingWidget extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          jiffyTime(latestMessage.eventItem()!.originServerTs()),
-          style: Theme.of(context).textTheme.labelMedium,
-        ),
-      ],
+    return Text(
+      jiffyTime(latestMessage.eventItem()!.originServerTs()),
+      style: Theme.of(context).textTheme.labelMedium,
     );
   }
 }

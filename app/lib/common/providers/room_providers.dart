@@ -134,3 +134,30 @@ final roomMembershipProvider =
   }
   return await room.getMyMembership();
 });
+
+/// Get the locally configured RoomNotificationsStatus for this room
+final roomNotificationStatusProvider =
+    FutureProvider.autoDispose.family<String?, String>((ref, roomId) async {
+  final room = await ref.watch(maybeRoomProvider(roomId).future);
+  if (room == null) {
+    return null;
+  }
+  return room.notificationMode();
+});
+
+/// Get the default RoomNotificationsStatus for this room type
+final roomDefaultNotificationStatusProvider =
+    FutureProvider.autoDispose.family<String?, String>((ref, roomId) async {
+  final room = await ref.watch(maybeRoomProvider(roomId).future);
+  if (room == null) {
+    return null;
+  }
+  return room.defaultNotificationMode();
+});
+
+/// Get the default RoomNotificationsStatus for this room type
+final roomIsMutedProvider =
+    FutureProvider.autoDispose.family<bool, String>((ref, roomId) async {
+  return (await ref.watch(roomNotificationStatusProvider(roomId).future)) ==
+      'muted';
+});

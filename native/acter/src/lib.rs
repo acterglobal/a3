@@ -6,6 +6,8 @@
 #![allow(unused, dead_code, clippy::transmutes_expressible_as_ptr_casts)]
 
 pub use matrix_sdk;
+pub use ruma_common;
+pub use ruma_events;
 
 pub mod api;
 pub mod platform;

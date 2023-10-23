@@ -52,7 +52,7 @@ async fn load_pending_invitation() -> Result<()> {
     // sleep(Duration::from_secs(3)).await;
 
     // let room = sisko.get_joined_room(room_id.as_str().try_into()?)?;
-    // let kyra_id = acter::matrix_sdk::ruma::user_id!("@kyra");
+    // let kyra_id = acter::ruma_common::user_id!("@kyra");
     // room.invite_user_by_id(kyra_id).await?;
 
     // sleep(Duration::from_secs(3)).await;
