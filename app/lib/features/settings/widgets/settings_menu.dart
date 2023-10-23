@@ -63,6 +63,25 @@ class SettingsMenu extends ConsumerWidget {
               ),
               SettingsTile.navigation(
                 title: Text(
+                  'Notifications',
+                  style: titleStylesSelected(Routes.settingNotifications),
+                ),
+                description: Text(
+                  'Notifications settings and targets',
+                  style: titleStylesSelected(Routes.settingNotifications),
+                ),
+                leading: Icon(
+                  Atlas.bell_mobile_thin,
+                  color: colorSelected(Routes.settingNotifications),
+                ),
+                onPressed: (context) {
+                  shouldGoNotNamed
+                      ? context.goNamed(Routes.settingNotifications.name)
+                      : context.pushNamed(Routes.settingNotifications.name);
+                },
+              ),
+              SettingsTile.navigation(
+                title: Text(
                   'Blocked Users',
                   style: titleStylesSelected(Routes.blockedUsers),
                 ),
