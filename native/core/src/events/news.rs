@@ -1,6 +1,5 @@
 use derive_builder::Builder;
 use derive_getters::Getters;
-use ruma_common::OwnedMxcUri;
 use ruma_events::{
     macros::EventContent,
     room::message::{
@@ -100,44 +99,44 @@ pub struct NewsSlide {
 }
 
 impl NewsSlide {
-    pub fn new_text(body: String) -> Self {
+    pub fn new_text(content: TextMessageEventContent) -> Self {
         NewsSlide {
-            content: NewsContent::Text(TextMessageEventContent::markdown(body)),
+            content: NewsContent::Text(content),
             references: vec![],
         }
     }
 
-    pub fn new_image(body: String, url: OwnedMxcUri) -> Self {
+    pub fn new_image(content: ImageMessageEventContent) -> Self {
         NewsSlide {
-            content: NewsContent::Image(ImageMessageEventContent::plain(body, url)),
+            content: NewsContent::Image(content),
             references: vec![],
         }
     }
 
-    pub fn new_audio(body: String, url: OwnedMxcUri) -> Self {
+    pub fn new_audio(content: AudioMessageEventContent) -> Self {
         NewsSlide {
-            content: NewsContent::Audio(AudioMessageEventContent::plain(body, url)),
+            content: NewsContent::Audio(content),
             references: vec![],
         }
     }
 
-    pub fn new_video(body: String, url: OwnedMxcUri) -> Self {
+    pub fn new_video(content: VideoMessageEventContent) -> Self {
         NewsSlide {
-            content: NewsContent::Video(VideoMessageEventContent::plain(body, url)),
+            content: NewsContent::Video(content),
             references: vec![],
         }
     }
 
-    pub fn new_file(body: String, url: OwnedMxcUri) -> Self {
+    pub fn new_file(content: FileMessageEventContent) -> Self {
         NewsSlide {
-            content: NewsContent::File(FileMessageEventContent::plain(body, url)),
+            content: NewsContent::File(content),
             references: vec![],
         }
     }
 
-    pub fn new_location(body: String, geo_uri: String) -> Self {
+    pub fn new_location(content: LocationMessageEventContent) -> Self {
         NewsSlide {
-            content: NewsContent::Location(LocationMessageEventContent::new(body, geo_uri)),
+            content: NewsContent::Location(content),
             references: vec![],
         }
     }

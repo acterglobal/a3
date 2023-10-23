@@ -1,13 +1,14 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
-import 'package:acter/router/providers/router_providers.dart';
+import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:go_router/go_router.dart';
+import 'package:settings_ui/settings_ui.dart';
 
 const defaultSpaceSettingsMenuKey = Key('space-settings-menu');
 
@@ -20,15 +21,7 @@ class SpaceSettingsMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentRoute = ref.watch(currentRoutingLocation);
     final size = MediaQuery.of(context).size;
-    bool isSelected(Routes route) {
-      debugPrint(
-        '${route.route} $currentRoute, ${currentRoute == route.route}',
-      );
-      return currentRoute == route.route;
-    }
-
     final spaceProfile = ref.watch(spaceProfileDataForSpaceIdProvider(spaceId));
 
     return Scaffold(
@@ -79,40 +72,48 @@ class SpaceSettingsMenu extends ConsumerWidget {
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 500),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ListTile(
-                title: const Text('Access & Visibility'),
-                subtitle: const Text(
-                  'Configure, who can view and how to join this space',
-                ),
-                leading: const Icon(Atlas.lab_appliance_thin),
-                selected: isSelected(Routes.settingsLabs),
-                enabled: false,
-                onTap: () {
-                  isDesktop || size.width > 770
-                      ? context.goNamed(Routes.settingsLabs.name)
-                      : context.pushNamed(Routes.settingsLabs.name);
-                },
+          child: SettingsList(
+            sections: [
+              SettingsSection(
+                title: const Text('My Settings'),
+                tiles: [
+                  NotificationsSettingsTile(roomId: spaceId),
+                ],
               ),
-              ListTile(
-                title: const Text('Apps'),
-                subtitle: const Text('Customize Apps and their features'),
-                leading: const Icon(Atlas.info_circle_thin),
-                selected: isSelected(Routes.info),
-                onTap: () {
-                  isDesktop || size.width > 770
-                      ? context.goNamed(
-                          Routes.spaceSettingsApps.name,
-                          pathParameters: {'spaceId': spaceId},
-                        )
-                      : context.pushNamed(
-                          Routes.spaceSettingsApps.name,
-                          pathParameters: {'spaceId': spaceId},
-                        );
-                },
+              SettingsSection(
+                title: const Text('My Settings'),
+                tiles: <SettingsTile>[
+                  SettingsTile(
+                    title: const Text('Access & Visibility'),
+                    description: const Text(
+                      'Configure, who can view and how to join this space',
+                    ),
+                    leading: const Icon(Atlas.lab_appliance_thin),
+                    enabled: false,
+                    onPressed: (context) {
+                      isDesktop || size.width > 770
+                          ? context.goNamed(Routes.settingsLabs.name)
+                          : context.pushNamed(Routes.settingsLabs.name);
+                    },
+                  ),
+                  SettingsTile(
+                    title: const Text('Apps'),
+                    description:
+                        const Text('Customize Apps and their features'),
+                    leading: const Icon(Atlas.info_circle_thin),
+                    onPressed: (context) {
+                      isDesktop || size.width > 770
+                          ? context.goNamed(
+                              Routes.spaceSettingsApps.name,
+                              pathParameters: {'spaceId': spaceId},
+                            )
+                          : context.pushNamed(
+                              Routes.spaceSettingsApps.name,
+                              pathParameters: {'spaceId': spaceId},
+                            );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
