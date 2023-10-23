@@ -144,7 +144,7 @@ class EmailAddressesPage extends ConsumerWidget {
               vertical: 15,
             ),
             child: Text(
-              "You added these email addresses but didn't confirm them yet. Once you confirmed them please acknowledge it here and they will be added to your confirmed addresses.",
+              'These email addresses have not yet been confirmed. Please go to your inbox and check for the confirmation link.',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
