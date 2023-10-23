@@ -106,16 +106,16 @@ class RoomsListWidget extends ConsumerWidget {
                             icon: const Icon(Atlas.magnifying_glass),
                           ),
                           IconButton(
-                            onPressed: () async => size.width > 600
+                            onPressed: () async => isDesktop || size.width > 600
                                 ? await showAdaptiveDialog(
                                     barrierDismissible: false,
                                     context: ctx,
-                                    builder: (ctx) => const CreateChatWidget(),
+                                    builder: (ctx) => const CreateChatPage(),
                                   )
                                 : await showModalBottomSheet(
                                     isScrollControlled: true,
                                     context: ctx,
-                                    builder: (ctx) => const CreateChatWidget(),
+                                    builder: (ctx) => const CreateChatPage(),
                                   ),
                             padding: const EdgeInsets.only(right: 10, left: 10),
                             icon: const Icon(

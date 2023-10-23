@@ -1,10 +1,13 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
+import 'package:acter/features/chat/widgets/create_chat.dart';
 import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
+import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +25,7 @@ class SpaceChatsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final chats = ref.watch(relatedChatsProvider(spaceIdOrAlias));
     final related = ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias));
+    final size = MediaQuery.of(context).size;
     return Padding(
       padding: const EdgeInsets.all(20),
       child: CustomScrollView(
@@ -44,10 +48,25 @@ class SpaceChatsPage extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     IconButton(
-                      onPressed: () => context.pushNamed(
-                        Routes.createChat.name,
-                        queryParameters: {'parentSpaceId': spaceIdOrAlias},
-                      ),
+                      onPressed: () async {
+                        isDesktop || size.width > 600
+                            ? await showAdaptiveDialog(
+                                barrierDismissible: false,
+                                context: shellNavKey.currentContext!,
+                                builder: (ctx) => CreateChatPage(
+                                  initialSelectedSpaceId: spaceIdOrAlias,
+                                  initialPage: 1,
+                                ),
+                              )
+                            : await showModalBottomSheet(
+                                isScrollControlled: true,
+                                context: shellNavKey.currentContext!,
+                                builder: (ctx) => CreateChatPage(
+                                  initialSelectedSpaceId: spaceIdOrAlias,
+                                  initialPage: 1,
+                                ),
+                              );
+                      },
                       icon: const Icon(Atlas.plus_circle_thin),
                     ),
                   ],
