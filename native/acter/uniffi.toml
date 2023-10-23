@@ -1,0 +1,4 @@
+[bindings.swift]
+cdylib_name = "acter"
+omit_argument_labels = true
+generate_module_map = true

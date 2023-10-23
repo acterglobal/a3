@@ -52,7 +52,6 @@ enum Routes {
   spaceSettingsApps('/:spaceId([!#][^/]+)/settings/app'),
 
   // -- pins
-
   pins('/pins'),
   pin('/pins/:pinId'),
   editPin('/pins/:pinId/edit'),
@@ -73,7 +72,11 @@ enum Routes {
 
   // -- utils
   bugReport('/bug-report'),
-  quickJump('/quick-jump');
+  quickJump('/quick-jump'),
+  // -- coming in from a push notification
+  forward('/forward'),
+  // -- fatal failure
+  fatalFail('/error');
 
   const Routes(this.route);
   final String route;

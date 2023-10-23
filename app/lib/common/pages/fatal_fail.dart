@@ -1,23 +1,26 @@
+
+import 'package:acter/common/dialogs/nuke_confirmation.dart';
+import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/router/providers/router_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-class ErrorPage extends ConsumerWidget {
-  final GoRouterState routerState;
-  const ErrorPage({
+class FatalFailPage extends ConsumerWidget {
+  final String error;
+  final String trace;
+  const FatalFailPage({
     super.key,
-    required this.routerState,
+    required this.error,
+    required this.trace,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentLocation = ref.watch(currentRoutingLocation);
     return Scaffold(
-      appBar: AppBar(title: const Text('404 - oopsie')),
+      appBar: AppBar(title: Text('Fatal Error: $error')),
       body: Center(
         child: Column(
           children: [
@@ -27,15 +30,18 @@ class ErrorPage extends ConsumerWidget {
               child: SvgPicture.asset('assets/images/genericError.svg'),
             ),
             Text(
-              'How did you get here? There is nothing to see at `$currentLocation`...',
+              'Something went terribly wrong: $error',
             ),
             ButtonBar(
               alignment: MainAxisAlignment.center,
               children: [
                 OutlinedButton.icon(
-                  icon: const Icon(Atlas.home_thin),
-                  label: const Text('Go to home'),
-                  onPressed: () => context.goNamed(Routes.main.name),
+                  icon:  Icon(Atlas.bomb_thin,
+                    color: Theme.of(context).colorScheme.error,),
+                  label: Text('Nuke local data',
+                    style: TextStyle(color: Theme.of(context).colorScheme.error),),
+                  onPressed: () => customMsgSnackbar(context, 'long press to activate'),
+                  onLongPress: () => nukeConfirmationDialog(context, ref),
                 ),
                 OutlinedButton.icon(
                   icon: const Icon(Atlas.bug_clipboard_thin),

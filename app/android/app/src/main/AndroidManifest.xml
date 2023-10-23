@@ -2,12 +2,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="global.acter.app" android:largeHeap="true">
    <uses-permission android:name="android.permission.INTERNET"/>
+   <uses-permission android:name="android.permission.VIBRATE"/>
+   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
    <application
         android:label="Acter"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
 		android:roundIcon="@mipmap/ic_launcher_round"
         android:extractNativeLibs="true"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
         tools:replace="android:extractNativeLibs">
         <activity
             android:name=".MainActivity"

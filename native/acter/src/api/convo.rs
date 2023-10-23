@@ -50,7 +50,7 @@ use crate::{SpaceRelations, TimelineStream};
 
 use super::{
     client::Client,
-    message::{sync_event_to_message, RoomMessage},
+    message::RoomMessage,
     receipt::ReceiptRecord,
     room::{self, Room},
     utils::{remap_for_diff, ApiVectorDiff},
@@ -480,6 +480,14 @@ impl Client {
                 Retry::spawn(retry_strategy, || me.convo_str(room_id_or_alias.as_str())).await
             })
             .await?
+    }
+
+    pub async fn has_convo(&self, room_id: String) -> bool {
+        self.convos
+            .read()
+            .await
+            .iter()
+            .any(|s| *s.room_id() == room_id)
     }
 
     pub async fn convo_typed(&self, room_id: &OwnedRoomId) -> Option<Convo> {

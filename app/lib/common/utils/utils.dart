@@ -5,14 +5,28 @@ import 'dart:math';
 import 'dart:async';
 
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:riverpod/riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
+
+/// Get provider right from the context no matter where we are
+extension Context on BuildContext {
+  // Custom call a provider for reading method only
+  // It will be helpful for us for calling the read function
+  // without Consumer,ConsumerWidget or ConsumerStatefulWidget
+  // Incase if you face any issue using this then please wrap your widget
+  // with consumer and then call your provider
+
+  T read<T>(ProviderBase<T> provider) {
+     return ProviderScope.containerOf(this, listen: false).read(provider);
+  }
+}
+
 
 /// An extension on [Ref] with helpful methods to add a debounce.
 extension RefDebounceExtension on Ref {

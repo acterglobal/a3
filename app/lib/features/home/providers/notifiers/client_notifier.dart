@@ -1,3 +1,4 @@
+import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -17,6 +18,9 @@ class ClientNotifier extends StateNotifier<Client?> {
       asyncSdk.writeLog(stackTrace.toString(), 'error');
       return true; // make this error handled
     };
-    state = asyncSdk.currentClient;
+    final client = state = asyncSdk.currentClient;
+    if (client != null) {
+      await setupPushNotifications(client);
+    }
   }
 }

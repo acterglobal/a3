@@ -166,9 +166,10 @@ dependencies = [
     "ios-aarch64-apple-ios",
     "ios-aarch64-apple-ios-release",
     "ios-x86_64-apple-ios",
-    "ios-aarch64-apple-ios-sim",
+ #   "ios-aarch64-apple-ios-sim",
     "post-ios",
-    "post-ios-release"
+    "post-ios-release",
+    "make-ios-swift",
 ]
 
 [tasks.cargo-build-dev]
@@ -195,42 +196,114 @@ args = [
     "--release"
 ]
 
+[tasks.build-ios-swift]
+dependencies = [
+    "cargo-build-uniffi-dev",
+    "cargo-build-uniffi-release",
+]
+
+
+[tasks.cargo-build-uniffi-dev]
+private = true
+condition = { env_true = ["DEV"], env_set = ["CARGO_BUILD_TARGET"] }
+command = "cargo"
+args = [
+    "build",
+    "--target",
+    "${CARGO_BUILD_TARGET}",
+    "-Zbuild-std",
+    "--features",
+    "uniffi"
+]
+
+[tasks.cargo-build-uniffi-release]
+private = true
+condition = { env_true = ["RELEASE"], env_set = ["CARGO_BUILD_TARGET"] }
+command = "cargo"
+args = [
+    "build",
+    "--target",
+    "${CARGO_BUILD_TARGET}",
+    "-Zbuild-std",
+    "--features",
+    "uniffi",
+    "--release"
+]
+
+[tasks.make-ios-swift]
+private = true
+condition = { platforms = ["mac"] }
+dependencies = [
+    "build-swift-uniffi",
+]
+
+script = [
+    """
+    cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}
+    cp target/swift-out/acterFFI.modulemap ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/app/ios/acterFFI/module.modulemap
+    cp target/swift-out/acterFFI.h ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/app/ios/acterFFI/acterFFI.h
+    cp target/swift-out/acter.swift ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/app/ios/ActerPushServiceExtension/acter.swift
+    """,
+]
+
+[tasks.build-swift-uniffi]
+private = true
+command = "cargo"
+args = [
+    "run",
+    "--target",
+    "aarch64-apple-darwin",
+    "-p",
+    "acter",
+    "--features",
+    "uniffi",
+    "--bin",
+    "uniffi-bindgen",
+    "generate",
+    "--library",
+    "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/aarch64-apple-ios/${LIB_OUT_DIR}/libacter.a",
+    "--language",
+    "swift",
+    "--out-dir",
+    "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/swift-out",
+]
+
 
 [tasks.ios-aarch64-apple-ios]
 private = true
 condition = { env_true = ["DEV"] }
 env = { CARGO_BUILD_TARGET = "aarch64-apple-ios" }
-run_task = "cargo-build-dev"
+run_task = "cargo-build-uniffi-dev"
 
 [tasks.ios-aarch64-apple-ios-release]
 private = true
 condition = { env_true = ["RELEASE"] }
 env = { CARGO_BUILD_TARGET = "aarch64-apple-ios" }
-run_task = "cargo-build-release"
+run_task = "cargo-build-uniffi-release"
 
 [tasks.ios-x86_64-apple-ios]
 private = true
 condition = { env_true = ["DEV"] }
 env = { CARGO_BUILD_TARGET = "x86_64-apple-ios" }
-run_task = "cargo-build-dev"
+run_task = "cargo-build-uniffi-dev"
 
 [tasks.ios-x86_64-apple-ios-release]
 private = true
 condition = { env_true = ["RELEASE"] }
 env = { CARGO_BUILD_TARGET = "x86_64-apple-ios" }
-run_task = "cargo-build-release"
+run_task = "cargo-build-uniffi-release"
 
 [tasks.ios-aarch64-apple-ios-sim]
 private = true
 condition = { env_true = ["DEV"] }
 env = { CARGO_BUILD_TARGET = "aarch64-apple-ios-sim" }
-run_task = "cargo-build-dev"
+run_task = "cargo-build-uniffi-dev"
 
 [tasks.ios-aarch64-apple-ios-sim-release]
 private = true
 condition = { env_true = ["RELEASE"] }
 env = { CARGO_BUILD_TARGET = "aarch64-apple-ios-sim" }
-run_task = "cargo-build-release"
+run_task = "cargo-build-uniffi-release"
 
 [tasks.post-ios]
 script_runner = "@shell"
@@ -238,12 +311,11 @@ condition = { env_true = ["DEV"] }
 script = [
     """
     LIBNAME=libacter.a
-    mkdir -p ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/ios-sim-lipo
-    LIPO_LIB=${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/ios-sim-lipo/$LIBNAME
+    mkdir -p ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/ios-lipo
+    LIPO_LIB=${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/ios-lipo/$LIBNAME
 
     lipo -create -output $LIPO_LIB \
-            ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/aarch64-apple-ios-sim/release/$LIBNAME \
-            ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/x86_64-apple-ios/release/$LIBNAME \
+            ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/x86_64-apple-ios/${LIB_OUT_DIR}/$LIBNAME \
             ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/aarch64-apple-ios/${LIB_OUT_DIR}/$LIBNAME
 
 
