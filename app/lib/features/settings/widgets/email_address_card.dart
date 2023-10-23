@@ -193,13 +193,20 @@ class EmailAddressCard extends ConsumerWidget {
     if (newValue != null) {
       EasyLoading.show(status: 'Trying to confirm token');
       try {
-        await manager.submitTokenFromEmail(
+        final result = await manager.submitTokenFromEmail(
           emailAddress,
           newValue.token,
           newValue.password,
         );
-        ref.invalidate(emailAddressesProvider);
-        EasyLoading.showSuccess('Looks good');
+        if (result) {
+          ref.invalidate(emailAddressesProvider);
+          EasyLoading.showSuccess('Looks good');
+        } else {
+          EasyLoading.showError(
+            'Invalid token or password',
+            duration: const Duration(seconds: 3),
+          );
+        }
       } catch (e) {
         EasyLoading.showError(
           'Failed to confirm token: $e',
