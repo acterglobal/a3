@@ -82,6 +82,25 @@ class SettingsMenu extends ConsumerWidget {
               ),
               SettingsTile.navigation(
                 title: Text(
+                  'Email Addresses',
+                  style: titleStylesSelected(Routes.emailAddresses),
+                ),
+                description: Text(
+                  'Connected to your account',
+                  style: titleStylesSelected(Routes.emailAddresses),
+                ),
+                leading: Icon(
+                  Atlas.envelope_paper_email_thin,
+                  color: colorSelected(Routes.emailAddresses),
+                ),
+                onPressed: (context) {
+                  shouldGoNotNamed
+                      ? context.goNamed(Routes.emailAddresses.name)
+                      : context.pushNamed(Routes.emailAddresses.name);
+                },
+              ),
+              SettingsTile.navigation(
+                title: Text(
                   'Blocked Users',
                   style: titleStylesSelected(Routes.blockedUsers),
                 ),
