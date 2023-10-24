@@ -67,6 +67,7 @@ class _IntroProfileState extends State<IntroProfile> {
                     child: Column(
                       children: [
                         GestureDetector(
+                          key: LoginPageKeys.signUpBtn,
                           onTap: () =>
                               context.pushNamed(Routes.authRegister.name),
                           child: Container(

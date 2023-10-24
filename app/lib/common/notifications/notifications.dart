@@ -99,16 +99,17 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
   }
 }
 
-String makeForward(
-    {required String roomId,
-    required String deviceId,
-    required String eventId,}) {
+String makeForward({
+  required String roomId,
+  required String deviceId,
+  required String eventId,
+}) {
   return '/forward?roomId=${Uri.encodeComponent(roomId)}&eventId=${Uri.encodeComponent(eventId)}&deviceId=${Uri.encodeComponent(deviceId)}';
 }
 
 Future<void> initializeNotifications() async {
   if (!supportedPlatforms) {
-    return; // nothign for us to do here.
+    return; // nothing for us to do here.
   }
 
   final NotificationAppLaunchDetails? notificationAppLaunchDetails = !kIsWeb &&
@@ -229,37 +230,43 @@ Future<void> initializeNotifications() async {
   });
 
   // Handle notification taps
-  Push.instance.onNotificationTap.listen((data) {
-    debugPrint('Notification was tapped. Data: \n $data');
-    final uri = data['payload'] as String?;
-    if (uri != null) {
-      debugPrint('Uri found $uri');
-      rootNavKey.currentContext!.push(uri);
-      return;
-    }
+  try {
+    Push.instance.onNotificationTap.listen((data) {
+      debugPrint('Notification was tapped. Data: \n $data');
+      final uri = data['payload'] as String?;
+      if (uri != null) {
+        debugPrint('Uri found $uri');
+        rootNavKey.currentContext!.push(uri);
+        return;
+      }
 
-    final roomId = data['room_id'] as String?;
-    final eventId = data['event_id'] as String?;
-    final deviceId = data['device_id'] as String?;
-    if (roomId == null || eventId == null || deviceId == null) {
-      debugPrint('Not our kind of push event. $roomId, $eventId, $deviceId');
-      return;
-    }
-    rootNavKey.currentContext!.push(
-        makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId),);
-  });
-
-  // Handle push notifications
-  Push.instance.onMessage.listen((message) async {
-    await handleMessage(message, background: false);
-  });
-
-  // Handle push notifications on background - in iOS we are doing that in
-  // the other instance.
-  if (!Platform.isIOS) {
-    Push.instance.onBackgroundMessage.listen((message) async {
-      await handleMessage(message, background: true);
+      final roomId = data['room_id'] as String?;
+      final eventId = data['event_id'] as String?;
+      final deviceId = data['device_id'] as String?;
+      if (roomId == null || eventId == null || deviceId == null) {
+        debugPrint('Not our kind of push event. $roomId, $eventId, $deviceId');
+        return;
+      }
+      rootNavKey.currentContext!.push(
+        makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId),
+      );
     });
+
+    // Handle push notifications
+    Push.instance.onMessage.listen((message) async {
+      await handleMessage(message, background: false);
+    });
+
+    // Handle push notifications on background - in iOS we are doing that in
+    // the other instance.
+    if (!Platform.isIOS) {
+      Push.instance.onBackgroundMessage.listen((message) async {
+        await handleMessage(message, background: true);
+      });
+    }
+  } catch (e) {
+    // this fails on hot-reload and in integration tests... if so, ignore for now
+    debugPrint('Push initialization error: $e');
   }
 }
 
@@ -437,7 +444,14 @@ Future<bool> onNewToken(Client client, String token) async {
   }
 
   await client.addPusher(
-      appId, token, name, appName, pushServerUrl, Platform.isIOS, null,);
+    appId,
+    token,
+    name,
+    appName,
+    pushServerUrl,
+    Platform.isIOS,
+    null,
+  );
 
   debugPrint(
     ' ---- notification pusher sent: $appName ($appId) on $name ($token) to $pushServerUrl',

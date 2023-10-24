@@ -15,6 +15,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
+  static const usernameField = Key('reg-username-txt');
+  static const passwordField = Key('reg-password-txt');
+  static const nameField = Key('reg-name-txt');
+  static const tokenField = Key('reg-token-txt');
+  static const submitBtn = Key('reg-submit');
+
   const RegisterPage({super.key});
 
   @override
@@ -128,6 +134,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         children: [
                           const SizedBox(height: 20),
                           TextFormField(
+                            key: RegisterPage.nameField,
                             controller: name,
                             decoration: InputDecoration(
                               hintText: AppLocalizations.of(context)!.name,
@@ -169,6 +176,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           ),
                           const SizedBox(height: 10),
                           TextFormField(
+                            key: RegisterPage.usernameField,
                             controller: username,
                             decoration: InputDecoration(
                               hintText: AppLocalizations.of(context)!.username,
@@ -220,6 +228,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           ),
                           const SizedBox(height: 10),
                           TextFormField(
+                            key: RegisterPage.passwordField,
                             controller: password,
                             decoration: InputDecoration(
                               hintText: AppLocalizations.of(context)!.password,
@@ -260,6 +269,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           ),
                           const SizedBox(height: 10),
                           TextFormField(
+                            key: RegisterPage.tokenField,
                             controller: token,
                             decoration: InputDecoration(
                               hintText: AppLocalizations.of(context)!.token,
@@ -338,6 +348,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     authState
                         ? const CircularProgressIndicator()
                         : DefaultButton(
+                            key: RegisterPage.submitBtn,
                             onPressed: handleSubmit,
                             title: AppLocalizations.of(context)!.register,
                             style: ElevatedButton.styleFrom(
