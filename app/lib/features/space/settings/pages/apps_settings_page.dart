@@ -446,6 +446,7 @@ class ChangePowerLevel extends StatefulWidget {
   final String featureName;
   final int? currentPowerLevel;
   final String currentPowerLevelName;
+
   const ChangePowerLevel({
     Key? key,
     required this.featureName,
