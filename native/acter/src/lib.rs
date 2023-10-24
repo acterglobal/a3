@@ -10,6 +10,8 @@
 uniffi::include_scaffolding!("acter");
 
 pub use matrix_sdk;
+pub use ruma_common;
+pub use ruma_events;
 
 pub mod api;
 pub mod platform;

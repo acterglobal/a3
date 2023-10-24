@@ -71,17 +71,7 @@ class NotificationsListNotifier extends StateNotifier<NotificationListState>
     _listener = client.notificationsStream();
     if (_listener != null) {
       _poller = _listener!.listen((ev) {
-        // debugPrint(
-        //   ' --- - - ----------------- new notification received',
-        // );
 
-        // final provider = ref.watch(featuresProvider);
-        // if (provider.isActive(LabsFeature.showNotifications)) {
-        //   if (!ev.read()) {
-        //     final brief = extractBrief(ev);
-        //     // notify(brief);
-        //   }
-        // }
         state = state.addNotification(ev);
       });
       ref.onDispose(() => _poller != null ? _poller!.cancel() : null);
