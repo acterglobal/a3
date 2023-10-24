@@ -90,26 +90,7 @@ class MyProfile extends ConsumerWidget {
 
     final newText = await showDialog<String>(
       context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: const Text('Change your display name'),
-        content: TextField(controller: newName),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              if (profile.profile.displayName != newName.text) {
-                Navigator.pop(context, newName.text);
-              } else {
-                Navigator.pop(context);
-              }
-            },
-            child: const Text('Submit'),
-          ),
-        ],
-      ),
+      builder: (BuildContext context) => ChangeDisplayName(account: profile),
     );
 
     if (newText != null && context.mounted) {

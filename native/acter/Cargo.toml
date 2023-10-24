@@ -72,7 +72,6 @@ features = [
     "anyhow",
     "automatic-room-key-forwarding",
     "bundled-sqlite",
-    "experimental-sliding-sync",
     "markdown",
 #   "qrcode",
     "rustls-tls",

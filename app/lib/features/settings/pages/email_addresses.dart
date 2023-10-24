@@ -20,13 +20,12 @@ class AddEmailAddr extends StatefulWidget {
 class _AddEmailAddrState extends State<AddEmailAddr> {
   final TextEditingController newEmailAddress = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool passwordVisible = false;
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text(
-        'Add email address',
+        "Please provide the email address you'd like to add",
       ), // The token-reset path is just the process by which control over that email address is confirmed.
       content: Form(
         key: _formKey,
@@ -102,8 +101,8 @@ class EmailAddressesPage extends ConsumerWidget {
         body: emailAddresses.when(
           data: (addresses) => buildAddresses(context, addresses),
           error: (error, stack) {
-            return const Center(
-              child: Text("Couldn't load all email addresses"),
+            return Center(
+              child: Text('Error loading email addresses: $error'),
             );
           },
           loading: () => const Center(
@@ -127,9 +126,7 @@ class EmailAddressesPage extends ConsumerWidget {
               children: [
                 const Padding(
                   padding: EdgeInsets.only(right: 10),
-                  child: Icon(
-                    Atlas.envelope_question_thin,
-                  ),
+                  child: Icon(Atlas.envelope_question_thin),
                 ),
                 Text(
                   'Awaiting confirmation',
@@ -146,7 +143,7 @@ class EmailAddressesPage extends ConsumerWidget {
               vertical: 15,
             ),
             child: Text(
-              "You added these email addresses but didn't confirm them yet. Once you confirmed them please acknowledge it here and they will be added to your confirmed addresses.",
+              'These email addresses have not yet been confirmed. Please go to your inbox and check for the confirmation link.',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
@@ -224,11 +221,9 @@ class EmailAddressesPage extends ConsumerWidget {
       builder: (BuildContext context) => const AddEmailAddr(),
     );
     if (newValue != null) {
-      EasyLoading.show(status: 'Requesting token via email');
+      EasyLoading.show(status: 'Adding email address');
       try {
-        await manager.requestTokenViaEmail(
-          newValue,
-        );
+        await manager.requestTokenViaEmail(newValue);
         ref.invalidate(emailAddressesProvider);
         EasyLoading.showSuccess(
           'Please check your inbox for the validation email',

@@ -380,10 +380,12 @@ class MemberListEntry extends ConsumerWidget {
   }
 
   Future<void> changePowerLevel(BuildContext context, WidgetRef ref) async {
-    final newPowerlevel = await showDialog<int>(
+    final newPowerlevel = await showDialog<int?>(
       context: context,
-      builder: (BuildContext context) =>
-          ChangePowerLevel(member: member, myMembership: myMembership),
+      builder: (BuildContext context) => ChangePowerLevel(
+        member: member,
+        myMembership: myMembership,
+      ),
     );
     if (newPowerlevel != null) {
       final userId = member.userId().toString();
