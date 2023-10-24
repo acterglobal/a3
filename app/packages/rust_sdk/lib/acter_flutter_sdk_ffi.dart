@@ -13260,11 +13260,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -13306,13 +13306,13 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__NewsEntryDraft_add_audio_slide");
 
   late final _newsEntryDraftAddAudioSlide =
@@ -13345,17 +13345,17 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -13404,7 +13404,7 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__NewsEntryDraft_add_file_slide");
 
   late final _newsEntryDraftAddFileSlide =
@@ -16004,11 +16004,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -16071,11 +16071,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__Convo_edit_image_message");
 
   late final _convoEditImageMessage = _convoEditImageMessagePtr.asFunction<
@@ -16114,9 +16114,9 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__Convo_send_audio_message");
 
   late final _convoSendAudioMessage = _convoSendAudioMessagePtr.asFunction<
@@ -16169,9 +16169,9 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__Convo_edit_audio_message");
 
   late final _convoEditAudioMessage = _convoEditAudioMessagePtr.asFunction<
@@ -16208,13 +16208,13 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -16279,13 +16279,13 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__Convo_edit_video_message");
 
   late final _convoEditVideoMessage = _convoEditVideoMessagePtr.asFunction<
@@ -16325,7 +16325,7 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__Convo_send_file_message");
 
   late final _convoSendFileMessage = _convoSendFileMessagePtr.asFunction<
@@ -16375,7 +16375,7 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__Convo_edit_file_message");
 
   late final _convoEditFileMessage = _convoEditFileMessagePtr.asFunction<
@@ -16642,11 +16642,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -16696,9 +16696,9 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -16746,13 +16746,13 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -16812,7 +16812,7 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -17278,11 +17278,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -17325,13 +17325,13 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__AttachmentsManager_audio_attachment_draft");
 
   late final _attachmentsManagerAudioAttachmentDraft =
@@ -17364,17 +17364,17 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -17423,7 +17423,7 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__AttachmentsManager_file_attachment_draft");
 
   late final _attachmentsManagerFileAttachmentDraft =
@@ -20019,11 +20019,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -20083,9 +20083,9 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__Space_send_audio_message");
 
   late final _spaceSendAudioMessage = _spaceSendAudioMessagePtr.asFunction<
@@ -20135,13 +20135,13 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -20202,7 +20202,7 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__Space_send_file_message");
 
   late final _spaceSendFileMessage = _spaceSendFileMessagePtr.asFunction<
@@ -22285,8 +22285,8 @@ class Api {
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-            ffi.Uint32,
-            ffi.Uint32,
+            ffi.Uint64,
+            ffi.Uint64,
           )>>("__UserProfile_get_thumbnail");
 
   late final _userProfileGetThumbnail = _userProfileGetThumbnailPtr.asFunction<
@@ -22330,8 +22330,8 @@ class Api {
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-            ffi.Uint32,
-            ffi.Uint32,
+            ffi.Uint64,
+            ffi.Uint64,
           )>>("__RoomProfile_get_thumbnail");
 
   late final _roomProfileGetThumbnail = _roomProfileGetThumbnailPtr.asFunction<
@@ -49817,21 +49817,21 @@ class _ThumbnailInfoMimetypeReturn extends ffi.Struct {
 class _ThumbnailInfoSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _ThumbnailInfoWidthReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _ThumbnailInfoHeightReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
@@ -50071,21 +50071,21 @@ class _ImageDescMimetypeReturn extends ffi.Struct {
 class _ImageDescSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _ImageDescWidthReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _ImageDescHeightReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
@@ -50126,14 +50126,14 @@ class _AudioDescMimetypeReturn extends ffi.Struct {
 class _AudioDescSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _AudioDescDurationReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
@@ -50160,21 +50160,21 @@ class _VideoDescMimetypeReturn extends ffi.Struct {
 class _VideoDescSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _VideoDescWidthReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _VideoDescHeightReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
@@ -50192,7 +50192,7 @@ class _VideoDescBlurhashReturn extends ffi.Struct {
 class _VideoDescDurationReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
@@ -50233,7 +50233,7 @@ class _FileDescMimetypeReturn extends ffi.Struct {
 class _FileDescSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
