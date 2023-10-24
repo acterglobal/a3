@@ -1744,6 +1744,27 @@ object Account {
     fn unignore_user(user_id: string) -> Future<Result<bool>>;
 }
 
+object ThreePidManager {
+    /// get email addresses from third party identifier
+    fn confirmed_email_addresses() -> Future<Result<Vec<string>>>;
+
+    /// get email addresses that were registered
+    fn requested_email_addresses() -> Future<Result<Vec<string>>>;
+
+    /// Requests token via email and add email address to third party identifier.
+    /// If password is not enough complex, homeserver may reject this request.
+    fn request_token_via_email(email_address: string) -> Future<Result<bool>>;
+
+    /// Submit token to finish email register
+    fn submit_token_from_email(email_address: string, token: string, password: string) -> Future<Result<bool>>;
+
+    /// Submit token to finish email register
+    fn try_confirm_email_status(email_address: string, password: string) -> Future<Result<bool>>;
+
+    /// Remove email address from confirmed list or unconfirmed list
+    fn remove_email_address(email_address: string) -> Future<Result<bool>>;
+}
+
 object SyncState {
     /// Get event handler of first synchronization on every launch
     fn first_synced_rx() -> Stream<bool>;
@@ -2081,6 +2102,9 @@ object Client {
 
     /// get only past events that I responded as rsvp
     fn my_past_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
+
+    /// get intermediate info of login (via email and phone) from account data
+    fn three_pid_manager() -> Result<ThreePidManager>;
 
 }
 

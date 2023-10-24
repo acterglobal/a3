@@ -42,6 +42,7 @@ class BubbleBuilder extends ConsumerWidget {
 
     final chatInputState = ref.watch(chatInputProvider(roomId));
     final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
+    final chatInputFocusState = ref.watch(chatInputFocusProvider.notifier);
 
     String eventType = message.metadata?['eventType'] ?? '';
     bool isMemberEvent = eventType == 'm.room.member';
@@ -56,6 +57,8 @@ class BubbleBuilder extends ConsumerWidget {
                 onLeftSwipe: !isAuthor
                     ? null
                     : () {
+                        FocusScope.of(context)
+                            .requestFocus(chatInputFocusState.state);
                         if (chatInputState.currentMessageId != null) {
                           chatInputNotifier.emojiRowVisible(false);
                           chatInputNotifier.setRepliedToMessage(message);
@@ -70,6 +73,8 @@ class BubbleBuilder extends ConsumerWidget {
                 onRightSwipe: isAuthor
                     ? null
                     : () {
+                        FocusScope.of(context)
+                            .requestFocus(chatInputFocusState.state);
                         if (chatInputState.emojiRowVisible) {
                           chatInputNotifier.emojiRowVisible(false);
 
@@ -125,7 +130,12 @@ class _ChatBubble extends ConsumerWidget {
       children: [
         EmojiRow(
           roomId: roomId,
-          onEmojiTap: sendEmojiReaction,
+          onEmojiTap: (String eventId, String emoji) {
+            final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
+            inputNotifier.setCurrentMessageId(null);
+            inputNotifier.emojiRowVisible(false);
+            sendEmojiReaction(eventId, emoji);
+          },
           message: message,
         ),
         const SizedBox(height: 4),

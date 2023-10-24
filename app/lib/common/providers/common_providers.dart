@@ -5,6 +5,7 @@ import 'package:acter/common/providers/notifiers/network_notifier.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Network/Connectivity Providers
@@ -43,4 +44,30 @@ final accountProfileProvider = FutureProvider((ref) async {
   final account = await ref.watch(accountProvider.future);
   final profile = await getProfileData(account);
   return AccountProfile(account, profile);
+});
+
+// Email addresses that registered by user
+class EmailAddresses {
+  final List<String> confirmed;
+  final List<String> unconfirmed;
+
+  const EmailAddresses(this.confirmed, this.unconfirmed);
+}
+
+final emailAddressesProvider = FutureProvider((ref) async {
+  final client = ref.watch(clientProvider);
+  final threePidManager = client!.threePidManager();
+  final confirmed =
+      asDartStringList(await threePidManager.confirmedEmailAddresses());
+  final requested =
+      asDartStringList(await threePidManager.requestedEmailAddresses());
+  final List<String> unconfirmed = [];
+  for (var i = 0; i < requested.length; i++) {
+    if (!confirmed.contains(requested[i])) {
+      unconfirmed.add(requested[i]);
+    }
+  }
+  debugPrint('confirmed email addresses: $confirmed');
+  debugPrint('unconfirmed email addresses: $unconfirmed');
+  return EmailAddresses(confirmed, unconfirmed);
 });

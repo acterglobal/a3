@@ -6,12 +6,12 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
-import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:package_info/package_info.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:package_info/package_info.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 export './acter_flutter_sdk_ffi.dart' show Client;
@@ -44,7 +44,6 @@ const appleKeychainAppGroupName = String.fromEnvironment(
   'APPLE_KEYCHAIN_APP_GROUP_NAME',
   defaultValue: 'V45JGKTC6K.global.acter.a3',
 );
-
 
 // ex: a3-nightly or acter-linux
 const appName = String.fromEnvironment(
@@ -154,14 +153,19 @@ const aOptions = AndroidOptions(
 );
 const iOptions = IOSOptions(
   synchronizable: true,
-  accessibility: KeychainAccessibility.first_unlock,   // must have been unlocked since reboot
-  groupId: appleKeychainAppGroupName,                  // to allow the background process to access the same store
+  accessibility: KeychainAccessibility
+      .first_unlock, // must have been unlocked since reboot
+  groupId:
+      appleKeychainAppGroupName, // to allow the background process to access the same store
 );
 const mOptions = MacOsOptions(
   synchronizable: true,
-  accessibility: KeychainAccessibility.first_unlock,   // must have been unlocked since reboot
-  groupId: appleKeychainAppGroupName,                  // to allow the background process to access the same store
+  accessibility: KeychainAccessibility
+      .first_unlock, // must have been unlocked since reboot
+  groupId:
+      appleKeychainAppGroupName, // to allow the background process to access the same store
 );
+
 class ActerSdk {
   late final ffi.Api _api;
   static String _sessionKey = defaultSessionKey;
@@ -169,11 +173,10 @@ class ActerSdk {
   static final List<ffi.Client> _clients = [];
   static const platform = MethodChannel('acter_flutter_sdk');
 
-  
   static FlutterSecureStorage storage = const FlutterSecureStorage(
     aOptions: aOptions,
-      iOptions: iOptions,
-      mOptions: mOptions,
+    iOptions: iOptions,
+    mOptions: mOptions,
   );
 
   ActerSdk._(this._api);
@@ -187,7 +190,8 @@ class ActerSdk {
       sessions.add(deviceId);
     }
     await storage.write(key: _sessionKey, value: json.encode(sessions));
-    await storage.write(key: '$_sessionKey::currentClientIdx', value: '$_index');
+    final key = '$_sessionKey::currentClientIdx';
+    await storage.write(key: key, value: '$_index');
     debugPrint('session stored: $sessions');
   }
 
@@ -198,10 +202,7 @@ class ActerSdk {
     await storage.write(key: _sessionKey, value: json.encode([]));
   }
 
-
-  Future<ffi.Client> getClientWithDeviceId(
-    String deviceId,
-  ) async {
+  Future<ffi.Client> getClientWithDeviceId(String deviceId) async {
     ffi.Client? client;
     for (final c in _clients) {
       if (c.deviceId().toString() == deviceId) {
@@ -275,7 +276,8 @@ class ActerSdk {
           debugPrint('$deviceId not found. despite in session list');
         }
       }
-      _index = int.tryParse(await storage.read(key: '$_sessionKey::currentClientIdx') ?? '0') ?? 0;
+      final key = await storage.read(key: '$_sessionKey::currentClientIdx');
+      _index = int.tryParse(key ?? '0') ?? 0;
     }
     debugPrint('loading configuration from $appDocPath');
     debugPrint('restored $_clients');
@@ -376,10 +378,9 @@ class ActerSdk {
         : ffi.Api.load();
     String appPath = await appDir();
 
-    String logSettings =
-        (await sharedPrefs()).getString(rustLogKey) ?? defaultLogSetting;
+    final logSettings = (await sharedPrefs()).getString(rustLogKey);
     try {
-      api.initLogging(appPath, logSettings);
+      api.initLogging(appPath, logSettings ?? defaultLogSetting);
     } catch (e) {
       developer.log(
         'Logging setup failed',
@@ -414,7 +415,6 @@ class ActerSdk {
     }
     return _instanceCompl!.future;
   }
-
 
   static Future<ActerSdk> get instance async {
     return await _restoredInstance;
@@ -513,9 +513,7 @@ class ActerSdk {
     return _clients;
   }
 
-  Future<bool> deactivateAndDestroyCurrentClient(
-    String password,
-  ) async {
+  Future<bool> deactivateAndDestroyCurrentClient(String password) async {
     final client = currentClient;
     if (client == null) {
       return false;
