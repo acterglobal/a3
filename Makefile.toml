@@ -251,8 +251,6 @@ private = true
 command = "cargo"
 args = [
     "run",
-    "--target",
-    "aarch64-apple-darwin",
     "-p",
     "acter",
     "--features",
