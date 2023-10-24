@@ -20,7 +20,6 @@ class AddEmailAddr extends StatefulWidget {
 class _AddEmailAddrState extends State<AddEmailAddr> {
   final TextEditingController newEmailAddress = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool passwordVisible = false;
 
   @override
   Widget build(BuildContext context) {
