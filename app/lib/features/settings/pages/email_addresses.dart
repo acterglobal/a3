@@ -101,8 +101,8 @@ class EmailAddressesPage extends ConsumerWidget {
         body: emailAddresses.when(
           data: (addresses) => buildAddresses(context, addresses),
           error: (error, stack) {
-            return const Center(
-              child: Text("Couldn't load all email addresses"),
+            return Center(
+              child: Text('Error loading email addresses: $error'),
             );
           },
           loading: () => const Center(
