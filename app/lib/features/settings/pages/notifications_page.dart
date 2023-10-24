@@ -14,18 +14,18 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:settings_ui/settings_ui.dart';
 
-class AddEmail extends StatefulWidget {
+class _AddEmail extends StatefulWidget {
   final List<String> emails;
-  const AddEmail(
+  const _AddEmail(
     this.emails, {
     Key? key,
   }) : super(key: key);
 
   @override
-  State<AddEmail> createState() => _AddEmailState();
+  State<_AddEmail> createState() => __AddEmailState();
 }
 
-class _AddEmailState extends State<AddEmail> {
+class __AddEmailState extends State<_AddEmail> {
   String? emailAddr;
 
   @override
@@ -149,7 +149,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
               onPressed: () async {
                 final emailToAdd = await showDialog<String?>(
                   context: context,
-                  builder: (BuildContext context) => AddEmail(emails),
+                  builder: (BuildContext context) => _AddEmail(emails),
                 );
                 if (emailToAdd != null) {
                   EasyLoading.show(status: 'Adding $emailToAdd');
