@@ -28,7 +28,6 @@ derive_builder = "0.10.2"
 eyeball-im = "0.4.1"
 fern = { git = "https://github.com/acterglobal/fern", branch = "rotate", features = ["manual"] }
 ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen", branch = "proc-macro2-unpin" }
-filesize = "0.2.0"
 futures = "0.3.17"
 futures-signals = "0.3.31"
 lazy_static = "1.4"

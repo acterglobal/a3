@@ -134,20 +134,14 @@ impl UserProfile {
         Ok(OptionBuffer::new(None))
     }
 
-    pub async fn get_thumbnail(&self, width: u64, height: u64) -> Result<OptionBuffer> {
-        let Some(width) = UInt::new(width) else {
-            bail!("Wrong width in getting user thumbnail")
-        };
-        let Some(height) = UInt::new(height) else {
-            bail!("Wrong height in getting user thumbnail")
-        };
+    pub async fn get_thumbnail(&self, width: u32, height: u32) -> Result<OptionBuffer> {
         if let Some(account) = self.account.clone() {
             return RUNTIME
                 .spawn(async move {
                     let size = MediaThumbnailSize {
                         method: ThumbnailMethod::Scale,
-                        width,
-                        height,
+                        width: UInt::from(width),
+                        height: UInt::from(height),
                     };
                     let buf = account.get_avatar(MediaFormat::Thumbnail(size)).await?;
                     Ok(OptionBuffer::new(buf))
@@ -159,8 +153,8 @@ impl UserProfile {
                 .spawn(async move {
                     let size = MediaThumbnailSize {
                         method: ThumbnailMethod::Scale,
-                        width,
-                        height,
+                        width: UInt::from(width),
+                        height: UInt::from(height),
                     };
                     let buf = member.avatar(MediaFormat::Thumbnail(size)).await?;
                     Ok(OptionBuffer::new(buf))
@@ -223,13 +217,7 @@ impl RoomProfile {
             .await?
     }
 
-    pub async fn get_thumbnail(&self, width: u64, height: u64) -> Result<OptionBuffer> {
-        let Some(width) = UInt::new(width) else {
-            bail!("Wrong width in getting room thumbnail")
-        };
-        let Some(height) = UInt::new(height) else {
-            bail!("Wrong height in getting room thumbnail")
-        };
+    pub async fn get_thumbnail(&self, width: u32, height: u32) -> Result<OptionBuffer> {
         let room = self
             .client
             .get_room(&self.room_id)
@@ -238,8 +226,8 @@ impl RoomProfile {
             .spawn(async move {
                 let size = MediaThumbnailSize {
                     method: ThumbnailMethod::Scale,
-                    width,
-                    height,
+                    width: UInt::from(width),
+                    height: UInt::from(height),
                 };
                 let buf = room.avatar(MediaFormat::Thumbnail(size)).await?;
                 Ok(OptionBuffer::new(buf))

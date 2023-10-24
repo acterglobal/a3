@@ -51,6 +51,7 @@ pub struct VerificationEvent {
 }
 
 impl VerificationEvent {
+    #[allow(clippy::too_many_arguments)]
     pub(crate) fn new(
         client: SdkClient,
         controller: VerificationController,

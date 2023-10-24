@@ -19,19 +19,19 @@ use super::client::Client;
 pub struct ReceiptRecord {
     event_id: OwnedEventId,
     seen_by: OwnedUserId,
-    timestamp: Option<MilliSecondsSinceUnixEpoch>,
+    ts: Option<MilliSecondsSinceUnixEpoch>,
 }
 
 impl ReceiptRecord {
     pub(crate) fn new(
         event_id: OwnedEventId,
         seen_by: OwnedUserId,
-        timestamp: Option<MilliSecondsSinceUnixEpoch>,
+        ts: Option<MilliSecondsSinceUnixEpoch>,
     ) -> Self {
         ReceiptRecord {
             event_id,
             seen_by,
-            timestamp,
+            ts,
         }
     }
 
@@ -43,8 +43,8 @@ impl ReceiptRecord {
         self.seen_by.to_string()
     }
 
-    pub fn timestamp(&self) -> Option<u64> {
-        self.timestamp.map(|x| x.get().into())
+    pub fn ts(&self) -> Option<u64> {
+        self.ts.map(|x| x.get().into())
     }
 }
 

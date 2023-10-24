@@ -64,16 +64,34 @@ impl ThumbnailInfo {
         self.inner.mimetype.clone()
     }
 
-    pub fn size(&self) -> Option<u64> {
-        self.inner.size.map(|x| x.into())
+    pub fn size(&self) -> Option<u32> {
+        self.inner.size.map(|x| {
+            let size = u64::from(x);
+            if size > u32::MAX as u64 {
+                panic!("thumbnail size overflowed");
+            }
+            size as u32
+        })
     }
 
-    pub fn width(&self) -> Option<u64> {
-        self.inner.width.map(|x| x.into())
+    pub fn width(&self) -> Option<u32> {
+        self.inner.width.map(|x| {
+            let width = u64::from(x);
+            if width > u32::MAX as u64 {
+                panic!("thumbnail width overflowed");
+            }
+            width as u32
+        })
     }
 
-    pub fn height(&self) -> Option<u64> {
-        self.inner.height.map(|x| x.into())
+    pub fn height(&self) -> Option<u32> {
+        self.inner.height.map(|x| {
+            let height = u64::from(x);
+            if height > u32::MAX as u64 {
+                panic!("thumbnail height overflowed");
+            }
+            height as u32
+        })
     }
 }
 
@@ -146,16 +164,34 @@ impl ImageDesc {
         self.info.mimetype.clone()
     }
 
-    pub fn size(&self) -> Option<u64> {
-        self.info.size.map(|x| x.into())
+    pub fn size(&self) -> Option<u32> {
+        self.info.size.map(|x| {
+            let size = u64::from(x);
+            if size > u32::MAX as u64 {
+                panic!("image size overflowed");
+            }
+            size as u32
+        })
     }
 
-    pub fn width(&self) -> Option<u64> {
-        self.info.width.map(|x| x.into())
+    pub fn width(&self) -> Option<u32> {
+        self.info.width.map(|x| {
+            let width = u64::from(x);
+            if width > u32::MAX as u64 {
+                panic!("image width overflowed");
+            }
+            width as u32
+        })
     }
 
-    pub fn height(&self) -> Option<u64> {
-        self.info.height.map(|x| x.into())
+    pub fn height(&self) -> Option<u32> {
+        self.info.height.map(|x| {
+            let height = u64::from(x);
+            if height > u32::MAX as u64 {
+                panic!("image height overflowed");
+            }
+            height as u32
+        })
     }
 
     pub fn thumbnail_info(&self) -> Option<ThumbnailInfo> {
@@ -195,16 +231,28 @@ impl AudioDesc {
         }
     }
 
-    pub fn duration(&self) -> Option<u64> {
-        self.info.duration.map(|x| x.as_secs())
+    pub fn duration(&self) -> Option<u32> {
+        self.info.duration.map(|x| {
+            let secs = x.as_secs();
+            if secs > u32::MAX as u64 {
+                panic!("audio duration overflowed");
+            }
+            secs as u32
+        })
     }
 
     pub fn mimetype(&self) -> Option<String> {
         self.info.mimetype.clone()
     }
 
-    pub fn size(&self) -> Option<u64> {
-        self.info.size.map(|x| x.into())
+    pub fn size(&self) -> Option<u32> {
+        self.info.size.map(|x| {
+            let size = u64::from(x);
+            if size > u32::MAX as u64 {
+                panic!("audio size overflowed");
+            }
+            size as u32
+        })
     }
 }
 
@@ -234,24 +282,48 @@ impl VideoDesc {
         self.info.blurhash.clone()
     }
 
-    pub fn duration(&self) -> Option<u64> {
-        self.info.duration.map(|x| x.as_secs())
+    pub fn duration(&self) -> Option<u32> {
+        self.info.duration.map(|x| {
+            let secs = x.as_secs();
+            if secs > u32::MAX as u64 {
+                panic!("video duration overflowed");
+            }
+            secs as u32
+        })
     }
 
     pub fn mimetype(&self) -> Option<String> {
         self.info.mimetype.clone()
     }
 
-    pub fn size(&self) -> Option<u64> {
-        self.info.size.map(|x| x.into())
+    pub fn size(&self) -> Option<u32> {
+        self.info.size.map(|x| {
+            let size = u64::from(x);
+            if size > u32::MAX as u64 {
+                panic!("video size overflowed");
+            }
+            size as u32
+        })
     }
 
-    pub fn width(&self) -> Option<u64> {
-        self.info.width.map(|x| x.into())
+    pub fn width(&self) -> Option<u32> {
+        self.info.width.map(|x| {
+            let width = u64::from(x);
+            if width > u32::MAX as u64 {
+                panic!("video width overflowed");
+            }
+            width as u32
+        })
     }
 
-    pub fn height(&self) -> Option<u64> {
-        self.info.height.map(|x| x.into())
+    pub fn height(&self) -> Option<u32> {
+        self.info.height.map(|x| {
+            let height = u64::from(x);
+            if height > u32::MAX as u64 {
+                panic!("video height overflowed");
+            }
+            height as u32
+        })
     }
 
     pub fn thumbnail_info(&self) -> Option<ThumbnailInfo> {
@@ -295,8 +367,14 @@ impl FileDesc {
         self.info.mimetype.clone()
     }
 
-    pub fn size(&self) -> Option<u64> {
-        self.info.size.map(|x| x.into())
+    pub fn size(&self) -> Option<u32> {
+        self.info.size.map(|x| {
+            let size = u64::from(x);
+            if size > u32::MAX as u64 {
+                panic!("file size overflowed");
+            }
+            size as u32
+        })
     }
 
     pub fn thumbnail_info(&self) -> Option<ThumbnailInfo> {
@@ -358,6 +436,39 @@ impl LocationDesc {
         self.thumbnail_info
             .clone()
             .map(|inner| ThumbnailInfo { inner })
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ReactionRecord {
+    sender_id: OwnedUserId,
+    timestamp: MilliSecondsSinceUnixEpoch,
+    sent_by_me: bool,
+}
+
+impl ReactionRecord {
+    pub(crate) fn new(
+        sender_id: OwnedUserId,
+        timestamp: MilliSecondsSinceUnixEpoch,
+        sent_by_me: bool,
+    ) -> Self {
+        ReactionRecord {
+            sender_id,
+            timestamp,
+            sent_by_me,
+        }
+    }
+
+    pub fn sender_id(&self) -> OwnedUserId {
+        self.sender_id.clone()
+    }
+
+    pub fn sent_by_me(&self) -> bool {
+        self.sent_by_me
+    }
+
+    pub fn timestamp(&self) -> u64 {
+        self.timestamp.get().into()
     }
 }
 

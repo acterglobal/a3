@@ -1712,138 +1712,6 @@ class Api {
     return tmp7;
   }
 
-  bool? __newsEntryDraftAddAudioSlideFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _newsEntryDraftAddAudioSlideFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
-  bool? __newsEntryDraftAddVideoSlideFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _newsEntryDraftAddVideoSlideFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
-  bool? __newsEntryDraftAddFileSlideFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _newsEntryDraftAddFileSlideFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
   EventId? __newsEntryDraftSendFuturePoll(
     int boxed,
     int postCobject,
@@ -13388,10 +13256,15 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint64,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -13416,10 +13289,15 @@ class Api {
             int,
             int,
             int,
+            int,
+            int,
+            int,
+            int,
+            int,
           )>();
   late final _newsEntryDraftAddAudioSlidePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          ffi.Void Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Uint64,
@@ -13428,12 +13306,24 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Int64,
             ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint32,
           )>>("__NewsEntryDraft_add_audio_slide");
 
   late final _newsEntryDraftAddAudioSlide =
       _newsEntryDraftAddAudioSlidePtr.asFunction<
-          int Function(
+          void Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
             int,
             int,
             int,
@@ -13446,7 +13336,7 @@ class Api {
           )>();
   late final _newsEntryDraftAddVideoSlidePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          ffi.Void Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Uint64,
@@ -13455,11 +13345,17 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Uint64,
+            ffi.Uint32,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -13468,7 +13364,13 @@ class Api {
 
   late final _newsEntryDraftAddVideoSlide =
       _newsEntryDraftAddVideoSlidePtr.asFunction<
-          int Function(
+          void Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
             int,
             int,
             int,
@@ -13489,29 +13391,6 @@ class Api {
           )>();
   late final _newsEntryDraftAddFileSlidePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__NewsEntryDraft_add_file_slide");
-
-  late final _newsEntryDraftAddFileSlide =
-      _newsEntryDraftAddFileSlidePtr.asFunction<
-          int Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _newsEntryDraftAddLocationSlidePtr = _lookup<
-      ffi.NativeFunction<
           ffi.Void Function(
             ffi.Int64,
             ffi.Int64,
@@ -13520,11 +13399,23 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__NewsEntryDraft_add_location_slide");
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint32,
+          )>>("__NewsEntryDraft_add_file_slide");
 
-  late final _newsEntryDraftAddLocationSlide =
-      _newsEntryDraftAddLocationSlidePtr.asFunction<
+  late final _newsEntryDraftAddFileSlide =
+      _newsEntryDraftAddFileSlidePtr.asFunction<
           void Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
             int,
             int,
             int,
@@ -16109,10 +16000,15 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint64,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -16121,6 +16017,11 @@ class Api {
 
   late final _convoSendImageMessage = _convoSendImageMessagePtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -16166,14 +16067,24 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint64,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
           )>>("__Convo_edit_image_message");
 
   late final _convoEditImageMessage = _convoEditImageMessagePtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -16199,12 +16110,22 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
+            ffi.Int64,
             ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
           )>>("__Convo_send_audio_message");
 
   late final _convoSendAudioMessage = _convoSendAudioMessagePtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -16244,12 +16165,22 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
+            ffi.Int64,
             ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
           )>>("__Convo_edit_audio_message");
 
   late final _convoEditAudioMessage = _convoEditAudioMessagePtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -16273,12 +16204,17 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint64,
+            ffi.Uint32,
             ffi.Uint8,
-            ffi.Uint64,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -16287,6 +16223,11 @@ class Api {
 
   late final _convoSendVideoMessage = _convoSendVideoMessagePtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -16334,16 +16275,26 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint64,
+            ffi.Uint32,
             ffi.Uint8,
-            ffi.Uint64,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
           )>>("__Convo_edit_video_message");
 
   late final _convoEditVideoMessage = _convoEditVideoMessagePtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -16371,10 +16322,18 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint32,
           )>>("__Convo_send_file_message");
 
   late final _convoSendFileMessage = _convoSendFileMessagePtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -16412,10 +16371,20 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint32,
           )>>("__Convo_edit_file_message");
 
   late final _convoEditFileMessage = _convoEditFileMessagePtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -16669,10 +16638,15 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint64,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -16702,6 +16676,11 @@ class Api {
         int,
         int,
         int,
+        int,
+        int,
+        int,
+        int,
+        int,
       )>();
   late final _convoSendAudioReplyPtr = _lookup<
       ffi.NativeFunction<
@@ -16713,8 +16692,13 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
+            ffi.Int64,
             ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -16742,6 +16726,11 @@ class Api {
         int,
         int,
         int,
+        int,
+        int,
+        int,
+        int,
+        int,
       )>();
   late final _convoSendVideoReplyPtr = _lookup<
       ffi.NativeFunction<
@@ -16753,12 +16742,17 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint64,
+            ffi.Uint32,
             ffi.Uint8,
-            ffi.Uint64,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -16798,6 +16792,11 @@ class Api {
         int,
         int,
         int,
+        int,
+        int,
+        int,
+        int,
+        int,
       )>();
   late final _convoSendFileReplyPtr = _lookup<
       ffi.NativeFunction<
@@ -16813,6 +16812,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
+            ffi.Uint32,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -16820,6 +16824,11 @@ class Api {
 
   late final _convoSendFileReply = _convoSendFileReplyPtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -17269,11 +17278,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint64,
+            ffi.Uint32,
             ffi.Uint8,
-            ffi.Uint64,
+            ffi.Uint32,
             ffi.Uint8,
-            ffi.Uint64,
+            ffi.Uint32,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -17316,13 +17325,13 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Uint64,
+            ffi.Uint32,
           )>>("__AttachmentsManager_audio_attachment_draft");
 
   late final _attachmentsManagerAudioAttachmentDraft =
@@ -17355,17 +17364,17 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Uint64,
+            ffi.Uint32,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -17414,7 +17423,7 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint64,
+            ffi.Uint32,
           )>>("__AttachmentsManager_file_attachment_draft");
 
   late final _attachmentsManagerFileAttachmentDraft =
@@ -20006,10 +20015,15 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint64,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -20018,6 +20032,11 @@ class Api {
 
   late final _spaceSendImageMessage = _spaceSendImageMessagePtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -20060,12 +20079,22 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
+            ffi.Int64,
             ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
           )>>("__Space_send_audio_message");
 
   late final _spaceSendAudioMessage = _spaceSendAudioMessagePtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -20102,12 +20131,17 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint64,
+            ffi.Uint32,
             ffi.Uint8,
-            ffi.Uint64,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -20116,6 +20150,11 @@ class Api {
 
   late final _spaceSendVideoMessage = _spaceSendVideoMessagePtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -20160,10 +20199,18 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint32,
           )>>("__Space_send_file_message");
 
   late final _spaceSendFileMessage = _spaceSendFileMessagePtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -20364,7 +20411,7 @@ class Api {
           )>();
   late final _memberPowerLevelPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          ffi.Uint64 Function(
             ffi.Int64,
           )>>("__Member_power_level");
 
@@ -22238,8 +22285,8 @@ class Api {
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
+            ffi.Uint32,
+            ffi.Uint32,
           )>>("__UserProfile_get_thumbnail");
 
   late final _userProfileGetThumbnail = _userProfileGetThumbnailPtr.asFunction<
@@ -22283,8 +22330,8 @@ class Api {
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
+            ffi.Uint32,
+            ffi.Uint32,
           )>>("__RoomProfile_get_thumbnail");
 
   late final _roomProfileGetThumbnail = _roomProfileGetThumbnailPtr.asFunction<
@@ -22674,14 +22721,14 @@ class Api {
       _ReceiptRecordSeenByReturn Function(
         int,
       )>();
-  late final _receiptRecordTimestampPtr = _lookup<
+  late final _receiptRecordTsPtr = _lookup<
       ffi.NativeFunction<
-          _ReceiptRecordTimestampReturn Function(
+          _ReceiptRecordTsReturn Function(
             ffi.Int64,
-          )>>("__ReceiptRecord_timestamp");
+          )>>("__ReceiptRecord_ts");
 
-  late final _receiptRecordTimestamp = _receiptRecordTimestampPtr.asFunction<
-      _ReceiptRecordTimestampReturn Function(
+  late final _receiptRecordTs = _receiptRecordTsPtr.asFunction<
+      _ReceiptRecordTsReturn Function(
         int,
       )>();
   late final _deviceNewEventDeviceIdPtr = _lookup<
@@ -23016,51 +23063,6 @@ class Api {
   late final _newsEntryDraftAddImageSlideFuturePoll =
       _newsEntryDraftAddImageSlideFuturePollPtr.asFunction<
           _NewsEntryDraftAddImageSlideFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _newsEntryDraftAddAudioSlideFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsEntryDraftAddAudioSlideFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__NewsEntryDraft_add_audio_slide_future_poll");
-
-  late final _newsEntryDraftAddAudioSlideFuturePoll =
-      _newsEntryDraftAddAudioSlideFuturePollPtr.asFunction<
-          _NewsEntryDraftAddAudioSlideFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _newsEntryDraftAddVideoSlideFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsEntryDraftAddVideoSlideFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__NewsEntryDraft_add_video_slide_future_poll");
-
-  late final _newsEntryDraftAddVideoSlideFuturePoll =
-      _newsEntryDraftAddVideoSlideFuturePollPtr.asFunction<
-          _NewsEntryDraftAddVideoSlideFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _newsEntryDraftAddFileSlideFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsEntryDraftAddFileSlideFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__NewsEntryDraft_add_file_slide_future_poll");
-
-  late final _newsEntryDraftAddFileSlideFuturePoll =
-      _newsEntryDraftAddFileSlideFuturePollPtr.asFunction<
-          _NewsEntryDraftAddFileSlideFuturePollReturn Function(
             int,
             int,
             int,
@@ -28904,16 +28906,145 @@ class NewsEntryDraft {
   /// create news slide for image msg
   Future<bool> addImageSlide(
     String body,
-    String uri,
+    String url,
+    String mimetype,
+    int? size,
     int? width,
     int? height,
     String? blurhash,
   ) {
     final tmp1 = body;
-    final tmp5 = uri;
-    final tmp9 = width;
-    final tmp13 = height;
-    final tmp17 = blurhash;
+    final tmp5 = url;
+    final tmp9 = mimetype;
+    final tmp13 = size;
+    final tmp17 = width;
+    final tmp21 = height;
+    final tmp25 = blurhash;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp29 = 0;
+    var tmp30 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
+    }
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    if (tmp21 == null) {
+      tmp22 = 0;
+    } else {
+      tmp22 = 1;
+      final tmp23 = tmp21;
+      tmp24 = tmp23;
+    }
+    if (tmp25 == null) {
+      tmp26 = 0;
+    } else {
+      tmp26 = 1;
+      final tmp27 = tmp25;
+      final tmp27_0 = utf8.encode(tmp27);
+      tmp29 = tmp27_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
+      final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
+      tmp28_1.setAll(0, tmp27_0);
+      tmp28 = tmp28_0.address;
+      tmp30 = tmp29;
+    }
+    final tmp31 = _api._newsEntryDraftAddImageSlide(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp24,
+      tmp26,
+      tmp28,
+      tmp29,
+      tmp30,
+    );
+    final tmp33 = tmp31;
+    final ffi.Pointer<ffi.Void> tmp33_0 = ffi.Pointer.fromAddress(tmp33);
+    final tmp33_1 =
+        _Box(_api, tmp33_0, "__NewsEntryDraft_add_image_slide_future_drop");
+    tmp33_1._finalizer = _api._registerFinalizer(tmp33_1);
+    final tmp32 =
+        _nativeFuture(tmp33_1, _api.__newsEntryDraftAddImageSlideFuturePoll);
+    return tmp32;
+  }
+
+  /// create news slide for audio msg
+  void addAudioSlide(
+    String body,
+    String url,
+    int? secs,
+    String? mimetype,
+    int? size,
+  ) {
+    final tmp1 = body;
+    final tmp5 = url;
+    final tmp9 = secs;
+    final tmp13 = mimetype;
+    final tmp19 = size;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -28925,9 +29056,9 @@ class NewsEntryDraft {
     var tmp12 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
+    var tmp17 = 0;
     var tmp18 = 0;
     var tmp20 = 0;
-    var tmp21 = 0;
     var tmp22 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
@@ -28958,23 +29089,23 @@ class NewsEntryDraft {
     } else {
       tmp14 = 1;
       final tmp15 = tmp13;
-      tmp16 = tmp15;
-    }
-    if (tmp17 == null) {
-      tmp18 = 0;
-    } else {
-      tmp18 = 1;
-      final tmp19 = tmp17;
-      final tmp19_0 = utf8.encode(tmp19);
-      tmp21 = tmp19_0.length;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp20_0 = _api.__allocate(tmp21 * 1, 1);
-      final Uint8List tmp20_1 = tmp20_0.asTypedList(tmp21);
-      tmp20_1.setAll(0, tmp19_0);
-      tmp20 = tmp20_0.address;
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
+      tmp18 = tmp17;
+    }
+    if (tmp19 == null) {
+      tmp20 = 0;
+    } else {
+      tmp20 = 1;
+      final tmp21 = tmp19;
       tmp22 = tmp21;
     }
-    final tmp23 = _api._newsEntryDraftAddImageSlide(
+    _api._newsEntryDraftAddAudioSlide(
       tmp0,
       tmp2,
       tmp3,
@@ -28986,99 +29117,33 @@ class NewsEntryDraft {
       tmp12,
       tmp14,
       tmp16,
+      tmp17,
       tmp18,
       tmp20,
-      tmp21,
       tmp22,
     );
-    final tmp25 = tmp23;
-    final ffi.Pointer<ffi.Void> tmp25_0 = ffi.Pointer.fromAddress(tmp25);
-    final tmp25_1 =
-        _Box(_api, tmp25_0, "__NewsEntryDraft_add_image_slide_future_drop");
-    tmp25_1._finalizer = _api._registerFinalizer(tmp25_1);
-    final tmp24 =
-        _nativeFuture(tmp25_1, _api.__newsEntryDraftAddImageSlideFuturePoll);
-    return tmp24;
-  }
-
-  /// create news slide for audio msg
-  Future<bool> addAudioSlide(
-    String body,
-    String uri,
-    int? secs,
-  ) {
-    final tmp1 = body;
-    final tmp5 = uri;
-    final tmp9 = secs;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    final tmp13 = _api._newsEntryDraftAddAudioSlide(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
-      tmp10,
-      tmp12,
-    );
-    final tmp15 = tmp13;
-    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
-    final tmp15_1 =
-        _Box(_api, tmp15_0, "__NewsEntryDraft_add_audio_slide_future_drop");
-    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
-    final tmp14 =
-        _nativeFuture(tmp15_1, _api.__newsEntryDraftAddAudioSlideFuturePoll);
-    return tmp14;
+    return;
   }
 
   /// create news slide for video msg
-  Future<bool> addVideoSlide(
+  void addVideoSlide(
     String body,
-    String uri,
+    String url,
     int? secs,
-    int? width,
     int? height,
+    int? width,
+    String? mimetype,
+    int? size,
     String? blurhash,
   ) {
     final tmp1 = body;
-    final tmp5 = uri;
+    final tmp5 = url;
     final tmp9 = secs;
-    final tmp13 = width;
-    final tmp17 = height;
-    final tmp21 = blurhash;
+    final tmp13 = height;
+    final tmp17 = width;
+    final tmp21 = mimetype;
+    final tmp27 = size;
+    final tmp31 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -29096,6 +29161,12 @@ class NewsEntryDraft {
     var tmp24 = 0;
     var tmp25 = 0;
     var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp30 = 0;
+    var tmp32 = 0;
+    var tmp34 = 0;
+    var tmp35 = 0;
+    var tmp36 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -29148,7 +29219,28 @@ class NewsEntryDraft {
       tmp24 = tmp24_0.address;
       tmp26 = tmp25;
     }
-    final tmp27 = _api._newsEntryDraftAddVideoSlide(
+    if (tmp27 == null) {
+      tmp28 = 0;
+    } else {
+      tmp28 = 1;
+      final tmp29 = tmp27;
+      tmp30 = tmp29;
+    }
+    if (tmp31 == null) {
+      tmp32 = 0;
+    } else {
+      tmp32 = 1;
+      final tmp33 = tmp31;
+      final tmp33_0 = utf8.encode(tmp33);
+      tmp35 = tmp33_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp34_0 = _api.__allocate(tmp35 * 1, 1);
+      final Uint8List tmp34_1 = tmp34_0.asTypedList(tmp35);
+      tmp34_1.setAll(0, tmp33_0);
+      tmp34 = tmp34_0.address;
+      tmp36 = tmp35;
+    }
+    _api._newsEntryDraftAddVideoSlide(
       tmp0,
       tmp2,
       tmp3,
@@ -29166,24 +29258,27 @@ class NewsEntryDraft {
       tmp24,
       tmp25,
       tmp26,
+      tmp28,
+      tmp30,
+      tmp32,
+      tmp34,
+      tmp35,
+      tmp36,
     );
-    final tmp29 = tmp27;
-    final ffi.Pointer<ffi.Void> tmp29_0 = ffi.Pointer.fromAddress(tmp29);
-    final tmp29_1 =
-        _Box(_api, tmp29_0, "__NewsEntryDraft_add_video_slide_future_drop");
-    tmp29_1._finalizer = _api._registerFinalizer(tmp29_1);
-    final tmp28 =
-        _nativeFuture(tmp29_1, _api.__newsEntryDraftAddVideoSlideFuturePoll);
-    return tmp28;
+    return;
   }
 
   /// create news slide for file msg
-  Future<bool> addFileSlide(
+  void addFileSlide(
     String body,
-    String uri,
+    String url,
+    String? mimetype,
+    int? size,
   ) {
     final tmp1 = body;
-    final tmp5 = uri;
+    final tmp5 = url;
+    final tmp9 = mimetype;
+    final tmp15 = size;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -29191,6 +29286,12 @@ class NewsEntryDraft {
     var tmp6 = 0;
     var tmp7 = 0;
     var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp13 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -29208,7 +29309,28 @@ class NewsEntryDraft {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9 = _api._newsEntryDraftAddFileSlide(
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
+      tmp18 = tmp17;
+    }
+    _api._newsEntryDraftAddFileSlide(
       tmp0,
       tmp2,
       tmp3,
@@ -29216,56 +29338,12 @@ class NewsEntryDraft {
       tmp6,
       tmp7,
       tmp8,
-    );
-    final tmp11 = tmp9;
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 =
-        _Box(_api, tmp11_0, "__NewsEntryDraft_add_file_slide_future_drop");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 =
-        _nativeFuture(tmp11_1, _api.__newsEntryDraftAddFileSlideFuturePoll);
-    return tmp10;
-  }
-
-  /// create news slide for location msg
-  void addLocationSlide(
-    String body,
-    String geoUri,
-  ) {
-    final tmp1 = body;
-    final tmp5 = geoUri;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    _api._newsEntryDraftAddLocationSlide(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
+      tmp10,
+      tmp12,
+      tmp13,
+      tmp14,
+      tmp16,
+      tmp18,
     );
     return;
   }
@@ -34839,566 +34917,19 @@ class Convo {
   Future<EventId> sendImageMessage(
     String uri,
     String name,
+    String mimetype,
+    int? size,
     int? width,
     int? height,
     String? blurhash,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
-    final tmp9 = width;
-    final tmp13 = height;
-    final tmp17 = blurhash;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp18 = 0;
-    var tmp20 = 0;
-    var tmp21 = 0;
-    var tmp22 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      tmp16 = tmp15;
-    }
-    if (tmp17 == null) {
-      tmp18 = 0;
-    } else {
-      tmp18 = 1;
-      final tmp19 = tmp17;
-      final tmp19_0 = utf8.encode(tmp19);
-      tmp21 = tmp19_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp20_0 = _api.__allocate(tmp21 * 1, 1);
-      final Uint8List tmp20_1 = tmp20_0.asTypedList(tmp21);
-      tmp20_1.setAll(0, tmp19_0);
-      tmp20 = tmp20_0.address;
-      tmp22 = tmp21;
-    }
-    final tmp23 = _api._convoSendImageMessage(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
-      tmp10,
-      tmp12,
-      tmp14,
-      tmp16,
-      tmp18,
-      tmp20,
-      tmp21,
-      tmp22,
-    );
-    final tmp25 = tmp23;
-    final ffi.Pointer<ffi.Void> tmp25_0 = ffi.Pointer.fromAddress(tmp25);
-    final tmp25_1 =
-        _Box(_api, tmp25_0, "__Convo_send_image_message_future_drop");
-    tmp25_1._finalizer = _api._registerFinalizer(tmp25_1);
-    final tmp24 =
-        _nativeFuture(tmp25_1, _api.__convoSendImageMessageFuturePoll);
-    return tmp24;
-  }
-
-  /// decrypted image file data
-  /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-  /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-  Future<FfiBufferUint8> imageBinary(
-    String eventId,
-  ) {
-    final tmp1 = eventId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._convoImageBinary(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_image_binary_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__convoImageBinaryFuturePoll);
-    return tmp6;
-  }
-
-  /// edit the image message
-  Future<EventId> editImageMessage(
-    String eventId,
-    String uri,
-    String name,
-    int? width,
-    int? height,
-  ) {
-    final tmp1 = eventId;
-    final tmp5 = uri;
-    final tmp9 = name;
-    final tmp13 = width;
-    final tmp17 = height;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp11 = 0;
-    var tmp12 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp18 = 0;
-    var tmp20 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    final tmp9_0 = utf8.encode(tmp9);
-    tmp11 = tmp9_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-    tmp10_1.setAll(0, tmp9_0);
-    tmp10 = tmp10_0.address;
-    tmp12 = tmp11;
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      tmp16 = tmp15;
-    }
-    if (tmp17 == null) {
-      tmp18 = 0;
-    } else {
-      tmp18 = 1;
-      final tmp19 = tmp17;
-      tmp20 = tmp19;
-    }
-    final tmp21 = _api._convoEditImageMessage(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
-      tmp10,
-      tmp11,
-      tmp12,
-      tmp14,
-      tmp16,
-      tmp18,
-      tmp20,
-    );
-    final tmp23 = tmp21;
-    final ffi.Pointer<ffi.Void> tmp23_0 = ffi.Pointer.fromAddress(tmp23);
-    final tmp23_1 =
-        _Box(_api, tmp23_0, "__Convo_edit_image_message_future_drop");
-    tmp23_1._finalizer = _api._registerFinalizer(tmp23_1);
-    final tmp22 =
-        _nativeFuture(tmp23_1, _api.__convoEditImageMessageFuturePoll);
-    return tmp22;
-  }
-
-  /// send the audio message to this room
-  Future<EventId> sendAudioMessage(
-    String uri,
-    String name,
-    int? secs,
-  ) {
-    final tmp1 = uri;
-    final tmp5 = name;
-    final tmp9 = secs;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    final tmp13 = _api._convoSendAudioMessage(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
-      tmp10,
-      tmp12,
-    );
-    final tmp15 = tmp13;
-    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
-    final tmp15_1 =
-        _Box(_api, tmp15_0, "__Convo_send_audio_message_future_drop");
-    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
-    final tmp14 =
-        _nativeFuture(tmp15_1, _api.__convoSendAudioMessageFuturePoll);
-    return tmp14;
-  }
-
-  /// decrypted audio buffer data
-  /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-  /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-  Future<FfiBufferUint8> audioBinary(
-    String eventId,
-  ) {
-    final tmp1 = eventId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._convoAudioBinary(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_audio_binary_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__convoAudioBinaryFuturePoll);
-    return tmp6;
-  }
-
-  /// edit the audio message
-  Future<EventId> editAudioMessage(
-    String eventId,
-    String uri,
-    String name,
-    int? secs,
-  ) {
-    final tmp1 = eventId;
-    final tmp5 = uri;
-    final tmp9 = name;
-    final tmp13 = secs;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp11 = 0;
-    var tmp12 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    final tmp9_0 = utf8.encode(tmp9);
-    tmp11 = tmp9_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-    tmp10_1.setAll(0, tmp9_0);
-    tmp10 = tmp10_0.address;
-    tmp12 = tmp11;
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      tmp16 = tmp15;
-    }
-    final tmp17 = _api._convoEditAudioMessage(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
-      tmp10,
-      tmp11,
-      tmp12,
-      tmp14,
-      tmp16,
-    );
-    final tmp19 = tmp17;
-    final ffi.Pointer<ffi.Void> tmp19_0 = ffi.Pointer.fromAddress(tmp19);
-    final tmp19_1 =
-        _Box(_api, tmp19_0, "__Convo_edit_audio_message_future_drop");
-    tmp19_1._finalizer = _api._registerFinalizer(tmp19_1);
-    final tmp18 =
-        _nativeFuture(tmp19_1, _api.__convoEditAudioMessageFuturePoll);
-    return tmp18;
-  }
-
-  /// send the video message to this room
-  Future<EventId> sendVideoMessage(
-    String uri,
-    String name,
-    int? secs,
-    int? width,
-    int? height,
-    String? blurhash,
-  ) {
-    final tmp1 = uri;
-    final tmp5 = name;
-    final tmp9 = secs;
-    final tmp13 = width;
-    final tmp17 = height;
-    final tmp21 = blurhash;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp18 = 0;
-    var tmp20 = 0;
-    var tmp22 = 0;
-    var tmp24 = 0;
-    var tmp25 = 0;
-    var tmp26 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      tmp16 = tmp15;
-    }
-    if (tmp17 == null) {
-      tmp18 = 0;
-    } else {
-      tmp18 = 1;
-      final tmp19 = tmp17;
-      tmp20 = tmp19;
-    }
-    if (tmp21 == null) {
-      tmp22 = 0;
-    } else {
-      tmp22 = 1;
-      final tmp23 = tmp21;
-      final tmp23_0 = utf8.encode(tmp23);
-      tmp25 = tmp23_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
-      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
-      tmp24_1.setAll(0, tmp23_0);
-      tmp24 = tmp24_0.address;
-      tmp26 = tmp25;
-    }
-    final tmp27 = _api._convoSendVideoMessage(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
-      tmp10,
-      tmp12,
-      tmp14,
-      tmp16,
-      tmp18,
-      tmp20,
-      tmp22,
-      tmp24,
-      tmp25,
-      tmp26,
-    );
-    final tmp29 = tmp27;
-    final ffi.Pointer<ffi.Void> tmp29_0 = ffi.Pointer.fromAddress(tmp29);
-    final tmp29_1 =
-        _Box(_api, tmp29_0, "__Convo_send_video_message_future_drop");
-    tmp29_1._finalizer = _api._registerFinalizer(tmp29_1);
-    final tmp28 =
-        _nativeFuture(tmp29_1, _api.__convoSendVideoMessageFuturePoll);
-    return tmp28;
-  }
-
-  /// decrypted video buffer data
-  /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-  /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-  Future<FfiBufferUint8> videoBinary(
-    String eventId,
-  ) {
-    final tmp1 = eventId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._convoVideoBinary(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_video_binary_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__convoVideoBinaryFuturePoll);
-    return tmp6;
-  }
-
-  /// edit the video message
-  Future<EventId> editVideoMessage(
-    String eventId,
-    String uri,
-    String name,
-    int? secs,
-    int? width,
-    int? height,
-  ) {
-    final tmp1 = eventId;
-    final tmp5 = uri;
-    final tmp9 = name;
-    final tmp13 = secs;
+    final tmp9 = mimetype;
+    final tmp13 = size;
     final tmp17 = width;
     final tmp21 = height;
+    final tmp25 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -35415,6 +34946,10 @@ class Convo {
     var tmp20 = 0;
     var tmp22 = 0;
     var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp29 = 0;
+    var tmp30 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -35461,7 +34996,21 @@ class Convo {
       final tmp23 = tmp21;
       tmp24 = tmp23;
     }
-    final tmp25 = _api._convoEditVideoMessage(
+    if (tmp25 == null) {
+      tmp26 = 0;
+    } else {
+      tmp26 = 1;
+      final tmp27 = tmp25;
+      final tmp27_0 = utf8.encode(tmp27);
+      tmp29 = tmp27_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
+      final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
+      tmp28_1.setAll(0, tmp27_0);
+      tmp28 = tmp28_0.address;
+      tmp30 = tmp29;
+    }
+    final tmp31 = _api._convoSendImageMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -35478,24 +35027,72 @@ class Convo {
       tmp20,
       tmp22,
       tmp24,
+      tmp26,
+      tmp28,
+      tmp29,
+      tmp30,
     );
-    final tmp27 = tmp25;
-    final ffi.Pointer<ffi.Void> tmp27_0 = ffi.Pointer.fromAddress(tmp27);
-    final tmp27_1 =
-        _Box(_api, tmp27_0, "__Convo_edit_video_message_future_drop");
-    tmp27_1._finalizer = _api._registerFinalizer(tmp27_1);
-    final tmp26 =
-        _nativeFuture(tmp27_1, _api.__convoEditVideoMessageFuturePoll);
-    return tmp26;
+    final tmp33 = tmp31;
+    final ffi.Pointer<ffi.Void> tmp33_0 = ffi.Pointer.fromAddress(tmp33);
+    final tmp33_1 =
+        _Box(_api, tmp33_0, "__Convo_send_image_message_future_drop");
+    tmp33_1._finalizer = _api._registerFinalizer(tmp33_1);
+    final tmp32 =
+        _nativeFuture(tmp33_1, _api.__convoSendImageMessageFuturePoll);
+    return tmp32;
   }
 
-  /// send the file message to this room
-  Future<EventId> sendFileMessage(
+  /// decrypted image file data
+  /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
+  /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
+  Future<FfiBufferUint8> imageBinary(
+    String eventId,
+  ) {
+    final tmp1 = eventId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._convoImageBinary(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_image_binary_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__convoImageBinaryFuturePoll);
+    return tmp6;
+  }
+
+  /// edit the image message
+  Future<EventId> editImageMessage(
+    String eventId,
     String uri,
     String name,
+    String mimetype,
+    int? size,
+    int? width,
+    int? height,
   ) {
-    final tmp1 = uri;
-    final tmp5 = name;
+    final tmp1 = eventId;
+    final tmp5 = uri;
+    final tmp9 = name;
+    final tmp13 = mimetype;
+    final tmp17 = size;
+    final tmp21 = width;
+    final tmp25 = height;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -35503,6 +35100,18 @@ class Convo {
     var tmp6 = 0;
     var tmp7 = 0;
     var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp15 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -35520,7 +35129,44 @@ class Convo {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9 = _api._convoSendFileMessage(
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    final tmp13_0 = utf8.encode(tmp13);
+    tmp15 = tmp13_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp14_0 = _api.__allocate(tmp15 * 1, 1);
+    final Uint8List tmp14_1 = tmp14_0.asTypedList(tmp15);
+    tmp14_1.setAll(0, tmp13_0);
+    tmp14 = tmp14_0.address;
+    tmp16 = tmp15;
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    if (tmp21 == null) {
+      tmp22 = 0;
+    } else {
+      tmp22 = 1;
+      final tmp23 = tmp21;
+      tmp24 = tmp23;
+    }
+    if (tmp25 == null) {
+      tmp26 = 0;
+    } else {
+      tmp26 = 1;
+      final tmp27 = tmp25;
+      tmp28 = tmp27;
+    }
+    final tmp29 = _api._convoEditImageMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -35528,14 +35174,641 @@ class Convo {
       tmp6,
       tmp7,
       tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp15,
+      tmp16,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp24,
+      tmp26,
+      tmp28,
     );
-    final tmp11 = tmp9;
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 =
-        _Box(_api, tmp11_0, "__Convo_send_file_message_future_drop");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = _nativeFuture(tmp11_1, _api.__convoSendFileMessageFuturePoll);
-    return tmp10;
+    final tmp31 = tmp29;
+    final ffi.Pointer<ffi.Void> tmp31_0 = ffi.Pointer.fromAddress(tmp31);
+    final tmp31_1 =
+        _Box(_api, tmp31_0, "__Convo_edit_image_message_future_drop");
+    tmp31_1._finalizer = _api._registerFinalizer(tmp31_1);
+    final tmp30 =
+        _nativeFuture(tmp31_1, _api.__convoEditImageMessageFuturePoll);
+    return tmp30;
+  }
+
+  /// send the audio message to this room
+  Future<EventId> sendAudioMessage(
+    String uri,
+    String name,
+    String mimetype,
+    int? secs,
+    int? size,
+  ) {
+    final tmp1 = uri;
+    final tmp5 = name;
+    final tmp9 = mimetype;
+    final tmp13 = secs;
+    final tmp17 = size;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
+    }
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    final tmp21 = _api._convoSendAudioMessage(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp20,
+    );
+    final tmp23 = tmp21;
+    final ffi.Pointer<ffi.Void> tmp23_0 = ffi.Pointer.fromAddress(tmp23);
+    final tmp23_1 =
+        _Box(_api, tmp23_0, "__Convo_send_audio_message_future_drop");
+    tmp23_1._finalizer = _api._registerFinalizer(tmp23_1);
+    final tmp22 =
+        _nativeFuture(tmp23_1, _api.__convoSendAudioMessageFuturePoll);
+    return tmp22;
+  }
+
+  /// decrypted audio buffer data
+  /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
+  /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
+  Future<FfiBufferUint8> audioBinary(
+    String eventId,
+  ) {
+    final tmp1 = eventId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._convoAudioBinary(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_audio_binary_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__convoAudioBinaryFuturePoll);
+    return tmp6;
+  }
+
+  /// edit the audio message
+  Future<EventId> editAudioMessage(
+    String eventId,
+    String uri,
+    String name,
+    String mimetype,
+    int? secs,
+    int? size,
+  ) {
+    final tmp1 = eventId;
+    final tmp5 = uri;
+    final tmp9 = name;
+    final tmp13 = mimetype;
+    final tmp17 = secs;
+    final tmp21 = size;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp15 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    final tmp13_0 = utf8.encode(tmp13);
+    tmp15 = tmp13_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp14_0 = _api.__allocate(tmp15 * 1, 1);
+    final Uint8List tmp14_1 = tmp14_0.asTypedList(tmp15);
+    tmp14_1.setAll(0, tmp13_0);
+    tmp14 = tmp14_0.address;
+    tmp16 = tmp15;
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    if (tmp21 == null) {
+      tmp22 = 0;
+    } else {
+      tmp22 = 1;
+      final tmp23 = tmp21;
+      tmp24 = tmp23;
+    }
+    final tmp25 = _api._convoEditAudioMessage(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp15,
+      tmp16,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp24,
+    );
+    final tmp27 = tmp25;
+    final ffi.Pointer<ffi.Void> tmp27_0 = ffi.Pointer.fromAddress(tmp27);
+    final tmp27_1 =
+        _Box(_api, tmp27_0, "__Convo_edit_audio_message_future_drop");
+    tmp27_1._finalizer = _api._registerFinalizer(tmp27_1);
+    final tmp26 =
+        _nativeFuture(tmp27_1, _api.__convoEditAudioMessageFuturePoll);
+    return tmp26;
+  }
+
+  /// send the video message to this room
+  Future<EventId> sendVideoMessage(
+    String uri,
+    String name,
+    String mimetype,
+    int? secs,
+    int? height,
+    int? width,
+    int? size,
+    String? blurhash,
+  ) {
+    final tmp1 = uri;
+    final tmp5 = name;
+    final tmp9 = mimetype;
+    final tmp13 = secs;
+    final tmp17 = height;
+    final tmp21 = width;
+    final tmp25 = size;
+    final tmp29 = blurhash;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp30 = 0;
+    var tmp32 = 0;
+    var tmp33 = 0;
+    var tmp34 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
+    }
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    if (tmp21 == null) {
+      tmp22 = 0;
+    } else {
+      tmp22 = 1;
+      final tmp23 = tmp21;
+      tmp24 = tmp23;
+    }
+    if (tmp25 == null) {
+      tmp26 = 0;
+    } else {
+      tmp26 = 1;
+      final tmp27 = tmp25;
+      tmp28 = tmp27;
+    }
+    if (tmp29 == null) {
+      tmp30 = 0;
+    } else {
+      tmp30 = 1;
+      final tmp31 = tmp29;
+      final tmp31_0 = utf8.encode(tmp31);
+      tmp33 = tmp31_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
+      final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
+      tmp32_1.setAll(0, tmp31_0);
+      tmp32 = tmp32_0.address;
+      tmp34 = tmp33;
+    }
+    final tmp35 = _api._convoSendVideoMessage(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp24,
+      tmp26,
+      tmp28,
+      tmp30,
+      tmp32,
+      tmp33,
+      tmp34,
+    );
+    final tmp37 = tmp35;
+    final ffi.Pointer<ffi.Void> tmp37_0 = ffi.Pointer.fromAddress(tmp37);
+    final tmp37_1 =
+        _Box(_api, tmp37_0, "__Convo_send_video_message_future_drop");
+    tmp37_1._finalizer = _api._registerFinalizer(tmp37_1);
+    final tmp36 =
+        _nativeFuture(tmp37_1, _api.__convoSendVideoMessageFuturePoll);
+    return tmp36;
+  }
+
+  /// decrypted video buffer data
+  /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
+  /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
+  Future<FfiBufferUint8> videoBinary(
+    String eventId,
+  ) {
+    final tmp1 = eventId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._convoVideoBinary(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_video_binary_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__convoVideoBinaryFuturePoll);
+    return tmp6;
+  }
+
+  /// edit the video message
+  Future<EventId> editVideoMessage(
+    String eventId,
+    String uri,
+    String name,
+    String mimetype,
+    int? secs,
+    int? height,
+    int? width,
+    int? size,
+  ) {
+    final tmp1 = eventId;
+    final tmp5 = uri;
+    final tmp9 = name;
+    final tmp13 = mimetype;
+    final tmp17 = secs;
+    final tmp21 = height;
+    final tmp25 = width;
+    final tmp29 = size;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp15 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp30 = 0;
+    var tmp32 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    final tmp13_0 = utf8.encode(tmp13);
+    tmp15 = tmp13_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp14_0 = _api.__allocate(tmp15 * 1, 1);
+    final Uint8List tmp14_1 = tmp14_0.asTypedList(tmp15);
+    tmp14_1.setAll(0, tmp13_0);
+    tmp14 = tmp14_0.address;
+    tmp16 = tmp15;
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    if (tmp21 == null) {
+      tmp22 = 0;
+    } else {
+      tmp22 = 1;
+      final tmp23 = tmp21;
+      tmp24 = tmp23;
+    }
+    if (tmp25 == null) {
+      tmp26 = 0;
+    } else {
+      tmp26 = 1;
+      final tmp27 = tmp25;
+      tmp28 = tmp27;
+    }
+    if (tmp29 == null) {
+      tmp30 = 0;
+    } else {
+      tmp30 = 1;
+      final tmp31 = tmp29;
+      tmp32 = tmp31;
+    }
+    final tmp33 = _api._convoEditVideoMessage(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp15,
+      tmp16,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp24,
+      tmp26,
+      tmp28,
+      tmp30,
+      tmp32,
+    );
+    final tmp35 = tmp33;
+    final ffi.Pointer<ffi.Void> tmp35_0 = ffi.Pointer.fromAddress(tmp35);
+    final tmp35_1 =
+        _Box(_api, tmp35_0, "__Convo_edit_video_message_future_drop");
+    tmp35_1._finalizer = _api._registerFinalizer(tmp35_1);
+    final tmp34 =
+        _nativeFuture(tmp35_1, _api.__convoEditVideoMessageFuturePoll);
+    return tmp34;
+  }
+
+  /// send the file message to this room
+  Future<EventId> sendFileMessage(
+    String uri,
+    String name,
+    String mimetype,
+    int size,
+  ) {
+    final tmp1 = uri;
+    final tmp5 = name;
+    final tmp9 = mimetype;
+    final tmp13 = size;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    tmp14 = tmp13;
+    final tmp15 = _api._convoSendFileMessage(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+    );
+    final tmp17 = tmp15;
+    final ffi.Pointer<ffi.Void> tmp17_0 = ffi.Pointer.fromAddress(tmp17);
+    final tmp17_1 =
+        _Box(_api, tmp17_0, "__Convo_send_file_message_future_drop");
+    tmp17_1._finalizer = _api._registerFinalizer(tmp17_1);
+    final tmp16 = _nativeFuture(tmp17_1, _api.__convoSendFileMessageFuturePoll);
+    return tmp16;
   }
 
   /// decrypted file buffer data
@@ -35577,10 +35850,14 @@ class Convo {
     String eventId,
     String uri,
     String name,
+    String mimetype,
+    int? size,
   ) {
     final tmp1 = eventId;
     final tmp5 = uri;
     final tmp9 = name;
+    final tmp13 = mimetype;
+    final tmp17 = size;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -35591,6 +35868,11 @@ class Convo {
     var tmp10 = 0;
     var tmp11 = 0;
     var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp15 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -35616,7 +35898,22 @@ class Convo {
     tmp10_1.setAll(0, tmp9_0);
     tmp10 = tmp10_0.address;
     tmp12 = tmp11;
-    final tmp13 = _api._convoEditFileMessage(
+    final tmp13_0 = utf8.encode(tmp13);
+    tmp15 = tmp13_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp14_0 = _api.__allocate(tmp15 * 1, 1);
+    final Uint8List tmp14_1 = tmp14_0.asTypedList(tmp15);
+    tmp14_1.setAll(0, tmp13_0);
+    tmp14 = tmp14_0.address;
+    tmp16 = tmp15;
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    final tmp21 = _api._convoEditFileMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -35627,14 +35924,19 @@ class Convo {
       tmp10,
       tmp11,
       tmp12,
+      tmp14,
+      tmp15,
+      tmp16,
+      tmp18,
+      tmp20,
     );
-    final tmp15 = tmp13;
-    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
-    final tmp15_1 =
-        _Box(_api, tmp15_0, "__Convo_edit_file_message_future_drop");
-    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
-    final tmp14 = _nativeFuture(tmp15_1, _api.__convoEditFileMessageFuturePoll);
-    return tmp14;
+    final tmp23 = tmp21;
+    final ffi.Pointer<ffi.Void> tmp23_0 = ffi.Pointer.fromAddress(tmp23);
+    final tmp23_1 =
+        _Box(_api, tmp23_0, "__Convo_edit_file_message_future_drop");
+    tmp23_1._finalizer = _api._registerFinalizer(tmp23_1);
+    final tmp22 = _nativeFuture(tmp23_1, _api.__convoEditFileMessageFuturePoll);
+    return tmp22;
   }
 
   /// send the location message to this room
@@ -36106,6 +36408,8 @@ class Convo {
   Future<EventId> sendImageReply(
     String uri,
     String name,
+    String mimetype,
+    int? size,
     int? width,
     int? height,
     String eventId,
@@ -36113,372 +36417,12 @@ class Convo {
   ) {
     final tmp1 = uri;
     final tmp5 = name;
-    final tmp9 = width;
-    final tmp13 = height;
-    final tmp17 = eventId;
-    final tmp21 = txnId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp18 = 0;
-    var tmp19 = 0;
-    var tmp20 = 0;
-    var tmp22 = 0;
-    var tmp24 = 0;
-    var tmp25 = 0;
-    var tmp26 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      tmp16 = tmp15;
-    }
-    final tmp17_0 = utf8.encode(tmp17);
-    tmp19 = tmp17_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp18_0 = _api.__allocate(tmp19 * 1, 1);
-    final Uint8List tmp18_1 = tmp18_0.asTypedList(tmp19);
-    tmp18_1.setAll(0, tmp17_0);
-    tmp18 = tmp18_0.address;
-    tmp20 = tmp19;
-    if (tmp21 == null) {
-      tmp22 = 0;
-    } else {
-      tmp22 = 1;
-      final tmp23 = tmp21;
-      final tmp23_0 = utf8.encode(tmp23);
-      tmp25 = tmp23_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
-      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
-      tmp24_1.setAll(0, tmp23_0);
-      tmp24 = tmp24_0.address;
-      tmp26 = tmp25;
-    }
-    final tmp27 = _api._convoSendImageReply(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
-      tmp10,
-      tmp12,
-      tmp14,
-      tmp16,
-      tmp18,
-      tmp19,
-      tmp20,
-      tmp22,
-      tmp24,
-      tmp25,
-      tmp26,
-    );
-    final tmp29 = tmp27;
-    final ffi.Pointer<ffi.Void> tmp29_0 = ffi.Pointer.fromAddress(tmp29);
-    final tmp29_1 = _Box(_api, tmp29_0, "__Convo_send_image_reply_future_drop");
-    tmp29_1._finalizer = _api._registerFinalizer(tmp29_1);
-    final tmp28 = _nativeFuture(tmp29_1, _api.__convoSendImageReplyFuturePoll);
-    return tmp28;
-  }
-
-  /// send reply as audio
-  Future<EventId> sendAudioReply(
-    String uri,
-    String name,
-    int? secs,
-    String eventId,
-    String? txnId,
-  ) {
-    final tmp1 = uri;
-    final tmp5 = name;
-    final tmp9 = secs;
-    final tmp13 = eventId;
-    final tmp17 = txnId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
-    var tmp14 = 0;
-    var tmp15 = 0;
-    var tmp16 = 0;
-    var tmp18 = 0;
-    var tmp20 = 0;
-    var tmp21 = 0;
-    var tmp22 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    final tmp13_0 = utf8.encode(tmp13);
-    tmp15 = tmp13_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp14_0 = _api.__allocate(tmp15 * 1, 1);
-    final Uint8List tmp14_1 = tmp14_0.asTypedList(tmp15);
-    tmp14_1.setAll(0, tmp13_0);
-    tmp14 = tmp14_0.address;
-    tmp16 = tmp15;
-    if (tmp17 == null) {
-      tmp18 = 0;
-    } else {
-      tmp18 = 1;
-      final tmp19 = tmp17;
-      final tmp19_0 = utf8.encode(tmp19);
-      tmp21 = tmp19_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp20_0 = _api.__allocate(tmp21 * 1, 1);
-      final Uint8List tmp20_1 = tmp20_0.asTypedList(tmp21);
-      tmp20_1.setAll(0, tmp19_0);
-      tmp20 = tmp20_0.address;
-      tmp22 = tmp21;
-    }
-    final tmp23 = _api._convoSendAudioReply(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
-      tmp10,
-      tmp12,
-      tmp14,
-      tmp15,
-      tmp16,
-      tmp18,
-      tmp20,
-      tmp21,
-      tmp22,
-    );
-    final tmp25 = tmp23;
-    final ffi.Pointer<ffi.Void> tmp25_0 = ffi.Pointer.fromAddress(tmp25);
-    final tmp25_1 = _Box(_api, tmp25_0, "__Convo_send_audio_reply_future_drop");
-    tmp25_1._finalizer = _api._registerFinalizer(tmp25_1);
-    final tmp24 = _nativeFuture(tmp25_1, _api.__convoSendAudioReplyFuturePoll);
-    return tmp24;
-  }
-
-  /// send reply as video
-  Future<EventId> sendVideoReply(
-    String uri,
-    String name,
-    int? secs,
-    int? width,
-    int? height,
-    String? blurhash,
-    String eventId,
-    String? txnId,
-  ) {
-    final tmp1 = uri;
-    final tmp5 = name;
-    final tmp9 = secs;
-    final tmp13 = width;
-    final tmp17 = height;
-    final tmp21 = blurhash;
-    final tmp27 = eventId;
-    final tmp31 = txnId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp18 = 0;
-    var tmp20 = 0;
-    var tmp22 = 0;
-    var tmp24 = 0;
-    var tmp25 = 0;
-    var tmp26 = 0;
-    var tmp28 = 0;
-    var tmp29 = 0;
-    var tmp30 = 0;
-    var tmp32 = 0;
-    var tmp34 = 0;
-    var tmp35 = 0;
-    var tmp36 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      tmp16 = tmp15;
-    }
-    if (tmp17 == null) {
-      tmp18 = 0;
-    } else {
-      tmp18 = 1;
-      final tmp19 = tmp17;
-      tmp20 = tmp19;
-    }
-    if (tmp21 == null) {
-      tmp22 = 0;
-    } else {
-      tmp22 = 1;
-      final tmp23 = tmp21;
-      final tmp23_0 = utf8.encode(tmp23);
-      tmp25 = tmp23_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
-      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
-      tmp24_1.setAll(0, tmp23_0);
-      tmp24 = tmp24_0.address;
-      tmp26 = tmp25;
-    }
-    final tmp27_0 = utf8.encode(tmp27);
-    tmp29 = tmp27_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
-    final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
-    tmp28_1.setAll(0, tmp27_0);
-    tmp28 = tmp28_0.address;
-    tmp30 = tmp29;
-    if (tmp31 == null) {
-      tmp32 = 0;
-    } else {
-      tmp32 = 1;
-      final tmp33 = tmp31;
-      final tmp33_0 = utf8.encode(tmp33);
-      tmp35 = tmp33_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp34_0 = _api.__allocate(tmp35 * 1, 1);
-      final Uint8List tmp34_1 = tmp34_0.asTypedList(tmp35);
-      tmp34_1.setAll(0, tmp33_0);
-      tmp34 = tmp34_0.address;
-      tmp36 = tmp35;
-    }
-    final tmp37 = _api._convoSendVideoReply(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
-      tmp10,
-      tmp12,
-      tmp14,
-      tmp16,
-      tmp18,
-      tmp20,
-      tmp22,
-      tmp24,
-      tmp25,
-      tmp26,
-      tmp28,
-      tmp29,
-      tmp30,
-      tmp32,
-      tmp34,
-      tmp35,
-      tmp36,
-    );
-    final tmp39 = tmp37;
-    final ffi.Pointer<ffi.Void> tmp39_0 = ffi.Pointer.fromAddress(tmp39);
-    final tmp39_1 = _Box(_api, tmp39_0, "__Convo_send_video_reply_future_drop");
-    tmp39_1._finalizer = _api._registerFinalizer(tmp39_1);
-    final tmp38 = _nativeFuture(tmp39_1, _api.__convoSendVideoReplyFuturePoll);
-    return tmp38;
-  }
-
-  /// send reply as file
-  Future<EventId> sendFileReply(
-    String uri,
-    String name,
-    String eventId,
-    String? txnId,
-  ) {
-    final tmp1 = uri;
-    final tmp5 = name;
-    final tmp9 = eventId;
-    final tmp13 = txnId;
+    final tmp9 = mimetype;
+    final tmp13 = size;
+    final tmp17 = width;
+    final tmp21 = height;
+    final tmp25 = eventId;
+    final tmp29 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -36491,8 +36435,17 @@ class Convo {
     var tmp12 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
-    var tmp17 = 0;
     var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp27 = 0;
+    var tmp28 = 0;
+    var tmp30 = 0;
+    var tmp32 = 0;
+    var tmp33 = 0;
+    var tmp34 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -36523,16 +36476,45 @@ class Convo {
     } else {
       tmp14 = 1;
       final tmp15 = tmp13;
-      final tmp15_0 = utf8.encode(tmp15);
-      tmp17 = tmp15_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
-      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
-      tmp16_1.setAll(0, tmp15_0);
-      tmp16 = tmp16_0.address;
-      tmp18 = tmp17;
+      tmp16 = tmp15;
     }
-    final tmp19 = _api._convoSendFileReply(
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    if (tmp21 == null) {
+      tmp22 = 0;
+    } else {
+      tmp22 = 1;
+      final tmp23 = tmp21;
+      tmp24 = tmp23;
+    }
+    final tmp25_0 = utf8.encode(tmp25);
+    tmp27 = tmp25_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp26_0 = _api.__allocate(tmp27 * 1, 1);
+    final Uint8List tmp26_1 = tmp26_0.asTypedList(tmp27);
+    tmp26_1.setAll(0, tmp25_0);
+    tmp26 = tmp26_0.address;
+    tmp28 = tmp27;
+    if (tmp29 == null) {
+      tmp30 = 0;
+    } else {
+      tmp30 = 1;
+      final tmp31 = tmp29;
+      final tmp31_0 = utf8.encode(tmp31);
+      tmp33 = tmp31_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
+      final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
+      tmp32_1.setAll(0, tmp31_0);
+      tmp32 = tmp32_0.address;
+      tmp34 = tmp33;
+    }
+    final tmp35 = _api._convoSendImageReply(
       tmp0,
       tmp2,
       tmp3,
@@ -36545,15 +36527,451 @@ class Convo {
       tmp12,
       tmp14,
       tmp16,
-      tmp17,
       tmp18,
+      tmp20,
+      tmp22,
+      tmp24,
+      tmp26,
+      tmp27,
+      tmp28,
+      tmp30,
+      tmp32,
+      tmp33,
+      tmp34,
     );
-    final tmp21 = tmp19;
-    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
-    final tmp21_1 = _Box(_api, tmp21_0, "__Convo_send_file_reply_future_drop");
-    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
-    final tmp20 = _nativeFuture(tmp21_1, _api.__convoSendFileReplyFuturePoll);
-    return tmp20;
+    final tmp37 = tmp35;
+    final ffi.Pointer<ffi.Void> tmp37_0 = ffi.Pointer.fromAddress(tmp37);
+    final tmp37_1 = _Box(_api, tmp37_0, "__Convo_send_image_reply_future_drop");
+    tmp37_1._finalizer = _api._registerFinalizer(tmp37_1);
+    final tmp36 = _nativeFuture(tmp37_1, _api.__convoSendImageReplyFuturePoll);
+    return tmp36;
+  }
+
+  /// send reply as audio
+  Future<EventId> sendAudioReply(
+    String uri,
+    String name,
+    String mimetype,
+    int? secs,
+    int? size,
+    String eventId,
+    String? txnId,
+  ) {
+    final tmp1 = uri;
+    final tmp5 = name;
+    final tmp9 = mimetype;
+    final tmp13 = secs;
+    final tmp17 = size;
+    final tmp21 = eventId;
+    final tmp25 = txnId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp23 = 0;
+    var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp29 = 0;
+    var tmp30 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
+    }
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    final tmp21_0 = utf8.encode(tmp21);
+    tmp23 = tmp21_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp22_0 = _api.__allocate(tmp23 * 1, 1);
+    final Uint8List tmp22_1 = tmp22_0.asTypedList(tmp23);
+    tmp22_1.setAll(0, tmp21_0);
+    tmp22 = tmp22_0.address;
+    tmp24 = tmp23;
+    if (tmp25 == null) {
+      tmp26 = 0;
+    } else {
+      tmp26 = 1;
+      final tmp27 = tmp25;
+      final tmp27_0 = utf8.encode(tmp27);
+      tmp29 = tmp27_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
+      final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
+      tmp28_1.setAll(0, tmp27_0);
+      tmp28 = tmp28_0.address;
+      tmp30 = tmp29;
+    }
+    final tmp31 = _api._convoSendAudioReply(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp23,
+      tmp24,
+      tmp26,
+      tmp28,
+      tmp29,
+      tmp30,
+    );
+    final tmp33 = tmp31;
+    final ffi.Pointer<ffi.Void> tmp33_0 = ffi.Pointer.fromAddress(tmp33);
+    final tmp33_1 = _Box(_api, tmp33_0, "__Convo_send_audio_reply_future_drop");
+    tmp33_1._finalizer = _api._registerFinalizer(tmp33_1);
+    final tmp32 = _nativeFuture(tmp33_1, _api.__convoSendAudioReplyFuturePoll);
+    return tmp32;
+  }
+
+  /// send reply as video
+  Future<EventId> sendVideoReply(
+    String uri,
+    String name,
+    String mimetype,
+    int? secs,
+    int? width,
+    int? height,
+    int? size,
+    String? blurhash,
+    String eventId,
+    String? txnId,
+  ) {
+    final tmp1 = uri;
+    final tmp5 = name;
+    final tmp9 = mimetype;
+    final tmp13 = secs;
+    final tmp17 = width;
+    final tmp21 = height;
+    final tmp25 = size;
+    final tmp29 = blurhash;
+    final tmp35 = eventId;
+    final tmp39 = txnId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp30 = 0;
+    var tmp32 = 0;
+    var tmp33 = 0;
+    var tmp34 = 0;
+    var tmp36 = 0;
+    var tmp37 = 0;
+    var tmp38 = 0;
+    var tmp40 = 0;
+    var tmp42 = 0;
+    var tmp43 = 0;
+    var tmp44 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
+    }
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    if (tmp21 == null) {
+      tmp22 = 0;
+    } else {
+      tmp22 = 1;
+      final tmp23 = tmp21;
+      tmp24 = tmp23;
+    }
+    if (tmp25 == null) {
+      tmp26 = 0;
+    } else {
+      tmp26 = 1;
+      final tmp27 = tmp25;
+      tmp28 = tmp27;
+    }
+    if (tmp29 == null) {
+      tmp30 = 0;
+    } else {
+      tmp30 = 1;
+      final tmp31 = tmp29;
+      final tmp31_0 = utf8.encode(tmp31);
+      tmp33 = tmp31_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
+      final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
+      tmp32_1.setAll(0, tmp31_0);
+      tmp32 = tmp32_0.address;
+      tmp34 = tmp33;
+    }
+    final tmp35_0 = utf8.encode(tmp35);
+    tmp37 = tmp35_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp36_0 = _api.__allocate(tmp37 * 1, 1);
+    final Uint8List tmp36_1 = tmp36_0.asTypedList(tmp37);
+    tmp36_1.setAll(0, tmp35_0);
+    tmp36 = tmp36_0.address;
+    tmp38 = tmp37;
+    if (tmp39 == null) {
+      tmp40 = 0;
+    } else {
+      tmp40 = 1;
+      final tmp41 = tmp39;
+      final tmp41_0 = utf8.encode(tmp41);
+      tmp43 = tmp41_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp42_0 = _api.__allocate(tmp43 * 1, 1);
+      final Uint8List tmp42_1 = tmp42_0.asTypedList(tmp43);
+      tmp42_1.setAll(0, tmp41_0);
+      tmp42 = tmp42_0.address;
+      tmp44 = tmp43;
+    }
+    final tmp45 = _api._convoSendVideoReply(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp24,
+      tmp26,
+      tmp28,
+      tmp30,
+      tmp32,
+      tmp33,
+      tmp34,
+      tmp36,
+      tmp37,
+      tmp38,
+      tmp40,
+      tmp42,
+      tmp43,
+      tmp44,
+    );
+    final tmp47 = tmp45;
+    final ffi.Pointer<ffi.Void> tmp47_0 = ffi.Pointer.fromAddress(tmp47);
+    final tmp47_1 = _Box(_api, tmp47_0, "__Convo_send_video_reply_future_drop");
+    tmp47_1._finalizer = _api._registerFinalizer(tmp47_1);
+    final tmp46 = _nativeFuture(tmp47_1, _api.__convoSendVideoReplyFuturePoll);
+    return tmp46;
+  }
+
+  /// send reply as file
+  Future<EventId> sendFileReply(
+    String uri,
+    String name,
+    String mimetype,
+    int? size,
+    String eventId,
+    String? txnId,
+  ) {
+    final tmp1 = uri;
+    final tmp5 = name;
+    final tmp9 = mimetype;
+    final tmp13 = size;
+    final tmp17 = eventId;
+    final tmp21 = txnId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp19 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp25 = 0;
+    var tmp26 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
+    }
+    final tmp17_0 = utf8.encode(tmp17);
+    tmp19 = tmp17_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp18_0 = _api.__allocate(tmp19 * 1, 1);
+    final Uint8List tmp18_1 = tmp18_0.asTypedList(tmp19);
+    tmp18_1.setAll(0, tmp17_0);
+    tmp18 = tmp18_0.address;
+    tmp20 = tmp19;
+    if (tmp21 == null) {
+      tmp22 = 0;
+    } else {
+      tmp22 = 1;
+      final tmp23 = tmp21;
+      final tmp23_0 = utf8.encode(tmp23);
+      tmp25 = tmp23_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
+      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
+      tmp24_1.setAll(0, tmp23_0);
+      tmp24 = tmp24_0.address;
+      tmp26 = tmp25;
+    }
+    final tmp27 = _api._convoSendFileReply(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp19,
+      tmp20,
+      tmp22,
+      tmp24,
+      tmp25,
+      tmp26,
+    );
+    final tmp29 = tmp27;
+    final ffi.Pointer<ffi.Void> tmp29_0 = ffi.Pointer.fromAddress(tmp29);
+    final tmp29_1 = _Box(_api, tmp29_0, "__Convo_send_file_reply_future_drop");
+    tmp29_1._finalizer = _api._registerFinalizer(tmp29_1);
+    final tmp28 = _nativeFuture(tmp29_1, _api.__convoSendFileReplyFuturePoll);
+    return tmp28;
   }
 
   /// redact any message (including text/image/file and reaction)
@@ -37524,15 +37942,15 @@ class AttachmentsManager {
   AttachmentDraft audioAttachmentDraft(
     String body,
     String url,
+    int? secs,
     String? mimetype,
     int? size,
-    int? secs,
   ) {
     final tmp1 = body;
     final tmp5 = url;
-    final tmp9 = mimetype;
-    final tmp15 = size;
-    final tmp19 = secs;
+    final tmp9 = secs;
+    final tmp13 = mimetype;
+    final tmp19 = size;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -37542,9 +37960,9 @@ class AttachmentsManager {
     var tmp8 = 0;
     var tmp10 = 0;
     var tmp12 = 0;
-    var tmp13 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
+    var tmp17 = 0;
     var tmp18 = 0;
     var tmp20 = 0;
     var tmp22 = 0;
@@ -37570,20 +37988,20 @@ class AttachmentsManager {
     } else {
       tmp10 = 1;
       final tmp11 = tmp9;
-      final tmp11_0 = utf8.encode(tmp11);
-      tmp13 = tmp11_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-      tmp12_1.setAll(0, tmp11_0);
-      tmp12 = tmp12_0.address;
-      tmp14 = tmp13;
+      tmp12 = tmp11;
     }
-    if (tmp15 == null) {
-      tmp16 = 0;
+    if (tmp13 == null) {
+      tmp14 = 0;
     } else {
-      tmp16 = 1;
-      final tmp17 = tmp15;
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
       tmp18 = tmp17;
     }
     if (tmp19 == null) {
@@ -37603,9 +38021,9 @@ class AttachmentsManager {
       tmp8,
       tmp10,
       tmp12,
-      tmp13,
       tmp14,
       tmp16,
+      tmp17,
       tmp18,
       tmp20,
       tmp22,
@@ -37622,20 +38040,20 @@ class AttachmentsManager {
   AttachmentDraft videoAttachmentDraft(
     String body,
     String url,
+    int? secs,
+    int? height,
+    int? width,
     String? mimetype,
     int? size,
-    int? secs,
-    int? width,
-    int? height,
     String? blurhash,
   ) {
     final tmp1 = body;
     final tmp5 = url;
-    final tmp9 = mimetype;
-    final tmp15 = size;
-    final tmp19 = secs;
-    final tmp23 = width;
-    final tmp27 = height;
+    final tmp9 = secs;
+    final tmp13 = height;
+    final tmp17 = width;
+    final tmp21 = mimetype;
+    final tmp27 = size;
     final tmp31 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -37646,13 +38064,13 @@ class AttachmentsManager {
     var tmp8 = 0;
     var tmp10 = 0;
     var tmp12 = 0;
-    var tmp13 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
     var tmp18 = 0;
     var tmp20 = 0;
     var tmp22 = 0;
     var tmp24 = 0;
+    var tmp25 = 0;
     var tmp26 = 0;
     var tmp28 = 0;
     var tmp30 = 0;
@@ -37682,34 +38100,34 @@ class AttachmentsManager {
     } else {
       tmp10 = 1;
       final tmp11 = tmp9;
-      final tmp11_0 = utf8.encode(tmp11);
-      tmp13 = tmp11_0.length;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
+    }
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    if (tmp21 == null) {
+      tmp22 = 0;
+    } else {
+      tmp22 = 1;
+      final tmp23 = tmp21;
+      final tmp23_0 = utf8.encode(tmp23);
+      tmp25 = tmp23_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-      tmp12_1.setAll(0, tmp11_0);
-      tmp12 = tmp12_0.address;
-      tmp14 = tmp13;
-    }
-    if (tmp15 == null) {
-      tmp16 = 0;
-    } else {
-      tmp16 = 1;
-      final tmp17 = tmp15;
-      tmp18 = tmp17;
-    }
-    if (tmp19 == null) {
-      tmp20 = 0;
-    } else {
-      tmp20 = 1;
-      final tmp21 = tmp19;
-      tmp22 = tmp21;
-    }
-    if (tmp23 == null) {
-      tmp24 = 0;
-    } else {
-      tmp24 = 1;
-      final tmp25 = tmp23;
+      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
+      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
+      tmp24_1.setAll(0, tmp23_0);
+      tmp24 = tmp24_0.address;
       tmp26 = tmp25;
     }
     if (tmp27 == null) {
@@ -37743,13 +38161,13 @@ class AttachmentsManager {
       tmp8,
       tmp10,
       tmp12,
-      tmp13,
       tmp14,
       tmp16,
       tmp18,
       tmp20,
       tmp22,
       tmp24,
+      tmp25,
       tmp26,
       tmp28,
       tmp30,
@@ -42349,15 +42767,19 @@ class Space {
   Future<EventId> sendImageMessage(
     String uri,
     String name,
+    String mimetype,
+    int? size,
     int? width,
     int? height,
     String? blurhash,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
-    final tmp9 = width;
-    final tmp13 = height;
-    final tmp17 = blurhash;
+    final tmp9 = mimetype;
+    final tmp13 = size;
+    final tmp17 = width;
+    final tmp21 = height;
+    final tmp25 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -42366,13 +42788,18 @@ class Space {
     var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
+    var tmp11 = 0;
     var tmp12 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
     var tmp18 = 0;
     var tmp20 = 0;
-    var tmp21 = 0;
     var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp29 = 0;
+    var tmp30 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -42390,13 +42817,14 @@ class Space {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
     if (tmp13 == null) {
       tmp14 = 0;
     } else {
@@ -42409,16 +42837,30 @@ class Space {
     } else {
       tmp18 = 1;
       final tmp19 = tmp17;
-      final tmp19_0 = utf8.encode(tmp19);
-      tmp21 = tmp19_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp20_0 = _api.__allocate(tmp21 * 1, 1);
-      final Uint8List tmp20_1 = tmp20_0.asTypedList(tmp21);
-      tmp20_1.setAll(0, tmp19_0);
-      tmp20 = tmp20_0.address;
-      tmp22 = tmp21;
+      tmp20 = tmp19;
     }
-    final tmp23 = _api._spaceSendImageMessage(
+    if (tmp21 == null) {
+      tmp22 = 0;
+    } else {
+      tmp22 = 1;
+      final tmp23 = tmp21;
+      tmp24 = tmp23;
+    }
+    if (tmp25 == null) {
+      tmp26 = 0;
+    } else {
+      tmp26 = 1;
+      final tmp27 = tmp25;
+      final tmp27_0 = utf8.encode(tmp27);
+      tmp29 = tmp27_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
+      final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
+      tmp28_1.setAll(0, tmp27_0);
+      tmp28 = tmp28_0.address;
+      tmp30 = tmp29;
+    }
+    final tmp31 = _api._spaceSendImageMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -42427,22 +42869,27 @@ class Space {
       tmp7,
       tmp8,
       tmp10,
+      tmp11,
       tmp12,
       tmp14,
       tmp16,
       tmp18,
       tmp20,
-      tmp21,
       tmp22,
+      tmp24,
+      tmp26,
+      tmp28,
+      tmp29,
+      tmp30,
     );
-    final tmp25 = tmp23;
-    final ffi.Pointer<ffi.Void> tmp25_0 = ffi.Pointer.fromAddress(tmp25);
-    final tmp25_1 =
-        _Box(_api, tmp25_0, "__Space_send_image_message_future_drop");
-    tmp25_1._finalizer = _api._registerFinalizer(tmp25_1);
-    final tmp24 =
-        _nativeFuture(tmp25_1, _api.__spaceSendImageMessageFuturePoll);
-    return tmp24;
+    final tmp33 = tmp31;
+    final ffi.Pointer<ffi.Void> tmp33_0 = ffi.Pointer.fromAddress(tmp33);
+    final tmp33_1 =
+        _Box(_api, tmp33_0, "__Space_send_image_message_future_drop");
+    tmp33_1._finalizer = _api._registerFinalizer(tmp33_1);
+    final tmp32 =
+        _nativeFuture(tmp33_1, _api.__spaceSendImageMessageFuturePoll);
+    return tmp32;
   }
 
   /// decrypted image buffer data
@@ -42483,11 +42930,15 @@ class Space {
   Future<EventId> sendAudioMessage(
     String uri,
     String name,
+    String mimetype,
     int? secs,
+    int? size,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
-    final tmp9 = secs;
+    final tmp9 = mimetype;
+    final tmp13 = secs;
+    final tmp17 = size;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -42496,7 +42947,12 @@ class Space {
     var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
+    var tmp11 = 0;
     var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -42514,14 +42970,29 @@ class Space {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    if (tmp13 == null) {
+      tmp14 = 0;
     } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      tmp12 = tmp11;
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
     }
-    final tmp13 = _api._spaceSendAudioMessage(
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    final tmp21 = _api._spaceSendAudioMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -42530,16 +43001,21 @@ class Space {
       tmp7,
       tmp8,
       tmp10,
+      tmp11,
       tmp12,
+      tmp14,
+      tmp16,
+      tmp18,
+      tmp20,
     );
-    final tmp15 = tmp13;
-    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
-    final tmp15_1 =
-        _Box(_api, tmp15_0, "__Space_send_audio_message_future_drop");
-    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
-    final tmp14 =
-        _nativeFuture(tmp15_1, _api.__spaceSendAudioMessageFuturePoll);
-    return tmp14;
+    final tmp23 = tmp21;
+    final ffi.Pointer<ffi.Void> tmp23_0 = ffi.Pointer.fromAddress(tmp23);
+    final tmp23_1 =
+        _Box(_api, tmp23_0, "__Space_send_audio_message_future_drop");
+    tmp23_1._finalizer = _api._registerFinalizer(tmp23_1);
+    final tmp22 =
+        _nativeFuture(tmp23_1, _api.__spaceSendAudioMessageFuturePoll);
+    return tmp22;
   }
 
   /// decrypted audio buffer data
@@ -42580,17 +43056,21 @@ class Space {
   Future<EventId> sendVideoMessage(
     String uri,
     String name,
+    String mimetype,
     int? secs,
-    int? width,
     int? height,
+    int? width,
+    int? size,
     String? blurhash,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
-    final tmp9 = secs;
-    final tmp13 = width;
+    final tmp9 = mimetype;
+    final tmp13 = secs;
     final tmp17 = height;
-    final tmp21 = blurhash;
+    final tmp21 = width;
+    final tmp25 = size;
+    final tmp29 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -42599,6 +43079,7 @@ class Space {
     var tmp7 = 0;
     var tmp8 = 0;
     var tmp10 = 0;
+    var tmp11 = 0;
     var tmp12 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
@@ -42606,8 +43087,12 @@ class Space {
     var tmp20 = 0;
     var tmp22 = 0;
     var tmp24 = 0;
-    var tmp25 = 0;
     var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp30 = 0;
+    var tmp32 = 0;
+    var tmp33 = 0;
+    var tmp34 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -42625,13 +43110,14 @@ class Space {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
     if (tmp13 == null) {
       tmp14 = 0;
     } else {
@@ -42651,16 +43137,30 @@ class Space {
     } else {
       tmp22 = 1;
       final tmp23 = tmp21;
-      final tmp23_0 = utf8.encode(tmp23);
-      tmp25 = tmp23_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
-      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
-      tmp24_1.setAll(0, tmp23_0);
-      tmp24 = tmp24_0.address;
-      tmp26 = tmp25;
+      tmp24 = tmp23;
     }
-    final tmp27 = _api._spaceSendVideoMessage(
+    if (tmp25 == null) {
+      tmp26 = 0;
+    } else {
+      tmp26 = 1;
+      final tmp27 = tmp25;
+      tmp28 = tmp27;
+    }
+    if (tmp29 == null) {
+      tmp30 = 0;
+    } else {
+      tmp30 = 1;
+      final tmp31 = tmp29;
+      final tmp31_0 = utf8.encode(tmp31);
+      tmp33 = tmp31_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
+      final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
+      tmp32_1.setAll(0, tmp31_0);
+      tmp32 = tmp32_0.address;
+      tmp34 = tmp33;
+    }
+    final tmp35 = _api._spaceSendVideoMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -42669,6 +43169,7 @@ class Space {
       tmp7,
       tmp8,
       tmp10,
+      tmp11,
       tmp12,
       tmp14,
       tmp16,
@@ -42676,17 +43177,21 @@ class Space {
       tmp20,
       tmp22,
       tmp24,
-      tmp25,
       tmp26,
+      tmp28,
+      tmp30,
+      tmp32,
+      tmp33,
+      tmp34,
     );
-    final tmp29 = tmp27;
-    final ffi.Pointer<ffi.Void> tmp29_0 = ffi.Pointer.fromAddress(tmp29);
-    final tmp29_1 =
-        _Box(_api, tmp29_0, "__Space_send_video_message_future_drop");
-    tmp29_1._finalizer = _api._registerFinalizer(tmp29_1);
-    final tmp28 =
-        _nativeFuture(tmp29_1, _api.__spaceSendVideoMessageFuturePoll);
-    return tmp28;
+    final tmp37 = tmp35;
+    final ffi.Pointer<ffi.Void> tmp37_0 = ffi.Pointer.fromAddress(tmp37);
+    final tmp37_1 =
+        _Box(_api, tmp37_0, "__Space_send_video_message_future_drop");
+    tmp37_1._finalizer = _api._registerFinalizer(tmp37_1);
+    final tmp36 =
+        _nativeFuture(tmp37_1, _api.__spaceSendVideoMessageFuturePoll);
+    return tmp36;
   }
 
   /// decrypted video buffer data
@@ -42727,9 +43232,13 @@ class Space {
   Future<EventId> sendFileMessage(
     String uri,
     String name,
+    String mimetype,
+    int size,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
+    final tmp9 = mimetype;
+    final tmp13 = size;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -42737,6 +43246,10 @@ class Space {
     var tmp6 = 0;
     var tmp7 = 0;
     var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -42754,7 +43267,16 @@ class Space {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9 = _api._spaceSendFileMessage(
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    tmp14 = tmp13;
+    final tmp15 = _api._spaceSendFileMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -42762,14 +43284,18 @@ class Space {
       tmp6,
       tmp7,
       tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
     );
-    final tmp11 = tmp9;
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 =
-        _Box(_api, tmp11_0, "__Space_send_file_message_future_drop");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = _nativeFuture(tmp11_1, _api.__spaceSendFileMessageFuturePoll);
-    return tmp10;
+    final tmp17 = tmp15;
+    final ffi.Pointer<ffi.Void> tmp17_0 = ffi.Pointer.fromAddress(tmp17);
+    final tmp17_1 =
+        _Box(_api, tmp17_0, "__Space_send_file_message_future_drop");
+    tmp17_1._finalizer = _api._registerFinalizer(tmp17_1);
+    final tmp16 = _nativeFuture(tmp17_1, _api.__spaceSendFileMessageFuturePoll);
+    return tmp16;
   }
 
   /// decrypted file buffer data
@@ -48029,10 +48555,10 @@ class ReceiptRecord {
   }
 
   /// Get time that this user read message from peer in milliseconds
-  int? timestamp() {
+  int? ts() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._receiptRecordTimestamp(
+    final tmp1 = _api._receiptRecordTs(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -49291,21 +49817,21 @@ class _ThumbnailInfoMimetypeReturn extends ffi.Struct {
 class _ThumbnailInfoSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint64()
+  @ffi.Uint32()
   external int arg1;
 }
 
 class _ThumbnailInfoWidthReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint64()
+  @ffi.Uint32()
   external int arg1;
 }
 
 class _ThumbnailInfoHeightReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint64()
+  @ffi.Uint32()
   external int arg1;
 }
 
@@ -49545,21 +50071,21 @@ class _ImageDescMimetypeReturn extends ffi.Struct {
 class _ImageDescSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint64()
+  @ffi.Uint32()
   external int arg1;
 }
 
 class _ImageDescWidthReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint64()
+  @ffi.Uint32()
   external int arg1;
 }
 
 class _ImageDescHeightReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint64()
+  @ffi.Uint32()
   external int arg1;
 }
 
@@ -49600,14 +50126,14 @@ class _AudioDescMimetypeReturn extends ffi.Struct {
 class _AudioDescSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint64()
+  @ffi.Uint32()
   external int arg1;
 }
 
 class _AudioDescDurationReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint64()
+  @ffi.Uint32()
   external int arg1;
 }
 
@@ -49634,21 +50160,21 @@ class _VideoDescMimetypeReturn extends ffi.Struct {
 class _VideoDescSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint64()
+  @ffi.Uint32()
   external int arg1;
 }
 
 class _VideoDescWidthReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint64()
+  @ffi.Uint32()
   external int arg1;
 }
 
 class _VideoDescHeightReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint64()
+  @ffi.Uint32()
   external int arg1;
 }
 
@@ -49666,7 +50192,7 @@ class _VideoDescBlurhashReturn extends ffi.Struct {
 class _VideoDescDurationReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint64()
+  @ffi.Uint32()
   external int arg1;
 }
 
@@ -49707,7 +50233,7 @@ class _FileDescMimetypeReturn extends ffi.Struct {
 class _FileDescSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint64()
+  @ffi.Uint32()
   external int arg1;
 }
 
@@ -51009,7 +51535,7 @@ class _ReceiptRecordSeenByReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ReceiptRecordTimestampReturn extends ffi.Struct {
+class _ReceiptRecordTsReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint64()
@@ -51181,51 +51707,6 @@ class _NewsSlideFileBinaryFuturePollReturn extends ffi.Struct {
 }
 
 class _NewsEntryDraftAddImageSlideFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
-class _NewsEntryDraftAddAudioSlideFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
-class _NewsEntryDraftAddVideoSlideFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
-class _NewsEntryDraftAddFileSlideFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
