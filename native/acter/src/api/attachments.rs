@@ -243,7 +243,7 @@ impl AttachmentsManager {
     pub fn image_attachment_draft(
         &self,
         body: String,
-        url: String, // integration test supposes it is remote url
+        url: String,
         mimetype: Option<String>,
         size: Option<u64>,
         width: Option<u64>,
@@ -254,10 +254,10 @@ impl AttachmentsManager {
             bail!("Can only attachment in joined rooms");
         }
         let info = assign!(ImageInfo::new(), {
+            height: height.and_then(UInt::new),
+            width: width.and_then(UInt::new),
             mimetype,
             size: size.and_then(UInt::new),
-            width: width.and_then(UInt::new),
-            height: height.and_then(UInt::new),
             blurhash,
         });
         let url = Box::<MxcUri>::from(url.as_str());
@@ -276,7 +276,7 @@ impl AttachmentsManager {
     pub fn audio_attachment_draft(
         &self,
         body: String,
-        url: String, // integration test supposes it is remote url
+        url: String,
         mimetype: Option<String>,
         size: Option<u64>,
         secs: Option<u64>,
@@ -285,9 +285,9 @@ impl AttachmentsManager {
             bail!("Can only attachment in joined rooms");
         }
         let info = assign!(AudioInfo::new(), {
+            duration: secs.map(|x| Duration::new(x, 0)),
             mimetype,
             size: size.and_then(UInt::new),
-            duration: secs.map(Duration::from_secs),
         });
         let url = Box::<MxcUri>::from(url.as_str());
         let mut builder = self.inner.draft_builder();
@@ -306,7 +306,7 @@ impl AttachmentsManager {
     pub fn video_attachment_draft(
         &self,
         body: String,
-        url: String, // integration test supposes it is remote url
+        url: String,
         mimetype: Option<String>,
         size: Option<u64>,
         secs: Option<u64>,
@@ -318,11 +318,11 @@ impl AttachmentsManager {
             bail!("Can only attachment in joined rooms");
         }
         let info = assign!(VideoInfo::new(), {
+            duration: secs.map(|x| Duration::new(x, 0)),
+            height: height.and_then(UInt::new),
+            width: width.and_then(UInt::new),
             mimetype,
             size: size.and_then(UInt::new),
-            duration: secs.map(Duration::from_secs),
-            width: width.and_then(UInt::new),
-            height: height.and_then(UInt::new),
             blurhash,
         });
         let url = Box::<MxcUri>::from(url.as_str());
@@ -341,7 +341,7 @@ impl AttachmentsManager {
     pub fn file_attachment_draft(
         &self,
         body: String,
-        url: String, // integration test supposes it is remote url
+        url: String,
         mimetype: Option<String>,
         size: Option<u64>,
     ) -> Result<AttachmentDraft> {
