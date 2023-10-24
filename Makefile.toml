@@ -234,7 +234,8 @@ args = [
 private = true
 condition = { platforms = ["mac"] }
 dependencies = [
-    "build-swift-uniffi",
+    "build-swift-uniffi-aarch",
+    "build-swift-uniffi-ci",
 ]
 
 script = [
@@ -246,13 +247,37 @@ script = [
     """,
 ]
 
-[tasks.build-swift-uniffi]
+[tasks.build-swift-uniffi-aarch]
 private = true
+condition = { env_false = ["CARGO_MAKE_CI"] }
 command = "cargo"
 args = [
     "run",
     "--target",
     "aarch64-apple-darwin",
+    "-p",
+    "acter",
+    "--features",
+    "uniffi",
+    "--bin",
+    "uniffi-bindgen",
+    "generate",
+    "--library",
+    "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/aarch64-apple-ios/${LIB_OUT_DIR}/libacter.a",
+    "--language",
+    "swift",
+    "--out-dir",
+    "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/swift-out",
+]
+
+[tasks.build-swift-uniffi-ci]
+private = true
+condition = { env_true = ["CARGO_MAKE_CI"] }
+command = "cargo"
+args = [
+    "run",
+    "--target",
+    "x86_64-apple-darwin",
     "-p",
     "acter",
     "--features",
