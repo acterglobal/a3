@@ -130,7 +130,12 @@ class _ChatBubble extends ConsumerWidget {
       children: [
         EmojiRow(
           roomId: roomId,
-          onEmojiTap: sendEmojiReaction,
+          onEmojiTap: (String eventId, String emoji) {
+            final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
+            inputNotifier.setCurrentMessageId(null);
+            inputNotifier.emojiRowVisible(false);
+            sendEmojiReaction(eventId, emoji);
+          },
           message: message,
         ),
         const SizedBox(height: 4),
