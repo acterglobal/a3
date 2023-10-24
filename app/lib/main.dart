@@ -6,7 +6,6 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/cli/main.dart';
 import 'package:acter/l10n/l10n.dart';
 import 'package:acter/router/providers/router_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -23,20 +22,19 @@ void main(List<String> args) async {
   }
 }
 
-Future<void> startFreshTestApp(String key) async {
-  await ActerSdk.resetSessionsAndClients(key);
-  await startAppInner();
+Widget makeApp() {
+  return const ProviderScope(child: Acter());
 }
 
 Future<void> startApp() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await startAppInner();
+  await startAppInner(makeApp());
 }
 
-Future<void> startAppInner() async {
+Future<void> startAppInner(Widget app) async {
   await initializeNotifications();
   await initLogging();
-  runApp(const ProviderScope(child: Acter()));
+  runApp(app);
 }
 
 class Acter extends ConsumerStatefulWidget {
