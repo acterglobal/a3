@@ -1,4 +1,5 @@
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -150,6 +151,7 @@ void onBoardingDialog({
                   ? GestureDetector(
                       onTap: () => context.pop(),
                       child: const Padding(
+                        key: Keys.skipBtn,
                         padding: EdgeInsets.only(right: 50),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,

@@ -250,12 +250,11 @@ packages:
     source: hosted
     version: "4.1.0"
   convenient_test:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
-      name: convenient_test
-      sha256: "5c1e725a175c575b8265ba026c778b3003d7936cdd3c09a17c76ccb5a7c7f88e"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../../flutter_convenient_test/packages/convenient_test"
+      relative: true
+    source: path
     version: "1.3.1"
   convenient_test_common:
     dependency: transitive
@@ -276,10 +275,9 @@ packages:
   convenient_test_dev:
     dependency: "direct dev"
     description:
-      name: convenient_test_dev
-      sha256: aec27095cabf2806f95d0d3b5e9dd28fc6c829e95761a0933ff93eef797a77e3
-      url: "https://pub.dev"
-    source: hosted
+      path: "../../flutter_convenient_test/packages/convenient_test_dev"
+      relative: true
+    source: path
     version: "1.3.1"
   convert:
     dependency: "direct main"

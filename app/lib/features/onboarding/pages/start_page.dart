@@ -1,3 +1,4 @@
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
 
@@ -312,6 +313,7 @@ class _StartPageState extends State<StartPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Padding(
+                      key: Keys.skipBtn,
                       padding: EdgeInsets.only(bottom: 16.0),
                       child: Text('Skip'),
                     ),

@@ -52,9 +52,19 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         }
         if (loginSuccess == null) {
           // no message means, login was successful.
+          customMsgSnackbar(
+            context,
+            AppLocalizations.of(context)!.welcomeBack,
+            key: LoginPageKeys.snackbarSuccess,
+          );
           context.goNamed(Routes.main.name);
         } else {
           customMsgSnackbar(context, loginSuccess);
+          customMsgSnackbar(
+            context,
+            loginSuccess,
+            key: LoginPageKeys.snackbarFailed,
+          );
         }
       }
     }

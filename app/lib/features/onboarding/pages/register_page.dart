@@ -354,6 +354,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         InkWell(
+                          key: Keys.loginBtn,
                           onTap: () => context.goNamed(Routes.authLogin.name),
                           child: Text(
                             AppLocalizations.of(context)!.logIn,
