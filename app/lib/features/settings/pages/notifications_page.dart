@@ -1,4 +1,6 @@
 import 'package:acter/common/notifications/notifications.dart';
+import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/widgets/settings_section_with_title_actions.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
@@ -11,42 +13,43 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:settings_ui/settings_ui.dart';
-import 'package:email_validator/email_validator.dart';
 
-class AddEmail extends StatefulWidget {
-  const AddEmail({
+class _AddEmail extends StatefulWidget {
+  final List<String> emails;
+  const _AddEmail(
+    this.emails, {
     Key? key,
   }) : super(key: key);
 
   @override
-  State<AddEmail> createState() => _AddEmailState();
+  State<_AddEmail> createState() => __AddEmailState();
 }
 
-class _AddEmailState extends State<AddEmail> {
-  final TextEditingController emailAddr = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+class __AddEmailState extends State<_AddEmail> {
+  String? emailAddr;
+
+  @override
+  void initState() {
+    super.initState();
+    emailAddr = widget.emails.first;
+  }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Email address to add'),
-      content: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(5),
-              child: TextFormField(
-                controller: emailAddr,
-                validator: (value) =>
-                    value == null || !EmailValidator.validate(value)
-                        ? 'Format must an Email'
-                        : null,
-              ),
-            ),
-          ],
-        ),
+      content: DropdownMenu<String>(
+        initialSelection: widget.emails.first,
+        onSelected: (String? value) {
+          // This is called when the user selects an item.
+          setState(() {
+            emailAddr = value!;
+          });
+        },
+        dropdownMenuEntries:
+            widget.emails.map<DropdownMenuEntry<String>>((String value) {
+          return DropdownMenuEntry<String>(value: value, label: value);
+        }).toList(),
       ),
       actions: <Widget>[
         TextButton(
@@ -55,9 +58,7 @@ class _AddEmailState extends State<AddEmail> {
         ),
         TextButton(
           onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              Navigator.pop(context, emailAddr.text);
-            }
+            Navigator.pop(context, emailAddr);
           },
           child: const Text('Add'),
         ),
@@ -128,55 +129,57 @@ class NotificationsSettingsPage extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
+    final potentialEmails = ref.watch(possibleEmailToAddForPushProvider);
     return SettingsSectionWithTitleActions(
       title: const Text('Notification Targets'),
-      actions: const [
-        // FIXME: enable once we have 3pid support
-        // IconButton(
-        //   icon: Icon(
-        //     Atlas.plus_circle_thin,
-        //     color: Theme.of(context).colorScheme.neutral5,
-        //   ),
-        //   iconSize: 20,
-        //   color: Theme.of(context).colorScheme.surface,
-        //   onPressed: () async {
-        //     final emailToAdd = await showDialog<String?>(
-        //       context: context,
-        //       builder: (BuildContext context) => const AddEmail(),
-        //     );
-        //     if (emailToAdd != null) {
-        //       EasyLoading.show();
-        //       final client = ref.read(
-        //         clientProvider,
-        //       ); // is guaranteed because of the ignoredUsersProvider using it
-        //       try {
-        //         await client!.addEmailPusher(
-        //           appIdPrefix,
-        //           (await deviceName()),
-        //           emailToAdd,
-        //           null,
-        //         );
-        //       } catch (e) {
-        //         EasyLoading.dismiss();
-        //         // ignore: use_build_context_synchronously
-        //         customMsgSnackbar(
-        //           context,
-        //           'Failed to add $emailToAdd: $e',
-        //         );
-        //         return;
-        //       }
-        //       EasyLoading.dismiss();
-        //       if (context.mounted) {
-        //         customMsgSnackbar(
-        //           context,
-        //           '$emailToAdd added to pusher list. UI might take a bit too update',
-        //         );
-        //         ref.invalidate(pushersProvider);
-        //       }
-        //     }
-        //   },
-        // ),
-      ],
+      actions: potentialEmails.maybeWhen(
+        orElse: () => [],
+        data: (emails) {
+          if (emails.isEmpty) {
+            return [];
+          }
+          return [
+            IconButton(
+              icon: Icon(
+                Atlas.plus_circle_thin,
+                color: Theme.of(context).colorScheme.neutral5,
+              ),
+              iconSize: 20,
+              color: Theme.of(context).colorScheme.surface,
+              onPressed: () async {
+                final emailToAdd = await showDialog<String?>(
+                  context: context,
+                  builder: (BuildContext context) => _AddEmail(emails),
+                );
+                if (emailToAdd != null) {
+                  EasyLoading.show(status: 'Adding $emailToAdd');
+                  final client = ref.read(
+                    clientProvider,
+                  ); // is guaranteed because of the ignoredUsersProvider using it
+                  try {
+                    await client!.addEmailPusher(
+                      appIdPrefix,
+                      (await deviceName()),
+                      emailToAdd,
+                      null,
+                    );
+                    ref.invalidate(possibleEmailToAddForPushProvider);
+                  } catch (e) {
+                    EasyLoading.showError(
+                      'Failed to add $emailToAdd: $e',
+                    );
+                    return;
+                  }
+                  ref.invalidate(pushersProvider);
+                  EasyLoading.showSuccess(
+                    '$emailToAdd added to pusher list',
+                  );
+                }
+              },
+            ),
+          ];
+        },
+      ),
       tiles: ref.watch(pushersProvider).when(
             data: (items) {
               if (items.isEmpty) {
@@ -207,17 +210,18 @@ class NotificationsSettingsPage extends ConsumerWidget {
   }
 
   SettingsTile _pusherTile(BuildContext context, WidgetRef ref, Pusher item) {
+    final isEmail = item.isEmailPusher();
     return SettingsTile(
-      leading: item.isEmailPusher()
-          ? const Icon(Atlas.email_thin)
+      leading: isEmail
+          ? const Icon(Atlas.envelope)
           : const Icon(Atlas.mobile_portrait_thin),
-      title: Text(item.deviceDisplayName()),
-      description: Text(item.appDisplayName()),
+      title: isEmail ? Text(item.pushkey()) : Text(item.deviceDisplayName()),
+      description: isEmail ? null : Text(item.appDisplayName()),
       trailing: const Icon(Atlas.dots_vertical_thin),
       onPressed: (context) => showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Target Details'),
+          title: const Text('Push Target Details'),
           content: SizedBox(
             width: 300,
             child: ListView(
@@ -226,6 +230,10 @@ class NotificationsSettingsPage extends ConsumerWidget {
                 ListTile(
                   title: const Text('AppId'),
                   subtitle: Text(item.appId()),
+                ),
+                ListTile(
+                  title: const Text('PushKey'),
+                  subtitle: Text(item.pushkey()),
                 ),
                 ListTile(
                   title: const Text('App Name'),
@@ -252,10 +260,19 @@ class NotificationsSettingsPage extends ConsumerWidget {
               ),
               child: TextButton(
                 onPressed: () async {
-                  EasyLoading.show();
-                  await item.delete();
-                  EasyLoading.dismiss();
-                  ref.invalidate(pushersProvider);
+                  Navigator.pop(context, null);
+                  EasyLoading.show(status: 'Deleting push target');
+                  try {
+                    await item.delete();
+                    EasyLoading.showSuccess('Push target deleted');
+                    ref.invalidate(possibleEmailToAddForPushProvider);
+                    ref.invalidate(pushersProvider);
+                  } catch (e) {
+                    EasyLoading.showSuccess(
+                      'Deletion failed: $e',
+                      duration: const Duration(seconds: 3),
+                    );
+                  }
                 },
                 child: const Text(
                   'Delete Target',
