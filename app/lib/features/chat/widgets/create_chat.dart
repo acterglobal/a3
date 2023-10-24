@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:acter/common/dialogs/invite_to_room_dialog.dart';
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
@@ -19,8 +18,14 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+/// saves selected users from search result
 final _selectedUsersProvider =
     StateProvider.autoDispose<List<ffi.UserProfile>>((ref) => []);
+
+/// Room title
+final _titleProvider = StateProvider.autoDispose<String>((ref) => '');
+// upload avatar path
+final _avatarProvider = StateProvider.autoDispose<String>((ref) => '');
 
 class CreateChatPage extends ConsumerStatefulWidget {
   final String? initialSelectedSpaceId;
@@ -46,8 +51,8 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
     controller = PageController(initialPage: widget.initialPage ?? 0);
     currIdx = controller.initialPage;
     pages = [
-      _ContentWidget(controller: controller),
-      _CreateRoomAction(
+      _CreateChatWidget(controller: controller),
+      _CreateRoomFormWidget(
         controller: controller,
         initialSelectedSpaceId: widget.initialSelectedSpaceId,
       ),
@@ -68,9 +73,10 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
   }
 }
 
-class _ContentWidget extends ConsumerWidget {
+///
+class _CreateChatWidget extends ConsumerWidget {
   final PageController controller;
-  const _ContentWidget({required this.controller});
+  const _CreateChatWidget({required this.controller});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -78,7 +84,14 @@ class _ContentWidget extends ConsumerWidget {
     final foundUsers = ref.watch(searchResultProvider);
     final searchCtrl = ref.watch(searchController);
     final largeWidth = isDesktop || MediaQuery.of(context).size.width > 600;
-
+    String tileTitle = selectedUsers.isEmpty
+        ? 'Create Room'
+        : selectedUsers.length > 1
+            ? 'Create Group DM'
+            : checkUserDMExists(selectedUsers[0].userId().toString(), ref) !=
+                    null
+                ? 'Go in DM'
+                : 'Create DM';
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
@@ -212,25 +225,72 @@ class _ContentWidget extends ConsumerWidget {
               ),
             ),
             ListTile(
-              onTap: () => controller.nextPage(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.linear,
-              ),
+              onTap: selectedUsers.length > 1 || selectedUsers.isEmpty
+                  ? () => controller.nextPage(
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.linear,
+                      )
+                  : () {
+                      String? id = checkUserDMExists(
+                        selectedUsers[0].userId().toString(),
+                        ref,
+                      );
+                      if (id != null) {
+                        Navigator.of(context).pop();
+                        context.pushNamed(
+                          Routes.chatroom.name,
+                          pathParameters: {'roomId': id},
+                        );
+                      } else {}
+                    },
               contentPadding: const EdgeInsets.only(left: 0),
-              leading: ActerAvatar(
-                uniqueId: '#',
-                mode: DisplayMode.Space,
-                size: 48,
-              ),
+              leading: selectedUsers.isEmpty
+                  ? ActerAvatar(
+                      uniqueId: '#',
+                      mode: DisplayMode.Space,
+                      size: 48,
+                    )
+                  : selectedUsers.length > 1
+                      ? CircleAvatar(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.neutral4,
+                          radius: 28,
+                          child: Icon(
+                            Atlas.team_group,
+                            color: Theme.of(context).colorScheme.neutral,
+                          ),
+                        )
+                      : ActerAvatar(
+                          uniqueId: selectedUsers[0].userId().toString(),
+                          mode: DisplayMode.User,
+                          displayName: ref
+                              .watch(displayNameProvider(selectedUsers[0]))
+                              .valueOrNull,
+                          avatar: ref
+                              .watch(userAvatarProvider(selectedUsers[0]))
+                              .valueOrNull,
+                          size: ref
+                                      .watch(
+                                        userAvatarProvider(selectedUsers[0]),
+                                      )
+                                      .valueOrNull !=
+                                  null
+                              ? 20
+                              : 40,
+                        ),
               title: Text(
-                selectedUsers.isNotEmpty
-                    ? selectedUsers.length > 1
-                        ? 'Create Group DM'
-                        : 'Create DM'
-                    : 'Create Room',
+                tileTitle,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
-              trailing: const Icon(Icons.chevron_right_outlined, size: 24),
+              trailing: Visibility(
+                visible: selectedUsers.isEmpty ||
+                    checkUserDMExists(
+                          selectedUsers[0].userId().toString(),
+                          ref,
+                        ) !=
+                        null,
+                child: const Icon(Icons.chevron_right_outlined, size: 24),
+              ),
             ),
             const SizedBox(height: 15),
             Visibility(
@@ -259,53 +319,37 @@ class _ContentWidget extends ConsumerWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 15),
-            Text('Suggestions', style: Theme.of(context).textTheme.bodyMedium),
-            Consumer(
-              builder: (context, ref, child) {
-                final suggestions = ref.watch(suggestedInvitesProvider);
-                return suggestions.when(
-                  data: (data) => ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: data.length,
-                    itemBuilder: (context, index) =>
-                        _UserWidget(profile: data[index]),
-                  ),
-                  error: (e, st) => Text('Error loading users $e'),
-                  loading: () => const Center(
-                    heightFactor: 5,
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              },
-            ),
           ],
         ),
       ),
     );
   }
+
+// checks whether user DM already exists or needs created
+  String? checkUserDMExists(String userId, WidgetRef ref) {
+    final client = ref.watch(clientProvider);
+    if (client == null) throw 'Client not available';
+    final id = client.dmWithUser(userId).text();
+    if (id != null) return id;
+    return null;
+  }
 }
 
-// interface data providers
-final _titleProvider = StateProvider.autoDispose<String>((ref) => '');
-// upload avatar path
-final _avatarProvider = StateProvider.autoDispose<String>((ref) => '');
-
-class _CreateRoomAction extends ConsumerStatefulWidget {
+class _CreateRoomFormWidget extends ConsumerStatefulWidget {
   final String? initialSelectedSpaceId;
   final PageController controller;
-  const _CreateRoomAction({
+  const _CreateRoomFormWidget({
     required this.controller,
     this.initialSelectedSpaceId,
   });
 
   @override
-  ConsumerState<_CreateRoomAction> createState() =>
-      _CreateChatActionConsumerState();
+  ConsumerState<_CreateRoomFormWidget> createState() =>
+      _CreateRoomFormWidgetConsumerState();
 }
 
-class _CreateChatActionConsumerState extends ConsumerState<_CreateRoomAction> {
+class _CreateRoomFormWidgetConsumerState
+    extends ConsumerState<_CreateRoomFormWidget> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
@@ -327,9 +371,12 @@ class _CreateChatActionConsumerState extends ConsumerState<_CreateRoomAction> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedUsers = ref.watch(_selectedUsersProvider);
     final titleInput = ref.watch(_titleProvider);
     final avatarUpload = ref.watch(_avatarProvider);
     final currentParentSpace = ref.read(selectedSpaceIdProvider);
+
+    String title = selectedUsers.isEmpty ? 'Create Room' : 'Create Group DM';
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
       child: ListView(
@@ -351,7 +398,7 @@ class _CreateChatActionConsumerState extends ConsumerState<_CreateRoomAction> {
                 ),
               ),
               Text(
-                'Create Room',
+                title,
                 style: Theme.of(context).textTheme.titleSmall,
               ),
             ],
@@ -420,6 +467,7 @@ class _CreateChatActionConsumerState extends ConsumerState<_CreateRoomAction> {
             textInputType: TextInputType.multiline,
             maxLines: 10,
           ),
+          const SizedBox(height: 15),
           const SelectSpaceFormField(
             canCheck: 'CanLinkSpaces',
             mandatory: true,
@@ -439,15 +487,26 @@ class _CreateChatActionConsumerState extends ConsumerState<_CreateRoomAction> {
               DefaultButton(
                 onPressed: titleInput.trim().isEmpty
                     ? null
-                    : () {
+                    : () async {
                         if (isSpaceRoom && currentParentSpace == null) {
+                          EasyLoading.showError(
+                            'Parent Space must be selected',
+                            duration: const Duration(seconds: 2),
+                          );
                           return;
                         }
-                        _handleCreateConvo(
+                        final convo = await _handleCreateConvo(
                           context,
                           titleInput,
                           _descriptionController.text.trim(),
                         );
+                        if (context.mounted && convo != null) {
+                          Navigator.pop(context);
+                          context.pushNamed(
+                            Routes.chatroom.name,
+                            pathParameters: {'roomId': convo.getRoomIdStr()},
+                          );
+                        }
                       },
                 title: 'Create',
                 style: ElevatedButton.styleFrom(
@@ -481,7 +540,8 @@ class _CreateChatActionConsumerState extends ConsumerState<_CreateRoomAction> {
     }
   }
 
-  Future<void> _handleCreateConvo(
+  /// Create Room Method
+  Future<ffi.Convo?> _handleCreateConvo(
     BuildContext context,
     String convoName,
     String description,
@@ -511,30 +571,23 @@ class _CreateChatActionConsumerState extends ConsumerState<_CreateRoomAction> {
         await space.addChildSpace(roomId.toString());
       }
       final convo = await client.convoWithRetry(roomId.toString(), 12);
-      // We are doing as expected, but the lint still triggers.
-      // ignore: use_build_context_synchronously
-      if (!context.mounted) {
-        return;
-      }
-      context.pop(); // clear the loading dialog
-      context.pop(); // remove this sidesheet
-      context.pushNamed(
-        Routes.chatroom.name,
-        pathParameters: {'roomId': roomId.toString()},
-        extra: convo,
+      EasyLoading.dismiss();
+      EasyLoading.showSuccess(
+        'Chat Room Created with Room ID: ${convo.getRoomIdStr()}',
       );
+      return convo;
     } catch (e) {
-      if (!context.mounted) {
-        return;
-      }
+      EasyLoading.dismiss();
       EasyLoading.showError(
         'Some error occured $e',
         duration: const Duration(seconds: 2),
       );
+      return null;
     }
   }
 }
 
+// Searched User tile UI widget
 class _UserWidget extends ConsumerWidget {
   final ffi.UserProfile profile;
   const _UserWidget({required this.profile});

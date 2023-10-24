@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/notifiers/chat_notifiers.dart';
 import 'package:acter/common/providers/space_providers.dart';
@@ -126,18 +124,4 @@ final memberProvider =
     throw 'No chat selected';
   }
   return await convo.getMember(userId);
-});
-
-final suggestedInvitesProvider =
-    FutureProvider.autoDispose<List<UserProfile>>((ref) async {
-  final client = ref.watch(clientProvider);
-  if (client == null) throw UnimplementedError('Client is not available');
-  final convos = ref.watch(chatsProvider);
-  // we specify random index from all fetched rooms for suggestions
-  int rIdx = Random().nextInt(convos.length);
-  List<UserProfile> users =
-      (await client.suggestedUsersToInvite(convos[rIdx].getRoomIdStr()))
-          .toList();
-  return users;
-  // return users.getRange(0, threshold).toList();
 });
