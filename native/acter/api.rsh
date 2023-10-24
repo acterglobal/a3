@@ -1701,7 +1701,7 @@ object Member {
     fn membership_status_str() -> string;
 
     /// the power level this user has
-    fn power_level() -> u64;
+    fn power_level() -> i64;
 
     /// Whether this user is allowed to perform the given action
     //fn can(permission: MemberPermission) -> bool;
@@ -2259,7 +2259,7 @@ object ReceiptRecord {
     fn seen_by() -> string;
 
     /// Get time that this user read message from peer in milliseconds
-    fn ts() -> Option<u64>;
+    fn timestamp() -> Option<u64>;
 }
 
 /// Deliver devices new event from rust to flutter
