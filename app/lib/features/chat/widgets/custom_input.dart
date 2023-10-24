@@ -659,7 +659,7 @@ class _TextInputWidget extends ConsumerWidget {
           });
         }
       },
-      textInputAction: TextInputAction.send,
+      textInputAction: TextInputAction.newline,
       enabled: chatInputState.allowEdit,
       onSubmitted: (value) => onSendButtonPressed(),
       style: Theme.of(context).textTheme.bodySmall,
