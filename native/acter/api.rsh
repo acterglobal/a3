@@ -142,10 +142,10 @@ object NewsEntryDraft {
     fn add_image_slide(body: string, url: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<bool>>;
 
     /// create news slide for audio msg
-    fn add_audio_slide(body: string, url: string, secs: Option<u64>, mimetype: Option<string>, size: Option<u64>);
+    fn add_audio_slide(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>);
 
     /// create news slide for video msg
-    fn add_video_slide(body: string, url: string, secs: Option<u64>, height: Option<u64>, width: Option<u64>, mimetype: Option<string>, size: Option<u64>, blurhash: Option<string>);
+    fn add_video_slide(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>);
 
     /// create news slide for file msg
     fn add_file_slide(body: string, url: string, mimetype: Option<string>, size: Option<u64>);
@@ -853,7 +853,7 @@ object Convo {
     fn edit_image_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>) -> Future<Result<EventId>>;
 
     /// send the audio message to this room
-    fn send_audio_message(uri: string, name: string, mimetype: string, secs: Option<u64>, size: Option<u64>) -> Future<Result<EventId>>;
+    fn send_audio_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>) -> Future<Result<EventId>>;
 
     /// decrypted audio buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -861,10 +861,10 @@ object Convo {
     fn audio_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// edit the audio message
-    fn edit_audio_message(event_id: string, uri: string, name: string, mimetype: string, secs: Option<u64>, size: Option<u64>) -> Future<Result<EventId>>;
+    fn edit_audio_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>) -> Future<Result<EventId>>;
 
     /// send the video message to this room
-    fn send_video_message(uri: string, name: string, mimetype: string, secs: Option<u64>, height: Option<u64>, width: Option<u64>, size: Option<u64>, blurhash: Option<string>) -> Future<Result<EventId>>;
+    fn send_video_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<EventId>>;
 
     /// decrypted video buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -872,10 +872,10 @@ object Convo {
     fn video_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// edit the video message
-    fn edit_video_message(event_id: string, uri: string, name: string, mimetype: string, secs: Option<u64>, height: Option<u64>, width: Option<u64>, size: Option<u64>) -> Future<Result<EventId>>;
+    fn edit_video_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>) -> Future<Result<EventId>>;
 
     /// send the file message to this room
-    fn send_file_message(uri: string, name: string, mimetype: string, size: u64) -> Future<Result<EventId>>;
+    fn send_file_message(uri: string, name: string, mimetype: string, size: Option<u64>) -> Future<Result<EventId>>;
 
     /// decrypted file buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -934,10 +934,10 @@ object Convo {
     fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// send reply as audio
-    fn send_audio_reply(uri: string, name: string, mimetype: string, secs: Option<u64>, size: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+    fn send_audio_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// send reply as video
-    fn send_video_reply(uri: string, name: string, mimetype: string, secs: Option<u64>, width: Option<u64>, height: Option<u64>, size: Option<u64>, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+    fn send_video_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// send reply as file
     fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
@@ -1052,10 +1052,10 @@ object AttachmentsManager {
     fn image_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> AttachmentDraft;
 
     /// create news slide for audio msg
-    fn audio_attachment_draft(body: string, url: string, secs: Option<u64>, mimetype: Option<string>, size: Option<u64>) -> AttachmentDraft;
+    fn audio_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>) -> AttachmentDraft;
 
     /// create news slide for video msg
-    fn video_attachment_draft(body: string, url: string, secs: Option<u64>, height: Option<u64>, width: Option<u64>, mimetype: Option<string>, size: Option<u64>, blurhash: Option<string>) -> AttachmentDraft;
+    fn video_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> AttachmentDraft;
 
     /// create news slide for file msg
     fn file_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>) -> AttachmentDraft;
@@ -1605,7 +1605,7 @@ object Space {
     fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// send the audio message to this room
-    fn send_audio_message(uri: string, name: string, mimetype: string, secs: Option<u64>, size: Option<u64>) -> Future<Result<EventId>>;
+    fn send_audio_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>) -> Future<Result<EventId>>;
 
     /// decrypted audio buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -1613,7 +1613,7 @@ object Space {
     fn audio_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// send the video message to this room
-    fn send_video_message(uri: string, name: string, mimetype: string, secs: Option<u64>, height: Option<u64>, width: Option<u64>, size: Option<u64>, blurhash: Option<string>) -> Future<Result<EventId>>;
+    fn send_video_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<EventId>>;
 
     /// decrypted video buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -1621,7 +1621,7 @@ object Space {
     fn video_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// send the file message to this room
-    fn send_file_message(uri: string, name: string, mimetype: string, size: u64) -> Future<Result<EventId>>;
+    fn send_file_message(uri: string, name: string, mimetype: string, size: Option<u64>) -> Future<Result<EventId>>;
 
     /// decrypted file buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable

@@ -1284,8 +1284,8 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        secs: Option<u64>,
         size: Option<u64>,
+        secs: Option<u64>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't send message as audio to a room we are not in");
@@ -1360,8 +1360,8 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        secs: Option<u64>,
         size: Option<u64>,
+        secs: Option<u64>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't edit message as audio to a room we are not in");
@@ -1436,10 +1436,10 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        secs: Option<u64>,
-        height: Option<u64>,
-        width: Option<u64>,
         size: Option<u64>,
+        secs: Option<u64>,
+        width: Option<u64>,
+        height: Option<u64>,
         blurhash: Option<String>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
@@ -1518,10 +1518,10 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        secs: Option<u64>,
-        height: Option<u64>,
-        width: Option<u64>,
         size: Option<u64>,
+        secs: Option<u64>,
+        width: Option<u64>,
+        height: Option<u64>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't edit message as video to a room we are not in");
@@ -1597,7 +1597,7 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        size: u64,
+        size: Option<u64>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't send message as file to a room we are not in");
@@ -1612,7 +1612,7 @@ impl Room {
 
         let path = PathBuf::from(uri);
         let config = AttachmentConfig::new().info(AttachmentInfo::File(BaseFileInfo {
-            size: UInt::new(size),
+            size: size.and_then(UInt::new),
         }));
         let mime_type = mimetype.parse::<mime::Mime>()?;
 
@@ -2439,8 +2439,8 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        secs: Option<u64>,
         size: Option<u64>,
+        secs: Option<u64>,
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
@@ -2501,10 +2501,10 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
+        size: Option<u64>,
         secs: Option<u64>,
         width: Option<u64>,
         height: Option<u64>,
-        size: Option<u64>,
         blurhash: Option<String>,
         event_id: String,
         txn_id: Option<String>,

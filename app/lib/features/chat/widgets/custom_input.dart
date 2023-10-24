@@ -425,8 +425,8 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
               fileName,
               mimeType,
               file.lengthSync(),
-              image.height,
               image.width,
+              image.height,
               null,
             );
           }

@@ -456,9 +456,9 @@ impl NewsEntryDraft {
         &mut self,
         body: String,
         url: String,
-        secs: Option<u64>,
         mimetype: Option<String>,
         size: Option<u64>,
+        secs: Option<u64>,
     ) -> &mut Self {
         let url = Box::<MxcUri>::from(url.as_str());
 
@@ -475,11 +475,11 @@ impl NewsEntryDraft {
         &mut self,
         body: String,
         url: String,
-        secs: Option<u64>,
-        height: Option<u64>,
-        width: Option<u64>,
         mimetype: Option<String>,
         size: Option<u64>,
+        secs: Option<u64>,
+        width: Option<u64>,
+        height: Option<u64>,
         blurhash: Option<String>,
     ) -> &mut Self {
         let url = Box::<MxcUri>::from(url.as_str());

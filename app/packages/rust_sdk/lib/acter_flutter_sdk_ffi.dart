@@ -13306,10 +13306,10 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint64,
-            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
             ffi.Uint64,
             ffi.Uint8,
             ffi.Uint64,
@@ -13345,14 +13345,14 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Uint64,
-            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint64,
+            ffi.Uint8,
             ffi.Uint64,
             ffi.Uint8,
             ffi.Uint64,
@@ -16325,11 +16325,13 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Uint8,
             ffi.Uint64,
           )>>("__Convo_send_file_message");
 
   late final _convoSendFileMessage = _convoSendFileMessagePtr.asFunction<
       int Function(
+        int,
         int,
         int,
         int,
@@ -17325,10 +17327,10 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint64,
-            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
             ffi.Uint64,
             ffi.Uint8,
             ffi.Uint64,
@@ -17364,14 +17366,14 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Uint64,
-            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint64,
+            ffi.Uint8,
             ffi.Uint64,
             ffi.Uint8,
             ffi.Uint64,
@@ -20202,11 +20204,13 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Uint8,
             ffi.Uint64,
           )>>("__Space_send_file_message");
 
   late final _spaceSendFileMessage = _spaceSendFileMessagePtr.asFunction<
       int Function(
+        int,
         int,
         int,
         int,
@@ -29036,15 +29040,15 @@ class NewsEntryDraft {
   void addAudioSlide(
     String body,
     String url,
-    int? secs,
     String? mimetype,
     int? size,
+    int? secs,
   ) {
     final tmp1 = body;
     final tmp5 = url;
-    final tmp9 = secs;
-    final tmp13 = mimetype;
-    final tmp19 = size;
+    final tmp9 = mimetype;
+    final tmp15 = size;
+    final tmp19 = secs;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -29054,9 +29058,9 @@ class NewsEntryDraft {
     var tmp8 = 0;
     var tmp10 = 0;
     var tmp12 = 0;
+    var tmp13 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
-    var tmp17 = 0;
     var tmp18 = 0;
     var tmp20 = 0;
     var tmp22 = 0;
@@ -29082,20 +29086,20 @@ class NewsEntryDraft {
     } else {
       tmp10 = 1;
       final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      final tmp15_0 = utf8.encode(tmp15);
-      tmp17 = tmp15_0.length;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
-      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
-      tmp16_1.setAll(0, tmp15_0);
-      tmp16 = tmp16_0.address;
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
       tmp18 = tmp17;
     }
     if (tmp19 == null) {
@@ -29115,9 +29119,9 @@ class NewsEntryDraft {
       tmp8,
       tmp10,
       tmp12,
+      tmp13,
       tmp14,
       tmp16,
-      tmp17,
       tmp18,
       tmp20,
       tmp22,
@@ -29129,20 +29133,20 @@ class NewsEntryDraft {
   void addVideoSlide(
     String body,
     String url,
-    int? secs,
-    int? height,
-    int? width,
     String? mimetype,
     int? size,
+    int? secs,
+    int? width,
+    int? height,
     String? blurhash,
   ) {
     final tmp1 = body;
     final tmp5 = url;
-    final tmp9 = secs;
-    final tmp13 = height;
-    final tmp17 = width;
-    final tmp21 = mimetype;
-    final tmp27 = size;
+    final tmp9 = mimetype;
+    final tmp15 = size;
+    final tmp19 = secs;
+    final tmp23 = width;
+    final tmp27 = height;
     final tmp31 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -29153,13 +29157,13 @@ class NewsEntryDraft {
     var tmp8 = 0;
     var tmp10 = 0;
     var tmp12 = 0;
+    var tmp13 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
     var tmp18 = 0;
     var tmp20 = 0;
     var tmp22 = 0;
     var tmp24 = 0;
-    var tmp25 = 0;
     var tmp26 = 0;
     var tmp28 = 0;
     var tmp30 = 0;
@@ -29189,34 +29193,34 @@ class NewsEntryDraft {
     } else {
       tmp10 = 1;
       final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      tmp16 = tmp15;
-    }
-    if (tmp17 == null) {
-      tmp18 = 0;
-    } else {
-      tmp18 = 1;
-      final tmp19 = tmp17;
-      tmp20 = tmp19;
-    }
-    if (tmp21 == null) {
-      tmp22 = 0;
-    } else {
-      tmp22 = 1;
-      final tmp23 = tmp21;
-      final tmp23_0 = utf8.encode(tmp23);
-      tmp25 = tmp23_0.length;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
-      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
-      tmp24_1.setAll(0, tmp23_0);
-      tmp24 = tmp24_0.address;
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
+      tmp18 = tmp17;
+    }
+    if (tmp19 == null) {
+      tmp20 = 0;
+    } else {
+      tmp20 = 1;
+      final tmp21 = tmp19;
+      tmp22 = tmp21;
+    }
+    if (tmp23 == null) {
+      tmp24 = 0;
+    } else {
+      tmp24 = 1;
+      final tmp25 = tmp23;
       tmp26 = tmp25;
     }
     if (tmp27 == null) {
@@ -29250,13 +29254,13 @@ class NewsEntryDraft {
       tmp8,
       tmp10,
       tmp12,
+      tmp13,
       tmp14,
       tmp16,
       tmp18,
       tmp20,
       tmp22,
       tmp24,
-      tmp25,
       tmp26,
       tmp28,
       tmp30,
@@ -35202,14 +35206,14 @@ class Convo {
     String uri,
     String name,
     String mimetype,
-    int? secs,
     int? size,
+    int? secs,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
     final tmp9 = mimetype;
-    final tmp13 = secs;
-    final tmp17 = size;
+    final tmp13 = size;
+    final tmp17 = secs;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -35329,15 +35333,15 @@ class Convo {
     String uri,
     String name,
     String mimetype,
-    int? secs,
     int? size,
+    int? secs,
   ) {
     final tmp1 = eventId;
     final tmp5 = uri;
     final tmp9 = name;
     final tmp13 = mimetype;
-    final tmp17 = secs;
-    final tmp21 = size;
+    final tmp17 = size;
+    final tmp21 = secs;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -35436,19 +35440,19 @@ class Convo {
     String uri,
     String name,
     String mimetype,
-    int? secs,
-    int? height,
-    int? width,
     int? size,
+    int? secs,
+    int? width,
+    int? height,
     String? blurhash,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
     final tmp9 = mimetype;
-    final tmp13 = secs;
-    final tmp17 = height;
+    final tmp13 = size;
+    final tmp17 = secs;
     final tmp21 = width;
-    final tmp25 = size;
+    final tmp25 = height;
     final tmp29 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -35613,19 +35617,19 @@ class Convo {
     String uri,
     String name,
     String mimetype,
-    int? secs,
-    int? height,
-    int? width,
     int? size,
+    int? secs,
+    int? width,
+    int? height,
   ) {
     final tmp1 = eventId;
     final tmp5 = uri;
     final tmp9 = name;
     final tmp13 = mimetype;
-    final tmp17 = secs;
-    final tmp21 = height;
+    final tmp17 = size;
+    final tmp21 = secs;
     final tmp25 = width;
-    final tmp29 = size;
+    final tmp29 = height;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -35746,7 +35750,7 @@ class Convo {
     String uri,
     String name,
     String mimetype,
-    int size,
+    int? size,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
@@ -35763,6 +35767,7 @@ class Convo {
     var tmp11 = 0;
     var tmp12 = 0;
     var tmp14 = 0;
+    var tmp16 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -35788,8 +35793,14 @@ class Convo {
     tmp10_1.setAll(0, tmp9_0);
     tmp10 = tmp10_0.address;
     tmp12 = tmp11;
-    tmp14 = tmp13;
-    final tmp15 = _api._convoSendFileMessage(
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
+    }
+    final tmp17 = _api._convoSendFileMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -35801,14 +35812,15 @@ class Convo {
       tmp11,
       tmp12,
       tmp14,
+      tmp16,
     );
-    final tmp17 = tmp15;
-    final ffi.Pointer<ffi.Void> tmp17_0 = ffi.Pointer.fromAddress(tmp17);
-    final tmp17_1 =
-        _Box(_api, tmp17_0, "__Convo_send_file_message_future_drop");
-    tmp17_1._finalizer = _api._registerFinalizer(tmp17_1);
-    final tmp16 = _nativeFuture(tmp17_1, _api.__convoSendFileMessageFuturePoll);
-    return tmp16;
+    final tmp19 = tmp17;
+    final ffi.Pointer<ffi.Void> tmp19_0 = ffi.Pointer.fromAddress(tmp19);
+    final tmp19_1 =
+        _Box(_api, tmp19_0, "__Convo_send_file_message_future_drop");
+    tmp19_1._finalizer = _api._registerFinalizer(tmp19_1);
+    final tmp18 = _nativeFuture(tmp19_1, _api.__convoSendFileMessageFuturePoll);
+    return tmp18;
   }
 
   /// decrypted file buffer data
@@ -36552,16 +36564,16 @@ class Convo {
     String uri,
     String name,
     String mimetype,
-    int? secs,
     int? size,
+    int? secs,
     String eventId,
     String? txnId,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
     final tmp9 = mimetype;
-    final tmp13 = secs;
-    final tmp17 = size;
+    final tmp13 = size;
+    final tmp17 = secs;
     final tmp21 = eventId;
     final tmp25 = txnId;
     var tmp0 = 0;
@@ -36682,10 +36694,10 @@ class Convo {
     String uri,
     String name,
     String mimetype,
+    int? size,
     int? secs,
     int? width,
     int? height,
-    int? size,
     String? blurhash,
     String eventId,
     String? txnId,
@@ -36693,10 +36705,10 @@ class Convo {
     final tmp1 = uri;
     final tmp5 = name;
     final tmp9 = mimetype;
-    final tmp13 = secs;
-    final tmp17 = width;
-    final tmp21 = height;
-    final tmp25 = size;
+    final tmp13 = size;
+    final tmp17 = secs;
+    final tmp21 = width;
+    final tmp25 = height;
     final tmp29 = blurhash;
     final tmp35 = eventId;
     final tmp39 = txnId;
@@ -37942,15 +37954,15 @@ class AttachmentsManager {
   AttachmentDraft audioAttachmentDraft(
     String body,
     String url,
-    int? secs,
     String? mimetype,
     int? size,
+    int? secs,
   ) {
     final tmp1 = body;
     final tmp5 = url;
-    final tmp9 = secs;
-    final tmp13 = mimetype;
-    final tmp19 = size;
+    final tmp9 = mimetype;
+    final tmp15 = size;
+    final tmp19 = secs;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -37960,9 +37972,9 @@ class AttachmentsManager {
     var tmp8 = 0;
     var tmp10 = 0;
     var tmp12 = 0;
+    var tmp13 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
-    var tmp17 = 0;
     var tmp18 = 0;
     var tmp20 = 0;
     var tmp22 = 0;
@@ -37988,20 +38000,20 @@ class AttachmentsManager {
     } else {
       tmp10 = 1;
       final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      final tmp15_0 = utf8.encode(tmp15);
-      tmp17 = tmp15_0.length;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
-      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
-      tmp16_1.setAll(0, tmp15_0);
-      tmp16 = tmp16_0.address;
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
       tmp18 = tmp17;
     }
     if (tmp19 == null) {
@@ -38021,9 +38033,9 @@ class AttachmentsManager {
       tmp8,
       tmp10,
       tmp12,
+      tmp13,
       tmp14,
       tmp16,
-      tmp17,
       tmp18,
       tmp20,
       tmp22,
@@ -38040,20 +38052,20 @@ class AttachmentsManager {
   AttachmentDraft videoAttachmentDraft(
     String body,
     String url,
-    int? secs,
-    int? height,
-    int? width,
     String? mimetype,
     int? size,
+    int? secs,
+    int? width,
+    int? height,
     String? blurhash,
   ) {
     final tmp1 = body;
     final tmp5 = url;
-    final tmp9 = secs;
-    final tmp13 = height;
-    final tmp17 = width;
-    final tmp21 = mimetype;
-    final tmp27 = size;
+    final tmp9 = mimetype;
+    final tmp15 = size;
+    final tmp19 = secs;
+    final tmp23 = width;
+    final tmp27 = height;
     final tmp31 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -38064,13 +38076,13 @@ class AttachmentsManager {
     var tmp8 = 0;
     var tmp10 = 0;
     var tmp12 = 0;
+    var tmp13 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
     var tmp18 = 0;
     var tmp20 = 0;
     var tmp22 = 0;
     var tmp24 = 0;
-    var tmp25 = 0;
     var tmp26 = 0;
     var tmp28 = 0;
     var tmp30 = 0;
@@ -38100,34 +38112,34 @@ class AttachmentsManager {
     } else {
       tmp10 = 1;
       final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      tmp16 = tmp15;
-    }
-    if (tmp17 == null) {
-      tmp18 = 0;
-    } else {
-      tmp18 = 1;
-      final tmp19 = tmp17;
-      tmp20 = tmp19;
-    }
-    if (tmp21 == null) {
-      tmp22 = 0;
-    } else {
-      tmp22 = 1;
-      final tmp23 = tmp21;
-      final tmp23_0 = utf8.encode(tmp23);
-      tmp25 = tmp23_0.length;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
-      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
-      tmp24_1.setAll(0, tmp23_0);
-      tmp24 = tmp24_0.address;
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
+      tmp18 = tmp17;
+    }
+    if (tmp19 == null) {
+      tmp20 = 0;
+    } else {
+      tmp20 = 1;
+      final tmp21 = tmp19;
+      tmp22 = tmp21;
+    }
+    if (tmp23 == null) {
+      tmp24 = 0;
+    } else {
+      tmp24 = 1;
+      final tmp25 = tmp23;
       tmp26 = tmp25;
     }
     if (tmp27 == null) {
@@ -38161,13 +38173,13 @@ class AttachmentsManager {
       tmp8,
       tmp10,
       tmp12,
+      tmp13,
       tmp14,
       tmp16,
       tmp18,
       tmp20,
       tmp22,
       tmp24,
-      tmp25,
       tmp26,
       tmp28,
       tmp30,
@@ -42931,14 +42943,14 @@ class Space {
     String uri,
     String name,
     String mimetype,
-    int? secs,
     int? size,
+    int? secs,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
     final tmp9 = mimetype;
-    final tmp13 = secs;
-    final tmp17 = size;
+    final tmp13 = size;
+    final tmp17 = secs;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -43057,19 +43069,19 @@ class Space {
     String uri,
     String name,
     String mimetype,
-    int? secs,
-    int? height,
-    int? width,
     int? size,
+    int? secs,
+    int? width,
+    int? height,
     String? blurhash,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
     final tmp9 = mimetype;
-    final tmp13 = secs;
-    final tmp17 = height;
+    final tmp13 = size;
+    final tmp17 = secs;
     final tmp21 = width;
-    final tmp25 = size;
+    final tmp25 = height;
     final tmp29 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43233,7 +43245,7 @@ class Space {
     String uri,
     String name,
     String mimetype,
-    int size,
+    int? size,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
@@ -43250,6 +43262,7 @@ class Space {
     var tmp11 = 0;
     var tmp12 = 0;
     var tmp14 = 0;
+    var tmp16 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -43275,8 +43288,14 @@ class Space {
     tmp10_1.setAll(0, tmp9_0);
     tmp10 = tmp10_0.address;
     tmp12 = tmp11;
-    tmp14 = tmp13;
-    final tmp15 = _api._spaceSendFileMessage(
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
+    }
+    final tmp17 = _api._spaceSendFileMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -43288,14 +43307,15 @@ class Space {
       tmp11,
       tmp12,
       tmp14,
+      tmp16,
     );
-    final tmp17 = tmp15;
-    final ffi.Pointer<ffi.Void> tmp17_0 = ffi.Pointer.fromAddress(tmp17);
-    final tmp17_1 =
-        _Box(_api, tmp17_0, "__Space_send_file_message_future_drop");
-    tmp17_1._finalizer = _api._registerFinalizer(tmp17_1);
-    final tmp16 = _nativeFuture(tmp17_1, _api.__spaceSendFileMessageFuturePoll);
-    return tmp16;
+    final tmp19 = tmp17;
+    final ffi.Pointer<ffi.Void> tmp19_0 = ffi.Pointer.fromAddress(tmp19);
+    final tmp19_1 =
+        _Box(_api, tmp19_0, "__Space_send_file_message_future_drop");
+    tmp19_1._finalizer = _api._registerFinalizer(tmp19_1);
+    final tmp18 = _nativeFuture(tmp19_1, _api.__spaceSendFileMessageFuturePoll);
+    return tmp18;
   }
 
   /// decrypted file buffer data
