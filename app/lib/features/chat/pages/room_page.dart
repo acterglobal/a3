@@ -25,6 +25,7 @@ import 'package:intl/intl.dart';
 
 class RoomPage extends ConsumerWidget {
   final String roomId;
+
   const RoomPage({
     required this.roomId,
     super.key,
@@ -42,6 +43,7 @@ class RoomPage extends ConsumerWidget {
 
 class ChatRoom extends ConsumerStatefulWidget {
   final Convo convo;
+
   const ChatRoom({
     required this.convo,
     Key? key,
@@ -53,6 +55,26 @@ class ChatRoom extends ConsumerStatefulWidget {
 
 class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
   void onBackgroundTap() {}
+
+  void showMessageOptions(
+    BuildContext context,
+    types.Message message,
+    String roomId,
+  ) async {
+    if (message is types.CustomMessage) {
+      if (message.metadata!.containsKey('eventType') &&
+          message.metadata!['eventType'] == 'm.room.redaction') {
+        return;
+      }
+    }
+    final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
+    if (ref.read(chatInputProvider(roomId)).showReplyView) {
+      inputNotifier.toggleReplyView(false);
+      inputNotifier.setReplyWidget(null);
+    }
+    inputNotifier.setCurrentMessageId(message.id);
+    inputNotifier.emojiRowVisible(true);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -218,12 +240,17 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                     required types.Message message,
                     required bool nextMessageInGroup,
                   }) =>
-                      BubbleBuilder(
-                    convo: convo,
-                    message: message,
-                    nextMessageInGroup: nextMessageInGroup,
-                    enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
-                    child: child,
+                      GestureDetector(
+                    onSecondaryTap: () {
+                      showMessageOptions(context, message, roomId);
+                    },
+                    child: BubbleBuilder(
+                      convo: convo,
+                      message: message,
+                      nextMessageInGroup: nextMessageInGroup,
+                      enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
+                      child: child,
+                    ),
                   ),
                   imageMessageBuilder: (
                     types.ImageMessage message, {
@@ -247,21 +274,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                     BuildContext context,
                     types.Message message,
                   ) async {
-                    if (message is types.CustomMessage) {
-                      if (message.metadata!.containsKey('eventType') &&
-                          message.metadata!['eventType'] ==
-                              'm.room.redaction') {
-                        return;
-                      }
-                    }
-                    final inputNotifier =
-                        ref.read(chatInputProvider(roomId).notifier);
-                    if (ref.read(chatInputProvider(roomId)).showReplyView) {
-                      inputNotifier.toggleReplyView(false);
-                      inputNotifier.setReplyWidget(null);
-                    }
-                    inputNotifier.setCurrentMessageId(message.id);
-                    inputNotifier.emojiRowVisible(true);
+                    showMessageOptions(context, message, roomId);
                   },
                   onEndReached: ref
                       .read(chatStateProvider(convo).notifier)
