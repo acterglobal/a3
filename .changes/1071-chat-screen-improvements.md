@@ -1,0 +1,2 @@
+- Hide emoji option after sent
+- Auto focus on chat input while swipe to reply
