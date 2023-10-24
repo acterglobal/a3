@@ -26,7 +26,7 @@ class _AddEmailAddrState extends State<AddEmailAddr> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text(
-        'Add email address',
+        "Please provide the email address you'd like to add",
       ), // The token-reset path is just the process by which control over that email address is confirmed.
       content: Form(
         key: _formKey,
@@ -222,7 +222,7 @@ class EmailAddressesPage extends ConsumerWidget {
       builder: (BuildContext context) => const AddEmailAddr(),
     );
     if (newValue != null) {
-      EasyLoading.show(status: 'Requesting token via email');
+      EasyLoading.show(status: 'Adding email address');
       try {
         await manager.requestTokenViaEmail(newValue);
         ref.invalidate(emailAddressesProvider);
