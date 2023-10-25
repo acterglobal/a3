@@ -85,13 +85,13 @@ class _CreateChatWidget extends ConsumerWidget {
     final searchCtrl = ref.watch(searchController);
     final largeWidth = isDesktop || MediaQuery.of(context).size.width > 600;
     String tileTitle = selectedUsers.isEmpty
-        ? 'Create Room'
+        ? 'Start Chat'
         : selectedUsers.length > 1
-            ? 'Create Group DM'
+            ? 'Start Group DM'
             : checkUserDMExists(selectedUsers[0].userId().toString(), ref) !=
                     null
                 ? 'Go in DM'
-                : 'Create DM';
+                : 'Start DM';
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
@@ -106,7 +106,7 @@ class _CreateChatWidget extends ConsumerWidget {
                         icon: const Icon(Icons.chevron_left),
                       )
                     : const SizedBox.shrink(),
-                const Spacer(),
+                Spacer(flex: !largeWidth ? 1 : 2),
                 Text(
                   'New Chat',
                   style: Theme.of(context).textTheme.titleSmall,
@@ -122,6 +122,7 @@ class _CreateChatWidget extends ConsumerWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 15),
             TextField(
               controller: searchCtrl,
               style: Theme.of(context).textTheme.labelMedium,
@@ -226,9 +227,10 @@ class _CreateChatWidget extends ConsumerWidget {
             ),
             ListTile(
               onTap: selectedUsers.length > 1 || selectedUsers.isEmpty
-                  ? () => controller.nextPage(
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.linear,
+                  ? () => controller.animateToPage(
+                        1,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.ease,
                       )
                   : () {
                       String? id = checkUserDMExists(
@@ -282,15 +284,7 @@ class _CreateChatWidget extends ConsumerWidget {
                 tileTitle,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
-              trailing: Visibility(
-                visible: selectedUsers.isEmpty ||
-                    checkUserDMExists(
-                          selectedUsers[0].userId().toString(),
-                          ref,
-                        ) !=
-                        null,
-                child: const Icon(Icons.chevron_right_outlined, size: 24),
-              ),
+              trailing: const Icon(Icons.chevron_right_outlined, size: 24),
             ),
             const SizedBox(height: 15),
             Visibility(
@@ -376,7 +370,7 @@ class _CreateRoomFormWidgetConsumerState
     final avatarUpload = ref.watch(_avatarProvider);
     final currentParentSpace = ref.read(selectedSpaceIdProvider);
 
-    String title = selectedUsers.isEmpty ? 'Create Room' : 'Create Group DM';
+    String title = selectedUsers.isEmpty ? 'Start Chat' : 'Start Group DM';
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
       child: ListView(
@@ -391,8 +385,8 @@ class _CreateRoomFormWidgetConsumerState
                 child: IconButton(
                   padding: const EdgeInsets.all(0),
                   onPressed: () => widget.controller.previousPage(
-                    duration: const Duration(milliseconds: 100),
-                    curve: Curves.linear,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.ease,
                   ),
                   icon: const Icon(Icons.chevron_left_outlined),
                 ),
@@ -546,7 +540,7 @@ class _CreateRoomFormWidgetConsumerState
     String convoName,
     String description,
   ) async {
-    EasyLoading.show(status: 'Creating Chat Room');
+    EasyLoading.show(status: 'Creating Chat');
     try {
       final sdk = await ref.read(sdkProvider.future);
       final config = sdk.newConvoSettingsBuilder();
