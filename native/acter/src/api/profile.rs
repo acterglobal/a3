@@ -3,10 +3,7 @@ use matrix_sdk::{
     media::{MediaFormat, MediaRequest, MediaThumbnailSize},
     room::RoomMember,
     ruma::{
-        api::client::{
-            media::get_content_thumbnail,
-            user_directory::search_users,
-        },
+        api::client::{media::get_content_thumbnail, user_directory::search_users},
         UInt,
     },
     Account, Client, DisplayName,

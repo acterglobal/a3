@@ -289,7 +289,11 @@ pub async fn register_under_config(
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            if let Err(resp) = client.matrix_auth().register(register::v3::Request::new()).await {
+            if let Err(resp) = client
+                .matrix_auth()
+                .register(register::v3::Request::new())
+                .await
+            {
                 // FIXME: do actually check the registration types...
                 if resp.as_uiaa_response().is_some() {
                     let request = assign!(register::v3::Request::new(), {

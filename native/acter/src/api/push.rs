@@ -6,7 +6,10 @@ use super::{
 };
 use anyhow::{bail, Context, Result};
 use matrix_sdk::ruma::{
-    api::client::push::{get_pushers, set_pusher, EmailPusherData, Pusher as RumaPusher, PusherIds, PusherInit, PusherKind},
+    api::client::push::{
+        get_pushers, set_pusher, EmailPusherData, Pusher as RumaPusher, PusherIds, PusherInit,
+        PusherKind,
+    },
     assign,
     push::HttpPusherData,
 };

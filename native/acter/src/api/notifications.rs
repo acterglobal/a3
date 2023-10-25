@@ -1,9 +1,6 @@
 use acter_core::spaces::is_acter_space;
 use anyhow::{Context, Result};
-use matrix_sdk::ruma::{
-    api::client::push::get_notifications,
-    assign,
-};
+use matrix_sdk::ruma::{api::client::push::get_notifications, assign};
 use ruma_common::OwnedRoomId;
 
 use crate::{Convo, RoomMessage, Space};
@@ -20,7 +17,10 @@ pub struct Notification {
 }
 
 impl Notification {
-    pub(crate) async fn new(notification: get_notifications::v3::Notification, client: Client) -> Self {
+    pub(crate) async fn new(
+        notification: get_notifications::v3::Notification,
+        client: Client,
+    ) -> Self {
         let room = client.room_by_id_typed(&notification.room_id);
         let (is_space, is_acter_space) = if let Some(room) = &room {
             if room.is_space() {

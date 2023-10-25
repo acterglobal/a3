@@ -1,8 +1,5 @@
 use anyhow::Result;
-use matrix_sdk::ruma::{
-    api::client::directory::get_public_rooms_filtered,
-    assign,
-};
+use matrix_sdk::ruma::{api::client::directory::get_public_rooms_filtered, assign};
 use ruma_common::{
     directory::{Filter, PublicRoomJoinRule, PublicRoomsChunk, RoomNetwork, RoomTypeFilter},
     room::RoomType,

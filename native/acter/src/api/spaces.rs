@@ -24,10 +24,7 @@ use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     media::{MediaFormat, MediaRequest},
     room::{Messages, MessagesOptions, Room as SdkRoom},
-    ruma::{
-        api::client::state::send_state_event,
-        assign,
-    },
+    ruma::{api::client::state::send_state_event, assign},
     RoomState,
 };
 use ruma_common::{
