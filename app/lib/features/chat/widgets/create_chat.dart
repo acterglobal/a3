@@ -99,9 +99,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
         } else {
           // we are creating dm
           final userId = selectedUsers[0].userId().toString();
-          var displayName = await selectedUsers[0].getDisplayName();
-          String title = displayName.text() ?? userId;
-          config.setName(title);
+          config.setName('');
           config.addInvitee(userId);
         }
       } else {
