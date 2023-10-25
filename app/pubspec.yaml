@@ -156,11 +156,6 @@ dependency_overrides:
       path: flutter_secure_storage_platform_interface
       ref: develop
 
-  convenient_test:
-    path: "../../flutter_convenient_test/packages/convenient_test"
-  convenient_test_dev:
-    path: "../../flutter_convenient_test/packages/convenient_test_dev"
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
