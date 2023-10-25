@@ -224,6 +224,8 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
         .add_image_slide(
             "This is a simple text".to_owned(),
             tmp_file.path().as_os_str().to_str().unwrap().to_owned(),
+            "image/jpg".to_string(),
+            None,
             None,
             None,
             None,
@@ -285,6 +287,8 @@ async fn news_png_image_with_text_test() -> Result<()> {
         .add_image_slide(
             "This is a simple text".to_owned(),
             tmp_file.path().as_os_str().to_str().unwrap().to_owned(),
+            "image/png".to_string(),
+            None,
             None,
             None,
             None,
