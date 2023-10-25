@@ -214,9 +214,10 @@ class RoomProfilePage extends ConsumerWidget {
                       onPressed: (ctx) async {
                         await showAdaptiveDialog(
                           barrierDismissible: true,
-                          context: ctx,
-                          builder: (ctx) => DefaultDialog(
-                            height: MediaQuery.of(context).size.height * 0.5,
+                          context: context,
+                          useRootNavigator: false,
+                          builder: (dialogContext) => DefaultDialog(
+                            height: MediaQuery.of(dialogContext).size.height * 0.5,
                             title: topMenu,
                             description: convo.when(
                               data: (data) => MemberList(convo: data),
