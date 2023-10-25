@@ -42,6 +42,7 @@ mod settings;
 mod spaces;
 mod stream;
 mod tasks;
+mod three_pid;
 mod typing;
 mod utils;
 mod verification;
@@ -68,7 +69,7 @@ pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
     duration_from_secs, AudioDesc, DeviceRecord, FileDesc, ImageDesc, LocationDesc, MediaSource,
-    OptionBuffer, OptionString, TextDesc, ThumbnailInfo, VideoDesc,
+    OptionBuffer, OptionString, ReactionRecord, TextDesc, ThumbnailInfo, VideoDesc,
 };
 pub use convo::{
     new_convo_settings_builder, Convo, ConvoDiff, CreateConvoSettings, CreateConvoSettingsBuilder,
@@ -76,12 +77,12 @@ pub use convo::{
 pub use core::time::Duration as EfkDuration;
 pub use device::{DeviceChangedEvent, DeviceNewEvent};
 pub use invitation::Invitation;
-pub use message::{ReactionRecord, RoomEventItem, RoomMessage, RoomVirtualItem};
+pub use message::{RoomEventItem, RoomMessage, RoomVirtualItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide};
 pub use notifications::{Notification, NotificationListResult};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
-pub use push::NotificationItem;
+pub use push::{NotificationItem, Pusher};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{
     Member, MemberPermission, MembershipStatus, Room, SpaceHierarchyListResult,
@@ -102,6 +103,7 @@ pub use stream::{TimelineDiff, TimelineStream};
 pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
+pub use three_pid::ThreePidManager;
 pub use typing::TypingEvent;
 pub use utils::parse_markdown;
 pub use verification::{SessionManager, VerificationEmoji, VerificationEvent};

@@ -139,19 +139,16 @@ object NewsEntryDraft {
     fn add_text_slide(body: string);
 
     /// create news slide for image msg
-    fn add_image_slide(body: string, uri: string, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<bool>>;
+    fn add_image_slide(body: string, url: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<bool>>;
 
     /// create news slide for audio msg
-    fn add_audio_slide(body: string, uri: string, secs: Option<u64>) -> Future<Result<bool>>;
+    fn add_audio_slide(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>);
 
     /// create news slide for video msg
-    fn add_video_slide(body: string, uri: string, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<bool>>;
+    fn add_video_slide(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>);
 
     /// create news slide for file msg
-    fn add_file_slide(body: string, uri: string) -> Future<Result<bool>>;
-
-    /// create news slide for location msg
-    fn add_location_slide(body: string, geo_uri: string);
+    fn add_file_slide(body: string, url: string, mimetype: Option<string>, size: Option<u64>);
 
     /// clear slides
     fn unset_slides();
@@ -845,7 +842,7 @@ object Convo {
     fn send_reaction(event_id: string, key: string) -> Future<Result<EventId>>;
 
     /// send the image message to this room
-    fn send_image_message(uri: string, name: string, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<EventId>>;
+    fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<EventId>>;
 
     /// decrypted image file data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -853,10 +850,10 @@ object Convo {
     fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// edit the image message
-    fn edit_image_message(event_id: string, uri: string, name: string, width: Option<u64>, height: Option<u64>) -> Future<Result<EventId>>;
+    fn edit_image_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>) -> Future<Result<EventId>>;
 
     /// send the audio message to this room
-    fn send_audio_message(uri: string, name: string, secs: Option<u64>) -> Future<Result<EventId>>;
+    fn send_audio_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>) -> Future<Result<EventId>>;
 
     /// decrypted audio buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -864,10 +861,10 @@ object Convo {
     fn audio_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// edit the audio message
-    fn edit_audio_message(event_id: string, uri: string, name: string, secs: Option<u64>) -> Future<Result<EventId>>;
+    fn edit_audio_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>) -> Future<Result<EventId>>;
 
     /// send the video message to this room
-    fn send_video_message(uri: string, name: string, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<EventId>>;
+    fn send_video_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<EventId>>;
 
     /// decrypted video buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -875,10 +872,10 @@ object Convo {
     fn video_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// edit the video message
-    fn edit_video_message(event_id: string, uri: string, name: string, secs: Option<u64>, width: Option<u64>, height: Option<u64>) -> Future<Result<EventId>>;
+    fn edit_video_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>) -> Future<Result<EventId>>;
 
     /// send the file message to this room
-    fn send_file_message(uri: string, name: string) -> Future<Result<EventId>>;
+    fn send_file_message(uri: string, name: string, mimetype: string, size: Option<u64>) -> Future<Result<EventId>>;
 
     /// decrypted file buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -886,7 +883,7 @@ object Convo {
     fn file_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// edit the file message
-    fn edit_file_message(event_id: string, uri: string, name: string) -> Future<Result<EventId>>;
+    fn edit_file_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>) -> Future<Result<EventId>>;
 
     /// send the location message to this room
     fn send_location_message(body: string, geo_uri: string) -> Future<Result<EventId>>;
@@ -934,16 +931,16 @@ object Convo {
     fn send_text_reply(msg: string, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// send reply as image
-    fn send_image_reply(uri: string, name: string, width: Option<u64>, height: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+    fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// send reply as audio
-    fn send_audio_reply(uri: string, name: string, secs: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+    fn send_audio_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// send reply as video
-    fn send_video_reply(uri: string, name: string, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+    fn send_video_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// send reply as file
-    fn send_file_reply(uri: string, name: string, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+    fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// redact any message (including text/image/file and reaction)
     fn redact_message(event_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
@@ -1600,7 +1597,7 @@ object Space {
     fn pin_draft() -> Result<PinDraft>;
 
     /// send the image message to this room
-    fn send_image_message(uri: string, name: string, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<EventId>>;
+    fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<EventId>>;
 
     /// decrypted image buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -1608,7 +1605,7 @@ object Space {
     fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// send the audio message to this room
-    fn send_audio_message(uri: string, name: string, secs: Option<u64>) -> Future<Result<EventId>>;
+    fn send_audio_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>) -> Future<Result<EventId>>;
 
     /// decrypted audio buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -1616,7 +1613,7 @@ object Space {
     fn audio_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// send the video message to this room
-    fn send_video_message(uri: string, name: string, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<EventId>>;
+    fn send_video_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<EventId>>;
 
     /// decrypted video buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -1624,7 +1621,7 @@ object Space {
     fn video_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// send the file message to this room
-    fn send_file_message(uri: string, name: string) -> Future<Result<EventId>>;
+    fn send_file_message(uri: string, name: string, mimetype: string, size: Option<u64>) -> Future<Result<EventId>>;
 
     /// decrypted file buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -1747,6 +1744,27 @@ object Account {
     fn unignore_user(user_id: string) -> Future<Result<bool>>;
 }
 
+object ThreePidManager {
+    /// get email addresses from third party identifier
+    fn confirmed_email_addresses() -> Future<Result<Vec<string>>>;
+
+    /// get email addresses that were registered
+    fn requested_email_addresses() -> Future<Result<Vec<string>>>;
+
+    /// Requests token via email and add email address to third party identifier.
+    /// If password is not enough complex, homeserver may reject this request.
+    fn request_token_via_email(email_address: string) -> Future<Result<bool>>;
+
+    /// Submit token to finish email register
+    fn submit_token_from_email(email_address: string, token: string, password: string) -> Future<Result<bool>>;
+
+    /// Submit token to finish email register
+    fn try_confirm_email_status(email_address: string, password: string) -> Future<Result<bool>>;
+
+    /// Remove email address from confirmed list or unconfirmed list
+    fn remove_email_address(email_address: string) -> Future<Result<bool>>;
+}
+
 object SyncState {
     /// Get event handler of first synchronization on every launch
     fn first_synced_rx() -> Stream<bool>;
@@ -1820,7 +1838,19 @@ object NotificationItem {
     fn is_direct_message_room() -> bool;
     fn is_noisy() -> Option<bool>;
     fn joined_members_count() -> u64;
+}
 
+/// The pusher we sent notifications via to the user
+object Pusher {
+    fn is_email_pusher() -> bool;
+    fn pushkey() -> string;
+    fn app_id() -> string;
+    fn app_display_name() -> string;
+    fn device_display_name() -> string;
+    fn lang() -> string;
+    fn profile_tag() -> Option<string>;
+
+    fn delete() -> Future<Result<bool>>;
 }
 
 /// make convo settings builder
@@ -2053,8 +2083,14 @@ object Client {
     /// listen to incoming notifications
     fn notifications_stream() -> Stream<Notification>;
 
+    /// list of pushers
+    fn pushers() -> Future<Result<Vec<Pusher>>>;
+
     /// add another http pusher to the notification system
     fn add_pusher(app_id: string, token: string, device_name: string, app_name: string, server_url: string, with_ios_default: bool, lang: Option<string>) -> Future<Result<bool>>;
+
+    /// add another http pusher to the notification system
+    fn add_email_pusher(device_name: string, app_name: string, email: string, lang: Option<string>) -> Future<Result<bool>>;
 
     /// getting a notification item from the notification data;
     fn get_notification_item(room_id: string, event_id: string) -> Future<Result<NotificationItem>>;
@@ -2066,6 +2102,9 @@ object Client {
 
     /// get only past events that I responded as rsvp
     fn my_past_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
+
+    /// get intermediate info of login (via email and phone) from account data
+    fn three_pid_manager() -> Result<ThreePidManager>;
 
 }
 

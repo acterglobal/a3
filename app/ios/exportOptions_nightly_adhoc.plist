@@ -12,6 +12,8 @@
     <dict>
         <key>global.acter.a3</key>
         <string>A3-Nightly-Internal</string>
+        <key>global.acter.a3.ActerPushServiceExtension</key>
+        <string>A3-push-Nightly</string>
     </dict>
     <key>signingCertificate</key>
     <string>Apple Distribution</string>

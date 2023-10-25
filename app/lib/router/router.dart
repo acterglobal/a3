@@ -1,6 +1,7 @@
 import 'package:acter/common/pages/fatal_fail.dart';
 import 'package:acter/common/widgets/dialog_page.dart';
 import 'package:acter/common/widgets/side_sheet_page.dart';
+import 'package:acter/common/dialogs/invite_to_room_dialog.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
@@ -13,16 +14,16 @@ import 'package:acter/features/events/sheets/edit_event_sheet.dart';
 import 'package:acter/features/pins/sheets/create_pin_sheet.dart';
 import 'package:acter/features/pins/sheets/edit_pin_sheet.dart';
 import 'package:acter/features/settings/pages/blocked_users.dart';
+import 'package:acter/features/settings/pages/notifications_page.dart';
 import 'package:acter/features/settings/pages/sessions_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/pages/chat_select_page.dart';
 import 'package:acter/features/chat/pages/chats_shell.dart';
-import 'package:acter/features/chat/pages/room_profile_page.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
+import 'package:acter/features/chat/pages/room_profile_page.dart';
 import 'package:acter/features/events/pages/event_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
-import 'package:acter/features/space/pages/members_page.dart';
 import 'package:acter/features/news/pages/news_page.dart';
 import 'package:acter/features/news/pages/simple_post.dart';
 import 'package:acter/features/onboarding/pages/intro_page.dart';
@@ -35,27 +36,28 @@ import 'package:acter/features/pins/pages/pins_page.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/search/pages/search.dart';
+import 'package:acter/features/settings/pages/email_addresses.dart';
 import 'package:acter/features/settings/pages/index_page.dart';
 import 'package:acter/features/settings/pages/info_page.dart';
 import 'package:acter/features/settings/pages/labs_page.dart';
 import 'package:acter/features/settings/pages/licenses_page.dart';
-import 'package:acter/common/dialogs/invite_to_room_dialog.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/pages/events_page.dart';
+import 'package:acter/features/space/pages/members_page.dart';
 import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/pins_page.dart';
 import 'package:acter/features/space/pages/related_spaces_page.dart';
 import 'package:acter/features/space/pages/shell_page.dart';
 import 'package:acter/features/space/pages/tasks_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
+import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
+import 'package:acter/features/space/settings/pages/index_page.dart';
 import 'package:acter/features/space/sheets/edit_space_sheet.dart';
+import 'package:acter/features/spaces/pages/join_space.dart';
+import 'package:acter/features/spaces/pages/spaces_page.dart';
 import 'package:acter/features/spaces/sheets/create_space_sheet.dart';
 import 'package:acter/features/tasks/dialogs/create_task_list_sheet.dart';
 import 'package:acter/features/tasks/pages/tasks_page.dart';
-import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
-import 'package:acter/features/space/settings/pages/index_page.dart';
-import 'package:acter/features/spaces/pages/join_space.dart';
-import 'package:acter/features/spaces/pages/spaces_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -104,7 +106,7 @@ Future<String?> forwardRedirect(
   try {
     final acterSdk = await ActerSdk.instance;
     if (!acterSdk.hasClients) {
-      // we are not logged in. 
+      // we are not logged in.
       return null;
     }
     final deviceId = state.uri.queryParameters['deviceId'];
@@ -112,11 +114,15 @@ Future<String?> forwardRedirect(
     final client = await acterSdk.getClientWithDeviceId(deviceId!);
     if (await client.hasConvo(roomId!)) {
       // this is a chat
-      return state.namedLocation(Routes.chatroom.name, pathParameters: {'roomId': roomId});
-    } else  {
+      return state.namedLocation(
+        Routes.chatroom.name,
+        pathParameters: {'roomId': roomId},
+      );
+    } else {
       // final eventId = state.uri.queryParameters['eventId'];
-      // with the event ID or further information we could figure out the specific action 
-      return state.namedLocation(Routes.space.name, pathParameters: {'roomId': roomId});
+      // with the event ID or further information we could figure out the specific action
+      return state
+          .namedLocation(Routes.space.name, pathParameters: {'roomId': roomId});
     }
   } catch (error, trace) {
     // ignore: deprecated_member_use
@@ -152,7 +158,7 @@ List<RouteBase> makeRoutes(Ref ref) {
       path: Routes.forward.route,
       redirect: forwardRedirect,
     ),
-    
+
     GoRoute(
       name: Routes.intro.name,
       path: Routes.intro.route,
@@ -192,7 +198,10 @@ List<RouteBase> makeRoutes(Ref ref) {
       parentNavigatorKey: rootNavKey,
       name: Routes.fatalFail.name,
       path: Routes.fatalFail.route,
-      builder: (context, state) => FatalFailPage(error: state.uri.queryParameters['error']!, trace: state.uri.queryParameters['trace']!),
+      builder: (context, state) => FatalFailPage(
+        error: state.uri.queryParameters['error']!,
+        trace: state.uri.queryParameters['trace']!,
+      ),
     ),
     GoRoute(
       parentNavigatorKey: rootNavKey,
@@ -493,6 +502,18 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
         GoRoute(
           parentNavigatorKey: shellNavKey,
+          name: Routes.emailAddresses.name,
+          path: Routes.emailAddresses.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: const EmailAddressesPage(),
+            );
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: shellNavKey,
           name: Routes.blockedUsers.name,
           path: Routes.blockedUsers.route,
           redirect: authGuardRedirect,
@@ -690,6 +711,17 @@ List<RouteBase> makeRoutes(Ref ref) {
             return NoTransitionPage(
               key: state.pageKey,
               child: const SettingsLabsPage(),
+            );
+          },
+        ),
+        GoRoute(
+          name: Routes.settingNotifications.name,
+          path: Routes.settingNotifications.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: const NotificationsSettingsPage(),
             );
           },
         ),

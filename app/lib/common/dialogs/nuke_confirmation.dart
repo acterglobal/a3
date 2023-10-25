@@ -7,15 +7,20 @@ import 'package:go_router/go_router.dart';
 // Can be extended to be reusable dialog as riverpod states get added.
 // Ref can be used to read any provider which are declared.
 void nukeConfirmationDialog(BuildContext context, WidgetRef ref) {
-  showDialog(
+  showAdaptiveDialog(
     context: context,
     builder: (BuildContext ctx) {
       return AlertDialog(
         title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Atlas.bomb_bold,color: Colors.red,),
-            SizedBox(height:10,),
+            Icon(
+              Atlas.bomb_bold,
+              color: Colors.red,
+            ),
+            SizedBox(
+              height: 10,
+            ),
             Text('Nuke all local data'),
           ],
         ),
@@ -36,42 +41,42 @@ void nukeConfirmationDialog(BuildContext context, WidgetRef ref) {
         actions: <Widget>[
           Row(
             children: [
-               Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey),),
-              child: TextButton(
-                onPressed: () => ctx.pop(),
-                child: const Text(
-                  'No',
-                  style: TextStyle(color: Colors.white,fontSize: 17),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey),
+                  ),
+                  child: TextButton(
+                    onPressed: () => ctx.pop(),
+                    child: const Text(
+                      'No',
+                      style: TextStyle(color: Colors.white, fontSize: 17),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-           const SizedBox(width: 10),
-            Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.red,
-                  border: Border.all(color: Colors.red),
-                  borderRadius: BorderRadius.circular(8),),
-              child: TextButton(
-                onPressed: () async {
-                  await ref.read(authStateProvider.notifier).nuke(ctx);
-                },
-                child: const Text(
-                  'Yihaaaa',
-                  style: TextStyle(color: Colors.white,fontSize: 17),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    border: Border.all(color: Colors.red),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: TextButton(
+                    onPressed: () async {
+                      await ref.read(authStateProvider.notifier).nuke(ctx);
+                    },
+                    child: const Text(
+                      'Yihaaaa',
+                      style: TextStyle(color: Colors.white, fontSize: 17),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
             ],
           ),
-         
-        
         ],
       );
     },

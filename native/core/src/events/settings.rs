@@ -51,7 +51,7 @@ pub type EventsSettings = SimpleSettingWithTurnOff;
 #[ruma_event(type = "global.acter.app_settings", kind = State, state_key_type = EmptyStateKey)]
 pub struct ActerAppSettingsContent {
     news: Option<NewsSettings>,
-    pins: Option<NewsSettings>,
+    pins: Option<PinsSettings>,
     events: Option<EventsSettings>,
     tasks: Option<TasksSettings>,
 }

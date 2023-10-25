@@ -1,0 +1,4 @@
+- [Enhance] Desktop: Shift+enter will allow jump to new line
+- [Enhance] Desktop: Chat options are now accessible from the right click
+- [Fix] Auto focus on chat input while swipe to reply
+- [Fix] Hide Emoji/Chat options having long pressed and successfully made a reaction
