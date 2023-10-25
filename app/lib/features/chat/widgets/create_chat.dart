@@ -51,10 +51,14 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
     controller = PageController(initialPage: widget.initialPage ?? 0);
     currIdx = controller.initialPage;
     pages = [
-      _CreateChatWidget(controller: controller),
+      _CreateChatWidget(
+        controller: controller,
+        onCreateConvo: _handleCreateConvo,
+      ),
       _CreateRoomFormWidget(
         controller: controller,
         initialSelectedSpaceId: widget.initialSelectedSpaceId,
+        onCreateConvo: _handleCreateConvo,
       ),
     ];
   }
@@ -71,12 +75,83 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
       itemBuilder: ((context, index) => pages[currIdx]),
     );
   }
+
+  /// Create Room Method
+  Future<ffi.Convo?> _handleCreateConvo(
+    BuildContext context,
+    String convoName,
+    String description,
+  ) async {
+    EasyLoading.show(status: 'Creating Chat');
+    try {
+      final sdk = await ref.read(sdkProvider.future);
+      final config = sdk.newConvoSettingsBuilder();
+      final selectedUsers = ref.watch(_selectedUsersProvider);
+      // we check whether user has selected participants for DM/Group DM.
+      if (selectedUsers.isNotEmpty) {
+        if (selectedUsers.length > 1) {
+          // we are creating group DM
+          for (int i = 0; i < selectedUsers.length; i++) {
+            final userId = selectedUsers[i].userId().toString();
+            config.addInvitee(userId);
+          }
+          config.setName('');
+        } else {
+          // we are creating dm
+          final userId = selectedUsers[0].userId().toString();
+          var displayName = await selectedUsers[0].getDisplayName();
+          String title = displayName.text() ?? userId;
+          config.setName(title);
+          config.addInvitee(userId);
+        }
+      } else {
+        // we are creating default room
+        config.setName(convoName);
+      }
+      if (description.isNotEmpty) {
+        config.setTopic(description);
+      }
+      final avatarUri = ref.read(_avatarProvider);
+      if (avatarUri.isNotEmpty) {
+        config.setAvatarUri(avatarUri); // convo creation will upload it
+      }
+      final parentId = ref.read(selectedSpaceIdProvider);
+      if (parentId != null) {
+        config.setParent(parentId);
+      }
+      final client = ref.read(clientProvider);
+      if (client == null) throw UnimplementedError('Client is not available');
+      final roomId = await client.createConvo(config.build());
+      // add room to child of space (if given)
+      if (parentId != null) {
+        final space = await ref.read(spaceProvider(parentId).future);
+        await space.addChildSpace(roomId.toString());
+      }
+      final convo = await client.convoWithRetry(roomId.toString(), 12);
+      EasyLoading.dismiss();
+      EasyLoading.showSuccess(
+        'Chat Room Created with Room ID: ${convo.getRoomIdStr()}',
+      );
+      return convo;
+    } catch (e) {
+      EasyLoading.dismiss();
+      EasyLoading.showError(
+        'Some error occured $e',
+        duration: const Duration(seconds: 2),
+      );
+      return null;
+    }
+  }
 }
 
 ///
 class _CreateChatWidget extends ConsumerWidget {
   final PageController controller;
-  const _CreateChatWidget({required this.controller});
+  final Future<ffi.Convo?> Function(BuildContext, String, String) onCreateConvo;
+  const _CreateChatWidget({
+    required this.controller,
+    required this.onCreateConvo,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -226,24 +301,44 @@ class _CreateChatWidget extends ConsumerWidget {
               ),
             ),
             ListTile(
-              onTap: selectedUsers.length > 1 || selectedUsers.isEmpty
+              onTap: selectedUsers.isEmpty
                   ? () => controller.animateToPage(
                         1,
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.ease,
                       )
-                  : () {
-                      String? id = checkUserDMExists(
-                        selectedUsers[0].userId().toString(),
-                        ref,
-                      );
-                      if (id != null) {
-                        Navigator.of(context).pop();
-                        context.pushNamed(
-                          Routes.chatroom.name,
-                          pathParameters: {'roomId': id},
+                  : () async {
+                      if (selectedUsers.length > 1) {
+                        final convo = await onCreateConvo(context, '', '');
+                        if (context.mounted && convo != null) {
+                          Navigator.of(context).pop();
+                          context.pushNamed(
+                            Routes.chatroom.name,
+                            pathParameters: {'roomId': convo.getRoomIdStr()},
+                          );
+                        }
+                      } else {
+                        String? id = checkUserDMExists(
+                          selectedUsers[0].userId().toString(),
+                          ref,
                         );
-                      } else {}
+                        if (id != null) {
+                          Navigator.of(context).pop();
+                          context.pushNamed(
+                            Routes.chatroom.name,
+                            pathParameters: {'roomId': id},
+                          );
+                        } else {
+                          final convo = await onCreateConvo(context, '', '');
+                          if (context.mounted && convo != null) {
+                            Navigator.of(context).pop();
+                            context.pushNamed(
+                              Routes.chatroom.name,
+                              pathParameters: {'roomId': convo.getRoomIdStr()},
+                            );
+                          }
+                        }
+                      }
                     },
               contentPadding: const EdgeInsets.only(left: 0),
               leading: selectedUsers.isEmpty
@@ -332,8 +427,10 @@ class _CreateChatWidget extends ConsumerWidget {
 class _CreateRoomFormWidget extends ConsumerStatefulWidget {
   final String? initialSelectedSpaceId;
   final PageController controller;
+  final Future<ffi.Convo?> Function(BuildContext, String, String) onCreateConvo;
   const _CreateRoomFormWidget({
     required this.controller,
+    required this.onCreateConvo,
     this.initialSelectedSpaceId,
   });
 
@@ -489,7 +586,7 @@ class _CreateRoomFormWidgetConsumerState
                           );
                           return;
                         }
-                        final convo = await _handleCreateConvo(
+                        final convo = await widget.onCreateConvo(
                           context,
                           titleInput,
                           _descriptionController.text.trim(),
@@ -531,52 +628,6 @@ class _CreateRoomFormWidgetConsumerState
       ref.read(_avatarProvider.notifier).update((state) => filepath);
     } else {
       // user cancelled the picker
-    }
-  }
-
-  /// Create Room Method
-  Future<ffi.Convo?> _handleCreateConvo(
-    BuildContext context,
-    String convoName,
-    String description,
-  ) async {
-    EasyLoading.show(status: 'Creating Chat');
-    try {
-      final sdk = await ref.read(sdkProvider.future);
-      final config = sdk.newConvoSettingsBuilder();
-      config.setName(convoName);
-      if (description.isNotEmpty) {
-        config.setTopic(description);
-      }
-      final avatarUri = ref.read(_avatarProvider);
-      if (avatarUri.isNotEmpty) {
-        config.setAvatarUri(avatarUri); // convo creation will upload it
-      }
-      final parentId = ref.read(selectedSpaceIdProvider);
-      if (parentId != null) {
-        config.setParent(parentId);
-      }
-      final client = ref.read(clientProvider);
-      if (client == null) throw UnimplementedError('Client is not available');
-      final roomId = await client.createConvo(config.build());
-      // add room to child of space (if given)
-      if (parentId != null) {
-        final space = await ref.read(spaceProvider(parentId).future);
-        await space.addChildSpace(roomId.toString());
-      }
-      final convo = await client.convoWithRetry(roomId.toString(), 12);
-      EasyLoading.dismiss();
-      EasyLoading.showSuccess(
-        'Chat Room Created with Room ID: ${convo.getRoomIdStr()}',
-      );
-      return convo;
-    } catch (e) {
-      EasyLoading.dismiss();
-      EasyLoading.showError(
-        'Some error occured $e',
-        duration: const Duration(seconds: 2),
-      );
-      return null;
     }
   }
 }

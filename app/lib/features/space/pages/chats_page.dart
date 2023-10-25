@@ -53,9 +53,19 @@ class SpaceChatsPage extends ConsumerWidget {
                             ? await showAdaptiveDialog(
                                 barrierDismissible: false,
                                 context: shellNavKey.currentContext!,
-                                builder: (ctx) => CreateChatPage(
-                                  initialSelectedSpaceId: spaceIdOrAlias,
-                                  initialPage: 1,
+                                builder: (ctx) => Dialog(
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.onPrimary,
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      maxHeight: size.height * 0.8,
+                                      maxWidth: size.width * 0.5,
+                                    ),
+                                    child: CreateChatPage(
+                                      initialSelectedSpaceId: spaceIdOrAlias,
+                                      initialPage: 1,
+                                    ),
+                                  ),
                                 ),
                               )
                             : await showModalBottomSheet(

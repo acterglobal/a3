@@ -7,7 +7,6 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/activities/pages/activities_page.dart';
-import 'package:acter/features/chat/sheets/create_chat_sheet.dart';
 import 'package:acter/features/events/pages/events_page.dart';
 import 'package:acter/features/events/sheets/create_event_sheet.dart';
 import 'package:acter/features/events/sheets/edit_event_sheet.dart';
@@ -421,31 +420,6 @@ List<RouteBase> makeRoutes(Ref ref) {
           roomId: state.pathParameters['chatId']!,
         ),
       ),
-    ),
-
-    GoRoute(
-      parentNavigatorKey: rootNavKey,
-      name: Routes.createChat.name,
-      path: Routes.createChat.route,
-      pageBuilder: (context, state) {
-        return SideSheetPage(
-          key: state.pageKey,
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween(
-                begin: const Offset(1, 0),
-                end: const Offset(0, 0),
-              ).animate(
-                animation,
-              ),
-              child: child,
-            );
-          },
-          child: CreateChatSheet(
-            initialSelectedSpaceId: state.uri.queryParameters['spaceId'],
-          ),
-        );
-      },
     ),
 
     /// Application shell
