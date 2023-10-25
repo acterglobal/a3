@@ -6,7 +6,7 @@ use super::{
 };
 use anyhow::{bail, Context, Result};
 use matrix_sdk::ruma::{
-    api::client::push::{set_pusher, Pusher as RumaPusher, PusherIds, PusherInit, PusherKind},
+    api::client::push::{get_pushers, set_pusher, EmailPusherData, Pusher as RumaPusher, PusherIds, PusherInit, PusherKind},
     assign,
     push::HttpPusherData,
 };
@@ -14,7 +14,6 @@ use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
     NotificationProcessSetup,
 };
-use ruma::api::client::push::{get_pushers, EmailPusherData};
 use ruma_common::{OwnedEventId, OwnedRoomId};
 
 pub struct NotificationItem {

@@ -22,7 +22,7 @@ use matrix_sdk::{
     room::Room as SdkRoom,
     ruma::api::client::{
         error::{ErrorBody, ErrorKind},
-        push::get_notifications::v3::Notification as RumaNotification,
+        push::get_notifications,
         Error,
     },
     Client as SdkClient, LoopCtrl, RoomState, RumaApiError,
@@ -89,7 +89,7 @@ pub struct Client {
     pub(crate) receipt_controller: ReceiptController,
     pub spaces: Arc<RwLock<eyeball_im::ObservableVector<Space>>>,
     pub convos: Arc<RwLock<eyeball_im::ObservableVector<Convo>>>,
-    pub(crate) notifications: Arc<Sender<RumaNotification>>,
+    pub(crate) notifications: Arc<Sender<get_notifications::v3::Notification>>,
 }
 
 impl Deref for Client {

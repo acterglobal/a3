@@ -4,8 +4,8 @@ use matrix_sdk::{
     room::RoomMember,
     ruma::{
         api::client::{
-            media::get_content_thumbnail::v3::Method as ThumbnailMethod,
-            user_directory::search_users::v3::User,
+            media::get_content_thumbnail,
+            user_directory::search_users,
         },
         UInt,
     },
@@ -22,12 +22,12 @@ use super::{
 
 #[derive(Clone)]
 pub struct PublicProfile {
-    inner: User,
+    inner: search_users::v3::User,
     client: Client,
 }
 
 impl PublicProfile {
-    pub fn new(inner: User, client: Client) -> Self {
+    pub fn new(inner: search_users::v3::User, client: Client) -> Self {
         PublicProfile { inner, client }
     }
 
@@ -145,7 +145,7 @@ impl UserProfile {
             return RUNTIME
                 .spawn(async move {
                     let size = MediaThumbnailSize {
-                        method: ThumbnailMethod::Scale,
+                        method: get_content_thumbnail::v3::Method::Scale,
                         width,
                         height,
                     };
@@ -158,7 +158,7 @@ impl UserProfile {
             return RUNTIME
                 .spawn(async move {
                     let size = MediaThumbnailSize {
-                        method: ThumbnailMethod::Scale,
+                        method: get_content_thumbnail::v3::Method::Scale,
                         width,
                         height,
                     };
@@ -237,7 +237,7 @@ impl RoomProfile {
         RUNTIME
             .spawn(async move {
                 let size = MediaThumbnailSize {
-                    method: ThumbnailMethod::Scale,
+                    method: get_content_thumbnail::v3::Method::Scale,
                     width,
                     height,
                 };

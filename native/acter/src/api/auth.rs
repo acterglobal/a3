@@ -4,7 +4,7 @@ use matrix_sdk::{
     matrix_auth::{MatrixSession, MatrixSessionTokens},
     ruma::{
         api::client::{
-            account::register::{v3::Request as RegisterRequest, RegistrationKind},
+            account::register,
             uiaa::{AuthData, Dummy, Password, RegistrationToken},
         },
         assign,
@@ -89,8 +89,8 @@ pub async fn guest_client(
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            let request = assign!(RegisterRequest::new(), {
-                kind: RegistrationKind::Guest,
+            let request = assign!(register::v3::Request::new(), {
+                kind: register::RegistrationKind::Guest,
                 initial_device_display_name: device_name,
             });
             let response = client.matrix_auth().register(request).await?;
@@ -289,10 +289,10 @@ pub async fn register_under_config(
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            if let Err(resp) = client.matrix_auth().register(RegisterRequest::new()).await {
+            if let Err(resp) = client.matrix_auth().register(register::v3::Request::new()).await {
                 // FIXME: do actually check the registration types...
                 if resp.as_uiaa_response().is_some() {
-                    let request = assign!(RegisterRequest::new(), {
+                    let request = assign!(register::v3::Request::new(), {
                         username: Some(user_id.localpart().to_owned()),
                         password: Some(password.clone()),
                         initial_device_display_name: Some(user_agent.clone()),
@@ -357,7 +357,7 @@ pub async fn register_with_token_under_config(
         .spawn(async move {
             let client = {
                 let client = config.build().await?;
-                let request = assign!(RegisterRequest::new(), {
+                let request = assign!(register::v3::Request::new(), {
                     username: Some(user_id.localpart().to_owned()),
                     password: Some(password.clone()),
                     initial_device_display_name: Some(user_agent.clone()),
@@ -372,7 +372,7 @@ pub async fn register_with_token_under_config(
                     info!("Acceptable auth flows: {response:?}");
 
                     // FIXME: do actually check the registration types...
-                    let token_request = assign!(RegisterRequest::new(), {
+                    let token_request = assign!(register::v3::Request::new(), {
                         auth: Some(AuthData::RegistrationToken(
                             assign!(RegistrationToken::new(registration_token), {
                                 session: response.session.clone(),
