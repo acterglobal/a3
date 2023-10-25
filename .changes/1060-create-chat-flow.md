@@ -1,0 +1,3 @@
+- Chat Feature:
+  - Chat Creation flow is now more simplified and accessible, allows you to create DM/Group DM's by selecting user(s) from the new intuitive interface and discard previous side sheet in favor of it.
+  - The create chat interface is now more adaptive, meaning it'll adapt to the screen sizes and show bottom sheet (mobile) and dialog (larger screens), when you tap on plus icon in `Chat`.
