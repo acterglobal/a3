@@ -8508,6 +8508,278 @@ class Api {
     return tmp7;
   }
 
+  FfiListFfiString? __threePidManagerConfirmedEmailAddressesFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _threePidManagerConfirmedEmailAddressesFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListFfiString");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListFfiString._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  FfiListFfiString? __threePidManagerRequestedEmailAddressesFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _threePidManagerRequestedEmailAddressesFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListFfiString");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListFfiString._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  bool? __threePidManagerRequestTokenViaEmailFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _threePidManagerRequestTokenViaEmailFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __threePidManagerSubmitTokenFromEmailFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _threePidManagerSubmitTokenFromEmailFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __threePidManagerTryConfirmEmailStatusFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _threePidManagerTryConfirmEmailStatusFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __threePidManagerRemoveEmailAddressFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _threePidManagerRemoveEmailAddressFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   Space? __notificationSpaceFuturePoll(
     int boxed,
     int postCobject,
@@ -13366,11 +13638,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -13412,13 +13684,13 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
-            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint64,
           )>>("__NewsEntryDraft_add_audio_slide");
 
   late final _newsEntryDraftAddAudioSlide =
@@ -13451,17 +13723,17 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
-            ffi.Uint8,
-            ffi.Uint32,
-            ffi.Uint8,
-            ffi.Uint32,
-            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -13510,7 +13782,7 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__NewsEntryDraft_add_file_slide");
 
   late final _newsEntryDraftAddFileSlide =
@@ -16110,11 +16382,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -16177,11 +16449,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__Convo_edit_image_message");
 
   late final _convoEditImageMessage = _convoEditImageMessagePtr.asFunction<
@@ -16220,9 +16492,9 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__Convo_send_audio_message");
 
   late final _convoSendAudioMessage = _convoSendAudioMessagePtr.asFunction<
@@ -16275,9 +16547,9 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__Convo_edit_audio_message");
 
   late final _convoEditAudioMessage = _convoEditAudioMessagePtr.asFunction<
@@ -16314,13 +16586,13 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -16385,13 +16657,13 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__Convo_edit_video_message");
 
   late final _convoEditVideoMessage = _convoEditVideoMessagePtr.asFunction<
@@ -16431,11 +16703,13 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint64,
           )>>("__Convo_send_file_message");
 
   late final _convoSendFileMessage = _convoSendFileMessagePtr.asFunction<
       int Function(
+        int,
         int,
         int,
         int,
@@ -16481,7 +16755,7 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__Convo_edit_file_message");
 
   late final _convoEditFileMessage = _convoEditFileMessagePtr.asFunction<
@@ -16748,11 +17022,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -16802,9 +17076,9 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -16852,13 +17126,13 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -16918,7 +17192,7 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -17384,11 +17658,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -17431,13 +17705,13 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
-            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint64,
           )>>("__AttachmentsManager_audio_attachment_draft");
 
   late final _attachmentsManagerAudioAttachmentDraft =
@@ -17470,17 +17744,17 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
-            ffi.Uint8,
-            ffi.Uint32,
-            ffi.Uint8,
-            ffi.Uint32,
-            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -17529,7 +17803,7 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__AttachmentsManager_file_attachment_draft");
 
   late final _attachmentsManagerFileAttachmentDraft =
@@ -20125,11 +20399,11 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -20189,9 +20463,9 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
           )>>("__Space_send_audio_message");
 
   late final _spaceSendAudioMessage = _spaceSendAudioMessagePtr.asFunction<
@@ -20241,13 +20515,13 @@ class Api {
             ffi.Uint64,
             ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
-            ffi.Uint32,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -20308,11 +20582,13 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint64,
           )>>("__Space_send_file_message");
 
   late final _spaceSendFileMessage = _spaceSendFileMessagePtr.asFunction<
       int Function(
+        int,
         int,
         int,
         int,
@@ -20517,7 +20793,7 @@ class Api {
           )>();
   late final _memberPowerLevelPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint64 Function(
+          ffi.Int64 Function(
             ffi.Int64,
           )>>("__Member_power_level");
 
@@ -20675,6 +20951,114 @@ class Api {
         int,
         int,
       )>();
+  late final _threePidManagerConfirmedEmailAddressesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__ThreePidManager_confirmed_email_addresses");
+
+  late final _threePidManagerConfirmedEmailAddresses =
+      _threePidManagerConfirmedEmailAddressesPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _threePidManagerRequestedEmailAddressesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__ThreePidManager_requested_email_addresses");
+
+  late final _threePidManagerRequestedEmailAddresses =
+      _threePidManagerRequestedEmailAddressesPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _threePidManagerRequestTokenViaEmailPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__ThreePidManager_request_token_via_email");
+
+  late final _threePidManagerRequestTokenViaEmail =
+      _threePidManagerRequestTokenViaEmailPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _threePidManagerSubmitTokenFromEmailPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__ThreePidManager_submit_token_from_email");
+
+  late final _threePidManagerSubmitTokenFromEmail =
+      _threePidManagerSubmitTokenFromEmailPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _threePidManagerTryConfirmEmailStatusPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__ThreePidManager_try_confirm_email_status");
+
+  late final _threePidManagerTryConfirmEmailStatus =
+      _threePidManagerTryConfirmEmailStatusPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _threePidManagerRemoveEmailAddressPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__ThreePidManager_remove_email_address");
+
+  late final _threePidManagerRemoveEmailAddress =
+      _threePidManagerRemoveEmailAddressPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _syncStateFirstSyncedRxPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -21577,6 +21961,22 @@ class Api {
         int,
         int,
       )>();
+  late final _clientDmWithUserPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientDmWithUserReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Client_dm_with_user");
+
+  late final _clientDmWithUser = _clientDmWithUserPtr.asFunction<
+      _ClientDmWithUserReturn Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _clientGetUserProfilePtr = _lookup<
       ffi.NativeFunction<
           _ClientGetUserProfileReturn Function(
@@ -22357,6 +22757,16 @@ class Api {
         int,
         int,
       )>();
+  late final _clientThreePidManagerPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientThreePidManagerReturn Function(
+            ffi.Int64,
+          )>>("__Client_three_pid_manager");
+
+  late final _clientThreePidManager = _clientThreePidManagerPtr.asFunction<
+      _ClientThreePidManagerReturn Function(
+        int,
+      )>();
   late final _optionStringTextPtr = _lookup<
       ffi.NativeFunction<
           _OptionStringTextReturn Function(
@@ -22411,8 +22821,8 @@ class Api {
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-            ffi.Uint32,
-            ffi.Uint32,
+            ffi.Uint64,
+            ffi.Uint64,
           )>>("__UserProfile_get_thumbnail");
 
   late final _userProfileGetThumbnail = _userProfileGetThumbnailPtr.asFunction<
@@ -22456,8 +22866,8 @@ class Api {
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-            ffi.Uint32,
-            ffi.Uint32,
+            ffi.Uint64,
+            ffi.Uint64,
           )>>("__RoomProfile_get_thumbnail");
 
   late final _roomProfileGetThumbnail = _roomProfileGetThumbnailPtr.asFunction<
@@ -22847,14 +23257,14 @@ class Api {
       _ReceiptRecordSeenByReturn Function(
         int,
       )>();
-  late final _receiptRecordTsPtr = _lookup<
+  late final _receiptRecordTimestampPtr = _lookup<
       ffi.NativeFunction<
-          _ReceiptRecordTsReturn Function(
+          _ReceiptRecordTimestampReturn Function(
             ffi.Int64,
-          )>>("__ReceiptRecord_ts");
+          )>>("__ReceiptRecord_timestamp");
 
-  late final _receiptRecordTs = _receiptRecordTsPtr.asFunction<
-      _ReceiptRecordTsReturn Function(
+  late final _receiptRecordTimestamp = _receiptRecordTimestampPtr.asFunction<
+      _ReceiptRecordTimestampReturn Function(
         int,
       )>();
   late final _deviceNewEventDeviceIdPtr = _lookup<
@@ -25330,6 +25740,96 @@ class Api {
   late final _accountUnignoreUserFuturePoll =
       _accountUnignoreUserFuturePollPtr.asFunction<
           _AccountUnignoreUserFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _threePidManagerConfirmedEmailAddressesFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ThreePidManagerConfirmedEmailAddressesFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ThreePidManager_confirmed_email_addresses_future_poll");
+
+  late final _threePidManagerConfirmedEmailAddressesFuturePoll =
+      _threePidManagerConfirmedEmailAddressesFuturePollPtr.asFunction<
+          _ThreePidManagerConfirmedEmailAddressesFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _threePidManagerRequestedEmailAddressesFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ThreePidManagerRequestedEmailAddressesFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ThreePidManager_requested_email_addresses_future_poll");
+
+  late final _threePidManagerRequestedEmailAddressesFuturePoll =
+      _threePidManagerRequestedEmailAddressesFuturePollPtr.asFunction<
+          _ThreePidManagerRequestedEmailAddressesFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _threePidManagerRequestTokenViaEmailFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ThreePidManagerRequestTokenViaEmailFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ThreePidManager_request_token_via_email_future_poll");
+
+  late final _threePidManagerRequestTokenViaEmailFuturePoll =
+      _threePidManagerRequestTokenViaEmailFuturePollPtr.asFunction<
+          _ThreePidManagerRequestTokenViaEmailFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _threePidManagerSubmitTokenFromEmailFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ThreePidManagerSubmitTokenFromEmailFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ThreePidManager_submit_token_from_email_future_poll");
+
+  late final _threePidManagerSubmitTokenFromEmailFuturePoll =
+      _threePidManagerSubmitTokenFromEmailFuturePollPtr.asFunction<
+          _ThreePidManagerSubmitTokenFromEmailFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _threePidManagerTryConfirmEmailStatusFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ThreePidManagerTryConfirmEmailStatusFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ThreePidManager_try_confirm_email_status_future_poll");
+
+  late final _threePidManagerTryConfirmEmailStatusFuturePoll =
+      _threePidManagerTryConfirmEmailStatusFuturePollPtr.asFunction<
+          _ThreePidManagerTryConfirmEmailStatusFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _threePidManagerRemoveEmailAddressFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ThreePidManagerRemoveEmailAddressFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ThreePidManager_remove_email_address_future_poll");
+
+  late final _threePidManagerRemoveEmailAddressFuturePoll =
+      _threePidManagerRemoveEmailAddressFuturePollPtr.asFunction<
+          _ThreePidManagerRemoveEmailAddressFuturePollReturn Function(
             int,
             int,
             int,
@@ -29192,15 +29692,15 @@ class NewsEntryDraft {
   void addAudioSlide(
     String body,
     String url,
-    int? secs,
     String? mimetype,
     int? size,
+    int? secs,
   ) {
     final tmp1 = body;
     final tmp5 = url;
-    final tmp9 = secs;
-    final tmp13 = mimetype;
-    final tmp19 = size;
+    final tmp9 = mimetype;
+    final tmp15 = size;
+    final tmp19 = secs;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -29210,9 +29710,9 @@ class NewsEntryDraft {
     var tmp8 = 0;
     var tmp10 = 0;
     var tmp12 = 0;
+    var tmp13 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
-    var tmp17 = 0;
     var tmp18 = 0;
     var tmp20 = 0;
     var tmp22 = 0;
@@ -29238,20 +29738,20 @@ class NewsEntryDraft {
     } else {
       tmp10 = 1;
       final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      final tmp15_0 = utf8.encode(tmp15);
-      tmp17 = tmp15_0.length;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
-      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
-      tmp16_1.setAll(0, tmp15_0);
-      tmp16 = tmp16_0.address;
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
       tmp18 = tmp17;
     }
     if (tmp19 == null) {
@@ -29271,9 +29771,9 @@ class NewsEntryDraft {
       tmp8,
       tmp10,
       tmp12,
+      tmp13,
       tmp14,
       tmp16,
-      tmp17,
       tmp18,
       tmp20,
       tmp22,
@@ -29285,20 +29785,20 @@ class NewsEntryDraft {
   void addVideoSlide(
     String body,
     String url,
-    int? secs,
-    int? height,
-    int? width,
     String? mimetype,
     int? size,
+    int? secs,
+    int? width,
+    int? height,
     String? blurhash,
   ) {
     final tmp1 = body;
     final tmp5 = url;
-    final tmp9 = secs;
-    final tmp13 = height;
-    final tmp17 = width;
-    final tmp21 = mimetype;
-    final tmp27 = size;
+    final tmp9 = mimetype;
+    final tmp15 = size;
+    final tmp19 = secs;
+    final tmp23 = width;
+    final tmp27 = height;
     final tmp31 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -29309,13 +29809,13 @@ class NewsEntryDraft {
     var tmp8 = 0;
     var tmp10 = 0;
     var tmp12 = 0;
+    var tmp13 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
     var tmp18 = 0;
     var tmp20 = 0;
     var tmp22 = 0;
     var tmp24 = 0;
-    var tmp25 = 0;
     var tmp26 = 0;
     var tmp28 = 0;
     var tmp30 = 0;
@@ -29345,34 +29845,34 @@ class NewsEntryDraft {
     } else {
       tmp10 = 1;
       final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      tmp16 = tmp15;
-    }
-    if (tmp17 == null) {
-      tmp18 = 0;
-    } else {
-      tmp18 = 1;
-      final tmp19 = tmp17;
-      tmp20 = tmp19;
-    }
-    if (tmp21 == null) {
-      tmp22 = 0;
-    } else {
-      tmp22 = 1;
-      final tmp23 = tmp21;
-      final tmp23_0 = utf8.encode(tmp23);
-      tmp25 = tmp23_0.length;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
-      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
-      tmp24_1.setAll(0, tmp23_0);
-      tmp24 = tmp24_0.address;
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
+      tmp18 = tmp17;
+    }
+    if (tmp19 == null) {
+      tmp20 = 0;
+    } else {
+      tmp20 = 1;
+      final tmp21 = tmp19;
+      tmp22 = tmp21;
+    }
+    if (tmp23 == null) {
+      tmp24 = 0;
+    } else {
+      tmp24 = 1;
+      final tmp25 = tmp23;
       tmp26 = tmp25;
     }
     if (tmp27 == null) {
@@ -29406,13 +29906,13 @@ class NewsEntryDraft {
       tmp8,
       tmp10,
       tmp12,
+      tmp13,
       tmp14,
       tmp16,
       tmp18,
       tmp20,
       tmp22,
       tmp24,
-      tmp25,
       tmp26,
       tmp28,
       tmp30,
@@ -35358,14 +35858,14 @@ class Convo {
     String uri,
     String name,
     String mimetype,
-    int? secs,
     int? size,
+    int? secs,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
     final tmp9 = mimetype;
-    final tmp13 = secs;
-    final tmp17 = size;
+    final tmp13 = size;
+    final tmp17 = secs;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -35485,15 +35985,15 @@ class Convo {
     String uri,
     String name,
     String mimetype,
-    int? secs,
     int? size,
+    int? secs,
   ) {
     final tmp1 = eventId;
     final tmp5 = uri;
     final tmp9 = name;
     final tmp13 = mimetype;
-    final tmp17 = secs;
-    final tmp21 = size;
+    final tmp17 = size;
+    final tmp21 = secs;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -35592,19 +36092,19 @@ class Convo {
     String uri,
     String name,
     String mimetype,
-    int? secs,
-    int? height,
-    int? width,
     int? size,
+    int? secs,
+    int? width,
+    int? height,
     String? blurhash,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
     final tmp9 = mimetype;
-    final tmp13 = secs;
-    final tmp17 = height;
+    final tmp13 = size;
+    final tmp17 = secs;
     final tmp21 = width;
-    final tmp25 = size;
+    final tmp25 = height;
     final tmp29 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -35769,19 +36269,19 @@ class Convo {
     String uri,
     String name,
     String mimetype,
-    int? secs,
-    int? height,
-    int? width,
     int? size,
+    int? secs,
+    int? width,
+    int? height,
   ) {
     final tmp1 = eventId;
     final tmp5 = uri;
     final tmp9 = name;
     final tmp13 = mimetype;
-    final tmp17 = secs;
-    final tmp21 = height;
+    final tmp17 = size;
+    final tmp21 = secs;
     final tmp25 = width;
-    final tmp29 = size;
+    final tmp29 = height;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -35902,7 +36402,7 @@ class Convo {
     String uri,
     String name,
     String mimetype,
-    int size,
+    int? size,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
@@ -35919,6 +36419,7 @@ class Convo {
     var tmp11 = 0;
     var tmp12 = 0;
     var tmp14 = 0;
+    var tmp16 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -35944,8 +36445,14 @@ class Convo {
     tmp10_1.setAll(0, tmp9_0);
     tmp10 = tmp10_0.address;
     tmp12 = tmp11;
-    tmp14 = tmp13;
-    final tmp15 = _api._convoSendFileMessage(
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
+    }
+    final tmp17 = _api._convoSendFileMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -35957,14 +36464,15 @@ class Convo {
       tmp11,
       tmp12,
       tmp14,
+      tmp16,
     );
-    final tmp17 = tmp15;
-    final ffi.Pointer<ffi.Void> tmp17_0 = ffi.Pointer.fromAddress(tmp17);
-    final tmp17_1 =
-        _Box(_api, tmp17_0, "__Convo_send_file_message_future_drop");
-    tmp17_1._finalizer = _api._registerFinalizer(tmp17_1);
-    final tmp16 = _nativeFuture(tmp17_1, _api.__convoSendFileMessageFuturePoll);
-    return tmp16;
+    final tmp19 = tmp17;
+    final ffi.Pointer<ffi.Void> tmp19_0 = ffi.Pointer.fromAddress(tmp19);
+    final tmp19_1 =
+        _Box(_api, tmp19_0, "__Convo_send_file_message_future_drop");
+    tmp19_1._finalizer = _api._registerFinalizer(tmp19_1);
+    final tmp18 = _nativeFuture(tmp19_1, _api.__convoSendFileMessageFuturePoll);
+    return tmp18;
   }
 
   /// decrypted file buffer data
@@ -36708,16 +37216,16 @@ class Convo {
     String uri,
     String name,
     String mimetype,
-    int? secs,
     int? size,
+    int? secs,
     String eventId,
     String? txnId,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
     final tmp9 = mimetype;
-    final tmp13 = secs;
-    final tmp17 = size;
+    final tmp13 = size;
+    final tmp17 = secs;
     final tmp21 = eventId;
     final tmp25 = txnId;
     var tmp0 = 0;
@@ -36838,10 +37346,10 @@ class Convo {
     String uri,
     String name,
     String mimetype,
+    int? size,
     int? secs,
     int? width,
     int? height,
-    int? size,
     String? blurhash,
     String eventId,
     String? txnId,
@@ -36849,10 +37357,10 @@ class Convo {
     final tmp1 = uri;
     final tmp5 = name;
     final tmp9 = mimetype;
-    final tmp13 = secs;
-    final tmp17 = width;
-    final tmp21 = height;
-    final tmp25 = size;
+    final tmp13 = size;
+    final tmp17 = secs;
+    final tmp21 = width;
+    final tmp25 = height;
     final tmp29 = blurhash;
     final tmp35 = eventId;
     final tmp39 = txnId;
@@ -38098,15 +38606,15 @@ class AttachmentsManager {
   AttachmentDraft audioAttachmentDraft(
     String body,
     String url,
-    int? secs,
     String? mimetype,
     int? size,
+    int? secs,
   ) {
     final tmp1 = body;
     final tmp5 = url;
-    final tmp9 = secs;
-    final tmp13 = mimetype;
-    final tmp19 = size;
+    final tmp9 = mimetype;
+    final tmp15 = size;
+    final tmp19 = secs;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -38116,9 +38624,9 @@ class AttachmentsManager {
     var tmp8 = 0;
     var tmp10 = 0;
     var tmp12 = 0;
+    var tmp13 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
-    var tmp17 = 0;
     var tmp18 = 0;
     var tmp20 = 0;
     var tmp22 = 0;
@@ -38144,20 +38652,20 @@ class AttachmentsManager {
     } else {
       tmp10 = 1;
       final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      final tmp15_0 = utf8.encode(tmp15);
-      tmp17 = tmp15_0.length;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
-      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
-      tmp16_1.setAll(0, tmp15_0);
-      tmp16 = tmp16_0.address;
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
       tmp18 = tmp17;
     }
     if (tmp19 == null) {
@@ -38177,9 +38685,9 @@ class AttachmentsManager {
       tmp8,
       tmp10,
       tmp12,
+      tmp13,
       tmp14,
       tmp16,
-      tmp17,
       tmp18,
       tmp20,
       tmp22,
@@ -38196,20 +38704,20 @@ class AttachmentsManager {
   AttachmentDraft videoAttachmentDraft(
     String body,
     String url,
-    int? secs,
-    int? height,
-    int? width,
     String? mimetype,
     int? size,
+    int? secs,
+    int? width,
+    int? height,
     String? blurhash,
   ) {
     final tmp1 = body;
     final tmp5 = url;
-    final tmp9 = secs;
-    final tmp13 = height;
-    final tmp17 = width;
-    final tmp21 = mimetype;
-    final tmp27 = size;
+    final tmp9 = mimetype;
+    final tmp15 = size;
+    final tmp19 = secs;
+    final tmp23 = width;
+    final tmp27 = height;
     final tmp31 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -38220,13 +38728,13 @@ class AttachmentsManager {
     var tmp8 = 0;
     var tmp10 = 0;
     var tmp12 = 0;
+    var tmp13 = 0;
     var tmp14 = 0;
     var tmp16 = 0;
     var tmp18 = 0;
     var tmp20 = 0;
     var tmp22 = 0;
     var tmp24 = 0;
-    var tmp25 = 0;
     var tmp26 = 0;
     var tmp28 = 0;
     var tmp30 = 0;
@@ -38256,34 +38764,34 @@ class AttachmentsManager {
     } else {
       tmp10 = 1;
       final tmp11 = tmp9;
-      tmp12 = tmp11;
-    }
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      tmp16 = tmp15;
-    }
-    if (tmp17 == null) {
-      tmp18 = 0;
-    } else {
-      tmp18 = 1;
-      final tmp19 = tmp17;
-      tmp20 = tmp19;
-    }
-    if (tmp21 == null) {
-      tmp22 = 0;
-    } else {
-      tmp22 = 1;
-      final tmp23 = tmp21;
-      final tmp23_0 = utf8.encode(tmp23);
-      tmp25 = tmp23_0.length;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
-      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
-      tmp24_1.setAll(0, tmp23_0);
-      tmp24 = tmp24_0.address;
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
+      tmp18 = tmp17;
+    }
+    if (tmp19 == null) {
+      tmp20 = 0;
+    } else {
+      tmp20 = 1;
+      final tmp21 = tmp19;
+      tmp22 = tmp21;
+    }
+    if (tmp23 == null) {
+      tmp24 = 0;
+    } else {
+      tmp24 = 1;
+      final tmp25 = tmp23;
       tmp26 = tmp25;
     }
     if (tmp27 == null) {
@@ -38317,13 +38825,13 @@ class AttachmentsManager {
       tmp8,
       tmp10,
       tmp12,
+      tmp13,
       tmp14,
       tmp16,
       tmp18,
       tmp20,
       tmp22,
       tmp24,
-      tmp25,
       tmp26,
       tmp28,
       tmp30,
@@ -43087,14 +43595,14 @@ class Space {
     String uri,
     String name,
     String mimetype,
-    int? secs,
     int? size,
+    int? secs,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
     final tmp9 = mimetype;
-    final tmp13 = secs;
-    final tmp17 = size;
+    final tmp13 = size;
+    final tmp17 = secs;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -43213,19 +43721,19 @@ class Space {
     String uri,
     String name,
     String mimetype,
-    int? secs,
-    int? height,
-    int? width,
     int? size,
+    int? secs,
+    int? width,
+    int? height,
     String? blurhash,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
     final tmp9 = mimetype;
-    final tmp13 = secs;
-    final tmp17 = height;
+    final tmp13 = size;
+    final tmp17 = secs;
     final tmp21 = width;
-    final tmp25 = size;
+    final tmp25 = height;
     final tmp29 = blurhash;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43389,7 +43897,7 @@ class Space {
     String uri,
     String name,
     String mimetype,
-    int size,
+    int? size,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
@@ -43406,6 +43914,7 @@ class Space {
     var tmp11 = 0;
     var tmp12 = 0;
     var tmp14 = 0;
+    var tmp16 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -43431,8 +43940,14 @@ class Space {
     tmp10_1.setAll(0, tmp9_0);
     tmp10 = tmp10_0.address;
     tmp12 = tmp11;
-    tmp14 = tmp13;
-    final tmp15 = _api._spaceSendFileMessage(
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
+    }
+    final tmp17 = _api._spaceSendFileMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -43444,14 +43959,15 @@ class Space {
       tmp11,
       tmp12,
       tmp14,
+      tmp16,
     );
-    final tmp17 = tmp15;
-    final ffi.Pointer<ffi.Void> tmp17_0 = ffi.Pointer.fromAddress(tmp17);
-    final tmp17_1 =
-        _Box(_api, tmp17_0, "__Space_send_file_message_future_drop");
-    tmp17_1._finalizer = _api._registerFinalizer(tmp17_1);
-    final tmp16 = _nativeFuture(tmp17_1, _api.__spaceSendFileMessageFuturePoll);
-    return tmp16;
+    final tmp19 = tmp17;
+    final ffi.Pointer<ffi.Void> tmp19_0 = ffi.Pointer.fromAddress(tmp19);
+    final tmp19_1 =
+        _Box(_api, tmp19_0, "__Space_send_file_message_future_drop");
+    tmp19_1._finalizer = _api._registerFinalizer(tmp19_1);
+    final tmp18 = _nativeFuture(tmp19_1, _api.__spaceSendFileMessageFuturePoll);
+    return tmp18;
   }
 
   /// decrypted file buffer data
@@ -44135,6 +44651,237 @@ class Account {
     final tmp7_1 = _Box(_api, tmp7_0, "__Account_unignore_user_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__accountUnignoreUserFuturePoll);
+    return tmp6;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class ThreePidManager {
+  final Api _api;
+  final _Box _box;
+
+  ThreePidManager._(this._api, this._box);
+
+  /// get email addresses from third party identifier
+  Future<FfiListFfiString> confirmedEmailAddresses() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._threePidManagerConfirmedEmailAddresses(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0,
+        "__ThreePidManager_confirmed_email_addresses_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(
+        tmp3_1, _api.__threePidManagerConfirmedEmailAddressesFuturePoll);
+    return tmp2;
+  }
+
+  /// get email addresses that were registered
+  Future<FfiListFfiString> requestedEmailAddresses() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._threePidManagerRequestedEmailAddresses(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0,
+        "__ThreePidManager_requested_email_addresses_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(
+        tmp3_1, _api.__threePidManagerRequestedEmailAddressesFuturePoll);
+    return tmp2;
+  }
+
+  /// Requests token via email and add email address to third party identifier.
+  /// If password is not enough complex, homeserver may reject this request.
+  Future<bool> requestTokenViaEmail(
+    String emailAddress,
+  ) {
+    final tmp1 = emailAddress;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._threePidManagerRequestTokenViaEmail(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(
+        _api, tmp7_0, "__ThreePidManager_request_token_via_email_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(
+        tmp7_1, _api.__threePidManagerRequestTokenViaEmailFuturePoll);
+    return tmp6;
+  }
+
+  /// Submit token to finish email register
+  Future<bool> submitTokenFromEmail(
+    String emailAddress,
+    String token,
+    String password,
+  ) {
+    final tmp1 = emailAddress;
+    final tmp5 = token;
+    final tmp9 = password;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    final tmp13 = _api._threePidManagerSubmitTokenFromEmail(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+    );
+    final tmp15 = tmp13;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(
+        _api, tmp15_0, "__ThreePidManager_submit_token_from_email_future_drop");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp14 = _nativeFuture(
+        tmp15_1, _api.__threePidManagerSubmitTokenFromEmailFuturePoll);
+    return tmp14;
+  }
+
+  /// Submit token to finish email register
+  Future<bool> tryConfirmEmailStatus(
+    String emailAddress,
+    String password,
+  ) {
+    final tmp1 = emailAddress;
+    final tmp5 = password;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._threePidManagerTryConfirmEmailStatus(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0,
+        "__ThreePidManager_try_confirm_email_status_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(
+        tmp11_1, _api.__threePidManagerTryConfirmEmailStatusFuturePoll);
+    return tmp10;
+  }
+
+  /// Remove email address from confirmed list or unconfirmed list
+  Future<bool> removeEmailAddress(
+    String emailAddress,
+  ) {
+    final tmp1 = emailAddress;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._threePidManagerRemoveEmailAddress(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(
+        _api, tmp7_0, "__ThreePidManager_remove_email_address_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(
+        tmp7_1, _api.__threePidManagerRemoveEmailAddressFuturePoll);
     return tmp6;
   }
 
@@ -46041,6 +46788,54 @@ class Client {
     return tmp8;
   }
 
+  /// get the room id of dm from user id
+  OptionString dmWithUser(
+    String userId,
+  ) {
+    final tmp1 = userId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._clientDmWithUser(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 =
+          utf8.decode(tmp8_0.asTypedList(tmp9), allowMalformed: true);
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_OptionString");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = OptionString._(_api, tmp11_1);
+    return tmp6;
+  }
+
   /// get the user profile that contains avatar and display name
   UserProfile getUserProfile() {
     var tmp0 = 0;
@@ -47679,6 +48474,37 @@ class Client {
     return tmp6;
   }
 
+  /// get intermediate info of login (via email and phone) from account data
+  ThreePidManager threePidManager() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientThreePidManager(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 =
+          utf8.decode(tmp4_0.asTypedList(tmp5), allowMalformed: true);
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_ThreePidManager");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = ThreePidManager._(_api, tmp7_1);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -48735,10 +49561,10 @@ class ReceiptRecord {
   }
 
   /// Get time that this user read message from peer in milliseconds
-  int? ts() {
+  int? timestamp() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._receiptRecordTs(
+    final tmp1 = _api._receiptRecordTimestamp(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -49997,21 +50823,21 @@ class _ThumbnailInfoMimetypeReturn extends ffi.Struct {
 class _ThumbnailInfoSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _ThumbnailInfoWidthReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _ThumbnailInfoHeightReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
@@ -50251,21 +51077,21 @@ class _ImageDescMimetypeReturn extends ffi.Struct {
 class _ImageDescSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _ImageDescWidthReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _ImageDescHeightReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
@@ -50306,14 +51132,14 @@ class _AudioDescMimetypeReturn extends ffi.Struct {
 class _AudioDescSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _AudioDescDurationReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
@@ -50340,21 +51166,21 @@ class _VideoDescMimetypeReturn extends ffi.Struct {
 class _VideoDescSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _VideoDescWidthReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
 class _VideoDescHeightReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
@@ -50372,7 +51198,7 @@ class _VideoDescBlurhashReturn extends ffi.Struct {
 class _VideoDescDurationReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
@@ -50413,7 +51239,7 @@ class _FileDescMimetypeReturn extends ffi.Struct {
 class _FileDescSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint32()
+  @ffi.Uint64()
   external int arg1;
 }
 
@@ -51549,6 +52375,19 @@ class _ClientUserIdReturn extends ffi.Struct {
   external int arg4;
 }
 
+class _ClientDmWithUserReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
 class _ClientGetUserProfileReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -51595,6 +52434,19 @@ class _ClientReceiptEventRxReturn extends ffi.Struct {
   external int arg0;
   @ffi.Int64()
   external int arg1;
+}
+
+class _ClientThreePidManagerReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
 }
 
 class _OptionStringTextReturn extends ffi.Struct {
@@ -51702,7 +52554,7 @@ class _ReceiptRecordSeenByReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ReceiptRecordTsReturn extends ffi.Struct {
+class _ReceiptRecordTimestampReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint64()
@@ -54050,6 +54902,98 @@ class _AccountIgnoreUserFuturePollReturn extends ffi.Struct {
 }
 
 class _AccountUnignoreUserFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _ThreePidManagerConfirmedEmailAddressesFuturePollReturn
+    extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ThreePidManagerRequestedEmailAddressesFuturePollReturn
+    extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ThreePidManagerRequestTokenViaEmailFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _ThreePidManagerSubmitTokenFromEmailFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _ThreePidManagerTryConfirmEmailStatusFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _ThreePidManagerRemoveEmailAddressFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

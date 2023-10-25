@@ -42,6 +42,7 @@ mod settings;
 mod spaces;
 mod stream;
 mod tasks;
+mod three_pid;
 mod typing;
 mod utils;
 mod verification;
@@ -102,6 +103,7 @@ pub use stream::{TimelineDiff, TimelineStream};
 pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
+pub use three_pid::ThreePidManager;
 pub use typing::TypingEvent;
 pub use utils::parse_markdown;
 pub use verification::{SessionManager, VerificationEmoji, VerificationEvent};

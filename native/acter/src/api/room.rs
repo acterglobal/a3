@@ -1110,9 +1110,9 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        size: Option<u32>,
-        width: Option<u32>,
-        height: Option<u32>,
+        size: Option<u64>,
+        width: Option<u64>,
+        height: Option<u64>,
         blurhash: Option<String>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
@@ -1128,9 +1128,9 @@ impl Room {
 
         let path = PathBuf::from(uri);
         let config = AttachmentConfig::new().info(AttachmentInfo::Image(BaseImageInfo {
-            height: height.map(UInt::from),
-            width: width.map(UInt::from),
-            size: size.map(UInt::from),
+            height: height.and_then(UInt::new),
+            width: width.and_then(UInt::new),
+            size: size.and_then(UInt::new),
             blurhash: None,
         }));
         let mime_type = mimetype.parse::<mime::Mime>()?;
@@ -1190,9 +1190,9 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        size: Option<u32>,
-        width: Option<u32>,
-        height: Option<u32>,
+        size: Option<u64>,
+        width: Option<u64>,
+        height: Option<u64>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't edit message as image to a room we are not in");
@@ -1240,10 +1240,10 @@ impl Room {
                 let response = client.media().upload(&content_type, image_buf).await?;
 
                 let info = assign!(ImageInfo::new(), {
-                    height: height.map(UInt::from),
-                    width: width.map(UInt::from),
+                    height: height.and_then(UInt::new),
+                    width: width.and_then(UInt::new),
                     mimetype: Some(mimetype),
-                    size: size.map(UInt::from),
+                    size: size.and_then(UInt::new),
                 });
                 let mut image_content = ImageMessageEventContent::plain(name, response.content_uri);
                 image_content.info = Some(Box::new(info));
@@ -1267,8 +1267,8 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        secs: Option<u32>,
-        size: Option<u32>,
+        size: Option<u64>,
+        secs: Option<u64>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't send message as audio to a room we are not in");
@@ -1283,8 +1283,8 @@ impl Room {
 
         let path = PathBuf::from(uri);
         let config = AttachmentConfig::new().info(AttachmentInfo::Audio(BaseAudioInfo {
-            duration: secs.map(|x| Duration::from_secs(x as u64)),
-            size: size.map(UInt::from),
+            duration: secs.map(Duration::from_secs),
+            size: size.and_then(UInt::new),
         }));
         let mime_type = mimetype.parse::<mime::Mime>()?;
 
@@ -1343,8 +1343,8 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        secs: Option<u32>,
-        size: Option<u32>,
+        size: Option<u64>,
+        secs: Option<u64>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't edit message as audio to a room we are not in");
@@ -1392,9 +1392,9 @@ impl Room {
                 let response = client.media().upload(&content_type, audio_buf).await?;
 
                 let info = assign!(AudioInfo::new(), {
-                    duration: secs.map(|x| Duration::from_secs(x as u64)),
+                    duration: secs.map(Duration::from_secs),
                     mimetype: Some(mimetype),
-                    size: size.map(UInt::from),
+                    size: size.and_then(UInt::new),
                 });
                 let mut audio_content = AudioMessageEventContent::plain(name, response.content_uri);
                 audio_content.info = Some(Box::new(info));
@@ -1419,10 +1419,10 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        secs: Option<u32>,
-        height: Option<u32>,
-        width: Option<u32>,
-        size: Option<u32>,
+        size: Option<u64>,
+        secs: Option<u64>,
+        width: Option<u64>,
+        height: Option<u64>,
         blurhash: Option<String>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
@@ -1438,10 +1438,10 @@ impl Room {
 
         let path = PathBuf::from(uri);
         let config = AttachmentConfig::new().info(AttachmentInfo::Video(BaseVideoInfo {
-            duration: secs.map(|x| Duration::from_secs(x as u64)),
-            height: height.map(UInt::from),
-            width: width.map(UInt::from),
-            size: size.map(UInt::from),
+            duration: secs.map(Duration::from_secs),
+            height: height.and_then(UInt::new),
+            width: width.and_then(UInt::new),
+            size: size.and_then(UInt::new),
             blurhash,
         }));
         let mime_type = mimetype.parse::<mime::Mime>()?;
@@ -1501,10 +1501,10 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        secs: Option<u32>,
-        height: Option<u32>,
-        width: Option<u32>,
-        size: Option<u32>,
+        size: Option<u64>,
+        secs: Option<u64>,
+        width: Option<u64>,
+        height: Option<u64>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't edit message as video to a room we are not in");
@@ -1552,11 +1552,11 @@ impl Room {
                 let response = client.media().upload(&content_type, video_buf).await?;
 
                 let info = assign!(VideoInfo::new(), {
-                    duration: secs.map(|x| Duration::from_secs(x as u64)),
-                    height: height.map(UInt::from),
-                    width: width.map(UInt::from),
+                    duration: secs.map(Duration::from_secs),
+                    height: height.and_then(UInt::new),
+                    width: width.and_then(UInt::new),
                     mimetype: Some(mimetype),
-                    size: size.map(UInt::from),
+                    size: size.and_then(UInt::new),
                 });
                 let mut video_content = VideoMessageEventContent::plain(name, response.content_uri);
                 video_content.info = Some(Box::new(info));
@@ -1580,7 +1580,7 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        size: u32,
+        size: Option<u64>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't send message as file to a room we are not in");
@@ -1595,7 +1595,7 @@ impl Room {
 
         let path = PathBuf::from(uri);
         let config = AttachmentConfig::new().info(AttachmentInfo::File(BaseFileInfo {
-            size: Some(UInt::from(size)),
+            size: size.and_then(UInt::new),
         }));
         let mime_type = mimetype.parse::<mime::Mime>()?;
 
@@ -1653,7 +1653,7 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        size: Option<u32>,
+        size: Option<u64>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't edit message as file to a room we are not in");
@@ -1702,7 +1702,7 @@ impl Room {
 
                 let info = assign!(FileInfo::new(), {
                     mimetype: Some(mimetype),
-                    size: size.map(UInt::from),
+                    size: size.and_then(UInt::new),
                 });
                 let mut file_content = FileMessageEventContent::plain(name, response.content_uri);
                 file_content.info = Some(Box::new(info));
@@ -2358,9 +2358,9 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        size: Option<u32>,
-        width: Option<u32>,
-        height: Option<u32>,
+        size: Option<u64>,
+        width: Option<u64>,
+        height: Option<u64>,
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
@@ -2375,10 +2375,10 @@ impl Room {
         let event_id = EventId::parse(event_id)?;
         let content_type = mimetype.parse::<mime::Mime>()?;
         let info = assign!(ImageInfo::new(), {
-            height: height.map(UInt::from),
-            width: width.map(UInt::from),
+            height: height.and_then(UInt::new),
+            width: width.and_then(UInt::new),
             mimetype: Some(mimetype),
-            size: size.map(UInt::from),
+            size: size.and_then(UInt::new),
         });
 
         RUNTIME
@@ -2422,8 +2422,8 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        secs: Option<u32>,
-        size: Option<u32>,
+        size: Option<u64>,
+        secs: Option<u64>,
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
@@ -2439,8 +2439,8 @@ impl Room {
         let content_type = mimetype.parse::<mime::Mime>()?;
         let info = assign!(AudioInfo::new(), {
             mimetype: Some(mimetype),
-            duration: secs.map(|x| Duration::from_secs(x as u64)),
-            size: size.map(UInt::from),
+            duration: secs.map(Duration::from_secs),
+            size: size.and_then(UInt::new),
         });
 
         RUNTIME
@@ -2484,10 +2484,10 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        secs: Option<u32>,
-        width: Option<u32>,
-        height: Option<u32>,
-        size: Option<u32>,
+        size: Option<u64>,
+        secs: Option<u64>,
+        width: Option<u64>,
+        height: Option<u64>,
         blurhash: Option<String>,
         event_id: String,
         txn_id: Option<String>,
@@ -2503,11 +2503,11 @@ impl Room {
         let event_id = EventId::parse(event_id)?;
         let content_type = mimetype.parse::<mime::Mime>()?;
         let info = assign!(VideoInfo::new(), {
-            duration: secs.map(|x| Duration::from_secs(x as u64)),
-            height: height.map(UInt::from),
-            width: width.map(UInt::from),
+            duration: secs.map(Duration::from_secs),
+            height: height.and_then(UInt::new),
+            width: width.and_then(UInt::new),
             mimetype: Some(mimetype),
-            size: size.map(UInt::from),
+            size: size.and_then(UInt::new),
             blurhash,
         });
 
@@ -2551,7 +2551,7 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        size: Option<u32>,
+        size: Option<u64>,
         event_id: String,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
@@ -2567,7 +2567,7 @@ impl Room {
         let content_type = mimetype.parse::<mime::Mime>()?;
         let info = assign!(FileInfo::new(), {
             mimetype: Some(mimetype),
-            size: size.map(UInt::from),
+            size: size.and_then(UInt::new),
         });
 
         RUNTIME

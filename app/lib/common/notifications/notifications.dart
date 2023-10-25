@@ -99,10 +99,11 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
   }
 }
 
-String makeForward(
-    {required String roomId,
-    required String deviceId,
-    required String eventId,}) {
+String makeForward({
+  required String roomId,
+  required String deviceId,
+  required String eventId,
+}) {
   return '/forward?roomId=${Uri.encodeComponent(roomId)}&eventId=${Uri.encodeComponent(eventId)}&deviceId=${Uri.encodeComponent(deviceId)}';
 }
 
@@ -246,7 +247,8 @@ Future<void> initializeNotifications() async {
       return;
     }
     rootNavKey.currentContext!.push(
-        makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId),);
+      makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId),
+    );
   });
 
   // Handle push notifications
@@ -314,8 +316,8 @@ Future<bool> handleMessage(
     }
 
     try {
-      // ignore: use_build_context_synchronously
       final currentBase =
+          // ignore: use_build_context_synchronously
           rootNavKey.currentContext!.read(currentRoutingLocation);
       final isInChat = currentBase == '/chat/${Uri.encodeComponent(roomId)}';
       debugPrint('current path: $currentBase == /chat/$roomId : $isInChat');
@@ -431,7 +433,14 @@ Future<bool> onNewToken(Client client, String token) async {
   }
 
   await client.addPusher(
-      appId, token, name, appName, pushServerUrl, Platform.isIOS, null,);
+    appId,
+    token,
+    name,
+    appName,
+    pushServerUrl,
+    Platform.isIOS,
+    null,
+  );
 
   debugPrint(
     ' ---- notification pusher sent: $appName ($appId) on $name ($token) to $pushServerUrl',

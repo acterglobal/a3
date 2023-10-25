@@ -25,6 +25,43 @@ dependencies:
   meta: ^1.9.1
   flutter_secure_storage: ^9.0.0
 
+# FIXME keep until a new version has been published
+dependency_overrides:
+  flutter_secure_storage:
+    git:
+      url: https://github.com/mogol/flutter_secure_storage
+      path: flutter_secure_storage
+      ref: develop
+  flutter_secure_storage_linux:
+    git:
+      url: https://github.com/mogol/flutter_secure_storage
+      path: flutter_secure_storage_linux
+      ref: develop
+
+  flutter_secure_storage_web:
+    git:
+      url: https://github.com/mogol/flutter_secure_storage
+      path: flutter_secure_storage_web
+      ref: develop
+
+  flutter_secure_storage_windows:
+    git:
+      url: https://github.com/mogol/flutter_secure_storage
+      path: flutter_secure_storage_windows
+      ref: develop
+  flutter_secure_storage_macos:
+    git:
+      url: https://github.com/gnunicorn/flutter_secure_storage
+      path: flutter_secure_storage_macos
+      ref: patch-1
+
+  flutter_secure_storage_platform_interface:
+    git:
+      url: https://github.com/mogol/flutter_secure_storage
+      path: flutter_secure_storage_platform_interface
+      ref: develop
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

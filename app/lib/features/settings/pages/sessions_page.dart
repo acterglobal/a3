@@ -1,6 +1,6 @@
 import 'package:acter/common/widgets/with_sidebar.dart';
-import 'package:acter/features/activities/providers/session_providers.dart';
-import 'package:acter/features/activities/widgets/session_card.dart';
+import 'package:acter/features/settings/providers/session_providers.dart';
+import 'package:acter/features/settings/widgets/session_card.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -122,7 +122,7 @@ class SessionsPage extends ConsumerWidget {
               vertical: 15,
             ),
             child: Text(
-              'All your devices are verified. Your account is secure',
+              'All your devices are verified. Your account is secure.',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),

@@ -277,9 +277,9 @@ impl AttachmentsManager {
         &self,
         body: String,
         url: String,
-        secs: Option<u64>,
         mimetype: Option<String>,
         size: Option<u64>,
+        secs: Option<u64>,
     ) -> Result<AttachmentDraft> {
         if !self.is_joined() {
             bail!("Can only attachment in joined rooms");
@@ -307,11 +307,11 @@ impl AttachmentsManager {
         &self,
         body: String,
         url: String,
-        secs: Option<u64>,
-        height: Option<u64>,
-        width: Option<u64>,
         mimetype: Option<String>,
         size: Option<u64>,
+        secs: Option<u64>,
+        width: Option<u64>,
+        height: Option<u64>,
         blurhash: Option<String>,
     ) -> Result<AttachmentDraft> {
         if !self.is_joined() {

@@ -43,7 +43,7 @@ impl ReceiptRecord {
         self.seen_by.to_string()
     }
 
-    pub fn ts(&self) -> Option<u64> {
+    pub fn timestamp(&self) -> Option<u64> {
         self.ts.map(|x| x.get().into())
     }
 }
