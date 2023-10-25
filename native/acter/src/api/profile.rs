@@ -136,10 +136,10 @@ impl UserProfile {
 
     pub async fn get_thumbnail(&self, width: u64, height: u64) -> Result<OptionBuffer> {
         let Some(width) = UInt::new(width) else {
-            bail!("Wrong width in getting user thumbnail")
+            bail!("Invalid width when getting user thumbnail")
         };
         let Some(height) = UInt::new(height) else {
-            bail!("Wrong height in getting user thumbnail")
+            bail!("Invalid height when getting user thumbnail")
         };
         if let Some(account) = self.account.clone() {
             return RUNTIME
@@ -225,10 +225,10 @@ impl RoomProfile {
 
     pub async fn get_thumbnail(&self, width: u64, height: u64) -> Result<OptionBuffer> {
         let Some(width) = UInt::new(width) else {
-            bail!("Wrong width in getting room thumbnail")
+            bail!("Invalid width when getting room thumbnail")
         };
         let Some(height) = UInt::new(height) else {
-            bail!("Wrong height in getting room thumbnail")
+            bail!("Invalid height when getting room thumbnail")
         };
         let room = self
             .client

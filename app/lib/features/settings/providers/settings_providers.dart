@@ -32,6 +32,32 @@ final pushersProvider = FutureProvider<List<Pusher>>((ref) async {
   return (await client.pushers()).toList();
 });
 
+final possibleEmailToAddForPushProvider =
+    FutureProvider<List<String>>((ref) async {
+  final emailAddress = await ref.watch(emailAddressesProvider.future);
+  if (emailAddress.confirmed.isEmpty) {
+    return [];
+  }
+  final pushers = await ref.watch(pushersProvider.future);
+  if (pushers.isEmpty) {
+    return emailAddress.confirmed;
+  }
+
+  var allowedEmails = emailAddress.confirmed;
+  for (final p in pushers) {
+    if (p.isEmailPusher()) {
+      // for each pusher, remove the email from the potential list
+      final addr = p.pushkey();
+      debugPrint(addr);
+      if (allowedEmails.contains(addr)) {
+        allowedEmails.remove(addr);
+      }
+      debugPrint('$allowedEmails');
+    }
+  }
+  return allowedEmails;
+});
+
 final isActiveProvider = StateProvider.family<bool, LabsFeature>(
   (ref, feature) => ref.watch(featuresProvider).isActive(feature),
 );

@@ -410,6 +410,8 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             await convo.sendImageReply(
               file.path,
               fileName,
+              mimeType,
+              file.lengthSync(),
               image.width,
               image.height,
               chatInputState.repliedToMessage!.id,
@@ -423,8 +425,10 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             await convo.sendImageMessage(
               file.path,
               fileName,
-              image.height,
+              mimeType,
+              file.lengthSync(),
               image.width,
+              image.height,
               null,
             );
           }
@@ -437,6 +441,8 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             await convo.sendFileReply(
               file.path,
               fileName,
+              mimeType,
+              file.lengthSync(),
               chatInputState.repliedToMessage!.id,
               null,
             );
@@ -444,7 +450,12 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             chatInputNotifier.toggleReplyView(false);
             chatInputNotifier.setReplyWidget(null);
           } else {
-            await convo.sendFileMessage(file.path, fileName);
+            await convo.sendFileMessage(
+              file.path,
+              fileName,
+              mimeType,
+              file.lengthSync(),
+            );
           }
         }
       }
