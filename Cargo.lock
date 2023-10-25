@@ -89,7 +89,7 @@ dependencies = [
  "enum_dispatch",
  "env_logger",
  "futures",
- "indexmap 2.0.0",
+ "indexmap 2.0.2",
  "matrix-sdk",
  "matrix-sdk-base",
  "mime_guess",
@@ -2251,9 +2251,9 @@ checksum = "8a9ee70c43aaf417c914396645a0fa852624801b24ebb7ae78fe8272889ac888"
 
 [[package]]
 name = "hashbrown"
-version = "0.14.0"
+version = "0.14.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2c6201b9ff9fd90a5a3bac2e56a830d0caa509576f0e503818ee82c181b3437a"
+checksum = "f93e7192158dbcda357bdec5fb5788eebf8bbac027f3f33e719d29135ae84156"
 dependencies = [
  "ahash",
  "allocator-api2",
@@ -2265,7 +2265,7 @@ version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "312f66718a2d7789ffef4f4b7b213138ed9f1eb3aa1d0d82fc99f88fb3ffd26f"
 dependencies = [
- "hashbrown 0.14.0",
+ "hashbrown 0.14.2",
 ]
 
 [[package]]
@@ -2544,12 +2544,12 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.0.0"
+version = "2.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d5477fe2230a79769d8dc68e0eabf5437907c0457a5614a9e8dddb67f65eb65d"
+checksum = "8adf3ddd720272c6ea8bf59463c04e0f93d0bbf7c5439b691bca2987e0270897"
 dependencies = [
  "equivalent",
- "hashbrown 0.14.0",
+ "hashbrown 0.14.2",
  "serde",
 ]
 
@@ -3077,7 +3077,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk"
 version = "0.6.2"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=b98c4772e5f881768b158ce2238e0ab4e8150bc4#b98c4772e5f881768b158ce2238e0ab4e8150bc4"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=a515bc8f03a9f008acf2c4d02687a66fb497c604#a515bc8f03a9f008acf2c4d02687a66fb497c604"
 dependencies = [
  "anyhow",
  "anymap2",
@@ -3100,6 +3100,7 @@ dependencies = [
  "gloo-timers 0.3.0",
  "http",
  "imbl",
+ "indexmap 2.0.2",
  "language-tags",
  "mas-oidc-client",
  "matrix-sdk-base",
@@ -3114,6 +3115,7 @@ dependencies = [
  "serde",
  "serde_html_form",
  "serde_json",
+ "sha2",
  "tempfile",
  "thiserror",
  "tokio",
@@ -3128,7 +3130,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-base"
 version = "0.6.1"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=b98c4772e5f881768b158ce2238e0ab4e8150bc4#b98c4772e5f881768b158ce2238e0ab4e8150bc4"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=a515bc8f03a9f008acf2c4d02687a66fb497c604#a515bc8f03a9f008acf2c4d02687a66fb497c604"
 dependencies = [
  "as_variant",
  "async-trait",
@@ -3151,7 +3153,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-common"
 version = "0.6.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=b98c4772e5f881768b158ce2238e0ab4e8150bc4#b98c4772e5f881768b158ce2238e0ab4e8150bc4"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=a515bc8f03a9f008acf2c4d02687a66fb497c604#a515bc8f03a9f008acf2c4d02687a66fb497c604"
 dependencies = [
  "async-trait",
  "futures-core",
@@ -3165,6 +3167,7 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
+ "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
 ]
@@ -3172,7 +3175,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-crypto"
 version = "0.6.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=b98c4772e5f881768b158ce2238e0ab4e8150bc4#b98c4772e5f881768b158ce2238e0ab4e8150bc4"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=a515bc8f03a9f008acf2c4d02687a66fb497c604#a515bc8f03a9f008acf2c4d02687a66fb497c604"
 dependencies = [
  "aes",
  "as_variant",
@@ -3209,7 +3212,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-indexeddb"
 version = "0.2.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=b98c4772e5f881768b158ce2238e0ab4e8150bc4#b98c4772e5f881768b158ce2238e0ab4e8150bc4"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=a515bc8f03a9f008acf2c4d02687a66fb497c604#a515bc8f03a9f008acf2c4d02687a66fb497c604"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3235,7 +3238,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-sqlite"
 version = "0.1.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=b98c4772e5f881768b158ce2238e0ab4e8150bc4#b98c4772e5f881768b158ce2238e0ab4e8150bc4"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=a515bc8f03a9f008acf2c4d02687a66fb497c604#a515bc8f03a9f008acf2c4d02687a66fb497c604"
 dependencies = [
  "async-trait",
  "deadpool-sqlite",
@@ -3257,7 +3260,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-store-encryption"
 version = "0.2.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=b98c4772e5f881768b158ce2238e0ab4e8150bc4#b98c4772e5f881768b158ce2238e0ab4e8150bc4"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=a515bc8f03a9f008acf2c4d02687a66fb497c604#a515bc8f03a9f008acf2c4d02687a66fb497c604"
 dependencies = [
  "blake3",
  "chacha20poly1305",
@@ -3277,7 +3280,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-ui"
 version = "0.6.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=b98c4772e5f881768b158ce2238e0ab4e8150bc4#b98c4772e5f881768b158ce2238e0ab4e8150bc4"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=a515bc8f03a9f008acf2c4d02687a66fb497c604#a515bc8f03a9f008acf2c4d02687a66fb497c604"
 dependencies = [
  "as_variant",
  "async-once-cell",
@@ -3293,7 +3296,7 @@ dependencies = [
  "futures-util",
  "fuzzy-matcher",
  "imbl",
- "indexmap 2.0.0",
+ "indexmap 2.0.2",
  "itertools",
  "matrix-sdk",
  "matrix-sdk-base",
@@ -4626,9 +4629,9 @@ dependencies = [
 
 [[package]]
 name = "ruma"
-version = "0.9.1"
+version = "0.9.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f067a50962653d837e5ead753c3c33129aaeaaa25a2e9b4868cdc8e5af3edd4a"
+checksum = "cc39664df66d707506b1dd318c30e600f25ebc1e7feadf4804ae45db67922c53"
 dependencies = [
  "assign",
  "js_int",
@@ -4672,7 +4675,7 @@ dependencies = [
  "form_urlencoded",
  "getrandom 0.2.10",
  "http",
- "indexmap 2.0.0",
+ "indexmap 2.0.2",
  "js-sys",
  "js_int",
  "konst",
@@ -4693,12 +4696,12 @@ dependencies = [
 
 [[package]]
 name = "ruma-events"
-version = "0.27.5"
+version = "0.27.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e44bf8dca3bd734c175784faddeb14b1780a504f34683ac899331a141b8dfa55"
+checksum = "9135a0b84495fabbe46c477a1fcdef181001a215ec4b1f9215320cf980397636"
 dependencies = [
  "as_variant",
- "indexmap 2.0.0",
+ "indexmap 2.0.2",
  "js_int",
  "js_option",
  "percent-encoding",
@@ -5109,7 +5112,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d7d9b8af723e4199801a643c622daa7aae8cf4a772dc2b3efcb3a95add6cb91a"
 dependencies = [
  "form_urlencoded",
- "indexmap 2.0.0",
+ "indexmap 2.0.2",
  "itoa",
  "ryu",
  "serde",
@@ -5168,7 +5171,7 @@ dependencies = [
  "chrono",
  "hex",
  "indexmap 1.9.3",
- "indexmap 2.0.0",
+ "indexmap 2.0.2",
  "serde",
  "serde_json",
  "serde_with_macros",
@@ -5693,7 +5696,7 @@ version = "0.7.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1ebafdf5ad1220cb59e7d17cf4d2c72015297b75b19a10472f99b89225089240"
 dependencies = [
- "indexmap 2.0.0",
+ "indexmap 2.0.2",
  "serde",
  "serde_spanned",
  "toml_datetime",
@@ -5727,7 +5730,7 @@ version = "0.19.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "266f016b7f039eec8a1a80dfe6156b633d208b9fccca5e4db1d6775b0c4e34a7"
 dependencies = [
- "indexmap 2.0.0",
+ "indexmap 2.0.2",
  "serde",
  "serde_spanned",
  "toml_datetime",
@@ -5740,7 +5743,7 @@ version = "0.20.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "396e4d48bbb2b7554c944bde63101b5ae446cff6ec4a24227428f15eb72ef338"
 dependencies = [
- "indexmap 2.0.0",
+ "indexmap 2.0.2",
  "serde",
  "serde_spanned",
  "toml_datetime",
