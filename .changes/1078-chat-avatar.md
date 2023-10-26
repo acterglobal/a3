@@ -1,2 +1,2 @@
-- [Fix] DM avatar was not showing properly
-- [Enhance] Now DM and GroupDM have seperate avatar views
+- DM's now show the avatar of the user you are talking to, if no avatar was set.
+- In Group DMs the Avatar is showing several users you are in the DM with.
