@@ -459,18 +459,6 @@ List<RouteBase> makeRoutes(Ref ref) {
       },
     ),
 
-    GoRoute(
-      parentNavigatorKey: rootNavKey,
-      name: Routes.createChatAction.name,
-      path: Routes.createChatAction.route,
-      builder: (context, state) {
-        return CreateChatPage(
-          initialSelectedSpaceId: state.uri.queryParameters['spaceId'],
-          initialPage: state.extra as int?,
-        );
-      },
-    ),
-
     /// Application shell
     ShellRoute(
       navigatorKey: shellNavKey,
