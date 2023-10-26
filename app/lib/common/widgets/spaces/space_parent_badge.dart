@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -51,9 +52,10 @@ class SpaceParentBadge extends ConsumerWidget {
                     message: parent.profile.displayName,
                     child: InkWell(
                       onTap: onTap ??
-                          () {
-                            context.push('/$parentId');
-                          },
+                          () => context.goNamed(
+                                Routes.space.name,
+                                pathParameters: {'spaceId': parentId},
+                              ),
                       child: ActerAvatar(
                         mode: DisplayMode.Space,
                         displayName: parent.profile.displayName,
