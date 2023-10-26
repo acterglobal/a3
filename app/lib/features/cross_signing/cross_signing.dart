@@ -64,17 +64,23 @@ class CrossSigning {
   void _installDeviceEvent() {
     _deviceNewPoller = client.deviceNewEventRx()?.listen((event) async {
       final records = await event.deviceRecords(false);
+      final myDevId = client.deviceId();
+      var newDevFound = false;
       for (var record in records) {
-        debugPrint('found device id: ${record.deviceId()}');
+        final newDevId = record.deviceId();
+        if (newDevId.toString() != myDevId.toString()) {
+          // ignore detection of this device in this device
+          newDevFound = true;
+          debugPrint('found device id: $newDevId');
+        }
       }
 
-      if (!_shouldShowNewDevicePopup()) {
+      if (!_shouldShowNewDevicePopup() || !newDevFound) {
         return;
       }
       showSimpleNotification(
         ListTile(
-          leading:
-              isDesktop ? const Icon(Atlas.laptop) : const Icon(Atlas.phone),
+          leading: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
           title: const Text('New Session Alert'),
           subtitle: const Text('Tap to review and verify!'),
         ),

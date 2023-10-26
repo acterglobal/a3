@@ -24,18 +24,7 @@ use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     media::{MediaFormat, MediaRequest},
     room::{Messages, MessagesOptions, Room as SdkRoom},
-    ruma::{
-        api::client::{
-            space::{
-                get_hierarchy::v1::{
-                    Request as GetHierarchyRequest, Response as GetHierarchyResponse,
-                },
-                SpaceHierarchyRoomsChunk,
-            },
-            state::send_state_event::v3::Request as SendStateEventRequest,
-        },
-        assign,
-    },
+    ruma::{api::client::state::send_state_event, assign},
     RoomState,
 };
 use ruma_common::{
@@ -514,7 +503,7 @@ impl Space {
                         );
                     }
 
-                    requests.push(SendStateEventRequest::new_raw(
+                    requests.push(send_state_event::v3::Request::new_raw(
                         room_id.clone(),
                         event_type,
                         state_key,
