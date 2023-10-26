@@ -2,7 +2,6 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/convo_list.dart';
-import 'package:acter/features/chat/widgets/create_chat.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -17,10 +16,8 @@ final bucketGlobal = PageStorageBucket();
 final _searchToggleProvider = StateProvider.autoDispose<bool>((ref) => false);
 
 class RoomsListWidget extends ConsumerWidget {
-  final BuildContext ctx;
   const RoomsListWidget({
     super.key = defaultRoomListMenuKey,
-    required this.ctx,
   });
 
   @override
@@ -29,7 +26,6 @@ class RoomsListWidget extends ConsumerWidget {
     final showSearch = ref.watch(_searchToggleProvider);
     final searchNotifier = ref.watch(_searchToggleProvider.notifier);
     final inSideBar = ref.watch(inSideBarProvider);
-    final size = MediaQuery.of(ctx).size;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.onSecondary.withOpacity(0.8),
@@ -106,28 +102,9 @@ class RoomsListWidget extends ConsumerWidget {
                             icon: const Icon(Atlas.magnifying_glass),
                           ),
                           IconButton(
-                            onPressed: () async => isDesktop || size.width > 600
-                                ? await showAdaptiveDialog(
-                                    barrierDismissible: false,
-                                    context: ctx,
-                                    builder: (ctx) => Dialog(
-                                      backgroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary,
-                                      child: ConstrainedBox(
-                                        constraints: BoxConstraints(
-                                          maxHeight: size.height * 0.8,
-                                          maxWidth: size.width * 0.5,
-                                        ),
-                                        child: const CreateChatPage(),
-                                      ),
-                                    ),
-                                  )
-                                : await showModalBottomSheet(
-                                    isScrollControlled: true,
-                                    context: ctx,
-                                    builder: (ctx) => const CreateChatPage(),
-                                  ),
+                            onPressed: () async => context.pushNamed(
+                              Routes.createChat.name,
+                            ),
                             padding: const EdgeInsets.only(right: 10, left: 10),
                             icon: const Icon(
                               Atlas.plus_circle_thin,

@@ -25,8 +25,8 @@ class ChatShell extends ConsumerWidget {
           return Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Flexible(
-                child: RoomsListWidget(ctx: context),
+              const Flexible(
+                child: RoomsListWidget(),
               ),
               Flexible(
                 flex: 2,
@@ -45,7 +45,7 @@ class ChatShell extends ConsumerWidget {
         // mobile case / not enough space
         if (currentId == null) {
           // we prefer showing the room list on the index page if there isn't enough space
-          return RoomsListWidget(ctx: context);
+          return const RoomsListWidget();
         }
         return child;
       },

@@ -65,20 +65,46 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PageView.builder(
-      onPageChanged: (index) {
-        setState(() {
-          currIdx = index;
-        });
-      },
-      controller: controller,
-      itemBuilder: ((context, index) => pages[currIdx]),
-    );
+    final size = MediaQuery.of(context).size;
+    final largeWidth = isDesktop || size.width > 770;
+    return largeWidth
+        ? Container(
+            width: size.width * 0.5,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.onPrimary,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: PageView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              onPageChanged: (index) {
+                setState(() {
+                  currIdx = index;
+                });
+              },
+              controller: controller,
+              itemBuilder: ((context, index) => pages[currIdx]),
+            ),
+          )
+        : DecoratedBox(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.neutral,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: PageView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              onPageChanged: (index) {
+                setState(() {
+                  currIdx = index;
+                });
+              },
+              controller: controller,
+              itemBuilder: ((context, index) => pages[currIdx]),
+            ),
+          );
   }
 
   /// Create Room Method
   Future<ffi.Convo?> _handleCreateConvo(
-    BuildContext context,
     String convoName,
     String description,
   ) async {
@@ -95,11 +121,10 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
             final userId = selectedUsers[i].userId().toString();
             config.addInvitee(userId);
           }
-          config.setName('');
         } else {
           // we are creating dm
           final userId = selectedUsers[0].userId().toString();
-          config.setName('');
+
           config.addInvitee(userId);
         }
       } else {
@@ -134,7 +159,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
     } catch (e) {
       EasyLoading.dismiss();
       EasyLoading.showError(
-        'Some error occured $e',
+        'Error creating chat $e',
         duration: const Duration(seconds: 2),
       );
       return null;
@@ -145,7 +170,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
 ///
 class _CreateChatWidget extends ConsumerWidget {
   final PageController controller;
-  final Future<ffi.Convo?> Function(BuildContext, String, String) onCreateConvo;
+  final Future<ffi.Convo?> Function(String, String) onCreateConvo;
   const _CreateChatWidget({
     required this.controller,
     required this.onCreateConvo,
@@ -156,158 +181,156 @@ class _CreateChatWidget extends ConsumerWidget {
     final selectedUsers = ref.watch(_selectedUsersProvider).toList();
     final foundUsers = ref.watch(searchResultProvider);
     final searchCtrl = ref.watch(searchController);
-    final largeWidth = isDesktop || MediaQuery.of(context).size.width > 600;
-    String tileTitle = selectedUsers.isEmpty
-        ? 'Start Chat'
-        : selectedUsers.length > 1
-            ? 'Start Group DM'
-            : checkUserDMExists(selectedUsers[0].userId().toString(), ref) !=
-                    null
-                ? 'Go in DM'
-                : 'Start DM';
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                !largeWidth
-                    ? IconButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        icon: const Icon(Icons.chevron_left),
-                      )
-                    : const SizedBox.shrink(),
-                Spacer(flex: !largeWidth ? 1 : 2),
-                Text(
-                  'New Chat',
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                const Spacer(flex: 2),
-                Visibility(
-                  visible: largeWidth,
-                  child: IconButton(
-                    onPressed: () =>
-                        Navigator.of(context, rootNavigator: true).pop(),
-                    icon: const Icon(Atlas.xmark_circle_thin),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 15),
-            TextField(
-              controller: searchCtrl,
-              style: Theme.of(context).textTheme.labelMedium,
-              decoration: InputDecoration(
-                isCollapsed: true,
-                filled: true,
-                fillColor: Theme.of(context).colorScheme.secondaryContainer,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                hintText: 'Search Username',
-                hintStyle: Theme.of(context).textTheme.labelMedium!.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withOpacity(0.8),
-                    ),
-                contentPadding: const EdgeInsets.all(18),
-                hintMaxLines: 1,
+    String tileTitle = _makeTitle(ref);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
+      child: ListView(
+        shrinkWrap: true,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              InkWell(
+                onTap: () => Navigator.of(context).pop(),
+                child: const Icon(Icons.chevron_left),
               ),
-              onChanged: (String val) =>
-                  ref.read(searchValueProvider.notifier).update((state) => val),
+              const Spacer(),
+              Text(
+                'New Chat',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const Spacer(),
+            ],
+          ),
+          const SizedBox(height: 15),
+          TextField(
+            controller: searchCtrl,
+            style: Theme.of(context).textTheme.labelMedium,
+            decoration: InputDecoration(
+              isCollapsed: true,
+              filled: true,
+              fillColor: Theme.of(context).colorScheme.secondaryContainer,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              hintText: 'Search Username',
+              hintStyle: Theme.of(context).textTheme.labelMedium!.copyWith(
+                    color:
+                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                  ),
+              contentPadding: const EdgeInsets.all(18),
+              hintMaxLines: 1,
             ),
-            const SizedBox(height: 15),
-            Visibility(
-              visible: selectedUsers.isNotEmpty,
-              replacement: const SizedBox.shrink(),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Wrap(
-                  direction: Axis.horizontal,
-                  spacing: 5.0,
-                  runSpacing: 5.0,
-                  children: List.generate(
-                    selectedUsers.length,
-                    (index) => Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+            onChanged: (String val) =>
+                ref.read(searchValueProvider.notifier).update((state) => val),
+          ),
+          const SizedBox(height: 15),
+          Visibility(
+            visible: selectedUsers.isNotEmpty,
+            replacement: const SizedBox.shrink(),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Wrap(
+                direction: Axis.horizontal,
+                spacing: 5.0,
+                runSpacing: 5.0,
+                children: List.generate(
+                  selectedUsers.length,
+                  (index) => Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.primary,
                       ),
-                      child: Consumer(
-                        builder: (context, ref, child) {
-                          final avatarProv = ref
-                              .watch(userAvatarProvider(selectedUsers[index]));
-                          final displayName = ref
-                              .watch(displayNameProvider(selectedUsers[index]));
-                          final userId =
-                              selectedUsers[index].userId().toString();
-                          return Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              ActerAvatar(
-                                uniqueId: userId,
-                                mode: DisplayMode.User,
-                                displayName: displayName.valueOrNull ?? userId,
-                                avatar: avatarProv.valueOrNull,
-                                size: avatarProv.valueOrNull != null ? 14 : 28,
+                    ),
+                    child: Consumer(
+                      builder: (context, ref, child) {
+                        final avatarProv =
+                            ref.watch(userAvatarProvider(selectedUsers[index]));
+                        final displayName = ref
+                            .watch(displayNameProvider(selectedUsers[index]));
+                        final userId = selectedUsers[index].userId().toString();
+                        return Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            ActerAvatar(
+                              uniqueId: userId,
+                              mode: DisplayMode.User,
+                              displayName: displayName.valueOrNull ?? userId,
+                              avatar: avatarProv.valueOrNull,
+                              size: avatarProv.valueOrNull != null ? 14 : 28,
+                            ),
+                            const SizedBox(width: 5),
+                            Text(
+                              displayName.valueOrNull ?? userId,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelMedium!
+                                  .copyWith(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                            ),
+                            const SizedBox(width: 10),
+                            InkWell(
+                              onTap: () => ref
+                                  .read(_selectedUsersProvider.notifier)
+                                  .update(
+                                    (state) => [
+                                      for (int j = 0; j < state.length; j++)
+                                        if (j != index) state[j],
+                                    ],
+                                  ),
+                              child: Icon(
+                                Icons.close_outlined,
+                                size: 18,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
-                              const SizedBox(width: 5),
-                              Text(
-                                displayName.valueOrNull ?? userId,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .labelMedium!
-                                    .copyWith(
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                    ),
-                              ),
-                              const SizedBox(width: 10),
-                              InkWell(
-                                onTap: () => ref
-                                    .read(_selectedUsersProvider.notifier)
-                                    .update(
-                                      (state) => [
-                                        for (int j = 0; j < state.length; j++)
-                                          if (j != index) state[j],
-                                      ],
-                                    ),
-                                child: Icon(
-                                  Icons.close_outlined,
-                                  size: 18,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ),
               ),
             ),
-            ListTile(
-              onTap: selectedUsers.isEmpty
-                  ? () => controller.animateToPage(
-                        1,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.ease,
-                      )
-                  : () async {
-                      if (selectedUsers.length > 1) {
-                        final convo = await onCreateConvo(context, '', '');
+          ),
+          ListTile(
+            onTap: selectedUsers.isEmpty
+                ? () => controller.animateToPage(
+                      1,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.ease,
+                    )
+                : () async {
+                    if (selectedUsers.length > 1) {
+                      final convo = await onCreateConvo('', '');
+                      if (context.mounted && convo != null) {
+                        Navigator.of(context).pop();
+                        context.pushNamed(
+                          Routes.chatroom.name,
+                          pathParameters: {'roomId': convo.getRoomIdStr()},
+                        );
+                      }
+                    } else {
+                      String? id = checkUserDMExists(
+                        selectedUsers[0].userId().toString(),
+                        ref,
+                      );
+                      if (id != null) {
+                        Navigator.of(context).pop();
+                        context.pushNamed(
+                          Routes.chatroom.name,
+                          pathParameters: {'roomId': id},
+                        );
+                      } else {
+                        final convo = await onCreateConvo('', '');
                         if (context.mounted && convo != null) {
                           Navigator.of(context).pop();
                           context.pushNamed(
@@ -315,101 +338,95 @@ class _CreateChatWidget extends ConsumerWidget {
                             pathParameters: {'roomId': convo.getRoomIdStr()},
                           );
                         }
-                      } else {
-                        String? id = checkUserDMExists(
-                          selectedUsers[0].userId().toString(),
-                          ref,
-                        );
-                        if (id != null) {
-                          Navigator.of(context).pop();
-                          context.pushNamed(
-                            Routes.chatroom.name,
-                            pathParameters: {'roomId': id},
-                          );
-                        } else {
-                          final convo = await onCreateConvo(context, '', '');
-                          if (context.mounted && convo != null) {
-                            Navigator.of(context).pop();
-                            context.pushNamed(
-                              Routes.chatroom.name,
-                              pathParameters: {'roomId': convo.getRoomIdStr()},
-                            );
-                          }
-                        }
                       }
-                    },
-              contentPadding: const EdgeInsets.only(left: 0),
-              leading: selectedUsers.isEmpty
-                  ? ActerAvatar(
-                      uniqueId: '#',
-                      mode: DisplayMode.Space,
-                      size: 48,
-                    )
-                  : selectedUsers.length > 1
-                      ? CircleAvatar(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.neutral4,
-                          radius: 28,
-                          child: Icon(
-                            Atlas.team_group,
-                            color: Theme.of(context).colorScheme.neutral,
-                          ),
-                        )
-                      : ActerAvatar(
-                          uniqueId: selectedUsers[0].userId().toString(),
-                          mode: DisplayMode.User,
-                          displayName: ref
-                              .watch(displayNameProvider(selectedUsers[0]))
-                              .valueOrNull,
-                          avatar: ref
-                              .watch(userAvatarProvider(selectedUsers[0]))
-                              .valueOrNull,
-                          size: ref
-                                      .watch(
-                                        userAvatarProvider(selectedUsers[0]),
-                                      )
-                                      .valueOrNull !=
-                                  null
-                              ? 20
-                              : 40,
+                    }
+                  },
+            contentPadding: const EdgeInsets.only(left: 0),
+            leading: selectedUsers.isEmpty
+                ? ActerAvatar(
+                    uniqueId: '#',
+                    mode: DisplayMode.Space,
+                    size: 48,
+                  )
+                : selectedUsers.length > 1
+                    ? CircleAvatar(
+                        backgroundColor: Theme.of(context).colorScheme.neutral4,
+                        radius: 28,
+                        child: Icon(
+                          Atlas.team_group,
+                          color: Theme.of(context).colorScheme.neutral,
                         ),
-              title: Text(
-                tileTitle,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              trailing: const Icon(Icons.chevron_right_outlined, size: 24),
+                      )
+                    : ActerAvatar(
+                        uniqueId: selectedUsers[0].userId().toString(),
+                        mode: DisplayMode.User,
+                        displayName: ref
+                            .watch(displayNameProvider(selectedUsers[0]))
+                            .valueOrNull,
+                        avatar: ref
+                            .watch(userAvatarProvider(selectedUsers[0]))
+                            .valueOrNull,
+                        size: ref
+                                    .watch(
+                                      userAvatarProvider(selectedUsers[0]),
+                                    )
+                                    .valueOrNull !=
+                                null
+                            ? 20
+                            : 40,
+                      ),
+            title: Text(
+              tileTitle,
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
-            const SizedBox(height: 15),
-            Visibility(
-              visible: searchCtrl.text.isNotEmpty,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Found Users',
-                    style: Theme.of(context).textTheme.bodyMedium,
+            trailing: const Icon(Icons.chevron_right_outlined, size: 24),
+          ),
+          const SizedBox(height: 15),
+          Visibility(
+            visible: searchCtrl.text.isNotEmpty,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Found Users',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                foundUsers.when(
+                  data: (data) => ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: data.length,
+                    itemBuilder: (context, index) =>
+                        _UserWidget(profile: data[index]),
                   ),
-                  foundUsers.when(
-                    data: (data) => ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: data.length,
-                      itemBuilder: (context, index) =>
-                          _UserWidget(profile: data[index]),
-                    ),
-                    error: (e, st) => Text('Error loading users $e'),
-                    loading: () => const Center(
-                      heightFactor: 5,
-                      child: CircularProgressIndicator(),
-                    ),
+                  error: (e, st) => Text('Error loading users $e'),
+                  loading: () => const Center(
+                    heightFactor: 5,
+                    child: CircularProgressIndicator(),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
+  }
+
+  String _makeTitle(WidgetRef ref) {
+    final selectedUsers = ref.watch(_selectedUsersProvider).toList();
+    if (selectedUsers.isEmpty) {
+      return 'Start Chat';
+    } else if (selectedUsers.length > 1) {
+      return 'Start Group DM';
+    } else {
+      if (checkUserDMExists(selectedUsers[0].userId().toString(), ref) !=
+          null) {
+        return 'Go to DM';
+      } else {
+        return 'Start DM';
+      }
+    }
   }
 
 // checks whether user DM already exists or needs created
@@ -425,7 +442,7 @@ class _CreateChatWidget extends ConsumerWidget {
 class _CreateRoomFormWidget extends ConsumerStatefulWidget {
   final String? initialSelectedSpaceId;
   final PageController controller;
-  final Future<ffi.Convo?> Function(BuildContext, String, String) onCreateConvo;
+  final Future<ffi.Convo?> Function(String, String) onCreateConvo;
   const _CreateRoomFormWidget({
     required this.controller,
     required this.onCreateConvo,
@@ -460,36 +477,35 @@ class _CreateRoomFormWidgetConsumerState
 
   @override
   Widget build(BuildContext context) {
-    final selectedUsers = ref.watch(_selectedUsersProvider);
     final titleInput = ref.watch(_titleProvider);
     final avatarUpload = ref.watch(_avatarProvider);
     final currentParentSpace = ref.read(selectedSpaceIdProvider);
 
-    String title = selectedUsers.isEmpty ? 'Start Chat' : 'Start Group DM';
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
       child: ListView(
         shrinkWrap: true,
         children: <Widget>[
           Row(
-            mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               Visibility(
-                visible: widget.initialSelectedSpaceId == null,
-                child: IconButton(
-                  padding: const EdgeInsets.all(0),
-                  onPressed: () => widget.controller.previousPage(
+                visible: widget.controller.initialPage == 0,
+                child: InkWell(
+                  onTap: () => widget.controller.previousPage(
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.ease,
                   ),
-                  icon: const Icon(Icons.chevron_left_outlined),
+                  child: const Icon(Icons.chevron_left),
                 ),
               ),
+              const Spacer(),
               Text(
-                title,
+                'Start Chat',
                 style: Theme.of(context).textTheme.titleSmall,
               ),
+              const Spacer(),
             ],
           ),
           const SizedBox(height: 15),
@@ -532,7 +548,7 @@ class _CreateRoomFormWidgetConsumerState
                   children: <Widget>[
                     const Padding(
                       padding: EdgeInsets.only(bottom: 5),
-                      child: Text('Chat Name'),
+                      child: Text('Name'),
                     ),
                     InputTextField(
                       hintText: 'Type Chat Name',
@@ -564,6 +580,7 @@ class _CreateRoomFormWidgetConsumerState
             emptyText: 'optional parent space',
             selectTitle: 'Select parent space',
           ),
+          const SizedBox(height: 15),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
@@ -585,7 +602,6 @@ class _CreateRoomFormWidgetConsumerState
                           return;
                         }
                         final convo = await widget.onCreateConvo(
-                          context,
                           titleInput,
                           _descriptionController.text.trim(),
                         );
