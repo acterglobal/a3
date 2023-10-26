@@ -143,6 +143,9 @@ class _TextWidget extends ConsumerWidget {
               maxLines: isReply ? 3 : null,
             )
           : Html(
+              onLinkTap: (url) async {
+                await openLink(url.toString(), context);
+              },
               backgroundColor: Colors.transparent,
               data: message.text,
               shrinkToFit: true,

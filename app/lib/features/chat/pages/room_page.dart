@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/chat_theme.dart';
@@ -183,6 +184,9 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                   gradient: AppTheme.primaryGradient,
                 ),
                 child: Chat(
+                  keyboardDismissBehavior: Platform.isIOS
+                      ? ScrollViewKeyboardDismissBehavior.onDrag
+                      : ScrollViewKeyboardDismissBehavior.manual,
                   customBottomWidget:
                       CustomChatInput(key: Key(roomId), convo: convo),
                   textMessageBuilder: (
