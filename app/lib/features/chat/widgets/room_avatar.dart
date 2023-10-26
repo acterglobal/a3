@@ -77,10 +77,8 @@ class RoomAvatar extends ConsumerWidget {
         //Show member avatar
         if (count == 1) {
           return memberAvatar(members[0], ref);
-        }
-
-        //Show opponent member avatar
-        else if (count == 2) {
+        } else if (count == 2) {
+          //Show opponent member avatar
           if (members[0].userId().toString() != client?.userId().toString()) {
             return memberAvatar(members[0], ref);
           } else {
