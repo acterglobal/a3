@@ -12,6 +12,8 @@
     <dict>
         <key>global.acter.a3</key>
         <string>Acter App Release</string>
+        <key>global.acter.a3.ActerPushServiceExtension</key>
+        <string>Acter Push Service App Store</string>
     </dict>
     <key>signingCertificate</key>
     <string>Apple Distribution: Acter Aps (V45JGKTC6K)</string>
