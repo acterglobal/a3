@@ -1,0 +1,2 @@
+- [Fix] DM avatar was not showing properly
+- [Enhance] Now DM and GroupDM have seperate avatar views
