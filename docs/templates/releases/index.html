@@ -1,0 +1,57 @@
+{% extends "section.html" %}
+
+{% block body %}
+{% set page_class = "blog list" %}
+{% endblock body %}
+
+{% block header %}
+  {# This value is matched by the config.extra.menu.main~section #}
+  {% set current_section = "blog" %}
+  {{ macros_header::header(current_section=current_section)}}
+{% endblock header %}
+
+{% block content %}
+<div class="wrap container" role="document">
+  <div class="content">
+    <article>
+        <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-10 col-xxl-8">
+            <h1 class="text-center">{{ section.title }}</h1>
+            <div class="text-center">{{ section.content | safe }}</div>
+        </div>
+
+        {% if not paginator.previous %}
+
+            <div class="col-lg-12 text-center">
+
+                <p>
+                <a href='https://play.google.com/store/apps/details?id=global.acter.a3&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+                    <img alt='Get it on Google Play' width="250" src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/>
+                </a>
+                <a href="https://apps.apple.com/us/app/acter/id6445989155?itsct=apps_box_badge&amp;itscg=30200">
+                    <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1694390400" alt="Download on the App Store" style="border-radius: 13px; width: 250px; height: 83px;">
+                </a>
+                <a href="ms-windows-store://pdp/?ProductId=9NZLTDVTN203">
+                    <img height="83" src="https://get.microsoft.com/images/en-us%20dark.svg" alt="Download Acter" />
+                </a>
+                </p>
+            </div>
+            <h2>Changes</h2>
+        {% endif %}
+        <div class="card-list">
+        {% for page in paginator.pages %}
+            <div class="card">
+                <div class="card-body">
+                    <h3><a class="stretched-link text-body" href="{{ page.permalink }}">{{ page.title }}</a></h3>
+                    <p class="lead">{{ page.content | safe }}</p>
+                </div>
+            </div>
+        {% endfor %}
+        {% if paginator.previous or paginator.next %}
+            {{ macros_section_nav::navigation(paginator=paginator) }}
+        {% endif %}
+        </div>
+    </article>
+  </div>
+</div>
+{% endblock content %}

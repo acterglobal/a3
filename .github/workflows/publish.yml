@@ -446,11 +446,11 @@ jobs:
       - name: "Generate docs"
         run: |
           echo "+++" > docs/content/releases/${{ needs.tags.outputs.tag }}.md
-          echo "title = \" Nightly ${{ needs.tags.outputs.tag }}\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-          echo "template = \"nightlies/release.html\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-          echo "date = ${{ needs.tags.outputs.tag }}" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-          echo "+++" >>docs/content/releases/${{ needs.tags.outputs.tag }}.md
-          echo "" >>docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "title = \" v${{ needs.tags.outputs.tag }}\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "template = \"releases/release.html\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "date = `date +%Y-%m-%d`" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "+++" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
           cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
 
       - name: Tag for release
