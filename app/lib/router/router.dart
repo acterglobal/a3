@@ -425,6 +425,7 @@ List<RouteBase> makeRoutes(Ref ref) {
     ),
 
     GoRoute(
+      parentNavigatorKey: rootNavKey,
       name: Routes.createChat.name,
       path: Routes.createChat.route,
       pageBuilder: (context, state) {
