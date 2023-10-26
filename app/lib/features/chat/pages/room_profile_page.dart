@@ -9,8 +9,8 @@ import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
+import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,6 +20,7 @@ import 'package:settings_ui/settings_ui.dart';
 
 class RoomProfilePage extends ConsumerWidget {
   final String roomId;
+
   const RoomProfilePage({
     required this.roomId,
     Key? key,
@@ -85,26 +86,9 @@ class RoomProfilePage extends ConsumerWidget {
                     child: SpaceParentBadge(
                       badgeSize: 20,
                       roomId: roomId,
-                      child: convoProfile.when(
-                        data: (profile) => ActerAvatar(
-                          mode: profile.isDm
-                              ? DisplayMode.User
-                              : DisplayMode.Space,
-                          uniqueId: roomId,
-                          displayName: profile.displayName ?? roomId,
-                          avatar: profile.getAvatarImage(),
-                          size: 75,
-                        ),
-                        error: (err, stackTrace) {
-                          debugPrint('Some error occured $err');
-                          return ActerAvatar(
-                            mode: DisplayMode.GroupChat,
-                            uniqueId: roomId,
-                            displayName: roomId,
-                            size: 75,
-                          );
-                        },
-                        loading: () => const CircularProgressIndicator(),
+                      child: RoomAvatar(
+                        roomId: roomId,
+                        avatarSize: 75,
                       ),
                     ),
                   ),

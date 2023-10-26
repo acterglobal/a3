@@ -10,9 +10,9 @@ import 'package:acter/features/chat/widgets/bubble_builder.dart';
 import 'package:acter/features/chat/widgets/custom_input.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
+import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -171,30 +171,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                     child: SpaceParentBadge(
                       roomId: convo.getRoomIdStr(),
                       badgeSize: 20,
-                      child: convoProfile.when(
-                        data: (profile) => ActerAvatar(
-                          uniqueId: convo.getRoomIdStr(),
-                          //FIXME: add support for DM/Group Chats
-                          mode: profile.isDm
-                              ? DisplayMode.User
-                              : DisplayMode.Space,
-                          displayName:
-                              profile.displayName ?? convo.getRoomIdStr(),
-                          avatar: profile.getAvatarImage(),
-                          size: 36,
-                        ),
-                        skipLoadingOnReload: true,
-                        error: (err, stackTrace) {
-                          debugPrint('Failed to load avatar due to $err');
-                          return ActerAvatar(
-                            uniqueId: convo.getRoomIdStr(),
-                            mode: DisplayMode.GroupChat,
-                            displayName: convo.getRoomIdStr(),
-                            size: 36,
-                          );
-                        },
-                        loading: () => const CircularProgressIndicator(),
-                      ),
+                      child: RoomAvatar(roomId: widget.convo.getRoomIdStr()),
                     ),
                   ),
                 ),

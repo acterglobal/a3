@@ -1,0 +1,2 @@
+- DM's now show the avatar of the user you are talking to, if no avatar was set.
+- In Group DMs the Avatar is showing several users you are in the DM with.
