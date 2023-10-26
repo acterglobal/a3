@@ -23,10 +23,9 @@ extension Context on BuildContext {
   // with consumer and then call your provider
 
   T read<T>(ProviderBase<T> provider) {
-     return ProviderScope.containerOf(this, listen: false).read(provider);
+    return ProviderScope.containerOf(this, listen: false).read(provider);
   }
 }
-
 
 /// An extension on [Ref] with helpful methods to add a debounce.
 extension RefDebounceExtension on Ref {
@@ -45,6 +44,11 @@ extension RefDebounceExtension on Ref {
     });
     return completer.future;
   }
+}
+
+const largeScreenBreakPoint = 770;
+bool isLargeScreen(BuildContext context) {
+  return MediaQuery.of(context).size.width >= largeScreenBreakPoint;
 }
 
 DateTime kFirstDay = DateTime.utc(2010, 10, 16);

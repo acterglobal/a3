@@ -5,6 +5,7 @@ import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
@@ -66,8 +67,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final largeWidth = isDesktop || size.width > 770;
-    return largeWidth
+    return isLargeScreen(context)
         ? Container(
             width: size.width * 0.5,
             decoration: BoxDecoration(

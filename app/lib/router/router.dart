@@ -1,4 +1,5 @@
 import 'package:acter/common/pages/fatal_fail.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/dialog_page.dart';
 import 'package:acter/common/widgets/side_sheet_page.dart';
 import 'package:acter/common/dialogs/invite_to_room_dialog.dart';
@@ -429,8 +430,7 @@ List<RouteBase> makeRoutes(Ref ref) {
       name: Routes.createChat.name,
       path: Routes.createChat.route,
       pageBuilder: (context, state) {
-        final largeWidth = isDesktop || MediaQuery.of(context).size.width > 770;
-        return largeWidth
+        return isLargeScreen(context)
             ? DialogPage(
                 barrierDismissible: false,
                 builder: (context) => CreateChatPage(
