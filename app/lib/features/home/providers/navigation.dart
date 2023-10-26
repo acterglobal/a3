@@ -12,7 +12,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const fallbackSidebarIdx = 1;
-const fallbackBottomBarIdx = 0;
+const fallbackBottomBarIdx = 1;
 
 final spaceItemsProvider = FutureProvider.autoDispose
     .family<List<SidebarNavigationItem>, BuildContext>((ref, context) async {
