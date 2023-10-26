@@ -7,6 +7,7 @@ class DefaultDialog extends ConsumerWidget {
   final Widget? subtitle;
   final Widget? description;
   final double? height;
+  final double? minHeight;
   final double? width;
   final bool isLoader;
   final List<Widget>? actions;
@@ -17,6 +18,7 @@ class DefaultDialog extends ConsumerWidget {
     this.subtitle,
     this.description,
     this.height,
+    this.minHeight,
     this.width,
     this.isLoader = false,
     this.actions = const <Widget>[],
@@ -31,6 +33,7 @@ class DefaultDialog extends ConsumerWidget {
           constraints: BoxConstraints(
             maxWidth: width ?? MediaQuery.of(context).size.width * 0.5,
             maxHeight: height ?? double.infinity,
+            minHeight: minHeight ?? 0.0,
           ),
           child: SingleChildScrollView(
             child: Column(
