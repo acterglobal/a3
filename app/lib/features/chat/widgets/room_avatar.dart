@@ -10,9 +10,9 @@ class RoomAvatar extends ConsumerWidget {
   final double avatarSize;
 
   const RoomAvatar({
+    super.key,
     required this.roomId,
     this.avatarSize = 36,
-    Key? super.key,
   });
 
   @override
