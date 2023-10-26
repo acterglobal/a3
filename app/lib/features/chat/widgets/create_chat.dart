@@ -551,7 +551,7 @@ class _CreateRoomFormWidgetConsumerState
                       child: Text('Name'),
                     ),
                     InputTextField(
-                      hintText: 'Type Chat Name',
+                      hintText: 'What to call this chat?',
                       textInputType: TextInputType.multiline,
                       controller: _titleController,
                       onInputChanged: _handleTitleChange,
