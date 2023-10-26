@@ -145,9 +145,7 @@ class _TextWidget extends ConsumerWidget {
             )
           : Html(
               onLinkTap: (url) async {
-                if (await canLaunchUrl(url)) {
-                  await launchUrl(url);
-                }
+                await openLink(url.toString(), context);
               },
               backgroundColor: Colors.transparent,
               data: message.text,
