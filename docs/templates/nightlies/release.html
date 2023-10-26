@@ -31,9 +31,9 @@
 
           <h3>Install</h3>
           <h4>Desktop:</h4>
-          {{ nightly_macros::nightly_desktop_install_buttons(tag_date=page.date) }}
+          {{ nightly_macros::nightly_desktop_install_buttons(tag_date=page.extra.custom_tag | default(value = page.date)) }}
           <h4>On mobile:</h4>
-          {{ nightly_macros::nightly_mobile_install_buttons(tag_date=page.date) }}
+          {{ nightly_macros::nightly_mobile_install_buttons(tag_date=page.extra.custom_tag | default(value = page.date)) }}
         </article>
       </div>
     </div>
