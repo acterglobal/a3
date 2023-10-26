@@ -2,9 +2,7 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RoomAvatar extends ConsumerWidget {
@@ -138,23 +136,24 @@ class RoomAvatar extends ConsumerWidget {
           child: memberAvatar(members[1], ref),
         ),
         Positioned.fill(
-            bottom: -5,
-            child: Align(
-              alignment: Alignment.bottomRight,
-              child: Container(
-                width: 15,
-                height: 15,
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                  color: Colors.green,
-                  shape: BoxShape.circle,
-                ),
-                child: Text(
-                  '+${members.length - 2}',
-                  style: const TextStyle(fontSize: 8),
-                ),
+          bottom: -5,
+          child: Align(
+            alignment: Alignment.bottomRight,
+            child: Container(
+              width: 15,
+              height: 15,
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(
+                color: Colors.green,
+                shape: BoxShape.circle,
               ),
-            ))
+              child: Text(
+                '+${members.length - 2}',
+                style: const TextStyle(fontSize: 8),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
