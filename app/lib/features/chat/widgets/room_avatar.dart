@@ -12,8 +12,8 @@ class RoomAvatar extends ConsumerWidget {
   const RoomAvatar({
     required this.roomId,
     this.avatarSize = 36,
-    Key? key,
-  }) : super(key: key);
+    Key? super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
