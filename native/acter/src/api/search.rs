@@ -1,10 +1,5 @@
 use anyhow::Result;
-use matrix_sdk::ruma::{
-    api::client::directory::get_public_rooms_filtered::v3::{
-        Request as FilteredRequest, Response as FilteredResponse,
-    },
-    assign,
-};
+use matrix_sdk::ruma::{api::client::directory::get_public_rooms_filtered, assign};
 use ruma_common::{
     directory::{Filter, PublicRoomJoinRule, PublicRoomsChunk, RoomNetwork, RoomTypeFilter},
     room::RoomType,
@@ -89,7 +84,7 @@ impl PublicSearchResultItem {
 }
 
 pub struct PublicSearchResult {
-    resp: FilteredResponse,
+    resp: get_public_rooms_filtered::v3::Response,
 }
 
 impl PublicSearchResult {
@@ -140,7 +135,7 @@ impl Client {
                 } else {
                     None
                 };
-                let request = assign!(FilteredRequest::new(), {
+                let request = assign!(get_public_rooms_filtered::v3::Request::new(), {
                     since,
                     filter,
                     server,

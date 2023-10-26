@@ -2,7 +2,7 @@ use anyhow::{bail, Context, Result};
 use futures::stream::{Stream, StreamExt};
 use matrix_sdk::{
     room::{Receipts, Room},
-    ruma::api::client::receipt::create_receipt::v3::ReceiptType,
+    ruma::api::client::receipt::create_receipt,
     RoomState,
 };
 use matrix_sdk_ui::timeline::{BackPaginationStatus, PaginationOptions, Timeline};
@@ -126,9 +126,9 @@ impl TimelineStream {
     ) -> Result<bool> {
         let timeline = self.timeline.clone();
         let receipt_type = match receipt_type.as_str() {
-            "FullyRead" => ReceiptType::FullyRead,
-            "Read" => ReceiptType::Read,
-            "ReadPrivate" => ReceiptType::ReadPrivate,
+            "FullyRead" => create_receipt::v3::ReceiptType::FullyRead,
+            "Read" => create_receipt::v3::ReceiptType::Read,
+            "ReadPrivate" => create_receipt::v3::ReceiptType::ReadPrivate,
             _ => {
                 bail!("Wrong receipt type")
             }

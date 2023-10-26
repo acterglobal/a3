@@ -2,10 +2,7 @@ use derive_builder::Builder;
 use matrix_sdk::{
     room::Room,
     ruma::{
-        api::client::room::{
-            create_room::v3::{CreationContent, Request as CreateRoomRequest},
-            Visibility,
-        },
+        api::client::room::{create_room, Visibility},
         assign,
     },
 };
@@ -187,7 +184,7 @@ impl SpaceRelations {
 impl CoreClient {
     pub async fn create_acter_space(&self, settings: CreateSpaceSettings) -> Result<OwnedRoomId> {
         let client = self.client();
-        let content = assign!(CreationContent::new(), {
+        let content = assign!(create_room::v3::CreationContent::new(), {
             room_type: Some(RoomType::Space),
         });
         let CreateSpaceSettings {
@@ -247,7 +244,7 @@ impl CoreClient {
             initial_states.push(join_rule.to_raw_any());
         };
 
-        let request = assign!(CreateRoomRequest::new(), {
+        let request = assign!(create_room::v3::Request::new(), {
             creation_content: Some(Raw::new(&content)?),
             initial_state: initial_states,
             is_direct: false,

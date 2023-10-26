@@ -3,7 +3,7 @@ use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStr
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     room::{Room, RoomMember},
-    ruma::api::client::user_directory::search_users::v3::User,
+    ruma::api::client::user_directory::search_users,
     Client as SdkClient, RoomMemberships, RoomState,
 };
 use ruma_common::{OwnedRoomId, OwnedUserId, RoomId};
@@ -286,7 +286,7 @@ impl InvitationController {
 }
 
 struct SearchedUser {
-    inner: User,
+    inner: search_users::v3::User,
 }
 
 impl SearchedUser {
