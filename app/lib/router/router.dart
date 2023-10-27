@@ -54,6 +54,8 @@ import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/settings/pages/index_page.dart';
 import 'package:acter/features/space/sheets/edit_space_sheet.dart';
+import 'package:acter/features/space/sheets/link_chat_sheet.dart';
+import 'package:acter/features/space/sheets/link_space_sheet.dart';
 import 'package:acter/features/spaces/pages/join_space.dart';
 import 'package:acter/features/spaces/pages/spaces_page.dart';
 import 'package:acter/features/spaces/sheets/create_space_sheet.dart';
@@ -355,6 +357,54 @@ List<RouteBase> makeRoutes(Ref ref) {
           },
           child: CreateSpacePage(
             initialParentsSpaceId: state.uri.queryParameters['parentSpaceId'],
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.linkChat.name,
+      path: Routes.linkChat.route,
+      pageBuilder: (context, state) {
+        return SideSheetPage(
+          key: state.pageKey,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween(
+                begin: const Offset(1, 0),
+                end: const Offset(0, 0),
+              ).animate(
+                animation,
+              ),
+              child: child,
+            );
+          },
+          child: LinkChatPage(
+            parentSpaceId: state.uri.queryParameters['spaceId'],
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.linkSpace.name,
+      path: Routes.linkSpace.route,
+      pageBuilder: (context, state) {
+        return SideSheetPage(
+          key: state.pageKey,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween(
+                begin: const Offset(1, 0),
+                end: const Offset(0, 0),
+              ).animate(
+                animation,
+              ),
+              child: child,
+            );
+          },
+          child: LinkSpacePage(
+            parentSpaceId: state.uri.queryParameters['spaceId'],
           ),
         );
       },
