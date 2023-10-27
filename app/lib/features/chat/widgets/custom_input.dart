@@ -517,6 +517,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   }
 
   Future<void> onSendButtonPressed() async {
+    if(mentionKey.currentState!.controller!.text.isEmpty) return;
     final roomId = widget.convo.getRoomIdStr();
     final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
     final mentionReplacements =

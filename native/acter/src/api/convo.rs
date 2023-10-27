@@ -9,10 +9,7 @@ use matrix_sdk::{
     executor::JoinHandle,
     room::MessagesOptions,
     ruma::{
-        api::client::room::{
-            create_room::v3::{CreationContent, Request as CreateRoomRequest},
-            Visibility,
-        },
+        api::client::room::{create_room, Visibility},
         assign,
     },
     Client as SdkClient, RoomMemberships,
@@ -392,8 +389,8 @@ impl Client {
                     initial_states.push(join_rule.to_raw_any());
                 };
 
-                let request = assign!(CreateRoomRequest::new(), {
-                    creation_content: Some(Raw::new(&CreationContent::new())?),
+                let request = assign!(create_room::v3::Request::new(), {
+                    creation_content: Some(Raw::new(&create_room::v3::CreationContent::new())?),
                     initial_state: initial_states,
                     is_direct: true,
                     invite: settings.invites,

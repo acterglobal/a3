@@ -74,7 +74,8 @@ final maybeSpaceInfoProvider =
 });
 
 /// gives current context space id
-final selectedSpaceIdProvider = StateProvider<String?>((ref) => null);
+final selectedSpaceIdProvider =
+    StateProvider.autoDispose<String?>((ref) => null);
 
 /// gives current context space details based on id, will throw null if id is null
 final selectedSpaceDetailsProvider =

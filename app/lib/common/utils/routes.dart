@@ -25,6 +25,7 @@ enum Routes {
 
   // --- chat
   chat('/chat'),
+  // show as dialog
   createChat('/chat/create'),
   chatroom('/chat/:roomId([!#][^/]+)'), // !roomId, #roomName
   chatProfile('/chat/:roomId([!#][^/]+)/profile'),

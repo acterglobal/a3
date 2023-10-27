@@ -25,9 +25,9 @@
                 {% set latest_page = paginator.pages | first %} 
                 <h3>Install Latest</h3>
                 <h4>Desktop:</h4>
-                {{ nightly_macros::nightly_desktop_install_buttons(tag_date=latest_page.date) }}
+                {{ nightly_macros::nightly_desktop_install_buttons(tag_date=latest_page.extra.custom_tag | default(value = latest_page.date)) }}
                 <h4>On mobile:</h4>
-                {{ nightly_macros::nightly_mobile_install_buttons(tag_date=latest_page.date) }}
+                {{ nightly_macros::nightly_mobile_install_buttons(tag_date=latest_page.extra.custom_tag | default(value = latest_page.date)) }}
                 </div>
             <h2>Changes</h2>
             {% endif %}

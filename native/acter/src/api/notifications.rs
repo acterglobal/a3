@@ -1,12 +1,6 @@
 use acter_core::spaces::is_acter_space;
 use anyhow::{Context, Result};
-use matrix_sdk::ruma::{
-    api::client::push::get_notifications::v3::{
-        Notification as RumaNotification, Request as GetNotificationsRequest,
-        Response as GetNotificationsResponse,
-    },
-    assign,
-};
+use matrix_sdk::ruma::{api::client::push::get_notifications, assign};
 use ruma_common::OwnedRoomId;
 
 use crate::{Convo, RoomMessage, Space};
@@ -14,7 +8,7 @@ use crate::{Convo, RoomMessage, Space};
 use super::{client::Client, message::sync_event_to_message, room::Room, RUNTIME};
 
 pub struct Notification {
-    notification: RumaNotification,
+    notification: get_notifications::v3::Notification,
     client: Client,
     room: Option<Room>,
     room_message: Option<RoomMessage>,
@@ -23,7 +17,10 @@ pub struct Notification {
 }
 
 impl Notification {
-    pub(crate) async fn new(notification: RumaNotification, client: Client) -> Self {
+    pub(crate) async fn new(
+        notification: get_notifications::v3::Notification,
+        client: Client,
+    ) -> Self {
         let room = client.room_by_id_typed(&notification.room_id);
         let (is_space, is_acter_space) = if let Some(room) = &room {
             if room.is_space() {
@@ -93,7 +90,7 @@ impl Notification {
 }
 
 pub struct NotificationListResult {
-    resp: GetNotificationsResponse,
+    resp: get_notifications::v3::Response,
     client: Client,
 }
 
@@ -126,7 +123,7 @@ impl Client {
         let c = self.clone();
         RUNTIME
             .spawn(async move {
-                let request = assign!(GetNotificationsRequest::new(), { from: since, only });
+                let request = assign!(get_notifications::v3::Request::new(), { from: since, only });
                 let resp = c.send(request, None).await?;
                 Ok(NotificationListResult { resp, client: c })
             })

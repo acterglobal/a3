@@ -1,4 +1,5 @@
 import 'package:acter/common/pages/fatal_fail.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/dialog_page.dart';
 import 'package:acter/common/widgets/side_sheet_page.dart';
 import 'package:acter/common/dialogs/invite_to_room_dialog.dart';
@@ -7,7 +8,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/activities/pages/activities_page.dart';
-import 'package:acter/features/chat/sheets/create_chat_sheet.dart';
+import 'package:acter/features/chat/widgets/create_chat.dart';
 import 'package:acter/features/events/pages/events_page.dart';
 import 'package:acter/features/events/sheets/create_event_sheet.dart';
 import 'package:acter/features/events/sheets/edit_event_sheet.dart';
@@ -59,6 +60,7 @@ import 'package:acter/features/spaces/sheets/create_space_sheet.dart';
 import 'package:acter/features/tasks/dialogs/create_task_list_sheet.dart';
 import 'package:acter/features/tasks/pages/tasks_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod/riverpod.dart';
@@ -428,23 +430,33 @@ List<RouteBase> makeRoutes(Ref ref) {
       name: Routes.createChat.name,
       path: Routes.createChat.route,
       pageBuilder: (context, state) {
-        return SideSheetPage(
-          key: state.pageKey,
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween(
-                begin: const Offset(1, 0),
-                end: const Offset(0, 0),
-              ).animate(
-                animation,
-              ),
-              child: child,
-            );
-          },
-          child: CreateChatSheet(
-            initialSelectedSpaceId: state.uri.queryParameters['spaceId'],
-          ),
-        );
+        return isLargeScreen(context)
+            ? DialogPage(
+                barrierDismissible: false,
+                builder: (context) => CreateChatPage(
+                  initialSelectedSpaceId: state.uri.queryParameters['spaceId'],
+                  initialPage: state.extra as int?,
+                ),
+              )
+            : CustomTransitionPage(
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  var begin = const Offset(0.0, 1.0);
+                  var end = Offset.zero;
+                  var curve = Curves.easeInOut;
+                  var tween = Tween(begin: begin, end: end)
+                      .chain(CurveTween(curve: curve));
+                  var offsetAnimation = animation.drive(tween);
+                  return SlideTransition(
+                    position: offsetAnimation,
+                    child: child,
+                  );
+                },
+                child: CreateChatPage(
+                  initialSelectedSpaceId: state.uri.queryParameters['spaceId'],
+                  initialPage: state.extra as int?,
+                ),
+              );
       },
     ),
 

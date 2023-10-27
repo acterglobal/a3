@@ -25,14 +25,9 @@ use matrix_sdk::{
     room::{Room as SdkRoom, RoomMember},
     ruma::{
         api::client::{
-            receipt::create_receipt::v3::ReceiptType as CreateReceiptType,
-            room::report_content::v3::Request as ReportContentRequest,
-            space::{
-                get_hierarchy::v1::{
-                    Request as GetHierarchyRequest, Response as GetHierarchyResponse,
-                },
-                SpaceHierarchyRoomsChunk,
-            },
+            receipt::create_receipt,
+            room::report_content,
+            space::{get_hierarchy, SpaceHierarchyRoomsChunk},
         },
         assign, Int, UInt,
     },
@@ -423,7 +418,7 @@ impl SpaceHierarchyRoomInfo {
 }
 
 pub struct SpaceHierarchyListResult {
-    resp: GetHierarchyResponse,
+    resp: get_hierarchy::v1::Response,
     client: CoreClient,
 }
 
@@ -472,7 +467,7 @@ impl SpaceRelations {
         let room_id = self.room.room_id().to_owned();
         RUNTIME
             .spawn(async move {
-                let request = assign!(GetHierarchyRequest::new(room_id), { from, max_depth: Some(1u32.into()) });
+                let request = assign!(get_hierarchy::v1::Request::new(room_id), { from, max_depth: Some(1u32.into()) });
                 let resp = c.client().send(request, None).await?;
                 Ok(SpaceHierarchyListResult { resp, client: c.clone() })
             })
@@ -905,7 +900,7 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 room.send_single_receipt(
-                    CreateReceiptType::Read,
+                    create_receipt::v3::ReceiptType::Read,
                     ReceiptThread::Unthreaded,
                     event_id,
                 )
@@ -2704,7 +2699,7 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let request = ReportContentRequest::new(
+                let request = report_content::v3::Request::new(
                     room.room_id().to_owned(),
                     event_id,
                     int_score,
