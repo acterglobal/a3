@@ -1,7 +1,6 @@
 {# Default page template used for blog contents #}
 
 {% extends "page.html" %}
-{% import 'macros/nightly-macros.html' as nightly_macros -%}
 
 {% block seo %}
   {# This value is matched by the config.extra.menu.main->section #}
@@ -28,12 +27,6 @@
           </div>
           <h2>Changes</h2>
           {{ page.content | safe }}
-
-          <h3>Install</h3>
-          <h4>Desktop:</h4>
-          {{ nightly_macros::nightly_desktop_install_buttons(tag_date=page.extra.custom_tag | default(value = page.date)) }}
-          <h4>On mobile:</h4>
-          {{ nightly_macros::nightly_mobile_install_buttons(tag_date=page.extra.custom_tag | default(value = page.date)) }}
         </article>
       </div>
     </div>

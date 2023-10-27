@@ -9,17 +9,19 @@ import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
+import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:settings_ui/settings_ui.dart';
 
 class RoomProfilePage extends ConsumerWidget {
   final String roomId;
+
   const RoomProfilePage({
     required this.roomId,
     Key? key,
@@ -85,26 +87,9 @@ class RoomProfilePage extends ConsumerWidget {
                     child: SpaceParentBadge(
                       badgeSize: 20,
                       roomId: roomId,
-                      child: convoProfile.when(
-                        data: (profile) => ActerAvatar(
-                          mode: profile.isDm
-                              ? DisplayMode.User
-                              : DisplayMode.Space,
-                          uniqueId: roomId,
-                          displayName: profile.displayName ?? roomId,
-                          avatar: profile.getAvatarImage(),
-                          size: 75,
-                        ),
-                        error: (err, stackTrace) {
-                          debugPrint('Some error occured $err');
-                          return ActerAvatar(
-                            mode: DisplayMode.GroupChat,
-                            uniqueId: roomId,
-                            displayName: roomId,
-                            size: 75,
-                          );
-                        },
-                        loading: () => const CircularProgressIndicator(),
+                      child: RoomAvatar(
+                        roomId: roomId,
+                        avatarSize: 75,
                       ),
                     ),
                   ),
@@ -214,9 +199,10 @@ class RoomProfilePage extends ConsumerWidget {
                       onPressed: (ctx) async {
                         await showAdaptiveDialog(
                           barrierDismissible: true,
-                          context: ctx,
-                          builder: (ctx) => DefaultDialog(
-                            height: MediaQuery.of(context).size.height * 0.5,
+                          context: context,
+                          useRootNavigator: false,
+                          builder: (dialogContext) => DefaultDialog(
+                            height: MediaQuery.of(dialogContext).size.height * 0.5,
                             title: topMenu,
                             description: convo.when(
                               data: (data) => MemberList(convo: data),
@@ -276,43 +262,18 @@ class RoomProfilePage extends ConsumerWidget {
                               onPressed: () async {
                                 Navigator.of(context, rootNavigator: true)
                                     .pop();
-                                showAdaptiveDialog(
-                                  context: context,
-                                  builder: (context) => const DefaultDialog(
-                                    title: Text('Leaving room'),
-                                    isLoader: true,
-                                  ),
-                                );
+                                EasyLoading.show(status: 'Leaving Room');
                                 var res = await _handleLeaveRoom(ref, roomId);
                                 if (res) {
                                   if (context.mounted) {
-                                    context.pop();
+                                    EasyLoading.dismiss();
                                     context.goNamed(Routes.chat.name);
                                   }
                                 } else {
-                                  if (context.mounted) {
-                                    showAdaptiveDialog(
-                                      context: ctx,
-                                      builder: (ctx) => DefaultDialog(
-                                        title: Text(
-                                          'Some error occured',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleSmall,
-                                        ),
-                                        isLoader: true,
-                                        actions: [
-                                          DefaultButton(
-                                            onPressed: () => Navigator.of(
-                                              context,
-                                              rootNavigator: true,
-                                            ).pop(),
-                                            title: 'Close',
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  }
+                                  EasyLoading.dismiss();
+                                  EasyLoading.showError(
+                                    'Some error occured leaving room',
+                                  );
                                 }
                               },
                               title: 'Yes',

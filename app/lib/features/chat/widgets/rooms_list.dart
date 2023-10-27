@@ -102,8 +102,9 @@ class RoomsListWidget extends ConsumerWidget {
                             icon: const Icon(Atlas.magnifying_glass),
                           ),
                           IconButton(
-                            onPressed: () =>
-                                context.pushNamed(Routes.createChat.name),
+                            onPressed: () async => context.pushNamed(
+                              Routes.createChat.name,
+                            ),
                             padding: const EdgeInsets.only(right: 10, left: 10),
                             icon: const Icon(
                               Atlas.plus_circle_thin,
