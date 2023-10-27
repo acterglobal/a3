@@ -21,6 +21,7 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{
+    deserialized_responses::SyncOrStrippedState,
     event_handler::{Ctx, EventHandlerHandle},
     media::{MediaFormat, MediaRequest},
     room::{Messages, MessagesOptions, Room as SdkRoom},
@@ -546,6 +547,44 @@ impl Space {
                     )
                     .await?;
                 Ok(response.event_id.to_string())
+            })
+            .await?
+    }
+
+    pub async fn remove_child_room(&self, room_id: String, reason: Option<String>) -> Result<bool> {
+        let room_id = OwnedRoomId::try_from(room_id)?;
+        if !self
+            .get_my_membership()
+            .await?
+            .can(crate::MemberPermission::CanLinkSpaces)
+        {
+            bail!("You don't have permissions to remove child-spaces");
+        }
+        if !self.inner.is_joined() {
+            bail!("You can't update a space you aren't part of");
+        }
+        let room = self.inner.room.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let response = room
+                    .get_state_event_static_for_key::<SpaceChildEventContent, OwnedRoomId>(&room_id)
+                    .await?;
+                let Some(raw_state) = response else {
+                    warn!("This room {} was not found in children", room_id);
+                    return Ok(false);
+                };
+                let Ok(state) = raw_state.deserialize() else {
+                    bail!("Invalid space child event")
+                };
+                let event_id = match state {
+                    SyncOrStrippedState::Stripped(ev) => {
+                        bail!("Couldn't get event id about stripped event")
+                    }
+                    SyncOrStrippedState::Sync(ev) => ev.event_id().to_owned(),
+                };
+                room.redact(&event_id, reason.as_deref(), None).await?;
+                Ok(true)
             })
             .await?
     }

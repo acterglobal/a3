@@ -687,9 +687,12 @@ object Room {
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
 
-    /// add the following as a parent space
+    /// add the following as a parent room
     /// it can have multiple parents
     fn add_parent_room(room_id: string, canonical: bool) -> Future<Result<string>>;
+
+    /// remove a parent room
+    fn remove_parent_room(room_id: string, reason: Option<string>) -> Future<Result<bool>>;
 
     /// the Membership of myself
     fn get_my_membership() -> Future<Result<Member>>;
@@ -1514,6 +1517,9 @@ object Space {
 
     /// add the following as a child space
     fn add_child_room(room_id: string) -> Future<Result<string>>;
+
+    /// remove a child space
+    fn remove_child_room(room_id: string, reason: Option<string>) -> Future<Result<bool>>;
 
     /// Change the avatar of the room
     fn upload_avatar(uri: string) -> Future<Result<MxcUri>>;
