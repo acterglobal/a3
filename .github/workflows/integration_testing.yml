@@ -127,7 +127,7 @@ jobs:
         run: flutter config --enable-linux-desktop
 
       - name: Build Native
-        run: cargo make --profile release desktop
+        run: cargo make desktop
 
       - name: Flutter setup
         working-directory: app
@@ -222,7 +222,7 @@ jobs:
           DEFAULT_HOMESERVER_URL: "http://localhost:8118"
 
       - name: Build Native
-        run: cargo make --profile release ios
+        run: cargo make ios-sim
 
       - uses: futureware-tech/simulator-action@v1
         with:
@@ -319,7 +319,7 @@ jobs:
           DEFAULT_HOMESERVER_URL: "http://localhost:8118"
 
       - name: Build Native
-        run: cargo make --profile release android-dev
+        run: cargo make android-dev
 
       - name: Flutter setup
         working-directory: app
@@ -337,6 +337,7 @@ jobs:
           disable-animations: true
           emulator-build: 7425822
           script: |
+            cd app
             flutter run integration_test/main_test.dart  \
                 --host-vmservice-port 9753 \
                 --disable-service-auth-codes \

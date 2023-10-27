@@ -166,11 +166,20 @@ dependencies = [
     "ios-aarch64-apple-ios",
     "ios-aarch64-apple-ios-release",
     "ios-x86_64-apple-ios",
- #   "ios-aarch64-apple-ios-sim",
     "post-ios",
     "post-ios-release",
     "make-ios-swift",
 ]
+
+[tasks.ios-sim]
+# Build ios targets.
+condition = { platforms = ["mac"] }
+dependencies = [
+    "ios-aarch64-apple-ios-sim",
+    "post-ios-sim",
+    "make-ios-swift-sim",
+]
+
 
 [tasks.cargo-build-dev]
 private = true
@@ -293,6 +302,29 @@ args = [
     "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/swift-out",
 ]
 
+[tasks.make-ios-swift-sim]
+private = true
+condition = { }
+command = "cargo"
+args = [
+    "run",
+    "--target",
+    "x86_64-apple-darwin",
+    "-p",
+    "acter",
+    "--features",
+    "uniffi",
+    "--bin",
+    "uniffi-bindgen",
+    "generate",
+    "--library",
+    "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/aarch64-apple-ios-sim/${LIB_OUT_DIR}/libacter.a",
+    "--language",
+    "swift",
+    "--out-dir",
+    "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/swift-out",
+]
+
 
 [tasks.ios-aarch64-apple-ios]
 private = true
@@ -357,6 +389,17 @@ script = [
     LIBNAME=libacter.a
     cp "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/bindings.h" "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/Classes/libacter.h"
     cp "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/aarch64-apple-ios/${LIB_OUT_DIR}/$LIBNAME" "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/$LIBNAME"
+    """,
+]
+
+
+[tasks.post-ios-sim]
+script_runner = "@shell"
+script = [
+    """
+    LIBNAME=libacter.a
+    cp "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/bindings.h" "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/Classes/libacter.h"
+    cp "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/aarch64-apple-ios-sim/${LIB_OUT_DIR}/$LIBNAME" "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/$LIBNAME"
     """,
 ]
 
