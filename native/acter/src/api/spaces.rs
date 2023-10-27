@@ -32,9 +32,8 @@ use ruma_common::{
     OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
 };
 use ruma_events::{
-    room::MediaSource,
-    space::child::{HierarchySpaceChildEvent, SpaceChildEventContent},
-    AnyStateEventContent, MessageLikeEvent, StateEventType,
+    room::MediaSource, space::child::SpaceChildEventContent, AnyStateEventContent,
+    MessageLikeEvent, StateEventType,
 };
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
@@ -520,7 +519,7 @@ impl Space {
             .await?
     }
 
-    pub async fn add_child_space(&self, room_id: String) -> Result<String> {
+    pub async fn add_child_room(&self, room_id: String) -> Result<String> {
         let room_id = OwnedRoomId::try_from(room_id)?;
         if !self
             .get_my_membership()

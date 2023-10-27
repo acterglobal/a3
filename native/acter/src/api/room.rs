@@ -4,6 +4,7 @@ pub use acter_core::spaces::{
 };
 use acter_core::{
     client::CoreClient,
+    error::Error,
     events::{
         calendar::CalendarEventEventContent,
         news::{NewsContent, NewsEntryEvent, NewsEntryEventContent},
@@ -52,7 +53,7 @@ use ruma_events::{
         },
         ImageInfo, MediaSource,
     },
-    space::child::HierarchySpaceChildEvent,
+    space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
     AnyMessageLikeEvent, AnyStateEvent, AnyTimelineEvent, MessageLikeEvent, MessageLikeEventType,
     StateEvent, StateEventType, StaticEventContent,
 };
@@ -518,6 +519,41 @@ impl Room {
             .spawn(async move {
                 let core = c.space_relations(&me.room).await?;
                 Ok(SpaceRelations { core, room: me })
+            })
+            .await?
+    }
+
+    pub async fn add_parent_room(&self, room_id: String, canonical: bool) -> Result<String> {
+        let room_id = OwnedRoomId::try_from(room_id)?;
+        if !self
+            .get_my_membership()
+            .await?
+            .can(crate::MemberPermission::CanLinkSpaces)
+        {
+            bail!("You don't have permissions to add parent-rooms");
+        }
+        if !self.is_joined() {
+            bail!("You can't update a room you aren't part of");
+        }
+        let room = self.room.clone();
+        let client = self.core.client().clone();
+
+        RUNTIME
+            .spawn(async move {
+                let Some(Ok(homeserver)) = client.homeserver().host_str().map(|h| h.try_into()) else {
+                    return Err(Error::HomeserverMissesHostname)?;
+                };
+                let mut content = SpaceParentEventContent::new(vec![homeserver]);
+                if canonical {
+                    content.canonical = true;
+                }
+                let response = room
+                    .send_state_event_for_key(
+                        &room_id,
+                        content,
+                    )
+                    .await?;
+                Ok(response.event_id.to_string())
             })
             .await?
     }

@@ -212,7 +212,7 @@ class _CreateChatSheetConsumerState extends ConsumerState<CreateChatSheet> {
       // add room to child of space (if given)
       if (parentId != null) {
         final space = await ref.read(spaceProvider(parentId).future);
-        await space.addChildSpace(roomId.toString());
+        await space.addChildRoom(roomId.toString());
       }
       final convo = await client.convoWithRetry(roomId.toString(), 12);
       // We are doing as expected, but the lint still triggers.
