@@ -537,7 +537,7 @@ impl Space {
 
         RUNTIME
             .spawn(async move {
-                let Some(Ok(homeserver)) = client.homeserver().host_str().map(|h|h.try_into()) else {
+                let Some(Ok(homeserver)) = client.homeserver().host_str().map(|h| h.try_into()) else {
                     return Err(Error::HomeserverMissesHostname)?;
                 };
                 let response = room
