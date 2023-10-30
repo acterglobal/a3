@@ -525,6 +525,9 @@ impl Room {
     }
 
     pub async fn add_parent_room(&self, room_id: String, canonical: bool) -> Result<String> {
+        if !self.is_joined() {
+            bail!("You can't update a room you aren't part of");
+        }
         let room_id = OwnedRoomId::try_from(room_id)?;
         if !self
             .get_my_membership()
@@ -532,9 +535,6 @@ impl Room {
             .can(crate::MemberPermission::CanLinkSpaces)
         {
             bail!("You don't have permissions to add parent to room");
-        }
-        if !self.is_joined() {
-            bail!("You can't update a room you aren't part of");
         }
         let room = self.room.clone();
         let client = self.core.client().clone();
@@ -564,6 +564,9 @@ impl Room {
         room_id: String,
         reason: Option<String>,
     ) -> Result<bool> {
+        if !self.is_joined() {
+            bail!("You can't update a room you aren't part of");
+        }
         let room_id = OwnedRoomId::try_from(room_id)?;
         if !self
             .get_my_membership()
@@ -571,9 +574,6 @@ impl Room {
             .can(crate::MemberPermission::CanLinkSpaces)
         {
             bail!("You don't have permissions to remove parent from room");
-        }
-        if !self.is_joined() {
-            bail!("You can't update a space you aren't part of");
         }
         let room = self.room.clone();
 
@@ -2793,10 +2793,10 @@ impl Room {
     }
 
     pub async fn redact_content(&self, event_id: String, reason: Option<String>) -> Result<bool> {
-        let event_id = EventId::parse(event_id)?;
         if !self.is_joined() {
             bail!("Can't redact content in a room we are not in");
         }
+        let event_id = EventId::parse(event_id)?;
         let room = self.room.clone();
 
         RUNTIME

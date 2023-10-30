@@ -521,6 +521,9 @@ impl Space {
     }
 
     pub async fn add_child_room(&self, room_id: String) -> Result<String> {
+        if !self.inner.is_joined() {
+            bail!("You can't update a space you aren't part of");
+        }
         let room_id = OwnedRoomId::try_from(room_id)?;
         if !self
             .get_my_membership()
@@ -528,9 +531,6 @@ impl Space {
             .can(crate::MemberPermission::CanLinkSpaces)
         {
             bail!("You don't have permissions to add child to space");
-        }
-        if !self.inner.is_joined() {
-            bail!("You can't update a space you aren't part of");
         }
         let room = self.inner.room.clone();
         let client = self.client.clone();
@@ -552,6 +552,9 @@ impl Space {
     }
 
     pub async fn remove_child_room(&self, room_id: String, reason: Option<String>) -> Result<bool> {
+        if !self.inner.is_joined() {
+            bail!("You can't update a space you aren't part of");
+        }
         let room_id = OwnedRoomId::try_from(room_id)?;
         if !self
             .get_my_membership()
@@ -559,9 +562,6 @@ impl Space {
             .can(crate::MemberPermission::CanLinkSpaces)
         {
             bail!("You don't have permissions to remove child from space");
-        }
-        if !self.inner.is_joined() {
-            bail!("You can't update a space you aren't part of");
         }
         let room = self.inner.room.clone();
 
