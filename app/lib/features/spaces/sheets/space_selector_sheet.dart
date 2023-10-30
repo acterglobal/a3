@@ -53,6 +53,7 @@ Future<String?> selectSpaceDrawer({
                               final roomId = item.roomId;
                               final canLink = membership.canString(canCheck);
                               return ListTile(
+                                key: Key('select-space-$roomId'),
                                 enabled: canLink,
                                 leading: ActerAvatar(
                                   mode: DisplayMode.Space,

@@ -9,6 +9,7 @@ import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:cross_file_image/cross_file_image.dart';
@@ -53,6 +54,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
               ),
               imageNotifier.state == null
                   ? MdEditorWithPreview(
+                      key: NewsUpdateKeys.textUpdateField,
                       hintText: 'Text Update',
                       labelText: 'Text Update',
                       validator: (value) {
@@ -70,6 +72,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                     )
                   : Expanded(
                       child: TextFormField(
+                        key: NewsUpdateKeys.imageCaption,
                         textAlignVertical: TextAlignVertical.top,
                         decoration: const InputDecoration(
                           hintText: 'Text caption',
@@ -102,6 +105,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
         ),
         const SizedBox(width: 10),
         ElevatedButton(
+          key: NewsUpdateKeys.submitBtn,
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
               final spaceId = ref.read(selectedSpaceIdProvider);

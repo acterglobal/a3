@@ -1,14 +1,18 @@
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/space/model/keys.dart';
+import 'package:acter/features/space/widgets/shell_header.dart';
 import 'package:acter/features/spaces/model/keys.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'login.dart';
 
-typedef stepCallback = Future<void> Function(ConvenientTest);
+typedef StepCallback = Future<void> Function(ConvenientTest);
 
 extension ActerSpace on ConvenientTest {
-  Future<void> createSpace(String title, {stepCallback? onCreateForm}) async {
+  Future<String> createSpace(String title, {StepCallback? onCreateForm}) async {
     await find.byKey(Keys.mainNav).should(findsOneWidget);
     final homeKey = find.byKey(MainNavKeys.dashboardHome);
     await homeKey.should(findsOneWidget);
@@ -42,5 +46,25 @@ extension ActerSpace on ConvenientTest {
 
     final spaceHeader = find.byKey(SpaceKeys.header);
     await spaceHeader.should(findsOneWidget);
+    // read the actual spaceId
+    final header = spaceHeader.evaluate().first as ShellHeader;
+    return header.spaceId;
+  }
+
+  Future<void> selectSpace(String spaceId) async {
+    // open the drawer
+    final selectSpacesKey = find.byKey(SelectSpaceFormField.openKey);
+    await selectSpacesKey.should(findsOneWidget);
+    await selectSpacesKey.tap();
+
+    // select the space and close the drawer
+    final select = find.byKey(Key('select-sapce-$spaceId'));
+    await tester.ensureVisible(select);
+    await select.tap();
+  }
+
+  Future<String> freshAccountWithSpace() async {
+    await freshAccount();
+    return await createSpace('My home Space');
   }
 }
