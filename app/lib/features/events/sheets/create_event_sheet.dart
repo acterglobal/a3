@@ -209,9 +209,9 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       draft.utcEndFromRfc3339(utcEndDateTime);
       draft.descriptionText(description);
       final eventId = await draft.send();
-      final client = ref.read(clientProvider);
+      final client = ref.read(alwaysClientProvider);
       final calendarEvent =
-          await client!.waitForCalendarEvent(eventId.toString(), null);
+          await client.waitForCalendarEvent(eventId.toString(), null);
 
       /// Event is created, set RSVP status to `Yes` by default for host.
       final rsvpManager = await calendarEvent.rsvpManager();

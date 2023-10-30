@@ -9,6 +9,7 @@ import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -52,18 +53,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         }
         if (loginSuccess == null) {
           // no message means, login was successful.
-          customMsgSnackbar(
-            context,
-            AppLocalizations.of(context)!.welcomeBack,
-            key: LoginPageKeys.snackbarSuccess,
-          );
           context.goNamed(Routes.main.name);
         } else {
-          customMsgSnackbar(context, loginSuccess);
-          customMsgSnackbar(
-            context,
+          EasyLoading.showError(
             loginSuccess,
-            key: LoginPageKeys.snackbarFailed,
           );
         }
       }

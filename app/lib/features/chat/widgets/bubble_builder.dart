@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -35,8 +36,7 @@ class BubbleBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(clientProvider);
-    final myId = client!.userId().toString();
+    final myId = ref.watch(myUserIdStrProvider);
     final isAuthor = (myId == message.author.id);
     final roomId = convo.getRoomIdStr();
 
@@ -117,8 +117,7 @@ class _ChatBubble extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(clientProvider);
-    final myId = client!.userId().toString();
+    final myId = ref.watch(myUserIdStrProvider);
     final isAuthor = (myId == message.author.id);
     final roomId = convo.getRoomIdStr();
     bool hasRepliedMessage = message.repliedMessage != null;

@@ -135,8 +135,8 @@ class EmailAddressCard extends ConsumerWidget {
           ),
           DefaultButton(
             onPressed: () async {
-              final client = ref.read(clientProvider);
-              final manager = client!.threePidManager();
+              final client = ref.read(alwaysClientProvider);
+              final manager = client.threePidManager();
               await manager.removeEmailAddress(emailAddress);
               ref.invalidate(emailAddressesProvider);
 
@@ -159,8 +159,8 @@ class EmailAddressCard extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
-    final client = ref.read(clientProvider);
-    final manager = client!.threePidManager();
+    final client = ref.read(alwaysClientProvider);
+    final manager = client.threePidManager();
     final newValue = await showDialog<String>(
       context: context,
       builder: (BuildContext context) => const PasswordConfirm(),
@@ -184,8 +184,8 @@ class EmailAddressCard extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
-    final client = ref.read(clientProvider);
-    final manager = client!.threePidManager();
+    final client = ref.read(alwaysClientProvider);
+    final manager = client.threePidManager();
     final newValue = await showDialog<EmailConfirm>(
       context: context,
       builder: (BuildContext context) => const TokenConfirm(),

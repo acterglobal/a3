@@ -1,5 +1,9 @@
+import 'package:acter/common/models/keys.dart';
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
+import 'package:acter/features/profile/model/keys.dart';
+import 'package:acter/features/search/model/keys.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:uuid/uuid.dart';
@@ -11,10 +15,11 @@ const registrationToken = String.fromEnvironment(
 );
 
 extension ActerLogin on ConvenientTest {
-  Future<void> freshAccount() async {
+  Future<String> freshAccount() async {
     final newId = 'it-${const Uuid().v4().toString()}';
     startFreshTestApp(newId);
-    return await register(newId);
+    await register(newId);
+    return newId;
   }
 
   Future<void> register(String username) async {
@@ -52,10 +57,33 @@ extension ActerLogin on ConvenientTest {
     await token.enterTextWithoutReplace(registrationToken);
 
     Finder submitBtn = find.byKey(RegisterPage.submitBtn);
-    await submitBtn.should(findsOneWidget);
+    await tester.ensureVisible(submitBtn);
     await submitBtn.tap();
     // we should see a main navigation, either at the side (desktop) or the bottom (mobile/tablet)
     await find.byKey(Keys.mainNav).should(findsOneWidget);
+  }
+
+  Future<void> logout() async {
+    // ensure we do actually have access to the main nav.
+    await find.byKey(Keys.mainNav).should(findsOneWidget);
+    final quickJumpKey = find.byKey(MainNavKeys.quickJump);
+    await quickJumpKey.should(findsOneWidget);
+    await quickJumpKey.tap();
+
+    final profileKey = find.byKey(QuickJumpKeys.profile);
+    await profileKey.should(findsOneWidget);
+    await profileKey.tap();
+
+    final logoutKey = find.byKey(MyProfileKeys.logout);
+    await logoutKey.should(findsOneWidget);
+    await logoutKey.tap();
+
+    final confirmKey = find.byKey(LogoutDialogKeys.confirm);
+    await confirmKey.should(findsOneWidget);
+    await confirmKey.tap();
+
+    // we should see a main navigation, either at the side (desktop) or the bottom (mobile/tablet)
+    await find.byKey(Keys.mainNav).should(findsNothing);
   }
 
   Future<void> login(String username) async {

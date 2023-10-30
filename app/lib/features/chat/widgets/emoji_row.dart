@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
@@ -57,8 +58,7 @@ class EmojiRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(clientProvider);
-    final myId = client!.userId().toString();
+    final myId = ref.watch(myUserIdStrProvider);
     final isAuthor = (myId == message.author.id);
 
     final emojiList = _emojiUnicodes;

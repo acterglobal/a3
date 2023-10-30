@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
+import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -96,7 +97,10 @@ final sidebarItemsProvider = Provider.autoDispose
   final activitiesIcon = ref.watch(activitiesIconProvider(context));
   final features = [
     SidebarNavigationItem(
-      icon: const Icon(Atlas.magnifying_glass_thin),
+      icon: const Icon(
+        Atlas.magnifying_glass_thin,
+        key: MainNavKeys.quickJump,
+      ),
       label: Text(
         'Jump',
         style: Theme.of(context).textTheme.labelSmall,
@@ -207,8 +211,10 @@ final bottomBarNavProvider =
     BottomBarNavigationItem(
       icon: const Icon(
         Atlas.magnifying_glass_thin,
+        key: MainNavKeys.quickJump,
       ),
       activeIcon: const CustomSelectedIcon(
+        key: MainNavKeys.quickJump,
         icon: Icon(
           Atlas.magnifying_glass_thin,
         ),

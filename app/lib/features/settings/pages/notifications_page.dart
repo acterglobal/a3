@@ -154,10 +154,10 @@ class NotificationsSettingsPage extends ConsumerWidget {
                 if (emailToAdd != null) {
                   EasyLoading.show(status: 'Adding $emailToAdd');
                   final client = ref.read(
-                    clientProvider,
+                    alwaysClientProvider,
                   ); // is guaranteed because of the ignoredUsersProvider using it
                   try {
-                    await client!.addEmailPusher(
+                    await client.addEmailPusher(
                       appIdPrefix,
                       (await deviceName()),
                       emailToAdd,

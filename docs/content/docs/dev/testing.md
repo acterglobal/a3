@@ -459,6 +459,8 @@ Once ready, start the automatic full cli-runner by running (from `/app`):
 dart run convenient_test_manager_dart --enable-report-saver
 ```
 
+That will create a folder with the entire report in your `$TMPFOLDER/ConvenientTest/`
+
 **From Visual Studio Code**
 
 If you have the [Flutter extension for vscode](https://marketplace.visualstudio.com/items?itemName=Dart-Code.flutter) you can also run the `Run Integration Tests (acter)` launch commend from within your VSCode to run the tests directly or use the `Run Local Integration Tests` on the specific test from within your editor. To **debug** an integration tests, use the `Debug Integration Tests (acter)` on the specific test from within the editor - which allows you to add breakpoints and debugging widgets as usual:

@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -44,7 +45,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
 
   @override
   Widget build(BuildContext context) {
-    final client = ref.watch(clientProvider);
+    final userId = ref.watch(myUserIdStrProvider);
     String roomId = widget.room.getRoomIdStr();
     final convoProfile = ref.watch(chatProfileDataProvider(widget.room));
     final mutedStatus =
@@ -71,7 +72,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
                     room: widget.room,
                     latestMessage: latestMsg,
                     activeMembers: activeMembers,
-                    userId: client!.userId().toString(),
+                    userId: userId,
                   )
                 : const SizedBox.shrink(),
             mutedStatus.valueOrNull == true
