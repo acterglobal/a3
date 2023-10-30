@@ -6,6 +6,7 @@ import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:screenshot/screenshot.dart';
 
 class LinkSpacePage extends ConsumerStatefulWidget {
   final String? parentSpaceId;
@@ -54,16 +55,22 @@ class _LinkSpacePageConsumerState extends ConsumerState<LinkSpacePage> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     //Fetch known sub-spaces list of selected parent space
     fetchKnownSubspacesData();
 
     return SideSheet(
       header: 'Link Sub-Space',
-      body: Column(
-        children: [
-          parentSpaceSelector(context, ref),
-          spacesList(context, ref),
-        ],
+      body: SizedBox(
+        height: size.height,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            parentSpaceSelector(context, ref),
+            Expanded(child: spacesList(context, ref)),
+          ],
+        ),
       ),
     );
   }

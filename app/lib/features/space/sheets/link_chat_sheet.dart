@@ -56,16 +56,23 @@ class _LinkChatPageConsumerState extends ConsumerState<LinkChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     //Fetch known sub-chats list of selected parent space
     fetchKnownSubChatsData();
 
     return SideSheet(
       header: 'Link Sub-Chat',
-      body: Column(
-        children: [
-          parentSpaceSelector(context, ref),
-          chatsList(context, ref),
-        ],
+      body: SizedBox(
+        height: size.height,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            parentSpaceSelector(context, ref),
+            Expanded(child: chatsList(context, ref)),
+          ],
+        ),
       ),
     );
   }
@@ -89,7 +96,6 @@ class _LinkChatPageConsumerState extends ConsumerState<LinkChatPage> {
     final chats =
         ref.watch(chatsProvider).where((element) => !element.isDm()).toList();
     return ListView.builder(
-      shrinkWrap: true,
       padding: const EdgeInsets.all(8),
       itemCount: chats.length,
       itemBuilder: (context, index) {
