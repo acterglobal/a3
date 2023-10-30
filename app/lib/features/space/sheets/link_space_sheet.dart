@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/search.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -18,6 +19,8 @@ class LinkSpacePage extends ConsumerStatefulWidget {
 }
 
 class _LinkSpacePageConsumerState extends ConsumerState<LinkSpacePage> {
+  final TextEditingController searchTextEditingController =
+      TextEditingController();
   final List<String> subSpacesIds = [];
 
   @override
@@ -62,12 +65,18 @@ class _LinkSpacePageConsumerState extends ConsumerState<LinkSpacePage> {
     return SideSheet(
       header: 'Link Sub-Space',
       body: SizedBox(
-        height: size.height,
+        height: size.height - 120,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             parentSpaceSelector(context, ref),
+            Search(
+              onChanged: (value) => ref
+                  .read(spaceSearchValueProvider.notifier)
+                  .update((state) => value),
+              searchController: searchTextEditingController,
+            ),
             Expanded(child: spacesList(context, ref)),
           ],
         ),
@@ -91,6 +100,38 @@ class _LinkSpacePageConsumerState extends ConsumerState<LinkSpacePage> {
 
   //List of spaces that can be linked according to the selected parent space
   Widget spacesList(BuildContext context, WidgetRef ref) {
+    final searchValue = ref.watch(spaceSearchValueProvider);
+    if (searchValue != null && searchValue.isNotEmpty) {
+      return ref.watch(searchedSpacesProvider).when(
+            data: (spaces) {
+              if (spaces.isEmpty) {
+                return const Center(
+                  heightFactor: 10,
+                  child: Text('No chats found matching your search term'),
+                );
+              }
+              return ListView.builder(
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(8),
+                itemCount: spaces.length,
+                itemBuilder: (context, index) {
+                  return spaceListItemUI(spaces[index]);
+                },
+              );
+            },
+            loading: () => const Center(
+              heightFactor: 10,
+              child: CircularProgressIndicator(),
+            ),
+            error: (e, s) => Center(
+              heightFactor: 10,
+              child: Text(
+                'Searching failed: $e',
+              ),
+            ),
+          );
+    }
+
     final spacesList = ref.watch(briefSpaceItemsProviderWithMembership);
     return spacesList.when(
       data: (spaces) => spaces.isEmpty
@@ -114,10 +155,11 @@ class _LinkSpacePageConsumerState extends ConsumerState<LinkSpacePage> {
 
   //Space list item UI
   Widget spaceListItemUI(SpaceItem item) {
-    final membership = item.membership!;
+    final membership = item.membership;
     final profile = item.spaceProfileData;
     final roomId = item.roomId;
-    final canLink = membership.canString('CanLinkSpaces');
+    final canLink =
+        membership == null ? false : membership.canString('CanLinkSpaces');
     final isLinked = subSpacesIds.contains(item.roomId);
     return widget.parentSpaceId == roomId
         ? Container()
@@ -146,7 +188,7 @@ class _LinkSpacePageConsumerState extends ConsumerState<LinkSpacePage> {
                     )
                   : canLink
                       ? DefaultButton(
-                          onPressed: () => onTapLinkSubSpace(),
+                          onPressed: () => onTapLinkSubSpace(roomId),
                           title: 'Link',
                           isOutlined: true,
                           style: OutlinedButton.styleFrom(
@@ -160,7 +202,18 @@ class _LinkSpacePageConsumerState extends ConsumerState<LinkSpacePage> {
           );
   }
 
-  void onTapLinkSubSpace() {}
+  void onTapLinkSubSpace(String roomId) {
+    final selectedParentSpaceId = ref.watch(selectedSpaceIdProvider);
+    if (selectedParentSpaceId == null) return;
+    final space = ref.watch(spaceProvider(selectedParentSpaceId));
+    space.when(
+      data: (space) {
+        space.addChildSpace(roomId);
+      },
+      error: (e, s) => Container(),
+      loading: () => Container(),
+    );
+  }
 
   void onTapUnlinkSubSpace() {}
 }

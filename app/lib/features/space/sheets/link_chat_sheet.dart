@@ -3,8 +3,10 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/search.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +21,8 @@ class LinkChatPage extends ConsumerStatefulWidget {
 }
 
 class _LinkChatPageConsumerState extends ConsumerState<LinkChatPage> {
+  final TextEditingController searchTextEditingController =
+      TextEditingController();
   final List<String> subChatsIds = [];
 
   @override
@@ -64,12 +68,18 @@ class _LinkChatPageConsumerState extends ConsumerState<LinkChatPage> {
     return SideSheet(
       header: 'Link Sub-Chat',
       body: SizedBox(
-        height: size.height,
+        height: size.height - 120,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             parentSpaceSelector(context, ref),
+            Search(
+              onChanged: (value) => ref
+                  .read(chatSearchValueProvider.notifier)
+                  .update((state) => value),
+              searchController: searchTextEditingController,
+            ),
             Expanded(child: chatsList(context, ref)),
           ],
         ),
@@ -93,8 +103,41 @@ class _LinkChatPageConsumerState extends ConsumerState<LinkChatPage> {
 
   //List of chats excluding DMs that can be linked according to the selected parent space
   Widget chatsList(BuildContext context, WidgetRef ref) {
+    final searchValue = ref.watch(chatSearchValueProvider);
+    if (searchValue != null && searchValue.isNotEmpty) {
+      return ref.watch(searchedChatsProvider).when(
+            data: (chats) {
+              var chatList =
+                  chats.where((element) => (!element.isDm())).toList();
+              if (chatList.isEmpty) {
+                return const Center(
+                  heightFactor: 10,
+                  child: Text('No chats found matching your search term'),
+                );
+              }
+              return ListView.builder(
+                padding: const EdgeInsets.all(8),
+                itemCount: chatList.length,
+                itemBuilder: (context, index) {
+                  return chatsListItemUI(chatList[index].getRoomIdStr());
+                },
+              );
+            },
+            loading: () => const Center(
+              heightFactor: 10,
+              child: CircularProgressIndicator(),
+            ),
+            error: (e, s) => Center(
+              heightFactor: 10,
+              child: Text(
+                'Searching failed: $e',
+              ),
+            ),
+          );
+    }
+
     final chats =
-        ref.watch(chatsProvider).where((element) => !element.isDm()).toList();
+        ref.watch(chatsProvider).where((element) => (!element.isDm())).toList();
     return ListView.builder(
       padding: const EdgeInsets.all(8),
       itemCount: chats.length,
@@ -110,8 +153,9 @@ class _LinkChatPageConsumerState extends ConsumerState<LinkChatPage> {
 
     return roomItem.when(
       data: (roomProfile) {
-        final membership = roomProfile.membership!;
-        final canLink = membership.canString('CanLinkChats');
+        final membership = roomProfile.membership;
+        final canLink =
+            membership == null ? false : membership.canString('CanLinkSpaces');
         final isLinked = subChatsIds.contains(roomId);
 
         return widget.parentSpaceId == roomId
@@ -141,7 +185,7 @@ class _LinkChatPageConsumerState extends ConsumerState<LinkChatPage> {
                         )
                       : canLink
                           ? DefaultButton(
-                              onPressed: () => onTapLinkSubChat(),
+                              onPressed: () => onTapLinkSubChat(roomId),
                               title: 'Link',
                               isOutlined: true,
                               style: OutlinedButton.styleFrom(
@@ -160,7 +204,18 @@ class _LinkChatPageConsumerState extends ConsumerState<LinkChatPage> {
     );
   }
 
-  void onTapLinkSubChat() {}
+  void onTapLinkSubChat(String roomId) {
+    final selectedParentSpaceId = ref.watch(selectedSpaceIdProvider);
+    if (selectedParentSpaceId == null) return;
+    final space = ref.watch(spaceProvider(selectedParentSpaceId));
+    space.when(
+      data: (space) {
+        space.addChildSpace(roomId);
+      },
+      error: (e, s) => Container(),
+      loading: () => Container(),
+    );
+  }
 
   void onTapUnlinkSubChat() {}
 }
