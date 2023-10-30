@@ -217,7 +217,7 @@ class _CreateChatWidget extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
               ),
-              hintText: 'Search Username',
+              hintText: 'Search Username to start a DM',
               hintStyle: Theme.of(context).textTheme.labelMedium!.copyWith(
                     color:
                         Theme.of(context).colorScheme.primary.withOpacity(0.8),
@@ -416,7 +416,7 @@ class _CreateChatWidget extends ConsumerWidget {
   String _makeTitle(WidgetRef ref) {
     final selectedUsers = ref.watch(_selectedUsersProvider).toList();
     if (selectedUsers.isEmpty) {
-      return 'Start Chat';
+      return 'Create Group Chat';
     } else if (selectedUsers.length > 1) {
       return 'Start Group DM';
     } else {
@@ -502,7 +502,7 @@ class _CreateRoomFormWidgetConsumerState
               ),
               const Spacer(),
               Text(
-                'Start Chat',
+                'Create Group Chat',
                 style: Theme.of(context).textTheme.titleSmall,
               ),
               const Spacer(),
