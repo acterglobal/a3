@@ -34408,8 +34408,8 @@ class Room {
     return tmp2;
   }
 
-  /// add the following as a parent room
-  /// it can have multiple parents
+  /// add the following as a parent room and return event id of that event
+  /// room can have multiple parents
   Future<String> addParentRoom(
     String roomId,
     bool canonical,
@@ -42927,7 +42927,7 @@ class Space {
     return tmp6;
   }
 
-  /// add the following as a child space
+  /// add the following as a child space and return event id of that event
   Future<String> addChildRoom(
     String roomId,
   ) {

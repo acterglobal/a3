@@ -527,7 +527,7 @@ impl Space {
             .await?
             .can(crate::MemberPermission::CanLinkSpaces)
         {
-            bail!("You don't have permissions to add child-spaces");
+            bail!("You don't have permissions to add child to space");
         }
         if !self.inner.is_joined() {
             bail!("You can't update a space you aren't part of");
@@ -558,7 +558,7 @@ impl Space {
             .await?
             .can(crate::MemberPermission::CanLinkSpaces)
         {
-            bail!("You don't have permissions to remove child-spaces");
+            bail!("You don't have permissions to remove child from space");
         }
         if !self.inner.is_joined() {
             bail!("You can't update a space you aren't part of");
@@ -571,7 +571,7 @@ impl Space {
                     .get_state_event_static_for_key::<SpaceChildEventContent, OwnedRoomId>(&room_id)
                     .await?;
                 let Some(raw_state) = response else {
-                    warn!("This room {} was not found in children", room_id);
+                    warn!("Room {} is not a child", room_id);
                     return Ok(false);
                 };
                 let Ok(state) = raw_state.deserialize() else {

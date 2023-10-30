@@ -687,8 +687,8 @@ object Room {
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
 
-    /// add the following as a parent room
-    /// it can have multiple parents
+    /// add the following as a parent room and return event id of that event
+    /// room can have multiple parents
     fn add_parent_room(room_id: string, canonical: bool) -> Future<Result<string>>;
 
     /// remove a parent room
@@ -1515,7 +1515,7 @@ object Space {
     /// Whether this space is a child of the given space
     fn is_child_space_of(room_id: string) -> Future<bool>;
 
-    /// add the following as a child space
+    /// add the following as a child space and return event id of that event
     fn add_child_room(room_id: string) -> Future<Result<string>>;
 
     /// remove a child space
