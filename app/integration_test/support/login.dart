@@ -8,6 +8,7 @@ import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:uuid/uuid.dart';
 import './appstart.dart';
+import 'spaces.dart';
 
 const registrationToken = String.fromEnvironment(
   'REGISTRATION_TOKEN',
@@ -19,6 +20,14 @@ extension ActerLogin on ConvenientTest {
     final newId = 'it-${const Uuid().v4().toString()}';
     startFreshTestApp(newId);
     await register(newId);
+    return newId;
+  }
+
+  Future<String> freshAccountWithSpace() async {
+    final newId = 'it-${const Uuid().v4().toString()}';
+    startFreshTestApp(newId);
+    await register(newId);
+    await createSpace('My home Space');
     return newId;
   }
 

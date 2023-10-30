@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import './support/appstart.dart';
 import 'tests/login.dart';
+import 'tests/updates.dart';
 
 void main() {
   convenientTestMain(ActerConvenientTestSlot(), () {
-    group('login tests', loginTests);
+    group('Auth', loginTests);
+    group('Updates', updateTests);
   });
 }
 

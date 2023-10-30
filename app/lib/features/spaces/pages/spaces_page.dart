@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/features/spaces/model/keys.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/themes/app_theme.dart';
@@ -38,6 +39,7 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
               ),
               actions: <Widget>[
                 PopupMenuButton(
+                  key: SpacesKeys.mainActions,
                   icon: Icon(
                     Atlas.plus_circle,
                     color: Theme.of(context).colorScheme.neutral5,
@@ -46,6 +48,7 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                   color: Theme.of(context).colorScheme.surface,
                   itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                     PopupMenuItem(
+                      key: SpacesKeys.actionCreate,
                       onTap: () => context.pushNamed(Routes.createSpace.name),
                       child: const Row(
                         children: <Widget>[

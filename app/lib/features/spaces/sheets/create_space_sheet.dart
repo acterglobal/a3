@@ -9,9 +9,11 @@ import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/spaces/model/keys.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -78,6 +80,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
                       ),
                       InputTextField(
                         hintText: 'Type Name',
+                        key: CreateSpaceKeys.titleField,
                         textInputType: TextInputType.multiline,
                         controller: _titleController,
                         onInputChanged: _handleTitleChange,
@@ -118,21 +121,11 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
         ),
       ),
       confirmActionTitle: 'Create Space',
+      confirmActionKey: CreateSpaceKeys.submitBtn,
       cancelActionTitle: 'Cancel',
       confirmActionOnPressed: titleInput.trim().isEmpty
           ? null
           : () {
-              showAdaptiveDialog(
-                barrierDismissible: false,
-                context: context,
-                builder: (context) => DefaultDialog(
-                  title: Text(
-                    'Creating Space',
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  isLoader: true,
-                ),
-              );
               _handleCreateSpace(
                 context,
                 titleInput,
@@ -190,6 +183,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     String spaceName,
     String description,
   ) async {
+    EasyLoading.show(status: 'Creating Space');
     try {
       final sdk = await ref.read(sdkProvider.future);
       final config = sdk.newSpaceSettingsBuilder();
@@ -205,35 +199,31 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       if (parentRoomId != null) {
         config.setParent(parentRoomId);
       }
-      final client = ref.read(clientProvider)!;
+      final client = ref.read(alwaysClientProvider);
       final roomId = await client.createActerSpace(config.build());
       if (parentRoomId != null) {
         final space = await ref.read(spaceProvider(parentRoomId).future);
         await space.addChildSpace(roomId.toString());
       }
 
+      EasyLoading.dismiss();
       // We are doing as expected, but the lints triggers.
       // ignore: use_build_context_synchronously
       if (!context.mounted) {
         return;
       }
-
-      Navigator.of(context, rootNavigator: true)
-          .pop(); // pop the loading screen
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
-      context.pushNamed(
+      context.goNamed(
         Routes.space.name,
         pathParameters: {
           'spaceId': roomId.toString(),
         },
       );
     } catch (err) {
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
-      if (!context.mounted) {
-        return;
-      }
-      customMsgSnackbar(context, 'Creating space failed $err');
+      EasyLoading.showError(
+        'Creating space failed $err',
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

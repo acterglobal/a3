@@ -6,6 +6,7 @@ import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/spaces/space_info.dart';
 import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
+import 'package:acter/features/space/model/keys.dart';
 import 'package:acter/features/space/widgets/top_nav.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
@@ -45,6 +46,7 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
             gradient: AppTheme.primaryGradient,
           ),
           child: Column(
+            key: SpaceKeys.header,
             children: <Widget>[
               _ShellToolbar(profile.space, widget.spaceIdOrAlias),
               _ShellHeader(widget.spaceIdOrAlias, profile.profile),

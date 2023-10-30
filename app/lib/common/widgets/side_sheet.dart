@@ -9,6 +9,7 @@ class SideSheet extends StatelessWidget {
   final bool addCloseIconButton;
   final bool addActions;
   final bool addDivider;
+  final Key? confirmActionKey;
   final String confirmActionTitle;
   final String cancelActionTitle;
   final String? closeButtonTooltip;
@@ -33,6 +34,7 @@ class SideSheet extends StatelessWidget {
     this.closeButtonTooltip,
     this.backButtonTooltip,
     this.addCloseIconButton = true,
+    this.confirmActionKey,
   });
 
   @override
@@ -83,6 +85,7 @@ class SideSheet extends StatelessWidget {
                 child: _SheetFooter(
                   addDivider: addDivider,
                   confirmActionTitle: confirmActionTitle,
+                  confirmActionKey: confirmActionKey,
                   cancelActionTitle: cancelActionTitle,
                   actions: actions,
                   confirmActionOnPressed: confirmActionOnPressed,
@@ -162,6 +165,7 @@ class _SheetHeader extends StatelessWidget {
 
 class _SheetFooter extends StatelessWidget {
   final bool addDivider;
+  final Key? confirmActionKey;
   final String confirmActionTitle;
   final String cancelActionTitle;
   final List<Widget>? actions;
@@ -177,6 +181,7 @@ class _SheetFooter extends StatelessWidget {
     this.actions,
     this.confirmActionOnPressed,
     this.cancelActionOnPressed,
+    this.confirmActionKey,
   }) : super(key: key);
 
   @override
@@ -207,6 +212,7 @@ class _SheetFooter extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   DefaultButton(
+                    key: confirmActionKey,
                     onPressed: confirmActionOnPressed,
                     title: confirmActionTitle,
                     style: ElevatedButton.styleFrom(

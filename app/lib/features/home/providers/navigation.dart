@@ -110,7 +110,10 @@ final sidebarItemsProvider = Provider.autoDispose
       pushToNavigate: true,
     ),
     SidebarNavigationItem(
-      icon: const Icon(Atlas.home_thin),
+      icon: const Icon(
+        Atlas.home_thin,
+        key: MainNavKeys.dashboardHome,
+      ),
       label: Text(
         'Home',
         style: Theme.of(context).textTheme.labelSmall,
@@ -177,9 +180,13 @@ final bottomBarNavProvider =
 
   return [
     BottomBarNavigationItem(
-      icon: const Icon(Atlas.home_thin),
+      icon: const Icon(
+        Atlas.home_thin,
+        key: MainNavKeys.dashboardHome,
+      ),
       activeIcon: const CustomSelectedIcon(
         icon: Icon(Atlas.home_bold),
+        key: MainNavKeys.dashboardHome,
       ),
       label: 'Dashboard',
       initialLocation: Routes.dashboard.route,
