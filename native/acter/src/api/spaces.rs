@@ -572,7 +572,7 @@ impl Space {
                     .await?;
                 let Some(raw_state) = response else {
                     warn!("Room {} is not a child", room_id);
-                    return Ok(false);
+                    return Ok(true);
                 };
                 let Ok(state) = raw_state.deserialize() else {
                     bail!("Invalid space child event")
