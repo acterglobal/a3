@@ -544,10 +544,7 @@ impl Room {
                 let Some(Ok(homeserver)) = client.homeserver().host_str().map(|h| h.try_into()) else {
                     return Err(Error::HomeserverMissesHostname)?;
                 };
-                let mut content = SpaceParentEventContent::new(vec![homeserver]);
-                if canonical {
-                    content.canonical = true;
-                }
+                let content = assign!(SpaceParentEventContent::new(vec![homeserver]), { canonical });
                 let response = room
                     .send_state_event_for_key(
                         &room_id,
