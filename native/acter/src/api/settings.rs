@@ -21,7 +21,7 @@ use ruma_events::{
     room::power_levels::{RoomPowerLevels as RumaRoomPowerLevels, RoomPowerLevelsEventContent},
     MessageLikeEvent, StaticEventContent, SyncStateEvent, TimelineEventType,
 };
-use std::ops::Deref;
+use std::{collections::btree_map, ops::Deref};
 
 use crate::Room;
 use crate::RUNTIME;
@@ -153,16 +153,19 @@ impl Room {
         name: String,
         power_level: Option<i32>,
     ) -> Result<bool> {
+        if !self.is_joined() {
+            bail!("You can't update a space you aren't part of");
+        }
         let mut current_power_levels = self.power_levels_content().await?;
         let mut updated = false;
         match current_power_levels.events.entry(name.into()) {
-            std::collections::btree_map::Entry::Vacant(e) => {
+            btree_map::Entry::Vacant(e) => {
                 if let Some(p) = power_level {
                     e.insert(Int::from(p));
                     updated = true;
                 }
             }
-            std::collections::btree_map::Entry::Occupied(mut e) => {
+            btree_map::Entry::Occupied(mut e) => {
                 if let Some(p) = power_level {
                     e.insert(Int::from(p));
                     updated = true;
@@ -186,9 +189,6 @@ impl Room {
         }
 
         let client = self.room.client().clone();
-        if !self.is_joined() {
-            bail!("You can't update a space you aren't part of");
-        }
         let room = self.room.clone();
 
         RUNTIME
