@@ -56,7 +56,7 @@ class RoomAvatar extends ConsumerWidget {
           );
         }
 
-        //Type == DM : Handle avatar according to the members counts
+        //Type == DM and no avatar: Handle avatar according to the members counts
         else {
           return dmAvatar(ref);
         }
