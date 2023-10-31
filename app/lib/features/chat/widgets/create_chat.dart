@@ -85,20 +85,24 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
               itemBuilder: ((context, index) => pages[currIdx]),
             ),
           )
-        : DecoratedBox(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.neutral,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: PageView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              onPageChanged: (index) {
-                setState(() {
-                  currIdx = index;
-                });
-              },
-              controller: controller,
-              itemBuilder: ((context, index) => pages[currIdx]),
+        : GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onPanDown: (_) => FocusScope.of(context).requestFocus(FocusNode()),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.neutral,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: PageView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                onPageChanged: (index) {
+                  setState(() {
+                    currIdx = index;
+                  });
+                },
+                controller: controller,
+                itemBuilder: ((context, index) => pages[currIdx]),
+              ),
             ),
           );
   }
