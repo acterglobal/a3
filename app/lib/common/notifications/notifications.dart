@@ -2,10 +2,12 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
 
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:convert/convert.dart';
 import 'package:flutter/foundation.dart';
@@ -174,7 +176,8 @@ Future<void> initializeNotifications() async {
   /// done later
   final DarwinInitializationSettings initializationSettingsDarwin =
       DarwinInitializationSettings(
-    requestAlertPermission: true,
+    // do not bother the user at startup, set all these to falls for now:
+    requestAlertPermission: false,
     requestBadgePermission: false,
     requestSoundPermission: false,
     onDidReceiveLocalNotification:
@@ -218,6 +221,14 @@ Future<void> initializeNotifications() async {
     },
     onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
   );
+
+  // To be informed that the device's token has been updated by the operating system
+  // You should update your servers with this token
+  Push.instance.onNewToken.listen((token) {
+    // FIXME: how to identify which clients are connected to this?
+    debugPrint('Just got a new FCM registration token: $token');
+    onNewToken(token);
+  });
 
   // Handle notification launching app from terminated state
   Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data) {
@@ -389,6 +400,18 @@ Future<void> _showNotification(
   );
 }
 
+Future<bool> wasRejected(String deviceId) async {
+  final SharedPreferences preferences = await sharedPrefs();
+  final prefKey = '$deviceId.rejected_notifications';
+  return (preferences.getBool(prefKey) ?? false);
+}
+
+Future<void> setRejected(String deviceId, bool value) async {
+  final SharedPreferences preferences = await sharedPrefs();
+  final prefKey = '$deviceId.rejected_notifications';
+  preferences.setBool(prefKey, value);
+}
+
 Future<bool> setupPushNotifications(
   Client client, {
   forced = false,
@@ -401,44 +424,49 @@ Future<bool> setupPushNotifications(
     return false;
   }
 
-  // To be informed that the device's token has been updated by the operating system
-  // You should update your servers with this token
-  Push.instance.onNewToken.listen((token) {
-    // FIXME: how to identify which clients are connected to this?
-    debugPrint('Just got a new FCM registration token: $token');
-    onNewToken(client, token);
-  });
-
   final deviceId = client.deviceId().toString();
-  final SharedPreferences preferences = await sharedPrefs();
-  final prefKey = '$deviceId.rejected_notifications';
-
-  String? token = await Push.instance.token;
-  // do we already have a token, then no need to bother the user again
-  if (token == null) {
-    // check whether we were already rejected and thus shouldn't ask again
-    if (!forced && (preferences.getBool(prefKey) ?? false)) {
-      // we need to be forced to continue
-      return false;
-    }
-    // this show some extra dialog here on devices where necessary
-    final requested = await Push.instance.requestPermission();
-    if (!requested) {
-      // we were bluntly rejected, save and don't them bother again:
-      preferences.setBool(prefKey, false);
-      return false;
-    }
-    token = await Push.instance.token;
+  if (!forced && await wasRejected(deviceId)) {
+    // If the user rejected and we aren't asked to force, don't vother them again.
+    return false;
   }
-
-  if (token == null) {
+  // this show some extra dialog here on devices where necessary
+  final requested = await Push.instance.requestPermission(
+    badge: true,
+    alert: true, // we request loud notifications now.
+  );
+  if (!requested) {
+    // we were bluntly rejected, save and don't them bother again:
+    await setRejected(deviceId, true);
     return false;
   }
 
-  return await onNewToken(client, token);
+  // let's get the token
+  final token = await Push.instance.token;
+
+  if (token == null) {
+    debugPrint('No token given');
+    return false;
+  }
+
+  return await onToken(client, token);
+}
+Future<bool> onNewToken(String token) async {
+  debugPrint('Received the update information for the token. Updating all clients.');
+  // ignore: use_build_context_synchronously
+  final sdk = rootNavKey.currentContext!.read(sdkProvider).requireValue;
+
+  for (final client in sdk.clients) {
+    final deviceId = client.deviceId().toString();
+    if (await wasRejected(deviceId)) {
+      debugPrint('$deviceId was ignored for token update');
+      continue;
+    }
+    await onToken(client, token);
+  }
+  return true;
 }
 
-Future<bool> onNewToken(Client client, String token) async {
+Future<bool> onToken(Client client, String token) async {
   final String name = await deviceName();
   late String appId;
   if (Platform.isIOS) {
