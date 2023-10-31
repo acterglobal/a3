@@ -172,7 +172,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
 }
 
 ///
-class _CreateChatWidget extends ConsumerWidget {
+class _CreateChatWidget extends ConsumerStatefulWidget {
   final PageController controller;
   final Future<ffi.Convo?> Function(String, String) onCreateConvo;
   const _CreateChatWidget({
@@ -181,7 +181,24 @@ class _CreateChatWidget extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_CreateChatWidget> createState() =>
+      _CreateChatWidgetConsumerState();
+}
+
+class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
+  ScrollController scrollController = ScrollController();
+
+  // scrolls to upward in list upon user tapping.
+  void _onUp() {
+    scrollController.animateTo(
+      0.0,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOutQuart,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final selectedUsers = ref.watch(_selectedUsersProvider).toList();
     final foundUsers = ref.watch(searchResultProvider);
     final searchCtrl = ref.watch(searchController);
@@ -189,6 +206,7 @@ class _CreateChatWidget extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
       child: ListView(
+        controller: scrollController,
         shrinkWrap: true,
         children: <Widget>[
           Row(
@@ -307,14 +325,14 @@ class _CreateChatWidget extends ConsumerWidget {
           ),
           ListTile(
             onTap: selectedUsers.isEmpty
-                ? () => controller.animateToPage(
+                ? () => widget.controller.animateToPage(
                       1,
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.ease,
                     )
                 : () async {
                     if (selectedUsers.length > 1) {
-                      final convo = await onCreateConvo('', '');
+                      final convo = await widget.onCreateConvo('', '');
                       if (context.mounted && convo != null) {
                         Navigator.of(context).pop();
                         context.pushNamed(
@@ -334,7 +352,7 @@ class _CreateChatWidget extends ConsumerWidget {
                           pathParameters: {'roomId': id},
                         );
                       } else {
-                        final convo = await onCreateConvo('', '');
+                        final convo = await widget.onCreateConvo('', '');
                         if (context.mounted && convo != null) {
                           Navigator.of(context).pop();
                           context.pushNamed(
@@ -396,13 +414,23 @@ class _CreateChatWidget extends ConsumerWidget {
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 foundUsers.when(
-                  data: (data) => ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: data.length,
-                    itemBuilder: (context, index) =>
-                        _UserWidget(profile: data[index]),
-                  ),
+                  data: (data) => data.isEmpty
+                      ? Center(
+                          heightFactor: 10,
+                          child: Text(
+                            'No Users found with specified search term',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        )
+                      : ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: data.length,
+                          itemBuilder: (context, index) => _UserWidget(
+                            profile: data[index],
+                            onUp: _onUp,
+                          ),
+                        ),
                   error: (e, st) => Text('Error loading users $e'),
                   loading: () => const Center(
                     heightFactor: 5,
@@ -653,7 +681,8 @@ class _CreateRoomFormWidgetConsumerState
 // Searched User tile UI widget
 class _UserWidget extends ConsumerWidget {
   final ffi.UserProfile profile;
-  const _UserWidget({required this.profile});
+  final void Function() onUp;
+  const _UserWidget({required this.profile, required this.onUp});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -668,6 +697,7 @@ class _UserWidget extends ConsumerWidget {
               .read(_selectedUsersProvider.notifier)
               .update((state) => [...state, profile]);
         }
+        onUp();
       },
       title: displayName.when(
         data: (data) => Text(
