@@ -19,6 +19,7 @@ String? notifToText(String curNotifStatus) {
 
 class _NotificationSettingsTile extends ConsumerWidget {
   final String roomId;
+
   const _NotificationSettingsTile({
     required this.roomId,
     Key? key,
@@ -74,22 +75,46 @@ class _NotificationSettingsTile extends ConsumerWidget {
           }
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-          const PopupMenuItem<String>(
+          PopupMenuItem<String>(
             value: 'all',
-            child: Text('All Messages'),
+            child: ListTile(
+              selected: curNotifStatus == 'all',
+              title: const Text('All Messages'),
+              trailing: curNotifStatus == 'all'
+                  ? const Icon(Atlas.check_circle, size: 18)
+                  : null,
+            ),
           ),
-          const PopupMenuItem<String>(
+          PopupMenuItem<String>(
             value: 'mentions',
-            child: Text('Mentions and Keywords only'),
+            child: ListTile(
+              selected: curNotifStatus == 'mentions',
+              title: const Text('Mentions and Keywords only'),
+              trailing: curNotifStatus == 'mentions'
+                  ? const Icon(Atlas.check_circle, size: 18)
+                  : null,
+            ),
           ),
-          const PopupMenuItem<String>(
+          PopupMenuItem<String>(
             value: 'muted',
-            child: Text('Muted'),
+            child: ListTile(
+              selected: curNotifStatus == 'muted',
+              title: const Text('Muted'),
+              trailing: curNotifStatus == 'muted'
+                  ? const Icon(Atlas.check_circle, size: 18)
+                  : null,
+            ),
           ),
           PopupMenuItem<String>(
             value: '',
-            child: Text(
-              'Default (${notifToText(defaultNotificationStatus.valueOrNull ?? '') ?? 'unedefined'})',
+            child: ListTile(
+              selected: curNotifStatus == '',
+              title: Text(
+                'Default (${notifToText(defaultNotificationStatus.valueOrNull ?? '') ?? 'unedefined'})',
+              ),
+              trailing: curNotifStatus == ''
+                  ? const Icon(Atlas.check_circle, size: 18)
+                  : null,
             ),
           ),
         ],
@@ -100,6 +125,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
 
 class NotificationsSettingsTile extends AbstractSettingsTile {
   final String roomId;
+
   const NotificationsSettingsTile({
     required this.roomId,
     Key? key,
