@@ -97,13 +97,15 @@ class NotificationsSettingsPage extends ConsumerWidget {
                       ),
                       initialValue: supportedPlatforms &&
                           ref.watch(
-                            isActiveProvider(LabsFeature.showNotifications),
+                            isActiveProvider(
+                              LabsFeature.mobilePushNotifications,
+                            ),
                           ),
                       enabled: supportedPlatforms,
                       onToggle: (newVal) {
                         updateFeatureState(
                           ref,
-                          LabsFeature.showNotifications,
+                          LabsFeature.mobilePushNotifications,
                           newVal,
                         );
                         if (newVal) {

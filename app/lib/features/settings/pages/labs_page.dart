@@ -23,7 +23,7 @@ class SettingsLabsPage extends ConsumerWidget {
               title: const Text('Notifications'),
               tiles: [
                 SettingsTile.switchTile(
-                  title: const Text('Push Notifications'),
+                  title: const Text('Mobile Push Notifications'),
                   description: Text(
                     !supportedPlatforms
                         ? 'Only supported on mobile (iOS & Android) right now'
@@ -31,13 +31,13 @@ class SettingsLabsPage extends ConsumerWidget {
                   ),
                   initialValue: supportedPlatforms &&
                       ref.watch(
-                        isActiveProvider(LabsFeature.showNotifications),
+                        isActiveProvider(LabsFeature.mobilePushNotifications),
                       ),
                   enabled: supportedPlatforms,
                   onToggle: (newVal) {
                     updateFeatureState(
                       ref,
-                      LabsFeature.showNotifications,
+                      LabsFeature.mobilePushNotifications,
                       newVal,
                     );
                     if (newVal) {

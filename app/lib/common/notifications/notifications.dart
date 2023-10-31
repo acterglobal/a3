@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:async';
 
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/router.dart';
 import 'package:go_router/go_router.dart';
@@ -277,6 +278,18 @@ Future<bool> handleMessage(
   RemoteMessage message, {
   bool background = false,
 }) async {
+  try {
+    // ignore: use_build_context_synchronously
+    if (!rootNavKey.currentContext!
+        .read(isActiveProvider(LabsFeature.mobilePushNotifications))) {
+      debugPrint(
+        'Showing push notifications has been disabled on this device. Ignoring',
+      );
+      return false;
+    }
+  } catch (e) {
+    debugPrint('Reading current context failed: $e');
+  }
   if (message.data == null) {
     debugPrint('non-matrix push: $message');
     return false;
