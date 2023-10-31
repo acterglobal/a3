@@ -174,7 +174,7 @@ class _LinkChatPageConsumerState extends ConsumerState<LinkChatPage> {
                   width: 100,
                   child: isLinked
                       ? DefaultButton(
-                          onPressed: () => onTapUnlinkSubChat(),
+                          onPressed: () => onTapUnlinkSubChat(roomId),
                           title: 'Unlink',
                           isOutlined: true,
                           style: OutlinedButton.styleFrom(
@@ -204,18 +204,21 @@ class _LinkChatPageConsumerState extends ConsumerState<LinkChatPage> {
     );
   }
 
-  void onTapLinkSubChat(String roomId) {
+  void onTapLinkSubChat(String roomId) async {
     final selectedParentSpaceId = ref.watch(selectedSpaceIdProvider);
     if (selectedParentSpaceId == null) return;
-    final space = ref.watch(spaceProvider(selectedParentSpaceId));
-    space.when(
-      data: (space) {
-        space.addChildSpace(roomId);
-      },
-      error: (e, s) => Container(),
-      loading: () => Container(),
-    );
+
+    //Fetch selected parent space data and add given roomId as child
+    final space = await ref.watch(spaceProvider(selectedParentSpaceId).future);
+    space.addChildRoom(roomId);
   }
 
-  void onTapUnlinkSubChat() {}
+  void onTapUnlinkSubChat(String roomId) async {
+    final selectedParentSpaceId = ref.watch(selectedSpaceIdProvider);
+    if (selectedParentSpaceId == null) return;
+
+    //Fetch selected parent space data and add given roomId as child
+    final space = await ref.watch(spaceProvider(selectedParentSpaceId).future);
+    space.removeChildRoom(roomId,'Unlink room');
+  }
 }

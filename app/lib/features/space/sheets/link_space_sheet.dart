@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_button.dart';
@@ -7,7 +8,6 @@ import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:screenshot/screenshot.dart';
 
 class LinkSpacePage extends ConsumerStatefulWidget {
   final String? parentSpaceId;
@@ -177,7 +177,7 @@ class _LinkSpacePageConsumerState extends ConsumerState<LinkSpacePage> {
               width: 100,
               child: isLinked
                   ? DefaultButton(
-                      onPressed: () => onTapUnlinkSubSpace(),
+                      onPressed: () => onTapUnlinkSubSpace(roomId),
                       title: 'Unlink',
                       isOutlined: true,
                       style: OutlinedButton.styleFrom(
@@ -202,18 +202,27 @@ class _LinkSpacePageConsumerState extends ConsumerState<LinkSpacePage> {
           );
   }
 
-  void onTapLinkSubSpace(String roomId) {
+  void onTapLinkSubSpace(String roomId) async {
     final selectedParentSpaceId = ref.watch(selectedSpaceIdProvider);
     if (selectedParentSpaceId == null) return;
-    final space = ref.watch(spaceProvider(selectedParentSpaceId));
-    space.when(
-      data: (space) {
-        space.addChildSpace(roomId);
-      },
-      error: (e, s) => Container(),
-      loading: () => Container(),
-    );
+
+    //Fetch selected parent space data and add given roomId as child
+    final space = await ref.watch(spaceProvider(selectedParentSpaceId).future);
+    space.addChildRoom(roomId);
+
+    //Fetch selected room data and add given parentSpaceId as parent
+    final room = await ref.watch(maybeRoomProvider(roomId).future);
+    if (room != null) {
+      room.addParentRoom(selectedParentSpaceId, true);
+    }
   }
 
-  void onTapUnlinkSubSpace() {}
+  void onTapUnlinkSubSpace(String roomId) async {
+    final selectedParentSpaceId = ref.watch(selectedSpaceIdProvider);
+    if (selectedParentSpaceId == null) return;
+
+    //Fetch selected parent space data and add given roomId as child
+    final space = await ref.watch(spaceProvider(selectedParentSpaceId).future);
+    space.removeChildRoom(roomId, 'Unlink room');
+  }
 }
