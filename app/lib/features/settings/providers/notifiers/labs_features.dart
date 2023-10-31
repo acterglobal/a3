@@ -14,9 +14,7 @@ class SharedPrefFeaturesNotifier extends FeaturesNotifier<LabsFeature> {
   }
 
   void _init() async {
-    debugPrint('start of init');
     prefInstance = await sharedPrefs();
-    debugPrint('got instance');
     final currentData = prefInstance.getString(instanceKey) ?? '[]';
     final features = featureFlagsFromJson<LabsFeature>(
       json.decode(currentData),
@@ -24,9 +22,7 @@ class SharedPrefFeaturesNotifier extends FeaturesNotifier<LabsFeature> {
     );
     resetFeatures(features);
     listener = addListener((s) {
-      debugPrint('saving $s');
       prefInstance.setString(instanceKey, s.toJson());
     });
-    debugPrint('end of init');
   }
 }

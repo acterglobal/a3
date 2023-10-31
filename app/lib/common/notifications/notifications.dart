@@ -109,7 +109,7 @@ String makeForward({
 
 Future<void> initializeNotifications() async {
   if (!supportedPlatforms) {
-    return; // nothign for us to do here.
+    return; // nothing for us to do here.
   }
 
   final NotificationAppLaunchDetails? notificationAppLaunchDetails = !kIsWeb &&
@@ -220,35 +220,16 @@ Future<void> initializeNotifications() async {
 
   // Handle notification launching app from terminated state
   Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data) {
-    if (data == null) {
-      debugPrint('App was not launched by tapping a notification');
-    } else {
+    if (data != null) {
       debugPrint('Notification tap launched app from terminated state:\n'
           'RemoteMessage: $data \n');
+      handleMessageTap(data);
     }
-    // notificationWhichLaunchedApp.value = data;
   });
 
   // Handle notification taps
   Push.instance.onNotificationTap.listen((data) {
-    debugPrint('Notification was tapped. Data: \n $data');
-    final uri = data['payload'] as String?;
-    if (uri != null) {
-      debugPrint('Uri found $uri');
-      rootNavKey.currentContext!.push(uri);
-      return;
-    }
-
-    final roomId = data['room_id'] as String?;
-    final eventId = data['event_id'] as String?;
-    final deviceId = data['device_id'] as String?;
-    if (roomId == null || eventId == null || deviceId == null) {
-      debugPrint('Not our kind of push event. $roomId, $eventId, $deviceId');
-      return;
-    }
-    rootNavKey.currentContext!.push(
-      makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId),
-    );
+    handleMessageTap(data);
   });
 
   // Handle push notifications
@@ -263,6 +244,33 @@ Future<void> initializeNotifications() async {
       await handleMessage(message, background: true);
     });
   }
+}
+
+bool handleMessageTap(Map<String?, Object?> data) {
+  debugPrint('Notification was tapped. Data: \n $data');
+  try {
+    final uri = data['payload'] as String?;
+    if (uri != null) {
+      debugPrint('Uri found $uri');
+      rootNavKey.currentContext!.push(uri);
+      return true;
+    }
+
+    final roomId = data['room_id'] as String?;
+    final eventId = data['event_id'] as String?;
+    final deviceId = data['device_id'] as String?;
+    if (roomId == null || eventId == null || deviceId == null) {
+      debugPrint('Not our kind of push event. $roomId, $eventId, $deviceId');
+      return false;
+    }
+    rootNavKey.currentContext!.push(
+      makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId),
+    );
+  } catch (e) {
+    debugPrint('Handling Notification tap failed: $e');
+  }
+
+  return true;
 }
 
 Future<bool> handleMessage(
@@ -400,7 +408,7 @@ Future<bool> setupPushNotifications(
       // we need to be forced to continue
       return false;
     }
-    // TASK: show some extra dialog here?
+    // this show some extra dialog here on devices where necessary
     final requested = await Push.instance.requestPermission();
     if (!requested) {
       // we were bluntly rejected, save and don't them bother again:
