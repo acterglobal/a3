@@ -1,3 +1,4 @@
+import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/common/pages/fatal_fail.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/dialog_page.dart';
@@ -12,6 +13,7 @@ import 'package:acter/features/chat/widgets/create_chat.dart';
 import 'package:acter/features/events/pages/events_page.dart';
 import 'package:acter/features/events/sheets/create_event_sheet.dart';
 import 'package:acter/features/events/sheets/edit_event_sheet.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/pins/sheets/create_pin_sheet.dart';
 import 'package:acter/features/pins/sheets/edit_pin_sheet.dart';
 import 'package:acter/features/settings/pages/blocked_users.dart';
@@ -42,6 +44,7 @@ import 'package:acter/features/settings/pages/index_page.dart';
 import 'package:acter/features/settings/pages/info_page.dart';
 import 'package:acter/features/settings/pages/labs_page.dart';
 import 'package:acter/features/settings/pages/licenses_page.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/pages/events_page.dart';
 import 'package:acter/features/space/pages/members_page.dart';
@@ -489,17 +492,29 @@ List<RouteBase> makeRoutes(Ref ref) {
           },
         ),
         GoRoute(
-          parentNavigatorKey: shellNavKey,
-          name: Routes.activities.name,
-          path: Routes.activities.route,
-          redirect: authGuardRedirect,
-          pageBuilder: (context, state) {
-            return NoTransitionPage(
-              key: state.pageKey,
-              child: const ActivitiesPage(),
-            );
-          },
-        ),
+            parentNavigatorKey: shellNavKey,
+            name: Routes.activities.name,
+            path: Routes.activities.route,
+            redirect: authGuardRedirect,
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: const ActivitiesPage(),
+              );
+            },
+            onExit: (BuildContext context) {
+              if (!context.read(
+                isActiveProvider(LabsFeature.mobilePushNotifications),
+              )) {
+                return true;
+              }
+              debugPrint('Attempting to ask for push notifications');
+              final client = context.read(clientProvider);
+              if (client != null) {
+                setupPushNotifications(client);
+              }
+              return true;
+            }),
         GoRoute(
           parentNavigatorKey: shellNavKey,
           name: Routes.settingSessions.name,
