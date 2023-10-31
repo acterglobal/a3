@@ -514,7 +514,7 @@ List<RouteBase> makeRoutes(Ref ref) {
                 setupPushNotifications(client);
               }
               return true;
-            }),
+            },),
         GoRoute(
           parentNavigatorKey: shellNavKey,
           name: Routes.settingSessions.name,

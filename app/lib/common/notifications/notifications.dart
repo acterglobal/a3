@@ -426,7 +426,7 @@ Future<bool> setupPushNotifications(
 
   final deviceId = client.deviceId().toString();
   if (!forced && await wasRejected(deviceId)) {
-    // If the user rejected and we aren't asked to force, don't vother them again.
+    // If the user rejected and we aren't asked to force, don't bother them again.
     return false;
   }
   // this show some extra dialog here on devices where necessary
@@ -450,8 +450,11 @@ Future<bool> setupPushNotifications(
 
   return await onToken(client, token);
 }
+
 Future<bool> onNewToken(String token) async {
-  debugPrint('Received the update information for the token. Updating all clients.');
+  debugPrint(
+    'Received the update information for the token. Updating all clients.',
+  );
   // ignore: use_build_context_synchronously
   final sdk = rootNavKey.currentContext!.read(sdkProvider).requireValue;
 

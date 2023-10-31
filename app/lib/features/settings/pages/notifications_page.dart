@@ -4,8 +4,6 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/widgets/labs_notifications_settings_tile.dart';
 import 'package:acter/features/settings/widgets/settings_section_with_title_actions.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';

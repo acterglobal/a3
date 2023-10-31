@@ -21,16 +21,19 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return SettingsTile.switchTile(
       title: Text(title ?? 'Mobile Push Notifications'),
-      description: !supportedPlatforms ? const Text(
-        'Only supported on mobile (iOS & Android) right now',
-      ) : null,
+      description: !supportedPlatforms
+          ? const Text(
+              'Only supported on mobile (iOS & Android) right now',
+            )
+          : (pushServer.isEmpty
+              ? const Text('No push server configured on build')
+              : null),
       initialValue: supportedPlatforms &&
           ref.watch(
             isActiveProvider(LabsFeature.mobilePushNotifications),
           ),
-      enabled: supportedPlatforms,
+      enabled: supportedPlatforms && pushServer.isNotEmpty,
       onToggle: (newVal) async {
-
         updateFeatureState(
           ref,
           LabsFeature.mobilePushNotifications,
@@ -44,7 +47,8 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
           }
           final granted = await setupPushNotifications(client, forced: true);
           if (!granted) {
-            await AppSettings.openAppSettings(type: AppSettingsType.notification);
+            await AppSettings.openAppSettings(
+                type: AppSettingsType.notification,);
             final granted = await setupPushNotifications(client, forced: true);
             if (!granted) {
               // second attempt, even sending the user to the settings, they do not
