@@ -203,7 +203,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       final roomId = await client.createActerSpace(config.build());
       if (parentRoomId != null) {
         final space = await ref.read(spaceProvider(parentRoomId).future);
-        await space.addChildSpace(roomId.toString());
+        await space.addChildRoom(roomId.toString());
       }
 
       EasyLoading.dismiss();

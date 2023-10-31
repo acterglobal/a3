@@ -2540,6 +2540,112 @@ class Api {
     return tmp7;
   }
 
+  String? __roomAddParentRoomFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _roomAddParentRoomFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
+    return tmp7;
+  }
+
+  bool? __roomRemoveParentRoomFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _roomRemoveParentRoomFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   Member? __roomGetMyMembershipFuturePoll(
     int boxed,
     int postCobject,
@@ -6393,7 +6499,7 @@ class Api {
     return tmp7;
   }
 
-  String? __spaceAddChildSpaceFuturePoll(
+  String? __spaceAddChildRoomFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -6407,7 +6513,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _spaceAddChildSpaceFuturePoll(
+    final tmp6 = _spaceAddChildRoomFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -6452,6 +6558,50 @@ class Api {
       tmp13_0 = ffi.Pointer.fromAddress(tmp13);
       this.__deallocate(tmp13_0, tmp15 * 1, 1);
     }
+    return tmp7;
+  }
+
+  bool? __spaceRemoveChildRoomFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceRemoveChildRoomFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
     return tmp7;
   }
 
@@ -15665,6 +15815,48 @@ class Api {
       int Function(
         int,
       )>();
+  late final _roomAddParentRoomPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+          )>>("__Room_add_parent_room");
+
+  late final _roomAddParentRoom = _roomAddParentRoomPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _roomRemoveParentRoomPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Room_remove_parent_room");
+
+  late final _roomRemoveParentRoom = _roomRemoveParentRoomPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _roomGetMyMembershipPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -19933,17 +20125,41 @@ class Api {
         int,
         int,
       )>();
-  late final _spaceAddChildSpacePtr = _lookup<
+  late final _spaceAddChildRoomPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__Space_add_child_space");
+          )>>("__Space_add_child_room");
 
-  late final _spaceAddChildSpace = _spaceAddChildSpacePtr.asFunction<
+  late final _spaceAddChildRoom = _spaceAddChildRoomPtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _spaceRemoveChildRoomPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Space_remove_child_room");
+
+  late final _spaceRemoveChildRoom = _spaceRemoveChildRoomPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -23714,6 +23930,36 @@ class Api {
             int,
             int,
           )>();
+  late final _roomAddParentRoomFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomAddParentRoomFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Room_add_parent_room_future_poll");
+
+  late final _roomAddParentRoomFuturePoll =
+      _roomAddParentRoomFuturePollPtr.asFunction<
+          _RoomAddParentRoomFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _roomRemoveParentRoomFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomRemoveParentRoomFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Room_remove_parent_room_future_poll");
+
+  late final _roomRemoveParentRoomFuturePoll =
+      _roomRemoveParentRoomFuturePollPtr.asFunction<
+          _RoomRemoveParentRoomFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _roomGetMyMembershipFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _RoomGetMyMembershipFuturePollReturn Function(
@@ -24935,17 +25181,32 @@ class Api {
             int,
             int,
           )>();
-  late final _spaceAddChildSpaceFuturePollPtr = _lookup<
+  late final _spaceAddChildRoomFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _SpaceAddChildSpaceFuturePollReturn Function(
+          _SpaceAddChildRoomFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__Space_add_child_space_future_poll");
+          )>>("__Space_add_child_room_future_poll");
 
-  late final _spaceAddChildSpaceFuturePoll =
-      _spaceAddChildSpaceFuturePollPtr.asFunction<
-          _SpaceAddChildSpaceFuturePollReturn Function(
+  late final _spaceAddChildRoomFuturePoll =
+      _spaceAddChildRoomFuturePollPtr.asFunction<
+          _SpaceAddChildRoomFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _spaceRemoveChildRoomFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceRemoveChildRoomFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Space_remove_child_room_future_poll");
+
+  late final _spaceRemoveChildRoomFuturePoll =
+      _spaceRemoveChildRoomFuturePollPtr.asFunction<
+          _SpaceRemoveChildRoomFuturePollReturn Function(
             int,
             int,
             int,
@@ -34147,6 +34408,101 @@ class Room {
     return tmp2;
   }
 
+  /// add the following as a parent room and return event id of that event
+  /// room can have multiple parents
+  Future<String> addParentRoom(
+    String roomId,
+    bool canonical,
+  ) {
+    final tmp1 = roomId;
+    final tmp5 = canonical;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    tmp6 = tmp5 ? 1 : 0;
+    final tmp7 = _api._roomAddParentRoom(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+    );
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0, "__Room_add_parent_room_future_drop");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = _nativeFuture(tmp9_1, _api.__roomAddParentRoomFuturePoll);
+    return tmp8;
+  }
+
+  /// remove a parent room
+  Future<bool> removeParentRoom(
+    String roomId,
+    String? reason,
+  ) {
+    final tmp1 = roomId;
+    final tmp5 = reason;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp9 = 0;
+    var tmp10 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      final tmp7_0 = utf8.encode(tmp7);
+      tmp9 = tmp7_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
+      final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
+      tmp8_1.setAll(0, tmp7_0);
+      tmp8 = tmp8_0.address;
+      tmp10 = tmp9;
+    }
+    final tmp11 = _api._roomRemoveParentRoom(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp8,
+      tmp9,
+      tmp10,
+    );
+    final tmp13 = tmp11;
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 =
+        _Box(_api, tmp13_0, "__Room_remove_parent_room_future_drop");
+    tmp13_1._finalizer = _api._registerFinalizer(tmp13_1);
+    final tmp12 = _nativeFuture(tmp13_1, _api.__roomRemoveParentRoomFuturePoll);
+    return tmp12;
+  }
+
   /// the Membership of myself
   Future<Member> getMyMembership() {
     var tmp0 = 0;
@@ -42571,8 +42927,8 @@ class Space {
     return tmp6;
   }
 
-  /// add the following as a child space
-  Future<String> addChildSpace(
+  /// add the following as a child space and return event id of that event
+  Future<String> addChildRoom(
     String roomId,
   ) {
     final tmp1 = roomId;
@@ -42589,7 +42945,7 @@ class Space {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._spaceAddChildSpace(
+    final tmp5 = _api._spaceAddChildRoom(
       tmp0,
       tmp2,
       tmp3,
@@ -42597,10 +42953,67 @@ class Space {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Space_add_child_space_future_drop");
+    final tmp7_1 = _Box(_api, tmp7_0, "__Space_add_child_room_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__spaceAddChildSpaceFuturePoll);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__spaceAddChildRoomFuturePoll);
     return tmp6;
+  }
+
+  /// remove a child space
+  Future<bool> removeChildRoom(
+    String roomId,
+    String? reason,
+  ) {
+    final tmp1 = roomId;
+    final tmp5 = reason;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp9 = 0;
+    var tmp10 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      final tmp7_0 = utf8.encode(tmp7);
+      tmp9 = tmp7_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
+      final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
+      tmp8_1.setAll(0, tmp7_0);
+      tmp8 = tmp8_0.address;
+      tmp10 = tmp9;
+    }
+    final tmp11 = _api._spaceRemoveChildRoom(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp8,
+      tmp9,
+      tmp10,
+    );
+    final tmp13 = tmp11;
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 =
+        _Box(_api, tmp13_0, "__Space_remove_child_room_future_drop");
+    tmp13_1._finalizer = _api._registerFinalizer(tmp13_1);
+    final tmp12 = _nativeFuture(tmp13_1, _api.__spaceRemoveChildRoomFuturePoll);
+    return tmp12;
   }
 
   /// Change the avatar of the room
@@ -52759,6 +53172,40 @@ class _RoomSpaceRelationsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _RoomAddParentRoomFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
+}
+
+class _RoomRemoveParentRoomFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _RoomGetMyMembershipFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -53989,7 +54436,7 @@ class _SpaceIsChildSpaceOfFuturePollReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _SpaceAddChildSpaceFuturePollReturn extends ffi.Struct {
+class _SpaceAddChildRoomFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -54006,6 +54453,21 @@ class _SpaceAddChildSpaceFuturePollReturn extends ffi.Struct {
   external int arg6;
   @ffi.Uint64()
   external int arg7;
+}
+
+class _SpaceRemoveChildRoomFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
 }
 
 class _SpaceUploadAvatarFuturePollReturn extends ffi.Struct {
