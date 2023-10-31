@@ -1,5 +1,4 @@
 - Chats (Create)
-  - Improve wordings
   - fix: bug where DM/Group DM avatars do not load correctly after creation in chat room.
   - fix: Hide keyboard when scrolling over the found users list after search.
   - fix: Selecting users in found users list will now automatically make page scroll over to top.

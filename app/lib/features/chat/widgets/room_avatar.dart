@@ -46,6 +46,14 @@ class RoomAvatar extends ConsumerWidget {
             avatar: profile.getAvatarImage(),
             size: 18,
           );
+        } else if (profile.hasAvatar()) {
+          return ActerAvatar(
+            uniqueId: roomId,
+            mode: DisplayMode.User,
+            displayName: profile.displayName ?? roomId,
+            avatar: profile.getAvatarImage(),
+            size: 18,
+          );
         }
 
         //Type == DM : Handle avatar according to the members counts
