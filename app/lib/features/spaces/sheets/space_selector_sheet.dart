@@ -4,20 +4,26 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+const Key selectSpaceDrawerKey = Key('space-widgets-select-space-drawer');
+
 Future<String?> selectSpaceDrawer({
   required BuildContext context,
+  Key? key = selectSpaceDrawerKey,
   String canCheck = 'CanLinkSpaces',
   String? currentSpaceId,
   Widget? title,
 }) async {
   final selected = await showModalBottomSheet(
+    showDragHandle: true,
+    enableDrag: true,
     context: context,
     isDismissible: true,
     builder: (context) => Consumer(
       builder: (context, ref, child) {
         final spaces = ref.watch(briefSpaceItemsProviderWithMembership);
-        return SizedBox(
-          height: 250,
+        return Container(
+          key: key,
+          constraints: const BoxConstraints(minHeight: 80),
           child: Padding(
             padding: const EdgeInsets.all(10),
             child: Column(
@@ -39,7 +45,7 @@ Future<String?> selectSpaceDrawer({
                     ),
                   ],
                 ),
-                Expanded(
+                Flexible(
                   child: spaces.when(
                     data: (spaces) => spaces.isEmpty
                         ? const Text('no spaces found')
