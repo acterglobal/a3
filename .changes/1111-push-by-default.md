@@ -1,0 +1,2 @@
+- [enhancement] After testing for while, we have switched the labs feature for mobile push notifications on by default - you can still disable it in settings
+- [enhancement] User will only be asked about notifications after leaving the Activities stream for the first time (not at startup) 
