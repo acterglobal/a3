@@ -371,8 +371,8 @@ impl Client {
                 }
 
                 if let Some(parent) = settings.parent {
-                    let Some(Ok(homeserver)) = client.homeserver().host_str().map(|h|h.try_into()) else {
-                      return Err(Error::HomeserverMissesHostname)?;
+                    let Some(Ok(homeserver)) = client.homeserver().host_str().map(|h| h.try_into()) else {
+                        return Err(Error::HomeserverMissesHostname)?;
                     };
                     let parent_event = InitialStateEvent::<SpaceParentEventContent> {
                         content: assign!(SpaceParentEventContent::new(vec![homeserver]), {

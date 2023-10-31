@@ -4,6 +4,7 @@ pub use acter_core::spaces::{
 };
 use acter_core::{
     client::CoreClient,
+    error::Error,
     events::{
         calendar::CalendarEventEventContent,
         news::{NewsContent, NewsEntryEvent, NewsEntryEventContent},
@@ -20,6 +21,7 @@ use matrix_sdk::{
     attachment::{
         AttachmentConfig, AttachmentInfo, BaseAudioInfo, BaseFileInfo, BaseImageInfo, BaseVideoInfo,
     },
+    deserialized_responses::SyncOrStrippedState,
     media::{MediaFormat, MediaRequest},
     notification_settings::{IsEncrypted, IsOneToOne, RoomNotificationMode},
     room::{Room as SdkRoom, RoomMember},
@@ -52,12 +54,12 @@ use ruma_events::{
         },
         ImageInfo, MediaSource,
     },
-    space::child::HierarchySpaceChildEvent,
+    space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
     AnyMessageLikeEvent, AnyStateEvent, AnyTimelineEvent, MessageLikeEvent, MessageLikeEventType,
     StateEvent, StateEventType, StaticEventContent,
 };
 use std::{io::Write, ops::Deref, path::PathBuf};
-use tracing::{error, info};
+use tracing::{error, info, warn};
 
 use crate::OptionBuffer;
 
@@ -518,6 +520,82 @@ impl Room {
             .spawn(async move {
                 let core = c.space_relations(&me.room).await?;
                 Ok(SpaceRelations { core, room: me })
+            })
+            .await?
+    }
+
+    pub async fn add_parent_room(&self, room_id: String, canonical: bool) -> Result<String> {
+        if !self.is_joined() {
+            bail!("You can't update a room you aren't part of");
+        }
+        let room_id = OwnedRoomId::try_from(room_id)?;
+        if !self
+            .get_my_membership()
+            .await?
+            .can(crate::MemberPermission::CanLinkSpaces)
+        {
+            bail!("You don't have permissions to add parent to room");
+        }
+        let room = self.room.clone();
+        let client = self.core.client().clone();
+
+        RUNTIME
+            .spawn(async move {
+                let Some(Ok(homeserver)) = client.homeserver().host_str().map(|h| h.try_into()) else {
+                    return Err(Error::HomeserverMissesHostname)?;
+                };
+                let content = assign!(SpaceParentEventContent::new(vec![homeserver]), { canonical });
+                let response = room
+                    .send_state_event_for_key(
+                        &room_id,
+                        content,
+                    )
+                    .await?;
+                Ok(response.event_id.to_string())
+            })
+            .await?
+    }
+
+    pub async fn remove_parent_room(
+        &self,
+        room_id: String,
+        reason: Option<String>,
+    ) -> Result<bool> {
+        if !self.is_joined() {
+            bail!("You can't update a room you aren't part of");
+        }
+        let room_id = OwnedRoomId::try_from(room_id)?;
+        if !self
+            .get_my_membership()
+            .await?
+            .can(crate::MemberPermission::CanLinkSpaces)
+        {
+            bail!("You don't have permissions to remove parent from room");
+        }
+        let room = self.room.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let response = room
+                    .get_state_event_static_for_key::<SpaceParentEventContent, OwnedRoomId>(
+                        &room_id,
+                    )
+                    .await?;
+                let Some(raw_state) = response else {
+                    warn!("Room {} is not a parent", room_id);
+                    return Ok(true);
+                };
+                let Ok(state) = raw_state.deserialize() else {
+                    bail!("Invalid room parent event")
+                };
+                let event_id = match state {
+                    SyncOrStrippedState::Stripped(ev) => {
+                        bail!("Couldn't get event id about stripped event")
+                    }
+                    SyncOrStrippedState::Sync(ev) => ev.event_id().to_owned(),
+                };
+                room.redact(&event_id, reason.as_deref(), None).await?;
+                Ok(true)
             })
             .await?
     }
@@ -2712,10 +2790,10 @@ impl Room {
     }
 
     pub async fn redact_content(&self, event_id: String, reason: Option<String>) -> Result<bool> {
-        let event_id = EventId::parse(event_id)?;
         if !self.is_joined() {
             bail!("Can't redact content in a room we are not in");
         }
+        let event_id = EventId::parse(event_id)?;
         let room = self.room.clone();
 
         RUNTIME
