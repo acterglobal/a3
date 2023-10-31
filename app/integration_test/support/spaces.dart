@@ -47,14 +47,14 @@ extension ActerSpace on ConvenientTest {
     final spaceHeader = find.byKey(SpaceKeys.header);
     await spaceHeader.should(findsOneWidget);
     // read the actual spaceId
-    final header = spaceHeader.evaluate().first as ShellHeader;
+    final header = spaceHeader.evaluate().first.widget as ShellHeader;
     return header.spaceId;
   }
 
   Future<void> selectSpace(String spaceId) async {
     // open the drawer
     final selectSpacesKey = find.byKey(SelectSpaceFormField.openKey);
-    await selectSpacesKey.should(findsOneWidget);
+    await tester.ensureVisible(selectSpacesKey);
     await selectSpacesKey.tap();
 
     // select the space and close the drawer
