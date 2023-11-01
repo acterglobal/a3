@@ -6,6 +6,7 @@ import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
+import 'package:acter/features/space/sheets/link_room_sheet.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -68,8 +69,9 @@ class SpaceChatsPage extends ConsumerWidget {
                         ),
                         PopupMenuItem(
                           onTap: () => context.pushNamed(
-                            Routes.linkChat.name,
+                            Routes.linkRoom.name,
                             pathParameters: {'spaceId': spaceIdOrAlias},
+                            queryParameters: {'childRoomType': ChildRoomType.chat.name},
                           ),
                           child: const Row(
                             children: <Widget>[
