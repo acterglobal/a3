@@ -299,9 +299,12 @@ class _StartPageState extends State<StartPage> {
                             onBoardingPages[index].image,
                           ),
                         ),
-                        FittedBox(
-                          child: onBoardingPages[index].description,
-                          fit: BoxFit.scaleDown,
+                        SizedBox(
+                          height: imageHeight,
+                          child: FittedBox(
+                            child: onBoardingPages[index].description,
+                            fit: BoxFit.scaleDown,
+                          ),
                         ),
                         const SizedBox(
                           height: 20,

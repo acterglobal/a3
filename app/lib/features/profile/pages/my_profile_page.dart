@@ -194,20 +194,17 @@ class MyProfile extends ConsumerWidget {
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(5),
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  data.profile.displayName ?? '',
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 5),
-                                  child: Icon(Atlas.pencil_edit_thin, size: 14),
-                                ),
-                              ],
-                            ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                data.profile.displayName ?? '',
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: Icon(Atlas.pencil_edit_thin, size: 14),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -223,20 +220,17 @@ class MyProfile extends ConsumerWidget {
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(5),
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  userId,
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 5),
-                                  child: Icon(Atlas.pages, size: 14),
-                                ),
-                              ],
-                            ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                userId,
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: Icon(Atlas.pages, size: 14),
+                              ),
+                            ],
                           ),
                         ),
                       ),

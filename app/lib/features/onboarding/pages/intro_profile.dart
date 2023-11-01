@@ -34,36 +34,30 @@ class _IntroProfileState extends State<IntroProfile> {
                   ),
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 30),
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Column(
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.symmetric(vertical: 10),
-                            child: const Text(
-                              'Acter',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 32),
-                            ),
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          child: const Text(
+                            'Acter',
+                            style: TextStyle(color: Colors.white, fontSize: 32),
                           ),
-                          Container(
-                            margin: const EdgeInsets.symmetric(vertical: 10),
-                            child: const Text(
-                              'Ready to start organizing and collaborating in safe space?',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 16),
-                            ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          child: const Text(
+                            'Ready to start organizing and collaborating in safe space?',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
-                          Container(
-                            margin: const EdgeInsets.symmetric(vertical: 10),
-                            child: const Text(
-                              'Log in or create a new profile and start organizing!',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 16),
-                            ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          child: const Text(
+                            'Log in or create a new profile and start organizing!',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                   Container(
