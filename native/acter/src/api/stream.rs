@@ -212,9 +212,9 @@ impl TimelineStream {
             .user_id()
             .context("User not found")?
             .to_owned();
+        let timeline = self.timeline.clone();
         let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
-        let timeline = self.timeline.clone();
 
         RUNTIME
             .spawn(async move {
@@ -320,9 +320,9 @@ impl TimelineStream {
             .user_id()
             .context("User not found")?
             .to_owned();
+        let timeline = self.timeline.clone();
         let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
-        let timeline = self.timeline.clone();
 
         RUNTIME
             .spawn(async move {
@@ -437,9 +437,9 @@ impl TimelineStream {
             .user_id()
             .context("User not found")?
             .to_owned();
+        let timeline = self.timeline.clone();
         let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
-        let timeline = self.timeline.clone();
 
         RUNTIME
             .spawn(async move {
@@ -562,9 +562,9 @@ impl TimelineStream {
             .user_id()
             .context("User not found")?
             .to_owned();
+        let timeline = self.timeline.clone();
         let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
-        let timeline = self.timeline.clone();
 
         RUNTIME
             .spawn(async move {
@@ -676,9 +676,9 @@ impl TimelineStream {
             .user_id()
             .context("User not found")?
             .to_owned();
+        let timeline = self.timeline.clone();
         let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
-        let timeline = self.timeline.clone();
 
         RUNTIME
             .spawn(async move {
@@ -774,9 +774,9 @@ impl TimelineStream {
             .user_id()
             .context("User not found")?
             .to_owned();
+        let timeline = self.timeline.clone();
         let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
-        let timeline = self.timeline.clone();
 
         RUNTIME
             .spawn(async move {
@@ -910,8 +910,8 @@ impl TimelineStream {
             .user_id()
             .context("User not found")?
             .to_owned();
-        let event_id = EventId::parse(event_id)?;
         let timeline = self.timeline.clone();
+        let event_id = EventId::parse(event_id)?;
 
         RUNTIME
             .spawn(async move {
