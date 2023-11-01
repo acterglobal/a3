@@ -2,9 +2,12 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
 
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:convert/convert.dart';
 import 'package:flutter/foundation.dart';
@@ -173,7 +176,8 @@ Future<void> initializeNotifications() async {
   /// done later
   final DarwinInitializationSettings initializationSettingsDarwin =
       DarwinInitializationSettings(
-    requestAlertPermission: true,
+    // do not bother the user at startup, set all these to falls for now:
+    requestAlertPermission: false,
     requestBadgePermission: false,
     requestSoundPermission: false,
     onDidReceiveLocalNotification:
@@ -218,38 +222,19 @@ Future<void> initializeNotifications() async {
     onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
   );
 
-  // Handle notification launching app from terminated state
-  Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data) {
-    if (data == null) {
-      debugPrint('App was not launched by tapping a notification');
-    } else {
-      debugPrint('Notification tap launched app from terminated state:\n'
-          'RemoteMessage: $data \n');
-    }
-    // notificationWhichLaunchedApp.value = data;
-  });
-
-  // Handle notification taps
   try {
-    Push.instance.onNotificationTap.listen((data) {
-      debugPrint('Notification was tapped. Data: \n $data');
-      final uri = data['payload'] as String?;
-      if (uri != null) {
-        debugPrint('Uri found $uri');
-        rootNavKey.currentContext!.push(uri);
-        return;
+    // Handle notification launching app from terminated state
+    Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data) {
+      if (data != null) {
+        debugPrint('Notification tap launched app from terminated state:\n'
+            'RemoteMessage: $data \n');
+        handleMessageTap(data);
       }
+    });
 
-      final roomId = data['room_id'] as String?;
-      final eventId = data['event_id'] as String?;
-      final deviceId = data['device_id'] as String?;
-      if (roomId == null || eventId == null || deviceId == null) {
-        debugPrint('Not our kind of push event. $roomId, $eventId, $deviceId');
-        return;
-      }
-      rootNavKey.currentContext!.push(
-        makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId),
-      );
+    // Handle notification taps
+    Push.instance.onNotificationTap.listen((data) {
+      handleMessageTap(data);
     });
 
     // Handle push notifications
@@ -264,16 +249,63 @@ Future<void> initializeNotifications() async {
         await handleMessage(message, background: true);
       });
     }
+
+    // To be informed that the device's token has been updated by the operating system
+    // You should update your servers with this token
+    Push.instance.onNewToken.listen((token) {
+      // FIXME: how to identify which clients are connected to this?
+      debugPrint('Just got a new FCM registration token: $token');
+      onNewToken(token);
+    });
   } catch (e) {
     // this fails on hot-reload and in integration tests... if so, ignore for now
     debugPrint('Push initialization error: $e');
   }
 }
 
+bool handleMessageTap(Map<String?, Object?> data) {
+  debugPrint('Notification was tapped. Data: \n $data');
+  try {
+    final uri = data['payload'] as String?;
+    if (uri != null) {
+      debugPrint('Uri found $uri');
+      rootNavKey.currentContext!.push(uri);
+      return true;
+    }
+
+    final roomId = data['room_id'] as String?;
+    final eventId = data['event_id'] as String?;
+    final deviceId = data['device_id'] as String?;
+    if (roomId == null || eventId == null || deviceId == null) {
+      debugPrint('Not our kind of push event. $roomId, $eventId, $deviceId');
+      return false;
+    }
+    rootNavKey.currentContext!.push(
+      makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId),
+    );
+  } catch (e) {
+    debugPrint('Handling Notification tap failed: $e');
+  }
+
+  return true;
+}
+
 Future<bool> handleMessage(
   RemoteMessage message, {
   bool background = false,
 }) async {
+  try {
+    // ignore: use_build_context_synchronously
+    if (!rootNavKey.currentContext!
+        .read(isActiveProvider(LabsFeature.mobilePushNotifications))) {
+      debugPrint(
+        'Showing push notifications has been disabled on this device. Ignoring',
+      );
+      return false;
+    }
+  } catch (e) {
+    debugPrint('Reading current context failed: $e');
+  }
   if (message.data == null) {
     debugPrint('non-matrix push: $message');
     return false;
@@ -373,6 +405,18 @@ Future<void> _showNotification(
   );
 }
 
+Future<bool> wasRejected(String deviceId) async {
+  final SharedPreferences preferences = await sharedPrefs();
+  final prefKey = '$deviceId.rejected_notifications';
+  return (preferences.getBool(prefKey) ?? false);
+}
+
+Future<void> setRejected(String deviceId, bool value) async {
+  final SharedPreferences preferences = await sharedPrefs();
+  final prefKey = '$deviceId.rejected_notifications';
+  preferences.setBool(prefKey, value);
+}
+
 Future<bool> setupPushNotifications(
   Client client, {
   forced = false,
@@ -385,44 +429,52 @@ Future<bool> setupPushNotifications(
     return false;
   }
 
-  // To be informed that the device's token has been updated by the operating system
-  // You should update your servers with this token
-  Push.instance.onNewToken.listen((token) {
-    // FIXME: how to identify which clients are connected to this?
-    debugPrint('Just got a new FCM registration token: $token');
-    onNewToken(client, token);
-  });
-
   final deviceId = client.deviceId().toString();
-  final SharedPreferences preferences = await sharedPrefs();
-  final prefKey = '$deviceId.rejected_notifications';
-
-  String? token = await Push.instance.token;
-  // do we already have a token, then no need to bother the user again
-  if (token == null) {
-    // check whether we were already rejected and thus shouldn't ask again
-    if (!forced && (preferences.getBool(prefKey) ?? false)) {
-      // we need to be forced to continue
-      return false;
-    }
-    // TASK: show some extra dialog here?
-    final requested = await Push.instance.requestPermission();
-    if (!requested) {
-      // we were bluntly rejected, save and don't them bother again:
-      preferences.setBool(prefKey, false);
-      return false;
-    }
-    token = await Push.instance.token;
+  if (!forced && await wasRejected(deviceId)) {
+    // If the user rejected and we aren't asked to force, don't bother them again.
+    return false;
   }
-
-  if (token == null) {
+  // this show some extra dialog here on devices where necessary
+  final requested = await Push.instance.requestPermission(
+    badge: true,
+    alert: true, // we request loud notifications now.
+  );
+  if (!requested) {
+    // we were bluntly rejected, save and don't them bother again:
+    await setRejected(deviceId, true);
     return false;
   }
 
-  return await onNewToken(client, token);
+  // let's get the token
+  final token = await Push.instance.token;
+
+  if (token == null) {
+    debugPrint('No token given');
+    return false;
+  }
+
+  return await onToken(client, token);
 }
 
-Future<bool> onNewToken(Client client, String token) async {
+Future<bool> onNewToken(String token) async {
+  debugPrint(
+    'Received the update information for the token. Updating all clients.',
+  );
+  // ignore: use_build_context_synchronously
+  final sdk = rootNavKey.currentContext!.read(sdkProvider).requireValue;
+
+  for (final client in sdk.clients) {
+    final deviceId = client.deviceId().toString();
+    if (await wasRejected(deviceId)) {
+      debugPrint('$deviceId was ignored for token update');
+      continue;
+    }
+    await onToken(client, token);
+  }
+  return true;
+}
+
+Future<bool> onToken(Client client, String token) async {
   final String name = await deviceName();
   late String appId;
   if (Platform.isIOS) {

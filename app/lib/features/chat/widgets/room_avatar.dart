@@ -38,17 +38,25 @@ class RoomAvatar extends ConsumerWidget {
       data: (profile) {
         //Show conversations avatar if available
         //Group : Show default image if avatar is not available
-        if (profile.hasAvatar() || !profile.isDm) {
+        if (!convo.isDm()) {
           return ActerAvatar(
             uniqueId: roomId,
-            mode: profile.isDm ? DisplayMode.User : DisplayMode.Space,
+            mode: DisplayMode.Space,
+            displayName: profile.displayName ?? roomId,
+            avatar: profile.getAvatarImage(),
+            size: 18,
+          );
+        } else if (profile.hasAvatar()) {
+          return ActerAvatar(
+            uniqueId: roomId,
+            mode: DisplayMode.User,
             displayName: profile.displayName ?? roomId,
             avatar: profile.getAvatarImage(),
             size: 18,
           );
         }
 
-        //Type == DM && Avatar not available : Handle avatar according to the members counts
+        //Type == DM and no avatar: Handle avatar according to the members counts
         else {
           return dmAvatar(ref);
         }
@@ -58,7 +66,7 @@ class RoomAvatar extends ConsumerWidget {
         debugPrint('Failed to load avatar due to $err');
         return ActerAvatar(
           uniqueId: convo.getRoomIdStr(),
-          mode: convo.isDm() ? DisplayMode.User : DisplayMode.GroupChat,
+          mode: convo.isDm() ? DisplayMode.User : DisplayMode.Space,
           displayName: convo.getRoomIdStr(),
           size: avatarSize,
         );
