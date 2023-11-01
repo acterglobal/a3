@@ -766,11 +766,17 @@ object TimelineStream {
     /// modify the plain text message
     fn edit_plain_message(event_id: string, new_msg: string) -> Future<Result<bool>>;
 
+    /// send reply as plain text
+    fn send_plain_reply(msg: string, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+
     /// send the formatted text message
     fn send_formatted_message(markdown: string) -> Future<Result<bool>>;
 
     /// modify the formatted text message
     fn edit_formatted_message(event_id: string, new_msg: string) -> Future<Result<bool>>;
+
+    /// send reply as formatted text
+    fn send_formatted_reply(markdown: string, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 
     /// send the image message
     fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<bool>>;
@@ -778,11 +784,17 @@ object TimelineStream {
     /// modify the image message
     fn edit_image_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>) -> Future<Result<bool>>;
 
+    /// send reply as image
+    fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+
     /// send the audio message
     fn send_audio_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>) -> Future<Result<bool>>;
 
     /// modify the audio message
     fn edit_audio_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>) -> Future<Result<bool>>;
+
+    /// send reply as audio
+    fn send_audio_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 
     /// send the video message
     fn send_video_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<bool>>;
@@ -790,17 +802,26 @@ object TimelineStream {
     /// modify the video message
     fn edit_video_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>) -> Future<Result<bool>>;
 
+    /// send reply as video
+    fn send_video_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+
     /// send the file message
     fn send_file_message(uri: string, name: string, mimetype: string, size: Option<u64>) -> Future<Result<bool>>;
 
     /// modify the file message
     fn edit_file_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>) -> Future<Result<bool>>;
 
+    /// send reply as file
+    fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+
     /// send the location message
     fn send_location_message(body: string, geo_uri: string) -> Future<Result<bool>>;
 
     /// modify the location message
     fn edit_location_message(event_id: string, body: string, geo_uri: string) -> Future<Result<bool>>;
+
+    /// send reply as location
+    fn send_location_reply(body: string, geo_uri: string, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 
     /// send single receipt
     /// receipt_type: FullyRead | Read | ReadPrivate
@@ -925,21 +946,6 @@ object Convo {
 
     /// get original of reply msg
     fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
-
-    /// send reply as text
-    fn send_text_reply(msg: string, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
-
-    /// send reply as image
-    fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
-
-    /// send reply as audio
-    fn send_audio_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
-
-    /// send reply as video
-    fn send_video_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
-
-    /// send reply as file
-    fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// redact any message (including text/image/file and reaction)
     fn redact_message(event_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
