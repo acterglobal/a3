@@ -204,19 +204,19 @@ class RelatedSpacesPage extends ConsumerWidget {
             if (spaces.otherRelations.isNotEmpty || canLinkSpace) {
               List<Widget> children = [
                 const Expanded(child: Text('Recommended Spaces')),
-                // IconButton(
-                //   icon: Icon(
-                //     Atlas.plus_circle,
-                //     color: Theme.of(context).colorScheme.neutral5,
-                //   ),
-                //   onPressed: () => context.pushNamed(
-                //     Routes.linkRoom.name,
-                //     pathParameters: {'spaceId': spaceIdOrAlias},
-                //     queryParameters: {
-                //       'childRoomType': ChildRoomType.recommendedSpace.name,
-                //     },
-                //   ),
-                // ),
+                IconButton(
+                  icon: Icon(
+                    Atlas.plus_circle,
+                    color: Theme.of(context).colorScheme.neutral5,
+                  ),
+                  onPressed: () => context.pushNamed(
+                    Routes.linkRoom.name,
+                    pathParameters: {'spaceId': spaceIdOrAlias},
+                    queryParameters: {
+                      'childRoomType': ChildRoomType.recommendedSpace.name,
+                    },
+                  ),
+                ),
               ];
               items.add(
                 SliverToBoxAdapter(
