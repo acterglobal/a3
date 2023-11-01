@@ -199,6 +199,7 @@ class QuickJump extends ConsumerWidget {
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

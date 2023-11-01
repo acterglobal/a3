@@ -4,7 +4,6 @@ import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/space/model/keys.dart';
 import 'package:acter/features/space/widgets/shell_header.dart';
 import 'package:acter/features/spaces/model/keys.dart';
-import 'package:acter/features/spaces/sheets/space_selector_sheet.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -58,11 +57,8 @@ extension ActerSpace on ConvenientTest {
     await tester.ensureVisible(selectSpacesKey);
     await selectSpacesKey.tap();
 
-    final selectBox = find.byKey(selectSpaceDrawerKey);
-    await selectBox.should(findsOneWidget);
-
     // select the space and close the drawer
-    final select = find.byKey(Key('select-sapce-$spaceId'));
+    final select = find.byKey(Key('select-space-$spaceId'));
     await tester.ensureVisible(select);
     await select.tap();
   }

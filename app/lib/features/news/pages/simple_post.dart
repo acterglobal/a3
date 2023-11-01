@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
@@ -43,7 +42,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: Form(
           key: _formKey,
-          child: _ImageBuilder(),
+          child: const _ImageBuilder(),
         ),
       ),
       actions: [
@@ -129,6 +128,8 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                 Navigator.of(context, rootNavigator: true).pop();
                 // FIXME due to #718. well lets at least try forcing a refresh upon route.
                 ref.invalidate(newsListProvider);
+                // Move to home which shows the news.
+                context.goNamed(Routes.main.name);
               } catch (err) {
                 EasyLoading.showError(
                   '$displayMsg failed: \n $err"',
@@ -152,7 +153,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
 }
 
 class _ImageBuilder extends ConsumerStatefulWidget {
-  const _ImageBuilder({super.key});
+  const _ImageBuilder();
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => __ImageBuilderState();
@@ -166,48 +167,50 @@ class __ImageBuilderState extends ConsumerState<_ImageBuilder> {
     final selectedImage = ref.watch(selectedImageProvider);
     final halfHeight = MediaQuery.of(context).size.height * 0.5;
     if (selectedImage != null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            constraints: BoxConstraints(
-              // make sure we always have enough space for the other items.
-              maxHeight: halfHeight,
-            ),
-            child: Center(
-              child: InkWell(
-                onTap: () {
-                  final imageNotifier =
-                      ref.read(selectedImageProvider.notifier);
-                  imageNotifier.state = null;
-                },
-                child: Image(
-                  image: XFileImage(selectedImage),
+      return Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              constraints: BoxConstraints(
+                // make sure we always have enough space for the other items.
+                maxHeight: halfHeight,
+              ),
+              child: Center(
+                child: InkWell(
+                  onTap: () {
+                    final imageNotifier =
+                        ref.read(selectedImageProvider.notifier);
+                    imageNotifier.state = null;
+                  },
+                  child: Image(
+                    image: XFileImage(selectedImage),
+                  ),
                 ),
               ),
             ),
-          ),
-          SizedBox(
-            height: 80,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: TextFormField(
-                controller: ref.read(textProvider),
-                key: NewsUpdateKeys.imageCaption,
-                textAlignVertical: TextAlignVertical.top,
-                decoration: const InputDecoration(
-                  hintText: 'caption',
-                  labelText: 'Image Caption',
+            SizedBox(
+              height: 80,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: TextFormField(
+                  controller: ref.read(textProvider),
+                  key: NewsUpdateKeys.imageCaption,
+                  textAlignVertical: TextAlignVertical.top,
+                  decoration: const InputDecoration(
+                    hintText: 'caption',
+                    labelText: 'Image Caption',
+                  ),
+                  expands: false,
+                  minLines: null,
+                  maxLines: 2,
+                  keyboardType: TextInputType.multiline,
                 ),
-                expands: false,
-                minLines: null,
-                maxLines: 2,
-                keyboardType: TextInputType.multiline,
               ),
             ),
-          ),
-          const SelectSpaceFormField(canCheck: 'CanPostNews'),
-        ],
+            const SelectSpaceFormField(canCheck: 'CanPostNews'),
+          ],
+        ),
       );
     }
 

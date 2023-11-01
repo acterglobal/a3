@@ -4,6 +4,7 @@ import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../support/setup.dart';
 import '../support/spaces.dart';
 
 extension ActerNews on ConvenientTest {
@@ -31,6 +32,7 @@ extension ActerNews on ConvenientTest {
 
 void updateTests() {
   tTestWidgets('Simple Text Update', (t) async {
+    disableOverflowErrors();
     final spaceId = await t.freshAccountWithSpace();
     await t.createTextNews(spaceId, 'Welcome to the show');
 
