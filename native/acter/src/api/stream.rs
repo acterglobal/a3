@@ -12,8 +12,9 @@ use matrix_sdk::{
 use matrix_sdk_ui::timeline::{BackPaginationStatus, PaginationOptions, Timeline};
 use ruma_common::EventId;
 use ruma_events::{
+    reaction::ReactionEventContent,
     receipt::ReceiptThread,
-    relation::Replacement,
+    relation::{Annotation, Replacement},
     room::{
         message::{
             AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
@@ -894,6 +895,36 @@ impl TimelineStream {
                     .public_read_receipt(public_read_receipt)
                     .private_read_receipt(private_read_receipt);
                 timeline.send_multiple_receipts(receipts).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn send_reaction(&self, event_id: String, key: String) -> Result<bool> {
+        if !self.is_joined() {
+            bail!("Can't send message to a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+        let event_id = EventId::parse(event_id)?;
+        let timeline = self.timeline.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::Reaction) {
+                    bail!("No permission to send reaction in this room");
+                }
+                let relates_to = Annotation::new(event_id, key);
+                let content = ReactionEventContent::new(relates_to);
+                timeline.send(content.into()).await;
                 Ok(true)
             })
             .await?

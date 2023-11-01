@@ -812,6 +812,9 @@ object TimelineStream {
     /// public_read_receipt: optional event id
     /// private_read_receipt: optional event id
     fn send_multiple_receipts(full_read: Option<string>, public_read_receipt: Option<string>, private_read_receipt: Option<string>) -> Future<Result<bool>>;
+
+    /// send reaction about existing event
+    fn send_reaction(event_id: string, key: string) -> Future<Result<bool>>;
 }
 
 object Convo {
@@ -869,9 +872,6 @@ object Convo {
 
     /// Send a request to notify this room that the user has read specific event.
     fn read_receipt(event_id: string) -> Future<Result<bool>>;
-
-    /// Send reaction about existing event
-    fn send_reaction(event_id: string, key: string) -> Future<Result<EventId>>;
 
     /// decrypted image file data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable

@@ -37,9 +37,7 @@ use ruma_common::{
     OwnedRoomAliasId, OwnedRoomId, OwnedUserId, TransactionId, UserId,
 };
 use ruma_events::{
-    reaction::ReactionEventContent,
     receipt::ReceiptThread,
-    relation::Annotation,
     room::{
         avatar::ImageInfo as AvatarImageInfo,
         join_rules::{AllowRule, JoinRule},
@@ -979,38 +977,6 @@ impl Room {
                 )
                 .await?;
                 Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn send_reaction(&self, event_id: String, key: String) -> Result<OwnedEventId> {
-        if !self.is_joined() {
-            bail!("Can't send message to a room we are not in");
-        }
-        let room = self.room.clone();
-
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
-
-        let event_id = EventId::parse(event_id)?;
-
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::Reaction) {
-                    bail!("No permission to send reaction in this room");
-                }
-                let relates_to = Annotation::new(event_id, key);
-                let content = ReactionEventContent::new(relates_to);
-                let txn_id = TransactionId::new();
-                let response = room.send(content, Some(&txn_id)).await?;
-                Ok(response.event_id)
             })
             .await?
     }
