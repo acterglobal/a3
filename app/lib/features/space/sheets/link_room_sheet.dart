@@ -5,8 +5,8 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/search.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
-import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -106,7 +106,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            parentSpaceSelector(context, ref),
+            parentSpaceDataUI(),
             searchUI(),
             Expanded(child: roomList()),
           ],
@@ -129,16 +129,26 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     );
   }
 
-  //Parent space selector
-  Widget parentSpaceSelector(BuildContext context, WidgetRef ref) {
-    return const Padding(
-      padding: EdgeInsets.all(16),
-      child: SelectSpaceFormField(
-        canCheck: 'CanLinkSpaces',
-        mandatory: true,
-        title: 'Parent space',
-        emptyText: '(none selected)',
-        selectTitle: 'Select parent space',
+  //Parent space
+  Widget parentSpaceDataUI() {
+    final spaceDetails = ref.watch(selectedSpaceDetailsProvider);
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: spaceDetails.when(
+        data: (space) {
+          return space == null
+              ? const SizedBox.shrink()
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Parent Space'),
+                    SpaceChip(space: space),
+                  ],
+                );
+        },
+        error: (e, s) => errorUI('error: ', e),
+        loading: () => loadingUI(),
       ),
     );
   }
@@ -147,7 +157,8 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   Widget roomList() {
     if (childRoomType == ChildRoomType.chat) {
       return chatsList();
-    } else if (childRoomType == ChildRoomType.space || childRoomType == ChildRoomType.recommendedSpace) {
+    } else if (childRoomType == ChildRoomType.space ||
+        childRoomType == ChildRoomType.recommendedSpace) {
       return spacesList();
     } else {
       return const SizedBox.shrink();
