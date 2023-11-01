@@ -1,15 +1,12 @@
-import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
-import 'package:acter/common/widgets/spaces/space_info.dart';
-import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
+import 'package:acter/features/space/model/keys.dart';
+import 'package:acter/features/space/widgets/shell_header.dart';
 import 'package:acter/features/space/widgets/top_nav.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/features/space/widgets/member_avatar.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Space;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +44,11 @@ class _SpaceShellState extends ConsumerState<SpaceShell> {
           child: Column(
             children: <Widget>[
               _ShellToolbar(profile.space, widget.spaceIdOrAlias),
-              _ShellHeader(widget.spaceIdOrAlias, profile.profile),
+              ShellHeader(
+                key: SpaceKeys.header,
+                widget.spaceIdOrAlias,
+                profile.profile,
+              ),
               TopNavBar(
                 spaceId: widget.spaceIdOrAlias,
                 key: Key('${widget.spaceIdOrAlias}::top-nav'),
@@ -185,97 +186,6 @@ class _ShellToolbar extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _ShellHeader extends ConsumerWidget {
-  final String spaceId;
-  final ProfileData spaceProfile;
-  const _ShellHeader(this.spaceId, this.spaceProfile);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 10),
-      child: Row(
-        children: <Widget>[
-          SpaceParentBadge(
-            roomId: spaceId,
-            badgeSize: 40,
-            child: ActerAvatar(
-              mode: DisplayMode.Space,
-              displayName: spaceProfile.displayName,
-              tooltip: TooltipStyle.None,
-              uniqueId: spaceId,
-              avatar: spaceProfile.getAvatarImage(),
-              size: 80,
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Text(
-                  spaceProfile.displayName ?? spaceId,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10, left: 10),
-                child: SpaceInfo(spaceId: spaceId),
-              ),
-              Consumer(builder: spaceMembersBuilder),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget spaceMembersBuilder(
-    BuildContext context,
-    WidgetRef ref,
-    Widget? child,
-  ) {
-    final spaceMembers = ref.watch(spaceMembersProvider(spaceId));
-    return spaceMembers.when(
-      data: (members) {
-        final membersCount = members.length;
-        if (membersCount > 5) {
-          // too many to display, means we limit to 5
-          members = members.sublist(0, 5);
-        }
-        return Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: GestureDetector(
-            onTap: () => context.goNamed(
-              Routes.spaceMembers.name,
-              pathParameters: {'spaceId': spaceId},
-            ),
-            child: Wrap(
-              direction: Axis.horizontal,
-              spacing: -12,
-              children: [
-                ...members.map(
-                  (a) => MemberAvatar(member: a),
-                ),
-                if (membersCount > 5)
-                  CircleAvatar(
-                    child: Text(
-                      '+${membersCount - 5}',
-                      textAlign: TextAlign.center,
-                      textScaleFactor: 0.8,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        );
-      },
-      error: (error, stack) => Text('Loading members failed: $error'),
-      loading: () => const CircularProgressIndicator(),
     );
   }
 }

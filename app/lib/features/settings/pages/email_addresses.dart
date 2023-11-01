@@ -214,8 +214,8 @@ class EmailAddressesPage extends ConsumerWidget {
   }
 
   Future<void> addEmailAddress(BuildContext context, WidgetRef ref) async {
-    final client = ref.read(clientProvider);
-    final manager = client!.threePidManager();
+    final client = ref.read(alwaysClientProvider);
+    final manager = client.threePidManager();
     final newValue = await showDialog<String>(
       context: context,
       builder: (BuildContext context) => const AddEmailAddr(),

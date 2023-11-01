@@ -5,6 +5,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/features/home/data/keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -23,9 +24,13 @@ class MySpacesSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'My Spaces',
-          style: Theme.of(context).textTheme.titleMedium,
+        InkWell(
+          key: DashboardKeys.widgetMySpacesHeader,
+          onTap: () => context.pushNamed(Routes.spaces.name),
+          child: Text(
+            'My Spaces',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
         ),
         spaces.isEmpty
             ? const _NoSpacesWidget()

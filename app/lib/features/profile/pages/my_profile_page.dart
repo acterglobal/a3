@@ -4,6 +4,7 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
+import 'package:acter/features/profile/model/keys.dart';
 import 'package:acter/features/profile/widgets/profile_item_tile.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -187,37 +188,51 @@ class MyProfile extends ConsumerWidget {
                           ),
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(data.profile.displayName ?? ''),
-                          IconButton(
-                            iconSize: 14,
-                            icon: const Icon(Atlas.pencil_edit_thin),
-                            onPressed: () async {
-                              await updateDisplayName(data, context, ref);
-                            },
+                      GestureDetector(
+                        onTap: () async {
+                          await updateDisplayName(data, context, ref);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                data.profile.displayName ?? '',
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: Icon(Atlas.pencil_edit_thin, size: 14),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(userId),
-                          IconButton(
-                            iconSize: 14,
-                            icon: const Icon(Atlas.pages),
-                            onPressed: () {
-                              Clipboard.setData(
-                                ClipboardData(text: userId),
-                              );
-                              customMsgSnackbar(
-                                context,
-                                'Username copied to clipboard',
-                              );
-                            },
+                      GestureDetector(
+                        onTap: () {
+                          Clipboard.setData(
+                            ClipboardData(text: userId),
+                          );
+                          customMsgSnackbar(
+                            context,
+                            'Username copied to clipboard',
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                userId,
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: Icon(Atlas.pages, size: 14),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                       const SizedBox(height: 5),
                       Container(
@@ -305,6 +320,7 @@ class MyProfile extends ConsumerWidget {
                         child: Column(
                           children: [
                             ProfileItemTile(
+                              gestureKey: MyProfileKeys.logout,
                               icon: Atlas.exit,
                               title: 'Logout',
                               onPressed: () =>

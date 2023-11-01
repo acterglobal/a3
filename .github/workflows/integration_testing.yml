@@ -11,6 +11,38 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  run_checker:
+    runs-on: ubuntu-latest
+    name: Check legibility
+    outputs:
+      should_run_all: ${{steps.PR.outputs.pr_found == 'true' && contains(steps.PR.outputs.pr_labels, 'ci-test-ui-all')}}
+      should_run_desktop: ${{steps.PR.outputs.pr_found == 'true' && contains(steps.PR.outputs.pr_labels, 'ci-test-ui-desktop')}}
+      should_run_emulator: ${{steps.PR.outputs.pr_found == 'true' && contains(steps.PR.outputs.pr_labels, 'ci-test-ui-emulators')}}
+      should_run_ios: ${{steps.PR.outputs.pr_found == 'true' && contains(steps.PR.outputs.pr_labels, 'ci-test-ui-ios')}}
+      should_run_android: ${{steps.PR.outputs.pr_found == 'true' && contains(steps.PR.outputs.pr_labels, 'ci-test-ui-android')}}
+    steps:
+      - uses: 8BitJonny/gh-get-current-pr@2.2.0
+        id: PR
+        with:
+          # Only return if PR is still open. (By default it returns PRs in any state.)
+          filterOutClosed: true
+          # Only return if PR is not in draft state. (By default it returns PRs in any state.)
+          # filterOutDraft: true
+
+      - run: echo "PR $prNumber $prTitle at $prUrl is labeled $prLabels. It should run a demo build; $contains"
+        if: steps.PR.outputs.pr_found == 'true'
+        env:
+          # Direct access to common PR properties
+          prNumber: ${{ steps.PR.outputs.number }}
+          prUrl: ${{ steps.PR.outputs.pr_url }}
+          prTitle: ${{ steps.PR.outputs.pr_title }}
+          prBody: ${{ steps.PR.outputs.pr_body }}
+          prCreatedAt: ${{ steps.PR.outputs.pr_created_at }}
+          prMergedAt: ${{ steps.PR.outputs.pr_merged_at }}
+          prClosedAt: ${{ steps.PR.outputs.pr_closed_at }}
+          prLabels: ${{ steps.PR.outputs.pr_labels }}
+          contains: ${{ contains(steps.PR.outputs.pr_labels, 'ci-test-ui') }}
+     
 
   rust:
     runs-on: ubuntu-latest
@@ -40,8 +72,6 @@ jobs:
           uploadLogs: false
           httpPort: 8118
           disableRateLimiting: true
-          customConfig: |
-            allow_guest_access: true
 
       - uses: rui314/setup-mold@v1
         name: "Setup mold linker"
@@ -82,6 +112,11 @@ jobs:
     runs-on: ubuntu-latest
     name: Flutter Desktop
     continue-on-error: true
+    needs:
+     - run_checker
+     
+    if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_all != 'false' && needs.run_checker.outputs.should_run_desktop != 'false' }}
+
     steps:
       - uses: actions/checkout@v2
 
@@ -115,11 +150,9 @@ jobs:
       - uses: michaelkaye/setup-matrix-synapse@main
         with:
           installer: poetry
-          uploadLogs: false
+          uploadLogs: true
           httpPort: 8118
           disableRateLimiting: true
-          customConfig: |
-            allow_guest_access: true
 
       - name: Initialize e2ee mock data
         run: cargo run -p acter-cli -- mock
@@ -131,32 +164,41 @@ jobs:
         run: flutter config --enable-linux-desktop
 
       - name: Build Native
-        run: cargo make --profile release desktop
+        run: cargo make desktop
 
-      # - name: Ensure ffi-interface is up to date
-      #   run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
+      - name: Flutter setup
+        working-directory: app
+        run: flutter pub get
 
       - name: Run flutter integration tests
         working-directory: app
         run: |
           export DISPLAY=:99
           sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
-          flutter pub get
-          flutter test -d linux integration_test/gherkin_suite_test.dart --dart-define CI=true --dart-define DEFAULT_HOMESERVER_URL=http://localhost:8118/ --dart-define DEFAULT_HOMESERVER_NAME=localhost
+          xvfb_pid=$!
+          flutter run integration_test/main_test.dart  \
+              -d linux \
+              --host-vmservice-port 9753 \
+              --disable-service-auth-codes \
+              --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib \
+              --dart-define DEFAULT_HOMESERVER_URL=http://localhost:8118/ \
+              --dart-define CI=true \
+              --dart-define DEFAULT_HOMESERVER_NAME=localhost \
+              &
+          subscript_pid=$!
 
-      - name: Generate Cucumber report
-        if: failure()
-        working-directory: util/cucumber_reporter
-        run: |
-          yarn install
-          node .
+          # actual manager runner
+          dart run convenient_test_manager_dart --enable-report-saver
+          exit_status=$?
+          kill "$xvfb_pid" "$subscript_pid"
+          exit exit_status
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
         if: failure()
         with:
-          name: linux-cucumber-report
-          path: util/cucumber_reporter/output
+          name: linux-desktop-convtest-report
+          path: /tmp/ConvenientTest/
 
       # file an error if this failed on `main` post-merge
       - name: Report issue
@@ -175,7 +217,9 @@ jobs:
   flutter-ios:
     runs-on: macos-latest
     name: iOS
-    if: github.ref == 'refs/heads/main'
+    needs:
+     - run_checker
+    if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_ios != 'false' || needs.run_checker.outputs.should_run_emulator != 'false' || needs.run_checker.outputs.should_run_all != 'false' }}
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
@@ -194,6 +238,7 @@ jobs:
       - name: Rust Android Setup
         run: cargo make setup-ios
 
+
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
@@ -206,12 +251,9 @@ jobs:
 
       - uses: michaelkaye/setup-matrix-synapse@main
         with:
-          installer: poetry
-          uploadLogs: false
+          uploadLogs: true
           httpPort: 8118
           disableRateLimiting: true
-          customConfig: |
-            allow_guest_access: true
 
       - name: Initialize e2ee mock data
         run: cargo run -p acter-cli -- mock
@@ -220,35 +262,44 @@ jobs:
           DEFAULT_HOMESERVER_URL: "http://localhost:8118"
 
       - name: Build Native
-        run: cargo make --profile release ios
-
-      # - name: Ensure ffi-interface is up to date
-      #   run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
+        run: cargo make ios-sim
 
       - uses: futureware-tech/simulator-action@v1
         with:
           model: 'iPhone 12'
 
+      - name: Flutter setup
+        working-directory: app
+        run: flutter pub get
+
       - name: Run flutter integration tests
         working-directory: app
         run: |
-          flutter pub get
-          flutter test -d ios integration_test/gherkin_suite_test.dart --dart-define CI=true --dart-define DEFAULT_HOMESERVER_URL=http://10.0.2.2:8118/ --dart-define DEFAULT_HOMESERVER_NAME=localhost
+          flutter run integration_test/main_test.dart  \
+              --host-vmservice-port 9753 \
+              --disable-service-auth-codes \
+              --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib \
+              --dart-define DEFAULT_HOMESERVER_URL=http://localhost:8118/ \
+              --dart-define DEFAULT_HOMESERVER_NAME=localhost \
+              --dart-define CONVENIENT_TEST_MANAGER_HOST=10.0.2.2 \
+              --dart-define DEFAULT_HOMESERVER_URL=http://10.0.2.2:8118/
+              --dart-define CI=true \
+              &
+          subscript_pid=$!
 
-      - name: Generate Cucumber report
-        if: failure()
-        working-directory: util/cucumber_reporter
-        run: |
-          yarn install
-          node .
+          # actual manager runner
+          dart run convenient_test_manager_dart --enable-report-saver
+          exit_status=$?
+          kill "$subscript_pid"
+          exit exit_status
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
         if: failure()
         with:
-          name: ios-cucumber-report
-          path: util/cucumber_reporter/output
-          
+          name: ios-convtest-report
+          path: /tmp/ConvenientTest/
+
       # file an error if this failed on `main` post-merge
       - name: Report issue
         if: ${{ github.ref == 'refs/heads/main' && failure() }}
@@ -266,7 +317,9 @@ jobs:
   flutter-android:
     runs-on: macos-latest
     name: Android
-    if: github.ref == 'refs/heads/main'
+    needs:
+     - run_checker
+    if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_android != 'false' || needs.run_checker.outputs.should_run_emulator != 'false' || needs.run_checker.outputs.should_run_all != 'false' }}
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
@@ -297,12 +350,9 @@ jobs:
 
       - uses: michaelkaye/setup-matrix-synapse@main
         with:
-          installer: poetry
-          uploadLogs: false
+          uploadLogs: true
           httpPort: 8118
           disableRateLimiting: true
-          customConfig: |
-            allow_guest_access: true
 
       - name: Initialize e2ee mock data
         run: cargo run -p acter-cli -- mock
@@ -311,10 +361,11 @@ jobs:
           DEFAULT_HOMESERVER_URL: "http://localhost:8118"
 
       - name: Build Native
-        run: cargo make --profile release android
+        run: cargo make android-dev
 
-      # - name: Ensure ffi-interface is up to date
-      #   run: git diff --exit-code acter_flutter_sdk/lib/acter_flutter_sdk_ffi.dart
+      - name: Flutter setup
+        working-directory: app
+        run: flutter pub get
 
       - name: Run integration tests on android
         uses: reactivecircus/android-emulator-runner@v2
@@ -328,23 +379,31 @@ jobs:
           disable-animations: true
           emulator-build: 7425822
           script: |
-            flutter pub get
-            flutter pub run build_runner build
-            flutter test -d android integration_test/gherkin_suite_test.dart --dart-define CI=true --dart-define DEFAULT_HOMESERVER_URL=http://10.0.2.2:8118/ --dart-define DEFAULT_HOMESERVER_NAME=localhost
+            cd app
+            flutter run integration_test/main_test.dart  \
+                --host-vmservice-port 9753 \
+                --disable-service-auth-codes \
+                --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib \
+                --dart-define DEFAULT_HOMESERVER_URL=http://localhost:8118/ \
+                --dart-define DEFAULT_HOMESERVER_NAME=localhost \
+                --dart-define CONVENIENT_TEST_MANAGER_HOST=10.0.2.2 \
+                --dart-define DEFAULT_HOMESERVER_URL=http://10.0.2.2:8118/
+                --dart-define CI=true \
+                &
+            subscript_pid=$!
 
-      - name: Generate Cucumber report
-        if: failure()
-        working-directory: util/cucumber_reporter
-        run: |
-          yarn install
-          node .
+            # actual manager runner
+            dart run convenient_test_manager_dart --enable-report-saver
+            exit_status=$?
+            kill "$subscript_pid"
+            exit exit_status
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
         if: failure()
         with:
-          name: android-cucumber-report
-          path: util/cucumber_reporter/output
+          name: android-convtest-report
+          path: /tmp/ConvenientTest/
 
       # file an error if this failed on `main` post-merge
       - name: Report issue

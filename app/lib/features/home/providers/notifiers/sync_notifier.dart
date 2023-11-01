@@ -17,8 +17,12 @@ class SyncNotifier extends StateNotifier<LocalSyncState> {
   late Stream<bool>? errorPoller;
   late Ref ref;
 
-  SyncNotifier(Client client, Ref ref) : super(const LocalSyncState(true)) {
-    startSync(client, ref);
+  SyncNotifier(Client? client, Ref ref) : super(const LocalSyncState(true)) {
+    if (client != null) {
+      startSync(client, ref);
+    } else {
+      state = const LocalSyncState(false, errorMsg: 'No active client');
+    }
   }
 
   Stream<String>? get notificationsStream => notifications;

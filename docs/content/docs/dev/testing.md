@@ -27,7 +27,7 @@ async fn testing_my_feature() -> Result<()> {
 }
 ```
 
-## Flutter
+## Flutter Widget tests
 
 _Note_: We currently don't have proper widget unit tests. So this is mainly here for when we do have them available.
 
@@ -409,18 +409,57 @@ HOMESERVER="http://10.0.0.1:8008" RUST_LOG="warn" cargo test -p acter-test -- --
 
 ### Flutter UI integration tests
 
-Flutter integration tests can be found `app/integration_test/features`. We use (a forked) [`flutter_gherkin`](https://github.com/acterglobal/flutter_gherkin) to write and run our tests.
+We are using `convenient_tests` framework to build and run flutter integration tests. The default test target is an Android Emulator. You need the above mentioned backend setup
 
-**Running**
+#### Running with the Manager
 
-To run the rust integration tests, you need a fresh integration testing infrastructure (see above) available at `$DEFAULT_HOMESERVER_URL` with the `$DEFAULT_HOMESERVER_NAME` set. The following will build the App and run the tests with on the default target (or you specify it via `-d`, e.g. `-d linux` or `-d windows`).
+**Requirements**:
 
-_Reminder_: If running against the testing/staging server, you need the registration token from Bitwarden to access the server.
+- To run the rust integration tests, you need a fresh integration testing infrastructure (see above) available at `$DEFAULT_HOMESERVER_URL` with the `$DEFAULT_HOMESERVER_NAME` set.
+- Have your test target ready: build the latest rust-sdk for it (e.g. `cargo make android-dev`), and have the emulator up and running
+
+To the run the tests from the interactive manager UI, start the manager in one terminal: `cd util/conv_test_man && flutter run` (`-d linux` / `-d macos` / `-d windows` for whichever is your desktop host), then from the `app` folder run the integration test version of the app by running:
 
 ```
-cd app
-flutter test integration_test/gherkin_suite_test.dart --dart-define DEFAULT_HOMESERVER_URL=$DEFAULT_HOMESERVER_URL --dart-define DEFAULT_HOMESERVER_NAME=$DEFAULT_HOMESERVER_NAME --dart-define REGISTRATION_TOKEN=$REGISTRATION_TOKEN
+    flutter run integration_test/main_test.dart --host-vmservice-port 9753 --disable-service-auth-codes --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib --dart-define DEFAULT_HOMESERVER_URL=$DEFAULT_HOMESERVER_URL --dart-define DEFAULT_HOMESERVER_NAME=$DEFAULT_HOMESERVER_NAME
 ```
+
+if you are running it with the Android emulator and have the server exposed on 8118 on your localhost, you need point the urls to `10.0.2.2` and also expose the `CONVENIENT_TEST_MANAGER_HOST`
+IP as follows:
+
+```
+    flutter run integration_test/main_test.dart --host-vmservice-port 9753 --disable-service-auth-codes --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib --dart-define CONVENIENT_TEST_MANAGER_HOST=10.0.2.2 --dart-define DEFAULT_HOMESERVER_URL=http:/10.0.2.2:8118/ --dart-define DEFAULT_HOMESERVER_NAME=localhost
+```
+
+Once the app is up and ready click "reconnect" in the manager and then you can select the tests you want to run.
+
+#### Running from the cli
+
+**Requirements**:
+
+- To run the rust integration tests, you need a fresh integration testing infrastructure (see above) available at `$DEFAULT_HOMESERVER_URL` with the `$DEFAULT_HOMESERVER_NAME` set.
+- Have your test target ready: build the latest rust-sdk for it (e.g. `cargo make android-dev`), and have the emulator up and running
+
+From the `app` folder run the integration test version of the app by running:
+
+```
+    flutter run integration_test/main_test.dart --host-vmservice-port 9753 --disable-service-auth-codes --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib --dart-define DEFAULT_HOMESERVER_URL=$DEFAULT_HOMESERVER_URL --dart-define DEFAULT_HOMESERVER_NAME=$DEFAULT_HOMESERVER_NAME
+```
+
+if you are running it with the Android emulator and have the server exposed on 8118 on your localhost, you need point the urls to `10.0.2.2` and also expose the `CONVENIENT_TEST_MANAGER_HOST`
+IP as follows:
+
+```
+    flutter run integration_test/main_test.dart --host-vmservice-port 9753 --disable-service-auth-codes --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib --dart-define CONVENIENT_TEST_MANAGER_HOST=10.0.2.2 --dart-define DEFAULT_HOMESERVER_URL=http:/10.0.2.2:8118/ --dart-define DEFAULT_HOMESERVER_NAME=localhost
+```
+
+Once ready, start the automatic full cli-runner by running (from `/app`):
+
+```
+dart run convenient_test_manager_dart --enable-report-saver
+```
+
+That will create a folder with the entire report in your `$TMPFOLDER/ConvenientTest/`
 
 **From Visual Studio Code**
 

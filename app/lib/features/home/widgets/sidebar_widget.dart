@@ -14,7 +14,7 @@ class SidebarWidget extends ConsumerWidget {
   final NavigationRailLabelType labelType;
 
   const SidebarWidget({
-    super.key,
+    super.key = Keys.mainNav,
     required this.labelType,
   });
 

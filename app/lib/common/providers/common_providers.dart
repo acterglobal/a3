@@ -32,6 +32,15 @@ Future<ProfileData> getProfileData(Account account) async {
   return ProfileData(displayName.text(), avatar.data());
 }
 
+final myUserIdStrProvider = StateProvider((ref) {
+  final client = ref.watch(clientProvider);
+
+  if (client == null) {
+    throw NoClientException();
+  }
+  return client.userId().toString();
+});
+
 final accountProvider = FutureProvider((ref) async {
   final client = ref.watch(clientProvider);
   if (client == null) {
@@ -56,7 +65,10 @@ class EmailAddresses {
 
 final emailAddressesProvider = FutureProvider((ref) async {
   final client = ref.watch(clientProvider);
-  final threePidManager = client!.threePidManager();
+  if (client == null) {
+    throw NoClientException();
+  }
+  final threePidManager = client.threePidManager();
   final confirmed =
       asDartStringList(await threePidManager.confirmedEmailAddresses());
   final requested =

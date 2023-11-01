@@ -1,3 +1,4 @@
+import 'package:acter/common/models/keys.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +16,13 @@ void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Atlas.warning,color: Colors.red,),
-            const SizedBox(height:10,),
+            const Icon(
+              Atlas.warning,
+              color: Colors.red,
+            ),
+            const SizedBox(
+              height: 10,
+            ),
             Text(AppLocalizations.of(context)!.logOut),
           ],
         ),
@@ -37,42 +43,44 @@ void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
         actions: <Widget>[
           Row(
             children: [
-               Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey),),
-              child: TextButton(
-                onPressed: () => ctx.pop(),
-                child: const Text(
-                  'No',
-                  style: TextStyle(color: Colors.white,fontSize: 17),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey),
+                  ),
+                  child: TextButton(
+                    onPressed: () => ctx.pop(),
+                    child: const Text(
+                      'No',
+                      key: LogoutDialogKeys.cancel,
+                      style: TextStyle(color: Colors.white, fontSize: 17),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-           const SizedBox(width: 10),
-            Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.red,
-                  border: Border.all(color: Colors.red),
-                  borderRadius: BorderRadius.circular(8),),
-              child: TextButton(
-                onPressed: () async {
-                  await ref.read(authStateProvider.notifier).logout(ctx);
-                },
-                child: const Text(
-                  'Yes',
-                  style: TextStyle(color: Colors.white,fontSize: 17),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    border: Border.all(color: Colors.red),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: TextButton(
+                    onPressed: () async {
+                      await ref.read(authStateProvider.notifier).logout(ctx);
+                    },
+                    child: const Text(
+                      'Yes',
+                      key: LogoutDialogKeys.confirm,
+                      style: TextStyle(color: Colors.white, fontSize: 17),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
             ],
           ),
-         
-        
         ],
       );
     },

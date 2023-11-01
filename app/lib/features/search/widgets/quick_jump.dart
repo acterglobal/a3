@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/search/providers/search.dart';
 import 'package:acter/features/search/widgets/quick_actions_builder.dart';
 import 'package:acter/features/search/widgets/spaces_builder.dart';
@@ -34,6 +35,26 @@ class QuickJump extends ConsumerWidget {
         children: List.from(
           [
             IconButton(
+              key: QuickJumpKeys.profile,
+              icon: const Padding(
+                padding: EdgeInsets.all(5),
+                child: Icon(
+                  Atlas.account_thin,
+                  size: 24,
+                ),
+              ),
+              style: IconButton.styleFrom(
+                side: BorderSide(
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
+                ),
+              ),
+              onPressed: () {
+                navigateTo(route: Routes.myProfile);
+              },
+            ),
+            IconButton(
+              key: QuickJumpKeys.settings,
               icon: const Padding(
                 padding: EdgeInsets.all(5),
                 child: Icon(
@@ -178,6 +199,7 @@ class QuickJump extends ConsumerWidget {
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

@@ -222,39 +222,44 @@ Future<void> initializeNotifications() async {
     onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
   );
 
-  // To be informed that the device's token has been updated by the operating system
-  // You should update your servers with this token
-  Push.instance.onNewToken.listen((token) {
-    // FIXME: how to identify which clients are connected to this?
-    debugPrint('Just got a new FCM registration token: $token');
-    onNewToken(token);
-  });
-
-  // Handle notification launching app from terminated state
-  Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data) {
-    if (data != null) {
-      debugPrint('Notification tap launched app from terminated state:\n'
-          'RemoteMessage: $data \n');
-      handleMessageTap(data);
-    }
-  });
-
-  // Handle notification taps
-  Push.instance.onNotificationTap.listen((data) {
-    handleMessageTap(data);
-  });
-
-  // Handle push notifications
-  Push.instance.onMessage.listen((message) async {
-    await handleMessage(message, background: false);
-  });
-
-  // Handle push notifications on background - in iOS we are doing that in
-  // the other instance.
-  if (!Platform.isIOS) {
-    Push.instance.onBackgroundMessage.listen((message) async {
-      await handleMessage(message, background: true);
+  try {
+    // Handle notification launching app from terminated state
+    Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data) {
+      if (data != null) {
+        debugPrint('Notification tap launched app from terminated state:\n'
+            'RemoteMessage: $data \n');
+        handleMessageTap(data);
+      }
     });
+
+    // Handle notification taps
+    Push.instance.onNotificationTap.listen((data) {
+      handleMessageTap(data);
+    });
+
+    // Handle push notifications
+    Push.instance.onMessage.listen((message) async {
+      await handleMessage(message, background: false);
+    });
+
+    // Handle push notifications on background - in iOS we are doing that in
+    // the other instance.
+    if (!Platform.isIOS) {
+      Push.instance.onBackgroundMessage.listen((message) async {
+        await handleMessage(message, background: true);
+      });
+    }
+
+    // To be informed that the device's token has been updated by the operating system
+    // You should update your servers with this token
+    Push.instance.onNewToken.listen((token) {
+      // FIXME: how to identify which clients are connected to this?
+      debugPrint('Just got a new FCM registration token: $token');
+      onNewToken(token);
+    });
+  } catch (e) {
+    // this fails on hot-reload and in integration tests... if so, ignore for now
+    debugPrint('Push initialization error: $e');
   }
 }
 

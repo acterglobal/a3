@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/activities/providers/notifications_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/providers/navigation.dart';
@@ -205,7 +206,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                         //In desktop, we have ability to adjust windows res,
                         // adjust to navbar as primary to smaller views.
                         Breakpoints.smallAndUp: SlotLayout.from(
-                          key: const Key('Bottom Navigation Small'),
+                          key: Keys.mainNav,
                           inAnimation: AdaptiveScaffold.bottomToTop,
                           outAnimation: AdaptiveScaffold.topToBottom,
                           builder: (BuildContext ctx) => BottomNavigationBar(
