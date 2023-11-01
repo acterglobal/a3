@@ -350,7 +350,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         ),
                         const SizedBox(height: 40),
                         authState
-                            ? const CircularProgressIndicator()
+                            ? const Center(child: CircularProgressIndicator())
                             : DefaultButton(
                                 key: RegisterPage.submitBtn,
                                 onPressed: handleSubmit,

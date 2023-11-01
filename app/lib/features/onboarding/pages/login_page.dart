@@ -185,7 +185,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         ),
                         const SizedBox(height: 40),
                         authState
-                            ? const CircularProgressIndicator()
+                            ? const Center(child: CircularProgressIndicator())
                             : DefaultButton(
                                 key: LoginPageKeys.submitBtn,
                                 onPressed: () => handleSubmit(context),

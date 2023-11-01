@@ -77,48 +77,42 @@ class _NotificationSettingsTile extends ConsumerWidget {
         itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
           PopupMenuItem<String>(
             value: 'all',
-            child: ListTile(
-              selected: curNotifStatus == 'all',
-              title: const Text('All Messages'),
-              trailing: curNotifStatus == 'all'
-                  ? const Icon(Atlas.check_circle, size: 18)
-                  : null,
+            child: notificationSettingItemUI(
+              curNotifStatus == 'all',
+              'All Messages',
             ),
           ),
           PopupMenuItem<String>(
             value: 'mentions',
-            child: ListTile(
-              selected: curNotifStatus == 'mentions',
-              title: const Text('Mentions and Keywords only'),
-              trailing: curNotifStatus == 'mentions'
-                  ? const Icon(Atlas.check_circle, size: 18)
-                  : null,
+            child: notificationSettingItemUI(
+              curNotifStatus == 'mentions',
+              'Mentions and Keywords only',
             ),
           ),
           PopupMenuItem<String>(
             value: 'muted',
-            child: ListTile(
-              selected: curNotifStatus == 'muted',
-              title: const Text('Muted'),
-              trailing: curNotifStatus == 'muted'
-                  ? const Icon(Atlas.check_circle, size: 18)
-                  : null,
+            child: notificationSettingItemUI(
+              curNotifStatus == 'muted',
+              'Muted',
             ),
           ),
           PopupMenuItem<String>(
             value: '',
-            child: ListTile(
-              selected: curNotifStatus == '',
-              title: Text(
-                'Default (${notifToText(defaultNotificationStatus.valueOrNull ?? '') ?? 'unedefined'})',
-              ),
-              trailing: curNotifStatus == ''
-                  ? const Icon(Atlas.check_circle, size: 18)
-                  : null,
+            child: notificationSettingItemUI(
+              curNotifStatus == '',
+              'Default (${notifToText(defaultNotificationStatus.valueOrNull ?? '') ?? 'unedefined'})',
             ),
           ),
         ],
       ),
+    );
+  }
+
+  ListTile notificationSettingItemUI(bool isSelected, String title) {
+    return ListTile(
+      selected: isSelected,
+      title: Text(title),
+      trailing: isSelected ? const Icon(Atlas.check_circle, size: 18) : null,
     );
   }
 }
