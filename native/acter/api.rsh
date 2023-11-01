@@ -870,9 +870,6 @@ object Convo {
     /// on every key stroke, since it will do nothing while typing is active.
     fn typing_notice(typing: bool) -> Future<Result<bool>>;
 
-    /// Send a request to notify this room that the user has read specific event.
-    fn read_receipt(event_id: string) -> Future<Result<bool>>;
-
     /// decrypted image file data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen

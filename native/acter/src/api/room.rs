@@ -960,27 +960,6 @@ impl Room {
             .await?
     }
 
-    pub async fn read_receipt(&self, event_id: String) -> Result<bool> {
-        if !self.is_joined() {
-            bail!("Can't send read_receipt to a room we are not in");
-        }
-        let room = self.room.clone();
-
-        let event_id = EventId::parse(event_id)?;
-
-        RUNTIME
-            .spawn(async move {
-                room.send_single_receipt(
-                    create_receipt::v3::ReceiptType::Read,
-                    ReceiptThread::Unthreaded,
-                    event_id,
-                )
-                .await?;
-                Ok(true)
-            })
-            .await?
-    }
-
     pub async fn image_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
         if !self.is_joined() {
             bail!("Can't read message as image from a room we are not in");
