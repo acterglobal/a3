@@ -78,11 +78,10 @@ class RelatedSpacesPage extends ConsumerWidget {
                         onTap: () => context.pushNamed(
                           Routes.linkSpace.name,
                           pathParameters: {'spaceId': spaceIdOrAlias},
-                          queryParameters: {'spaceId': spaceIdOrAlias},
                         ),
                         child: const Row(
                           children: <Widget>[
-                            Text('Link Space'),
+                            Text('Link existing Space'),
                             Spacer(),
                             Icon(Atlas.connection),
                           ],

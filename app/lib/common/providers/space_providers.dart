@@ -183,9 +183,9 @@ final briefSpaceItemsProviderWithMembership =
   return items;
 });
 
-final spaceSearchValueProvider = StateProvider<String?>((ref) => null);
+final spaceSearchValueProvider = StateProvider.autoDispose<String?>((ref) => null);
 
-final searchedSpacesProvider = FutureProvider<List<SpaceItem>>((ref) async {
+final searchedSpacesProvider = FutureProvider.autoDispose<List<SpaceItem>>((ref) async {
   final allSpaces =
       await ref.read(briefSpaceItemsProviderWithMembership.future);
   final searchValue = ref.watch(spaceSearchValueProvider);

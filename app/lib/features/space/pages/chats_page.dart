@@ -70,11 +70,10 @@ class SpaceChatsPage extends ConsumerWidget {
                           onTap: () => context.pushNamed(
                             Routes.linkChat.name,
                             pathParameters: {'spaceId': spaceIdOrAlias},
-                            queryParameters: {'spaceId': spaceIdOrAlias},
                           ),
                           child: const Row(
                             children: <Widget>[
-                              Text('Link Chat'),
+                              Text('Link existing Chat'),
                               Spacer(),
                               Icon(Atlas.chats),
                             ],

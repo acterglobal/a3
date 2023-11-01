@@ -27,10 +27,10 @@ class _LinkChatPageConsumerState extends ConsumerState<LinkChatPage> {
 
   @override
   void initState() {
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
       selectParentSpaceData();
     });
-    super.initState();
   }
 
   //Select parent space data
@@ -46,15 +46,12 @@ class _LinkChatPageConsumerState extends ConsumerState<LinkChatPage> {
     final selectedParentSpaceId = ref.watch(selectedSpaceIdProvider);
     if (selectedParentSpaceId == null) return;
     final sp = ref.watch(spaceRelationsOverviewProvider(selectedParentSpaceId));
-    sp.when(
-      data: (space) {
+    sp.whenData( (space) {
         subChatsIds.clear();
         for (int i = 0; i < space.knownChats.length; i++) {
           subChatsIds.add(space.knownChats[i].getRoomId().toString());
         }
       },
-      error: (e, s) => Container(),
-      loading: () => Container(),
     );
   }
 
@@ -66,7 +63,7 @@ class _LinkChatPageConsumerState extends ConsumerState<LinkChatPage> {
     fetchKnownSubChatsData();
 
     return SideSheet(
-      header: 'Link Sub-Chat',
+      header: 'Link as Spacechat',
       body: SizedBox(
         height: size.height - 120,
         child: Column(
@@ -95,7 +92,7 @@ class _LinkChatPageConsumerState extends ConsumerState<LinkChatPage> {
         canCheck: 'CanLinkSpaces',
         mandatory: true,
         title: 'Parent space',
-        emptyText: 'optional parent space',
+        emptyText: '(none selected)',
         selectTitle: 'Select parent space',
       ),
     );
@@ -159,7 +156,7 @@ class _LinkChatPageConsumerState extends ConsumerState<LinkChatPage> {
         final isLinked = subChatsIds.contains(roomId);
 
         return widget.parentSpaceId == roomId
-            ? Container()
+            ? const SizedBox.shrink()
             : ListTile(
                 enabled: canLink,
                 leading: ActerAvatar(
@@ -199,7 +196,7 @@ class _LinkChatPageConsumerState extends ConsumerState<LinkChatPage> {
               );
       },
       skipLoadingOnReload: false,
-      error: (err, stackTrace) => Container(),
+      error: (e, s) => Center(child: Text('Loading room failed: $e')),
       loading: () => Container(),
     );
   }

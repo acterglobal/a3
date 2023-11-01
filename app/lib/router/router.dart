@@ -380,7 +380,7 @@ List<RouteBase> makeRoutes(Ref ref) {
             );
           },
           child: LinkChatPage(
-            parentSpaceId: state.uri.queryParameters['spaceId'],
+            parentSpaceId: state.pathParameters['spaceId'],
           ),
         );
       },
@@ -404,7 +404,7 @@ List<RouteBase> makeRoutes(Ref ref) {
             );
           },
           child: LinkSpacePage(
-            parentSpaceId: state.uri.queryParameters['spaceId'],
+            parentSpaceId: state.pathParameters['spaceId'],
           ),
         );
       },

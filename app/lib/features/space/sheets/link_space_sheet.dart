@@ -25,10 +25,10 @@ class _LinkSpacePageConsumerState extends ConsumerState<LinkSpacePage> {
 
   @override
   void initState() {
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
       selectParentSpaceData();
     });
-    super.initState();
   }
 
   //Select parent space data
@@ -44,15 +44,13 @@ class _LinkSpacePageConsumerState extends ConsumerState<LinkSpacePage> {
     final selectedParentSpaceId = ref.watch(selectedSpaceIdProvider);
     if (selectedParentSpaceId == null) return;
     final sp = ref.watch(spaceRelationsOverviewProvider(selectedParentSpaceId));
-    sp.when(
-      data: (space) {
+    sp.whenData(
+      (space) {
         subSpacesIds.clear();
         for (int i = 0; i < space.knownSubspaces.length; i++) {
           subSpacesIds.add(space.knownSubspaces[i].getRoomId().toString());
         }
       },
-      error: (e, s) => Container(),
-      loading: () => Container(),
     );
   }
 
@@ -92,7 +90,7 @@ class _LinkSpacePageConsumerState extends ConsumerState<LinkSpacePage> {
         canCheck: 'CanLinkSpaces',
         mandatory: true,
         title: 'Parent space',
-        emptyText: 'optional parent space',
+        emptyText: '(none selected)',
         selectTitle: 'Select parent space',
       ),
     );
@@ -162,7 +160,7 @@ class _LinkSpacePageConsumerState extends ConsumerState<LinkSpacePage> {
         membership == null ? false : membership.canString('CanLinkSpaces');
     final isLinked = subSpacesIds.contains(item.roomId);
     return widget.parentSpaceId == roomId
-        ? Container()
+        ? const SizedBox.shrink()
         : ListTile(
             enabled: canLink,
             leading: ActerAvatar(
