@@ -766,7 +766,7 @@ object TimelineStream {
     /// modify the plain text message
     fn edit_plain_message(event_id: string, new_msg: string) -> Future<Result<bool>>;
 
-    /// send reply as plain text
+    /// send reply as plain text to event
     fn send_plain_reply(msg: string, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 
     /// send the formatted text message
@@ -775,7 +775,7 @@ object TimelineStream {
     /// modify the formatted text message
     fn edit_formatted_message(event_id: string, new_msg: string) -> Future<Result<bool>>;
 
-    /// send reply as formatted text
+    /// send reply as formatted text to event
     fn send_formatted_reply(markdown: string, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 
     /// send the image message
@@ -784,7 +784,7 @@ object TimelineStream {
     /// modify the image message
     fn edit_image_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>) -> Future<Result<bool>>;
 
-    /// send reply as image
+    /// send reply as image to event
     fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 
     /// send the audio message
@@ -793,7 +793,7 @@ object TimelineStream {
     /// modify the audio message
     fn edit_audio_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>) -> Future<Result<bool>>;
 
-    /// send reply as audio
+    /// send reply as audio to event
     fn send_audio_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 
     /// send the video message
@@ -802,7 +802,7 @@ object TimelineStream {
     /// modify the video message
     fn edit_video_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>) -> Future<Result<bool>>;
 
-    /// send reply as video
+    /// send reply as video to event
     fn send_video_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 
     /// send the file message
@@ -811,7 +811,7 @@ object TimelineStream {
     /// modify the file message
     fn edit_file_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>) -> Future<Result<bool>>;
 
-    /// send reply as file
+    /// send reply as file to event
     fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 
     /// send the location message
@@ -820,7 +820,7 @@ object TimelineStream {
     /// modify the location message
     fn edit_location_message(event_id: string, body: string, geo_uri: string) -> Future<Result<bool>>;
 
-    /// send reply as location
+    /// send reply as location to event
     fn send_location_reply(body: string, geo_uri: string, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 
     /// send single receipt
@@ -828,13 +828,13 @@ object TimelineStream {
     /// thread: Main | Unthreaded
     fn send_single_receipt(receipt_type: string, thread: string, event_id: string) -> Future<Result<bool>>;
 
-    /// send multiple receipts
+    /// send 3 types of receipts at once
     /// full_read: optional event id
     /// public_read_receipt: optional event id
     /// private_read_receipt: optional event id
     fn send_multiple_receipts(full_read: Option<string>, public_read_receipt: Option<string>, private_read_receipt: Option<string>) -> Future<Result<bool>>;
 
-    /// send reaction about existing event
+    /// send reaction to event
     fn send_reaction(event_id: string, key: string) -> Future<Result<bool>>;
 }
 

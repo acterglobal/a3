@@ -34610,7 +34610,7 @@ class TimelineStream {
     return tmp10;
   }
 
-  /// send reply as plain text
+  /// send reply as plain text to event
   Future<bool> sendPlainReply(
     String msg,
     String eventId,
@@ -34768,7 +34768,7 @@ class TimelineStream {
     return tmp10;
   }
 
-  /// send reply as formatted text
+  /// send reply as formatted text to event
   Future<bool> sendFormattedReply(
     String markdown,
     String eventId,
@@ -35092,7 +35092,7 @@ class TimelineStream {
     return tmp30;
   }
 
-  /// send reply as image
+  /// send reply as image to event
   Future<bool> sendImageReply(
     String uri,
     String name,
@@ -35461,7 +35461,7 @@ class TimelineStream {
     return tmp26;
   }
 
-  /// send reply as audio
+  /// send reply as audio to event
   Future<bool> sendAudioReply(
     String uri,
     String name,
@@ -35869,7 +35869,7 @@ class TimelineStream {
     return tmp34;
   }
 
-  /// send reply as video
+  /// send reply as video to event
   Future<bool> sendVideoReply(
     String uri,
     String name,
@@ -36225,7 +36225,7 @@ class TimelineStream {
     return tmp22;
   }
 
-  /// send reply as file
+  /// send reply as file to event
   Future<bool> sendFileReply(
     String uri,
     String name,
@@ -36460,7 +36460,7 @@ class TimelineStream {
     return tmp14;
   }
 
-  /// send reply as location
+  /// send reply as location to event
   Future<bool> sendLocationReply(
     String body,
     String geoUri,
@@ -36618,7 +36618,7 @@ class TimelineStream {
     return tmp14;
   }
 
-  /// send multiple receipts
+  /// send 3 types of receipts at once
   /// full_read: optional event id
   /// public_read_receipt: optional event id
   /// private_read_receipt: optional event id
@@ -36711,7 +36711,7 @@ class TimelineStream {
     return tmp20;
   }
 
-  /// send reaction about existing event
+  /// send reaction to event
   Future<bool> sendReaction(
     String eventId,
     String key,
