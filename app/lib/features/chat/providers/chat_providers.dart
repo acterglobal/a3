@@ -18,9 +18,9 @@ final chatStateProvider =
   (ref, convo) => ChatRoomNotifier(ref: ref, convo: convo),
 );
 
-final chatSearchValueProvider = StateProvider<String?>((ref) => null);
+final chatSearchValueProvider = StateProvider.autoDispose<String?>((ref) => null);
 
-final searchedChatsProvider = FutureProvider<List<Convo>>((ref) async {
+final searchedChatsProvider = FutureProvider.autoDispose<List<Convo>>((ref) async {
   final allRooms = ref.watch(chatsProvider);
   final searchValue = ref.watch(chatSearchValueProvider);
   if (searchValue == null || searchValue.isEmpty) {

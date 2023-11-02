@@ -6,7 +6,6 @@ import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/common/widgets/spaces/space_hierarchy_card.dart';
 import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
-import 'package:acter/features/space/sheets/link_room_sheet.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -77,9 +76,8 @@ class RelatedSpacesPage extends ConsumerWidget {
                       ),
                       PopupMenuItem(
                         onTap: () => context.pushNamed(
-                          Routes.linkRoom.name,
+                          Routes.linkSubspace.name,
                           pathParameters: {'spaceId': spaceIdOrAlias},
-                          queryParameters: {'childRoomType': ChildRoomType.space.name},
                         ),
                         child: const Row(
                           children: <Widget>[
@@ -210,11 +208,8 @@ class RelatedSpacesPage extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.neutral5,
                   ),
                   onPressed: () => context.pushNamed(
-                    Routes.linkRoom.name,
+                    Routes.linkRecommended.name,
                     pathParameters: {'spaceId': spaceIdOrAlias},
-                    queryParameters: {
-                      'childRoomType': ChildRoomType.recommendedSpace.name,
-                    },
                   ),
                 ),
               ];

@@ -20,12 +20,14 @@ enum ChildRoomType {
 }
 
 class LinkRoomPage extends ConsumerStatefulWidget {
-  final String? parentSpaceId;
-  final String? childRoomType;
+  final String parentSpaceId;
+  final String pageTitle;
+  final ChildRoomType childRoomType;
 
   const LinkRoomPage({
     super.key,
     required this.parentSpaceId,
+    required this.pageTitle,
     required this.childRoomType,
   });
 
@@ -34,8 +36,6 @@ class LinkRoomPage extends ConsumerStatefulWidget {
 }
 
 class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
-  ChildRoomType childRoomType = ChildRoomType.space;
-  String sheetHeader = '';
   final TextEditingController searchTextEditingController =
       TextEditingController();
   final List<String> childRoomsIds = [];
@@ -45,39 +45,18 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      initData();
       selectParentSpaceData();
       fetchKnownSubChatsData();
     });
   }
 
-  //Select parent space data
-  void initData() {
-    //Set data based on the childRoomType
-    if (widget.childRoomType == ChildRoomType.chat.name) {
-      childRoomType = ChildRoomType.chat;
-      sheetHeader = 'Link as Space-chat';
-    } else if (widget.childRoomType == ChildRoomType.space.name) {
-      childRoomType = ChildRoomType.space;
-      sheetHeader = 'Link Sub-Space';
-    } else if (widget.childRoomType == ChildRoomType.recommendedSpace.name) {
-      childRoomType = ChildRoomType.recommendedSpace;
-      sheetHeader = 'Link Recommended-Space';
-    } else {
-      childRoomType = ChildRoomType.space;
-      sheetHeader = 'Link Sub-Space';
-    }
-  }
-
-  //Select parent space data
+//Select parent space data
   void selectParentSpaceData() {
-    if (widget.parentSpaceId != null) {
-      final notifier = ref.read(selectedSpaceIdProvider.notifier);
-      notifier.state = widget.parentSpaceId;
-    }
+    final notifier = ref.read(selectedSpaceIdProvider.notifier);
+    notifier.state = widget.parentSpaceId;
   }
 
-  //Fetch known sub-rooms list of selected parent space
+//Fetch known sub-rooms list of selected parent space
   void fetchKnownSubChatsData() async {
     final selectedParentSpaceId = ref.watch(selectedSpaceIdProvider);
     if (selectedParentSpaceId == null) return;
@@ -85,7 +64,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
         .watch(spaceRelationsOverviewProvider(selectedParentSpaceId).future);
 
     childRoomsIds.clear();
-    if (childRoomType == ChildRoomType.chat) {
+    if (widget.childRoomType == ChildRoomType.chat) {
       for (int i = 0; i < space.knownChats.length; i++) {
         childRoomsIds.add(space.knownChats[i].getRoomId().toString());
       }
@@ -107,7 +86,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     final size = MediaQuery.of(context).size;
 
     return SideSheet(
-      header: sheetHeader,
+      header: widget.pageTitle,
       body: SizedBox(
         height: size.height - 120,
         child: Column(
@@ -123,13 +102,13 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     );
   }
 
-  //Search
+//Search
   Widget searchUI() {
     return Search(
       onChanged: (value) {
-        if (childRoomType == ChildRoomType.chat) {
+        if (widget.childRoomType == ChildRoomType.chat) {
           ref.read(chatSearchValueProvider.notifier).update((state) => value);
-        } else if (childRoomType == ChildRoomType.space) {
+        } else if (widget.childRoomType == ChildRoomType.space) {
           ref.read(spaceSearchValueProvider.notifier).update((state) => value);
         }
       },
@@ -137,7 +116,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     );
   }
 
-  //Parent space
+//Parent space
   Widget parentSpaceDataUI() {
     final spaceDetails = ref.watch(selectedSpaceDetailsProvider);
     return Padding(
@@ -161,19 +140,16 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     );
   }
 
-  //Manage list data based on the child room type
+//Manage list data based on the child room type
   Widget roomList() {
-    if (childRoomType == ChildRoomType.chat) {
+    if (widget.childRoomType == ChildRoomType.chat) {
       return chatsList();
-    } else if (childRoomType == ChildRoomType.space ||
-        childRoomType == ChildRoomType.recommendedSpace) {
-      return spacesList();
     } else {
-      return const SizedBox.shrink();
+      return spacesList();
     }
   }
 
-  //List of chats excluding DMs that can be linked according to the selected parent space
+//List of chats excluding DMs that can be linked according to the selected parent space
   Widget chatsList() {
     final searchValue = ref.watch(chatSearchValueProvider);
     if (searchValue != null && searchValue.isNotEmpty) {
@@ -185,7 +161,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     return chatListUI(chatList);
   }
 
-  //Show chat list based on the search term
+//Show chat list based on the search term
   Widget searchedChatsList() {
     return ref.watch(searchedChatsProvider).when(
           data: (chats) {
@@ -203,7 +179,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
         );
   }
 
-  //Chat List
+//Chat List
   Widget chatListUI(List<Convo> chatList) {
     return ListView.builder(
       padding: const EdgeInsets.all(8),
@@ -235,7 +211,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     );
   }
 
-  //List of spaces that can be linked according to the selected parent space
+//List of spaces that can be linked according to the selected parent space
   Widget spacesList() {
     final searchValue = ref.watch(spaceSearchValueProvider);
     if (searchValue != null && searchValue.isNotEmpty) {
@@ -251,7 +227,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     );
   }
 
-  //Show space list based on the search term
+//Show space list based on the search term
   Widget searchedSpaceList() {
     return ref.watch(searchedSpacesProvider).when(
           data: (spaces) {
@@ -268,7 +244,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
         );
   }
 
-  //Space List
+//Space List
   Widget spaceListUI(List<SpaceItem> spacesList) {
     return ListView.builder(
       shrinkWrap: true,
@@ -278,7 +254,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
         final item = spacesList[index];
         final membership = item.membership;
         final isSubspace = childRoomsIds.contains(item.roomId);
-        final isLinked = childRoomType == ChildRoomType.space
+        final isLinked = widget.childRoomType == ChildRoomType.space
             ? childRoomsIds.contains(item.roomId)
             : recommendedChildSpaceIds.contains(item.roomId);
         final canLink =
@@ -289,7 +265,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
           displayName: item.spaceProfileData.displayName,
           roomAvatar: item.spaceProfileData.getAvatarImage(),
           displayMode: DisplayMode.Space,
-          canLink: childRoomType == ChildRoomType.recommendedSpace
+          canLink: widget.childRoomType == ChildRoomType.recommendedSpace
               ? !isSubspace
               : canLink,
           isLinked: isLinked,
@@ -300,7 +276,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     );
   }
 
-  //Common loading UI
+//Common loading UI
   Widget loadingUI() {
     return const Center(
       heightFactor: 10,
@@ -308,14 +284,14 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     );
   }
 
-  //Common error UI
+//Common error UI
   Widget errorUI(String message, e) {
     return Center(
       child: Text('$message : $e'),
     );
   }
 
-  //Room list item UI
+//Room list item UI
   Widget roomListItemUI({
     required String roomId,
     required String? displayName,
@@ -372,7 +348,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
           );
   }
 
-  //Link child room
+//Link child room
   void onTapLinkChildRoom(String roomId) async {
     final selectedParentSpaceId = ref.watch(selectedSpaceIdProvider);
     if (selectedParentSpaceId == null) return;
@@ -382,21 +358,21 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     space.addChildRoom(roomId);
 
     //Make subspace
-    if (childRoomType == ChildRoomType.space) {
+    if (widget.childRoomType == ChildRoomType.space) {
       //Fetch selected room data and add given parentSpaceId as parent
       final room = await ref.watch(maybeRoomProvider(roomId).future);
       if (room != null) {
         room.addParentRoom(selectedParentSpaceId, true);
       }
     }
-    if (childRoomType == ChildRoomType.recommendedSpace) {
+    if (widget.childRoomType == ChildRoomType.recommendedSpace) {
       recommendedChildSpaceIds.add(roomId);
     } else {
       childRoomsIds.add(roomId);
     }
   }
 
-  //Unlink child room
+//Unlink child room
   void onTapUnlinkChildRoom(String roomId) async {
     final selectedParentSpaceId = ref.watch(selectedSpaceIdProvider);
     if (selectedParentSpaceId == null) return;
@@ -405,7 +381,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     final space = await ref.watch(spaceProvider(selectedParentSpaceId).future);
     space.removeChildRoom(roomId, 'Unlink room');
 
-    if (childRoomType == ChildRoomType.space) {
+    if (widget.childRoomType == ChildRoomType.space) {
       //Fetch selected room data and add given parentSpaceId as parent
       final room = await ref.watch(maybeRoomProvider(roomId).future);
       if (room != null) {
@@ -413,7 +389,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       }
     }
 
-    if (childRoomType == ChildRoomType.recommendedSpace) {
+    if (widget.childRoomType == ChildRoomType.recommendedSpace) {
       recommendedChildSpaceIds.remove(roomId);
     } else {
       childRoomsIds.remove(roomId);
