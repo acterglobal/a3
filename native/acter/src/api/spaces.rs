@@ -23,18 +23,14 @@ use futures::stream::StreamExt;
 use matrix_sdk::{
     deserialized_responses::SyncOrStrippedState,
     event_handler::{Ctx, EventHandlerHandle},
-    media::{MediaFormat, MediaRequest},
     room::{Messages, MessagesOptions, Room as SdkRoom},
-    ruma::{api::client::state::send_state_event, assign},
-    RoomState,
+    ruma::api::client::state::send_state_event,
 };
 use ruma_common::{
-    directory::RoomTypeFilter, room::RoomType, serde::Raw, space::SpaceRoomJoinRule, OwnedMxcUri,
-    OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
+    directory::RoomTypeFilter, serde::Raw, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
 };
 use ruma_events::{
-    room::MediaSource, space::child::SpaceChildEventContent, AnyStateEventContent,
-    MessageLikeEvent, StateEventType,
+    space::child::SpaceChildEventContent, AnyStateEventContent, MessageLikeEvent, StateEventType,
 };
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
@@ -44,7 +40,6 @@ use tracing::{error, trace, warn};
 
 use super::{
     client::Client,
-    common::OptionBuffer,
     room::Room,
     search::PublicSearchResult,
     utils::{remap_for_diff, ApiVectorDiff},
