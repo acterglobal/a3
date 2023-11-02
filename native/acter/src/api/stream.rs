@@ -17,11 +17,10 @@ use ruma_events::{
     relation::{Annotation, Replacement},
     room::{
         message::{
-            AddMentions, AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-            ForwardThread, ImageMessageEventContent, LocationMessageEventContent, MessageType,
-            Relation, RoomMessageEvent, RoomMessageEventContent,
-            RoomMessageEventContentWithoutRelation, TextMessageEventContent, VideoInfo,
-            VideoMessageEventContent,
+            AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent, ForwardThread,
+            ImageMessageEventContent, LocationMessageEventContent, MessageType, Relation,
+            RoomMessageEvent, RoomMessageEventContent, RoomMessageEventContentWithoutRelation,
+            VideoInfo, VideoMessageEventContent,
         },
         ImageInfo,
     },

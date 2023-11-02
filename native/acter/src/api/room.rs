@@ -16,7 +16,6 @@ use acter_core::{
     statics::PURPOSE_FIELD_DEV,
 };
 use anyhow::{bail, Context, Result};
-use core::time::Duration;
 use matrix_sdk::{
     deserialized_responses::SyncOrStrippedState,
     media::{MediaFormat, MediaRequest},
@@ -24,24 +23,22 @@ use matrix_sdk::{
     room::{Room as SdkRoom, RoomMember},
     ruma::{
         api::client::{
-            receipt::create_receipt,
             room::report_content,
             space::{get_hierarchy, SpaceHierarchyRoomsChunk},
         },
-        assign, Int, UInt,
+        assign, Int,
     },
     RoomMemberships, RoomState,
 };
 use ruma_common::{
     room::RoomType, serde::Raw, space::SpaceRoomJoinRule, EventId, OwnedEventId, OwnedMxcUri,
-    OwnedRoomAliasId, OwnedRoomId, OwnedUserId, TransactionId, UserId,
+    OwnedRoomAliasId, OwnedRoomId, OwnedUserId, UserId,
 };
 use ruma_events::{
-    receipt::ReceiptThread,
     room::{
         avatar::ImageInfo as AvatarImageInfo,
         join_rules::{AllowRule, JoinRule},
-        message::{MessageType, RoomMessageEvent},
+        message::MessageType,
         MediaSource,
     },
     space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
