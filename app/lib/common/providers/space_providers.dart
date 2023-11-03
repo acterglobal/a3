@@ -183,6 +183,32 @@ final briefSpaceItemsProviderWithMembership =
   return items;
 });
 
+final spaceSearchValueProvider = StateProvider.autoDispose<String?>((ref) => null);
+
+final searchedSpacesProvider = FutureProvider.autoDispose<List<SpaceItem>>((ref) async {
+  final allSpaces =
+      await ref.read(briefSpaceItemsProviderWithMembership.future);
+  final searchValue = ref.watch(spaceSearchValueProvider);
+  if (searchValue == null || searchValue.isEmpty) {
+    return allSpaces;
+  }
+
+  final searchTerm = searchValue.toLowerCase();
+
+  final foundSpaces = List<SpaceItem>.empty(growable: true);
+
+  for (final space in allSpaces) {
+    final sp = await ref.watch(spaceProvider(space.roomId).future);
+    final profileData = await ref.watch(spaceProfileDataProvider(sp).future);
+    final name = profileData.displayName ?? space.roomId;
+    if (name.toLowerCase().contains(searchTerm)) {
+      foundSpaces.add(space);
+    }
+  }
+
+  return foundSpaces;
+});
+
 /// Get the SpaceItem of the given sapceId filled in brief form
 /// (only spaceProfileData, no activeMembers). Stays up to date with underlying
 /// client info

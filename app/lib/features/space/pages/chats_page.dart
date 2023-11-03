@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
@@ -43,13 +44,42 @@ class SpaceChatsPage extends ConsumerWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    IconButton(
-                      onPressed: () => context.pushNamed(
-                        Routes.createChat.name,
-                        queryParameters: {'spaceId': spaceIdOrAlias},
-                        extra: 1,
+                    PopupMenuButton(
+                      icon: Icon(
+                        Atlas.plus_circle,
+                        color: Theme.of(context).colorScheme.neutral5,
                       ),
-                      icon: const Icon(Atlas.plus_circle_thin),
+                      iconSize: 28,
+                      color: Theme.of(context).colorScheme.surface,
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                        PopupMenuItem(
+                          onTap: () => context.pushNamed(
+                            Routes.createChat.name,
+                            queryParameters: {'spaceId': spaceIdOrAlias},
+                            extra: 1,
+                          ),
+                          child: const Row(
+                            children: <Widget>[
+                              Text('Create Chat'),
+                              Spacer(),
+                              Icon(Atlas.chats),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          onTap: () => context.pushNamed(
+                            Routes.linkChat.name,
+                            pathParameters: {'spaceId': spaceIdOrAlias},
+                          ),
+                          child: const Row(
+                            children: <Widget>[
+                              Text('Link existing Chat'),
+                              Spacer(),
+                              Icon(Atlas.chats),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

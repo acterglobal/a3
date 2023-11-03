@@ -18,6 +18,7 @@ import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
 class RelatedSpacesPage extends ConsumerWidget {
   final String spaceIdOrAlias;
+
   const RelatedSpacesPage({super.key, required this.spaceIdOrAlias});
 
   @override
@@ -68,6 +69,19 @@ class RelatedSpacesPage extends ConsumerWidget {
                         child: const Row(
                           children: <Widget>[
                             Text('Create Subspace'),
+                            Spacer(),
+                            Icon(Atlas.connection),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        onTap: () => context.pushNamed(
+                          Routes.linkSubspace.name,
+                          pathParameters: {'spaceId': spaceIdOrAlias},
+                        ),
+                        child: const Row(
+                          children: <Widget>[
+                            Text('Link existing Space'),
                             Spacer(),
                             Icon(Atlas.connection),
                           ],
@@ -188,6 +202,16 @@ class RelatedSpacesPage extends ConsumerWidget {
             if (spaces.otherRelations.isNotEmpty || canLinkSpace) {
               List<Widget> children = [
                 const Expanded(child: Text('Recommended Spaces')),
+                IconButton(
+                  icon: Icon(
+                    Atlas.plus_circle,
+                    color: Theme.of(context).colorScheme.neutral5,
+                  ),
+                  onPressed: () => context.pushNamed(
+                    Routes.linkRecommended.name,
+                    pathParameters: {'spaceId': spaceIdOrAlias},
+                  ),
+                ),
               ];
               items.add(
                 SliverToBoxAdapter(
