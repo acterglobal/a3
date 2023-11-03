@@ -170,6 +170,9 @@ jobs:
         working-directory: app
         run: flutter pub get
 
+      - name: Open Keyring
+        uses: t1m0thyj/unlock-keyring@v1
+
       - name: Run flutter integration tests
         working-directory: app
         run: |
