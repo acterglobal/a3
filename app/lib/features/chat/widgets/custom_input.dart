@@ -759,7 +759,7 @@ class _TextInputWidget extends ConsumerWidget {
                     authorId: authorId,
                     title: title,
                   ),
-                  title: Row(
+                  title: Wrap(
                     children: [
                       Text(title, style: Theme.of(context).textTheme.bodySmall),
                       const SizedBox(width: 15),

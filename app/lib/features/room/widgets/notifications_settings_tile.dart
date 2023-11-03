@@ -19,6 +19,7 @@ String? notifToText(String curNotifStatus) {
 
 class _NotificationSettingsTile extends ConsumerWidget {
   final String roomId;
+
   const _NotificationSettingsTile({
     required this.roomId,
     Key? key,
@@ -74,21 +75,31 @@ class _NotificationSettingsTile extends ConsumerWidget {
           }
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-          const PopupMenuItem<String>(
+          PopupMenuItem<String>(
             value: 'all',
-            child: Text('All Messages'),
+            child: notificationSettingItemUI(
+              curNotifStatus == 'all',
+              'All Messages',
+            ),
           ),
-          const PopupMenuItem<String>(
+          PopupMenuItem<String>(
             value: 'mentions',
-            child: Text('Mentions and Keywords only'),
+            child: notificationSettingItemUI(
+              curNotifStatus == 'mentions',
+              'Mentions and Keywords only',
+            ),
           ),
-          const PopupMenuItem<String>(
+          PopupMenuItem<String>(
             value: 'muted',
-            child: Text('Muted'),
+            child: notificationSettingItemUI(
+              curNotifStatus == 'muted',
+              'Muted',
+            ),
           ),
           PopupMenuItem<String>(
             value: '',
-            child: Text(
+            child: notificationSettingItemUI(
+              curNotifStatus == '',
               'Default (${notifToText(defaultNotificationStatus.valueOrNull ?? '') ?? 'unedefined'})',
             ),
           ),
@@ -96,10 +107,19 @@ class _NotificationSettingsTile extends ConsumerWidget {
       ),
     );
   }
+
+  ListTile notificationSettingItemUI(bool isSelected, String title) {
+    return ListTile(
+      selected: isSelected,
+      title: Text(title),
+      trailing: isSelected ? const Icon(Atlas.check_circle, size: 18) : null,
+    );
+  }
 }
 
 class NotificationsSettingsTile extends AbstractSettingsTile {
   final String roomId;
+
   const NotificationsSettingsTile({
     required this.roomId,
     Key? key,
