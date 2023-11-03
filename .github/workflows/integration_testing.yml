@@ -275,25 +275,7 @@ jobs:
         run: flutter pub get
 
       - name: Run flutter integration tests
-        working-directory: app
-        run: |
-          flutter run integration_test/main_test.dart  \
-              --host-vmservice-port 9753 \
-              --disable-service-auth-codes \
-              --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib \
-              --dart-define DEFAULT_HOMESERVER_URL=http://localhost:8118/ \
-              --dart-define DEFAULT_HOMESERVER_NAME=localhost \
-              --dart-define CONVENIENT_TEST_MANAGER_HOST=10.0.2.2 \
-              --dart-define DEFAULT_HOMESERVER_URL=http://10.0.2.2:8118/
-              --dart-define CI=true \
-              &
-          subscript_pid=$!
-
-          # actual manager runner
-          dart run convenient_test_manager_dart --enable-report-saver
-          exit_status=$?
-          kill "$subscript_pid"
-          exit exit_status
+        run: .github/scripts/flutter-integration-tests.sh
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
@@ -371,7 +353,6 @@ jobs:
 
       - name: Run integration tests on android
         uses: reactivecircus/android-emulator-runner@v2
-        continue-on-error: true
         with:
           api-level: 28
           arch: x86
@@ -380,25 +361,7 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           emulator-build: 7425822
-          script: |
-            cd app
-            flutter run integration_test/main_test.dart  \
-                --host-vmservice-port 9753 \
-                --disable-service-auth-codes \
-                --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib \
-                --dart-define DEFAULT_HOMESERVER_URL=http://localhost:8118/ \
-                --dart-define DEFAULT_HOMESERVER_NAME=localhost \
-                --dart-define CONVENIENT_TEST_MANAGER_HOST=10.0.2.2 \
-                --dart-define DEFAULT_HOMESERVER_URL=http://10.0.2.2:8118/
-                --dart-define CI=true \
-                &
-            subscript_pid=$!
-
-            # actual manager runner
-            dart run convenient_test_manager_dart --enable-report-saver
-            exit_status=$?
-            kill "$subscript_pid"
-            exit exit_status
+          script: .github/scripts/flutter-integration-tests.sh
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
