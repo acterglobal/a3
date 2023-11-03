@@ -95,7 +95,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   child: Form(
                     key: formKey,
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         SizedBox(
                           height: 50,
@@ -112,241 +112,238 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           AppLocalizations.of(context)!.createAccountText,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            children: [
-                              const SizedBox(height: 20),
-                              TextFormField(
-                                key: RegisterPage.nameField,
-                                controller: name,
-                                decoration: InputDecoration(
-                                  hintText: AppLocalizations.of(context)!.name,
-                                  fillColor: Theme.of(context)
-                                      .colorScheme
-                                      .primaryContainer,
-                                  filled: true,
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .tertiary,
-                                      width: 0.5,
-                                    ),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
+                        Column(
+                          children: [
+                            const SizedBox(height: 20),
+                            TextFormField(
+                              key: RegisterPage.nameField,
+                              controller: name,
+                              decoration: InputDecoration(
+                                hintText: AppLocalizations.of(context)!.name,
+                                fillColor: Theme.of(context)
+                                    .colorScheme
+                                    .primaryContainer,
+                                filled: true,
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.deny(
-                                    RegExp(r'\s'),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .tertiary,
+                                    width: 0.5,
                                   ),
-                                ],
-                                style: Theme.of(context).textTheme.labelLarge,
-                                cursorColor:
-                                    Theme.of(context).colorScheme.tertiary2,
-                                validator: (val) {
-                                  if (val == null || val.trim().isEmpty) {
-                                    return AppLocalizations.of(context)!
-                                        .missingName;
-                                  }
-                                  return null;
-                                },
-                                onChanged: (value) {
-                                  name.text = value;
-                                  name.selection = TextSelection.fromPosition(
-                                    TextPosition(offset: name.text.length),
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 10),
-                              TextFormField(
-                                key: RegisterPage.usernameField,
-                                controller: username,
-                                decoration: InputDecoration(
-                                  hintText:
-                                      AppLocalizations.of(context)!.username,
-                                  fillColor: Theme.of(context)
-                                      .colorScheme
-                                      .primaryContainer,
-                                  filled: true,
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .tertiary,
-                                      width: 0.5,
-                                    ),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                                inputFormatters: [
-                                  TextInputFormatter.withFunction((
-                                    TextEditingValue oldValue,
-                                    TextEditingValue newValue,
-                                  ) {
-                                    return newValue.text.isEmpty ||
-                                            usernamePattern
-                                                .hasMatch(newValue.text)
-                                        ? newValue
-                                        : oldValue;
-                                  }),
-                                ],
-                                style: Theme.of(context).textTheme.labelLarge,
-                                validator: (val) {
-                                  if (val == null || val.trim().isEmpty) {
-                                    return AppLocalizations.of(context)!
-                                        .emptyUsername;
-                                  }
-                                  final cleanedVal = val.trim().toLowerCase();
-                                  if (!usernamePattern.hasMatch(cleanedVal)) {
-                                    return 'Username may only contain letters a-z, numbers and any of  ._=-/';
-                                  }
-                                  return null;
-                                },
-                                onChanged: (value) {
-                                  username.text = value;
-                                  username.selection =
-                                      TextSelection.fromPosition(
-                                    TextPosition(offset: username.text.length),
-                                  );
-                                },
                               ),
-                              const SizedBox(height: 10),
-                              TextFormField(
-                                key: RegisterPage.passwordField,
-                                controller: password,
-                                decoration: InputDecoration(
-                                  hintText:
-                                      AppLocalizations.of(context)!.password,
-                                  fillColor: Theme.of(context)
-                                      .colorScheme
-                                      .primaryContainer,
-                                  filled: true,
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .tertiary,
-                                      width: 0.5,
-                                    ),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.deny(
+                                  RegExp(r'\s'),
                                 ),
-                                obscureText: true,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.deny(
-                                    RegExp(r'\s'),
-                                  ),
-                                ],
-                                style: Theme.of(context).textTheme.labelLarge,
-                                validator: (val) {
-                                  if (val == null || val.trim().isEmpty) {
-                                    return AppLocalizations.of(context)!
-                                        .emptyPassword;
-                                  }
-                                  return null;
-                                },
-                                onChanged: (value) {
-                                  password.text = value;
-                                  password.selection =
-                                      TextSelection.fromPosition(
-                                    TextPosition(offset: password.text.length),
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 10),
-                              TextFormField(
-                                key: RegisterPage.tokenField,
-                                controller: token,
-                                decoration: InputDecoration(
-                                  hintText: AppLocalizations.of(context)!.token,
-                                  fillColor: Theme.of(context)
-                                      .colorScheme
-                                      .primaryContainer,
-                                  filled: true,
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .tertiary,
-                                      width: 0.5,
-                                    ),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
+                              ],
+                              style: Theme.of(context).textTheme.labelLarge,
+                              cursorColor:
+                                  Theme.of(context).colorScheme.tertiary2,
+                              validator: (val) {
+                                if (val == null || val.trim().isEmpty) {
+                                  return AppLocalizations.of(context)!
+                                      .missingName;
+                                }
+                                return null;
+                              },
+                              onChanged: (value) {
+                                name.text = value;
+                                name.selection = TextSelection.fromPosition(
+                                  TextPosition(offset: name.text.length),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              key: RegisterPage.usernameField,
+                              controller: username,
+                              decoration: InputDecoration(
+                                hintText:
+                                    AppLocalizations.of(context)!.username,
+                                fillColor: Theme.of(context)
+                                    .colorScheme
+                                    .primaryContainer,
+                                filled: true,
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.deny(
-                                    RegExp(r'\s'),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .tertiary,
+                                    width: 0.5,
                                   ),
-                                ],
-                                style: Theme.of(context).textTheme.labelLarge,
-                                validator: (val) {
-                                  if (val == null || val.trim().isEmpty) {
-                                    return AppLocalizations.of(context)!
-                                        .emptyToken;
-                                  }
-                                  return null;
-                                },
-                                onChanged: (value) {
-                                  token.text = value;
-                                  token.selection = TextSelection.fromPosition(
-                                    TextPosition(offset: token.text.length),
-                                  );
-                                },
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                               ),
-                              const SizedBox(height: 30),
-                              RichText(
-                                textAlign: TextAlign.start,
-                                text: TextSpan(
-                                  // Note: Styles for TextSpans must be explicitly defined.
-                                  // Child text spans will inherit styles from parent
+                              inputFormatters: [
+                                TextInputFormatter.withFunction((
+                                  TextEditingValue oldValue,
+                                  TextEditingValue newValue,
+                                ) {
+                                  return newValue.text.isEmpty ||
+                                          usernamePattern
+                                              .hasMatch(newValue.text)
+                                      ? newValue
+                                      : oldValue;
+                                }),
+                              ],
+                              style: Theme.of(context).textTheme.labelLarge,
+                              validator: (val) {
+                                if (val == null || val.trim().isEmpty) {
+                                  return AppLocalizations.of(context)!
+                                      .emptyUsername;
+                                }
+                                final cleanedVal = val.trim().toLowerCase();
+                                if (!usernamePattern.hasMatch(cleanedVal)) {
+                                  return 'Username may only contain letters a-z, numbers and any of  ._=-/';
+                                }
+                                return null;
+                              },
+                              onChanged: (value) {
+                                username.text = value;
+                                username.selection =
+                                    TextSelection.fromPosition(
+                                  TextPosition(offset: username.text.length),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              key: RegisterPage.passwordField,
+                              controller: password,
+                              decoration: InputDecoration(
+                                hintText:
+                                    AppLocalizations.of(context)!.password,
+                                fillColor: Theme.of(context)
+                                    .colorScheme
+                                    .primaryContainer,
+                                filled: true,
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .tertiary,
+                                    width: 0.5,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              obscureText: true,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.deny(
+                                  RegExp(r'\s'),
+                                ),
+                              ],
+                              style: Theme.of(context).textTheme.labelLarge,
+                              validator: (val) {
+                                if (val == null || val.trim().isEmpty) {
+                                  return AppLocalizations.of(context)!
+                                      .emptyPassword;
+                                }
+                                return null;
+                              },
+                              onChanged: (value) {
+                                password.text = value;
+                                password.selection =
+                                    TextSelection.fromPosition(
+                                  TextPosition(offset: password.text.length),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              key: RegisterPage.tokenField,
+                              controller: token,
+                              decoration: InputDecoration(
+                                hintText: AppLocalizations.of(context)!.token,
+                                fillColor: Theme.of(context)
+                                    .colorScheme
+                                    .primaryContainer,
+                                filled: true,
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .tertiary,
+                                    width: 0.5,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.deny(
+                                  RegExp(r'\s'),
+                                ),
+                              ],
+                              style: Theme.of(context).textTheme.labelLarge,
+                              validator: (val) {
+                                if (val == null || val.trim().isEmpty) {
+                                  return AppLocalizations.of(context)!
+                                      .emptyToken;
+                                }
+                                return null;
+                              },
+                              onChanged: (value) {
+                                token.text = value;
+                                token.selection = TextSelection.fromPosition(
+                                  TextPosition(offset: token.text.length),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 30),
+                            RichText(
+                              textAlign: TextAlign.start,
+                              text: TextSpan(
+                                // Note: Styles for TextSpans must be explicitly defined.
+                                // Child text spans will inherit styles from parent
 
-                                  children: <TextSpan>[
-                                    TextSpan(
-                                      text:
-                                          '${AppLocalizations.of(context)!.termsText1} ',
-                                    ),
-                                    TextSpan(
-                                      recognizer: TapGestureRecognizer()
-                                        ..onTap = () {
-                                          debugPrint('Terms of Service"');
-                                        },
-                                      text: AppLocalizations.of(context)!
-                                          .termsText2,
-                                    ),
-                                    TextSpan(
-                                      text:
-                                          ' ${AppLocalizations.of(context)!.termsText3} ',
-                                    ),
-                                    TextSpan(
-                                      recognizer: TapGestureRecognizer()
-                                        ..onTap = () {
-                                          debugPrint('policy"');
-                                        },
-                                      text: AppLocalizations.of(context)!
-                                          .termsText4,
-                                    ),
-                                  ],
-                                ),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                    text:
+                                        '${AppLocalizations.of(context)!.termsText1} ',
+                                  ),
+                                  TextSpan(
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        debugPrint('Terms of Service"');
+                                      },
+                                    text: AppLocalizations.of(context)!
+                                        .termsText2,
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        ' ${AppLocalizations.of(context)!.termsText3} ',
+                                  ),
+                                  TextSpan(
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        debugPrint('policy"');
+                                      },
+                                    text: AppLocalizations.of(context)!
+                                        .termsText4,
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 40),
                         authState
