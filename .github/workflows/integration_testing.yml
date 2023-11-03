@@ -15,34 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     name: Check legibility
     outputs:
-      should_run_all: ${{steps.PR.outputs.pr_found == 'true' && contains(steps.PR.outputs.pr_labels, 'ci-test-ui-all')}}
-      should_run_desktop: ${{steps.PR.outputs.pr_found == 'true' && contains(steps.PR.outputs.pr_labels, 'ci-test-ui-desktop')}}
-      should_run_emulator: ${{steps.PR.outputs.pr_found == 'true' && contains(steps.PR.outputs.pr_labels, 'ci-test-ui-emulators')}}
-      should_run_ios: ${{steps.PR.outputs.pr_found == 'true' && contains(steps.PR.outputs.pr_labels, 'ci-test-ui-ios')}}
-      should_run_android: ${{steps.PR.outputs.pr_found == 'true' && contains(steps.PR.outputs.pr_labels, 'ci-test-ui-android')}}
+      should_run_all: ${{contains(github.event.pull_request.labels.*.name, 'ci-test-ui-all')}}
+      should_run_desktop: ${{contains(github.event.pull_request.labels.*.name, 'ci-test-ui-desktop')}}
+      should_run_emulator: ${{contains(github.event.pull_request.labels.*.name, 'ci-test-ui-emulators')}}
+      should_run_ios: ${{contains(github.event.pull_request.labels.*.name, 'ci-test-ui-ios')}}
+      should_run_android: ${{contains(github.event.pull_request.labels.*.name, 'ci-test-ui-android')}}
     steps:
-      - uses: 8BitJonny/gh-get-current-pr@2.2.0
-        id: PR
-        with:
-          # Only return if PR is still open. (By default it returns PRs in any state.)
-          filterOutClosed: true
-          # Only return if PR is not in draft state. (By default it returns PRs in any state.)
-          # filterOutDraft: true
-
-      - run: echo "PR $prNumber $prTitle at $prUrl is labeled $prLabels. It should run a demo build; $contains"
-        if: steps.PR.outputs.pr_found == 'true'
-        env:
-          # Direct access to common PR properties
-          prNumber: ${{ steps.PR.outputs.number }}
-          prUrl: ${{ steps.PR.outputs.pr_url }}
-          prTitle: ${{ steps.PR.outputs.pr_title }}
-          prBody: ${{ steps.PR.outputs.pr_body }}
-          prCreatedAt: ${{ steps.PR.outputs.pr_created_at }}
-          prMergedAt: ${{ steps.PR.outputs.pr_merged_at }}
-          prClosedAt: ${{ steps.PR.outputs.pr_closed_at }}
-          prLabels: ${{ steps.PR.outputs.pr_labels }}
-          contains: ${{ contains(steps.PR.outputs.pr_labels, 'ci-test-ui') }}
-     
+      - run: echo "Testing"s
 
   rust:
     runs-on: ubuntu-latest
