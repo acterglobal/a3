@@ -396,7 +396,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     final roomId = widget.convo.getRoomIdStr();
     final chatInputState = ref.read(chatInputProvider(roomId));
     final chatInputNotifier = ref.read(chatInputProvider(roomId).notifier);
-    final convo = widget.convo;
+    final stream = await widget.convo.timelineStream();
 
     try {
       for (File file in files) {
@@ -407,13 +407,14 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
           var bytes = file.readAsBytesSync();
           var image = await decodeImageFromList(bytes);
           if (chatInputState.repliedToMessage != null) {
-            await convo.sendImageReply(
+            await stream.sendImageReply(
               file.path,
               fileName,
               mimeType,
               file.lengthSync(),
               image.width,
               image.height,
+              null,
               chatInputState.repliedToMessage!.id,
               null,
             );
@@ -422,7 +423,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             chatInputNotifier.toggleReplyView(false);
             chatInputNotifier.setReplyWidget(null);
           } else {
-            await convo.sendImageMessage(
+            await stream.sendImageMessage(
               file.path,
               fileName,
               mimeType,
@@ -438,7 +439,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         } else if (mimeType.startsWith('/video')) {
         } else {
           if (chatInputState.repliedToMessage != null) {
-            await convo.sendFileReply(
+            await stream.sendFileReply(
               file.path,
               fileName,
               mimeType,
@@ -450,7 +451,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             chatInputNotifier.toggleReplyView(false);
             chatInputNotifier.setReplyWidget(null);
           } else {
-            await convo.sendFileMessage(
+            await stream.sendFileMessage(
               file.path,
               fileName,
               mimeType,
@@ -517,7 +518,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   }
 
   Future<void> onSendButtonPressed() async {
-    if(mentionKey.currentState!.controller!.text.isEmpty) return;
+    if (mentionKey.currentState!.controller!.text.isEmpty) return;
     final roomId = widget.convo.getRoomIdStr();
     final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
     final mentionReplacements =
@@ -547,15 +548,15 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     String markdownMessage,
     int messageLength,
   ) async {
-    final convo = widget.convo;
     final roomId = widget.convo.getRoomIdStr();
     final chatInputState = ref.watch(chatInputProvider(roomId));
     final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
-    await convo.typingNotice(false);
+    await widget.convo.typingNotice(false);
+    final stream = await widget.convo.timelineStream();
     if (chatInputState.repliedToMessage != null) {
-      await convo.sendTextReply(
+      await stream.sendPlainReply(
         markdownMessage,
         chatInputState.repliedToMessage!.id,
         null,
@@ -565,7 +566,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       inputNotifier.toggleReplyView(false);
       inputNotifier.setReplyWidget(null);
     } else {
-      await convo.sendFormattedMessage(markdownMessage);
+      await stream.sendFormattedMessage(markdownMessage);
     }
   }
 }
