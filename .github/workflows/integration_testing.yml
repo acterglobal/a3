@@ -75,7 +75,7 @@ jobs:
 
       # file an error if this failed on `main` post-merge
       - name: Report issue
-        if: ${{ github.ref == 'refs/heads/main' && failure() }}
+        # if: ${{ github.ref == 'refs/heads/main' && failure() }}
         uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -94,7 +94,7 @@ jobs:
     needs:
      - run_checker
      
-    if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_all != 'false' && needs.run_checker.outputs.should_run_desktop != 'false' }}
+    # if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_all != 'false' && needs.run_checker.outputs.should_run_desktop != 'false' }}
 
     steps:
       - uses: actions/checkout@v2
@@ -184,7 +184,7 @@ jobs:
 
       # file an error if this failed on `main` post-merge
       - name: Report issue
-        if: ${{ github.ref == 'refs/heads/main' && failure() }}
+        # if: ${{ github.ref == 'refs/heads/main' && failure() }}
         uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -201,7 +201,7 @@ jobs:
     name: iOS
     needs:
      - run_checker
-    if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_ios != 'false' || needs.run_checker.outputs.should_run_emulator != 'false' || needs.run_checker.outputs.should_run_all != 'false' }}
+    # if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_ios != 'false' || needs.run_checker.outputs.should_run_emulator != 'false' || needs.run_checker.outputs.should_run_all != 'false' }}
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
@@ -284,7 +284,7 @@ jobs:
 
       # file an error if this failed on `main` post-merge
       - name: Report issue
-        if: ${{ github.ref == 'refs/heads/main' && failure() }}
+        # if: ${{ github.ref == 'refs/heads/main' && failure() }}
         uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -301,7 +301,7 @@ jobs:
     name: Android
     needs:
      - run_checker
-    if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_android != 'false' || needs.run_checker.outputs.should_run_emulator != 'false' || needs.run_checker.outputs.should_run_all != 'false' }}
+    # if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_android != 'false' || needs.run_checker.outputs.should_run_emulator != 'false' || needs.run_checker.outputs.should_run_all != 'false' }}
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
@@ -389,7 +389,7 @@ jobs:
 
       # file an error if this failed on `main` post-merge
       - name: Report issue
-        if: ${{ github.ref == 'refs/heads/main' && failure() }}
+        # if: ${{ github.ref == 'refs/heads/main' && failure() }}
         uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ github.token }}
