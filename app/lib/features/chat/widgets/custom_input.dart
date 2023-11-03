@@ -33,6 +33,7 @@ final _textValuesProvider =
 
 class CustomChatInput extends ConsumerStatefulWidget {
   final Convo convo;
+
   const CustomChatInput({required this.convo, super.key});
 
   @override
@@ -44,6 +45,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   GlobalKey<FlutterMentionsState> mentionKey =
       GlobalKey<FlutterMentionsState>();
   bool isEncrypted = false;
+
   @override
   void initState() {
     super.initState();
@@ -66,9 +68,13 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     final chatInputState = ref.watch(chatInputProvider(roomId));
     final chatState = ref.watch(chatStateProvider(widget.convo));
     final repliedToMessage = chatInputState.repliedToMessage;
+    final editMessage = chatInputState.editMessage;
     final currentMessageId = chatInputState.currentMessageId;
     final showReplyView = ref.watch(
       chatInputProvider(roomId).select((ci) => ci.showReplyView),
+    );
+    final showEditView = ref.watch(
+      chatInputProvider(roomId).select((ci) => ci.showEditView),
     );
 
     bool isAuthor() {
@@ -131,6 +137,42 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                         convo: widget.convo,
                         msg: repliedToMessage,
                         messageWidget: chatInputState.replyWidget!,
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        Visibility(
+          visible: showEditView,
+          child: FrostEffect(
+            widgetWidth: size.width,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context)
+                    .colorScheme
+                    .primaryContainer
+                    .withOpacity(0.5),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 12.0,
+                  left: 16.0,
+                  right: 16.0,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    editMessage != null
+                        ? Consumer(builder: editMessageBuilder)
+                        : const SizedBox.shrink(),
+                    if (editMessage != null)
+                      _EditMessageContentWidget(
+                        convo: widget.convo,
+                        msg: editMessage,
                       ),
                   ],
                 ),
@@ -232,6 +274,42 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.error,
                       ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () async {
+                      final emojiRowVisible = ref.read(
+                        chatInputProvider(roomId).select((ci) {
+                          return ci.emojiRowVisible;
+                        }),
+                      );
+                      final inputNotifier =
+                          ref.read(chatInputProvider(roomId).notifier);
+                      if (emojiRowVisible) {
+                        inputNotifier.setCurrentMessageId(null);
+                        inputNotifier.emojiRowVisible(false);
+                      }
+
+                      inputNotifier.toggleEditView(true);
+                      final message = ref
+                          .read(chatStateProvider(widget.convo))
+                          .messages
+                          .firstWhere(
+                            (element) => element.id == currentMessageId,
+                          );
+                      chatInputNotifier.setEditMessage(message);
+
+                      final chatInputFocusState =
+                          ref.watch(chatInputFocusProvider.notifier);
+                      FocusScope.of(context)
+                          .requestFocus(chatInputFocusState.state);
+
+                      // await widget.convo
+                      //     .editPlainMessage(currentMessageId!, "Test Edit");
+                    },
+                    child: const Text(
+                      'Edit',
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                   InkWell(
@@ -419,8 +497,11 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             );
 
             chatInputNotifier.setRepliedToMessage(null);
+            chatInputNotifier.setEditMessage(null);
             chatInputNotifier.toggleReplyView(false);
+            chatInputNotifier.toggleEditView(false);
             chatInputNotifier.setReplyWidget(null);
+            chatInputNotifier.setEditWidget(null);
           } else {
             await convo.sendImageMessage(
               file.path,
@@ -447,8 +528,11 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
               null,
             );
             chatInputNotifier.setRepliedToMessage(null);
+            chatInputNotifier.setEditMessage(null);
             chatInputNotifier.toggleReplyView(false);
+            chatInputNotifier.toggleEditView(false);
             chatInputNotifier.setReplyWidget(null);
+            chatInputNotifier.setEditWidget(null);
           } else {
             await convo.sendFileMessage(
               file.path,
@@ -503,8 +587,45 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         GestureDetector(
           onTap: () {
             inputNotifier.toggleReplyView(false);
+            inputNotifier.toggleEditView(false);
             inputNotifier.setReplyWidget(null);
+            inputNotifier.setEditWidget(null);
             inputNotifier.setRepliedToMessage(null);
+            inputNotifier.setEditMessage(null);
+            FocusScope.of(context).unfocus();
+          },
+          child: const Icon(
+            Atlas.xmark_circle,
+            color: Colors.white,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget editMessageBuilder(
+      BuildContext context, WidgetRef ref, Widget? child) {
+    final roomId = widget.convo.getRoomIdStr();
+    final inputNotifier = ref.watch(chatInputProvider(roomId).notifier);
+    return Row(
+      children: [
+        const SizedBox(width: 5),
+        const Text(
+          'Edit:',
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: 12,
+          ),
+        ),
+        const Spacer(),
+        GestureDetector(
+          onTap: () {
+            inputNotifier.toggleReplyView(false);
+            inputNotifier.toggleEditView(false);
+            inputNotifier.setReplyWidget(null);
+            inputNotifier.setEditWidget(null);
+            inputNotifier.setRepliedToMessage(null);
+            inputNotifier.setEditMessage(null);
             FocusScope.of(context).unfocus();
           },
           child: const Icon(
@@ -517,7 +638,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   }
 
   Future<void> onSendButtonPressed() async {
-    if(mentionKey.currentState!.controller!.text.isEmpty) return;
+    if (mentionKey.currentState!.controller!.text.isEmpty) return;
     final roomId = widget.convo.getRoomIdStr();
     final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
     final mentionReplacements =
@@ -561,9 +682,12 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         null,
       );
       chatInputNotifier.setRepliedToMessage(null);
+      chatInputNotifier.setEditMessage(null);
       final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
       inputNotifier.toggleReplyView(false);
+      inputNotifier.toggleEditView(false);
       inputNotifier.setReplyWidget(null);
+      inputNotifier.setEditWidget(null);
     } else {
       await convo.sendFormattedMessage(markdownMessage);
     }
@@ -572,8 +696,10 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
 
 class _FileWidget extends ConsumerWidget {
   const _FileWidget(this.mimeType, this.file);
+
   final String? mimeType;
   final File file;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (mimeType!.startsWith('image/')) {
@@ -622,6 +748,7 @@ class _TextInputWidget extends ConsumerWidget {
   final Convo convo;
   final Function() onSendButtonPressed;
   final bool isEncrypted;
+
   const _TextInputWidget({
     required this.mentionKey,
     required this.convo,
@@ -827,5 +954,47 @@ class _ReplyContentWidget extends StatelessWidget {
       );
     }
     return messageWidget;
+  }
+}
+
+class _EditMessageContentWidget extends StatelessWidget {
+  const _EditMessageContentWidget({
+    required this.convo,
+    required this.msg,
+  });
+
+  final Convo convo;
+  final Message msg;
+
+  @override
+  Widget build(BuildContext context) {
+    if (msg is ImageMessage) {
+      final imageMsg = msg as ImageMessage;
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ImageMessageBuilder(
+          convo: convo,
+          message: imageMsg,
+          messageWidth: imageMsg.size.toInt(),
+          isReplyContent: true,
+        ),
+      );
+    } else if (msg is TextMessage) {
+      final textMsg = msg as TextMessage;
+      return Container(
+        constraints:
+            BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.2),
+        padding: const EdgeInsets.all(12),
+        child: Html(
+          data: textMsg.text,
+          defaultTextStyle: Theme.of(context)
+              .textTheme
+              .bodySmall!
+              .copyWith(overflow: TextOverflow.ellipsis),
+          maxLines: 3,
+        ),
+      );
+    }
+    return Container();
   }
 }

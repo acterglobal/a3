@@ -8,7 +8,9 @@ part 'chat_input_state.freezed.dart';
 class ChatInputState with _$ChatInputState {
   const factory ChatInputState({
     @Default(false) bool showReplyView,
+    @Default(false) bool showEditView,
     @Default(null) Widget? replyWidget,
+    @Default(null) Widget? editWidget,
     @Default(true) bool allowEdit,
     @Default(false) bool sendBtnVisible,
     @Default(false) bool emojiRowVisible,
@@ -16,6 +18,7 @@ class ChatInputState with _$ChatInputState {
     @Default(false) bool attachmentVisible,
     @Default(null) String? currentMessageId,
     @Default(null) types.Message? repliedToMessage,
+    @Default(null) types.Message? editMessage,
     @Default([]) List<Map<String, String>> mentions,
     @Default({}) Map<String, String> mentionReplacements,
   }) = _ChatInputState;
