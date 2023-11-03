@@ -298,14 +298,15 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                             (element) => element.id == currentMessageId,
                           );
                       chatInputNotifier.setEditMessage(message);
+                      var mentionState = mentionKey.currentState;
+                      if (message is TextMessage && mentionState != null) {
+                        mentionState.controller!.text = message.text;
+                      }
 
                       final chatInputFocusState =
                           ref.watch(chatInputFocusProvider.notifier);
                       FocusScope.of(context)
                           .requestFocus(chatInputFocusState.state);
-
-                      // await widget.convo
-                      //     .editPlainMessage(currentMessageId!, "Test Edit");
                     },
                     child: const Text(
                       'Edit',
@@ -604,7 +605,10 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   }
 
   Widget editMessageBuilder(
-      BuildContext context, WidgetRef ref, Widget? child) {
+    BuildContext context,
+    WidgetRef ref,
+    Widget? child,
+  ) {
     final roomId = widget.convo.getRoomIdStr();
     final inputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     return Row(
@@ -680,6 +684,18 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         markdownMessage,
         chatInputState.repliedToMessage!.id,
         null,
+      );
+      chatInputNotifier.setRepliedToMessage(null);
+      chatInputNotifier.setEditMessage(null);
+      final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
+      inputNotifier.toggleReplyView(false);
+      inputNotifier.toggleEditView(false);
+      inputNotifier.setReplyWidget(null);
+      inputNotifier.setEditWidget(null);
+    } else if (chatInputState.editMessage != null) {
+      await convo.editFormattedMessage(
+        chatInputState.editMessage!.id,
+        markdownMessage,
       );
       chatInputNotifier.setRepliedToMessage(null);
       chatInputNotifier.setEditMessage(null);
