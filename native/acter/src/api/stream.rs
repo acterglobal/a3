@@ -29,11 +29,9 @@ use ruma_events::{
 use std::{path::PathBuf, sync::Arc};
 use tracing::info;
 
-use super::{
-    message::RoomMessage,
-    utils::{remap_for_diff, ApiVectorDiff},
-    RUNTIME,
-};
+use crate::{RoomMessage, RUNTIME};
+
+use super::utils::{remap_for_diff, ApiVectorDiff};
 
 pub type TimelineDiff = ApiVectorDiff<RoomMessage>;
 

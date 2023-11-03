@@ -38,13 +38,9 @@ use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::{error, trace, warn};
 
-use super::{
-    client::Client,
-    room::Room,
-    search::PublicSearchResult,
-    utils::{remap_for_diff, ApiVectorDiff},
-    RUNTIME,
-};
+use crate::{Client, PublicSearchResult, Room, RUNTIME};
+
+use super::utils::{remap_for_diff, ApiVectorDiff};
 
 #[derive(Debug, Clone)]
 pub struct Space {

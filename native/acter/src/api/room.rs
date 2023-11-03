@@ -48,14 +48,9 @@ use ruma_events::{
 use std::{io::Write, ops::Deref, path::PathBuf};
 use tracing::{error, info, warn};
 
-use crate::OptionBuffer;
+use crate::{OptionBuffer, RoomMessage, RoomProfile, UserProfile, RUNTIME};
 
-use super::{
-    api::FfiBuffer,
-    message::RoomMessage,
-    profile::{RoomProfile, UserProfile},
-    RUNTIME,
-};
+use super::api::FfiBuffer;
 
 #[derive(Eq, PartialEq, Clone, strum::Display, strum::EnumString, Debug)]
 #[strum(serialize_all = "PascalCase")]
