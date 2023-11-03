@@ -272,7 +272,9 @@ jobs:
 
       - name: Flutter setup
         working-directory: app
-        run: flutter pub get
+        run: |
+          flutter pub get
+          flutter build ipa
 
       - name: Run flutter integration tests
         run: .github/scripts/flutter-integration-tests.sh
