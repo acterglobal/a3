@@ -6,6 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class ChatInputNotifier extends StateNotifier<ChatInputState> {
   ChatInputNotifier() : super(const ChatInputState());
 
+  void toggleEditView(bool value) =>
+      state = state.copyWith(showEditView: value);
+
   void toggleReplyView(bool value) =>
       state = state.copyWith(showReplyView: value);
 
@@ -25,6 +28,11 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
       state = state.copyWith(replyWidget: child);
     }
   }
+  void setEditWidget(Widget? child) {
+    if (mounted) {
+      state = state.copyWith(editWidget: child);
+    }
+  }
 
   void addMention(String displayName, String authorId) {
     final mentionReplacements = Map.of(state.mentionReplacements);
@@ -38,6 +46,9 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
 
   void setRepliedToMessage(Message? message) {
     state = state.copyWith(repliedToMessage: message);
+  }
+  void setEditMessage(Message? message) {
+    state = state.copyWith(editMessage: message);
   }
 
   void setCurrentMessageId(String? messageId) {
