@@ -600,11 +600,18 @@ jobs:
           APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+          APPLE_SIGN_CERTNAME: ${{ secrets.APPLE_MAC_APPSTORE_SIGN_CERTNAME }}
         run: |
           mkdir private_keys
           echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
-          xcrun altool --validate-app --type macos --file build/macos/Build/Products/Release/Acter.app \
-              --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID" --bundle-id global.acter.a3
-          xcrun altool --upload-app --type macos --file build/macos/Build/Products/Release/Acter.app \
-              --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID" --bundle-id global.acter.a3
+          echo "Productbuild"
+          productbuild --component build/macos/Build/Products/Release/Acter.app /Applications --sign "$APPLE_SIGN_CERTNAME" Acter.pkg
+          xcrun altool --upload-app --type macos --file Acter.pkg \
+              --bundle-id global.acter.a3 \
+              --key "private_keys/AuthKey_$APPLE_API_KEY_ID.p8" \
+              --key-id "$APPLE_API_KEY_ID" \
+              --issuer "$APPLE_ISSUER_ID" \
+          # xcrun notarytool submit Acter.zip --wait \
+          #     --key "private_keys/AuthKey_$APPLE_API_KEY_ID.p8" --key-id "$APPLE_API_KEY_ID" --issuer "$APPLE_ISSUER_ID" --bundle-id global.acter.a3
+          # xcrun stapler staple build/macos/Build/Products/Release/Acter.app
         shell: bash
