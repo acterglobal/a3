@@ -1093,7 +1093,7 @@ impl RoomMessage {
         RoomMessage::new_event_item(room_id, event_item)
     }
 
-    pub(crate) fn room_message_from_event(
+    pub fn room_message_from_event(
         event: OriginalRoomMessageEvent,
         room: Room,
         has_editable: bool,

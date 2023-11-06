@@ -1,6 +1,10 @@
-use acter::ruma_events::{AnyMessageLikeEvent, AnyTimelineEvent};
+use acter::{
+    api::RoomMessage,
+    ruma_events::{AnyMessageLikeEvent, AnyTimelineEvent, MessageLikeEvent},
+};
 use anyhow::{bail, Result};
 use futures::stream::StreamExt;
+use std::ops::Deref;
 
 use crate::utils::random_user_with_random_space;
 
@@ -27,17 +31,15 @@ async fn message_edit() -> Result<()> {
     let ev = space.event(&edited_id).await?;
     println!("msg edition: {ev:?}");
 
-    let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(r))) = ev.event.deserialize() else {
+    let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(MessageLikeEvent::Original(r)))) = ev.event.deserialize() else {
         bail!("not the proper room event")
     };
 
-    let Some(e) = r.as_original() else {
-        bail!("This event should have original message")
+    let msg = RoomMessage::room_message_from_event(r, space.deref().deref().clone(), false);
+    let Some(item) = msg.event_item() else {
+        bail!("This item should be event item not virtual item")
     };
 
-    let Some(ref relation) = e.content.relates_to else {
-        bail!("The edition message should have relation")
-    };
-    assert_eq!(relation.event_id(), &event_id);
+    assert!(item.is_edited());
     Ok(())
 }
