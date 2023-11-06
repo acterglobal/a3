@@ -38,6 +38,7 @@ class _ImageMessageBuilderState extends State<ImageMessageBuilder> {
             .imageBinary(widget.message.id)
             .then((value) => value.asTypedList()),
       );
+      setState(() {});
     } catch (e, s) {
       imageData = AsyncValue.error(e, s);
     }
