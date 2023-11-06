@@ -205,6 +205,8 @@ jobs:
           brew install git-crypt
           echo "${{ secrets.GIT_CRYPT_KEY }}" | base64 --decode > .github/assets/git-crypt-key
           git-crypt unlock .github/assets/git-crypt-key
+          echo "Files found:"
+          git-crypt status -e
 
       # Install the Apple certificate and provisioning profile
       - name: Install the Apple certificates
