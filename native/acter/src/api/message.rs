@@ -259,7 +259,7 @@ impl RoomEventItem {
     }
 
     pub fn is_edited(&self) -> bool {
-        self.editable
+        self.edited
     }
 
     pub(crate) fn set_edited(&mut self, value: bool) {
