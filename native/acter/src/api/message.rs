@@ -52,7 +52,7 @@ use ruma_events::{
         member::{MembershipState, OriginalRoomMemberEvent, OriginalSyncRoomMemberEvent},
         message::{
             AudioInfo, FileInfo, MessageFormat, MessageType, OriginalRoomMessageEvent,
-            OriginalSyncRoomMessageEvent, VideoInfo,
+            OriginalSyncRoomMessageEvent, Relation, VideoInfo,
         },
         name::{OriginalRoomNameEvent, OriginalSyncRoomNameEvent},
         pinned_events::{OriginalRoomPinnedEventsEvent, OriginalSyncRoomPinnedEventsEvent},
@@ -99,6 +99,7 @@ pub struct RoomEventItem {
     read_receipts: HashMap<String, Receipt>,
     reactions: HashMap<String, Vec<ReactionRecord>>,
     editable: bool,
+    edited: bool,
 }
 
 impl RoomEventItem {
@@ -119,6 +120,7 @@ impl RoomEventItem {
             read_receipts: Default::default(),
             reactions: Default::default(),
             editable: false,
+            edited: false,
         }
     }
 
@@ -254,6 +256,14 @@ impl RoomEventItem {
 
     pub(crate) fn set_editable(&mut self, value: bool) {
         self.editable = value;
+    }
+
+    pub fn is_edited(&self) -> bool {
+        self.editable
+    }
+
+    pub(crate) fn set_edited(&mut self, value: bool) {
+        self.edited = value;
     }
 }
 
@@ -1174,6 +1184,9 @@ impl RoomMessage {
             _ => {}
         }
         event_item.set_text_desc(text_desc);
+        if let Some(Relation::Replacement(r)) = event.content.relates_to {
+            event_item.set_edited(true);
+        }
         RoomMessage::new_event_item(room.room_id().to_owned(), event_item)
     }
 
@@ -1262,6 +1275,9 @@ impl RoomMessage {
             _ => {}
         }
         event_item.set_text_desc(text_desc);
+        if let Some(Relation::Replacement(r)) = event.content.relates_to {
+            event_item.set_edited(true);
+        }
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1787,6 +1803,9 @@ impl RoomMessage {
                 result.set_text_desc(text_desc);
                 if let Some(in_reply_to) = msg.in_reply_to() {
                     result.set_in_reply_to(in_reply_to.clone().event_id);
+                }
+                if msg.is_edited() {
+                    result.set_edited(true);
                 }
                 result
             }
