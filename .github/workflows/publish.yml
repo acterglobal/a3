@@ -56,49 +56,49 @@ jobs:
     strategy:
       matrix:
        include:
-          - name: Android
-            target: android
-            os: ubuntu-latest
-            exclude_from_release: true
-            cargo_make_setup: setup-android
-            cargo_make_args: android
-            with_ndk_version: r25
-            flutter_build_args: "build appbundle --split-debug-info=debug_symbols"
-            artifact_prefix: acter-android
-            artifact_path:  app/build/app/outputs/bundle/release/
-            extra_artifacts: app/build/app/outputs/bundle/release/app-release.aab
-          - name: Android apk
-            target: android
-            os: ubuntu-latest
-            cargo_make_setup: setup-android
-            cargo_make_args: android
-            with_ndk_version: r25
-            flutter_build_args: "build apk --split-per-abi --split-debug-info=debug_symbols"
-            artifact_prefix: acter-android
-            artifact_path:  app/build/app/outputs/apk/release/
-            extra_release_artifacts: app/build/app/outputs/apk/release/*.apk
-          - name: Linux x64
-            target: linux
-            os: ubuntu-latest
-            apt_install: ninja-build libgtk-3-dev
-            cargo_make_args: desktop
-            flutter_config: "--enable-linux-desktop"
-            flutter_build_args: "build linux"
-            artifact_prefix: acter-linux-x64
-            artifact_path: app/build/linux/x64/release/bundle/
-            tar_files: lib/ data/ acter
-          - name: iOS
-            os: macos-latest
-            target: ios
-            with_apple_cert: true
-            cargo_make_setup: setup-ios
-            cargo_make_args: ios
-            flutter_build_args: "build ipa --export-options-plist=ios/exportOptions_release.plist --split-debug-info=debug_symbols"
-            artifact_prefix: acter-ios
-            artifact_path:  app/build/ios/ipa/
-            rename_file: "acter.ipa"
-            rename_suffix: "ipa"
-            with_debug_symbols: true
+          # - name: Android
+          #   target: android
+          #   os: ubuntu-latest
+          #   exclude_from_release: true
+          #   cargo_make_setup: setup-android
+          #   cargo_make_args: android
+          #   with_ndk_version: r25
+          #   flutter_build_args: "build appbundle --split-debug-info=debug_symbols"
+          #   artifact_prefix: acter-android
+          #   artifact_path:  app/build/app/outputs/bundle/release/
+          #   extra_artifacts: app/build/app/outputs/bundle/release/app-release.aab
+          # - name: Android apk
+          #   target: android
+          #   os: ubuntu-latest
+          #   cargo_make_setup: setup-android
+          #   cargo_make_args: android
+          #   with_ndk_version: r25
+          #   flutter_build_args: "build apk --split-per-abi --split-debug-info=debug_symbols"
+          #   artifact_prefix: acter-android
+          #   artifact_path:  app/build/app/outputs/apk/release/
+          #   extra_release_artifacts: app/build/app/outputs/apk/release/*.apk
+          # - name: Linux x64
+          #   target: linux
+          #   os: ubuntu-latest
+          #   apt_install: ninja-build libgtk-3-dev
+          #   cargo_make_args: desktop
+          #   flutter_config: "--enable-linux-desktop"
+          #   flutter_build_args: "build linux"
+          #   artifact_prefix: acter-linux-x64
+          #   artifact_path: app/build/linux/x64/release/bundle/
+          #   tar_files: lib/ data/ acter
+          # - name: iOS
+          #   os: macos-latest
+          #   target: ios
+          #   with_apple_cert: true
+          #   cargo_make_setup: setup-ios
+          #   cargo_make_args: ios
+          #   flutter_build_args: "build ipa --export-options-plist=ios/exportOptions_release.plist --split-debug-info=debug_symbols"
+          #   artifact_prefix: acter-ios
+          #   artifact_path:  app/build/ios/ipa/
+          #   rename_file: "acter.ipa"
+          #   rename_suffix: "ipa"
+          #   with_debug_symbols: true
           - name: MacOS
             os: macos-12
             target: macos
@@ -111,18 +111,18 @@ jobs:
             extra_artifacts: app/build/macos/Build/Products/Release/Acter.app
             tar_files: "Acter.app"
             with_debug_symbols: true
-          - name: Windows
-            os: windows-latest
-            target: windows
-            cargo_make_args: desktop
-            flutter_config: "--enable-windows-desktop"
-            flutter_build_args: "build windows --split-debug-info=debug_symbols"
-            rename_file: acter.msix
-            artifact_prefix: acter-windows
-            rename_suffix: msix
-            artifact_path: app/build/windows/runner/Release/
-            zip_files: false
-            with_debug_symbols: true
+          # - name: Windows
+          #   os: windows-latest
+          #   target: windows
+          #   cargo_make_args: desktop
+          #   flutter_config: "--enable-windows-desktop"
+          #   flutter_build_args: "build windows --split-debug-info=debug_symbols"
+          #   rename_file: acter.msix
+          #   artifact_prefix: acter-windows
+          #   rename_suffix: msix
+          #   artifact_path: app/build/windows/runner/Release/
+          #   zip_files: false
+          #   with_debug_symbols: true
 
     name: Build ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
