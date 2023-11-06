@@ -177,7 +177,7 @@ class _ShellToolbar extends ConsumerWidget {
                 return;
               }
               context.pop();
-              context.pushNamed(Routes.dashboard.name);
+              context.goNamed(Routes.dashboard.name);
             },
             title: 'Yes, Leave',
             style: ElevatedButton.styleFrom(
