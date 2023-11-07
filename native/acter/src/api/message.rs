@@ -324,7 +324,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.call.answer".to_string(),
         );
-        let text_desc = TextDesc::new(event.content.answer.sdp, None);
+        let text_desc = TextDesc::new(event.content.answer.sdp);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -339,7 +339,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.call.answer".to_string(),
         );
-        let text_desc = TextDesc::new(event.content.answer.sdp, None);
+        let text_desc = TextDesc::new(event.content.answer.sdp);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -361,7 +361,7 @@ impl RoomMessage {
             .map(|x| x.candidate)
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc::new(format!("changed candidates to {candidates}"), None);
+        let text_desc = TextDesc::new(format!("changed candidates to {candidates}"));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -383,7 +383,7 @@ impl RoomMessage {
             .map(|x| x.candidate)
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc::new(format!("changed candidates to {candidates}"), None);
+        let text_desc = TextDesc::new(format!("changed candidates to {candidates}"));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -398,10 +398,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.call.hangup".to_string(),
         );
-        let text_desc = TextDesc::new(
-            format!("hangup this call because {}", event.content.reason),
-            None,
-        );
+        let text_desc = TextDesc::new(format!("hangup this call because {}", event.content.reason));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -416,10 +413,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.call.hangup".to_string(),
         );
-        let text_desc = TextDesc::new(
-            format!("hangup this call because {}", event.content.reason),
-            None,
-        );
+        let text_desc = TextDesc::new(format!("hangup this call because {}", event.content.reason));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -434,7 +428,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.call.invite".to_string(),
         );
-        let text_desc = TextDesc::new(event.content.offer.sdp, None);
+        let text_desc = TextDesc::new(event.content.offer.sdp);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -449,7 +443,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.call.invite".to_string(),
         );
-        let text_desc = TextDesc::new(event.content.offer.sdp, None);
+        let text_desc = TextDesc::new(event.content.offer.sdp);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -468,7 +462,7 @@ impl RoomMessage {
             "recommended {} about {} because {}",
             event.content.0.recommendation, event.content.0.entity, event.content.0.reason,
         );
-        let text_desc = TextDesc::new(body, None);
+        let text_desc = TextDesc::new(body);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -487,7 +481,7 @@ impl RoomMessage {
             "recommended {} about {} because {}",
             event.content.0.recommendation, event.content.0.entity, event.content.0.reason,
         );
-        let text_desc = TextDesc::new(body, None);
+        let text_desc = TextDesc::new(body);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -502,7 +496,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.policy.rule.server".to_string(),
         );
-        let text_desc = TextDesc::new("changed policy rule server".to_string(), None);
+        let text_desc = TextDesc::new("changed policy rule server".to_string());
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -517,7 +511,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.policy.rule.server".to_string(),
         );
-        let text_desc = TextDesc::new("changed policy rule server".to_string(), None);
+        let text_desc = TextDesc::new("changed policy rule server".to_string());
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -532,7 +526,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.policy.rule.user".to_string(),
         );
-        let text_desc = TextDesc::new("changed policy rule user".to_string(), None);
+        let text_desc = TextDesc::new("changed policy rule user".to_string());
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -547,7 +541,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.policy.rule.user".to_string(),
         );
-        let text_desc = TextDesc::new("changed policy rule user".to_string(), None);
+        let text_desc = TextDesc::new("changed policy rule user".to_string());
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -559,7 +553,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.reaction".to_string(),
         );
-        let text_desc = TextDesc::new(format!("reacted by {}", event.content.relates_to.key), None);
+        let text_desc = TextDesc::new(format!("reacted by {}", event.content.relates_to.key));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -574,7 +568,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.reaction".to_string(),
         );
-        let text_desc = TextDesc::new(format!("reacted by {}", event.content.relates_to.key), None);
+        let text_desc = TextDesc::new(format!("reacted by {}", event.content.relates_to.key));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -596,7 +590,7 @@ impl RoomMessage {
             .map(|x| x.to_string())
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc::new(format!("changed room aliases to {aliases}"), None);
+        let text_desc = TextDesc::new(format!("changed room aliases to {aliases}"));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -618,7 +612,7 @@ impl RoomMessage {
             .map(|x| x.to_string())
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc::new(format!("changed room aliases to {aliases}"), None);
+        let text_desc = TextDesc::new(format!("changed room aliases to {aliases}"));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -633,7 +627,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.avatar".to_string(),
         );
-        let text_desc = TextDesc::new("changed room avatar".to_string(), None);
+        let text_desc = TextDesc::new("changed room avatar".to_string());
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -648,7 +642,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.avatar".to_string(),
         );
-        let text_desc = TextDesc::new("changed room avatar".to_string(), None);
+        let text_desc = TextDesc::new("changed room avatar".to_string());
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -670,14 +664,12 @@ impl RoomMessage {
             .map(|x| x.to_string())
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc::new(
-            format!(
-                "changed canonical aliases ({}) of room alias ({:?})",
-                alt_aliases,
-                event.content.alias.map(|x| x.to_string()),
-            ),
-            None,
+        let body = format!(
+            "changed canonical aliases ({}) of room alias ({:?})",
+            alt_aliases,
+            event.content.alias.map(|x| x.to_string()),
         );
+        let text_desc = TextDesc::new(body);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -699,14 +691,12 @@ impl RoomMessage {
             .map(|x| x.to_string())
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc::new(
-            format!(
-                "changed canonical aliases ({}) of room alias ({:?})",
-                alt_aliases,
-                event.content.alias.map(|x| x.to_string()),
-            ),
-            None,
+        let body = format!(
+            "changed canonical aliases ({}) of room alias ({:?})",
+            alt_aliases,
+            event.content.alias.map(|x| x.to_string()),
         );
+        let text_desc = TextDesc::new(body);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -721,7 +711,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.create".to_string(),
         );
-        let text_desc = TextDesc::new("created this room".to_string(), None);
+        let text_desc = TextDesc::new("created this room".to_string());
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -736,7 +726,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.create".to_string(),
         );
-        let text_desc = TextDesc::new("created this room".to_string(), None);
+        let text_desc = TextDesc::new("created this room".to_string());
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -756,7 +746,7 @@ impl RoomMessage {
             EncryptedEventScheme::OlmV1Curve25519AesSha2(s) => "OlmV1Curve25519AesSha2".to_string(),
             _ => "Unknown".to_string(),
         };
-        let text_desc = TextDesc::new(format!("encrypted by {scheme}"), None);
+        let text_desc = TextDesc::new(format!("encrypted by {scheme}"));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -776,7 +766,7 @@ impl RoomMessage {
             EncryptedEventScheme::OlmV1Curve25519AesSha2(s) => "OlmV1Curve25519AesSha2".to_string(),
             _ => "Unknown".to_string(),
         };
-        let text_desc = TextDesc::new(format!("encrypted by {scheme}"), None);
+        let text_desc = TextDesc::new(format!("encrypted by {scheme}"));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -791,10 +781,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.encryption".to_string(),
         );
-        let text_desc = TextDesc::new(
-            format!("changed encryption to {}", event.content.algorithm),
-            None,
-        );
+        let text_desc = TextDesc::new(format!("changed encryption to {}", event.content.algorithm));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -809,10 +796,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.encryption".to_string(),
         );
-        let text_desc = TextDesc::new(
-            format!("changed encryption to {}", event.content.algorithm),
-            None,
-        );
+        let text_desc = TextDesc::new(format!("changed encryption to {}", event.content.algorithm));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -827,13 +811,11 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.guest.access".to_string(),
         );
-        let text_desc = TextDesc::new(
-            format!(
-                "changed room's guest access to {}",
-                event.content.guest_access,
-            ),
-            None,
+        let body = format!(
+            "changed room's guest access to {}",
+            event.content.guest_access,
         );
+        let text_desc = TextDesc::new(body);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -848,13 +830,11 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.guest.access".to_string(),
         );
-        let text_desc = TextDesc::new(
-            format!(
-                "changed room's guest access to {}",
-                event.content.guest_access,
-            ),
-            None,
+        let body = format!(
+            "changed room's guest access to {}",
+            event.content.guest_access,
         );
+        let text_desc = TextDesc::new(body);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -869,13 +849,11 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.history_visibility".to_string(),
         );
-        let text_desc = TextDesc::new(
-            format!(
-                "changed room's history visibility to {}",
-                event.content.history_visibility,
-            ),
-            None,
+        let body = format!(
+            "changed room's history visibility to {}",
+            event.content.history_visibility,
         );
+        let text_desc = TextDesc::new(body);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -890,13 +868,11 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.history_visibility".to_string(),
         );
-        let text_desc = TextDesc::new(
-            format!(
-                "changed room's history visibility to {}",
-                event.content.history_visibility,
-            ),
-            None,
+        let body = format!(
+            "changed room's history visibility to {}",
+            event.content.history_visibility,
         );
+        let text_desc = TextDesc::new(body);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -911,13 +887,11 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.join.rules".to_string(),
         );
-        let text_desc = TextDesc::new(
-            format!(
-                "changed room's join rules to {}",
-                event.content.join_rule.as_str(),
-            ),
-            None,
+        let body = format!(
+            "changed room's join rules to {}",
+            event.content.join_rule.as_str(),
         );
+        let text_desc = TextDesc::new(body);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -932,13 +906,11 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.join.rules".to_string(),
         );
-        let text_desc = TextDesc::new(
-            format!(
-                "changed room's join rules to {}",
-                event.content.join_rule.as_str(),
-            ),
-            None,
+        let body = format!(
+            "changed room's join rules to {}",
+            event.content.join_rule.as_str(),
         );
+        let text_desc = TextDesc::new(body);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1013,7 +985,7 @@ impl RoomMessage {
                 }
             }
         };
-        let text_desc = TextDesc::new(fallback, None);
+        let text_desc = TextDesc::new(fallback);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1088,7 +1060,7 @@ impl RoomMessage {
                 }
             }
         };
-        let text_desc = TextDesc::new(fallback, None);
+        let text_desc = TextDesc::new(fallback);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1124,7 +1096,7 @@ impl RoomMessage {
             MessageType::Video(content) => "sent a video.".to_string(),
             _ => "Unknown sync item".to_string(),
         };
-        let mut text_desc = TextDesc::new(fallback, None);
+        let mut text_desc = TextDesc::new(fallback);
         match event.content.msgtype {
             MessageType::Audio(content) => {
                 if let Some(info) = &content.info {
@@ -1215,7 +1187,7 @@ impl RoomMessage {
             MessageType::Video(content) => "sent a video.".to_string(),
             _ => "Unknown sync item".to_string(),
         };
-        let mut text_desc = TextDesc::new(fallback, None);
+        let mut text_desc = TextDesc::new(fallback);
         match event.content.msgtype {
             MessageType::Audio(content) => {
                 if let Some(info) = &content.info {
@@ -1288,8 +1260,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.name".to_string(),
         );
-        let body = format!("changed name to {}", event.content.name);
-        let text_desc = TextDesc::new(body, None);
+        let text_desc = TextDesc::new(format!("changed name to {}", event.content.name));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1304,8 +1275,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.name".to_string(),
         );
-        let body = format!("changed name to {}", event.content.name);
-        let text_desc = TextDesc::new(body, None);
+        let text_desc = TextDesc::new(format!("changed name to {}", event.content.name));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1320,10 +1290,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.pinned_events".to_string(),
         );
-        let text_desc = TextDesc::new(
-            format!("pinned {} events", event.content.pinned.len()),
-            None,
-        );
+        let text_desc = TextDesc::new(format!("pinned {} events", event.content.pinned.len()));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1338,10 +1305,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.pinned_events".to_string(),
         );
-        let text_desc = TextDesc::new(
-            format!("pinned {} events", event.content.pinned.len()),
-            None,
-        );
+        let text_desc = TextDesc::new(format!("pinned {} events", event.content.pinned.len()));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1363,7 +1327,7 @@ impl RoomMessage {
             .map(|(user_id, value)| format!("power level of {user_id} to {value}"))
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc::new(format!("changed {users}"), None);
+        let text_desc = TextDesc::new(format!("changed {users}"));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1385,7 +1349,7 @@ impl RoomMessage {
             .map(|(user_id, value)| format!("power level of {user_id} to {value}"))
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc::new(format!("changed {users}"), None);
+        let text_desc = TextDesc::new(format!("changed {users}"));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1405,7 +1369,7 @@ impl RoomMessage {
             Some(reason) => format!("deleted this item because {reason}"),
             None => "deleted this item".to_string(),
         };
-        let text_desc = TextDesc::new(body, None);
+        let text_desc = TextDesc::new(body);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1425,7 +1389,7 @@ impl RoomMessage {
             Some(reason) => format!("deleted this item because {reason}"),
             None => "deleted this item".to_string(),
         };
-        let text_desc = TextDesc::new(body, None);
+        let text_desc = TextDesc::new(body);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1448,7 +1412,7 @@ impl RoomMessage {
             (false, true) => format!("denied {deny}"),
             (false, false) => "".to_string(),
         };
-        let text_desc = TextDesc::new(body, None);
+        let text_desc = TextDesc::new(body);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1471,7 +1435,7 @@ impl RoomMessage {
             (false, true) => format!("denied {deny}"),
             (false, false) => "".to_string(),
         };
-        let text_desc = TextDesc::new(body, None);
+        let text_desc = TextDesc::new(body);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1486,7 +1450,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.third_party_invite".to_string(),
         );
-        let text_desc = TextDesc::new(format!("invited {}", event.content.display_name), None);
+        let text_desc = TextDesc::new(format!("invited {}", event.content.display_name));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1501,7 +1465,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.third_party_invite".to_string(),
         );
-        let text_desc = TextDesc::new(format!("invited {}", event.content.display_name), None);
+        let text_desc = TextDesc::new(format!("invited {}", event.content.display_name));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1516,7 +1480,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.tombstone".to_string(),
         );
-        let text_desc = TextDesc::new(event.content.body, None);
+        let text_desc = TextDesc::new(event.content.body);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1531,7 +1495,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.tombstone".to_string(),
         );
-        let text_desc = TextDesc::new(event.content.body, None);
+        let text_desc = TextDesc::new(event.content.body);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1546,7 +1510,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.topic".to_string(),
         );
-        let text_desc = TextDesc::new(format!("changed topic to {}", event.content.topic), None);
+        let text_desc = TextDesc::new(format!("changed topic to {}", event.content.topic));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1561,7 +1525,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.topic".to_string(),
         );
-        let text_desc = TextDesc::new(format!("changed topic to {}", event.content.topic), None);
+        let text_desc = TextDesc::new(format!("changed topic to {}", event.content.topic));
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1576,11 +1540,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.space.child".to_string(),
         );
-        let body = match event.content.order {
-            Some(order) => order,
-            None => "".to_string(),
-        };
-        let text_desc = TextDesc::new(body, None);
+        let text_desc = TextDesc::new(event.content.order.unwrap_or_default());
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1595,11 +1555,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.space.child".to_string(),
         );
-        let body = match event.content.order {
-            Some(order) => order,
-            None => "".to_string(),
-        };
-        let text_desc = TextDesc::new(body, None);
+        let text_desc = TextDesc::new(event.content.order.unwrap_or_default());
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1624,7 +1580,7 @@ impl RoomMessage {
                 .collect::<Vec<String>>()
                 .join(", "),
         );
-        let text_desc = TextDesc::new(body, None);
+        let text_desc = TextDesc::new(body);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1649,7 +1605,7 @@ impl RoomMessage {
                 .collect::<Vec<String>>()
                 .join(", "),
         );
-        let text_desc = TextDesc::new(body, None);
+        let text_desc = TextDesc::new(body);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1661,7 +1617,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.sticker".to_string(),
         );
-        let text_desc = TextDesc::new(event.content.body, None);
+        let text_desc = TextDesc::new(event.content.body);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1676,7 +1632,7 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.sticker".to_string(),
         );
-        let text_desc = TextDesc::new(event.content.body, None);
+        let text_desc = TextDesc::new(event.content.body);
         event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
@@ -1730,7 +1686,7 @@ impl RoomMessage {
                     MessageType::Video(content) => "sent a video.".to_string(),
                     _ => "Unknown timeline item".to_string(),
                 };
-                let mut text_desc = TextDesc::new(fallback, None);
+                let mut text_desc = TextDesc::new(fallback);
                 match msg_type {
                     MessageType::Text(content) => {
                         if let Some(formatted) = &content.formatted {
@@ -1919,7 +1875,7 @@ impl RoomMessage {
                     }
                     None => "unknown error".to_string(),
                 };
-                let text_desc = TextDesc::new(fallback, None);
+                let text_desc = TextDesc::new(fallback);
                 result.set_text_desc(text_desc);
                 result
             }
@@ -1935,13 +1891,13 @@ impl RoomMessage {
                 if let Some(change) = p.displayname_change() {
                     let text_desc = match (&change.old, &change.new) {
                         (Some(old), Some(new)) => {
-                            TextDesc::new(format!("changed name {old} -> {new}"), None)
+                            TextDesc::new(format!("changed name {old} -> {new}"))
                         }
-                        (None, Some(new)) => TextDesc::new(format!("set name to {new}"), None),
-                        (Some(_), None) => TextDesc::new("removed name".to_string(), None),
+                        (None, Some(new)) => TextDesc::new(format!("set name to {new}")),
+                        (Some(_), None) => TextDesc::new("removed name".to_string()),
                         (None, None) => {
                             //  why would that ever happen?
-                            TextDesc::new("kept name unset".to_string(), None)
+                            TextDesc::new("kept name unset".to_string())
                         }
                     };
                     result.set_text_desc(text_desc);
@@ -1988,7 +1944,7 @@ impl RoomMessage {
                     "m.poll.start".to_string(),
                 );
                 if let Some(fallback) = s.fallback_text() {
-                    let text_desc = TextDesc::new(fallback, None);
+                    let text_desc = TextDesc::new(fallback);
                     result.set_text_desc(text_desc);
                 }
                 result

@@ -84,10 +84,10 @@ pub struct TextDesc {
 }
 
 impl TextDesc {
-    pub fn new(body: String, formatted_body: Option<String>) -> Self {
+    pub fn new(body: String) -> Self {
         TextDesc {
             body,
-            formatted_body,
+            formatted_body: None,
         }
     }
 
@@ -106,6 +106,7 @@ impl TextDesc {
     pub(crate) fn set_formatted_body(&mut self, text: Option<String>) {
         self.formatted_body = text;
     }
+
     pub fn has_formatted(&self) -> bool {
         self.formatted_body.is_some()
     }
