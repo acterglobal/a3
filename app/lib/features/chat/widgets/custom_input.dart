@@ -298,15 +298,18 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                             (element) => element.id == currentMessageId,
                           );
                       chatInputNotifier.setEditMessage(message);
-                      var mentionState = mentionKey.currentState;
-                      if (message is TextMessage && mentionState != null) {
-                        mentionState.controller!.text = message.text;
+                      if (message is TextMessage) {
+                        ref
+                            .read(_textValuesProvider(roomId).notifier)
+                            .update((state) => message.text);
                       }
 
                       final chatInputFocusState =
-                          ref.watch(chatInputFocusProvider.notifier);
-                      FocusScope.of(context)
-                          .requestFocus(chatInputFocusState.state);
+                          ref.read(chatInputFocusProvider.notifier);
+                      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                        FocusScope.of(context)
+                            .requestFocus(chatInputFocusState.state);
+                      });
                     },
                     child: const Text(
                       'Edit',
@@ -624,6 +627,10 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         const Spacer(),
         GestureDetector(
           onTap: () {
+            final mentionState = mentionKey.currentState;
+            if (mentionKey.currentState != null) {
+              mentionState!.controller!.clear();
+            }
             inputNotifier.toggleReplyView(false);
             inputNotifier.toggleEditView(false);
             inputNotifier.setReplyWidget(null);
