@@ -1290,6 +1290,7 @@ impl RoomMessage {
         );
         let body = format!("changed name to {}", event.content.name);
         let text_desc = TextDesc::new(body, None);
+        event_item.set_text_desc(text_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
