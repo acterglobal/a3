@@ -71,8 +71,8 @@ use ruma_events::{
         parent::{OriginalSpaceParentEvent, OriginalSyncSpaceParentEvent},
     },
     sticker::{OriginalStickerEvent, OriginalSyncStickerEvent},
-    AnySyncMessageLikeEvent, AnySyncStateEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
-    SyncStateEvent,
+    AnySyncMessageLikeEvent, AnySyncStateEvent, AnySyncTimelineEvent, OriginalSyncMessageLikeEvent,
+    SyncMessageLikeEvent, SyncStateEvent,
 };
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Deref, sync::Arc};
@@ -1672,7 +1672,7 @@ impl RoomMessage {
                     result.add_reaction(key.clone(), records);
                 }
                 let sent_by_me = my_id.map(|me| me == event.sender()).unwrap_or_default();
-                let fallback = match msg_type {
+                let mut fallback = match msg_type {
                     MessageType::Audio(content) => "sent an audio.".to_string(),
                     MessageType::Emote(content) => content.body.clone(),
                     MessageType::File(content) => "sent a file.".to_string(),
@@ -1684,6 +1684,25 @@ impl RoomMessage {
                     MessageType::Video(content) => "sent a video.".to_string(),
                     _ => "Unknown timeline item".to_string(),
                 };
+                if let Some(json) = event.latest_edit_json() {
+                    if let Ok(AnySyncTimelineEvent::MessageLike(
+                        AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(ev)),
+                    )) = json.deserialize()
+                    {
+                        fallback = match ev.content.msgtype {
+                            MessageType::Audio(content) => "sent an audio.".to_string(),
+                            MessageType::Emote(content) => content.body.clone(),
+                            MessageType::File(content) => "sent a file.".to_string(),
+                            MessageType::Image(content) => "sent an image.".to_string(),
+                            MessageType::Location(content) => content.body.clone(),
+                            MessageType::Notice(content) => content.body.clone(),
+                            MessageType::ServerNotice(content) => content.body.clone(),
+                            MessageType::Text(content) => content.body.clone(),
+                            MessageType::Video(content) => "sent a video.".to_string(),
+                            _ => "Unknown timeline item".to_string(),
+                        };
+                    }
+                }
                 let mut text_desc = TextDesc::new(fallback);
                 match msg_type {
                     MessageType::Text(content) => {
@@ -1754,6 +1773,79 @@ impl RoomMessage {
                         }
                     }
                     _ => {}
+                }
+                if let Some(json) = event.latest_edit_json() {
+                    if let Ok(AnySyncTimelineEvent::MessageLike(
+                        AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(ev)),
+                    )) = json.deserialize()
+                    {
+                        match ev.content.msgtype {
+                            MessageType::Text(content) => {
+                                if let Some(formatted) = &content.formatted {
+                                    if formatted.format == MessageFormat::Html {
+                                        text_desc.set_formatted_body(Some(formatted.body.clone()));
+                                    }
+                                }
+                            }
+                            MessageType::Emote(content) => {
+                                if let Some(formatted) = &content.formatted {
+                                    if formatted.format == MessageFormat::Html {
+                                        text_desc.set_formatted_body(Some(formatted.body.clone()));
+                                    }
+                                }
+                            }
+                            MessageType::Image(content) => {
+                                if let Some(info) = &content.info {
+                                    let image_desc = ImageDesc::new(
+                                        content.body.clone(),
+                                        content.source.clone(),
+                                        *info.clone(),
+                                    );
+                                    result.set_image_desc(image_desc);
+                                }
+                            }
+                            MessageType::Audio(content) => {
+                                if let Some(info) = &content.info {
+                                    let audio_desc = AudioDesc::new(
+                                        content.body.clone(),
+                                        content.source.clone(),
+                                        *info.clone(),
+                                    );
+                                    result.set_audio_desc(audio_desc);
+                                }
+                            }
+                            MessageType::Video(content) => {
+                                if let Some(info) = &content.info {
+                                    let video_desc = VideoDesc::new(
+                                        content.body.clone(),
+                                        content.source.clone(),
+                                        *info.clone(),
+                                    );
+                                    result.set_video_desc(video_desc);
+                                }
+                            }
+                            MessageType::File(content) => {
+                                if let Some(info) = &content.info {
+                                    let file_desc = FileDesc::new(
+                                        content.body.clone(),
+                                        content.source.clone(),
+                                        *info.clone(),
+                                    );
+                                    result.set_file_desc(file_desc);
+                                }
+                            }
+                            MessageType::Location(content) => {
+                                if let Some(info) = &content.info {
+                                    let location_desc = LocationDesc::new(
+                                        content.body.clone(),
+                                        content.geo_uri.clone(),
+                                    );
+                                    result.set_location_desc(location_desc);
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
                 }
                 result.set_text_desc(text_desc);
                 if let Some(in_reply_to) = msg.in_reply_to() {
