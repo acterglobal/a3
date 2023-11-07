@@ -1643,7 +1643,7 @@ impl RoomMessage {
         let sender = event.sender().to_string();
         let origin_server_ts: u64 = event.timestamp().get().into();
         let client = room.client();
-        let my_user_id = client.user_id();
+        let my_id = client.user_id();
 
         let event_item = match event.content() {
             TimelineItemContent::Message(msg) => {
@@ -1665,15 +1665,13 @@ impl RoomMessage {
                             ReactionRecord::new(
                                 x.sender_id.clone(),
                                 x.timestamp,
-                                my_user_id.map(|me| me == x.sender_id).unwrap_or_default(),
+                                my_id.map(|me| me == x.sender_id).unwrap_or_default(),
                             )
                         })
                         .collect::<Vec<ReactionRecord>>();
                     result.add_reaction(key.clone(), records);
                 }
-                let sent_by_me = my_user_id
-                    .map(|me| me == event.sender())
-                    .unwrap_or_default();
+                let sent_by_me = my_id.map(|me| me == event.sender()).unwrap_or_default();
                 let fallback = match msg_type {
                     MessageType::Audio(content) => "sent an audio.".to_string(),
                     MessageType::Emote(content) => content.body.clone(),
