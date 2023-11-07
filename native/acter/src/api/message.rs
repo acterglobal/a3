@@ -1691,13 +1691,13 @@ impl RoomMessage {
                     {
                         fallback = match ev.content.msgtype {
                             MessageType::Audio(content) => "sent an audio.".to_string(),
-                            MessageType::Emote(content) => content.body.clone(),
+                            MessageType::Emote(content) => content.body,
                             MessageType::File(content) => "sent a file.".to_string(),
                             MessageType::Image(content) => "sent an image.".to_string(),
-                            MessageType::Location(content) => content.body.clone(),
-                            MessageType::Notice(content) => content.body.clone(),
-                            MessageType::ServerNotice(content) => content.body.clone(),
-                            MessageType::Text(content) => content.body.clone(),
+                            MessageType::Location(content) => content.body,
+                            MessageType::Notice(content) => content.body,
+                            MessageType::ServerNotice(content) => content.body,
+                            MessageType::Text(content) => content.body,
                             MessageType::Video(content) => "sent a video.".to_string(),
                             _ => "Unknown timeline item".to_string(),
                         };
