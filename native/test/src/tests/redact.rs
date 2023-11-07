@@ -1,6 +1,5 @@
 use acter::ruma_events::{AnyMessageLikeEvent, AnyTimelineEvent};
 use anyhow::{bail, Result};
-use futures::stream::StreamExt;
 
 use crate::utils::random_user_with_random_space;
 
