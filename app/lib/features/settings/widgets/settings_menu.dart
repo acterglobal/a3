@@ -1,3 +1,4 @@
+import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -196,11 +197,8 @@ class SettingsMenu extends ConsumerWidget {
                   Atlas.trash_can_thin,
                   color: AppTheme.brandColorScheme.error,
                 ),
-                onPressed: (context) {
-                  shouldGoNotNamed
-                      ? context.goNamed(Routes.settingSessions.name)
-                      : context.pushNamed(Routes.settingSessions.name);
-                },
+                onPressed: (context) =>
+                    deactivationConfirmationDialog(context, ref),
               ),
             ],
           ),
