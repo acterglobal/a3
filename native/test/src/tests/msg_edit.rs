@@ -1,4 +1,4 @@
-use anyhow::{bail, Result};
+use anyhow::Result;
 use futures::{pin_mut, stream::StreamExt};
 use tracing::info;
 
@@ -33,18 +33,25 @@ async fn message_edit() -> Result<()> {
                 info!("diff index: {:?}", diff.index());
                 info!("diff value: {:?}", diff.value());
                 info!("diff values: {:?}", diff.values());
-                let Some(value) = diff.value() else {
-                    bail!("diff set action should have valid value")
-                };
+                let value = diff
+                    .value()
+                    .expect("diff set action should have valid value");
                 assert_eq!(value.item_type(), "event");
-                let Some(event_item) = value.event_item() else {
-                    bail!("user already sent message edition")
-                };
-                assert!(event_item.is_edited());
-                assert_eq!(event_item.event_id(), event_id.to_string()); // should be original id, because original msg is replaced with msg edition
-                let Some(text_desc) = event_item.text_desc() else {
-                    bail!("message edition should have text desc")
-                };
+                let event_item = value
+                    .event_item()
+                    .expect("user already sent message edition");
+                assert!(
+                    event_item.is_edited(),
+                    "this event should be edition message"
+                );
+                assert_eq!(
+                    event_item.event_id(),
+                    event_id.to_string(),
+                    "should be original id, because original msg is replaced with msg edition"
+                );
+                let text_desc = event_item
+                    .text_desc()
+                    .expect("message edition should have text desc");
                 assert_eq!(text_desc.body(), "This is message edition");
                 break;
             }
@@ -58,18 +65,17 @@ async fn message_edit() -> Result<()> {
                 info!("diff index: {:?}", diff.index());
                 info!("diff value: {:?}", diff.value());
                 info!("diff values: {:?}", diff.values());
-                let Some(values) = diff.values() else {
-                    bail!("diff reset action should have valid values")
-                };
+                let values = diff
+                    .values()
+                    .expect("diff reset action should have valid values");
                 for msg in values.iter() {
                     if msg.item_type() == "event" {
-                        let Some(event_item) = msg.event_item() else {
-                            bail!("user already sent message edition")
-                        };
+                        let event_item =
+                            msg.event_item().expect("user already sent message edition");
                         if event_item.event_id() == event_id.to_string() {
-                            let Some(text_desc) = event_item.text_desc() else {
-                                bail!("text message should have text desc")
-                            };
+                            let text_desc = event_item
+                                .text_desc()
+                                .expect("text message should have text desc");
                             assert_eq!(text_desc.body(), "Hi, everyone");
                             break;
                         }

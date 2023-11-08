@@ -26,10 +26,9 @@ async fn message_redaction() -> Result<()> {
         bail!("not the proper room event");
     };
 
-    let Some(e) = r.as_original() else {
-        bail!("This should be m.room.redaction event");
-    };
-
+    let e = r
+        .as_original()
+        .expect("This should be m.room.redaction event");
     assert_eq!(e.redacts, Some(event_id));
     Ok(())
 }
