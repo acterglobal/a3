@@ -11,7 +11,7 @@ import './appstart.dart';
 
 const registrationToken = String.fromEnvironment(
   'REGISTRATION_TOKEN',
-  defaultValue: 'asdf',
+  defaultValue: 'TEST_TOKEN',
 );
 
 extension ActerLogin on ConvenientTest {
@@ -22,13 +22,16 @@ extension ActerLogin on ConvenientTest {
     return newId;
   }
 
-  Future<void> register(String username) async {
-    String passwordText;
+  String passwordFor(String username) {
     if (registrationToken.isNotEmpty) {
-      passwordText = '$registrationToken:$username';
+      return '$registrationToken:$username';
     } else {
-      passwordText = username;
+      return username;
     }
+  }
+
+  Future<void> register(String username) async {
+    String passwordText = passwordFor(username);
 
     Finder skip = find.byKey(Keys.skipBtn);
     await skip.should(findsOneWidget);
@@ -86,13 +89,8 @@ extension ActerLogin on ConvenientTest {
     await find.byKey(Keys.mainNav).should(findsNothing);
   }
 
-  Future<void> login(String username) async {
-    String passwordText;
-    if (registrationToken.isNotEmpty) {
-      passwordText = '$registrationToken:$username';
-    } else {
-      passwordText = username;
-    }
+  Future<void> tryLogin(String username) async {
+    String passwordText = passwordFor(username);
 
     Finder skip = find.byKey(Keys.skipBtn);
     await skip.should(findsOneWidget);
@@ -117,6 +115,10 @@ extension ActerLogin on ConvenientTest {
     Finder submitBtn = find.byKey(LoginPageKeys.submitBtn);
     await submitBtn.should(findsOneWidget);
     await submitBtn.tap();
+  }
+
+  Future<void> login(String username) async {
+    await tryLogin(username);
     // we should see a main navigation, either at the side (desktop) or the bottom (mobile/tablet)
     await find.byKey(Keys.mainNav).should(findsOneWidget);
   }

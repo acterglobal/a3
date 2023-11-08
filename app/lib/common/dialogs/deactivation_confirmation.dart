@@ -7,6 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+const deactivateConfirmBtn = Key('deactivate-account-confirm');
+const deactivateCancelBtn = Key('deactivate-account-cancel');
+const deactivatePasswordField = Key('deactivate-password-field');
+
 // Can be extended to be reusable dialog as riverpod states get added.
 // Ref can be used to read any provider which are declared.
 void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
@@ -58,6 +62,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 250),
                   child: TextField(
+                    key: deactivatePasswordField,
                     controller: passwordController,
                     obscureText: true,
                     decoration: const InputDecoration(hintText: 'Password'),
@@ -69,10 +74,12 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
         ),
         actions: <Widget>[
           TextButton(
+            key: deactivateCancelBtn,
             onPressed: () => ctx.pop(),
             child: const Text('Cancel'),
           ),
           TextButton(
+            key: deactivateConfirmBtn,
             onPressed: () async {
               showAdaptiveDialog(
                 barrierDismissible: false,

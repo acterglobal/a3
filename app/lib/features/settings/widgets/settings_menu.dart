@@ -1,3 +1,4 @@
+import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -11,6 +12,9 @@ import 'package:settings_ui/settings_ui.dart';
 const defaultSettingsMenuKey = Key('settings-menu');
 
 class SettingsMenu extends ConsumerWidget {
+  static Key deactivateAccount = const Key('settings-auth-deactivate-account');
+  static Key logoutAccount = const Key('settings-auth-logout-account');
+
   const SettingsMenu({super.key = defaultSettingsMenuKey});
 
   @override
@@ -165,6 +169,7 @@ class SettingsMenu extends ConsumerWidget {
             ),
             tiles: <SettingsTile>[
               SettingsTile.navigation(
+                key: logoutAccount,
                 title: const Text('Logout'),
                 description:
                     const Text('Close this session, deleting local data'),
@@ -174,6 +179,7 @@ class SettingsMenu extends ConsumerWidget {
                 },
               ),
               SettingsTile.navigation(
+                key: deactivateAccount,
                 title: Text(
                   'Deactivate Account',
                   style: TextStyle(
@@ -191,11 +197,8 @@ class SettingsMenu extends ConsumerWidget {
                   Atlas.trash_can_thin,
                   color: AppTheme.brandColorScheme.error,
                 ),
-                onPressed: (context) {
-                  shouldGoNotNamed
-                      ? context.goNamed(Routes.settingSessions.name)
-                      : context.pushNamed(Routes.settingSessions.name);
-                },
+                onPressed: (context) =>
+                    deactivationConfirmationDialog(context, ref),
               ),
             ],
           ),
