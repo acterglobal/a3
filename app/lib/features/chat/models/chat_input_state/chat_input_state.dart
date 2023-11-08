@@ -21,5 +21,6 @@ class ChatInputState with _$ChatInputState {
     @Default(null) types.Message? editMessage,
     @Default([]) List<Map<String, String>> mentions,
     @Default({}) Map<String, String> mentionReplacements,
+    @Default(false) bool editBtnVisible,
   }) = _ChatInputState;
 }

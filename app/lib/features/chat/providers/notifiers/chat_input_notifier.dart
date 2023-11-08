@@ -14,6 +14,8 @@ class ChatInputNotifier extends StateNotifier<ChatInputState> {
 
   void showSendBtn(bool value) => state = state.copyWith(sendBtnVisible: value);
 
+  void showEditButton(bool value) => state = state.copyWith(editBtnVisible: value);
+
   void toggleAttachment(bool value) =>
       state = state.copyWith(attachmentVisible: value);
 

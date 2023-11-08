@@ -76,6 +76,9 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     final showEditView = ref.watch(
       chatInputProvider(roomId).select((ci) => ci.showEditView),
     );
+    final showEditButton = ref.watch(
+      chatInputProvider(roomId).select((ci) => ci.editBtnVisible),
+    );
 
     bool isAuthor() {
       if (currentMessageId != null) {
@@ -276,46 +279,47 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                       ),
                     ),
                   ),
-                  InkWell(
-                    onTap: () async {
-                      final emojiRowVisible = ref.read(
-                        chatInputProvider(roomId).select((ci) {
-                          return ci.emojiRowVisible;
-                        }),
-                      );
-                      final inputNotifier =
-                          ref.read(chatInputProvider(roomId).notifier);
-                      if (emojiRowVisible) {
-                        inputNotifier.setCurrentMessageId(null);
-                        inputNotifier.emojiRowVisible(false);
-                      }
+                  if(showEditButton)
+                    InkWell(
+                      onTap: () async {
+                        final emojiRowVisible = ref.read(
+                          chatInputProvider(roomId).select((ci) {
+                            return ci.emojiRowVisible;
+                          }),
+                        );
+                        final inputNotifier =
+                        ref.read(chatInputProvider(roomId).notifier);
+                        if (emojiRowVisible) {
+                          inputNotifier.setCurrentMessageId(null);
+                          inputNotifier.emojiRowVisible(false);
+                        }
 
-                      inputNotifier.toggleEditView(true);
-                      final message = ref
-                          .read(chatStateProvider(widget.convo))
-                          .messages
-                          .firstWhere(
-                            (element) => element.id == currentMessageId,
-                          );
-                      chatInputNotifier.setEditMessage(message);
-                      if (message is TextMessage) {
-                        ref
-                            .read(_textValuesProvider(roomId).notifier)
-                            .update((state) => message.text);
-                      }
+                        inputNotifier.toggleEditView(true);
+                        final message = ref
+                            .read(chatStateProvider(widget.convo))
+                            .messages
+                            .firstWhere(
+                              (element) => element.id == currentMessageId,
+                        );
+                        chatInputNotifier.setEditMessage(message);
+                        if (message is TextMessage) {
+                          ref
+                              .read(_textValuesProvider(roomId).notifier)
+                              .update((state) => message.text);
+                        }
 
-                      final chatInputFocusState =
-                          ref.read(chatInputFocusProvider.notifier);
-                      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                        FocusScope.of(context)
-                            .requestFocus(chatInputFocusState.state);
-                      });
-                    },
-                    child: const Text(
-                      'Edit',
-                      style: TextStyle(color: Colors.white),
+                        final chatInputFocusState =
+                        ref.read(chatInputFocusProvider.notifier);
+                        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                          FocusScope.of(context)
+                              .requestFocus(chatInputFocusState.state);
+                        });
+                      },
+                      child: const Text(
+                        'Edit',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
-                  ),
                   InkWell(
                     onTap: () => customMsgSnackbar(
                       context,
