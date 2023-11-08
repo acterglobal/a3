@@ -18,12 +18,12 @@ async fn message_edit() -> Result<()> {
     pin_mut!(stream);
 
     let event_id = convo.send_plain_message("Hi, everyone".to_string()).await?;
-    println!("event id: {event_id:?}");
+    info!("event id: {event_id:?}");
 
     let edited_id = convo
         .edit_plain_message(event_id.to_string(), "This is message edition".to_string())
         .await?;
-    println!("edited id: {edited_id:?}");
+    info!("edited id: {edited_id:?}");
 
     while let Some(diff) = stream.next().await {
         match diff.action().as_str() {
