@@ -182,9 +182,9 @@ jobs:
               -d linux \
               --host-vmservice-port 9753 \
               --disable-service-auth-codes \
+              --dart-define CI=true \
               --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib \
               --dart-define DEFAULT_HOMESERVER_URL=http://localhost:8118/ \
-              --dart-define CI=true \
               --dart-define DEFAULT_HOMESERVER_NAME=localhost \
               &
           subscript_pid=$!
