@@ -11,6 +11,9 @@ import 'package:settings_ui/settings_ui.dart';
 const defaultSettingsMenuKey = Key('settings-menu');
 
 class SettingsMenu extends ConsumerWidget {
+  static Key deactivateAccount = const Key('settings-auth-deactivate-account');
+  static Key logoutAccount = const Key('settings-auth-logout-account');
+
   const SettingsMenu({super.key = defaultSettingsMenuKey});
 
   @override
@@ -165,6 +168,7 @@ class SettingsMenu extends ConsumerWidget {
             ),
             tiles: <SettingsTile>[
               SettingsTile.navigation(
+                key: logoutAccount,
                 title: const Text('Logout'),
                 description:
                     const Text('Close this session, deleting local data'),
@@ -174,6 +178,7 @@ class SettingsMenu extends ConsumerWidget {
                 },
               ),
               SettingsTile.navigation(
+                key: deactivateAccount,
                 title: Text(
                   'Deactivate Account',
                   style: TextStyle(
