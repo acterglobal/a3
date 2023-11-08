@@ -483,6 +483,38 @@ jobs:
           release_id: ${{ steps.create_release.outputs.id }}
 
 
+  build-flatpak:
+    name: Build flatpak
+    runs-on: ubuntu-latest
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:freedesktop-22.08
+      options: --privileged
+    needs:
+      - tags
+      - build
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v3
+        with:
+          name: Linux x64
+
+      # - uses: actions/download-artifact@v3
+      #   with:
+      #     name: Linux arm64
+
+
+      - name: Build .flatpak
+        uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v5
+        with:
+          bundle: FlutterApp.flatpak
+          manifest-path: app/linux/global.acter.Acter.yml
+
+      - name: Upload .flatpak artifact to workflow
+        uses: actions/upload-artifact@v3
+        with:
+          name: Flatpak artifact
+          path: Acter.flatpak
+
   microsoft-store:
     runs-on: windows-latest
     environment: release
