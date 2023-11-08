@@ -69,6 +69,12 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
       }
     }
     final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
+    final userId = ref.watch(myUserIdStrProvider);
+    if(userId == message.author.id && message is types.TextMessage) {
+      inputNotifier.showEditButton(true);
+    } else {
+      inputNotifier.showEditButton(false);
+    }
     if (ref.read(chatInputProvider(roomId)).showReplyView) {
       inputNotifier.toggleReplyView(false);
       inputNotifier.setReplyWidget(null);
