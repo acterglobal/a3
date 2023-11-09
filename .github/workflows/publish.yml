@@ -87,18 +87,18 @@ jobs:
           #   artifact_prefix: acter-linux-x64
           #   artifact_path: app/build/linux/x64/release/bundle/
           #   tar_files: lib/ data/ acter
-          # - name: iOS
-          #   os: macos-latest
-          #   target: ios
-          #   with_apple_cert: true
-          #   cargo_make_setup: setup-ios
-          #   cargo_make_args: ios
-          #   flutter_build_args: "build ipa --export-options-plist=ios/exportOptions_release.plist --split-debug-info=debug_symbols"
-          #   artifact_prefix: acter-ios
-          #   artifact_path:  app/build/ios/ipa/
-          #   rename_file: "acter.ipa"
-          #   rename_suffix: "ipa"
-          #   with_debug_symbols: true
+          - name: iOS
+            os: macos-latest
+            target: ios
+            with_apple_cert: true
+            cargo_make_setup: setup-ios
+            cargo_make_args: ios
+            flutter_build_args: "build ipa --export-options-plist=ios/exportOptions_release.plist --split-debug-info=debug_symbols"
+            artifact_prefix: acter-ios
+            artifact_path:  app/build/ios/ipa/
+            rename_file: "acter.ipa"
+            rename_suffix: "ipa"
+            with_debug_symbols: true
           - name: MacOS
             os: macos-12
             target: macos
