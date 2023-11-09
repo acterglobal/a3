@@ -487,7 +487,7 @@ jobs:
     name: Build flatpak
     runs-on: ubuntu-latest
     container:
-      image: bilelmoussaoui/flatpak-github-actions:freedesktop-22.08
+      image: bilelmoussaoui/flatpak-github-actions:freedesktop-23.08
       options: --privileged
     needs:
       - tags
@@ -502,12 +502,20 @@ jobs:
       #   with:
       #     name: Linux arm64
 
+      # extract upload
+      - name: Prepare for flatpack build
+        run: |
+          mkdir -p app/flatpak/build
+          tar -xvf *.tar.bz -C app/flatpak/build
+          cd app/flatpak
+          # for libsecret
+          git submodule add https://github.com/flathub/shared-modules.git
 
       - name: Build .flatpak
         uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v5
         with:
-          bundle: FlutterApp.flatpak
-          manifest-path: app/linux/global.acter.Acter.yml
+          bundle: Acterflatpak run.flatpak
+          manifest-path: app/flatpak/global.acter.a3.yml
 
       - name: Upload .flatpak artifact to workflow
         uses: actions/upload-artifact@v3
