@@ -436,7 +436,7 @@ jobs:
     name: Build flatpak
     runs-on: ubuntu-latest
     container:
-      image: bilelmoussaoui/flatpak-github-actions:freedesktop-23.08
+      image: ghcr.io/andyholmes/flatter/freedesktop:23.08
       options: --privileged
     needs:
       - tags
@@ -461,17 +461,28 @@ jobs:
           git submodule add https://github.com/flathub/shared-modules.git
 
       - name: Build .flatpak
-        uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v6
+        uses: andyholmes/actions/flatter@main
         with:
-          bundle: Acter.flatpak
-          branch: stable
-          manifest-path: app/flatpak/global.acter.a3.yml
+          upload-bundles: true
+          files: |
+              app/flatpak/global.acter.a3.yml
+          flatpak-builder-args: |
+              --default-branch=stable
+              --skip-if-unchanged
+        # FIXME: how to only create deltas and not overwrite the entire thing every time?
 
-      - name: Upload .flatpak artifact to workflow
-        uses: actions/upload-artifact@v3
+      # need to a add some metadata to the repo:
+      - name: Add repo metadata
+        run:
+          cp app/assets/icon/acter-logo.svg ${{ steps.flatpak.outputs.repository }}/logo.svg
+          cp app/flatpak/acter.flatpakrepo ${{ steps.flatpak.outputs.repository }}/acter.flatpakrepo
+
+      - name: Deploy Flatpak Repository
+        uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
-          name: Flatpak artifact
-          path: Acter.flatpak
+          folder: ${{ steps.flatpak.outputs.repository }}
+          token: ${{ secrets.PAT }}
+          repository-name: acterglobal/a3-flatpak
 
 ##     ##  ######      ######  ########  #######  ########  ######## 
 ###   ### ##    ##    ##    ##    ##    ##     ## ##     ## ##       
