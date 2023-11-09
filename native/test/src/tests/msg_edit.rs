@@ -91,7 +91,7 @@ async fn message_edit() -> Result<()> {
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    assert!(received, "Even after 3 seconds, text msg not received");
+    assert!(received, "Even after 3 seconds, msg edition not received");
 
     Ok(())
 }
