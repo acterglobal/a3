@@ -382,6 +382,13 @@ jobs:
           filename: .github/templates/failure-report-template.md.tmpl
           update_existing: false
 
+ ######  ##     ##    ###    ##    ##  ######   ######## ##        #######   ######   
+##    ## ##     ##   ## ##   ###   ## ##    ##  ##       ##       ##     ## ##    ##  
+##       ##     ##  ##   ##  ####  ## ##        ##       ##       ##     ## ##        
+##       ######### ##     ## ## ## ## ##   #### ######   ##       ##     ## ##   #### 
+##       ##     ## ######### ##  #### ##    ##  ##       ##       ##     ## ##    ##  
+##    ## ##     ## ##     ## ##   ### ##    ##  ##       ##       ##     ## ##    ##  
+ ######  ##     ## ##     ## ##    ##  ######   ######## ########  #######   ######  
 
   changelog:
     environment: release
@@ -417,13 +424,230 @@ jobs:
           body_path: CHANGELOG.md
           files: CHANGELOG.md
 
-########  ##     ## ########  ##       ####  ######  ##     ## 
-##     ## ##     ## ##     ## ##        ##  ##    ## ##     ## 
-##     ## ##     ## ##     ## ##        ##  ##       ##     ## 
-########  ##     ## ########  ##        ##   ######  ######### 
-##        ##     ## ##     ## ##        ##        ## ##     ## 
-##        ##     ## ##     ## ##        ##  ##    ## ##     ## 
-##         #######  ########  ######## ####  ######  ##     ## 
+######## ##          ###    ######## ########     ###    ##    ## 
+##       ##         ## ##      ##    ##     ##   ## ##   ##   ##  
+##       ##        ##   ##     ##    ##     ##  ##   ##  ##  ##   
+######   ##       ##     ##    ##    ########  ##     ## #####    
+##       ##       #########    ##    ##        ######### ##  ##   
+##       ##       ##     ##    ##    ##        ##     ## ##   ##  
+##       ######## ##     ##    ##    ##        ##     ## ##    ## 
+
+  build-flatpak:
+    name: Build flatpak
+    runs-on: ubuntu-latest
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:freedesktop-23.08
+      options: --privileged
+    needs:
+      - tags
+      - build
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v3
+        with:
+          name: Linux x64
+
+      # - uses: actions/download-artifact@v3
+      #   with:
+      #     name: Linux arm64
+
+      # extract upload
+      - name: Prepare for flatpack build
+        run: |
+          mkdir -p app/flatpak/build
+          tar -xvf *.tar.bz -C app/flatpak/build
+          cd app/flatpak
+          # for libsecret
+          git submodule add https://github.com/flathub/shared-modules.git
+
+      - name: Build .flatpak
+        uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: Acter.flatpak
+          branch: stable
+          manifest-path: app/flatpak/global.acter.a3.yml
+
+      - name: Upload .flatpak artifact to workflow
+        uses: actions/upload-artifact@v3
+        with:
+          name: Flatpak artifact
+          path: Acter.flatpak
+
+##     ##  ######      ######  ########  #######  ########  ######## 
+###   ### ##    ##    ##    ##    ##    ##     ## ##     ## ##       
+#### #### ##          ##          ##    ##     ## ##     ## ##       
+## ### ##  ######      ######     ##    ##     ## ########  ######   
+##     ##       ##          ##    ##    ##     ## ##   ##   ##       
+##     ## ##    ##    ##    ##    ##    ##     ## ##    ##  ##       
+##     ##  ######      ######     ##     #######  ##     ## ######## 
+
+
+  microsoft-store:
+    runs-on: windows-latest
+    environment: release
+    needs:
+      - tags
+      - build
+    steps:
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Windows
+
+      - name: setup storebroker
+        run: |
+          Install-Module StoreBroker -Force
+          Import-Module StoreBroker
+      # do the submission
+      - name: submit to MSStore via StoreBroker
+        run: |
+            # prepare te package
+            Move-Item -Path .\build\windows\runner\Release\acter-windows-${{ needs.tags.outputs.tag }}.msix
+            Compress-Archive -Path acter-windows-${{ needs.tags.outputs.tag }}.msix acter.zip
+            Write-Debug "Done compressing. Logging in"
+            # login with the StoreBroker
+            $password = ConvertTo-SecureString "${{ secrets.AZURE_AD_CLIENT_SECRET }}" -AsPlainText -Force
+            $cred = New-Object System.Management.Automation.PSCredential ("${{ secrets.AZURE_AD_CLIENT_ID }}", $password)
+            Set-StoreBrokerAuthentication -TenantId ${{ secrets.AZURE_AD_TENANT_ID }} -Credential $cred
+            Write-Debug "Logged in. Preparing submission"
+            # create the submission and add new package
+            $sub = New-ApplicationSubmission -AppId ${{ secrets.MS_STORE_APP_ID }} -Force
+            $sub.applicationPackages | ForEach-Object { $_.fileStatus = "PendingDelete" }
+            $pkg = $sub.applicationPackages[0].PSObject.Copy()
+            $pkg.fileName = "acter-windows-${{ needs.tags.outputs.tag }}.msix"
+            $pkg.fileStatus = "PendingUpload"
+            $pkg.PSObject.Properties.Remove("version")
+            $pkg.PSObject.Properties.Remove("id")
+            $sub.applicationPackages += $pkg
+            Write-Debug "Setting Submission ID"
+            Set-ApplicationSubmission -AppId ${{ secrets.MS_STORE_APP_ID }} -UpdatedSubmission $sub
+            Write-Debug "Setting Submission Package"
+            Set-SubmissionPackage -PackagePath 'acter.zip' -UploadUrl ($sub.fileUploadUrl)
+            Write-Debug "Completing submission"
+            Complete-ApplicationSubmission -AppId ${{ secrets.MS_STORE_APP_ID }} -SubmissionId ($sub.id)
+            Write-Debug "Submitted successfully"
+
+
+########  ##          ###    ##    ##     ######  ########  #######  ########  ######## 
+##     ## ##         ## ##    ##  ##     ##    ##    ##    ##     ## ##     ## ##       
+##     ## ##        ##   ##    ####      ##          ##    ##     ## ##     ## ##       
+########  ##       ##     ##    ##        ######     ##    ##     ## ########  ######   
+##        ##       #########    ##             ##    ##    ##     ## ##   ##   ##       
+##        ##       ##     ##    ##       ##    ##    ##    ##     ## ##    ##  ##       
+##        ######## ##     ##    ##        ######     ##     #######  ##     ## ######## 
+
+
+  google-play-store:
+    runs-on: ubuntu-latest
+    environment: release
+    needs:
+      - tags
+      - build
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: Android
+      - name: Release Build to playstore
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
+          packageName: global.acter.a3
+          releaseName: v${{ needs.tags.outputs.tag }}
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          # debugSymbols: debug_symbols/
+          track: beta
+          status: completed
+
+
+####  #######   ######        ###    ########  ########   ######  ########  #######  ########  ######## 
+ ##  ##     ## ##    ##      ## ##   ##     ## ##     ## ##    ##    ##    ##     ## ##     ## ##       
+ ##  ##     ## ##           ##   ##  ##     ## ##     ## ##          ##    ##     ## ##     ## ##       
+ ##  ##     ##  ######     ##     ## ########  ########   ######     ##    ##     ## ########  ######   
+ ##  ##     ##       ##    ######### ##        ##              ##    ##    ##     ## ##   ##   ##       
+ ##  ##     ## ##    ##    ##     ## ##        ##        ##    ##    ##    ##     ## ##    ##  ##       
+####  #######   ######     ##     ## ##        ##         ######     ##     #######  ##     ## ######## 
+
+
+
+  apple-store-ios:
+    runs-on: macos-latest
+    environment: release
+    needs:
+      - tags
+      - build
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: iOS
+
+      - name: Upload to App Store
+        env:
+          APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+        run: |
+          mkdir private_keys
+          echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
+          xcrun altool --upload-app --type ios --file build/ios/ipa/*.ipa \
+              --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID"
+        shell: bash
+
+
+##     ##    ###     ######        ###    ########  ########   ######  ########  #######  ########  ######## 
+###   ###   ## ##   ##    ##      ## ##   ##     ## ##     ## ##    ##    ##    ##     ## ##     ## ##       
+#### ####  ##   ##  ##           ##   ##  ##     ## ##     ## ##          ##    ##     ## ##     ## ##       
+## ### ## ##     ## ##          ##     ## ########  ########   ######     ##    ##     ## ########  ######   
+##     ## ######### ##          ######### ##        ##              ##    ##    ##     ## ##   ##   ##       
+##     ## ##     ## ##    ##    ##     ## ##        ##        ##    ##    ##    ##     ## ##    ##  ##       
+##     ## ##     ##  ######     ##     ## ##        ##         ######     ##     #######  ##     ## ######## 
+
+
+  apple-store-mac:
+    runs-on: macos-latest
+    environment: release
+    needs:
+      - tags
+      - build
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: MacOS
+
+      # for debugging any errors below, print out the bundle version from the IPA/plist
+      - name: Print Bundle Version
+        continue-on-error: true
+        env:
+         UNZIPPED_PATH: "build/macos/Build/Products/Release/Acter.app"
+        run: |
+          ls build/macos/Build/Products/Release/Acter.app/*
+          cat build/macos/Build/Products/Release/Acter.app/Info.plist
+          echo ""
+          echo " ------- "
+          echo ""
+          defaults read "build/macos/Build/Products/Release/Acter.app/Info.plist" CFBundleShortVersionString
+
+      - name: Upload to App Store
+        env:
+          APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+        run: |
+          mkdir private_keys
+          echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
+          xcrun altool --validate-app --type macos --file build/macos/Build/Products/Release/Acter.app \
+              --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID" --bundle-id global.acter.a3
+          xcrun altool --upload-app --type macos --file build/macos/Build/Products/Release/Acter.app \
+              --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID" --bundle-id global.acter.a3
+        shell: bash
+
+ ######   #### ######## ##     ## ##     ## ########     ########  ##     ## ########  ##       ####  ######  ##     ## 
+##    ##   ##     ##    ##     ## ##     ## ##     ##    ##     ## ##     ## ##     ## ##        ##  ##    ## ##     ## 
+##         ##     ##    ##     ## ##     ## ##     ##    ##     ## ##     ## ##     ## ##        ##  ##       ##     ## 
+##   ####  ##     ##    ######### ##     ## ########     ########  ##     ## ########  ##        ##   ######  ######### 
+##    ##   ##     ##    ##     ## ##     ## ##     ##    ##        ##     ## ##     ## ##        ##        ## ##     ## 
+##    ##   ##     ##    ##     ## ##     ## ##     ##    ##        ##     ## ##     ## ##        ##  ##    ## ##     ## 
+ ######   ####    ##    ##     ##  #######  ########     ##         #######  ########  ######## ####  ######  ##     ## 
+
 
   publish:
     environment: release
@@ -434,6 +658,7 @@ jobs:
       - tags
       - build
       - changelog
+      - build-flatpak
     steps:
       - uses: actions/checkout@v2
         with:
@@ -482,170 +707,3 @@ jobs:
         with:
           release_id: ${{ steps.create_release.outputs.id }}
 
-
-  build-flatpak:
-    name: Build flatpak
-    runs-on: ubuntu-latest
-    container:
-      image: bilelmoussaoui/flatpak-github-actions:freedesktop-23.08
-      options: --privileged
-    needs:
-      - tags
-      - build
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v3
-        with:
-          name: Linux x64
-
-      # - uses: actions/download-artifact@v3
-      #   with:
-      #     name: Linux arm64
-
-      # extract upload
-      - name: Prepare for flatpack build
-        run: |
-          mkdir -p app/flatpak/build
-          tar -xvf *.tar.bz -C app/flatpak/build
-          cd app/flatpak
-          # for libsecret
-          git submodule add https://github.com/flathub/shared-modules.git
-
-      - name: Build .flatpak
-        uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v5
-        with:
-          bundle: Acterflatpak run.flatpak
-          manifest-path: app/flatpak/global.acter.a3.yml
-
-      - name: Upload .flatpak artifact to workflow
-        uses: actions/upload-artifact@v3
-        with:
-          name: Flatpak artifact
-          path: Acter.flatpak
-
-  microsoft-store:
-    runs-on: windows-latest
-    environment: release
-    needs:
-      - tags
-      - build
-    steps:
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: Windows
-
-      - name: setup storebroker
-        run: |
-          Install-Module StoreBroker -Force
-          Import-Module StoreBroker
-      # do the submission
-      - name: submit to MSStore via StoreBroker
-        run: |
-            # prepare te package
-            Move-Item -Path .\build\windows\runner\Release\acter-windows-${{ needs.tags.outputs.tag }}.msix
-            Compress-Archive -Path acter-windows-${{ needs.tags.outputs.tag }}.msix acter.zip
-            Write-Debug "Done compressing. Logging in"
-            # login with the StoreBroker
-            $password = ConvertTo-SecureString "${{ secrets.AZURE_AD_CLIENT_SECRET }}" -AsPlainText -Force
-            $cred = New-Object System.Management.Automation.PSCredential ("${{ secrets.AZURE_AD_CLIENT_ID }}", $password)
-            Set-StoreBrokerAuthentication -TenantId ${{ secrets.AZURE_AD_TENANT_ID }} -Credential $cred
-            Write-Debug "Logged in. Preparing submission"
-            # create the submission and add new package
-            $sub = New-ApplicationSubmission -AppId ${{ secrets.MS_STORE_APP_ID }} -Force
-            $sub.applicationPackages | ForEach-Object { $_.fileStatus = "PendingDelete" }
-            $pkg = $sub.applicationPackages[0].PSObject.Copy()
-            $pkg.fileName = "acter-windows-${{ needs.tags.outputs.tag }}.msix"
-            $pkg.fileStatus = "PendingUpload"
-            $pkg.PSObject.Properties.Remove("version")
-            $pkg.PSObject.Properties.Remove("id")
-            $sub.applicationPackages += $pkg
-            Write-Debug "Setting Submission ID"
-            Set-ApplicationSubmission -AppId ${{ secrets.MS_STORE_APP_ID }} -UpdatedSubmission $sub
-            Write-Debug "Setting Submission Package"
-            Set-SubmissionPackage -PackagePath 'acter.zip' -UploadUrl ($sub.fileUploadUrl)
-            Write-Debug "Completing submission"
-            Complete-ApplicationSubmission -AppId ${{ secrets.MS_STORE_APP_ID }} -SubmissionId ($sub.id)
-            Write-Debug "Submitted successfully"
-
-  google-play-store:
-    runs-on: ubuntu-latest
-    environment: release
-    needs:
-      - tags
-      - build
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: Android
-      - name: Release Build to playstore
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
-          packageName: global.acter.a3
-          releaseName: v${{ needs.tags.outputs.tag }}
-          releaseFiles: build/app/outputs/bundle/release/app-release.aab
-          # debugSymbols: debug_symbols/
-          track: beta
-          status: completed
-
-  apple-store-ios:
-    runs-on: macos-latest
-    environment: release
-    needs:
-      - tags
-      - build
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: iOS
-
-      - name: Upload to App Store
-        env:
-          APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
-          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
-        run: |
-          mkdir private_keys
-          echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
-          xcrun altool --upload-app --type ios --file build/ios/ipa/*.ipa \
-              --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID"
-        shell: bash
-
-  apple-store-mac:
-    runs-on: macos-latest
-    environment: release
-    needs:
-      - tags
-      - build
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: MacOS
-
-      # for debugging any errors below, print out the bundle version from the IPA/plist
-      - name: Print Bundle Version
-        continue-on-error: true
-        env:
-         UNZIPPED_PATH: "build/macos/Build/Products/Release/Acter.app"
-        run: |
-          ls build/macos/Build/Products/Release/Acter.app/*
-          cat build/macos/Build/Products/Release/Acter.app/Info.plist
-          echo ""
-          echo " ------- "
-          echo ""
-          defaults read "build/macos/Build/Products/Release/Acter.app/Info.plist" CFBundleShortVersionString
-
-      - name: Upload to App Store
-        env:
-          APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
-          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
-        run: |
-          mkdir private_keys
-          echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
-          xcrun altool --validate-app --type macos --file build/macos/Build/Products/Release/Acter.app \
-              --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID" --bundle-id global.acter.a3
-          xcrun altool --upload-app --type macos --file build/macos/Build/Products/Release/Acter.app \
-              --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID" --bundle-id global.acter.a3
-        shell: bash
