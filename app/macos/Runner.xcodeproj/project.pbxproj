@@ -423,6 +423,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = V45JGKTC6K;
+				ENABLE_APP_SANDBOX = YES;
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Acter;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
@@ -555,6 +556,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = V45JGKTC6K;
+				ENABLE_APP_SANDBOX = YES;
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Acter;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
@@ -582,6 +584,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
+				ENABLE_APP_SANDBOX = YES;
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Acter;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
