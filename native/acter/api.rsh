@@ -497,6 +497,9 @@ object RoomEventItem {
 
     /// Whether this message is editable
     fn is_editable() -> bool;
+
+    /// Whether this message is the edited message
+    fn is_edited() -> bool;
 }
 
 object RoomVirtualItem {
