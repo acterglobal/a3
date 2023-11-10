@@ -471,7 +471,7 @@ jobs:
       - name: Prepare for flatpack build
         run: |
           mkdir -p app/flatpak/build
-          tar -xvf *.tar.bz -C app/flatpak/build
+          tar -xvf *.tar.bz2 -C app/flatpak/build
           cd app/flatpak
           # for libsecret
           git submodule add https://github.com/flathub/shared-modules.git
