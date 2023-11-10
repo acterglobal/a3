@@ -5,14 +5,18 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/pins/widgets/pin_list_item.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:acter/features/space/widgets/space_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:go_router/go_router.dart';
 
+import 'shell_page.dart';
+
 class SpacePinsPage extends ConsumerWidget {
   final String spaceIdOrAlias;
+
   const SpacePinsPage({super.key, required this.spaceIdOrAlias});
 
   @override
@@ -22,6 +26,12 @@ class SpacePinsPage extends ConsumerWidget {
     // get platform of context.
     return CustomScrollView(
       slivers: [
+        SliverToBoxAdapter(
+          child: SpaceShell(
+            spaceIdOrAlias: spaceIdOrAlias,
+            spaceNavItem: SpaceNavItem.pins,
+          ),
+        ),
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.all(8.0),

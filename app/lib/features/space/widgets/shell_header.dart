@@ -11,46 +11,53 @@ import 'package:go_router/go_router.dart';
 
 class ShellHeader extends ConsumerWidget {
   final String spaceId;
-  final ProfileData spaceProfile;
-  const ShellHeader(this.spaceId, this.spaceProfile, {super.key});
+
+  const ShellHeader(this.spaceId, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 10),
-      child: Row(
-        children: <Widget>[
-          SpaceParentBadge(
-            roomId: spaceId,
-            badgeSize: 40,
-            child: ActerAvatar(
-              mode: DisplayMode.Space,
-              displayName: spaceProfile.displayName,
-              tooltip: TooltipStyle.None,
-              uniqueId: spaceId,
-              avatar: spaceProfile.getAvatarImage(),
-              size: 80,
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    final profileData = ref.watch(spaceProfileDataForSpaceIdProvider(spaceId));
+    return profileData.when(
+      data: (spaceProfile) {
+        return Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Row(
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Text(
-                  spaceProfile.displayName ?? spaceId,
-                  style: Theme.of(context).textTheme.titleMedium,
+              SpaceParentBadge(
+                roomId: spaceId,
+                badgeSize: 40,
+                child: ActerAvatar(
+                  mode: DisplayMode.Space,
+                  displayName: spaceProfile.profile.displayName,
+                  tooltip: TooltipStyle.None,
+                  uniqueId: spaceId,
+                  avatar: spaceProfile.profile.getAvatarImage(),
+                  size: 80,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10, left: 10),
-                child: SpaceInfo(spaceId: spaceId),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(
+                      spaceProfile.profile.displayName ?? spaceId,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10, left: 10),
+                    child: SpaceInfo(spaceId: spaceId),
+                  ),
+                  Consumer(builder: spaceMembersBuilder),
+                ],
               ),
-              Consumer(builder: spaceMembersBuilder),
             ],
           ),
-        ],
-      ),
+        );
+      },
+      error: (error, stack) => Text('Loading failed: $error'),
+      loading: () => const Text('Loading'),
     );
   }
 

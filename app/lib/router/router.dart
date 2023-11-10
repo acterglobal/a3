@@ -156,7 +156,6 @@ final GlobalKey<NavigatorState> chatShellKey = GlobalKey<NavigatorState>(
 );
 
 List<RouteBase> makeRoutes(Ref ref) {
-  final tabKeyNotifier = ref.watch(selectedTabKeyProvider.notifier);
   final selectedChatNotifier = ref.watch(selectedChatIdProvider.notifier);
   return [
     GoRoute(
@@ -573,29 +572,30 @@ List<RouteBase> makeRoutes(Ref ref) {
           },
         ),
         GoRoute(
-            parentNavigatorKey: shellNavKey,
-            name: Routes.activities.name,
-            path: Routes.activities.route,
-            redirect: authGuardRedirect,
-            pageBuilder: (context, state) {
-              return NoTransitionPage(
-                key: state.pageKey,
-                child: const ActivitiesPage(),
-              );
-            },
-            onExit: (BuildContext context) {
-              if (!context.read(
-                isActiveProvider(LabsFeature.mobilePushNotifications),
-              )) {
-                return true;
-              }
-              debugPrint('Attempting to ask for push notifications');
-              final client = context.read(clientProvider);
-              if (client != null) {
-                setupPushNotifications(client);
-              }
+          parentNavigatorKey: shellNavKey,
+          name: Routes.activities.name,
+          path: Routes.activities.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: const ActivitiesPage(),
+            );
+          },
+          onExit: (BuildContext context) {
+            if (!context.read(
+              isActiveProvider(LabsFeature.mobilePushNotifications),
+            )) {
               return true;
-            },),
+            }
+            debugPrint('Attempting to ask for push notifications');
+            final client = context.read(clientProvider);
+            if (client != null) {
+              setupPushNotifications(client);
+            }
+            return true;
+          },
+        ),
         GoRoute(
           parentNavigatorKey: shellNavKey,
           name: Routes.settingSessions.name,
@@ -876,7 +876,102 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         /// Space subshell
-        ShellRoute(
+        GoRoute(
+          name: Routes.spaceRelatedSpaces.name,
+          path: Routes.spaceRelatedSpaces.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: RelatedSpacesPage(
+                spaceIdOrAlias: state.pathParameters['spaceId']!,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: Routes.spaceMembers.name,
+          path: Routes.spaceMembers.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: SpaceMembersPage(
+                spaceIdOrAlias: state.pathParameters['spaceId']!,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: Routes.spacePins.name,
+          path: Routes.spacePins.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: SpacePinsPage(
+                spaceIdOrAlias: state.pathParameters['spaceId']!,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: Routes.spaceEvents.name,
+          path: Routes.spaceEvents.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: SpaceEventsPage(
+                spaceIdOrAlias: state.pathParameters['spaceId']!,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: Routes.spaceChats.name,
+          path: Routes.spaceChats.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: SpaceChatsPage(
+                spaceIdOrAlias: state.pathParameters['spaceId']!,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: Routes.spaceTasks.name,
+          path: Routes.spaceTasks.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            ref
+                .read(selectedTabKeyProvider.notifier)
+                .switchTo(const Key('tasks'));
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: SpaceTasksPage(
+                spaceIdOrAlias: state.pathParameters['spaceId']!,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: Routes.space.name,
+          path: Routes.space.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: SpaceOverview(
+                spaceIdOrAlias: state.pathParameters['spaceId']!,
+              ),
+            );
+          },
+        ),
+
+        /* ShellRoute(
           navigatorKey: spaceNavKey,
           pageBuilder: (context, state, child) {
             return NoTransitionPage(
@@ -989,7 +1084,7 @@ List<RouteBase> makeRoutes(Ref ref) {
               },
             ),
           ],
-        ),
+        ),*/
 
         GoRoute(
           name: Routes.joinSpace.name,

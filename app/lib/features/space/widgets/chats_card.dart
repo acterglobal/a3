@@ -49,7 +49,7 @@ class ChatsCard extends ConsumerWidget {
                       /// FIXME: push is broken for switching from subshell to subshell
                       /// hence we are using `go` here.
                       /// https://github.com/flutter/flutter/issues/125752
-                      onTap: () => context.goNamed(
+                      onTap: () => context.pushNamed(
                         Routes.chatroom.name,
                         pathParameters: {
                           'roomId': chats[index].getRoomIdStr(),

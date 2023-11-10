@@ -7,10 +7,13 @@ import 'package:acter/features/space/widgets/events_card.dart';
 import 'package:acter/features/space/widgets/links_card.dart';
 import 'package:acter/features/space/widgets/non_acter_space_card.dart';
 import 'package:acter/features/space/widgets/related_spaces_card.dart';
+import 'package:acter/features/space/widgets/space_nav_bar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+
+import 'shell_page.dart';
 
 class ActerSpaceChecker extends ConsumerWidget {
   final Widget child;
@@ -38,6 +41,7 @@ class ActerSpaceChecker extends ConsumerWidget {
 
 class SpaceOverview extends ConsumerWidget {
   final String spaceIdOrAlias;
+
   const SpaceOverview({super.key, required this.spaceIdOrAlias});
 
   @override
@@ -48,6 +52,10 @@ class SpaceOverview extends ConsumerWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
+          SpaceShell(
+            spaceIdOrAlias: spaceIdOrAlias,
+            spaceNavItem: SpaceNavItem.overview,
+          ),
           StaggeredGrid.count(
             axisDirection: AxisDirection.down,
             crossAxisCount: min(widthCount, minCount),

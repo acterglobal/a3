@@ -3,13 +3,17 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/events_item.dart';
+import 'package:acter/features/space/widgets/space_nav_bar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'shell_page.dart';
+
 class SpaceEventsPage extends ConsumerWidget {
   final String spaceIdOrAlias;
+
   const SpaceEventsPage({super.key, required this.spaceIdOrAlias});
 
   @override
@@ -17,6 +21,12 @@ class SpaceEventsPage extends ConsumerWidget {
     final spaceEvents = ref.watch(spaceEventsProvider(spaceIdOrAlias));
     return CustomScrollView(
       slivers: <Widget>[
+        SliverToBoxAdapter(
+          child: SpaceShell(
+            spaceIdOrAlias: spaceIdOrAlias,
+            spaceNavItem: SpaceNavItem.events,
+          ),
+        ),
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
