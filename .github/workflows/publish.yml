@@ -66,7 +66,7 @@ jobs:
           #   flutter_build_args: "build appbundle --split-debug-info=debug_symbols"
           #   artifact_prefix: acter-android
           #   artifact_path:  app/build/app/outputs/bundle/release/
-          #   extra_artifacts: app/build/app/outputs/bundle/release/app-release.aab
+          #   specific_upload_artifacts: app/build/app/outputs/bundle/release/app-release.aab
           # - name: Android apk
           #   target: android
           #   os: ubuntu-latest
@@ -76,7 +76,7 @@ jobs:
           #   flutter_build_args: "build apk --split-per-abi --split-debug-info=debug_symbols"
           #   artifact_prefix: acter-android
           #   artifact_path:  app/build/app/outputs/apk/release/
-          #   extra_release_artifacts: app/build/app/outputs/apk/release/*.apk
+          #   specific_upload_artifacts: app/build/app/outputs/apk/release/*.apk
           - name: Linux x64
             target: linux
             os: ubuntu-latest
@@ -108,7 +108,7 @@ jobs:
           #   flutter_build_args: "build macos --split-debug-info=debug_symbols"
           #   artifact_prefix: acter-macosx
           #   artifact_path: app/build/macos/Build/Products/Release/
-          #   extra_artifacts: app/build/macos/Build/Products/Release/Acter.app
+          #   specific_upload_artifacts: app/build/macos/Build/Products/Release/Acter.app
           #   tar_files: "Acter.app"
           #   with_debug_symbols: true
           # - name: Windows
@@ -349,12 +349,28 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         name: "Upload artifacts"
+        if: matrix.specific_upload_artifacts
         with:
           name: ${{ matrix.name }}
           path: |
-            ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.*
-            app/debug_symbols/*
-            ${{ matrix.extra_artifacts }}
+            ${{ matrix.specific_upload_artifacts }}
+
+      - name: "move artifacts"
+        if: ${{!matrix.specific_upload_artifacts}}
+        run: mv ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.* .
+
+      - uses: actions/upload-artifact@v3
+        name: "Upload artifacts"
+        if: ${{!matrix.specific_upload_artifacts}}
+        with:
+          name: ${{ matrix.name }}
+          path: ${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.*
+
+      - uses: actions/upload-artifact@v3
+        name: "Upload debug artifacts"
+        with:
+          name: ${{ matrix.name }}
+          path: app/debug_symbols/*
 
       - name: Release
         if: ${{! matrix.exclude_from_release }}
@@ -365,8 +381,8 @@ jobs:
           tag_name: v${{ needs.tags.outputs.tag }}
           generate_release_notes: false
           files: |
-            ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.*
-            ${{ matrix.extra_release_artifacts }}
+            ${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.*
+            ${{ matrix.specific_upload_artifacts }}
 
       - name: Report issue
         if: ${{ github.event.schedule && failure() }}
