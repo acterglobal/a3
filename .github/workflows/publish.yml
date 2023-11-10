@@ -499,6 +499,8 @@ jobs:
       - name: Deploy Flatpak Repository
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
+          git-config-name: acter-sari
+          git-config-email: 'acter-sari@users.noreply.github.com'
           folder: ${{ steps.flatpak.outputs.repository }}
           token: ${{ secrets.PAT }}
           repository-name: acterglobal/a3-flatpak
