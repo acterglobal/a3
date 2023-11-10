@@ -461,7 +461,7 @@ jobs:
           git submodule add https://github.com/flathub/shared-modules.git
 
       - name: Build .flatpak
-        uses: andyholmes/actions/flatter@main
+        uses: andyholmes/flatter@main
         with:
           upload-bundles: true
           files: |
