@@ -3,6 +3,7 @@
 app-id: global.acter.a3
 runtime: org.freedesktop.Platform
 runtime-version: "23.08"
+branch: stable
 sdk: org.freedesktop.Sdk
 command: acter
 separate-locales: false
