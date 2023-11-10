@@ -598,7 +598,7 @@
 				MARKETING_VERSION = 0.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = global.acter.a3;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "Acter MacApp Release";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "Acter Mac AppStore";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
