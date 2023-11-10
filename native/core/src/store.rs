@@ -100,10 +100,19 @@ impl Store {
             .transpose()
             .map_err(|e| Error::Custom(format!("deserializing all models index failed: {e}")))?;
         let models_vec = if let Some(v) = data {
-            let items = v
-                .iter()
-                .map(|k| get_from_store::<AnyActerModel>(client.clone(), k));
-            futures::future::try_join_all(items).await?
+            let items = v.iter().map(|k| {
+                let client = client.clone();
+                async move {
+                    match get_from_store::<AnyActerModel>(client, k).await {
+                        Ok(m) => Some(m),
+                        Err(e) => {
+                            tracing::error!("Couldn't read model at startup. Skipping. {e}");
+                            None
+                        }
+                    }
+                }
+            });
+            futures::future::join_all(items).await
         } else {
             vec![]
         };
@@ -111,6 +120,10 @@ impl Store {
         let indizes = DashMap::new();
         let mut models_sources = Vec::new();
         for m in models_vec {
+            let Some(m) = m else {
+                // skip None's
+                continue
+            };
             let key = m.event_id().to_string();
             for idx in m.indizes() {
                 let mut r: RefMut<String, Vec<String>> = indizes.entry(idx).or_default();
