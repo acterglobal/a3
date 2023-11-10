@@ -26,14 +26,14 @@ async fn get_from_store<T: serde::de::DeserializeOwned>(client: Client, key: &st
         .store()
         .get_custom_value(format!("acter:{key}").as_bytes())
         .await?
-        .ok_or(Error::ModelNotFound)?;
+        .ok_or_else(|| Error::ModelNotFound(key.to_owned()))?;
     Ok(serde_json::from_slice(v.as_slice())?)
 }
 
 impl Store {
     pub async fn get_raw<T: serde::de::DeserializeOwned>(&self, key: &str) -> Result<T> {
         if self.fresh {
-            return Err(Error::ModelNotFound);
+            return Err(Error::ModelNotFound(key.to_owned()));
         }
         get_from_store(self.client.clone(), key).await
     }
@@ -149,7 +149,7 @@ impl Store {
         let m = self
             .models
             .get(model_key)
-            .ok_or(Error::ModelNotFound)?
+            .ok_or_else(|| Error::ModelNotFound(model_key.to_owned()))?
             .value()
             .clone();
         Ok(m)
