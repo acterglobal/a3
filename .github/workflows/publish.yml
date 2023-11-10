@@ -449,6 +449,7 @@ jobs:
 ##       ######## ##     ##    ##    ##        ##     ## ##    ## 
 
   build-flatpak:
+    environment: release
     name: Build flatpak
     runs-on: ubuntu-latest
     container:
