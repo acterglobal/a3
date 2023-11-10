@@ -491,7 +491,7 @@ jobs:
 
       # need to a add some metadata to the repo:
       - name: Add repo metadata
-        run:
+        run: |
           cp app/assets/icon/acter-logo.svg ${{ steps.flatpak.outputs.repository }}/logo.svg
           cp app/flatpak/acter.flatpakrepo ${{ steps.flatpak.outputs.repository }}/acter.flatpakrepo
 
