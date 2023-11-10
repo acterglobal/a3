@@ -108,10 +108,19 @@ class SpaceChatsPage extends ConsumerWidget {
                     /// FIXME: push is broken for switching from subshell to subshell
                     /// hence we are using `go` here.
                     /// https://github.com/flutter/flutter/issues/125752
-                    onTap: () => context.pushNamed(
-                      Routes.chatroom.name,
-                      pathParameters: {'roomId': rooms[index].getRoomIdStr()},
-                    ),
+                    onTap: () => isDesktop
+                        ? context.goNamed(
+                            Routes.chatroom.name,
+                            pathParameters: {
+                              'roomId': rooms[index].getRoomIdStr()
+                            },
+                          )
+                        : context.pushNamed(
+                            Routes.chatroom.name,
+                            pathParameters: {
+                              'roomId': rooms[index].getRoomIdStr()
+                            },
+                          ),
                   ),
                 ),
               );

@@ -2,6 +2,7 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:flutter/material.dart';
@@ -49,12 +50,19 @@ class ChatsCard extends ConsumerWidget {
                       /// FIXME: push is broken for switching from subshell to subshell
                       /// hence we are using `go` here.
                       /// https://github.com/flutter/flutter/issues/125752
-                      onTap: () => context.pushNamed(
-                        Routes.chatroom.name,
-                        pathParameters: {
-                          'roomId': chats[index].getRoomIdStr(),
-                        },
-                      ),
+                      onTap: () => isDesktop
+                          ? context.goNamed(
+                              Routes.chatroom.name,
+                              pathParameters: {
+                                'roomId': chats[index].getRoomIdStr(),
+                              },
+                            )
+                          : context.pushNamed(
+                              Routes.chatroom.name,
+                              pathParameters: {
+                                'roomId': chats[index].getRoomIdStr(),
+                              },
+                            ),
                     ),
                   ),
                   chats.length > 3
