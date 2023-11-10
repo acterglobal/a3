@@ -480,6 +480,7 @@ jobs:
 
       - name: Build .flatpak
         uses: andyholmes/flatter@main
+        id: flatpak
         with:
           upload-bundles: true
           files: |
