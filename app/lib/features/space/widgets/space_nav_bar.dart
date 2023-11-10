@@ -26,10 +26,11 @@ class _SpaceNavBarState extends State<SpaceNavBar>
   @override
   void initState() {
     _tabController = TabController(
-        length: 6,
-        vsync: this,
-        initialIndex: widget.selectedIndex,
-        animationDuration: const Duration(milliseconds: 500));
+      length: 6,
+      vsync: this,
+      initialIndex: widget.selectedIndex,
+      animationDuration: const Duration(milliseconds: 500),
+    );
     super.initState();
   }
 

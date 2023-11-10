@@ -4,7 +4,6 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -124,7 +123,7 @@ class SpaceToolbar extends ConsumerWidget {
                 return;
               }
               context.pop();
-              context.pushNamed(Routes.dashboard.name);
+              context.goNamed(Routes.dashboard.name);
             },
             title: 'Yes, Leave',
             style: ElevatedButton.styleFrom(

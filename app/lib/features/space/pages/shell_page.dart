@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/space/widgets/shell_header.dart';
 import 'package:acter/features/space/widgets/space_nav_bar.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';

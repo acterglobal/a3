@@ -3,16 +3,15 @@ import 'dart:math';
 
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/member_list_entry.dart';
+import 'package:acter/features/space/pages/shell_page.dart';
 import 'package:acter/features/space/widgets/space_nav_bar.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:go_router/go_router.dart';
-
-import 'shell_page.dart';
 
 class SpaceMembersPage extends ConsumerWidget {
   final String spaceIdOrAlias;

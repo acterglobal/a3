@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/space/pages/shell_page.dart';
 import 'package:acter/features/space/widgets/about_card.dart';
 import 'package:acter/features/space/widgets/chats_card.dart';
 import 'package:acter/features/space/widgets/events_card.dart';
@@ -12,8 +13,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-
-import 'shell_page.dart';
 
 class ActerSpaceChecker extends ConsumerWidget {
   final Widget child;

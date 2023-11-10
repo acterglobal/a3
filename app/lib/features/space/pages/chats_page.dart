@@ -2,8 +2,9 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
+import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
+import 'package:acter/features/space/pages/shell_page.dart';
 import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter/features/space/widgets/space_nav_bar.dart';
@@ -14,8 +15,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
-
-import 'shell_page.dart';
 
 class SpaceChatsPage extends ConsumerWidget {
   final String spaceIdOrAlias;
@@ -112,13 +111,13 @@ class SpaceChatsPage extends ConsumerWidget {
                         ? context.goNamed(
                             Routes.chatroom.name,
                             pathParameters: {
-                              'roomId': rooms[index].getRoomIdStr()
+                              'roomId': rooms[index].getRoomIdStr(),
                             },
                           )
                         : context.pushNamed(
                             Routes.chatroom.name,
                             pathParameters: {
-                              'roomId': rooms[index].getRoomIdStr()
+                              'roomId': rooms[index].getRoomIdStr(),
                             },
                           ),
                   ),

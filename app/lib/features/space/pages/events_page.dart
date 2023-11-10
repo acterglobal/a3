@@ -8,8 +8,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import 'shell_page.dart';
+import 'package:acter/features/space/pages/shell_page.dart';
 
 class SpaceEventsPage extends ConsumerWidget {
   final String spaceIdOrAlias;
