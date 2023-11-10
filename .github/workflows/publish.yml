@@ -473,8 +473,10 @@ jobs:
           mkdir -p app/flatpak/build
           tar -xvf *.tar.bz2 -C app/flatpak/build
           cd app/flatpak
+          # for whatever reason git submodules complains otherwise
+          git config --global --add safe.directory /__w/a3/a3
           # for libsecret
-          git submodule add https://github.com/flathub/shared-modules.git
+          git submodule add -f https://github.com/flathub/shared-modules.git
 
       - name: Build .flatpak
         uses: andyholmes/flatter@main
