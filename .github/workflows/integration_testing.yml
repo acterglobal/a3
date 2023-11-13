@@ -325,6 +325,11 @@ jobs:
           toolchain: nightly-2023-04-10
           override: true
 
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
       - uses: Swatinem/rust-cache@v1
 
       - name: Install cargo-make
