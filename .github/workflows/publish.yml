@@ -503,7 +503,7 @@ jobs:
           git-config-name: acter-sari
           git-config-email: 'acter-sari@users.noreply.github.com'
           folder: ${{ steps.flatpak.outputs.repository }}
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.FLATPAK_PAT }}
           repository-name: acterglobal/a3-flatpak
 
 ##     ##  ######      ######  ########  #######  ########  ######## 
@@ -694,9 +694,6 @@ jobs:
       - build-flatpak
     steps:
       - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.PAT }}
-
       - uses: actions/download-artifact@v3
         with:
           name: Changelog
