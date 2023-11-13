@@ -52,7 +52,7 @@ class SpaceParentBadge extends ConsumerWidget {
                     child: InkWell(
                       onTap: onTap ??
                           () {
-                            context.go('/$parentId');
+                            context.push('/$parentId');
                           },
                       child: ActerAvatar(
                         mode: DisplayMode.Space,
