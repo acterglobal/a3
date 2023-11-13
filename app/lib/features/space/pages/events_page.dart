@@ -3,7 +3,6 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/events_item.dart';
-import 'package:acter/features/space/widgets/space_nav_bar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,10 +20,7 @@ class SpaceEventsPage extends ConsumerWidget {
     return CustomScrollView(
       slivers: <Widget>[
         SliverToBoxAdapter(
-          child: SpaceShell(
-            spaceIdOrAlias: spaceIdOrAlias,
-            spaceNavItem: SpaceNavItem.events,
-          ),
+          child: SpaceShell(spaceIdOrAlias: spaceIdOrAlias),
         ),
         SliverToBoxAdapter(
           child: Padding(

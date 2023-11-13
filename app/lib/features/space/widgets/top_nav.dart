@@ -6,6 +6,7 @@ import 'package:acter/features/space/providers/space_navbar_provider.dart';
 class TabsState {
   final List<TabEntry> tabs;
   final TabController ctrl;
+
   const TabsState(this.tabs, this.ctrl);
 }
 
@@ -32,10 +33,11 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
     recentWatchScreenTabStateTestProvider = FutureProvider.autoDispose
         .family<TabsState, BuildContext>((ref, context) async {
       final tabs = await ref.watch(tabsProvider(widget.spaceId).future);
+      final selectedIndex = ref.watch(selectedTabIdxProvider(widget.spaceId));
       final ctrl = TabController(
         length: tabs.length,
         vsync: this,
-        initialIndex: 0,
+        initialIndex: selectedIndex.valueOrNull ?? 0,
       );
       ref.onDispose(() {
         ctrl.dispose(); // we need to clean this up.
@@ -46,13 +48,12 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(selectedTabIdxProvider(widget.spaceId));
     final tabState = ref.watch(recentWatchScreenTabStateTestProvider(context));
-    final selectedIndex = ref.watch(selectedTabIdxProvider(widget.spaceId));
     return tabState.when(
       data: (tabState) {
         final tabController = tabState.ctrl;
         final tabs = tabState.tabs;
-        tabController.animateTo(selectedIndex.valueOrNull ?? 0);
 
         return LayoutBuilder(
           builder: (context, constraints) {
@@ -76,13 +77,6 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
               child: TabBar(
                 controller: tabController,
                 isScrollable: scrollBar,
-                onTap: (idx) {
-                  final target = tabs[idx].target;
-                  context.goNamed(
-                    target,
-                    pathParameters: {'spaceId': widget.spaceId},
-                  );
-                },
                 labelStyle: useCols
                     ? Theme.of(context).textTheme.labelSmall
                     : Theme.of(context).textTheme.bodySmall,
@@ -100,21 +94,30 @@ class _TopNavBarState extends ConsumerState<TopNavBar>
                           : const SizedBox(width: 10),
                       Text(tabItem.label),
                     ];
-                    return Tab(
-                      key: tabItem.key,
-                      child: useCols
-                          ? SizedBox(
-                              width: minItemWidth.toDouble(),
-                              child: Column(
+                    return InkWell(
+                      onTap: () {
+                        final target = tabs[index].target;
+                        context.goNamed(
+                          target,
+                          pathParameters: {'spaceId': widget.spaceId},
+                        );
+                      },
+                      child: Tab(
+                        key: tabItem.key,
+                        child: useCols
+                            ? SizedBox(
+                                width: minItemWidth.toDouble(),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: children,
+                                ),
+                              )
+                            : Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: children,
                               ),
-                            )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: children,
-                            ),
+                      ),
                     );
                   },
                 ),

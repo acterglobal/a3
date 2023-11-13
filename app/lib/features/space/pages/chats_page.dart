@@ -7,7 +7,6 @@ import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
 import 'package:acter/features/space/pages/shell_page.dart';
 import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
-import 'package:acter/features/space/widgets/space_nav_bar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -28,10 +27,7 @@ class SpaceChatsPage extends ConsumerWidget {
     return CustomScrollView(
       slivers: <Widget>[
         SliverToBoxAdapter(
-          child: SpaceShell(
-            spaceIdOrAlias: spaceIdOrAlias,
-            spaceNavItem: SpaceNavItem.chats,
-          ),
+          child: SpaceShell(spaceIdOrAlias: spaceIdOrAlias),
         ),
         related.maybeWhen(
           data: (spaces) {
