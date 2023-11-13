@@ -15280,13 +15280,13 @@ class Api {
       int Function(
         int,
       )>();
-  late final _roomEventItemIsEditedPtr = _lookup<
+  late final _roomEventItemWasEditedPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
             ffi.Int64,
-          )>>("__RoomEventItem_is_edited");
+          )>>("__RoomEventItem_was_edited");
 
-  late final _roomEventItemIsEdited = _roomEventItemIsEditedPtr.asFunction<
+  late final _roomEventItemWasEdited = _roomEventItemWasEditedPtr.asFunction<
       int Function(
         int,
       )>();
@@ -33131,7 +33131,7 @@ class RoomEventItem {
     return tmp6;
   }
 
-  /// Whether this message is editable
+  /// Whether current user wrote this message and can modify it
   bool isEditable() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -33143,11 +33143,11 @@ class RoomEventItem {
     return tmp2;
   }
 
-  /// Whether this message is the edited message
-  bool isEdited() {
+  /// Whether this message was modified by author
+  bool wasEdited() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemIsEdited(
+    final tmp1 = _api._roomEventItemWasEdited(
       tmp0,
     );
     final tmp3 = tmp1;
