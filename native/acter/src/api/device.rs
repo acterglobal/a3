@@ -198,7 +198,7 @@ impl DeviceController {
                 .devices_stream()
                 .await
                 .expect("We have to get devices stream");
-            let my_user_id = client
+            let my_id = client
                 .user_id()
                 .expect("We should know our user id afte we have logged in");
             pin_mut!(devices_stream);
@@ -207,7 +207,7 @@ impl DeviceController {
                 if !client.logged_in() {
                     break;
                 }
-                if let Some(user_devices) = device_updates.new.get(my_user_id) {
+                if let Some(user_devices) = device_updates.new.get(my_id) {
                     for device in user_devices.values() {
                         let dev_id = device.device_id().to_owned();
                         info!("device-new device id: {}", dev_id);
@@ -217,7 +217,7 @@ impl DeviceController {
                         }
                     }
                 }
-                if let Some(user_devices) = device_updates.changed.get(my_user_id) {
+                if let Some(user_devices) = device_updates.changed.get(my_id) {
                     for device in user_devices.values() {
                         let dev_id = device.device_id().to_owned();
                         info!("device-changed device id: {}", dev_id);

@@ -1065,7 +1065,7 @@ impl Room {
                     event_id.to_owned(),
                     MessageType::text_plain(new_msg.to_string()).into(),
                 );
-                let mut edited_content = RoomMessageEventContent::text_markdown(new_msg);
+                let mut edited_content = RoomMessageEventContent::text_plain(new_msg);
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
                 let txn_id = TransactionId::new();
