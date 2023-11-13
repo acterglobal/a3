@@ -47,6 +47,10 @@ class _TextMessageBuilderConsumerState
     if (metadata != null && metadata.containsKey('enlargeEmoji')) {
       enlargeEmoji = metadata['enlargeEmoji'];
     }
+    bool isEdited = false;
+    if (metadata != null && metadata.containsKey('isEdited')) {
+      isEdited = metadata['isEdited'];
+    }
     final authorId = widget.message.author.id;
 
     //remove mx-reply tags.
@@ -87,6 +91,7 @@ class _TextMessageBuilderConsumerState
           enlargeEmoji: enlargeEmoji,
           isNotice: isNotice,
           isReply: widget.isReply,
+          isEdited: isEdited,
         ),
         width: widget.messageWidth.toDouble(),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -100,6 +105,7 @@ class _TextMessageBuilderConsumerState
         enlargeEmoji: enlargeEmoji,
         isNotice: isNotice,
         isReply: widget.isReply,
+        isEdited: isEdited,
       ),
     );
   }
@@ -116,6 +122,7 @@ class _TextWidget extends ConsumerWidget {
   final bool enlargeEmoji;
   final bool isNotice;
   final bool isReply;
+  final bool isEdited;
 
   const _TextWidget({
     required this.message,
@@ -123,6 +130,7 @@ class _TextWidget extends ConsumerWidget {
     required this.enlargeEmoji,
     required this.isNotice,
     required this.isReply,
+    required this.isEdited,
   });
 
   @override
@@ -131,35 +139,49 @@ class _TextWidget extends ConsumerWidget {
     final emojiTextStyle = client.userId().toString() == message.author.id
         ? const ActerChatTheme().sentEmojiMessageTextStyle
         : const ActerChatTheme().receivedEmojiMessageTextStyle;
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: messageWidth.toDouble()),
-      child: enlargeEmoji
-          ? Text(
-              message.text,
-              style: emojiTextStyle.copyWith(
-                overflow: isReply ? TextOverflow.ellipsis : null,
-                fontFamily: emojiFont,
-              ),
-              maxLines: isReply ? 3 : null,
-            )
-          : Html(
-              onLinkTap: (url) async {
-                await openLink(url.toString(), context);
-              },
-              backgroundColor: Colors.transparent,
-              data: message.text,
-              shrinkToFit: true,
-              defaultTextStyle: Theme.of(context).textTheme.bodySmall!.copyWith(
+    return Column(
+      children: [
+        ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: messageWidth.toDouble()),
+          child: enlargeEmoji
+              ? Text(
+                  message.text,
+                  style: emojiTextStyle.copyWith(
                     overflow: isReply ? TextOverflow.ellipsis : null,
-                    color: isNotice
-                        ? Theme.of(context)
-                            .colorScheme
-                            .neutral5
-                            .withOpacity(0.5)
-                        : null,
+                    fontFamily: emojiFont,
                   ),
-              maxLines: isReply ? 3 : null,
-            ),
+                  maxLines: isReply ? 3 : null,
+                )
+              : Html(
+                  onLinkTap: (url) async {
+                    await openLink(url.toString(), context);
+                  },
+                  backgroundColor: Colors.transparent,
+                  data: message.text,
+                  shrinkToFit: true,
+                  defaultTextStyle:
+                      Theme.of(context).textTheme.bodySmall!.copyWith(
+                            overflow: isReply ? TextOverflow.ellipsis : null,
+                            color: isNotice
+                                ? Theme.of(context)
+                                    .colorScheme
+                                    .neutral5
+                                    .withOpacity(0.5)
+                                : null,
+                          ),
+                  maxLines: isReply ? 3 : null,
+                ),
+        ),
+        Visibility(
+          visible: isEdited,
+          child: Text(
+            'Edited',
+            style: const ActerChatTheme()
+                .emptyChatPlaceholderTextStyle
+                .copyWith(fontSize: 12),
+          ),
+        ),
+      ],
     );
   }
 }
