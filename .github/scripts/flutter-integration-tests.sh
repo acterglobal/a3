@@ -3,9 +3,8 @@ flutter run integration_test/main_test.dart  \
     --host-vmservice-port 9753 \
     --disable-service-auth-codes \
     --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib \
-    --dart-define DEFAULT_HOMESERVER_URL=http://localhost:8118/ \
-    --dart-define DEFAULT_HOMESERVER_NAME=localhost \
     --dart-define CONVENIENT_TEST_MANAGER_HOST=10.0.2.2 \
+    --dart-define DEFAULT_HOMESERVER_NAME=localhost \
     --dart-define DEFAULT_HOMESERVER_URL=http://10.0.2.2:8118/ \
     --dart-define CI=true \
     &
