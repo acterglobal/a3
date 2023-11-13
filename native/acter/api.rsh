@@ -495,11 +495,11 @@ object RoomEventItem {
     /// the details that users reacted using this emote key in this message
     fn reaction_records(key: string) -> Option<Vec<ReactionRecord>>;
 
-    /// Whether this message is editable
+    /// Whether current user wrote this message and can modify it
     fn is_editable() -> bool;
 
-    /// Whether this message is the edited message
-    fn is_edited() -> bool;
+    /// Whether this message was modified by author
+    fn was_edited() -> bool;
 }
 
 object RoomVirtualItem {

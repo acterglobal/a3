@@ -100,7 +100,7 @@ fn match_room_msg(msg: &RoomMessage, event_id: String, body: &str, modified: boo
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
         if event_item.event_id() == event_id {
-            assert_eq!(event_item.is_edited(), modified);
+            assert_eq!(event_item.was_edited(), modified);
             let text_desc = event_item
                 .text_desc()
                 .expect("text msg should have text desc");
