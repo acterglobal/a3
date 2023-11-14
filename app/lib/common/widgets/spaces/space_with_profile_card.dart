@@ -1,12 +1,13 @@
 import 'package:acter/common/models/profile_data.dart';
-import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class SpaceWithProfileCard extends StatelessWidget {
   final String roomId;
+  final String? parentRoomId;
   final ProfileData profile;
+  final ProfileData? parentProfile;
   final Widget? subtitle;
   final Widget? trailing;
   final double avatarSize;
@@ -76,7 +77,9 @@ class SpaceWithProfileCard extends StatelessWidget {
   const SpaceWithProfileCard({
     super.key,
     required this.roomId,
+    this.parentRoomId,
     required this.profile,
+    this.parentProfile,
     this.subtitle,
     this.trailing,
     this.onTap,
@@ -97,12 +100,25 @@ class SpaceWithProfileCard extends StatelessWidget {
     final displayName = profile.displayName;
     final title =
         displayName != null && displayName.isNotEmpty ? displayName : roomId;
+
     final avatar = ActerAvatar(
       mode: DisplayMode.Space,
-      uniqueId: roomId,
-      displayName: title,
-      avatar: profile.getAvatarImage(),
+      avatarInfo: AvatarInfo(
+        uniqueId: roomId,
+        displayName: title,
+        avatar: profile.getAvatarImage(),
+      ),
+      avatarsInfo: showParent && parentRoomId != null
+          ? [
+              AvatarInfo(
+                uniqueId: parentRoomId!,
+                displayName: parentProfile?.displayName ?? parentRoomId,
+                avatar: parentProfile?.getAvatarImage(),
+              ),
+            ]
+          : [],
       size: avatarSize,
+      badgeSize: avatarSize / 2,
     );
 
     return Card(
@@ -118,13 +134,7 @@ class SpaceWithProfileCard extends StatelessWidget {
         leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
         title: Text(title),
         subtitle: subtitle,
-        leading: showParent
-            ? SpaceParentBadge(
-                roomId: roomId,
-                badgeSize: avatarSize / 2,
-                child: avatar,
-              )
-            : avatar,
+        leading: avatar,
         trailing: trailing,
       ),
     );

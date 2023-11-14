@@ -61,9 +61,11 @@ Future<String?> selectSpaceDrawer({
                               enabled: canLink,
                               leading: ActerAvatar(
                                 mode: DisplayMode.Space,
-                                displayName: profile.displayName,
-                                uniqueId: roomId,
-                                avatar: profile.getAvatarImage(),
+                                avatarInfo: AvatarInfo(
+                                  uniqueId: roomId,
+                                  displayName: profile.displayName,
+                                  avatar: profile.getAvatarImage(),
+                                ),
                                 size: 24,
                               ),
                               title: Text(profile.displayName ?? roomId),

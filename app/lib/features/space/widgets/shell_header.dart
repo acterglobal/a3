@@ -1,7 +1,7 @@
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_info.dart';
-import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -16,20 +16,42 @@ class ShellHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final canonicalParent = ref.watch(canonicalParentProvider(spaceId));
     return Padding(
       padding: const EdgeInsets.only(left: 10),
       child: Row(
         children: <Widget>[
-          SpaceParentBadge(
-            roomId: spaceId,
-            badgeSize: 40,
-            child: ActerAvatar(
+          canonicalParent.maybeWhen(
+            data: (parent) => ActerAvatar(
               mode: DisplayMode.Space,
-              displayName: spaceProfile.displayName,
-              tooltip: TooltipStyle.None,
-              uniqueId: spaceId,
-              avatar: spaceProfile.getAvatarImage(),
+              avatarInfo: AvatarInfo(
+                uniqueId: spaceId,
+                displayName: spaceProfile.displayName,
+                avatar: spaceProfile.getAvatarImage(),
+              ),
+              avatarsInfo: parent != null
+                  ? [
+                      AvatarInfo(
+                        uniqueId: parent.space.getRoomIdStr(),
+                        displayName: parent.profile.displayName,
+                        avatar: parent.profile.getAvatarImage(),
+                      ),
+                    ]
+                  : [],
               size: 80,
+              badgeSize: 30,
+            ),
+            orElse: () => ActerAvatar(
+              mode: DisplayMode.Space,
+              avatarInfo: AvatarInfo(
+                uniqueId: spaceId,
+                displayName: spaceProfile.displayName,
+                avatar: spaceProfile.getAvatarImage(),
+              ),
+              avatarsInfo: const [AvatarInfo(uniqueId: '!')],
+              size: 80,
+              tooltip: TooltipStyle.None,
+              badgeSize: 30,
             ),
           ),
           Column(

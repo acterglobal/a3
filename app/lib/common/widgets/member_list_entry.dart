@@ -550,24 +550,25 @@ class MemberListEntry extends ConsumerWidget {
     return ListTile(
       leading: profile.when(
         data: (data) => ActerAvatar(
-          mode: DisplayMode.User,
-          uniqueId: userId,
-          size: data.hasAvatar() ? 18 : 36,
-          avatar: data.getAvatarImage(),
-          displayName: data.displayName,
+          mode: DisplayMode.DM,
+          avatarInfo: AvatarInfo(
+            uniqueId: userId,
+            displayName: data.displayName,
+            avatar: data.getAvatarImage(),
+          ),
+          size: 18,
         ),
         loading: () => ActerAvatar(
-          mode: DisplayMode.User,
-          uniqueId: userId,
-          size: 36,
+          mode: DisplayMode.DM,
+          avatarInfo: AvatarInfo(uniqueId: userId),
+          size: 18,
         ),
         error: (e, t) {
           debugPrint('loading avatar failed: $e');
           return ActerAvatar(
-            uniqueId: userId,
-            displayName: userId,
-            mode: DisplayMode.User,
-            size: 36,
+            mode: DisplayMode.DM,
+            avatarInfo: AvatarInfo(uniqueId: userId),
+            size: 18,
           );
         },
       ),

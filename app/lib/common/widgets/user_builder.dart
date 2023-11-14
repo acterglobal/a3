@@ -67,10 +67,12 @@ class UserBuilder extends ConsumerWidget {
           loading: () => const Text('Loading display name'),
         ),
         leading: ActerAvatar(
-          mode: DisplayMode.User,
-          uniqueId: userId,
-          displayName: displayName.valueOrNull,
-          avatar: avatarProv.valueOrNull,
+          mode: DisplayMode.DM,
+          avatarInfo: AvatarInfo(
+            uniqueId: userId,
+            displayName: displayName.valueOrNull,
+            avatar: avatarProv.valueOrNull,
+          ),
         ),
         trailing: room.when(
           data: (data) => InviteButton(

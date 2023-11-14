@@ -49,17 +49,19 @@ class NotificationCard extends ConsumerWidget {
               child: spaceProfile.when(
                 data: (profile) => ActerAvatar(
                   mode: DisplayMode.Space,
-                  displayName: profile.displayName,
-                  uniqueId: roomId,
-                  avatar: profile.getAvatarImage(),
+                  avatarInfo: AvatarInfo(
+                    uniqueId: roomId,
+                    displayName: profile.displayName,
+                    avatar: profile.getAvatarImage(),
+                  ),
                   size: 48,
                 ),
                 error: (err, stackTrace) {
                   debugPrint('Failed to load space due to $err');
                   return ActerAvatar(
                     mode: DisplayMode.Space,
-                    displayName: roomId,
-                    uniqueId: roomId,
+                    avatarInfo:
+                        AvatarInfo(uniqueId: roomId, displayName: roomId),
                     size: 48,
                   );
                 },
@@ -95,17 +97,21 @@ class NotificationCard extends ConsumerWidget {
               child: profile.when(
                 data: (profile) => ActerAvatar(
                   mode: DisplayMode.GroupChat,
-                  displayName: profile.displayName,
-                  uniqueId: roomId,
-                  avatar: profile.getAvatarImage(),
+                  avatarInfo: AvatarInfo(
+                    uniqueId: roomId,
+                    displayName: profile.displayName,
+                    avatar: profile.getAvatarImage(),
+                  ),
                   size: 48,
                 ),
                 error: (err, stackTrace) {
                   debugPrint('Failed to load room due to $err');
                   return ActerAvatar(
                     mode: DisplayMode.GroupChat,
-                    displayName: roomId,
-                    uniqueId: roomId,
+                    avatarInfo: AvatarInfo(
+                      uniqueId: roomId,
+                      displayName: roomId,
+                    ),
                     size: 48,
                   );
                 },

@@ -1,5 +1,5 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/home/data/models/nav_item.dart';
@@ -22,6 +22,7 @@ final spaceItemsProvider = FutureProvider.autoDispose
   return spaces.map((space) {
     final profileData = ref.watch(spaceProfileDataProvider(space));
     final roomId = space.getRoomId().toString();
+    final canonicalParent = ref.watch(canonicalParentProvider(roomId));
     return profileData.when(
       loading: () => SidebarNavigationItem(
         icon: const Icon(Atlas.arrows_dots_rotate_thin),
@@ -41,23 +42,51 @@ final spaceItemsProvider = FutureProvider.autoDispose
         ),
         location: '/$roomId',
       ),
-      data: (info) => SidebarNavigationItem(
-        icon: SpaceParentBadge(
-          roomId: roomId,
-          child: ActerAvatar(
-            uniqueId: roomId,
-            displayName: info.displayName,
+      data: (info) => canonicalParent.maybeWhen(
+        data: (parent) => SidebarNavigationItem(
+          icon: ActerAvatar(
             mode: DisplayMode.Space,
-            avatar: info.getAvatarImage(),
+            avatarInfo: AvatarInfo(
+              uniqueId: roomId,
+              displayName: info.displayName,
+              avatar: info.getAvatarImage(),
+            ),
+            avatarsInfo: parent != null
+                ? [
+                    AvatarInfo(
+                      uniqueId: parent.space.getRoomIdStr(),
+                      displayName: parent.profile.displayName,
+                      avatar: parent.profile.getAvatarImage(),
+                    ),
+                  ]
+                : [],
             size: 48,
           ),
+          label: Text(
+            info.displayName ?? roomId,
+            style: Theme.of(context).textTheme.labelSmall,
+            softWrap: false,
+          ),
+          location: '/$roomId',
         ),
-        label: Text(
-          info.displayName ?? roomId,
-          style: Theme.of(context).textTheme.labelSmall,
-          softWrap: false,
+        orElse: () => SidebarNavigationItem(
+          icon: ActerAvatar(
+            mode: DisplayMode.Space,
+            avatarInfo: AvatarInfo(
+              uniqueId: roomId,
+              displayName: info.displayName,
+              avatar: info.getAvatarImage(),
+            ),
+            avatarsInfo: const [AvatarInfo(uniqueId: '!')],
+            size: 48,
+          ),
+          label: Text(
+            info.displayName ?? roomId,
+            style: Theme.of(context).textTheme.labelSmall,
+            softWrap: false,
+          ),
+          location: '/$roomId',
         ),
-        location: '/$roomId',
       ),
     );
   }).toList();

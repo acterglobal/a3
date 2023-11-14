@@ -36,9 +36,11 @@ class SpaceItem extends ConsumerWidget {
                 padding: const EdgeInsets.all(5.0),
                 child: ActerAvatar(
                   mode: DisplayMode.Space,
-                  uniqueId: client.userId().toString(),
+                  avatarInfo: AvatarInfo(
+                    uniqueId: client.userId().toString(),
+                    avatar: avatar,
+                  ),
                   size: 36,
-                  avatar: avatar,
                 ),
               ),
               Container(

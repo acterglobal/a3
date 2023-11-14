@@ -231,18 +231,19 @@ class _ChatBubble extends ConsumerWidget {
       children: [
         replyProfile.when(
           data: (profile) => ActerAvatar(
-            uniqueId: authorId,
-            displayName: profile.displayName,
-            mode: DisplayMode.User,
-            avatar: profile.getAvatarImage(),
-            size: profile.hasAvatar() ? 12 : 24,
+            mode: DisplayMode.DM,
+            avatarInfo: AvatarInfo(
+              uniqueId: authorId,
+              displayName: profile.displayName,
+              avatar: profile.getAvatarImage(),
+            ),
+            size: 12,
           ),
           error: (err, stackTrace) {
             debugPrint('Failed to load profile due to $err');
             return ActerAvatar(
-              uniqueId: authorId,
-              displayName: authorId,
-              mode: DisplayMode.User,
+              mode: DisplayMode.DM,
+              avatarInfo: AvatarInfo(uniqueId: authorId),
               size: 24,
             );
           },

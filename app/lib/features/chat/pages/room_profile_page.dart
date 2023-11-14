@@ -6,7 +6,6 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
@@ -77,16 +76,15 @@ class RoomProfilePage extends ConsumerWidget {
           ),
           SliverToBoxAdapter(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      top: 38,
-                      bottom: 12,
-                    ),
-                    child: SpaceParentBadge(
-                      badgeSize: 20,
-                      roomId: roomId,
+                Flexible(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 38,
+                        bottom: 12,
+                      ),
                       child: RoomAvatar(
                         roomId: roomId,
                         avatarSize: 75,
@@ -202,7 +200,8 @@ class RoomProfilePage extends ConsumerWidget {
                           context: context,
                           useRootNavigator: false,
                           builder: (dialogContext) => DefaultDialog(
-                            height: MediaQuery.of(dialogContext).size.height * 0.5,
+                            height:
+                                MediaQuery.of(dialogContext).size.height * 0.5,
                             title: topMenu,
                             description: convo.when(
                               data: (data) => MemberList(convo: data),

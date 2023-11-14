@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -32,6 +33,8 @@ class RoomAvatar extends ConsumerWidget {
   Widget chatAvatarUI(Convo convo, WidgetRef ref) {
     //Data Providers
     final convoProfile = ref.watch(chatProfileDataProvider(convo));
+    final canonicalParent =
+        ref.watch(canonicalParentProvider(convo.getRoomIdStr()));
 
     //Manage Avatar UI according to the avatar availability
     return convoProfile.when(
@@ -39,19 +42,45 @@ class RoomAvatar extends ConsumerWidget {
         //Show conversations avatar if available
         //Group : Show default image if avatar is not available
         if (!convo.isDm()) {
-          return ActerAvatar(
-            uniqueId: roomId,
-            mode: DisplayMode.Space,
-            displayName: profile.displayName ?? roomId,
-            avatar: profile.getAvatarImage(),
-            size: 18,
+          return canonicalParent.maybeWhen(
+            data: (parent) => ActerAvatar(
+              mode: DisplayMode.Space,
+              avatarInfo: AvatarInfo(
+                uniqueId: roomId,
+                displayName: profile.displayName ?? roomId,
+                avatar: profile.getAvatarImage(),
+              ),
+              size: avatarSize,
+              avatarsInfo: parent != null
+                  ? [
+                      AvatarInfo(
+                        uniqueId: parent.space.getRoomIdStr(),
+                        displayName: parent.profile.displayName ??
+                            parent.space.getRoomIdStr(),
+                        avatar: parent.profile.getAvatarImage(),
+                      ),
+                    ]
+                  : [],
+            ),
+            orElse: () => ActerAvatar(
+              mode: DisplayMode.Space,
+              avatarInfo: AvatarInfo(
+                uniqueId: roomId,
+                displayName: profile.displayName ?? roomId,
+                avatar: profile.getAvatarImage(),
+              ),
+              size: avatarSize,
+              avatarsInfo: const [AvatarInfo(uniqueId: '!')],
+            ),
           );
         } else if (profile.hasAvatar()) {
           return ActerAvatar(
-            uniqueId: roomId,
-            mode: DisplayMode.User,
-            displayName: profile.displayName ?? roomId,
-            avatar: profile.getAvatarImage(),
+            mode: DisplayMode.DM,
+            avatarInfo: AvatarInfo(
+              uniqueId: roomId,
+              displayName: profile.displayName ?? roomId,
+              avatar: profile.getAvatarImage(),
+            ),
             size: 18,
           );
         }
@@ -65,9 +94,11 @@ class RoomAvatar extends ConsumerWidget {
       error: (err, stackTrace) {
         debugPrint('Failed to load avatar due to $err');
         return ActerAvatar(
-          uniqueId: convo.getRoomIdStr(),
-          mode: convo.isDm() ? DisplayMode.User : DisplayMode.Space,
-          displayName: convo.getRoomIdStr(),
+          mode: convo.isDm() ? DisplayMode.DM : DisplayMode.GroupChat,
+          avatarInfo: AvatarInfo(
+            uniqueId: convo.getRoomIdStr(),
+            displayName: convo.getRoomIdStr(),
+          ),
           size: avatarSize,
         );
       },
@@ -96,7 +127,7 @@ class RoomAvatar extends ConsumerWidget {
 
         //Show multiple member avatars
         else {
-          return groupDMAvatarUI(members, ref);
+          return groupAvatarDM(members, ref);
         }
       },
       skipLoadingOnReload: false,
@@ -109,19 +140,23 @@ class RoomAvatar extends ConsumerWidget {
     final memberProfile = ref.watch(memberProfileProvider(member));
     return memberProfile.when(
       data: (data) => ActerAvatar(
-        mode: DisplayMode.User,
-        uniqueId: member.userId().toString(),
-        size: data.hasAvatar() ? 18 : avatarSize,
-        avatar: data.getAvatarImage(),
-        displayName: data.displayName,
+        mode: DisplayMode.DM,
+        avatarInfo: AvatarInfo(
+          uniqueId: member.userId().toString(),
+          displayName: data.displayName,
+          avatar: data.getAvatarImage(),
+        ),
+        size: avatarSize,
       ),
       error: (err, stackTrace) {
         debugPrint("Couldn't load avatar");
         return ActerAvatar(
-          mode: DisplayMode.User,
-          uniqueId: member.userId().toString(),
+          mode: DisplayMode.DM,
+          avatarInfo: AvatarInfo(
+            uniqueId: member.userId().toString(),
+            displayName: member.userId().toString(),
+          ),
           size: avatarSize,
-          displayName: member.userId().toString(),
         );
       },
       loading: () => const Center(
@@ -130,37 +165,63 @@ class RoomAvatar extends ConsumerWidget {
     );
   }
 
-  Widget groupDMAvatarUI(List<Member> members, WidgetRef ref) {
-    return Stack(
-      alignment: Alignment.bottomLeft,
-      clipBehavior: Clip.none,
-      children: [
-        memberAvatar(members[0], ref),
-        Positioned(
-          left: -7,
-          bottom: -5,
-          child: memberAvatar(members[1], ref),
-        ),
-        Positioned.fill(
-          bottom: -5,
-          child: Align(
-            alignment: Alignment.bottomRight,
-            child: Container(
-              width: 15,
-              height: 15,
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                color: Colors.green,
-                shape: BoxShape.circle,
-              ),
-              child: Text(
-                '+${members.length - 2}',
-                style: const TextStyle(fontSize: 8),
-              ),
-            ),
+  Widget groupAvatarDM(List<Member> members, WidgetRef ref) {
+    final userId = members[0].userId().toString();
+    final secondaryUserId = members[1].userId().toString();
+    final profile = ref.watch(memberProfileProvider(members[0]));
+    final secondaryProfile = ref.watch(memberProfileProvider(members[1]));
+
+    return profile.when(
+      data: (data) {
+        return ActerAvatar(
+          avatarInfo: AvatarInfo(
+            uniqueId: userId,
+            displayName: data.displayName,
+            avatar: data.getAvatarImage(),
           ),
-        ),
-      ],
+          avatarsInfo: secondaryProfile.maybeWhen(
+            data: (secData) => [
+              AvatarInfo(
+                uniqueId: secondaryUserId,
+                displayName: secData.displayName,
+                avatar: secData.getAvatarImage(),
+              ),
+              for (int i = 2; i < members.length; i++)
+                AvatarInfo(
+                  uniqueId: members[i].userId().toString(),
+                ),
+            ],
+            orElse: () => [],
+          ),
+          mode: DisplayMode.GroupDM,
+          size: avatarSize / 2,
+        );
+      },
+      loading: () => const CircularProgressIndicator(),
+      error: (err, st) {
+        debugPrint('Couldn\'t load group Avatar');
+        return ActerAvatar(
+          avatarInfo: AvatarInfo(
+            uniqueId: userId,
+            displayName: userId,
+          ),
+          avatarsInfo: secondaryProfile.maybeWhen(
+            data: (secData) => [
+              AvatarInfo(
+                uniqueId: secondaryUserId,
+                displayName: secData.displayName,
+                avatar: secData.getAvatarImage(),
+              ),
+              for (int i = 2; i < members.length; i++)
+                AvatarInfo(
+                  uniqueId: members[i].userId().toString(),
+                ),
+            ],
+            orElse: () => [],
+          ),
+          mode: DisplayMode.GroupDM,
+        );
+      },
     );
   }
 }

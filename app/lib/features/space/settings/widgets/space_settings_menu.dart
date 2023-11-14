@@ -1,6 +1,6 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,6 +23,7 @@ class SpaceSettingsMenu extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
     final spaceProfile = ref.watch(spaceProfileDataForSpaceIdProvider(spaceId));
+    final canonicalParent = ref.watch(canonicalParentProvider(spaceId));
 
     return Scaffold(
       appBar: AppBar(
@@ -31,16 +32,35 @@ class SpaceSettingsMenu extends ConsumerWidget {
           children: [
             ...spaceProfile.when(
               data: (spaceProfile) => [
-                SpaceParentBadge(
-                  roomId: spaceId,
-                  badgeSize: 18,
-                  child: ActerAvatar(
+                canonicalParent.maybeWhen(
+                  data: (parent) => ActerAvatar(
                     mode: DisplayMode.Space,
-                    displayName: spaceProfile.profile.displayName,
-                    tooltip: TooltipStyle.None,
-                    uniqueId: spaceId,
-                    avatar: spaceProfile.profile.getAvatarImage(),
+                    avatarInfo: AvatarInfo(
+                      uniqueId: spaceId,
+                      displayName: spaceProfile.profile.displayName,
+                      avatar: spaceProfile.profile.getAvatarImage(),
+                    ),
+                    avatarsInfo: parent != null
+                        ? [
+                            AvatarInfo(
+                              uniqueId: parent.space.getRoomIdStr(),
+                              displayName: parent.profile.displayName,
+                              avatar: parent.profile.getAvatarImage(),
+                            ),
+                          ]
+                        : [],
+                    badgeSize: 18,
+                  ),
+                  orElse: () => ActerAvatar(
+                    mode: DisplayMode.Space,
+                    avatarInfo: AvatarInfo(
+                      uniqueId: spaceId,
+                      displayName: spaceProfile.profile.displayName,
+                      avatar: spaceProfile.profile.getAvatarImage(),
+                    ),
+                    avatarsInfo: const [AvatarInfo(uniqueId: '!')],
                     size: 35,
+                    tooltip: TooltipStyle.None,
                   ),
                 ),
                 Padding(
@@ -53,7 +73,7 @@ class SpaceSettingsMenu extends ConsumerWidget {
                 ActerAvatar(
                   mode: DisplayMode.Space,
                   tooltip: TooltipStyle.None,
-                  uniqueId: spaceId,
+                  avatarInfo: AvatarInfo(uniqueId: spaceId),
                   size: 35,
                 ),
                 Padding(

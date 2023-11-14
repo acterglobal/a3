@@ -180,10 +180,12 @@ class MyProfile extends ConsumerWidget {
                             border: Border.all(width: 5),
                           ),
                           child: ActerAvatar(
-                            mode: DisplayMode.User,
-                            uniqueId: userId,
-                            avatar: data.profile.getAvatarImage(),
-                            displayName: data.profile.displayName,
+                            mode: DisplayMode.DM,
+                            avatarInfo: AvatarInfo(
+                              uniqueId: userId,
+                              avatar: data.profile.getAvatarImage(),
+                              displayName: data.profile.displayName,
+                            ),
                             size: 80,
                           ),
                         ),
