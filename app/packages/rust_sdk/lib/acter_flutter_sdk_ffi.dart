@@ -15280,6 +15280,16 @@ class Api {
       int Function(
         int,
       )>();
+  late final _roomEventItemIsEditedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__RoomEventItem_is_edited");
+
+  late final _roomEventItemIsEdited = _roomEventItemIsEditedPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _roomVirtualItemEventTypePtr = _lookup<
       ffi.NativeFunction<
           _RoomVirtualItemEventTypeReturn Function(
@@ -33126,6 +33136,18 @@ class RoomEventItem {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._roomEventItemIsEditable(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// Whether this message is the edited message
+  bool isEdited() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemIsEdited(
       tmp0,
     );
     final tmp3 = tmp1;
