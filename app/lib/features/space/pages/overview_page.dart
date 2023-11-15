@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/widgets/about_card.dart';
 import 'package:acter/features/space/widgets/chats_card.dart';
 import 'package:acter/features/space/widgets/events_card.dart';
@@ -38,6 +39,7 @@ class ActerSpaceChecker extends ConsumerWidget {
 
 class SpaceOverview extends ConsumerWidget {
   final String spaceIdOrAlias;
+
   const SpaceOverview({super.key, required this.spaceIdOrAlias});
 
   @override
@@ -48,6 +50,7 @@ class SpaceOverview extends ConsumerWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
+          SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
           StaggeredGrid.count(
             axisDirection: AxisDirection.down,
             crossAxisCount: min(widthCount, minCount),

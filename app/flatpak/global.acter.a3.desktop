@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+
+Name=Acter
+Comment=Casual Community Organizing
+Categories=Utility;Amusement;
+
+Icon=global.acter.a3
+Exec=acter
+Terminal=false
+StartupWMClass=acter

@@ -2,17 +2,18 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/common/widgets/spaces/space_hierarchy_card.dart';
+import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:atlas_icons/atlas_icons.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
@@ -27,6 +28,9 @@ class RelatedSpacesPage extends ConsumerWidget {
     // get platform of context.
     return CustomScrollView(
       slivers: [
+        SliverToBoxAdapter(
+          child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
+        ),
         ...spaces.when(
           data: (spaces) {
             final widthCount =

@@ -66,7 +66,7 @@ jobs:
             flutter_build_args: "build appbundle --split-debug-info=debug_symbols"
             artifact_prefix: acter-android
             artifact_path:  app/build/app/outputs/bundle/release/
-            extra_artifacts: app/build/app/outputs/bundle/release/app-release.aab
+            specific_upload_artifacts: app/build/app/outputs/bundle/release/app-release.aab
           - name: Android apk
             target: android
             os: ubuntu-latest
@@ -76,7 +76,7 @@ jobs:
             flutter_build_args: "build apk --split-per-abi --split-debug-info=debug_symbols"
             artifact_prefix: acter-android
             artifact_path:  app/build/app/outputs/apk/release/
-            extra_release_artifacts: app/build/app/outputs/apk/release/*.apk
+            specific_upload_artifacts: app/build/app/outputs/apk/release/*.apk
           - name: Linux x64
             target: linux
             os: ubuntu-latest
@@ -108,7 +108,7 @@ jobs:
             flutter_build_args: "build macos --split-debug-info=debug_symbols"
             artifact_prefix: acter-macosx
             artifact_path: app/build/macos/Build/Products/Release/
-            extra_artifacts: app/build/macos/Build/Products/Release/Acter.app
+            specific_upload_artifacts: app/build/macos/Build/Products/Release/Acter.app
             tar_files: "Acter.app"
             with_debug_symbols: true
           - name: Windows
@@ -190,7 +190,6 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
-          flutter-version: '3.13.1'
           channel: 'stable'
 
       - name: Flutter info
@@ -206,6 +205,8 @@ jobs:
           brew install git-crypt
           echo "${{ secrets.GIT_CRYPT_KEY }}" | base64 --decode > .github/assets/git-crypt-key
           git-crypt unlock .github/assets/git-crypt-key
+          echo "Files found:"
+          git-crypt status -e
 
       # Install the Apple certificate and provisioning profile
       - name: Install the Apple certificates
@@ -349,12 +350,28 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         name: "Upload artifacts"
+        if: matrix.specific_upload_artifacts
         with:
           name: ${{ matrix.name }}
           path: |
-            ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.*
-            app/debug_symbols/*
-            ${{ matrix.extra_artifacts }}
+            ${{ matrix.specific_upload_artifacts }}
+
+      - name: "move artifacts"
+        if: ${{!matrix.specific_upload_artifacts}}
+        run: mv ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.* .
+
+      - uses: actions/upload-artifact@v3
+        name: "Upload artifacts"
+        if: ${{!matrix.specific_upload_artifacts}}
+        with:
+          name: ${{ matrix.name }}
+          path: ${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.*
+
+      - uses: actions/upload-artifact@v3
+        name: "Upload debug artifacts"
+        with:
+          name: ${{ matrix.name }}
+          path: app/debug_symbols/*
 
       - name: Release
         if: ${{! matrix.exclude_from_release }}
@@ -365,8 +382,8 @@ jobs:
           tag_name: v${{ needs.tags.outputs.tag }}
           generate_release_notes: false
           files: |
-            ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.*
-            ${{ matrix.extra_release_artifacts }}
+            ${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.*
+            ${{ matrix.specific_upload_artifacts }}
 
       - name: Report issue
         if: ${{ github.event.schedule && failure() }}
@@ -382,6 +399,13 @@ jobs:
           filename: .github/templates/failure-report-template.md.tmpl
           update_existing: false
 
+ ######  ##     ##    ###    ##    ##  ######   ######## ##        #######   ######   
+##    ## ##     ##   ## ##   ###   ## ##    ##  ##       ##       ##     ## ##    ##  
+##       ##     ##  ##   ##  ####  ## ##        ##       ##       ##     ## ##        
+##       ######### ##     ## ## ## ## ##   #### ######   ##       ##     ## ##   #### 
+##       ##     ## ######### ##  #### ##    ##  ##       ##       ##     ## ##    ##  
+##    ## ##     ## ##     ## ##   ### ##    ##  ##       ##       ##     ## ##    ##  
+ ######  ##     ## ##     ## ##    ##  ######   ######## ########  #######   ######  
 
   changelog:
     environment: release
@@ -417,70 +441,79 @@ jobs:
           body_path: CHANGELOG.md
           files: CHANGELOG.md
 
-########  ##     ## ########  ##       ####  ######  ##     ## 
-##     ## ##     ## ##     ## ##        ##  ##    ## ##     ## 
-##     ## ##     ## ##     ## ##        ##  ##       ##     ## 
-########  ##     ## ########  ##        ##   ######  ######### 
-##        ##     ## ##     ## ##        ##        ## ##     ## 
-##        ##     ## ##     ## ##        ##  ##    ## ##     ## 
-##         #######  ########  ######## ####  ######  ##     ## 
+######## ##          ###    ######## ########     ###    ##    ## 
+##       ##         ## ##      ##    ##     ##   ## ##   ##   ##  
+##       ##        ##   ##     ##    ##     ##  ##   ##  ##  ##   
+######   ##       ##     ##    ##    ########  ##     ## #####    
+##       ##       #########    ##    ##        ######### ##  ##   
+##       ##       ##     ##    ##    ##        ##     ## ##   ##  
+##       ######## ##     ##    ##    ##        ##     ## ##    ## 
 
-  publish:
+  build-flatpak:
     environment: release
+    name: Build flatpak
     runs-on: ubuntu-latest
-    name: Publish
-    # if: ${{ github.event.schedule }}
+    container:
+      image: ghcr.io/andyholmes/flatter/freedesktop:23.08
+      options: --privileged
     needs:
       - tags
       - build
-      - changelog
     steps:
       - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.PAT }}
-
       - uses: actions/download-artifact@v3
         with:
-          name: Changelog
+          name: Linux x64
 
-      - name: "Generate docs"
+      # - uses: actions/download-artifact@v3
+      #   with:
+      #     name: Linux arm64
+
+      # extract upload
+      - name: Prepare for flatpack build
         run: |
-          echo "+++" > docs/content/releases/${{ needs.tags.outputs.tag }}.md
-          echo "title = \" v${{ needs.tags.outputs.tag }}\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-          echo "template = \"releases/release.html\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-          echo "date = `date +%Y-%m-%d`" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-          echo "+++" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-          echo "" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
-          cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          mkdir -p app/flatpak/build
+          tar -xvf *.tar.bz2 -C app/flatpak/build
+          cd app/flatpak
+          # for whatever reason git submodules complains otherwise
+          git config --global --add safe.directory /__w/a3/a3
+          # for libsecret
+          git submodule add -f https://github.com/flathub/shared-modules.git
 
-      - name: Tag for release
+      - name: Build .flatpak
+        uses: andyholmes/flatter@main
+        id: flatpak
+        with:
+          upload-bundles: true
+          files: |
+              app/flatpak/global.acter.a3.yml
+          flatpak-builder-args: |
+              --default-branch=stable
+              --skip-if-unchanged
+        # FIXME: how to only create deltas and not overwrite the entire thing every time?
+
+      # need to a add some metadata to the repo:
+      - name: Add repo metadata
         run: |
-          git config --global user.name 'Sari'
-          git config --global user.email 'acter-sari@users.noreply.github.com'
-          git add "docs/content/releases/${{ needs.tags.outputs.tag }}.md"
-          echo "Add release ${{ needs.tags.outputs.tag }}"
-          git commit -m "Releasing v${{ needs.tags.outputs.tag }}"
-          git tag v${{ needs.tags.outputs.tag }}
-          git tag -f release-latest
-          git push -f origin main v${{ needs.tags.outputs.tag }} release-latest
+          cp app/assets/icon/acter-logo.svg ${{ steps.flatpak.outputs.repository }}/logo.svg
+          cp app/flatpak/acter.flatpakrepo ${{ steps.flatpak.outputs.repository }}/acter.flatpakrepo
 
-      - name: Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
+      - name: Deploy Flatpak Repository
+        uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
-          # publish this nightly release now
-          draft: true
-          generate_release_notes: false
-          name: Acter ${{ needs.tags.outputs.tag }}
-          tag_name: v${{ needs.tags.outputs.tag }}
-          body_path: CHANGELOG.md
-          prerelease: true
-      # publish this full release now
-      - uses: eregon/publish-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          release_id: ${{ steps.create_release.outputs.id }}
+          git-config-name: acter-sari
+          git-config-email: 'acter-sari@users.noreply.github.com'
+          folder: ${{ steps.flatpak.outputs.repository }}
+          token: ${{ secrets.FLATPAK_PAT }}
+          repository-name: acterglobal/a3-flatpak
+
+##     ##  ######      ######  ########  #######  ########  ######## 
+###   ### ##    ##    ##    ##    ##    ##     ## ##     ## ##       
+#### #### ##          ##          ##    ##     ## ##     ## ##       
+## ### ##  ######      ######     ##    ##     ## ########  ######   
+##     ##       ##          ##    ##    ##     ## ##   ##   ##       
+##     ## ##    ##    ##    ##    ##    ##     ## ##    ##  ##       
+##     ##  ######      ######     ##     #######  ##     ## ######## 
 
 
   microsoft-store:
@@ -528,6 +561,16 @@ jobs:
             Complete-ApplicationSubmission -AppId ${{ secrets.MS_STORE_APP_ID }} -SubmissionId ($sub.id)
             Write-Debug "Submitted successfully"
 
+
+########  ##          ###    ##    ##     ######  ########  #######  ########  ######## 
+##     ## ##         ## ##    ##  ##     ##    ##    ##    ##     ## ##     ## ##       
+##     ## ##        ##   ##    ####      ##          ##    ##     ## ##     ## ##       
+########  ##       ##     ##    ##        ######     ##    ##     ## ########  ######   
+##        ##       #########    ##             ##    ##    ##     ## ##   ##   ##       
+##        ##       ##     ##    ##       ##    ##    ##    ##     ## ##    ##  ##       
+##        ######## ##     ##    ##        ######     ##     #######  ##     ## ######## 
+
+
   google-play-store:
     runs-on: ubuntu-latest
     environment: release
@@ -548,6 +591,17 @@ jobs:
           # debugSymbols: debug_symbols/
           track: beta
           status: completed
+
+
+####  #######   ######        ###    ########  ########   ######  ########  #######  ########  ######## 
+ ##  ##     ## ##    ##      ## ##   ##     ## ##     ## ##    ##    ##    ##     ## ##     ## ##       
+ ##  ##     ## ##           ##   ##  ##     ## ##     ## ##          ##    ##     ## ##     ## ##       
+ ##  ##     ##  ######     ##     ## ########  ########   ######     ##    ##     ## ########  ######   
+ ##  ##     ##       ##    ######### ##        ##              ##    ##    ##     ## ##   ##   ##       
+ ##  ##     ## ##    ##    ##     ## ##        ##        ##    ##    ##    ##     ## ##    ##  ##       
+####  #######   ######     ##     ## ##        ##         ######     ##     #######  ##     ## ######## 
+
+
 
   apple-store-ios:
     runs-on: macos-latest
@@ -572,6 +626,16 @@ jobs:
               --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID"
         shell: bash
 
+
+##     ##    ###     ######        ###    ########  ########   ######  ########  #######  ########  ######## 
+###   ###   ## ##   ##    ##      ## ##   ##     ## ##     ## ##    ##    ##    ##     ## ##     ## ##       
+#### ####  ##   ##  ##           ##   ##  ##     ## ##     ## ##          ##    ##     ## ##     ## ##       
+## ### ## ##     ## ##          ##     ## ########  ########   ######     ##    ##     ## ########  ######   
+##     ## ######### ##          ######### ##        ##              ##    ##    ##     ## ##   ##   ##       
+##     ## ##     ## ##    ##    ##     ## ##        ##        ##    ##    ##    ##     ## ##    ##  ##       
+##     ## ##     ##  ######     ##     ## ##        ##         ######     ##     #######  ##     ## ######## 
+
+
   apple-store-mac:
     runs-on: macos-latest
     environment: release
@@ -579,6 +643,46 @@ jobs:
       - tags
       - build
     steps:
+      - uses: actions/checkout@v2
+      - name: Unlock git-crypt
+        run: |
+          brew install git-crypt
+          echo "${{ secrets.GIT_CRYPT_KEY }}" | base64 --decode > .github/assets/git-crypt-key
+          git-crypt unlock .github/assets/git-crypt-key
+          echo "Files found:"
+          git-crypt status -e
+
+      # Install the Apple certificate and provisioning profile
+      - name: Install the Apple certificates
+        env:
+          P12_PASSWORD: ${{ secrets.BUILD_CERTS_P12_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          echo "starting in $RUNNER_TEMP"
+          # create variables
+          CERTIFICATE_PATH=".github/assets/build_certificates.p12"
+          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+          echo "vars set"
+          # import certificate and provisioning profile from secrets
+          # create temporary keychain
+          echo "creating keychain"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          echo "setting keychain"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          echo "unlocking keychain"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          # import certificate to keychain
+          echo "importing certificate"
+          security import "$CERTIFICATE_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          echo "listing keychains"
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+
+      - name: Install the Apple provisioning profile
+        run: |
+          echo "Installing provision profiles"
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles/
+          cp .github/assets/provision_profiles/* ~/Library/MobileDevice/Provisioning\ Profiles/
+          ls -ltas ~/Library/MobileDevice/Provisioning\ Profiles/
       - uses: actions/download-artifact@v3
         with:
           name: MacOS
@@ -601,11 +705,90 @@ jobs:
           APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+          APPLE_SIGN_CERTNAME: ${{ secrets.APPLE_MAC_APPSTORE_SIGN_CERTNAME }}
         run: |
           mkdir private_keys
           echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
-          xcrun altool --validate-app --type macos --file build/macos/Build/Products/Release/Acter.app \
-              --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID" --bundle-id global.acter.a3
-          xcrun altool --upload-app --type macos --file build/macos/Build/Products/Release/Acter.app \
-              --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID" --bundle-id global.acter.a3
+          ls -ltas private_keys
+          echo "Productbuild"
+          productbuild --component build/macos/Build/Products/Release/Acter.app /Applications --sign "$APPLE_SIGN_CERTNAME" Acter.pkg
+          xcrun altool --upload-app --type macos --file Acter.pkg \
+              --bundle-id global.acter.a3 \
+              --apiKey "$APPLE_API_KEY_ID" \
+              --apiIssuer "$APPLE_ISSUER_ID" \
+          # xcrun notarytool submit Acter.zip --wait \
+          #     --key "private_keys/AuthKey_$APPLE_API_KEY_ID.p8" --key-id "$APPLE_API_KEY_ID" --issuer "$APPLE_ISSUER_ID" --bundle-id global.acter.a3
+          # xcrun stapler staple build/macos/Build/Products/Release/Acter.app
         shell: bash
+
+      - name: Clean up keychain and provisioning profile
+        if: ${{ always() }}
+        run: |
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/*
+          rm .github/assets/git-crypt-key
+
+
+ ######   #### ######## ##     ## ##     ## ########     ########  ##     ## ########  ##       ####  ######  ##     ## 
+##    ##   ##     ##    ##     ## ##     ## ##     ##    ##     ## ##     ## ##     ## ##        ##  ##    ## ##     ## 
+##         ##     ##    ##     ## ##     ## ##     ##    ##     ## ##     ## ##     ## ##        ##  ##       ##     ## 
+##   ####  ##     ##    ######### ##     ## ########     ########  ##     ## ########  ##        ##   ######  ######### 
+##    ##   ##     ##    ##     ## ##     ## ##     ##    ##        ##     ## ##     ## ##        ##        ## ##     ## 
+##    ##   ##     ##    ##     ## ##     ## ##     ##    ##        ##     ## ##     ## ##        ##  ##    ## ##     ## 
+ ######   ####    ##    ##     ##  #######  ########     ##         #######  ########  ######## ####  ######  ##     ## 
+
+  publish:
+    environment: release
+    runs-on: ubuntu-latest
+    name: Publish
+    # if: ${{ github.event.schedule }}
+    needs:
+      - tags
+      - build
+      - changelog
+      - build-flatpak
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v3
+        with:
+          name: Changelog
+
+      - name: "Generate docs"
+        run: |
+          echo "+++" > docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "title = \" v${{ needs.tags.outputs.tag }}\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "template = \"releases/release.html\"" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "date = `date +%Y-%m-%d`" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "+++" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          echo "" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+          cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
+
+      - name: Tag for release
+        run: |
+          git config --global user.name 'Sari'
+          git config --global user.email 'acter-sari@users.noreply.github.com'
+          git add "docs/content/releases/${{ needs.tags.outputs.tag }}.md"
+          echo "Add release ${{ needs.tags.outputs.tag }}"
+          git commit -m "Releasing v${{ needs.tags.outputs.tag }}"
+          git tag v${{ needs.tags.outputs.tag }}
+          git tag -f release-latest
+          git push -f origin main v${{ needs.tags.outputs.tag }} release-latest
+
+      - name: Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          # publish this nightly release now
+          draft: true
+          generate_release_notes: false
+          name: Acter ${{ needs.tags.outputs.tag }}
+          tag_name: v${{ needs.tags.outputs.tag }}
+          body_path: CHANGELOG.md
+          prerelease: true
+      # publish this full release now
+      - uses: eregon/publish-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_id: ${{ steps.create_release.outputs.id }}
+

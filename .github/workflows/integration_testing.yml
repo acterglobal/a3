@@ -1,8 +1,7 @@
 on:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
+  push:
 
 name: Integration Tests
 
@@ -115,7 +114,7 @@ jobs:
     needs:
      - run_checker
      
-    if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_all != 'false' && needs.run_checker.outputs.should_run_desktop != 'false' }}
+    if: ${{ github.ref == 'refs/heads/main' || needs.run_checker.outputs.should_run_all != 'false' || needs.run_checker.outputs.should_run_desktop != 'false' }}
 
     steps:
       - uses: actions/checkout@v2
@@ -170,6 +169,9 @@ jobs:
         working-directory: app
         run: flutter pub get
 
+      - name: Open Keyring
+        uses: t1m0thyj/unlock-keyring@v1
+
       - name: Run flutter integration tests
         working-directory: app
         run: |
@@ -180,9 +182,9 @@ jobs:
               -d linux \
               --host-vmservice-port 9753 \
               --disable-service-auth-codes \
+              --dart-define CI=true \
               --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib \
               --dart-define DEFAULT_HOMESERVER_URL=http://localhost:8118/ \
-              --dart-define CI=true \
               --dart-define DEFAULT_HOMESERVER_NAME=localhost \
               &
           subscript_pid=$!
@@ -216,6 +218,8 @@ jobs:
 
   flutter-ios:
     runs-on: macos-latest
+    environment: release
+
     name: iOS
     needs:
      - run_checker
@@ -238,6 +242,44 @@ jobs:
       - name: Rust Android Setup
         run: cargo make setup-ios
 
+      - name: Unlock git-crypt
+        run: |
+          brew install git-crypt
+          echo "${{ secrets.GIT_CRYPT_KEY }}" | base64 --decode > .github/assets/git-crypt-key
+          git-crypt unlock .github/assets/git-crypt-key
+          echo "Files found:"
+          git-crypt status -e
+
+      # Install the Apple certificate and provisioning profile
+      - name: Install the Apple certificates
+        env:
+          P12_PASSWORD: ${{ secrets.BUILD_CERTS_P12_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          echo "starting in $RUNNER_TEMP"
+          # create variables
+          CERTIFICATE_PATH=".github/assets/build_certificates.p12"
+          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+          echo "vars set"
+          # import certificate and provisioning profile from secrets
+          # create temporary keychain
+          echo "creating keychain"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          echo "setting keychain"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          echo "unlocking keychain"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          # import certificate to keychain
+          echo "importing certificate"
+          security import "$CERTIFICATE_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          echo "listing keychains"
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+      - name: Install the Apple provisioning profile
+        run: |
+          echo "Installing provision profiles"
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles/
+          cp .github/assets/provision_profiles/* ~/Library/MobileDevice/Provisioning\ Profiles/
+          ls -ltas ~/Library/MobileDevice/Provisioning\ Profiles/
 
       - uses: subosito/flutter-action@v2
         name: Set up flutter
@@ -270,28 +312,12 @@ jobs:
 
       - name: Flutter setup
         working-directory: app
-        run: flutter pub get
+        run: |
+          flutter pub get
+          flutter build ipa
 
       - name: Run flutter integration tests
-        working-directory: app
-        run: |
-          flutter run integration_test/main_test.dart  \
-              --host-vmservice-port 9753 \
-              --disable-service-auth-codes \
-              --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib \
-              --dart-define DEFAULT_HOMESERVER_URL=http://localhost:8118/ \
-              --dart-define DEFAULT_HOMESERVER_NAME=localhost \
-              --dart-define CONVENIENT_TEST_MANAGER_HOST=10.0.2.2 \
-              --dart-define DEFAULT_HOMESERVER_URL=http://10.0.2.2:8118/
-              --dart-define CI=true \
-              &
-          subscript_pid=$!
-
-          # actual manager runner
-          dart run convenient_test_manager_dart --enable-report-saver
-          exit_status=$?
-          kill "$subscript_pid"
-          exit exit_status
+        run: .github/scripts/flutter-integration-tests.sh
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
@@ -314,6 +340,13 @@ jobs:
           filename: .github/templates/failure-report-template.md
           update_existing: true
 
+      - name: Clean up keychain and provisioning profile
+        if: ${{ always() }}
+        run: |
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/*
+          rm .github/assets/git-crypt-key
+
   flutter-android:
     runs-on: macos-latest
     name: Android
@@ -329,6 +362,11 @@ jobs:
         with:
           toolchain: nightly-2023-04-10
           override: true
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '11'
 
       - uses: Swatinem/rust-cache@v1
 
@@ -369,7 +407,6 @@ jobs:
 
       - name: Run integration tests on android
         uses: reactivecircus/android-emulator-runner@v2
-        continue-on-error: true
         with:
           api-level: 28
           arch: x86
@@ -378,25 +415,7 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           emulator-build: 7425822
-          script: |
-            cd app
-            flutter run integration_test/main_test.dart  \
-                --host-vmservice-port 9753 \
-                --disable-service-auth-codes \
-                --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib \
-                --dart-define DEFAULT_HOMESERVER_URL=http://localhost:8118/ \
-                --dart-define DEFAULT_HOMESERVER_NAME=localhost \
-                --dart-define CONVENIENT_TEST_MANAGER_HOST=10.0.2.2 \
-                --dart-define DEFAULT_HOMESERVER_URL=http://10.0.2.2:8118/
-                --dart-define CI=true \
-                &
-            subscript_pid=$!
-
-            # actual manager runner
-            dart run convenient_test_manager_dart --enable-report-saver
-            exit_status=$?
-            kill "$subscript_pid"
-            exit exit_status
+          script: .github/scripts/flutter-integration-tests.sh
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
