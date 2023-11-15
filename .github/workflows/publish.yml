@@ -190,7 +190,6 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
-          flutter-version: '3.13.1'
           channel: 'stable'
 
       - name: Flutter info
@@ -206,6 +205,8 @@ jobs:
           brew install git-crypt
           echo "${{ secrets.GIT_CRYPT_KEY }}" | base64 --decode > .github/assets/git-crypt-key
           git-crypt unlock .github/assets/git-crypt-key
+          echo "Files found:"
+          git-crypt status -e
 
       # Install the Apple certificate and provisioning profile
       - name: Install the Apple certificates
@@ -642,6 +643,46 @@ jobs:
       - tags
       - build
     steps:
+      - uses: actions/checkout@v2
+      - name: Unlock git-crypt
+        run: |
+          brew install git-crypt
+          echo "${{ secrets.GIT_CRYPT_KEY }}" | base64 --decode > .github/assets/git-crypt-key
+          git-crypt unlock .github/assets/git-crypt-key
+          echo "Files found:"
+          git-crypt status -e
+
+      # Install the Apple certificate and provisioning profile
+      - name: Install the Apple certificates
+        env:
+          P12_PASSWORD: ${{ secrets.BUILD_CERTS_P12_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          echo "starting in $RUNNER_TEMP"
+          # create variables
+          CERTIFICATE_PATH=".github/assets/build_certificates.p12"
+          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+          echo "vars set"
+          # import certificate and provisioning profile from secrets
+          # create temporary keychain
+          echo "creating keychain"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          echo "setting keychain"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          echo "unlocking keychain"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          # import certificate to keychain
+          echo "importing certificate"
+          security import "$CERTIFICATE_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          echo "listing keychains"
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+
+      - name: Install the Apple provisioning profile
+        run: |
+          echo "Installing provision profiles"
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles/
+          cp .github/assets/provision_profiles/* ~/Library/MobileDevice/Provisioning\ Profiles/
+          ls -ltas ~/Library/MobileDevice/Provisioning\ Profiles/
       - uses: actions/download-artifact@v3
         with:
           name: MacOS
@@ -664,14 +705,29 @@ jobs:
           APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+          APPLE_SIGN_CERTNAME: ${{ secrets.APPLE_MAC_APPSTORE_SIGN_CERTNAME }}
         run: |
           mkdir private_keys
           echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
-          xcrun altool --validate-app --type macos --file build/macos/Build/Products/Release/Acter.app \
-              --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID" --bundle-id global.acter.a3
-          xcrun altool --upload-app --type macos --file build/macos/Build/Products/Release/Acter.app \
-              --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID" --bundle-id global.acter.a3
+          ls -ltas private_keys
+          echo "Productbuild"
+          productbuild --component build/macos/Build/Products/Release/Acter.app /Applications --sign "$APPLE_SIGN_CERTNAME" Acter.pkg
+          xcrun altool --upload-app --type macos --file Acter.pkg \
+              --bundle-id global.acter.a3 \
+              --apiKey "$APPLE_API_KEY_ID" \
+              --apiIssuer "$APPLE_ISSUER_ID" \
+          # xcrun notarytool submit Acter.zip --wait \
+          #     --key "private_keys/AuthKey_$APPLE_API_KEY_ID.p8" --key-id "$APPLE_API_KEY_ID" --issuer "$APPLE_ISSUER_ID" --bundle-id global.acter.a3
+          # xcrun stapler staple build/macos/Build/Products/Release/Acter.app
         shell: bash
+
+      - name: Clean up keychain and provisioning profile
+        if: ${{ always() }}
+        run: |
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/*
+          rm .github/assets/git-crypt-key
+
 
  ######   #### ######## ##     ## ##     ## ########     ########  ##     ## ########  ##       ####  ######  ##     ## 
 ##    ##   ##     ##    ##     ## ##     ## ##     ##    ##     ## ##     ## ##     ## ##        ##  ##    ## ##     ## 
@@ -680,7 +736,6 @@ jobs:
 ##    ##   ##     ##    ##     ## ##     ## ##     ##    ##        ##     ## ##     ## ##        ##        ## ##     ## 
 ##    ##   ##     ##    ##     ## ##     ## ##     ##    ##        ##     ## ##     ## ##        ##  ##    ## ##     ## 
  ######   ####    ##    ##     ##  #######  ########     ##         #######  ########  ######## ####  ######  ##     ## 
-
 
   publish:
     environment: release
