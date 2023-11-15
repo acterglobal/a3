@@ -108,7 +108,7 @@ class SpaceToolbar extends ConsumerWidget {
         actions: <Widget>[
           DefaultButton(
             onPressed: () => context.pop(),
-            title: 'No Stay',
+            title: 'No, I stay',
             style: OutlinedButton.styleFrom(
               side: BorderSide(color: Theme.of(context).colorScheme.success),
             ),

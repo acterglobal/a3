@@ -7,7 +7,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter/features/space/pages/shell_page.dart';
+import 'package:acter/features/space/widgets/space_header.dart';
 
 class SpaceEventsPage extends ConsumerWidget {
   final String spaceIdOrAlias;
@@ -20,7 +20,7 @@ class SpaceEventsPage extends ConsumerWidget {
     return CustomScrollView(
       slivers: <Widget>[
         SliverToBoxAdapter(
-          child: SpaceShell(spaceIdOrAlias: spaceIdOrAlias),
+          child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
         ),
         SliverToBoxAdapter(
           child: Padding(

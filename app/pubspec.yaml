@@ -120,7 +120,6 @@ dependencies:
   flutter_local_notifications: ^16.0.0
   email_validator: ^2.1.17
   app_settings: ^5.1.1
-  flutter_animate: ^4.2.0+1
 
 # FIXME keep until a new version has been published
 dependency_overrides:

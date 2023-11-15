@@ -6,7 +6,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/common/widgets/spaces/space_hierarchy_card.dart';
-import 'package:acter/features/space/pages/shell_page.dart';
+import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -29,7 +29,7 @@ class RelatedSpacesPage extends ConsumerWidget {
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
-          child: SpaceShell(spaceIdOrAlias: spaceIdOrAlias),
+          child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
         ),
         ...spaces.when(
           data: (spaces) {

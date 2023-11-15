@@ -8,10 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class ShellHeader extends ConsumerWidget {
+class SpaceHeaderProfile extends ConsumerWidget {
   final String spaceId;
 
-  const ShellHeader(this.spaceId, {super.key});
+  const SpaceHeaderProfile(this.spaceId, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
