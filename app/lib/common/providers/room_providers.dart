@@ -4,8 +4,10 @@ import 'dart:core';
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/notifiers/room_notifiers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 
 class RoomItem {
   final Member? membership;
@@ -74,6 +76,57 @@ final briefRoomItemWithMembershipProvider =
     activeMembers: [],
     roomProfileData: profileData,
   );
+});
+
+final briefRoomItemsWithMembershipProvider = FutureProvider.autoDispose<List<RoomItem>>((ref) async {
+  final chatList = ref.watch(chatsProvider).where((element) => (!element.isDm())).toList();
+
+  List<RoomItem> items = [];
+  for (final element in chatList) {
+    final room = await ref.watch(maybeRoomProvider(element.getRoomIdStr()).future);
+    if (room == null) {
+      throw 'Room ${element.getRoomIdStr()} not found';
+    }
+    final profileData = await ref.watch(roomProfileDataProvider(element.getRoomIdStr()).future);
+
+    final item = RoomItem(
+      roomId: room.roomIdStr(),
+      room: room,
+      membership: room.isJoined() ? await room.getMyMembership() : null,
+      activeMembers: [],
+      roomProfileData: profileData,
+    );
+    items.add(item);
+  }
+  return items;
+});
+
+final roomSearchedChatsProvider = FutureProvider.autoDispose<List<RoomItem>>((ref) async {
+  final allRooms = ref.watch(chatsProvider).where((element) => (!element.isDm())).toList();
+  final searchValue = ref.watch(chatSearchValueProvider);
+  final foundRooms = List<RoomItem>.empty(growable: true);
+
+  for (final element in allRooms) {
+    final room = await ref.watch(maybeRoomProvider(element.getRoomIdStr()).future);
+    if (room == null) {
+      throw 'Room ${element.getRoomIdStr()} not found';
+    }
+
+    final profileData = await ref.watch(roomProfileDataProvider(element.getRoomIdStr()).future);
+    final name = profileData.displayName ?? element.getRoomIdStr();
+
+    if (name.toLowerCase().contains(searchValue!.toLowerCase())) {
+      final item = RoomItem(
+        roomId: room.roomIdStr(),
+        room: room,
+        membership: room.isJoined() ? await room.getMyMembership() : null,
+        activeMembers: [],
+        roomProfileData: profileData,
+      );
+      foundRooms.add(item);
+    }
+  }
+  return foundRooms;
 });
 
 /// If the room exists, this returns its space relations
