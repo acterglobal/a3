@@ -51,7 +51,6 @@ import 'package:acter/features/space/pages/members_page.dart';
 import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/pins_page.dart';
 import 'package:acter/features/space/pages/related_spaces_page.dart';
-import 'package:acter/features/space/pages/shell_page.dart';
 import 'package:acter/features/space/pages/tasks_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
@@ -145,10 +144,6 @@ final GlobalKey<NavigatorState> rootNavKey = GlobalKey<NavigatorState>(
 
 final GlobalKey<NavigatorState> shellNavKey = GlobalKey<NavigatorState>(
   debugLabel: 'shell',
-);
-
-final GlobalKey<NavigatorState> spaceNavKey = GlobalKey<NavigatorState>(
-  debugLabel: 'space',
 );
 
 final GlobalKey<NavigatorState> chatShellKey = GlobalKey<NavigatorState>(
@@ -573,29 +568,30 @@ List<RouteBase> makeRoutes(Ref ref) {
           },
         ),
         GoRoute(
-            parentNavigatorKey: shellNavKey,
-            name: Routes.activities.name,
-            path: Routes.activities.route,
-            redirect: authGuardRedirect,
-            pageBuilder: (context, state) {
-              return NoTransitionPage(
-                key: state.pageKey,
-                child: const ActivitiesPage(),
-              );
-            },
-            onExit: (BuildContext context) {
-              if (!context.read(
-                isActiveProvider(LabsFeature.mobilePushNotifications),
-              )) {
-                return true;
-              }
-              debugPrint('Attempting to ask for push notifications');
-              final client = context.read(clientProvider);
-              if (client != null) {
-                setupPushNotifications(client);
-              }
+          parentNavigatorKey: shellNavKey,
+          name: Routes.activities.name,
+          path: Routes.activities.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: const ActivitiesPage(),
+            );
+          },
+          onExit: (BuildContext context) {
+            if (!context.read(
+              isActiveProvider(LabsFeature.mobilePushNotifications),
+            )) {
               return true;
-            },),
+            }
+            debugPrint('Attempting to ask for push notifications');
+            final client = context.read(clientProvider);
+            if (client != null) {
+              setupPushNotifications(client);
+            }
+            return true;
+          },
+        ),
         GoRoute(
           parentNavigatorKey: shellNavKey,
           name: Routes.settingSessions.name,
@@ -876,119 +872,112 @@ List<RouteBase> makeRoutes(Ref ref) {
         ),
 
         /// Space subshell
-        ShellRoute(
-          navigatorKey: spaceNavKey,
-          pageBuilder: (context, state, child) {
+        GoRoute(
+          parentNavigatorKey: shellNavKey,
+          name: Routes.spaceRelatedSpaces.name,
+          path: Routes.spaceRelatedSpaces.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            tabKeyNotifier.switchTo(const Key('spaces'));
             return NoTransitionPage(
               key: state.pageKey,
-              child: SpaceShell(
+              child: RelatedSpacesPage(
                 spaceIdOrAlias: state.pathParameters['spaceId']!,
-                child: child,
               ),
             );
           },
-          routes: <RouteBase>[
-            GoRoute(
-              name: Routes.spaceRelatedSpaces.name,
-              path: Routes.spaceRelatedSpaces.route,
-              redirect: authGuardRedirect,
-              pageBuilder: (context, state) {
-                tabKeyNotifier.switchTo(const Key('spaces'));
-                return NoTransitionPage(
-                  key: state.pageKey,
-                  child: RelatedSpacesPage(
-                    spaceIdOrAlias: state.pathParameters['spaceId']!,
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: Routes.spaceMembers.name,
-              path: Routes.spaceMembers.route,
-              redirect: authGuardRedirect,
-              pageBuilder: (context, state) {
-                tabKeyNotifier.switchTo(const Key('members'));
-                return NoTransitionPage(
-                  key: state.pageKey,
-                  child: SpaceMembersPage(
-                    spaceIdOrAlias: state.pathParameters['spaceId']!,
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: Routes.spacePins.name,
-              path: Routes.spacePins.route,
-              redirect: authGuardRedirect,
-              pageBuilder: (context, state) {
-                tabKeyNotifier.switchTo(const Key('pins'));
-                return NoTransitionPage(
-                  key: state.pageKey,
-                  child: SpacePinsPage(
-                    spaceIdOrAlias: state.pathParameters['spaceId']!,
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: Routes.spaceEvents.name,
-              path: Routes.spaceEvents.route,
-              redirect: authGuardRedirect,
-              pageBuilder: (context, state) {
-                tabKeyNotifier.switchTo(const Key('events'));
-                return NoTransitionPage(
-                  key: state.pageKey,
-                  child: SpaceEventsPage(
-                    spaceIdOrAlias: state.pathParameters['spaceId']!,
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: Routes.spaceChats.name,
-              path: Routes.spaceChats.route,
-              redirect: authGuardRedirect,
-              pageBuilder: (context, state) {
-                tabKeyNotifier.switchTo(const Key('chat'));
-                return NoTransitionPage(
-                  key: state.pageKey,
-                  child: SpaceChatsPage(
-                    spaceIdOrAlias: state.pathParameters['spaceId']!,
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: Routes.spaceTasks.name,
-              path: Routes.spaceTasks.route,
-              redirect: authGuardRedirect,
-              pageBuilder: (context, state) {
-                ref
-                    .read(selectedTabKeyProvider.notifier)
-                    .switchTo(const Key('tasks'));
-                return NoTransitionPage(
-                  key: state.pageKey,
-                  child: SpaceTasksPage(
-                    spaceIdOrAlias: state.pathParameters['spaceId']!,
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: Routes.space.name,
-              path: Routes.space.route,
-              redirect: authGuardRedirect,
-              pageBuilder: (context, state) {
-                tabKeyNotifier.switchTo(const Key('overview'));
-                return NoTransitionPage(
-                  key: state.pageKey,
-                  child: SpaceOverview(
-                    spaceIdOrAlias: state.pathParameters['spaceId']!,
-                  ),
-                );
-              },
-            ),
-          ],
+        ),
+        GoRoute(
+          parentNavigatorKey: shellNavKey,
+          name: Routes.spaceMembers.name,
+          path: Routes.spaceMembers.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            tabKeyNotifier.switchTo(const Key('members'));
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: SpaceMembersPage(
+                spaceIdOrAlias: state.pathParameters['spaceId']!,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: shellNavKey,
+          name: Routes.spacePins.name,
+          path: Routes.spacePins.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            tabKeyNotifier.switchTo(const Key('pins'));
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: SpacePinsPage(
+                spaceIdOrAlias: state.pathParameters['spaceId']!,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: shellNavKey,
+          name: Routes.spaceEvents.name,
+          path: Routes.spaceEvents.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            tabKeyNotifier.switchTo(const Key('events'));
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: SpaceEventsPage(
+                spaceIdOrAlias: state.pathParameters['spaceId']!,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: shellNavKey,
+          name: Routes.spaceChats.name,
+          path: Routes.spaceChats.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            tabKeyNotifier.switchTo(const Key('chat'));
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: SpaceChatsPage(
+                spaceIdOrAlias: state.pathParameters['spaceId']!,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: shellNavKey,
+          name: Routes.spaceTasks.name,
+          path: Routes.spaceTasks.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            ref
+                .read(selectedTabKeyProvider.notifier)
+                .switchTo(const Key('tasks'));
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: SpaceTasksPage(
+                spaceIdOrAlias: state.pathParameters['spaceId']!,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: shellNavKey,
+          name: Routes.space.name,
+          path: Routes.space.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            tabKeyNotifier.switchTo(const Key('overview'));
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: SpaceOverview(
+                spaceIdOrAlias: state.pathParameters['spaceId']!,
+              ),
+            );
+          },
         ),
 
         GoRoute(
