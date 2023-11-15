@@ -308,9 +308,11 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
             enabled: canLink,
             leading: ActerAvatar(
               mode: displayMode,
-              displayName: displayName,
-              uniqueId: roomId,
-              avatar: roomAvatar,
+              avatarInfo: AvatarInfo(
+                uniqueId: roomId,
+                displayName: displayName,
+                avatar: roomAvatar,
+              ),
               size: 24,
             ),
             title: Text(displayName ?? roomId),

@@ -90,24 +90,29 @@ class NewsSideBar extends ConsumerWidget {
           },
           child: space.when(
             data: (space) => ActerAvatar(
-              uniqueId: roomId,
               mode: DisplayMode.Space,
-              displayName: space.spaceProfileData.displayName,
-              avatar: space.spaceProfileData.getAvatarImage(),
+              avatarInfo: AvatarInfo(
+                uniqueId: roomId,
+                displayName: space.spaceProfileData.displayName,
+                avatar: space.spaceProfileData.getAvatarImage(),
+              ),
               size: 42,
             ),
             error: (e, st) {
               debugPrint('Error loading space: $e');
               return ActerAvatar(
-                uniqueId: roomId,
                 mode: DisplayMode.Space,
-                displayName: roomId,
+                avatarInfo: AvatarInfo(
+                  uniqueId: roomId,
+                  displayName: roomId,
+                ),
                 size: 42,
               );
             },
             loading: () => const Text('l'),
           ),
         ),
+        const SizedBox(height: 15),
       ],
     );
   }

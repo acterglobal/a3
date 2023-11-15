@@ -474,18 +474,22 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       children: [
         replyProfile.when(
           data: (profile) => ActerAvatar(
-            mode: DisplayMode.User,
-            uniqueId: authorId,
-            displayName: profile.displayName ?? authorId,
-            avatar: profile.getAvatarImage(),
-            size: profile.hasAvatar() ? 12 : 24,
+            mode: DisplayMode.DM,
+            avatarInfo: AvatarInfo(
+              uniqueId: authorId,
+              displayName: profile.displayName ?? authorId,
+              avatar: profile.getAvatarImage(),
+            ),
+            size: 12,
           ),
           error: (e, st) {
             debugPrint('Error loading avatar due to $e');
             return ActerAvatar(
-              mode: DisplayMode.User,
-              uniqueId: authorId,
-              displayName: authorId,
+              mode: DisplayMode.DM,
+              avatarInfo: AvatarInfo(
+                uniqueId: authorId,
+                displayName: authorId,
+              ),
               size: 24,
             );
           },
@@ -517,7 +521,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   }
 
   Future<void> onSendButtonPressed() async {
-    if(mentionKey.currentState!.controller!.text.isEmpty) return;
+    if (mentionKey.currentState!.controller!.text.isEmpty) return;
     final roomId = widget.convo.getRoomIdStr();
     final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
     final mentionReplacements =

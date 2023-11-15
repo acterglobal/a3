@@ -37,9 +37,11 @@ class SpaceChip extends ConsumerWidget {
     return Chip(
       avatar: ActerAvatar(
         mode: DisplayMode.Space,
-        displayName: space.spaceProfileData.displayName,
-        uniqueId: space.roomId,
-        avatar: space.spaceProfileData.getAvatarImage(),
+        avatarInfo: AvatarInfo(
+          uniqueId: space.roomId,
+          displayName: space.spaceProfileData.displayName,
+          avatar: space.spaceProfileData.getAvatarImage(),
+        ),
         size: 24,
       ),
       label: Text(space.spaceProfileData.displayName ?? space.roomId),

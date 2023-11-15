@@ -1,7 +1,7 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_info.dart';
-import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
@@ -16,23 +16,35 @@ class SpaceHeaderProfile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileData = ref.watch(spaceProfileDataForSpaceIdProvider(spaceId));
+    final canonicalParent = ref.watch(canonicalParentProvider(spaceId));
     return profileData.when(
       data: (spaceProfile) {
         return Padding(
           padding: const EdgeInsets.only(left: 10),
           child: Row(
             children: <Widget>[
-              SpaceParentBadge(
-                roomId: spaceId,
-                badgeSize: 40,
-                child: ActerAvatar(
-                  mode: DisplayMode.Space,
-                  displayName: spaceProfile.profile.displayName,
-                  tooltip: TooltipStyle.None,
+              ActerAvatar(
+                mode: DisplayMode.Space,
+                avatarInfo: AvatarInfo(
                   uniqueId: spaceId,
+                  displayName: spaceProfile.profile.displayName,
                   avatar: spaceProfile.profile.getAvatarImage(),
-                  size: 80,
                 ),
+                avatarsInfo: canonicalParent.valueOrNull != null
+                    ? [
+                        AvatarInfo(
+                          uniqueId:
+                              canonicalParent.valueOrNull!.space.getRoomIdStr(),
+                          displayName:
+                              canonicalParent.valueOrNull!.profile.displayName,
+                          avatar: canonicalParent.valueOrNull!.profile
+                              .getAvatarImage(),
+                        ),
+                      ]
+                    : [],
+                tooltip: TooltipStyle.None,
+                badgeSize: 40,
+                size: 80,
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

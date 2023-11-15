@@ -31,10 +31,12 @@ final AutoDisposeFutureProvider<List<SpaceDetails>> spacesFoundProvider =
     finalSpaces.add(
       SpaceDetails._(
         ActerAvatar(
-          uniqueId: roomId,
-          displayName: info.displayName,
           mode: DisplayMode.Space,
-          avatar: info.getAvatarImage(),
+          avatarInfo: AvatarInfo(
+            uniqueId: roomId,
+            displayName: info.displayName,
+            avatar: info.getAvatarImage(),
+          ),
         ),
         info.displayName ?? roomId,
         '/$roomId',

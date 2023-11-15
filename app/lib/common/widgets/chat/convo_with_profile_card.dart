@@ -1,6 +1,5 @@
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -56,13 +55,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
                     Theme.of(context).colorScheme.secondaryContainer,
                 onFocusChange: onFocusChange,
                 onLongPress: onLongPress,
-                leading: (!profile.isDm && showParent)
-                    ? SpaceParentBadge(
-                        roomId: roomId,
-                        badgeSize: 20,
-                        child: RoomAvatar(roomId: roomId),
-                      )
-                    : RoomAvatar(roomId: roomId),
+                leading: RoomAvatar(roomId: roomId, showParent: showParent),
                 title: Text(
                   profile.displayName ?? roomId,
                   style: Theme.of(context)
