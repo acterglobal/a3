@@ -6,12 +6,17 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:readmore/readmore.dart';
 
 class RoomHierarchyJoinButtons extends ConsumerWidget {
   final Function(String)? forward;
   final SpaceHierarchyRoomInfo space;
-  const RoomHierarchyJoinButtons(
-      {super.key, required this.space, this.forward,});
+
+  const RoomHierarchyJoinButtons({
+    super.key,
+    required this.space,
+    this.forward,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -160,8 +165,17 @@ class SpaceHierarchyCard extends ConsumerWidget {
     final roomId = space.roomIdStr();
     final profile = ref.watch(spaceHierarchyProfileProvider(space));
     final topic = space.topic();
-    final Widget? subtitle =
-        topic != null && topic.isNotEmpty ? Text(topic) : null;
+    final Widget? subtitle = topic != null && topic.isNotEmpty
+        ? ReadMoreText(
+            topic,
+            trimLines: 1,
+            trimMode: TrimMode.Line,
+            trimCollapsedText: 'Show more',
+            trimExpandedText: 'Show less',
+            moreStyle: Theme.of(context).textTheme.labelMedium,
+            lessStyle: Theme.of(context).textTheme.labelMedium,
+          )
+        : null;
 
     return profile.when(
       data: (profile) => SpaceWithProfileCard(
