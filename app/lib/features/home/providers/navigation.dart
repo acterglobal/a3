@@ -42,51 +42,33 @@ final spaceItemsProvider = FutureProvider.autoDispose
         ),
         location: '/$roomId',
       ),
-      data: (info) => canonicalParent.maybeWhen(
-        data: (parent) => SidebarNavigationItem(
-          icon: ActerAvatar(
-            mode: DisplayMode.Space,
-            avatarInfo: AvatarInfo(
-              uniqueId: roomId,
-              displayName: info.displayName,
-              avatar: info.getAvatarImage(),
-            ),
-            avatarsInfo: parent != null
-                ? [
-                    AvatarInfo(
-                      uniqueId: parent.space.getRoomIdStr(),
-                      displayName: parent.profile.displayName,
-                      avatar: parent.profile.getAvatarImage(),
-                    ),
-                  ]
-                : [],
-            size: 48,
+      data: (info) => SidebarNavigationItem(
+        icon: ActerAvatar(
+          mode: DisplayMode.Space,
+          avatarInfo: AvatarInfo(
+            uniqueId: roomId,
+            displayName: info.displayName,
+            avatar: info.getAvatarImage(),
           ),
-          label: Text(
-            info.displayName ?? roomId,
-            style: Theme.of(context).textTheme.labelSmall,
-            softWrap: false,
-          ),
-          location: '/$roomId',
+          avatarsInfo: canonicalParent.valueOrNull != null
+              ? [
+                  AvatarInfo(
+                    uniqueId: canonicalParent.valueOrNull!.space.getRoomIdStr(),
+                    displayName:
+                        canonicalParent.valueOrNull!.profile.displayName,
+                    avatar:
+                        canonicalParent.valueOrNull!.profile.getAvatarImage(),
+                  ),
+                ]
+              : [],
+          size: 48,
         ),
-        orElse: () => SidebarNavigationItem(
-          icon: ActerAvatar(
-            mode: DisplayMode.Space,
-            avatarInfo: AvatarInfo(
-              uniqueId: roomId,
-              displayName: info.displayName,
-              avatar: info.getAvatarImage(),
-            ),
-            avatarsInfo: const [AvatarInfo(uniqueId: '!')],
-            size: 48,
-          ),
-          label: Text(
-            info.displayName ?? roomId,
-            style: Theme.of(context).textTheme.labelSmall,
-            softWrap: false,
-          ),
-          location: '/$roomId',
+        label: Text(
+          info.displayName ?? roomId,
+          style: Theme.of(context).textTheme.labelSmall,
+          softWrap: false,
         ),
+        location: '/$roomId',
       ),
     );
   }).toList();

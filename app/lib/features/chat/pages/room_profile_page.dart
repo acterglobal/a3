@@ -76,19 +76,16 @@ class RoomProfilePage extends ConsumerWidget {
           ),
           SliverToBoxAdapter(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               children: [
-                Flexible(
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 38,
-                        bottom: 12,
-                      ),
-                      child: RoomAvatar(
-                        roomId: roomId,
-                        avatarSize: 75,
-                      ),
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 38,
+                      bottom: 12,
+                    ),
+                    child: RoomAvatar(
+                      roomId: roomId,
+                      avatarSize: 75,
                     ),
                   ),
                 ),

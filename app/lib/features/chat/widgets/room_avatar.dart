@@ -9,11 +9,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class RoomAvatar extends ConsumerWidget {
   final String roomId;
   final double avatarSize;
+  final bool showParent;
 
   const RoomAvatar({
     super.key,
     required this.roomId,
     this.avatarSize = 36,
+    this.showParent = false,
   });
 
   @override
@@ -42,36 +44,27 @@ class RoomAvatar extends ConsumerWidget {
         //Show conversations avatar if available
         //Group : Show default image if avatar is not available
         if (!convo.isDm()) {
-          return canonicalParent.maybeWhen(
-            data: (parent) => ActerAvatar(
-              mode: DisplayMode.Space,
-              avatarInfo: AvatarInfo(
-                uniqueId: roomId,
-                displayName: profile.displayName ?? roomId,
-                avatar: profile.getAvatarImage(),
-              ),
-              size: avatarSize,
-              avatarsInfo: parent != null
-                  ? [
-                      AvatarInfo(
-                        uniqueId: parent.space.getRoomIdStr(),
-                        displayName: parent.profile.displayName ??
-                            parent.space.getRoomIdStr(),
-                        avatar: parent.profile.getAvatarImage(),
-                      ),
-                    ]
-                  : [],
+          return ActerAvatar(
+            mode: DisplayMode.Space,
+            avatarInfo: AvatarInfo(
+              uniqueId: roomId,
+              displayName: profile.displayName ?? roomId,
+              avatar: profile.getAvatarImage(),
             ),
-            orElse: () => ActerAvatar(
-              mode: DisplayMode.Space,
-              avatarInfo: AvatarInfo(
-                uniqueId: roomId,
-                displayName: profile.displayName ?? roomId,
-                avatar: profile.getAvatarImage(),
-              ),
-              size: avatarSize,
-              avatarsInfo: const [AvatarInfo(uniqueId: '!')],
-            ),
+            size: avatarSize,
+            avatarsInfo: (showParent && canonicalParent.valueOrNull != null)
+                ? [
+                    AvatarInfo(
+                      uniqueId:
+                          canonicalParent.valueOrNull!.space.getRoomIdStr(),
+                      displayName:
+                          canonicalParent.valueOrNull!.profile.displayName ??
+                              canonicalParent.valueOrNull!.space.getRoomIdStr(),
+                      avatar:
+                          canonicalParent.valueOrNull!.profile.getAvatarImage(),
+                    ),
+                  ]
+                : [],
           );
         } else if (profile.hasAvatar()) {
           return ActerAvatar(

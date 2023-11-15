@@ -21,38 +21,27 @@ class ShellHeader extends ConsumerWidget {
       padding: const EdgeInsets.only(left: 10),
       child: Row(
         children: <Widget>[
-          canonicalParent.maybeWhen(
-            data: (parent) => ActerAvatar(
-              mode: DisplayMode.Space,
-              avatarInfo: AvatarInfo(
-                uniqueId: spaceId,
-                displayName: spaceProfile.displayName,
-                avatar: spaceProfile.getAvatarImage(),
-              ),
-              avatarsInfo: parent != null
-                  ? [
-                      AvatarInfo(
-                        uniqueId: parent.space.getRoomIdStr(),
-                        displayName: parent.profile.displayName,
-                        avatar: parent.profile.getAvatarImage(),
-                      ),
-                    ]
-                  : [],
-              size: 80,
-              badgeSize: 30,
+          ActerAvatar(
+            mode: DisplayMode.Space,
+            avatarInfo: AvatarInfo(
+              uniqueId: spaceId,
+              displayName: spaceProfile.displayName,
+              avatar: spaceProfile.getAvatarImage(),
             ),
-            orElse: () => ActerAvatar(
-              mode: DisplayMode.Space,
-              avatarInfo: AvatarInfo(
-                uniqueId: spaceId,
-                displayName: spaceProfile.displayName,
-                avatar: spaceProfile.getAvatarImage(),
-              ),
-              avatarsInfo: const [AvatarInfo(uniqueId: '!')],
-              size: 80,
-              tooltip: TooltipStyle.None,
-              badgeSize: 30,
-            ),
+            avatarsInfo: canonicalParent.valueOrNull != null
+                ? [
+                    AvatarInfo(
+                      uniqueId:
+                          canonicalParent.valueOrNull!.space.getRoomIdStr(),
+                      displayName:
+                          canonicalParent.valueOrNull!.profile.displayName,
+                      avatar:
+                          canonicalParent.valueOrNull!.profile.getAvatarImage(),
+                    ),
+                  ]
+                : [],
+            size: 80,
+            badgeSize: 30,
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -32,36 +32,26 @@ class SpaceSettingsMenu extends ConsumerWidget {
           children: [
             ...spaceProfile.when(
               data: (spaceProfile) => [
-                canonicalParent.maybeWhen(
-                  data: (parent) => ActerAvatar(
-                    mode: DisplayMode.Space,
-                    avatarInfo: AvatarInfo(
-                      uniqueId: spaceId,
-                      displayName: spaceProfile.profile.displayName,
-                      avatar: spaceProfile.profile.getAvatarImage(),
-                    ),
-                    avatarsInfo: parent != null
-                        ? [
-                            AvatarInfo(
-                              uniqueId: parent.space.getRoomIdStr(),
-                              displayName: parent.profile.displayName,
-                              avatar: parent.profile.getAvatarImage(),
-                            ),
-                          ]
-                        : [],
-                    badgeSize: 18,
+                ActerAvatar(
+                  mode: DisplayMode.Space,
+                  avatarInfo: AvatarInfo(
+                    uniqueId: spaceId,
+                    displayName: spaceProfile.profile.displayName,
+                    avatar: spaceProfile.profile.getAvatarImage(),
                   ),
-                  orElse: () => ActerAvatar(
-                    mode: DisplayMode.Space,
-                    avatarInfo: AvatarInfo(
-                      uniqueId: spaceId,
-                      displayName: spaceProfile.profile.displayName,
-                      avatar: spaceProfile.profile.getAvatarImage(),
-                    ),
-                    avatarsInfo: const [AvatarInfo(uniqueId: '!')],
-                    size: 35,
-                    tooltip: TooltipStyle.None,
-                  ),
+                  avatarsInfo: canonicalParent.valueOrNull != null
+                      ? [
+                          AvatarInfo(
+                            uniqueId: canonicalParent.valueOrNull!.space
+                                .getRoomIdStr(),
+                            displayName: canonicalParent
+                                .valueOrNull!.profile.displayName,
+                            avatar: canonicalParent.valueOrNull!.profile
+                                .getAvatarImage(),
+                          ),
+                        ]
+                      : [],
+                  badgeSize: 18,
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 15),

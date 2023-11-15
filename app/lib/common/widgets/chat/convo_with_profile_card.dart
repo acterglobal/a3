@@ -55,7 +55,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
                     Theme.of(context).colorScheme.secondaryContainer,
                 onFocusChange: onFocusChange,
                 onLongPress: onLongPress,
-                leading: RoomAvatar(roomId: roomId),
+                leading: RoomAvatar(roomId: roomId, showParent: showParent),
                 title: Text(
                   profile.displayName ?? roomId,
                   style: Theme.of(context)
