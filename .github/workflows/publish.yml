@@ -120,7 +120,7 @@ jobs:
             rename_file: acter.msix
             artifact_prefix: acter-windows
             rename_suffix: msix
-            artifact_path: app/build/windows/runner/Release/
+            artifact_path: "app\\build\\windows\\runner\\Release\\"
             zip_files: false
             with_debug_symbols: true
 
@@ -587,7 +587,7 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
           packageName: global.acter.a3
           releaseName: v${{ needs.tags.outputs.tag }}
-          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          releaseFiles: app-release.aab
           # debugSymbols: debug_symbols/
           track: beta
           status: completed
@@ -622,7 +622,7 @@ jobs:
         run: |
           mkdir private_keys
           echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
-          xcrun altool --upload-app --type ios --file build/ios/ipa/*.ipa \
+          xcrun altool --upload-app --type ios --file *.ipa \
               --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_ISSUER_ID"
         shell: bash
 
@@ -690,15 +690,13 @@ jobs:
       # for debugging any errors below, print out the bundle version from the IPA/plist
       - name: Print Bundle Version
         continue-on-error: true
-        env:
-         UNZIPPED_PATH: "build/macos/Build/Products/Release/Acter.app"
         run: |
-          ls build/macos/Build/Products/Release/Acter.app/*
-          cat build/macos/Build/Products/Release/Acter.app/Info.plist
+          ls Acter.app/*
+          cat Acter.app/Info.plist
           echo ""
           echo " ------- "
           echo ""
-          defaults read "build/macos/Build/Products/Release/Acter.app/Info.plist" CFBundleShortVersionString
+          defaults read "Acter.app/Info.plist" CFBundleShortVersionString
 
       - name: Upload to App Store
         env:
@@ -711,14 +709,14 @@ jobs:
           echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
           ls -ltas private_keys
           echo "Productbuild"
-          productbuild --component build/macos/Build/Products/Release/Acter.app /Applications --sign "$APPLE_SIGN_CERTNAME" Acter.pkg
+          productbuild --component Acter.app /Applications --sign "$APPLE_SIGN_CERTNAME" Acter.pkg
           xcrun altool --upload-app --type macos --file Acter.pkg \
               --bundle-id global.acter.a3 \
               --apiKey "$APPLE_API_KEY_ID" \
               --apiIssuer "$APPLE_ISSUER_ID" \
           # xcrun notarytool submit Acter.zip --wait \
           #     --key "private_keys/AuthKey_$APPLE_API_KEY_ID.p8" --key-id "$APPLE_API_KEY_ID" --issuer "$APPLE_ISSUER_ID" --bundle-id global.acter.a3
-          # xcrun stapler staple build/macos/Build/Products/Release/Acter.app
+          # xcrun stapler staple Acter.app
         shell: bash
 
       - name: Clean up keychain and provisioning profile
