@@ -3,10 +3,10 @@ import 'package:acter/common/utils/rooms.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_with_profile_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:readmore/readmore.dart';
 
 class RoomHierarchyJoinButtons extends ConsumerWidget {
   final Function(String)? forward;
@@ -166,14 +166,12 @@ class SpaceHierarchyCard extends ConsumerWidget {
     final profile = ref.watch(spaceHierarchyProfileProvider(space));
     final topic = space.topic();
     final Widget? subtitle = topic != null && topic.isNotEmpty
-        ? ReadMoreText(
+        ? ExpandableText(
             topic,
-            trimLines: 1,
-            trimMode: TrimMode.Line,
-            trimCollapsedText: 'Show more',
-            trimExpandedText: 'Show less',
-            moreStyle: Theme.of(context).textTheme.labelMedium,
-            lessStyle: Theme.of(context).textTheme.labelMedium,
+            maxLines: 2,
+            expandText: 'show more',
+            collapseText: 'show less',
+            linkColor: Theme.of(context).colorScheme.primary,
           )
         : null;
 
