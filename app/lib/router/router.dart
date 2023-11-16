@@ -21,7 +21,7 @@ import 'package:acter/features/settings/pages/notifications_page.dart';
 import 'package:acter/features/settings/pages/sessions_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/pages/chat_select_page.dart';
-import 'package:acter/features/chat/pages/chats_shell.dart';
+import 'package:acter/features/chat/widgets/chat_layout_builder.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/chat/pages/room_profile_page.dart';
 import 'package:acter/features/events/pages/event_page.dart';
@@ -144,10 +144,6 @@ final GlobalKey<NavigatorState> rootNavKey = GlobalKey<NavigatorState>(
 
 final GlobalKey<NavigatorState> shellNavKey = GlobalKey<NavigatorState>(
   debugLabel: 'shell',
-);
-
-final GlobalKey<NavigatorState> chatShellKey = GlobalKey<NavigatorState>(
-  debugLabel: 'chat',
 );
 
 List<RouteBase> makeRoutes(Ref ref) {
