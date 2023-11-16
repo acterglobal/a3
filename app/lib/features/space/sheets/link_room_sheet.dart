@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
@@ -8,7 +7,6 @@ import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -156,56 +154,42 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       return searchedChatsList();
     }
 
-    final chatList =
-        ref.watch(chatsProvider).where((element) => (!element.isDm())).toList();
-    return chatListUI(chatList);
+    final chatList = ref.watch(briefRoomItemsWithMembershipProvider);
+    return chatList.when(
+      data: (chats) =>
+      chats.isEmpty ? const Text('no chats found') : chatListUI(chats),
+      error: (e, s) => errorUI('Error loading chats', e),
+      loading: () => loadingUI(),
+    );
   }
 
 //Show chat list based on the search term
   Widget searchedChatsList() {
-    return ref.watch(searchedChatsProvider).when(
-          data: (chats) {
-            var chatList = chats.where((element) => (!element.isDm())).toList();
-            if (chatList.isEmpty) {
-              return const Center(
-                heightFactor: 10,
-                child: Text('No chats found matching your search term'),
-              );
-            }
-            return chatListUI(chatList);
-          },
-          loading: () => loadingUI(),
-          error: (e, s) => errorUI('Searching failed', e),
-        );
+    final searchedList = ref.watch(roomSearchedChatsProvider);
+    return searchedList.when(
+      data: (chats) =>
+      chats.isEmpty ? const Text('No chats found matching your search term') : chatListUI(chats),
+      error: (e, s) => errorUI('Searching failed', e),
+      loading: () => loadingUI(),
+    );
   }
 
 //Chat List
-  Widget chatListUI(List<Convo> chatList) {
+  Widget chatListUI(List<RoomItem> chatList) {
     return ListView.builder(
       padding: const EdgeInsets.all(8),
       itemCount: chatList.length,
       itemBuilder: (context, index) {
-        final item = chatList[index];
-        final roomItem =
-            ref.watch(briefRoomItemWithMembershipProvider(item.getRoomIdStr()));
-        return roomItem.when(
-          data: (room) {
-            final membership = room.membership;
-
-            return roomListItemUI(
-              roomId: room.roomId,
-              displayName: room.roomProfileData.displayName,
-              roomAvatar: room.roomProfileData.getAvatarImage(),
-              displayMode: DisplayMode.Space,
-              canLink: membership == null
-                  ? false
-                  : membership.canString('CanLinkSpaces'),
-              isLinked: childRoomsIds.contains(room.roomId),
-            );
-          },
-          skipLoadingOnReload: false,
-          error: (e, s) => errorUI('Loading room failed ', e),
-          loading: () => loadingUI(),
+        final room = chatList[index];
+        return roomListItemUI(
+          roomId: room.roomId,
+          displayName: room.roomProfileData.displayName,
+          roomAvatar: room.roomProfileData.getAvatarImage(),
+          displayMode: DisplayMode.Space,
+          canLink: room.membership == null
+              ? false
+              : room.membership!.canString('CanLinkSpaces'),
+          isLinked: childRoomsIds.contains(room.roomId),
         );
       },
     );
