@@ -33,18 +33,24 @@ async fn search_users() -> Result<()> {
     while synced.next().await != Some(true) {} // let's wait for it to have synced
 
     let profiles = sisko.search_users("m".to_string()).await?;
-    let users = profiles.iter().map(|profile| profile.user_id()).collect::<Vec<OwnedUserId>>();
+    let users = profiles
+        .iter()
+        .map(|profile| profile.user_id())
+        .collect::<Vec<OwnedUserId>>();
     let miles_id = UserId::parse(format!("@miles:{}", homeserver_name))?;
     assert!(users.contains(&miles_id), "miles not found");
     let morn_id = UserId::parse(format!("@morn:{}", homeserver_name))?;
     assert!(users.contains(&morn_id), "morn not found");
 
-    let fields = homeserver_name.split('.').map(|x| x.to_string()).collect::<Vec<String>>();
+    let fields = homeserver_name
+        .split('.')
+        .map(|x| x.to_string())
+        .collect::<Vec<String>>();
     let mut segments = vec![];
     for field in fields {
         segments.push(field);
         let term = format!("miles:{}", segments.join("."));
-        let profiles = sisko.search_users(term).await?;
+        let profiles = sisko.search_users(term.clone()).await?;
         assert!(!profiles.is_empty(), "search by {} not working", term);
     }
 
