@@ -106,31 +106,22 @@ final briefRoomItemsWithMembershipProvider =
 
 final roomSearchedChatsProvider =
     FutureProvider.autoDispose<List<RoomItem>>((ref) async {
-  final allRooms =
-      ref.watch(chatsProvider).where((element) => (!element.isDm())).toList();
-  final searchValue = ref.watch(chatSearchValueProvider);
+  final allRoomList =
+      await ref.watch(briefRoomItemsWithMembershipProvider.future);
   final foundRooms = List<RoomItem>.empty(growable: true);
+  final searchValue = ref.watch(chatSearchValueProvider);
 
-  for (final element in allRooms) {
-    final room =
-        await ref.watch(maybeRoomProvider(element.getRoomIdStr()).future);
-    if (room != null) {
-      final profileData = await ref
-          .watch(roomProfileDataProvider(element.getRoomIdStr()).future);
-      final name = profileData.displayName ?? element.getRoomIdStr();
+  if (searchValue == null || searchValue.isEmpty) {
+    return allRoomList;
+  }
 
-      if (name.toLowerCase().contains(searchValue!.toLowerCase())) {
-        final item = RoomItem(
-          roomId: room.roomIdStr(),
-          room: room,
-          membership: room.isJoined() ? await room.getMyMembership() : null,
-          activeMembers: [],
-          roomProfileData: profileData,
-        );
-        foundRooms.add(item);
-      }
+  for (final roomItem in allRoomList) {
+    final name = roomItem.roomProfileData.displayName ?? roomItem.roomId;
+    if (name.toLowerCase().contains(searchValue.toLowerCase())) {
+      foundRooms.add(roomItem);
     }
   }
+
   return foundRooms;
 });
 
