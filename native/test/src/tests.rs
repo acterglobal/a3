@@ -11,6 +11,7 @@ mod receipt;
 mod redact;
 mod reply;
 mod rsvp;
+mod search_users;
 mod spaces;
 mod tasks;
 mod templates;
