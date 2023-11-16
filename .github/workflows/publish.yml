@@ -120,7 +120,7 @@ jobs:
             rename_file: acter.msix
             artifact_prefix: acter-windows
             rename_suffix: msix
-            artifact_path: app/build/windows/runner/Release/
+            artifact_path: "app\\build\\windows\\runner\\Release\\"
             zip_files: false
             with_debug_symbols: true
 
