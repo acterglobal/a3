@@ -716,56 +716,49 @@ List<RouteBase> makeRoutes(Ref ref) {
           },
         ),
 
-        ShellRoute(
-          navigatorKey: chatShellKey,
-          pageBuilder: (context, state, child) {
+        GoRoute(
+          name: Routes.chat.name,
+          path: Routes.chat.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            selectedChatNotifier.select(null);
             return NoTransitionPage(
               key: state.pageKey,
-              child: ChatShell(
-                child: child,
+              child: const ChatLayoutBuilder(
+                child: ChatSelectPage(),
               ),
             );
           },
-          routes: <RouteBase>[
-            GoRoute(
-              name: Routes.chat.name,
-              path: Routes.chat.route,
-              redirect: authGuardRedirect,
-              pageBuilder: (context, state) {
-                selectedChatNotifier.select(null);
-                return NoTransitionPage(
-                  key: state.pageKey,
-                  child: const ChatSelectPage(),
-                );
-              },
-            ),
-            GoRoute(
-              name: Routes.chatroom.name,
-              path: Routes.chatroom.route,
-              redirect: authGuardRedirect,
-              pageBuilder: (context, state) {
-                final roomId = state.pathParameters['roomId']!;
-                selectedChatNotifier.select(roomId);
-                return NoTransitionPage(
-                  key: state.pageKey,
-                  child: RoomPage(roomId: roomId),
-                );
-              },
-            ),
-            GoRoute(
-              name: Routes.chatProfile.name,
-              path: Routes.chatProfile.route,
-              redirect: authGuardRedirect,
-              pageBuilder: (context, state) {
-                final roomId = state.pathParameters['roomId']!;
-                selectedChatNotifier.select(roomId);
-                return NoTransitionPage(
-                  key: state.pageKey,
-                  child: RoomProfilePage(roomId: roomId),
-                );
-              },
-            ),
-          ],
+        ),
+        GoRoute(
+          name: Routes.chatroom.name,
+          path: Routes.chatroom.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            final roomId = state.pathParameters['roomId']!;
+            selectedChatNotifier.select(roomId);
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: ChatLayoutBuilder(
+                child: RoomPage(roomId: roomId),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: Routes.chatProfile.name,
+          path: Routes.chatProfile.route,
+          redirect: authGuardRedirect,
+          pageBuilder: (context, state) {
+            final roomId = state.pathParameters['roomId']!;
+            selectedChatNotifier.select(roomId);
+            return NoTransitionPage(
+              key: state.pageKey,
+              child: ChatLayoutBuilder(
+                child: RoomProfilePage(roomId: roomId),
+              ),
+            );
+          },
         ),
 
         GoRoute(
