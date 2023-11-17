@@ -71,6 +71,12 @@ jobs:
           uploadLogs: false
           httpPort: 8118
           disableRateLimiting: true
+          customModules: synapse_super_invites
+          customConfig: |
+            modules:
+              - module: "synapse_super_invites.SynapseSuperInvites"
+                config:
+                  enable_registration: true
 
       - uses: rui314/setup-mold@v1
         name: "Setup mold linker"
