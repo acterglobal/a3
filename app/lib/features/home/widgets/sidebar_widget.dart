@@ -32,17 +32,16 @@ class SidebarWidget extends ConsumerWidget {
       destinations: sidebarNavItems,
       selectedIndex: navigationShell.currentIndex,
       onDestinationSelected: (tabIndex) {
-        // navigationShell.goBranch(
-        //   tabIndex,
-        //   initialLocation: tabIndex == navigationShell.currentIndex,
-        // );
         if (sidebarNavItems[tabIndex].location != null) {
           final item = sidebarNavItems[tabIndex];
           // go to the initial location of the selected tab (by index)
-          if (item.pushToNavigate) {
-            context.push(item.location!);
-          } else {
+          if (item.isSpaceTab) {
             context.go(item.location!);
+          } else {
+            navigationShell.goBranch(
+              tabIndex,
+              initialLocation: tabIndex == navigationShell.currentIndex,
+            );
           }
         }
       },

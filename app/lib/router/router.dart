@@ -1,12 +1,13 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
-import 'package:acter/router/activities_shell_routes.dart';
-import 'package:acter/router/chat_shell_routes.dart';
-import 'package:acter/router/general_routes.dart';
-import 'package:acter/router/home_shell_routes.dart';
-import 'package:acter/router/search_shell_routes.dart';
-import 'package:acter/router/update_shell_routes.dart';
+import 'package:acter/router/shell_routers/activities_shell_router.dart';
+import 'package:acter/router/shell_routers/chat_shell_router.dart';
+import 'package:acter/router/general_router.dart';
+import 'package:acter/router/shell_routers/home_shell_router.dart';
+import 'package:acter/router/shell_routers/search_shell_router.dart';
+import 'package:acter/router/shell_routers/update_shell_router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -115,28 +116,54 @@ List<RouteBase> makeRoutes(Ref ref) {
       ) {
         return HomeShell(navigationShell: navigationShell);
       },
-      branches: <StatefulShellBranch>[
-        StatefulShellBranch(
-          navigatorKey: homeTabNavKey,
-          routes: makeHomeShellRoutes(ref),
-        ),
-        StatefulShellBranch(
-          navigatorKey: updateTabNavKey,
-          routes: makeUpdateShellRoutes(ref),
-        ),
-        StatefulShellBranch(
-          navigatorKey: chatTabNavKey,
-          routes: makeChatShellRoutes(ref),
-        ),
-        StatefulShellBranch(
-          navigatorKey: activitiesTabNavKey,
-          routes: makeActivitiesShellRoutes(ref),
-        ),
-        StatefulShellBranch(
-          navigatorKey: searchTabNavKey,
-          routes: makeSearchShellRoutes(ref),
-        ),
-      ],
+      branches:
+          isDesktop ? desktopShellBranches(ref) : mobileShellBranches(ref),
+    ),
+  ];
+}
+
+List<StatefulShellBranch> mobileShellBranches(Ref ref) {
+  return [
+    StatefulShellBranch(
+      navigatorKey: homeTabNavKey,
+      routes: makeHomeShellRoutes(ref),
+    ),
+    StatefulShellBranch(
+      navigatorKey: updateTabNavKey,
+      routes: makeUpdateShellRoutes(ref),
+    ),
+    StatefulShellBranch(
+      navigatorKey: chatTabNavKey,
+      routes: makeChatShellRoutes(ref),
+    ),
+    StatefulShellBranch(
+      navigatorKey: activitiesTabNavKey,
+      routes: makeActivitiesShellRoutes(ref),
+    ),
+    StatefulShellBranch(
+      navigatorKey: searchTabNavKey,
+      routes: makeSearchShellRoutes(ref),
+    ),
+  ];
+}
+
+List<StatefulShellBranch> desktopShellBranches(Ref ref) {
+  return [
+    StatefulShellBranch(
+      navigatorKey: searchTabNavKey,
+      routes: makeSearchShellRoutes(ref),
+    ),
+    StatefulShellBranch(
+      navigatorKey: homeTabNavKey,
+      routes: makeHomeShellRoutes(ref),
+    ),
+    StatefulShellBranch(
+      navigatorKey: chatTabNavKey,
+      routes: makeChatShellRoutes(ref),
+    ),
+    StatefulShellBranch(
+      navigatorKey: activitiesTabNavKey,
+      routes: makeActivitiesShellRoutes(ref),
     ),
   ];
 }
