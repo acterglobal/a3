@@ -141,8 +141,6 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     }
 
     final bottomBarNav = ref.watch(bottomBarNavProvider(context));
-    // final bottomBarIdx =
-    //     ref.watch(currentSelectedBottomBarIndexProvider(context));
     return CallbackShortcuts(
       bindings: <LogicalKeySet, VoidCallback>{
         LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyK): () {

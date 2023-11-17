@@ -23,8 +23,6 @@ class SidebarWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final sidebarNavItems = ref.watch(sidebarItemsProvider(context));
-    // final selectedSidebarIndex =
-    //     ref.watch(currentSelectedSidebarIndexProvider(context));
     final isGuest = ref.watch(clientProvider)!.isGuest();
 
     return AdaptiveScaffold.standardNavigationRail(
