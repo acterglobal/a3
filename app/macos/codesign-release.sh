@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if [ "${CONFIGURATION}" = "Debug" ] ; then
+    echo "Debug mode. Skipping code sign script!"
+    exit 0
+fi
+
 # WARNING: You may have to run Clean in Xcode after changing CODE_SIGN_IDENTITY! 
 
 # Verify that $CODE_SIGN_IDENTITY is set
