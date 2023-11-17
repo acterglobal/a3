@@ -30,6 +30,22 @@ pub async fn random_user_with_random_convo(prefix: &str) -> Result<(Client, Owne
     let room_id = user.create_convo(Box::new(settings)).await?;
     Ok((user, room_id))
 }
+pub async fn random_user_under_token(prefix: &str, registration_token: &str) -> Result<Client> {
+    let uuid = Uuid::new_v4().to_string();
+    ensure_user(
+        option_env!("DEFAULT_HOMESERVER_URL")
+            .unwrap_or("http://localhost:8118")
+            .to_string(),
+        option_env!("DEFAULT_HOMESERVER_NAME")
+            .unwrap_or("localhost")
+            .to_string(),
+        format!("it-{prefix}-{uuid}"),
+        Some(registration_token.to_owned()),
+        "acter-integration-tests".to_owned(),
+        StoreConfig::default(),
+    )
+    .await
+}
 
 pub async fn random_user_with_random_space(prefix: &str) -> Result<(Client, OwnedRoomId)> {
     let uuid = Uuid::new_v4().to_string();
