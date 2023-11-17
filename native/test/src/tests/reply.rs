@@ -59,7 +59,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
         .await
         .expect("kyra should belong to ops");
     let reply_id = kyra_space
-        .send_text_reply("Sorry, it's my bad".to_string(), event_id.to_string(), None)
+        .send_text_reply("Sorry, it's my bad".to_string(), event_id.to_string())
         .await?;
 
     let ev = sisko_space.event(&reply_id).await?;
