@@ -2382,11 +2382,7 @@ impl Room {
             .await?
     }
 
-    pub async fn send_text_reply(
-        &self,
-        msg: String,
-        event_id: String,
-    ) -> Result<OwnedEventId> {
+    pub async fn send_text_reply(&self, msg: String, event_id: String) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't send reply as text to a room we are not in");
         }
@@ -2662,9 +2658,7 @@ impl Room {
                 let content = RoomMessageEventContent::new(MessageType::File(file_content))
                     .make_reply_to(original_message, ForwardThread::Yes, AddMentions::No);
 
-                let response = room
-                    .send(content)
-                    .await?;
+                let response = room.send(content).await?;
                 Ok(response.event_id)
             })
             .await?
