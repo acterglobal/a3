@@ -7,9 +7,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const sidebarMinWidth = 750;
 
-class ChatShell extends ConsumerWidget {
+class ChatLayoutBuilder extends ConsumerWidget {
   final Widget child;
-  const ChatShell({required this.child, super.key});
+  const ChatLayoutBuilder({required this.child, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
