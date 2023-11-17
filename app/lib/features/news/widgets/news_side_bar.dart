@@ -81,36 +81,34 @@ class NewsSideBar extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 10),
-        InkWell(
-          onTap: () {
-            context.pushNamed(
-              Routes.space.name,
-              pathParameters: {'spaceId': roomId},
-            );
-          },
-          child: space.when(
-            data: (space) => ActerAvatar(
+        space.when(
+          data: (space) => ActerAvatar(
+            mode: DisplayMode.Space,
+            avatarInfo: AvatarInfo(
+              uniqueId: roomId,
+              displayName: space.spaceProfileData.displayName,
+              avatar: space.spaceProfileData.getAvatarImage(),
+            ),
+            size: 42,
+            onAvatarTap: () {
+              context.pushNamed(
+                Routes.space.name,
+                pathParameters: {'spaceId': roomId},
+              );
+            },
+          ),
+          error: (e, st) {
+            debugPrint('Error loading space: $e');
+            return ActerAvatar(
               mode: DisplayMode.Space,
               avatarInfo: AvatarInfo(
                 uniqueId: roomId,
-                displayName: space.spaceProfileData.displayName,
-                avatar: space.spaceProfileData.getAvatarImage(),
+                displayName: roomId,
               ),
               size: 42,
-            ),
-            error: (e, st) {
-              debugPrint('Error loading space: $e');
-              return ActerAvatar(
-                mode: DisplayMode.Space,
-                avatarInfo: AvatarInfo(
-                  uniqueId: roomId,
-                  displayName: roomId,
-                ),
-                size: 42,
-              );
-            },
-            loading: () => const Text('l'),
-          ),
+            );
+          },
+          loading: () => const Text('l'),
         ),
         const SizedBox(height: 15),
       ],
