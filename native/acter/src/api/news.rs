@@ -540,7 +540,7 @@ impl NewsEntryDraft {
         trace!("off we go");
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content, None).await?;
+                let resp = room.send(content).await?;
                 Ok(resp.event_id)
             })
             .await?
@@ -592,7 +592,7 @@ impl NewsEntryUpdateBuilder {
         let content = self.content.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content, None).await?;
+                let resp = room.send(content).await?;
                 Ok(resp.event_id)
             })
             .await?
