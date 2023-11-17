@@ -22,8 +22,9 @@ import 'package:screenshot/screenshot.dart';
 import 'package:shake/shake.dart';
 
 class HomeShell extends ConsumerStatefulWidget {
-  final Widget child;
-  const HomeShell({super.key, required this.child});
+  final StatefulNavigationShell navigationShell;
+
+  const HomeShell({super.key, required this.navigationShell});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _HomeShellState();
@@ -140,8 +141,6 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     }
 
     final bottomBarNav = ref.watch(bottomBarNavProvider(context));
-    final bottomBarIdx =
-        ref.watch(currentSelectedBottomBarIndexProvider(context));
     return CallbackShortcuts(
       bindings: <LogicalKeySet, VoidCallback>{
         LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyK): () {
@@ -177,14 +176,16 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                         // adapt layout according to platform.
                         Breakpoints.small: SlotLayout.from(
                           key: const Key('primaryNavigation'),
-                          builder: (BuildContext ctx) => const SidebarWidget(
+                          builder: (BuildContext ctx) => SidebarWidget(
                             labelType: NavigationRailLabelType.selected,
+                            navigationShell: widget.navigationShell,
                           ),
                         ),
                         Breakpoints.mediumAndUp: SlotLayout.from(
                           key: const Key('primaryNavigation'),
-                          builder: (BuildContext ctx) => const SidebarWidget(
+                          builder: (BuildContext ctx) => SidebarWidget(
                             labelType: NavigationRailLabelType.all,
+                            navigationShell: widget.navigationShell,
                           ),
                         ),
                       },
@@ -194,7 +195,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                 config: <Breakpoint, SlotLayoutConfig>{
                   Breakpoints.smallAndUp: SlotLayout.from(
                     key: const Key('Body Small'),
-                    builder: (BuildContext ctx) => widget.child,
+                    builder: (BuildContext ctx) => widget.navigationShell,
                   ),
                 },
               ),
@@ -212,9 +213,14 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                           builder: (BuildContext ctx) => BottomNavigationBar(
                             showSelectedLabels: false,
                             showUnselectedLabels: false,
-                            currentIndex: bottomBarIdx,
-                            onTap: (index) =>
-                                context.go(bottomBarNav[index].initialLocation),
+                            currentIndex: widget.navigationShell.currentIndex,
+                            onTap: (index) {
+                              widget.navigationShell.goBranch(
+                                index,
+                                initialLocation: index ==
+                                    widget.navigationShell.currentIndex,
+                              );
+                            },
                             items: bottomBarNav,
                             type: BottomNavigationBarType.fixed,
                           ),

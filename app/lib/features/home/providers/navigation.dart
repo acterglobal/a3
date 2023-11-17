@@ -32,6 +32,7 @@ final spaceItemsProvider = FutureProvider.autoDispose
           softWrap: false,
         ),
         location: '/$roomId',
+        isSpaceTab: true,
       ),
       error: (err, trace) => SidebarNavigationItem(
         icon: const Icon(Atlas.warning_bold),
@@ -41,6 +42,7 @@ final spaceItemsProvider = FutureProvider.autoDispose
           softWrap: false,
         ),
         location: '/$roomId',
+        isSpaceTab: true,
       ),
       data: (info) => SidebarNavigationItem(
         icon: ActerAvatar(
@@ -69,6 +71,7 @@ final spaceItemsProvider = FutureProvider.autoDispose
           softWrap: false,
         ),
         location: '/$roomId',
+        isSpaceTab: true,
       ),
     );
   }).toList();

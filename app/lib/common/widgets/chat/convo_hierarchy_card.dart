@@ -99,7 +99,7 @@ class ConvoHierarchyCard extends ConsumerWidget {
         subtitle: subtitle,
         trailing: RoomHierarchyJoinButtons(
           space: space,
-          forward: (roomId) => context.pushNamed(
+          forward: (roomId) => context.goNamed(
             Routes.chatroom.name,
             pathParameters: {
               'roomId': roomId,
