@@ -178,14 +178,16 @@ class _HomeShellState extends ConsumerState<HomeShell> {
                         // adapt layout according to platform.
                         Breakpoints.small: SlotLayout.from(
                           key: const Key('primaryNavigation'),
-                          builder: (BuildContext ctx) => const SidebarWidget(
+                          builder: (BuildContext ctx) => SidebarWidget(
                             labelType: NavigationRailLabelType.selected,
+                            navigationShell: widget.navigationShell,
                           ),
                         ),
                         Breakpoints.mediumAndUp: SlotLayout.from(
                           key: const Key('primaryNavigation'),
-                          builder: (BuildContext ctx) => const SidebarWidget(
+                          builder: (BuildContext ctx) => SidebarWidget(
                             labelType: NavigationRailLabelType.all,
+                            navigationShell: widget.navigationShell,
                           ),
                         ),
                       },

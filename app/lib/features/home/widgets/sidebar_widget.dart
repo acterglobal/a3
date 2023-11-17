@@ -12,24 +12,30 @@ import 'package:go_router/go_router.dart';
 
 class SidebarWidget extends ConsumerWidget {
   final NavigationRailLabelType labelType;
+  final StatefulNavigationShell navigationShell;
 
   const SidebarWidget({
     super.key = Keys.mainNav,
     required this.labelType,
+    required this.navigationShell,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final sidebarNavItems = ref.watch(sidebarItemsProvider(context));
-    final selectedSidebarIndex =
-        ref.watch(currentSelectedSidebarIndexProvider(context));
+    // final selectedSidebarIndex =
+    //     ref.watch(currentSelectedSidebarIndexProvider(context));
     final isGuest = ref.watch(clientProvider)!.isGuest();
 
     return AdaptiveScaffold.standardNavigationRail(
       // main logic
       destinations: sidebarNavItems,
-      selectedIndex: selectedSidebarIndex,
+      selectedIndex: navigationShell.currentIndex,
       onDestinationSelected: (tabIndex) {
+        // navigationShell.goBranch(
+        //   tabIndex,
+        //   initialLocation: tabIndex == navigationShell.currentIndex,
+        // );
         if (sidebarNavItems[tabIndex].location != null) {
           final item = sidebarNavItems[tabIndex];
           // go to the initial location of the selected tab (by index)

@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
@@ -30,23 +29,6 @@ import 'package:go_router/go_router.dart';
 List<RouteBase> makeHomeShellRoutes(ref) {
   final tabKeyNotifier = ref.watch(selectedTabKeyProvider.notifier);
   return <RouteBase>[
-    GoRoute(
-      name: Routes.main.name,
-      path: Routes.main.route,
-      redirect: (BuildContext context, GoRouterState state) async {
-        // we first check if there is a client available for us to use
-        final authGuarded = await authGuardRedirect(context, state);
-        if (authGuarded != null) {
-          return authGuarded;
-        }
-        if (context.mounted && isDesktop) {
-          return Routes.dashboard.route;
-        } else {
-          return Routes.updates.route;
-        }
-      },
-    ),
-
     GoRoute(
       name: Routes.dashboard.name,
       path: Routes.dashboard.route,

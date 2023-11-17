@@ -99,7 +99,7 @@ class SpaceChatsPage extends ConsumerWidget {
                   child: ConvoCard(
                     room: rooms[index],
                     showParent: false,
-                    onTap: () => context.pushNamed(
+                    onTap: () => context.goNamed(
                             Routes.chatroom.name,
                             pathParameters: {
                               'roomId': rooms[index].getRoomIdStr(),

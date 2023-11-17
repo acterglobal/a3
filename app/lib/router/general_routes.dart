@@ -1,5 +1,6 @@
 import 'package:acter/common/dialogs/invite_to_room_dialog.dart';
 import 'package:acter/common/pages/fatal_fail.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/dialog_page.dart';
@@ -405,6 +406,23 @@ List<RouteBase> makeGeneralRoutes() {
                   initialPage: state.extra as int?,
                 ),
               );
+      },
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.main.name,
+      path: Routes.main.route,
+      redirect: (BuildContext context, GoRouterState state) async {
+        // we first check if there is a client available for us to use
+        final authGuarded = await authGuardRedirect(context, state);
+        if (authGuarded != null) {
+          return authGuarded;
+        }
+        if (context.mounted && isDesktop) {
+          return Routes.dashboard.route;
+        } else {
+          return Routes.updates.route;
+        }
       },
     ),
   ];
