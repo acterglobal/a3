@@ -42,8 +42,7 @@ class SpaceHeaderProfile extends ConsumerWidget {
                         ),
                       ]
                     : [],
-                tooltip: TooltipStyle.None,
-                badgeSize: 40,
+                badgeSize: 30,
                 size: 80,
               ),
               Column(
