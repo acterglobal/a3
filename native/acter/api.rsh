@@ -1,3 +1,13 @@
+
+//   ######   ##        #######  ########     ###    ##          ######## ##    ##  ######  
+//  ##    ##  ##       ##     ## ##     ##   ## ##   ##          ##       ###   ## ##    ## 
+//  ##        ##       ##     ## ##     ##  ##   ##  ##          ##       ####  ## ##       
+//  ##   #### ##       ##     ## ########  ##     ## ##          ######   ## ## ##  ######  
+//  ##    ##  ##       ##     ## ##     ## ######### ##          ##       ##  ####       ## 
+//  ##    ##  ##       ##     ## ##     ## ##     ## ##          ##       ##   ### ##    ## 
+//   ######   ########  #######  ########  ##     ## ########    ##       ##    ##  ######  
+
+
 /// Initialize logging
 fn init_logging(log_dir: string, filter: string) -> Result<()>;
 
@@ -22,12 +32,22 @@ fn register_with_token(basepath: string, username: string, password: string, reg
 /// destroy the local data of a session
 fn destroy_local_data(basepath: string, userId: string, default_homeserver_name: string) -> Future<Result<bool>>;
 
-/// Representing a time frame
-object EfkDuration {}
-
 fn duration_from_secs(secs: u64) -> EfkDuration;
 
 fn parse_markdown(text: string) -> Option<string>;
+
+
+//  ########  ########  #### ##     ## #### ######## #### ##     ## ########  ######  
+//  ##     ## ##     ##  ##  ###   ###  ##     ##     ##  ##     ## ##       ##    ## 
+//  ##     ## ##     ##  ##  #### ####  ##     ##     ##  ##     ## ##       ##       
+//  ########  ########   ##  ## ### ##  ##     ##     ##  ##     ## ######    ######  
+//  ##        ##   ##    ##  ##     ##  ##     ##     ##   ##   ##  ##             ## 
+//  ##        ##    ##   ##  ##     ##  ##     ##     ##    ## ##   ##       ##    ## 
+//  ##        ##     ## #### ##     ## ####    ##    ####    ###    ########  ######  
+
+
+/// Representing a time frame
+object EfkDuration {}
 
 /// Representing a color
 object EfkColor {
@@ -74,6 +94,168 @@ object Colorize {
     /// Background color
     fn background() -> Option<EfkColor>;
 }
+
+object Tag {
+    /// the title of the tag
+    fn title() -> string;
+    /// dash-cased-ascii-version for usage in hashtags (no `#` at the front)
+    fn hash_tag() -> string;
+    /// if given, the specific color for this tag
+    fn color() -> Option<EfkColor>;
+}
+
+
+// enum LocationType {
+//    Physical,
+//    Virtual
+// }
+
+// object Location {
+//    /// "physical" or "virtual"
+//    fn location_type() -> string;
+//    fn name() -> Option<string>;
+//    fn description() -> Option<TextMessageContent>;
+//    fn coordinates() -> Option<string>;
+//    fn uri() -> Option<string>;
+//}
+
+
+
+
+
+//  ########     ###     ######  ####  ######     ######## ##    ## ########  ########  ######  
+//  ##     ##   ## ##   ##    ##  ##  ##    ##       ##     ##  ##  ##     ## ##       ##    ## 
+//  ##     ##  ##   ##  ##        ##  ##             ##      ####   ##     ## ##       ##       
+//  ########  ##     ##  ######   ##  ##             ##       ##    ########  ######    ######  
+//  ##     ## #########       ##  ##  ##             ##       ##    ##        ##             ## 
+//  ##     ## ##     ## ##    ##  ##  ##    ##       ##       ##    ##        ##       ##    ## 
+//  ########  ##     ##  ######  ####  ######        ##       ##    ##        ########  ######  
+
+
+
+object OptionString {
+    /// get text
+    fn text() -> Option<string>;
+}
+
+object OptionBuffer {
+    /// get text
+    fn data() -> Option<buffer<u8>>;
+}
+
+object UserProfile {
+    /// get user id
+    fn user_id() -> UserId;
+
+    /// whether to have avatar
+    fn has_avatar() -> Future<Result<bool>>;
+
+    /// get the binary data of avatar
+    fn get_avatar() -> Future<Result<OptionBuffer>>;
+
+    /// get the binary data of thumbnail
+    fn get_thumbnail(width: u64, height: u64) -> Future<Result<OptionBuffer>>;
+
+    /// get the display name
+    fn get_display_name() -> Future<Result<OptionString>>;
+}
+
+object RoomProfile {
+    /// whether to have avatar
+    fn has_avatar() -> Result<bool>;
+
+    /// get the binary data of avatar
+    fn get_avatar() -> Future<Result<OptionBuffer>>;
+
+    /// get the binary data of thumbnail
+    fn get_thumbnail(width: u64, height: u64) -> Future<Result<OptionBuffer>>;
+
+    /// get the display name
+    fn get_display_name() -> Future<Result<OptionString>>;
+}
+
+
+/// Deliver receipt event from rust to flutter
+object ReceiptEvent {
+    /// Get transaction id or flow id
+    fn room_id() -> RoomId;
+
+    /// Get records
+    fn receipt_records() -> Vec<ReceiptRecord>;
+}
+
+/// Deliver receipt record from rust to flutter
+object ReceiptRecord {
+    /// Get id of event that this user read message from peer
+    fn event_id() -> string;
+
+    /// Get id of user that read this message
+    fn seen_by() -> string;
+
+    /// Get time that this user read message from peer in milliseconds
+    fn timestamp() -> Option<u64>;
+}
+
+/// Deliver typing event from rust to flutter
+object TypingEvent {
+    /// Get transaction id or flow id
+    fn room_id() -> RoomId;
+
+    /// Get list of user id
+    fn user_ids() -> Vec<UserId>;
+} 
+
+object TextMessageContent {
+    fn body() -> string;
+    fn formatted() -> Option<string>;
+}
+
+object MediaSource {
+    fn url() -> string;
+}
+
+object ThumbnailInfo {
+    /// thumbnail mimetype
+    fn mimetype() -> Option<string>;
+    /// thumbnail size
+    fn size() -> Option<u64>;
+    /// thumbnail width
+    fn width() -> Option<u64>;
+    /// thumbnail height
+    fn height() -> Option<u64>;
+}
+
+object DeviceId {
+    fn to_string() -> string;
+}
+
+object EventId {
+    fn to_string() -> string;
+}
+
+object MxcUri {
+    fn to_string() -> string;
+}
+
+object RoomId {
+    fn to_string() -> string;
+}
+
+object UserId {
+    fn to_string() -> string;
+}
+
+
+
+//  ##     ## ########  ########     ###    ######## ########  ######  
+//  ##     ## ##     ## ##     ##   ## ##      ##    ##       ##    ## 
+//  ##     ## ##     ## ##     ##  ##   ##     ##    ##       ##       
+//  ##     ## ########  ##     ## ##     ##    ##    ######    ######  
+//  ##     ## ##        ##     ## #########    ##    ##             ## 
+//  ##     ## ##        ##     ## ##     ##    ##    ##       ##    ## 
+//   #######  ##        ########  ##     ##    ##    ########  ######  
+
+
 
 /// A single Slide of a NewsEntry
 object NewsSlide {
@@ -176,14 +358,16 @@ object NewsEntryUpdateBuilder {
     fn send() -> Future<Result<EventId>>;
 }
 
-object Tag {
-    /// the title of the tag
-    fn title() -> string;
-    /// dash-cased-ascii-version for usage in hashtags (no `#` at the front)
-    fn hash_tag() -> string;
-    /// if given, the specific color for this tag
-    fn color() -> Option<EfkColor>;
-}
+
+//  ########  #### ##    ##  ######  
+//  ##     ##  ##  ###   ## ##    ## 
+//  ##     ##  ##  ####  ## ##       
+//  ########   ##  ## ## ##  ######  
+//  ##         ##  ##  ####       ## 
+//  ##         ##  ##   ### ##    ## 
+//  ##        #### ##    ##  ######  
+
+
 
 /// Draft a Pin
 object PinDraft {
@@ -268,24 +452,15 @@ object PinUpdateBuilder {
     fn send() -> Future<Result<EventId>>;
 }
 
-// enum LocationType {
-//    Physical,
-//    Virtual
-// }
+//   ######     ###    ##       ######## ##    ## ########     ###    ########  
+//  ##    ##   ## ##   ##       ##       ###   ## ##     ##   ## ##   ##     ## 
+//  ##        ##   ##  ##       ##       ####  ## ##     ##  ##   ##  ##     ## 
+//  ##       ##     ## ##       ######   ## ## ## ##     ## ##     ## ########  
+//  ##       ######### ##       ##       ##  #### ##     ## ######### ##   ##   
+//  ##    ## ##     ## ##       ##       ##   ### ##     ## ##     ## ##    ##  
+//   ######  ##     ## ######## ######## ##    ## ########  ##     ## ##     ## 
 
-// object Location {
-//    /// "physical" or "virtual"
-//    fn location_type() -> string;
-//    fn name() -> Option<string>;
-//    fn description() -> Option<TextMessageContent>;
-//    fn coordinates() -> Option<string>;
-//    fn uri() -> Option<string>;
-//}
 
-object TextMessageContent {
-    fn body() -> string;
-    fn formatted() -> Option<string>;
-}
 
 object CalendarEvent {
     /// the title of the event
@@ -365,6 +540,17 @@ object CalendarEventDraft {
     fn send() -> Future<Result<EventId>>;
 }
 
+
+//  ########   ######  ##     ## ########  
+//  ##     ## ##    ## ##     ## ##     ## 
+//  ##     ## ##       ##     ## ##     ## 
+//  ########   ######  ##     ## ########  
+//  ##   ##         ##  ##   ##  ##        
+//  ##    ##  ##    ##   ## ##   ##        
+//  ##     ##  ######     ###    ##        
+
+
+
 object RsvpManager {
     /// whether manager has rsvp entries
     fn has_rsvp_entries() -> bool;
@@ -410,40 +596,13 @@ object Rsvp {
     fn status() -> string;
 }
 
-object MediaSource {
-    fn url() -> string;
-}
-
-object ThumbnailInfo {
-    /// thumbnail mimetype
-    fn mimetype() -> Option<string>;
-    /// thumbnail size
-    fn size() -> Option<u64>;
-    /// thumbnail width
-    fn width() -> Option<u64>;
-    /// thumbnail height
-    fn height() -> Option<u64>;
-}
-
-object DeviceId {
-    fn to_string() -> string;
-}
-
-object EventId {
-    fn to_string() -> string;
-}
-
-object MxcUri {
-    fn to_string() -> string;
-}
-
-object RoomId {
-    fn to_string() -> string;
-}
-
-object UserId {
-    fn to_string() -> string;
-}
+//  ########   #######   #######  ##     ##    ######## ##     ## ######## ##    ## ########  ######  
+//  ##     ## ##     ## ##     ## ###   ###    ##       ##     ## ##       ###   ##    ##    ##    ## 
+//  ##     ## ##     ## ##     ## #### ####    ##       ##     ## ##       ####  ##    ##    ##       
+//  ########  ##     ## ##     ## ## ### ##    ######   ##     ## ######   ## ## ##    ##     ######  
+//  ##   ##   ##     ## ##     ## ##     ##    ##        ##   ##  ##       ##  ####    ##          ## 
+//  ##    ##  ##     ## ##     ## ##     ##    ##         ## ##   ##       ##   ###    ##    ##    ## 
+//  ##     ##  #######   #######  ##     ##    ########    ###    ######## ##    ##    ##     ######  
 
 /// A room Message metadata and content
 object RoomEventItem {
@@ -676,6 +835,18 @@ object TimelineDiff {
 //    mute
 // }
 
+
+
+//  ########   #######   #######  ##     ## 
+//  ##     ## ##     ## ##     ## ###   ### 
+//  ##     ## ##     ## ##     ## #### #### 
+//  ########  ##     ## ##     ## ## ### ## 
+//  ##   ##   ##     ## ##     ## ##     ## 
+//  ##    ##  ##     ## ##     ## ##     ## 
+//  ##     ##  #######   #######  ##     ## 
+
+
+
 /// Generic Room Properties
 object Room {
     /// the RoomId as a String
@@ -777,6 +948,17 @@ object TimelineStream {
     /// private_read_receipt: optional event id
     fn send_multiple_receipts(full_read: Option<string>, public_read_receipt: Option<string>, private_read_receipt: Option<string>) -> Future<Result<bool>>;
 }
+
+
+//   ######   #######  ##    ## ##     ##  #######  
+//  ##    ## ##     ## ###   ## ##     ## ##     ## 
+//  ##       ##     ## ####  ## ##     ## ##     ## 
+//  ##       ##     ## ## ## ## ##     ## ##     ## 
+//  ##       ##     ## ##  ####  ##   ##  ##     ## 
+//  ##    ## ##     ## ##   ###   ## ##   ##     ## 
+//   ######   #######  ##    ##    ###     #######  
+
+
 
 object Convo {
     /// get the room profile that contains avatar and display name
@@ -970,6 +1152,16 @@ object Convo {
     fn is_joined() -> bool;
 }
 
+
+//   ######   #######  ##     ## ##     ## ######## ##    ## ########  ######  
+//  ##    ## ##     ## ###   ### ###   ### ##       ###   ##    ##    ##    ## 
+//  ##       ##     ## #### #### #### #### ##       ####  ##    ##    ##       
+//  ##       ##     ## ## ### ## ## ### ## ######   ## ## ##    ##     ######  
+//  ##       ##     ## ##     ## ##     ## ##       ##  ####    ##          ## 
+//  ##    ## ##     ## ##     ## ##     ## ##       ##   ###    ##    ##    ## 
+//   ######   #######  ##     ## ##     ## ######## ##    ##    ##     ######  
+
+
 object CommentDraft {
     /// set the content of the draft to body
     fn content_text(body: string);
@@ -1008,6 +1200,17 @@ object CommentsManager {
     /// draft a new comment for this item
     fn comment_draft() -> CommentDraft;
 }
+
+
+//     ###    ######## ########    ###     ######  ##     ## ##     ## ######## ##    ## ########  ######  
+//    ## ##      ##       ##      ## ##   ##    ## ##     ## ###   ### ##       ###   ##    ##    ##    ## 
+//   ##   ##     ##       ##     ##   ##  ##       ##     ## #### #### ##       ####  ##    ##    ##       
+//  ##     ##    ##       ##    ##     ## ##       ######### ## ### ## ######   ## ## ##    ##     ######  
+//  #########    ##       ##    ######### ##       ##     ## ##     ## ##       ##  ####    ##          ## 
+//  ##     ##    ##       ##    ##     ## ##    ## ##     ## ##     ## ##       ##   ###    ##    ##    ## 
+//  ##     ##    ##       ##    ##     ##  ######  ##     ## ##     ## ######## ##    ##    ##     ######  
+
+
 
 object AttachmentDraft {
     /// fire this attachment over - the event_id is the confirmation from the server.
@@ -1070,6 +1273,17 @@ object AttachmentsManager {
     /// create news slide for file msg
     fn file_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>) -> AttachmentDraft;
 }
+
+
+//  ########    ###     ######  ##    ##  ######  
+//     ##      ## ##   ##    ## ##   ##  ##    ## 
+//     ##     ##   ##  ##       ##  ##   ##       
+//     ##    ##     ##  ######  #####     ######  
+//     ##    #########       ## ##  ##         ## 
+//     ##    ##     ## ##    ## ##   ##  ##    ## 
+//     ##    ##     ##  ######  ##    ##  ######  
+
+
 
 object Task {
     /// the name of this task
@@ -1382,6 +1596,17 @@ object TaskListUpdateBuilder {
 }
 
 
+//   ######  ########     ###     ######  ########    ########  ######## ##       
+//  ##    ## ##     ##   ## ##   ##    ## ##          ##     ## ##       ##       
+//  ##       ##     ##  ##   ##  ##       ##          ##     ## ##       ##       
+//   ######  ########  ##     ## ##       ######      ########  ######   ##       
+//        ## ##        ######### ##       ##          ##   ##   ##       ##       
+//  ##    ## ##        ##     ## ##    ## ##          ##    ##  ##       ##       
+//   ######  ##        ##     ##  ######  ########    ##     ## ######## ######## 
+
+
+
+
 enum RelationTargetType {
     Unknown,
     ChatRoom,
@@ -1507,6 +1732,16 @@ object ActerAppSettingsBuilder {
     fn events(events: Option<SimpleSettingWithTurnOff>);
     fn tasks(tasks: Option<TasksSettings>);
 }
+
+
+//   ######  ########     ###     ######  ######## 
+//  ##    ## ##     ##   ## ##   ##    ## ##       
+//  ##       ##     ##  ##   ##  ##       ##       
+//   ######  ########  ##     ## ##       ######   
+//        ## ##        ######### ##       ##       
+//  ##    ## ##        ##     ## ##    ## ##       
+//   ######  ##        ##     ##  ######  ######## 
+
 
 object Space {
     /// get the room profile that contains avatar and display name
@@ -1789,6 +2024,17 @@ object SyncState {
     fn cancel();
 }
 
+
+//   ######  ########    ###    ########   ######  ##     ## 
+//  ##    ## ##         ## ##   ##     ## ##    ## ##     ## 
+//  ##       ##        ##   ##  ##     ## ##       ##     ## 
+//   ######  ######   ##     ## ########  ##       ######### 
+//        ## ##       ######### ##   ##   ##       ##     ## 
+//  ##    ## ##       ##     ## ##    ##  ##    ## ##     ## 
+//   ######  ######## ##     ## ##     ##  ######  ##     ## 
+
+
+
 object PublicSearchResultItem {
     fn name() -> Option<string>;
     fn topic() -> Option<string>;
@@ -1817,6 +2063,17 @@ object PublicSearchResult {
     /// get the chunk of items in this response
     fn chunks() -> Vec<PublicSearchResultItem>;
 }
+
+
+
+//  ##    ##  #######  ######## #### ######## ####  ######     ###    ######## ####  #######  ##    ##  ######  
+//  ###   ## ##     ##    ##     ##  ##        ##  ##    ##   ## ##      ##     ##  ##     ## ###   ## ##    ## 
+//  ####  ## ##     ##    ##     ##  ##        ##  ##        ##   ##     ##     ##  ##     ## ####  ## ##       
+//  ## ## ## ##     ##    ##     ##  ######    ##  ##       ##     ##    ##     ##  ##     ## ## ## ##  ######  
+//  ##  #### ##     ##    ##     ##  ##        ##  ##       #########    ##     ##  ##     ## ##  ####       ## 
+//  ##   ### ##     ##    ##     ##  ##        ##  ##    ## ##     ##    ##     ##  ##     ## ##   ### ##    ## 
+//  ##    ##  #######     ##    #### ##       ####  ######  ##     ##    ##    ####  #######  ##    ##  ######  
+
 
 object Notification {
     fn read() -> bool;
@@ -1865,6 +2122,17 @@ object Pusher {
 
     fn delete() -> Future<Result<bool>>;
 }
+
+
+//   ######  ########  ########    ###    ######## ######## 
+//  ##    ## ##     ## ##         ## ##      ##    ##       
+//  ##       ##     ## ##        ##   ##     ##    ##       
+//  ##       ########  ######   ##     ##    ##    ######   
+//  ##       ##   ##   ##       #########    ##    ##       
+//  ##    ## ##    ##  ##       ##     ##    ##    ##       
+//   ######  ##     ## ######## ##     ##    ##    ######## 
+
+
 
 /// make convo settings builder
 fn new_convo_settings_builder() -> CreateConvoSettingsBuilder;
@@ -1924,6 +2192,17 @@ object CreateSpaceSettingsBuilder {
 }
 
 object CreateSpaceSettings {}
+
+
+//   ######  ##       #### ######## ##    ## ######## 
+//  ##    ## ##        ##  ##       ###   ##    ##    
+//  ##       ##        ##  ##       ####  ##    ##    
+//  ##       ##        ##  ######   ## ## ##    ##    
+//  ##       ##        ##  ##       ##  ####    ##    
+//  ##    ## ##        ##  ##       ##   ###    ##    
+//   ######  ######## #### ######## ##    ##    ##    
+
+
 
 /// Main entry point for `acter`.
 object Client {
@@ -2121,46 +2400,16 @@ object Client {
 
 }
 
-object OptionString {
-    /// get text
-    fn text() -> Option<string>;
-}
 
-object OptionBuffer {
-    /// get text
-    fn data() -> Option<buffer<u8>>;
-}
+//  #### ##    ## ##     ## #### ########    ###    ######## ####  #######  ##    ##  ######  
+//   ##  ###   ## ##     ##  ##     ##      ## ##      ##     ##  ##     ## ###   ## ##    ## 
+//   ##  ####  ## ##     ##  ##     ##     ##   ##     ##     ##  ##     ## ####  ## ##       
+//   ##  ## ## ## ##     ##  ##     ##    ##     ##    ##     ##  ##     ## ## ## ##  ######  
+//   ##  ##  ####  ##   ##   ##     ##    #########    ##     ##  ##     ## ##  ####       ## 
+//   ##  ##   ###   ## ##    ##     ##    ##     ##    ##     ##  ##     ## ##   ### ##    ## 
+//  #### ##    ##    ###    ####    ##    ##     ##    ##    ####  #######  ##    ##  ######  
 
-object UserProfile {
-    /// get user id
-    fn user_id() -> UserId;
 
-    /// whether to have avatar
-    fn has_avatar() -> Future<Result<bool>>;
-
-    /// get the binary data of avatar
-    fn get_avatar() -> Future<Result<OptionBuffer>>;
-
-    /// get the binary data of thumbnail
-    fn get_thumbnail(width: u64, height: u64) -> Future<Result<OptionBuffer>>;
-
-    /// get the display name
-    fn get_display_name() -> Future<Result<OptionString>>;
-}
-
-object RoomProfile {
-    /// whether to have avatar
-    fn has_avatar() -> Result<bool>;
-
-    /// get the binary data of avatar
-    fn get_avatar() -> Future<Result<OptionBuffer>>;
-
-    /// get the binary data of thumbnail
-    fn get_thumbnail(width: u64, height: u64) -> Future<Result<OptionBuffer>>;
-
-    /// get the display name
-    fn get_display_name() -> Future<Result<OptionString>>;
-}
 
 object Invitation {
     /// get the timestamp of this invitation in milliseconds
@@ -2184,6 +2433,17 @@ object Invitation {
     /// reject invitation about me to this room
     fn reject() -> Future<Result<bool>>;
 }
+
+
+//  ##     ## ######## ########  #### ######## ####  ######     ###    ######## ####  #######  ##    ## 
+//  ##     ## ##       ##     ##  ##  ##        ##  ##    ##   ## ##      ##     ##  ##     ## ###   ## 
+//  ##     ## ##       ##     ##  ##  ##        ##  ##        ##   ##     ##     ##  ##     ## ####  ## 
+//  ##     ## ######   ########   ##  ######    ##  ##       ##     ##    ##     ##  ##     ## ## ## ## 
+//   ##   ##  ##       ##   ##    ##  ##        ##  ##       #########    ##     ##  ##     ## ##  #### 
+//    ## ##   ##       ##    ##   ##  ##        ##  ##    ## ##     ##    ##     ##  ##     ## ##   ### 
+//     ###    ######## ##     ## #### ##       ####  ######  ##     ##    ##    ####  #######  ##    ## 
+
+
 
 object VerificationEvent {
     /// Get event type
@@ -2243,6 +2503,17 @@ object VerificationEmoji {
     fn description() -> string;
 }
 
+
+//   ######  ########  ######   ######  ####  #######  ##    ##  ######  
+//  ##    ## ##       ##    ## ##    ##  ##  ##     ## ###   ## ##    ## 
+//  ##       ##       ##       ##        ##  ##     ## ####  ## ##       
+//   ######  ######    ######   ######   ##  ##     ## ## ## ##  ######  
+//        ## ##             ##       ##  ##  ##     ## ##  ####       ## 
+//  ##    ## ##       ##    ## ##    ##  ##  ##     ## ##   ### ##    ## 
+//   ######  ########  ######   ######  ####  #######  ##    ##  ######  
+
+
+
 object SessionManager {
     fn all_sessions() -> Future<Result<Vec<DeviceRecord>>>;
 
@@ -2254,26 +2525,15 @@ object SessionManager {
     fn request_verification(dev_id: string) -> Future<Result<bool>>;
 }
 
-/// Deliver receipt event from rust to flutter
-object ReceiptEvent {
-    /// Get transaction id or flow id
-    fn room_id() -> RoomId;
+//  ########  ######## ##     ## ####  ######  ########  ######  
+//  ##     ## ##       ##     ##  ##  ##    ## ##       ##    ## 
+//  ##     ## ##       ##     ##  ##  ##       ##       ##       
+//  ##     ## ######   ##     ##  ##  ##       ######    ######  
+//  ##     ## ##        ##   ##   ##  ##       ##             ## 
+//  ##     ## ##         ## ##    ##  ##    ## ##       ##    ## 
+//  ########  ########    ###    ####  ######  ########  ######  
 
-    /// Get records
-    fn receipt_records() -> Vec<ReceiptRecord>;
-}
 
-/// Deliver receipt record from rust to flutter
-object ReceiptRecord {
-    /// Get id of event that this user read message from peer
-    fn event_id() -> string;
-
-    /// Get id of user that read this message
-    fn seen_by() -> string;
-
-    /// Get time that this user read message from peer in milliseconds
-    fn timestamp() -> Option<u64>;
-}
 
 /// Deliver devices new event from rust to flutter
 object DeviceNewEvent {
@@ -2324,13 +2584,4 @@ object DeviceRecord {
 
     /// whether it is active
     fn is_active() -> bool;
-}
-
-/// Deliver typing event from rust to flutter
-object TypingEvent {
-    /// Get transaction id or flow id
-    fn room_id() -> RoomId;
-
-    /// Get list of user id
-    fn user_ids() -> Vec<UserId>;
 }
