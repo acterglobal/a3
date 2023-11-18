@@ -2,6 +2,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_info.dart';
+import 'package:acter/features/space/model/keys.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ import 'package:go_router/go_router.dart';
 class SpaceHeaderProfile extends ConsumerWidget {
   final String spaceId;
 
-  const SpaceHeaderProfile(this.spaceId, {super.key});
+  const SpaceHeaderProfile(this.spaceId, {super.key = SpaceKeys.header});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
