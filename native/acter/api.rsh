@@ -2398,6 +2398,9 @@ object Client {
     /// get intermediate info of login (via email and phone) from account data
     fn three_pid_manager() -> Result<ThreePidManager>;
 
+    /// super invites interface
+    fn super_invites() -> SuperInvites;
+
 }
 
 
@@ -2432,6 +2435,62 @@ object Invitation {
 
     /// reject invitation about me to this room
     fn reject() -> Future<Result<bool>>;
+}
+
+
+//   ######  ##     ## ########  ######## ########     #### ##    ## ##     ## #### ########    ###    ######## ####  #######  ##    ##  ######  
+//  ##    ## ##     ## ##     ## ##       ##     ##     ##  ###   ## ##     ##  ##     ##      ## ##      ##     ##  ##     ## ###   ## ##    ## 
+//  ##       ##     ## ##     ## ##       ##     ##     ##  ####  ## ##     ##  ##     ##     ##   ##     ##     ##  ##     ## ####  ## ##       
+//   ######  ##     ## ########  ######   ########      ##  ## ## ## ##     ##  ##     ##    ##     ##    ##     ##  ##     ## ## ## ##  ######  
+//        ## ##     ## ##        ##       ##   ##       ##  ##  ####  ##   ##   ##     ##    #########    ##     ##  ##     ## ##  ####       ## 
+//  ##    ## ##     ## ##        ##       ##    ##      ##  ##   ###   ## ##    ##     ##    ##     ##    ##     ##  ##     ## ##   ### ##    ## 
+//   ######   #######  ##        ######## ##     ##    #### ##    ##    ###    ####    ##    ##     ##    ##    ####  #######  ##    ##  ######  
+
+
+object SuperInvites {
+    /// the current tokens
+    fn tokens() -> Future<Result<Vec<SuperInviteToken>>>;
+
+    /// create a token updater to create a fresh token
+    fn new_token_updater() -> SuperInvitesTokenUpdateBuilder;
+
+    /// Send or update
+    fn create_or_update_token(builder: SuperInvitesTokenUpdateBuilder) -> Future<Result<SuperInviteToken>>;
+
+    /// delete the given token
+    fn delete(token: string) -> Future<Result<bool>>;
+}
+
+object SuperInviteToken {
+    /// the textual ID of the token
+    fn token() -> string;
+
+    /// whether or not this token will create a DM with the new user
+    fn create_dm() -> bool;
+
+    /// Which rooms the redeemer will be invited to
+    fn rooms() -> Vec<string>;
+
+    /// How often this token has been redeemed
+    fn accepted_count() -> u32;
+
+    /// Updater for this SuperInviteToken
+    fn update_builder() -> SuperInvitesTokenUpdateBuilder;
+}
+
+/// Updater/Creator for an invite token
+object SuperInvitesTokenUpdateBuilder {
+    /// set the token name
+    fn token(token: string);
+
+    /// add a room to the updater
+    fn add_room(room: string);
+
+    /// remove a room from the updater
+    fn remove_room(room: string);
+
+    /// set the create_dm field
+    fn create_dm(value: bool);
 }
 
 

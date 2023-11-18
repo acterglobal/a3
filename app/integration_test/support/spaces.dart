@@ -12,6 +12,20 @@ import 'login.dart';
 typedef StepCallback = Future<void> Function(ConvenientTest);
 
 extension ActerSpace on ConvenientTest {
+  Future<void> ensureIsMemberOfSpace(String spaceId) async {
+    await find.byKey(Keys.mainNav).should(findsOneWidget);
+    final homeKey = find.byKey(MainNavKeys.dashboardHome);
+    await homeKey.should(findsOneWidget);
+    await homeKey.tap();
+
+    final spacesKey = find.byKey(DashboardKeys.widgetMySpacesHeader);
+    await spacesKey.should(findsOneWidget);
+    await spacesKey.tap();
+
+    final select = find.byKey(Key('space-list-item-$spaceId'));
+    await tester.ensureVisible(select);
+  }
+
   Future<String> createSpace(String title, {StepCallback? onCreateForm}) async {
     await find.byKey(Keys.mainNav).should(findsOneWidget);
     final homeKey = find.byKey(MainNavKeys.dashboardHome);

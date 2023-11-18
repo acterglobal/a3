@@ -11512,6 +11512,145 @@ class Api {
     return tmp7;
   }
 
+  FfiListSuperInviteToken? __superInvitesTokensFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _superInvitesTokensFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListSuperInviteToken");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListSuperInviteToken._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  SuperInviteToken? __superInvitesCreateOrUpdateTokenFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _superInvitesCreateOrUpdateTokenFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_SuperInviteToken");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = SuperInviteToken._(this, tmp13_1);
+    return tmp7;
+  }
+
+  bool? __superInvitesDeleteFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _superInvitesDeleteFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   FfiListVerificationEmoji? __verificationEventGetEmojisFuturePoll(
     int boxed,
     int postCobject,
@@ -23042,6 +23181,16 @@ class Api {
       _ClientThreePidManagerReturn Function(
         int,
       )>();
+  late final _clientSuperInvitesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Client_super_invites");
+
+  late final _clientSuperInvites = _clientSuperInvitesPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _invitationOriginServerTsPtr = _lookup<
       ffi.NativeFunction<
           _InvitationOriginServerTsReturn Function(
@@ -23114,6 +23263,173 @@ class Api {
       int Function(
         int,
       )>();
+  late final _superInvitesTokensPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__SuperInvites_tokens");
+
+  late final _superInvitesTokens = _superInvitesTokensPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _superInvitesNewTokenUpdaterPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__SuperInvites_new_token_updater");
+
+  late final _superInvitesNewTokenUpdater =
+      _superInvitesNewTokenUpdaterPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _superInvitesCreateOrUpdateTokenPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__SuperInvites_create_or_update_token");
+
+  late final _superInvitesCreateOrUpdateToken =
+      _superInvitesCreateOrUpdateTokenPtr.asFunction<
+          int Function(
+            int,
+            int,
+          )>();
+  late final _superInvitesDeletePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__SuperInvites_delete");
+
+  late final _superInvitesDelete = _superInvitesDeletePtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _superInviteTokenTokenPtr = _lookup<
+      ffi.NativeFunction<
+          _SuperInviteTokenTokenReturn Function(
+            ffi.Int64,
+          )>>("__SuperInviteToken_token");
+
+  late final _superInviteTokenToken = _superInviteTokenTokenPtr.asFunction<
+      _SuperInviteTokenTokenReturn Function(
+        int,
+      )>();
+  late final _superInviteTokenCreateDmPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__SuperInviteToken_create_dm");
+
+  late final _superInviteTokenCreateDm =
+      _superInviteTokenCreateDmPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _superInviteTokenRoomsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__SuperInviteToken_rooms");
+
+  late final _superInviteTokenRooms = _superInviteTokenRoomsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _superInviteTokenAcceptedCountPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint32 Function(
+            ffi.Int64,
+          )>>("__SuperInviteToken_accepted_count");
+
+  late final _superInviteTokenAcceptedCount =
+      _superInviteTokenAcceptedCountPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _superInviteTokenUpdateBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__SuperInviteToken_update_builder");
+
+  late final _superInviteTokenUpdateBuilder =
+      _superInviteTokenUpdateBuilderPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _superInvitesTokenUpdateBuilderTokenPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__SuperInvitesTokenUpdateBuilder_token");
+
+  late final _superInvitesTokenUpdateBuilderToken =
+      _superInvitesTokenUpdateBuilderTokenPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _superInvitesTokenUpdateBuilderAddRoomPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__SuperInvitesTokenUpdateBuilder_add_room");
+
+  late final _superInvitesTokenUpdateBuilderAddRoom =
+      _superInvitesTokenUpdateBuilderAddRoomPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _superInvitesTokenUpdateBuilderRemoveRoomPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__SuperInvitesTokenUpdateBuilder_remove_room");
+
+  late final _superInvitesTokenUpdateBuilderRemoveRoom =
+      _superInvitesTokenUpdateBuilderRemoveRoomPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _superInvitesTokenUpdateBuilderCreateDmPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Uint8,
+          )>>("__SuperInvitesTokenUpdateBuilder_create_dm");
+
+  late final _superInvitesTokenUpdateBuilderCreateDm =
+      _superInvitesTokenUpdateBuilderCreateDmPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
   late final _verificationEventEventTypePtr = _lookup<
       ffi.NativeFunction<
           _VerificationEventEventTypeReturn Function(
@@ -26779,6 +27095,51 @@ class Api {
             int,
             int,
           )>();
+  late final _superInvitesTokensFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SuperInvitesTokensFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__SuperInvites_tokens_future_poll");
+
+  late final _superInvitesTokensFuturePoll =
+      _superInvitesTokensFuturePollPtr.asFunction<
+          _SuperInvitesTokensFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _superInvitesCreateOrUpdateTokenFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SuperInvitesCreateOrUpdateTokenFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__SuperInvites_create_or_update_token_future_poll");
+
+  late final _superInvitesCreateOrUpdateTokenFuturePoll =
+      _superInvitesCreateOrUpdateTokenFuturePollPtr.asFunction<
+          _SuperInvitesCreateOrUpdateTokenFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _superInvitesDeleteFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SuperInvitesDeleteFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__SuperInvites_delete_future_poll");
+
+  late final _superInvitesDeleteFuturePoll =
+      _superInvitesDeleteFuturePollPtr.asFunction<
+          _SuperInvitesDeleteFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _verificationEventGetEmojisFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _VerificationEventGetEmojisFuturePollReturn Function(
@@ -28470,6 +28831,55 @@ class Api {
 
   late final _ffiListSpaceRelationInsert =
       _ffiListSpaceRelationInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListSuperInviteToken createFfiListSuperInviteToken() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListSuperInviteTokenCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListSuperInviteToken");
+    return FfiListSuperInviteToken._(this, list_box);
+  }
+
+  late final _ffiListSuperInviteTokenCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListSuperInviteTokenCreate");
+
+  late final _ffiListSuperInviteTokenCreate =
+      _ffiListSuperInviteTokenCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListSuperInviteTokenLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListSuperInviteTokenLen");
+
+  late final _ffiListSuperInviteTokenLen =
+      _ffiListSuperInviteTokenLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListSuperInviteTokenElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListSuperInviteTokenElementAt");
+
+  late final _ffiListSuperInviteTokenElementAt =
+      _ffiListSuperInviteTokenElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListSuperInviteTokenRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListSuperInviteTokenRemove");
+
+  late final _ffiListSuperInviteTokenRemove =
+      _ffiListSuperInviteTokenRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListSuperInviteTokenAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListSuperInviteTokenAdd");
+
+  late final _ffiListSuperInviteTokenAdd =
+      _ffiListSuperInviteTokenAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListSuperInviteTokenInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListSuperInviteTokenInsert");
+
+  late final _ffiListSuperInviteTokenInsert = _ffiListSuperInviteTokenInsertPtr
+      .asFunction<void Function(int, int, int)>();
   FfiListTask createFfiListTask() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListTaskCreate());
@@ -49153,6 +49563,21 @@ class Client {
     return tmp2;
   }
 
+  /// super invites interface
+  SuperInvites superInvites() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientSuperInvites(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_SuperInvites");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = SuperInvites._(_api, tmp3_1);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -49271,6 +49696,312 @@ class Invitation {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__invitationRejectFuturePoll);
     return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class SuperInvites {
+  final Api _api;
+  final _Box _box;
+
+  SuperInvites._(this._api, this._box);
+
+  /// the current tokens
+  Future<FfiListSuperInviteToken> tokens() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._superInvitesTokens(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__SuperInvites_tokens_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__superInvitesTokensFuturePoll);
+    return tmp2;
+  }
+
+  /// create a token updater to create a fresh token
+  SuperInvitesTokenUpdateBuilder newTokenUpdater() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._superInvitesNewTokenUpdater(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "drop_box_SuperInvitesTokenUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = SuperInvitesTokenUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// Send or update
+  Future<SuperInviteToken> createOrUpdateToken(
+    SuperInvitesTokenUpdateBuilder builder,
+  ) {
+    final tmp1 = builder;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    final tmp3 = _api._superInvitesCreateOrUpdateToken(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 =
+        _Box(_api, tmp5_0, "__SuperInvites_create_or_update_token_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 =
+        _nativeFuture(tmp5_1, _api.__superInvitesCreateOrUpdateTokenFuturePoll);
+    return tmp4;
+  }
+
+  /// delete the given token
+  Future<bool> delete(
+    String token,
+  ) {
+    final tmp1 = token;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._superInvitesDelete(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__SuperInvites_delete_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__superInvitesDeleteFuturePoll);
+    return tmp6;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class SuperInviteToken {
+  final Api _api;
+  final _Box _box;
+
+  SuperInviteToken._(this._api, this._box);
+
+  /// the textual ID of the token
+  String token() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._superInviteTokenToken(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// whether or not this token will create a DM with the new user
+  bool createDm() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._superInviteTokenCreateDm(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// Which rooms the redeemer will be invited to
+  FfiListFfiString rooms() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._superInviteTokenRooms(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// How often this token has been redeemed
+  int acceptedCount() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._superInviteTokenAcceptedCount(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// Updater for this SuperInviteToken
+  SuperInvitesTokenUpdateBuilder updateBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._superInviteTokenUpdateBuilder(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "drop_box_SuperInvitesTokenUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = SuperInvitesTokenUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+/// Updater/Creator for an invite token
+class SuperInvitesTokenUpdateBuilder {
+  final Api _api;
+  final _Box _box;
+
+  SuperInvitesTokenUpdateBuilder._(this._api, this._box);
+
+  /// set the token name
+  void token(
+    String token,
+  ) {
+    final tmp1 = token;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._superInvitesTokenUpdateBuilderToken(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// add a room to the updater
+  void addRoom(
+    String room,
+  ) {
+    final tmp1 = room;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._superInvitesTokenUpdateBuilderAddRoom(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// remove a room from the updater
+  void removeRoom(
+    String room,
+  ) {
+    final tmp1 = room;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._superInvitesTokenUpdateBuilderRemoveRoom(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set the create_dm field
+  void createDm(
+    bool value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    _api._superInvitesTokenUpdateBuilderCreateDm(
+      tmp0,
+      tmp2,
+    );
+    return;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -52703,6 +53434,15 @@ class _InvitationOriginServerTsReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _SuperInviteTokenTokenReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
 class _VerificationEventEventTypeReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -56073,6 +56813,51 @@ class _InvitationRejectFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _SuperInvitesTokensFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _SuperInvitesCreateOrUpdateTokenFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _SuperInvitesDeleteFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _VerificationEventGetEmojisFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -57821,6 +58606,68 @@ class FfiListSpaceRelation extends Iterable<SpaceRelation>
   /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, SpaceRelation element) {
     _api._ffiListSpaceRelationInsert(
+        _box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListSuperInviteToken extends Iterable<SuperInviteToken>
+    implements CustomIterable<SuperInviteToken> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListSuperInviteToken._(this._api, this._box);
+
+  @override
+  Iterator<SuperInviteToken> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListSuperInviteTokenLen(_box.borrow());
+  }
+
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  SuperInviteToken elementAt(int index) {
+    final address =
+        _api._ffiListSuperInviteTokenElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return SuperInviteToken._(_api, reference);
+  }
+
+  SuperInviteToken operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  SuperInviteToken remove(int index) {
+    final address = _api._ffiListSuperInviteTokenRemove(_box.borrow(), index);
+    final reference = _Box(
+        _api, ffi.Pointer.fromAddress(address), "drop_box_SuperInviteToken");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return SuperInviteToken._(_api, reference);
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void add(SuperInviteToken element) {
+    _api._ffiListSuperInviteTokenAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, SuperInviteToken element) {
+    _api._ffiListSuperInviteTokenInsert(
         _box.borrow(), index, element._box.borrow());
     element._box.move();
   }

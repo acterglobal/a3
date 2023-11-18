@@ -87,11 +87,14 @@ impl SuperInvitesTokenUpdateBuilder {
 
 impl SuperInvites {
     pub async fn tokens(&self) -> Result<Vec<SuperInviteToken>> {
+        print!("starting");
         let c = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let req = api::list::Request::new();
+                println!("created request");
                 let resp = c.send(req, None).await?;
+                println!("received");
                 Ok(resp
                     .tokens
                     .into_iter()
@@ -99,6 +102,10 @@ impl SuperInvites {
                     .collect::<Vec<_>>())
             })
             .await?
+    }
+
+    pub fn new_token_updater(&self) -> SuperInvitesTokenUpdateBuilder {
+        SuperInvitesTokenUpdateBuilder::new()
     }
 
     pub async fn redeem(&self, token: String) -> Result<Vec<String>> {
@@ -114,7 +121,7 @@ impl SuperInvites {
 
     pub async fn create_or_update_token(
         &self,
-        builder: SuperInvitesTokenUpdateBuilder,
+        builder: Box<SuperInvitesTokenUpdateBuilder>,
     ) -> Result<SuperInviteToken> {
         let c = self.client.clone();
         RUNTIME
@@ -128,7 +135,7 @@ impl SuperInvites {
                     let resp = c.send(req, None).await?;
                     resp.token
                 } else {
-                    let SuperInvitesTokenUpdateBuilder { token } = builder;
+                    let token = builder.token;
                     let req = api::create::Request::new(token);
                     let resp = c.send(req, None).await?;
                     resp.token
