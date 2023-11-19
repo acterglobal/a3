@@ -9,8 +9,10 @@ use matrix_sdk::{
     ruma::{api::client::receipt::create_receipt, assign, UInt},
     RoomState,
 };
-use matrix_sdk_ui::timeline::{BackPaginationStatus, PaginationOptions, Timeline};
-use ruma_common::EventId;
+use matrix_sdk_ui::timeline::{
+    BackPaginationStatus, EventTimelineItem, PaginationOptions, Timeline,
+};
+use ruma_common::{EventId, OwnedEventId};
 use ruma_events::{
     reaction::ReactionEventContent,
     receipt::ReceiptThread,
@@ -90,6 +92,21 @@ impl TimelineStream {
 
     fn is_joined(&self) -> bool {
         matches!(self.room.state(), RoomState::Joined)
+    }
+
+    // for integration test, not api
+    pub async fn event(&self, event_id: OwnedEventId) -> Result<EventTimelineItem> {
+        let timeline = self.timeline.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let item = timeline
+                    .item_by_event_id(&event_id)
+                    .await
+                    .context("The event not found")?;
+                Ok(item)
+            })
+            .await?
     }
 
     pub async fn send_plain_message(&self, message: String) -> Result<bool> {

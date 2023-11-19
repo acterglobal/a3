@@ -1,67 +1,84 @@
-use acter::api::login_new_client;
 use anyhow::Result;
 use futures::stream::StreamExt;
-use tempfile::TempDir;
+use tracing::info;
 
-use crate::utils::default_user_password;
+use crate::utils::random_users_with_random_convo;
 
 #[tokio::test]
 async fn sisko_detects_kyra_read() -> Result<()> {
     let _ = env_logger::try_init();
-    let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME")
-        .unwrap_or("localhost")
-        .to_string();
-    let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL")
-        .unwrap_or("http://localhost:8118")
-        .to_string();
+    let (mut sisko, mut kyra, _, room_id) = random_users_with_random_convo("detect_read").await?;
+    let sisko_sync = sisko.start_sync();
+    sisko_sync.await_has_synced_history().await?;
 
-    let tmp_dir = TempDir::new()?;
-    let mut sisko = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
-        "@sisko".to_string(),
-        default_user_password("sisko"),
-        homeserver_name.clone(),
-        homeserver_url.clone(),
-        Some("SISKO_DEV".to_string()),
-    )
-    .await?;
-    let sisko_syncer = sisko.start_sync();
-    let mut sisko_synced = sisko_syncer.first_synced_rx();
-    while sisko_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let sisko_space = sisko
-        .space(format!("#ops:{homeserver_name}"))
+    info!("1");
+
+    let kyra_sync = kyra.start_sync();
+    kyra_sync.await_has_synced_history().await?;
+    let mut kyra_stream = Box::pin(kyra.sync_stream(Default::default()).await);
+    kyra_stream.next().await;
+    for invited in kyra.invited_rooms().iter() {
+        info!(" - accepting {:?}", invited.room_id());
+        invited.join().await?;
+    }
+
+    info!("2");
+
+    let sisko_convo = sisko
+        .convo(room_id.to_string())
         .await
-        .expect("sisko should belong to ops");
-    let event_id = sisko_space
+        .expect("sisko should belong to convo");
+    let sisko_timeline = sisko_convo
+        .timeline_stream()
+        .await
+        .expect("sisko should get timeline stream");
+    sisko_timeline
         .send_plain_message("Hi, everyone".to_string())
         .await?;
 
-    let tmp_dir = TempDir::new()?;
-    let mut kyra = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
-        "@kyra".to_string(),
-        default_user_password("kyra"),
-        homeserver_name.clone(),
-        homeserver_url.clone(),
-        Some("KYRA_DEV".to_string()),
-    )
-    .await?;
-    let kyra_syncer = kyra.start_sync();
-    let mut first_synced = kyra_syncer.first_synced_rx();
-    while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let kyra_space = kyra
-        .space(format!("#ops:{homeserver_name}"))
-        .await
-        .expect("kyra should belong to ops");
-    kyra_space.read_receipt(event_id.to_string()).await?;
+    info!("3");
 
-    let mut event_rx = kyra.receipt_event_rx().unwrap();
+    let mut sisko_stream = Box::pin(sisko.sync_stream(Default::default()).await);
+    let mut event_id = None;
     loop {
+        sisko_stream.next().await;
+        if let Some(msg) = sisko_convo.latest_message() {
+            if let Some(event_item) = msg.event_item() {
+                if let Some(text_desc) = event_item.text_desc() {
+                    assert_eq!(text_desc.body(), "Hi, everyone");
+                    event_id = Some(event_item.event_id());
+                    break;
+                }
+            }
+        }
+    }
+
+    info!("4");
+
+    let kyra_convo: acter::Convo = kyra
+        .convo(room_id.to_string())
+        .await
+        .expect("kyra should belong to convo");
+    let kyra_timeline = kyra_convo
+        .timeline_stream()
+        .await
+        .expect("kyra should get timeline stream");
+    kyra_timeline
+        .send_multiple_receipts(event_id.clone(), event_id.clone(), event_id)
+        .await?;
+
+    info!("5");
+
+    let mut event_rx = sisko.receipt_event_rx().unwrap();
+    loop {
+        info!("receipt loop ----------------------------------");
+        sisko_stream.next().await;
         match event_rx.try_next() {
             Ok(Some(event)) => {
+                info!("received: {:?}", event.clone());
                 let mut found = false;
                 for record in event.receipt_records() {
-                    if record.seen_by() == format!("@kyra:{homeserver_name}") {
+                    if record.seen_by() == kyra.user_id()?.to_string() {
                         found = true;
                         break;
                     }
@@ -74,7 +91,9 @@ async fn sisko_detects_kyra_read() -> Result<()> {
             Ok(None) => {
                 println!("received: none");
             }
-            Err(_e) => {}
+            Err(e) => {
+                info!("received error: {:?}", e);
+            }
         }
     }
 

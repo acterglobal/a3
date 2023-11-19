@@ -1,170 +1,135 @@
-use acter::api::login_new_client;
-use anyhow::Result;
+use acter::ruma_common::EventId;
+use anyhow::{bail, Result};
 use futures::stream::StreamExt;
-use tempfile::TempDir;
+use tokio_retry::{
+    strategy::{jitter, FibonacciBackoff},
+    Retry,
+};
+use tracing::info;
 
-use crate::utils::default_user_password;
+use crate::utils::random_users_with_random_convo;
 
 #[tokio::test]
 async fn sisko_reads_msg_reactions() -> Result<()> {
     let _ = env_logger::try_init();
-    let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME")
-        .unwrap_or("localhost")
-        .to_string();
-    let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL")
-        .unwrap_or("http://localhost:8118")
-        .to_string();
+    let (mut sisko, mut kyra, mut worf, room_id) =
+        random_users_with_random_convo("reaction").await?;
+    let sisko_sync = sisko.start_sync();
+    sisko_sync.await_has_synced_history().await?;
 
-    let tmp_dir = TempDir::new()?;
-    let mut sisko = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
-        "@sisko".to_string(),
-        default_user_password("sisko"),
-        homeserver_name.clone(),
-        homeserver_url.clone(),
-        Some("SISKO_DEV".to_string()),
-    )
-    .await?;
-    let sisko_syncer = sisko.start_sync();
-    let mut sisko_synced = sisko_syncer.first_synced_rx();
-    while sisko_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let sisko_space = sisko
-        .space(format!("#ops:{homeserver_name}"))
+    info!("1");
+
+    let Ok(kyra_id) = kyra.user_id() else {
+        bail!("kyra should have user id")
+    };
+    let kyra_sync = kyra.start_sync();
+    kyra_sync.await_has_synced_history().await?;
+    let mut kyra_stream = Box::pin(kyra.sync_stream(Default::default()).await);
+    kyra_stream.next().await;
+    for invited in kyra.invited_rooms().iter() {
+        info!(" - accepting {:?}", invited.room_id());
+        invited.join().await?;
+    }
+
+    info!("2");
+
+    let Ok(worf_id) = worf.user_id() else {
+        bail!("worf should have user id")
+    };
+    let worf_sync = worf.start_sync();
+    worf_sync.await_has_synced_history().await?;
+    let mut worf_stream = Box::pin(worf.sync_stream(Default::default()).await);
+    worf_stream.next().await;
+    for invited in worf.invited_rooms().iter() {
+        info!(" - accepting {:?}", invited.room_id());
+        invited.join().await?;
+    }
+
+    info!("3");
+
+    let sisko_convo = sisko
+        .convo(room_id.to_string())
         .await
-        .expect("sisko should belong to ops");
-    let event_id = sisko_space
+        .expect("sisko should belong to convo");
+    let sisko_timeline = sisko_convo
+        .timeline_stream()
+        .await
+        .expect("sisko should get timeline stream");
+    sisko_timeline
         .send_plain_message("Hi, everyone".to_string())
         .await?;
 
-    let tmp_dir = TempDir::new()?;
-    let mut kyra = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
-        "@kyra".to_string(),
-        default_user_password("kyra"),
-        homeserver_name.clone(),
-        homeserver_url.clone(),
-        Some("KYRA_DEV".to_string()),
-    )
-    .await?;
-    let kyra_syncer = kyra.start_sync();
-    let mut first_synced = kyra_syncer.first_synced_rx();
-    while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let kyra_space = kyra
-        .space(format!("#ops:{homeserver_name}"))
-        .await
-        .expect("kyra should belong to ops");
+    info!("4");
 
-    let tmp_dir = TempDir::new()?;
-    let mut worf = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
-        "@worf".to_string(),
-        default_user_password("worf"),
-        homeserver_name.clone(),
-        homeserver_url.clone(),
-        Some("WORF_DEV".to_string()),
-    )
-    .await?;
-    let worf_syncer = worf.start_sync();
-    let mut first_synced = worf_syncer.first_synced_rx();
-    while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let worf_space = worf
-        .space(format!("#ops:{homeserver_name}"))
-        .await
-        .expect("worf should belong to ops");
+    let mut sisko_stream = Box::pin(sisko.sync_stream(Default::default()).await);
+    let mut event_id = None;
+    loop {
+        sisko_stream.next().await;
+        if let Some(msg) = sisko_convo.latest_message() {
+            if let Some(event_item) = msg.event_item() {
+                let Some(text_desc) = event_item.text_desc() else {
+                    bail!("this event should be text message")
+                };
+                assert_eq!(text_desc.body(), "Hi, everyone");
+                event_id = Some(event_item.event_id());
+                break;
+            }
+        }
+    }
 
-    let tmp_dir = TempDir::new()?;
-    let mut bashir = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
-        "@bashir".to_string(),
-        default_user_password("bashir"),
-        homeserver_name.clone(),
-        homeserver_url.clone(),
-        Some("BASHIR_DEV".to_string()),
-    )
-    .await?;
-    let bashir_syncer = bashir.start_sync();
-    let mut first_synced = bashir_syncer.first_synced_rx();
-    while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let bashir_space = bashir
-        .space(format!("#ops:{homeserver_name}"))
-        .await
-        .expect("bashir should belong to ops");
+    info!("5");
 
-    let tmp_dir = TempDir::new()?;
-    let mut miles = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
-        "@miles".to_string(),
-        default_user_password("miles"),
-        homeserver_name.clone(),
-        homeserver_url.clone(),
-        Some("MILES_DEV".to_string()),
-    )
-    .await?;
-    let miles_syncer = miles.start_sync();
-    let mut first_synced = miles_syncer.first_synced_rx();
-    while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let miles_space = miles
-        .space(format!("#ops:{homeserver_name}"))
+    let kyra_convo = kyra
+        .convo(room_id.to_string())
         .await
-        .expect("miles should belong to ops");
-
-    let tmp_dir = TempDir::new()?;
-    let mut jadzia = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
-        "@jadzia".to_string(),
-        default_user_password("jadzia"),
-        homeserver_name.clone(),
-        homeserver_url.clone(),
-        Some("JADZIA_DEV".to_string()),
-    )
-    .await?;
-    let jadzia_syncer = jadzia.start_sync();
-    let mut first_synced = jadzia_syncer.first_synced_rx();
-    while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let jadzia_space = jadzia
-        .space(format!("#ops:{homeserver_name}"))
+        .expect("kyra should belong to convo");
+    let kyra_timeline = kyra_convo
+        .timeline_stream()
         .await
-        .expect("jadzia should belong to ops");
+        .expect("kyra should get timeline stream");
 
-    let tmp_dir = TempDir::new()?;
-    let mut odo = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
-        "@odo".to_string(),
-        default_user_password("odo"),
-        homeserver_name.clone(),
-        homeserver_url.clone(),
-        Some("ODO_DEV".to_string()),
-    )
-    .await?;
-    let odo_syncer = odo.start_sync();
-    let mut first_synced = odo_syncer.first_synced_rx();
-    while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let odo_space = odo
-        .space(format!("#ops:{homeserver_name}"))
+    info!("6");
+
+    let worf_convo = worf
+        .convo(room_id.to_string())
         .await
-        .expect("odo should belong to ops");
+        .expect("worf should belong to convo");
+    let worf_timeline = worf_convo
+        .timeline_stream()
+        .await
+        .expect("worf should get timeline stream");
 
-    kyra_space
-        .send_reaction(event_id.to_string(), "👏".to_string())
+    info!("7");
+
+    kyra_timeline
+        .send_reaction(event_id.clone().unwrap(), "👏".to_string())
         .await?;
-    worf_space
-        .send_reaction(event_id.to_string(), "😎".to_string())
-        .await?;
-    bashir_space
-        .send_reaction(event_id.to_string(), "😜".to_string())
-        .await?;
-    miles_space
-        .send_reaction(event_id.to_string(), "🤩".to_string())
-        .await?;
-    jadzia_space
-        .send_reaction(event_id.to_string(), "😍".to_string())
-        .await?;
-    odo_space
-        .send_reaction(event_id.to_string(), "😂".to_string())
+    worf_timeline
+        .send_reaction(event_id.clone().unwrap(), "😎".to_string())
         .await?;
 
-    let event = sisko_space.event(&event_id).await?;
-    println!("reactions: {event:?}");
+    info!("8");
+
+    sisko_stream.next().await;
+    let evt_id = EventId::parse(event_id.clone().unwrap())?;
+    let ev = sisko_timeline.event(evt_id.clone()).await?;
+    let Some(user_reactions) = ev.reactions().get("👏") else {
+        bail!("kyra already reacted as 👏")
+    };
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), move || {
+        let sisko_timeline = sisko_timeline.clone();
+        let evt_id = evt_id.clone();
+        async move {
+            let ev = sisko_timeline.event(evt_id).await?;
+            info!("sisko's 2nd event: {:?}", ev);
+            let Some(user_reactions) = ev.reactions().get("😎") else {
+                bail!("worf already reacted as 😎")
+            };
+            Ok(())
+        }
+    })
+    .await?;
 
     Ok(())
 }
