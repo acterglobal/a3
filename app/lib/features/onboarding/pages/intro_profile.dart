@@ -1,4 +1,5 @@
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -14,6 +15,7 @@ class _IntroProfileState extends State<IntroProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Container(
         decoration: const BoxDecoration(
           gradient: AppTheme.introGradient,
@@ -66,6 +68,7 @@ class _IntroProfileState extends State<IntroProfile> {
                     child: Column(
                       children: [
                         GestureDetector(
+                          key: LoginPageKeys.signUpBtn,
                           onTap: () =>
                               context.pushNamed(Routes.authRegister.name),
                           child: Container(
@@ -100,6 +103,7 @@ class _IntroProfileState extends State<IntroProfile> {
                           height: 25,
                         ),
                         GestureDetector(
+                          key: Keys.loginBtn,
                           onTap: () => context.pushNamed(Routes.authLogin.name),
                           child: Container(
                             height: 54,

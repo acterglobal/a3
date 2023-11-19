@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -47,9 +48,9 @@ class QuickActionsBuilder extends ConsumerWidget {
         [
           canPostNews
               ? OutlinedButton.icon(
+                  key: QuickJumpKeys.createUpdateAction,
                   onPressed: () {
                     navigateTo(route: Routes.actionAddUpdate, push: true);
-                    debugPrint('Update');
                   },
                   icon: const Icon(
                     Atlas.plus_circle_thin,

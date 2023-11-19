@@ -119,10 +119,15 @@ dependencies:
   great_list_view: ^0.2.3
   flutter_local_notifications: ^16.0.0
   email_validator: ^2.1.17
-
+  app_settings: ^5.1.1
 
 # FIXME keep until a new version has been published
 dependency_overrides:
+  flutter_math_fork:
+  # FIXME: we need this fix https://github.com/simpleclub-extended/flutter_math_fork/pull/87
+    git:
+      url: https://github.com/The-Redhat/flutter_math_fork/
+      ref: 3442b36a436880ce1c023e25c868d6f4004c4c24
   flutter_secure_storage:
     git:
       url: https://github.com/mogol/flutter_secure_storage
@@ -165,14 +170,15 @@ dev_dependencies:
   icons_launcher: ^2.0.7
   flutter_lints: ^2.0.2
   build_runner: ^2.4.6
-  flutter_gherkin:
-    # path: "../../flutter_gherkin"
+  convenient_test: ^1.3.1
+  convenient_test_dev: ^1.3.1
+  convenient_test_manager_dart:
     git:
-      url: https://github.com/acterglobal/flutter_gherkin
-      ref: main
-  gherkin: ^3.1.0
+      url: https://github.com/fzyzcjy/flutter_convenient_test/
+      path: packages/convenient_test_manager_dart
   msix: ^3.7.0
   # mockito: ^5.4.2
+  uuid: ^4.0.0
 
 icons_launcher:
   image_path: "assets/icon/logo.png"

@@ -58,7 +58,7 @@ jobs:
           mv target/doc/ docs/static/api/main/rust
 
       - name: Build Dart App
-        run: flutter pub global run dartdoc --output ../docs/static/api/main/app/
+        run: flutter pub global run dartdoc  --include-external integration_test/main_test.dart --output ../docs/static/api/main/app/
         working-directory: app
 
       - name: Checking for bindings

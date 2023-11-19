@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/chat_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
-import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/avatar_builder.dart';
 import 'package:acter/features/chat/widgets/bubble_builder.dart';
@@ -13,7 +13,6 @@ import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -79,7 +78,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
 
   @override
   Widget build(BuildContext context) {
-    final client = ref.watch(clientProvider);
+    final userId = ref.watch(myUserIdStrProvider);
     final convo = widget.convo;
     final inSideBar = ref.watch(inSideBarProvider);
     final convoProfile = ref.watch(chatProfileDataProvider(convo));
@@ -169,10 +168,8 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(right: 10),
-                    child: SpaceParentBadge(
-                      roomId: convo.getRoomIdStr(),
-                      badgeSize: 20,
-                      child: RoomAvatar(roomId: widget.convo.getRoomIdStr()),
+                    child: RoomAvatar(
+                      roomId: widget.convo.getRoomIdStr(),
                     ),
                   ),
                 ),
@@ -209,12 +206,12 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                   timeFormat: DateFormat.jm(),
                   messages: messages,
                   onSendPressed: (types.PartialText partialText) {},
-                  user: types.User(id: client!.userId().toString()),
+                  user: types.User(id: userId),
                   // disable image preview
                   disableImageGallery: true,
                   // custom avatar builder
-                  avatarBuilder: (String userId) =>
-                      AvatarBuilder(userId: userId),
+                  avatarBuilder: (types.User user) =>
+                      AvatarBuilder(userId: user.id),
                   isLastPage: !chatState.hasMore,
                   bubbleBuilder: (
                     Widget child, {

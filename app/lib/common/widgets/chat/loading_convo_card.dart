@@ -1,11 +1,11 @@
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LoadingConvoCard extends ConsumerWidget {
   final String roomId;
+  final String? parentRoomId;
   final Widget? subtitle;
   final Widget? trailing;
 
@@ -29,6 +29,7 @@ class LoadingConvoCard extends ConsumerWidget {
   const LoadingConvoCard({
     super.key,
     required this.roomId,
+    this.parentRoomId,
     this.onTap,
     this.onLongPress,
     this.onFocusChange,
@@ -40,9 +41,13 @@ class LoadingConvoCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final avatar = ActerAvatar(
-      uniqueId: roomId,
-      mode: DisplayMode.GroupChat,
-      size: 36,
+      mode: DisplayMode.Space,
+      avatarInfo: AvatarInfo(uniqueId: roomId),
+      avatarsInfo: showParent && parentRoomId != null
+          ? [
+              AvatarInfo(uniqueId: parentRoomId!, displayName: parentRoomId!),
+            ]
+          : [],
     );
 
     return LayoutBuilder(
@@ -58,13 +63,7 @@ class LoadingConvoCard extends ConsumerWidget {
                 selectedTileColor: Theme.of(context).colorScheme.onPrimary,
                 onFocusChange: onFocusChange,
                 onLongPress: onLongPress,
-                leading: showParent
-                    ? SpaceParentBadge(
-                        roomId: roomId,
-                        badgeSize: 20,
-                        child: avatar,
-                      )
-                    : avatar,
+                leading: avatar,
                 title: Text(
                   '',
                   style: Theme.of(context)

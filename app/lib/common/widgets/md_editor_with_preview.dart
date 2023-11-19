@@ -54,15 +54,21 @@ class _MdEditorWithPreviewState extends ConsumerState<MdEditorWithPreview> {
                         width: 1.5,
                       ),
                     ),
-                    child: SingleChildScrollView(
-                      child: Consumer(
-                        builder: (context, ref, child) =>
-                            ref.watch(markdownProvider(controller.text)).when(
-                                  data: (text) => RenderHtml(text: text),
-                                  error: (error, stackTrace) =>
-                                      Text('Parsing markdown failed: $error'),
-                                  loading: () => const Text('Parsing ...'),
-                                ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 10,
+                      ),
+                      child: SingleChildScrollView(
+                        child: Consumer(
+                          builder: (context, ref, child) =>
+                              ref.watch(markdownProvider(controller.text)).when(
+                                    data: (text) => RenderHtml(text: text),
+                                    error: (error, stackTrace) =>
+                                        Text('Parsing markdown failed: $error'),
+                                    loading: () => const Text('Parsing ...'),
+                                  ),
+                        ),
                       ),
                     ),
                   ),
@@ -71,7 +77,7 @@ class _MdEditorWithPreviewState extends ConsumerState<MdEditorWithPreview> {
                 )
               : InputTextField(
                   controller: controller,
-                  hintText: 'Description',
+                  hintText: widget.hintText,
                   maxLines: 10,
                   textInputType: TextInputType.multiline,
                   validator: widget.validator,

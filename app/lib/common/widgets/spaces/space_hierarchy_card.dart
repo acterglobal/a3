@@ -3,6 +3,7 @@ import 'package:acter/common/utils/rooms.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_with_profile_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -10,8 +11,12 @@ import 'package:go_router/go_router.dart';
 class RoomHierarchyJoinButtons extends ConsumerWidget {
   final Function(String)? forward;
   final SpaceHierarchyRoomInfo space;
-  const RoomHierarchyJoinButtons(
-      {super.key, required this.space, this.forward,});
+
+  const RoomHierarchyJoinButtons({
+    super.key,
+    required this.space,
+    this.forward,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -160,8 +165,15 @@ class SpaceHierarchyCard extends ConsumerWidget {
     final roomId = space.roomIdStr();
     final profile = ref.watch(spaceHierarchyProfileProvider(space));
     final topic = space.topic();
-    final Widget? subtitle =
-        topic != null && topic.isNotEmpty ? Text(topic) : null;
+    final Widget? subtitle = topic != null && topic.isNotEmpty
+        ? ExpandableText(
+            topic,
+            maxLines: 2,
+            expandText: 'show more',
+            collapseText: 'show less',
+            linkColor: Theme.of(context).colorScheme.primary,
+          )
+        : null;
 
     return profile.when(
       data: (profile) => SpaceWithProfileCard(

@@ -2,7 +2,6 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
-// import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Invitation;
 import 'package:flutter/material.dart';
@@ -32,9 +31,11 @@ class InvitationCard extends ConsumerWidget {
               ListTile(
                 leading: ActerAvatar(
                   mode: DisplayMode.Space,
-                  uniqueId: data.roomId,
-                  displayName: data.displayName,
-                  avatar: data.getAvatarImage(),
+                  avatarInfo: AvatarInfo(
+                    uniqueId: data.roomId,
+                    displayName: data.displayName,
+                    avatar: data.getAvatarImage(),
+                  ),
                   size: 20,
                 ),
                 title: Text(data.roomName ?? data.roomId),

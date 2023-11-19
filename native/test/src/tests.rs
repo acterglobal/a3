@@ -2,6 +2,7 @@ mod auth;
 mod calendar;
 mod formatted_body;
 mod invitation;
+mod msg_edit;
 mod news;
 mod onboarding;
 mod pins;

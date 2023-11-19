@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
 
@@ -246,7 +249,10 @@ class _StartPageState extends State<StartPage> {
 
   @override
   Widget build(BuildContext context) {
+    final imageHeight =
+        min(MediaQuery.of(context).size.height * 0.45, 280).toDouble();
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Container(
         padding: const EdgeInsets.only(top: kToolbarHeight),
         decoration: const BoxDecoration(
@@ -288,12 +294,18 @@ class _StartPageState extends State<StartPage> {
                         ),
                         onBoardingPages[index].title,
                         SizedBox(
-                          height: 280,
+                          height: imageHeight,
                           child: Image.asset(
                             onBoardingPages[index].image,
                           ),
                         ),
-                        onBoardingPages[index].description,
+                        SizedBox(
+                          height: imageHeight,
+                          child: FittedBox(
+                            child: onBoardingPages[index].description,
+                            fit: BoxFit.scaleDown,
+                          ),
+                        ),
                         const SizedBox(
                           height: 20,
                         ),
@@ -312,6 +324,7 @@ class _StartPageState extends State<StartPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Padding(
+                      key: Keys.skipBtn,
                       padding: EdgeInsets.only(bottom: 16.0),
                       child: Text('Skip'),
                     ),

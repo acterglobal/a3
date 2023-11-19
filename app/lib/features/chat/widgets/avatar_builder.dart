@@ -19,11 +19,13 @@ class AvatarBuilder extends ConsumerWidget {
         return Padding(
           padding: const EdgeInsets.only(right: 10),
           child: ActerAvatar(
-            mode: DisplayMode.User,
-            uniqueId: userId,
-            displayName: profile.displayName ?? userId,
-            avatar: profile.getAvatarImage(),
-            size: profile.hasAvatar() ? 14 : 28,
+            mode: DisplayMode.DM,
+            avatarInfo: AvatarInfo(
+              uniqueId: userId,
+              displayName: profile.displayName ?? userId,
+              avatar: profile.getAvatarImage(),
+            ),
+            size: 14,
           ),
         );
       },
@@ -32,10 +34,9 @@ class AvatarBuilder extends ConsumerWidget {
         return Padding(
           padding: const EdgeInsets.only(right: 10),
           child: ActerAvatar(
-            uniqueId: userId,
-            displayName: userId,
-            mode: DisplayMode.User,
-            size: 28,
+            mode: DisplayMode.DM,
+            avatarInfo: AvatarInfo(uniqueId: userId, displayName: userId),
+            size: 14,
           ),
         );
       },

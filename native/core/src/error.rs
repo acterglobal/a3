@@ -20,8 +20,8 @@ pub enum Error {
     #[error("Error with the matrix sdk Store")]
     Store(#[from] matrix_sdk::StoreError),
 
-    #[error("Reference Model not found.")]
-    ModelNotFound,
+    #[error("Model not found at {0}.")]
+    ModelNotFound(String),
 
     #[error("Index not found.")]
     IndexNotFound,

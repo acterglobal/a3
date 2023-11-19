@@ -221,19 +221,21 @@ class PublicSpaceItem extends ConsumerWidget {
                   data: (data) => data != null
                       ? ActerAvatar(
                           mode: DisplayMode.Space,
-                          uniqueId: spaceId,
-                          displayName: data.spaceProfileData.displayName,
-                          avatar: data.spaceProfileData.hasAvatar()
-                              ? data.spaceProfileData.getAvatarImage()
-                              : null,
+                          avatarInfo: AvatarInfo(
+                            uniqueId: spaceId,
+                            displayName: data.spaceProfileData.displayName,
+                            avatar: data.spaceProfileData.getAvatarImage(),
+                          ),
                         )
                       : fallbackAvatar(),
                   error: (e, a) {
                     debugPrint('loading failed: $e');
                     return ActerAvatar(
                       mode: DisplayMode.Space,
-                      uniqueId: spaceId,
-                      displayName: spaceId,
+                      avatarInfo: AvatarInfo(
+                        uniqueId: spaceId,
+                        displayName: spaceId,
+                      ),
                     );
                   },
                   loading: fallbackAvatar,
@@ -294,8 +296,10 @@ class PublicSpaceItem extends ConsumerWidget {
   ActerAvatar fallbackAvatar() {
     return ActerAvatar(
       mode: DisplayMode.Space,
-      uniqueId: space.roomIdStr(),
-      displayName: space.name(),
+      avatarInfo: AvatarInfo(
+        uniqueId: space.roomIdStr(),
+        displayName: space.name(),
+      ),
     );
   }
 }

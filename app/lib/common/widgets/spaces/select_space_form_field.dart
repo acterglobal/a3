@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SelectSpaceFormField extends ConsumerWidget {
+  static Key openKey = const Key('select-space-form-field-open');
+
   final String title;
   final String selectTitle;
   final String emptyText;
@@ -36,6 +38,7 @@ class SelectSpaceFormField extends ConsumerWidget {
     }
 
     final emptyButton = OutlinedButton(
+      key: openKey,
       onPressed: selectSpace,
       child: Text(emptyText),
     );
@@ -43,6 +46,7 @@ class SelectSpaceFormField extends ConsumerWidget {
     return FormField(
       builder: (state) => selectedSpace
           ? InkWell(
+              key: openKey,
               onTap: selectSpace,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

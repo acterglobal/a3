@@ -70,6 +70,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     final titleInput = ref.watch(editTitleProvider);
     final avatarUpload = ref.watch(editAvatarProvider);
     final avatarNotifier = ref.watch(editAvatarProvider.notifier);
+    ref.watch(editTopicProvider);
     return SideSheet(
       header: 'Edit Space',
       addActions: true,

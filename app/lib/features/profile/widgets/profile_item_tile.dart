@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 class ProfileItemTile extends StatelessWidget {
   const ProfileItemTile({
     super.key,
+    this.gestureKey,
     required this.icon,
     required this.title,
     required this.onPressed,
     required this.color,
   });
 
+  final Key? gestureKey;
   final IconData icon;
   final String title;
   final Color color;
@@ -16,8 +18,9 @@ class ProfileItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: onPressed,
+      key: gestureKey,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: Row(

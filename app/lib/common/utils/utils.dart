@@ -267,11 +267,14 @@ enum LabsFeature {
   discussions,
 
   // searchOptions
-  showNotifications,
-  ;
+  showNotifications, // FIXME: old name for desktop notifications
+  mobilePushNotifications;
 
-  static List<LabsFeature> get defaults =>
-      [LabsFeature.events, LabsFeature.pins];
+  static List<LabsFeature> get defaults => [
+        LabsFeature.events,
+        LabsFeature.pins,
+        LabsFeature.mobilePushNotifications,
+      ];
 }
 
 // ignore: constant_identifier_names

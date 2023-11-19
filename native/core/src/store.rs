@@ -26,14 +26,14 @@ async fn get_from_store<T: serde::de::DeserializeOwned>(client: Client, key: &st
         .store()
         .get_custom_value(format!("acter:{key}").as_bytes())
         .await?
-        .ok_or(Error::ModelNotFound)?;
+        .ok_or_else(|| Error::ModelNotFound(key.to_owned()))?;
     Ok(serde_json::from_slice(v.as_slice())?)
 }
 
 impl Store {
     pub async fn get_raw<T: serde::de::DeserializeOwned>(&self, key: &str) -> Result<T> {
         if self.fresh {
-            return Err(Error::ModelNotFound);
+            return Err(Error::ModelNotFound(key.to_owned()));
         }
         get_from_store(self.client.clone(), key).await
     }
@@ -100,10 +100,19 @@ impl Store {
             .transpose()
             .map_err(|e| Error::Custom(format!("deserializing all models index failed: {e}")))?;
         let models_vec = if let Some(v) = data {
-            let items = v
-                .iter()
-                .map(|k| get_from_store::<AnyActerModel>(client.clone(), k));
-            futures::future::try_join_all(items).await?
+            let items = v.iter().map(|k| {
+                let client = client.clone();
+                async move {
+                    match get_from_store::<AnyActerModel>(client, k).await {
+                        Ok(m) => Some(m),
+                        Err(e) => {
+                            tracing::error!("Couldn't read model at startup. Skipping. {e}");
+                            None
+                        }
+                    }
+                }
+            });
+            futures::future::join_all(items).await
         } else {
             vec![]
         };
@@ -111,6 +120,10 @@ impl Store {
         let indizes = DashMap::new();
         let mut models_sources = Vec::new();
         for m in models_vec {
+            let Some(m) = m else {
+                // skip None's
+                continue
+            };
             let key = m.event_id().to_string();
             for idx in m.indizes() {
                 let mut r: RefMut<String, Vec<String>> = indizes.entry(idx).or_default();
@@ -149,7 +162,7 @@ impl Store {
         let m = self
             .models
             .get(model_key)
-            .ok_or(Error::ModelNotFound)?
+            .ok_or_else(|| Error::ModelNotFound(model_key.to_owned()))?
             .value()
             .clone();
         Ok(m)

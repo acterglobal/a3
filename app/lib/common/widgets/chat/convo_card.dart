@@ -1,10 +1,10 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
 import 'package:acter/common/widgets/chat/loading_convo_card.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +44,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
 
   @override
   Widget build(BuildContext context) {
-    final client = ref.watch(clientProvider);
+    final userId = ref.watch(myUserIdStrProvider);
     String roomId = widget.room.getRoomIdStr();
     final convoProfile = ref.watch(chatProfileDataProvider(widget.room));
     final mutedStatus =
@@ -71,7 +71,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
                     room: widget.room,
                     latestMessage: latestMsg,
                     activeMembers: activeMembers,
-                    userId: client!.userId().toString(),
+                    userId: userId,
                   )
                 : const SizedBox.shrink(),
             mutedStatus.valueOrNull == true

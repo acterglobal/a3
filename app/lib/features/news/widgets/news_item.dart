@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/widgets/news_side_bar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -72,6 +73,7 @@ class NewsItem extends ConsumerWidget {
                     padding: const EdgeInsets.all(20),
                     child: slide.hasFormattedText()
                         ? RenderHtml(
+                            key: NewsUpdateKeys.textUpdateContent,
                             text: slide.text(),
                             defaultTextStyle:
                                 Theme.of(context).textTheme.bodyLarge!.copyWith(
@@ -79,6 +81,7 @@ class NewsItem extends ConsumerWidget {
                                     ),
                           )
                         : Text(
+                            key: NewsUpdateKeys.textUpdateContent,
                             slide.text(),
                             softWrap: true,
                             style:

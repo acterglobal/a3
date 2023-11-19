@@ -52,7 +52,7 @@ class _TextMessageBuilderConsumerState
     //remove mx-reply tags.
     String parsedString = simplifyBody(widget.message.text);
     final urlRegexp = RegExp(
-      r'https://matrix\.to/#/@[A-Za-z0-9]+:[A-Za-z0-9]+\.[A-Za-z0-9]+',
+      r'https://matrix\.to/#/@[A-Za-z0-9\-]+:[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+',
       caseSensitive: false,
     );
     final matches = urlRegexp.allMatches(parsedString);

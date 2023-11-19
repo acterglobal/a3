@@ -1,0 +1,2 @@
+- [bugfix] Scrolling issue while linking sub chat to space
+- [improvement] Compact view of the space description with show more option in sub-spaces listing of the space 

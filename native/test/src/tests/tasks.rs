@@ -34,9 +34,10 @@ async fn odos_tasks() -> Result<()> {
     state_sync.await_has_synced_history().await?;
 
     let task_lists = odo.task_lists().await?;
-    let Some(mut task_list) = task_lists.into_iter().find(|t| t.name() == list_name.as_str()) else {
-        bail!("TaskList not found");
-    };
+    let mut task_list = task_lists
+        .into_iter()
+        .find(|t| t.name() == list_name.as_str())
+        .expect("TaskList not found");
 
     assert!(
         task_list.tasks().await?.len() >= 3,
@@ -106,13 +107,12 @@ async fn odos_tasks() -> Result<()> {
     }
 
     // we do not expect a signal on the list, as the order hasn't changed
-    let Some(task) = task_list
+    let task = task_list
         .tasks()
         .await?
         .into_iter()
-        .find(|t| t.event_id() == new_task_event_id) else {
-            bail!("Task not found?!?")
-        };
+        .find(|t| t.event_id() == new_task_event_id)
+        .expect("Task not found?!?");
 
     assert_eq!(*task.title(), "New Test title".to_string());
     assert!(task.is_done(), "Task is not be marked as done");
@@ -143,16 +143,16 @@ async fn task_smoketests() -> Result<()> {
     let task_list_key = TaskList::key_from_event(&task_list_id);
 
     let wait_for_space = space.clone();
-    let Some(task_list) = wait_for(move || {
+    let task_list = wait_for(move || {
         let space = wait_for_space.clone();
         let task_list_key = task_list_key.clone();
         async move {
             let result = space.task_list(task_list_key).await.ok();
             Ok(result)
         }
-    }).await? else {
-        bail!("freshly created Task List couldn't be found");
-    };
+    })
+    .await?
+    .expect("freshly created Task List couldn't be found");
 
     assert_eq!(task_list.name(), "Starting up");
     assert_eq!(task_list.tasks().await?.len(), 0);
@@ -281,15 +281,13 @@ async fn task_lists_comments_smoketests() -> Result<()> {
     let task_list_key = TaskList::key_from_event(&task_list_id);
 
     let wait_for_space = space.clone();
-    let Some(task_list) = wait_for(move || {
+    let task_list = wait_for(move || {
         let space = wait_for_space.clone();
         let task_list_key = task_list_key.clone();
-        async move {
-            Ok(space.task_list(task_list_key).await.ok())
-        }
-    }).await? else {
-        bail!("freshly created Task List couldn't be found");
-    };
+        async move { Ok(space.task_list(task_list_key).await.ok()) }
+    })
+    .await?
+    .expect("freshly created Task List couldn't be found");
 
     let comments_manager = task_list.comments().await?;
 
@@ -349,15 +347,13 @@ async fn task_comment_smoketests() -> Result<()> {
     let task_list_key = TaskList::key_from_event(&task_list_id);
 
     let wait_for_space = space.clone();
-    let Some(task_list) = wait_for(move || {
+    let task_list = wait_for(move || {
         let space = wait_for_space.clone();
         let task_list_key = task_list_key.clone();
-        async move {
-            Ok(space.task_list(task_list_key).await.ok())
-        }
-    }).await? else {
-        bail!("freshly created Task List couldn't be found");
-    };
+        async move { Ok(space.task_list(task_list_key).await.ok()) }
+    })
+    .await?
+    .expect("freshly created Task List couldn't be found");
 
     assert_eq!(task_list.name(), "Starting up");
     assert_eq!(task_list.tasks().await?.len(), 0);

@@ -114,7 +114,7 @@ impl Executor {
                 );
                 self.notify(model.redact(&self.store, redacted).await?);
             }
-            Err(Error::ModelNotFound) => {
+            Err(Error::ModelNotFound(_)) => {
                 let redacted =
                     RedactedActerModel::new(model_type.to_owned(), vec![], event_meta, reason);
                 self.notify(redacted.execute(&self.store).await?);

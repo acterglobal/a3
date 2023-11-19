@@ -1,10 +1,11 @@
-import 'package:acter/common/notifications/notifications.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
+
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/settings/widgets/labs_notifications_settings_tile.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 
@@ -19,35 +20,10 @@ class SettingsLabsPage extends ConsumerWidget {
         appBar: AppBar(title: const Text('Acter Labs')),
         body: SettingsList(
           sections: [
-            SettingsSection(
-              title: const Text('Notifications'),
+            const SettingsSection(
+              title: Text('Notifications'),
               tiles: [
-                SettingsTile.switchTile(
-                  title: const Text('Push Notifications'),
-                  description: Text(
-                    !supportedPlatforms
-                        ? 'Only supported on mobile (iOS & Android) right now'
-                        : 'Needs App restart to activate',
-                  ),
-                  initialValue: supportedPlatforms &&
-                      ref.watch(
-                        isActiveProvider(LabsFeature.showNotifications),
-                      ),
-                  enabled: supportedPlatforms,
-                  onToggle: (newVal) {
-                    updateFeatureState(
-                      ref,
-                      LabsFeature.showNotifications,
-                      newVal,
-                    );
-                    if (newVal) {
-                      customMsgSnackbar(
-                        context,
-                        'Push enabled. Please restart to activate',
-                      );
-                    }
-                  },
-                ),
+                LabsNotificationsSettingsTile(),
               ],
             ),
             SettingsSection(

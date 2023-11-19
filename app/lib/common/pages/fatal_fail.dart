@@ -30,7 +30,7 @@ class FatalFailPage extends ConsumerWidget {
               child: SvgPicture.asset('assets/images/genericError.svg'),
             ),
             Text(
-              'Something went terribly wrong: $error',
+              'Something went wrong: $error',
             ),
             ButtonBar(
               alignment: MainAxisAlignment.center,

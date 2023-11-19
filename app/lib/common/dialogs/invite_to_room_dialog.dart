@@ -215,10 +215,12 @@ class _InviteToRoomDialogState extends ConsumerState<InviteToRoomDialog>
                   subtitle:
                       e.profile.displayName != null ? Text(e.userId) : null,
                   leading: ActerAvatar(
-                    mode: DisplayMode.User,
-                    uniqueId: e.userId,
-                    displayName: e.profile.displayName,
-                    avatar: e.profile.getAvatarImage(),
+                    mode: DisplayMode.DM,
+                    avatarInfo: AvatarInfo(
+                      uniqueId: e.userId,
+                      displayName: e.profile.displayName,
+                      avatar: e.profile.getAvatarImage(),
+                    ),
                   ),
                   trailing: InviteButton(
                     userId: e.userId,

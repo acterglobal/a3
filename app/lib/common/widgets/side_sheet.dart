@@ -9,6 +9,7 @@ class SideSheet extends StatelessWidget {
   final bool addCloseIconButton;
   final bool addActions;
   final bool addDivider;
+  final Key? confirmActionKey;
   final String confirmActionTitle;
   final String cancelActionTitle;
   final String? closeButtonTooltip;
@@ -33,6 +34,7 @@ class SideSheet extends StatelessWidget {
     this.closeButtonTooltip,
     this.backButtonTooltip,
     this.addCloseIconButton = true,
+    this.confirmActionKey,
   });
 
   @override
@@ -46,51 +48,51 @@ class SideSheet extends StatelessWidget {
       color: colorScheme.neutral,
       surfaceTintColor: colorScheme.surfaceTint,
       borderRadius: const BorderRadius.horizontal(left: Radius.circular(28)),
-      child: Container(
-        constraints: BoxConstraints(
-          minWidth: 256,
-          maxWidth: size.width <= 600 ? size.width : 400,
-          minHeight: size.height,
-          maxHeight: size.height,
-        ),
-        // keep scrolling under effect if content overflows.
-        margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        // keep space shell top bar to prevent us being covered by front-camera etc.
-        padding: const EdgeInsets.only(top: 12),
-        child: CustomScrollView(
-          shrinkWrap: true,
-          slivers: [
-            SliverList(
-              delegate: SliverChildListDelegate(
-                [
-                  _SheetHeader(
-                    header: header,
-                    addBackIconButton: addBackIconButton,
-                    addCloseIconButton: addCloseIconButton,
-                    backButtonTooltip: backButtonTooltip,
-                    closeButtonTooltip: closeButtonTooltip,
-                  ),
-                  SingleChildScrollView(child: body),
-                ],
-              ),
-            ),
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Visibility(
-                visible: addActions,
-                child: _SheetFooter(
-                  addDivider: addDivider,
-                  confirmActionTitle: confirmActionTitle,
-                  cancelActionTitle: cancelActionTitle,
-                  actions: actions,
-                  confirmActionOnPressed: confirmActionOnPressed,
-                  cancelActionOnPressed: cancelActionOnPressed,
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        body: Container(
+          constraints: BoxConstraints(
+            minWidth: 256,
+            maxWidth: size.width <= 600 ? size.width : 400,
+            minHeight: size.height,
+            maxHeight: size.height,
+          ),
+          // keep space shell top bar to prevent us being covered by front-camera etc.
+          padding: const EdgeInsets.only(top: 12),
+          child: CustomScrollView(
+            shrinkWrap: true,
+            slivers: [
+              SliverList(
+                delegate: SliverChildListDelegate(
+                  [
+                    _SheetHeader(
+                      header: header,
+                      addBackIconButton: addBackIconButton,
+                      addCloseIconButton: addCloseIconButton,
+                      backButtonTooltip: backButtonTooltip,
+                      closeButtonTooltip: closeButtonTooltip,
+                    ),
+                    SingleChildScrollView(child: body),
+                  ],
                 ),
               ),
-            ),
-          ],
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Visibility(
+                  visible: addActions,
+                  child: _SheetFooter(
+                    addDivider: addDivider,
+                    confirmActionTitle: confirmActionTitle,
+                    confirmActionKey: confirmActionKey,
+                    cancelActionTitle: cancelActionTitle,
+                    actions: actions,
+                    confirmActionOnPressed: confirmActionOnPressed,
+                    cancelActionOnPressed: cancelActionOnPressed,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -162,6 +164,7 @@ class _SheetHeader extends StatelessWidget {
 
 class _SheetFooter extends StatelessWidget {
   final bool addDivider;
+  final Key? confirmActionKey;
   final String confirmActionTitle;
   final String cancelActionTitle;
   final List<Widget>? actions;
@@ -177,6 +180,7 @@ class _SheetFooter extends StatelessWidget {
     this.actions,
     this.confirmActionOnPressed,
     this.cancelActionOnPressed,
+    this.confirmActionKey,
   }) : super(key: key);
 
   @override
@@ -207,6 +211,7 @@ class _SheetFooter extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   DefaultButton(
+                    key: confirmActionKey,
                     onPressed: confirmActionOnPressed,
                     title: confirmActionTitle,
                     style: ElevatedButton.styleFrom(

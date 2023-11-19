@@ -3,16 +3,18 @@ import 'dart:math';
 
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/member_list_entry.dart';
+import 'package:acter/features/space/widgets/space_header.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:go_router/go_router.dart';
 
 class SpaceMembersPage extends ConsumerWidget {
   final String spaceIdOrAlias;
+
   const SpaceMembersPage({super.key, required this.spaceIdOrAlias});
 
   @override
@@ -50,58 +52,58 @@ class SpaceMembersPage extends ConsumerWidget {
     }
     // get platform of context.
 
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Row(
-              children: topMenu,
-            ),
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
+        ),
+        SliverToBoxAdapter(
+          child: Row(
+            children: topMenu,
           ),
-          members.when(
-            data: (members) {
-              final widthCount =
-                  (MediaQuery.of(context).size.width ~/ 600).toInt();
-              const int minCount = 2;
-              if (members.isEmpty) {
-                return const SliverToBoxAdapter(
-                  child: Center(
-                    child: Text(
-                      'No members found. How can that even be, you are here, aren\'t you?',
-                    ),
+        ),
+        members.when(
+          data: (members) {
+            final widthCount =
+                (MediaQuery.of(context).size.width ~/ 600).toInt();
+            const int minCount = 2;
+            if (members.isEmpty) {
+              return const SliverToBoxAdapter(
+                child: Center(
+                  child: Text(
+                    'No members found. How can that even be, you are here, aren\'t you?',
                   ),
-                );
-              }
-              return SliverGrid.builder(
-                itemCount: members.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: max(1, min(widthCount, minCount)),
-                  childAspectRatio: 4.0,
                 ),
-                itemBuilder: (context, index) {
-                  final member = members[index];
-                  return MemberListEntry(
-                    member: member,
-                    space: space,
-                    myMembership: myMembership.valueOrNull,
-                  );
-                },
               );
-            },
-            error: (error, stack) => SliverToBoxAdapter(
-              child: Center(
-                child: Text('Loading failed: $error'),
+            }
+            return SliverGrid.builder(
+              itemCount: members.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: max(1, min(widthCount, minCount)),
+                childAspectRatio: 4.0,
               ),
-            ),
-            loading: () => const SliverToBoxAdapter(
-              child: Center(
-                child: Text('Loading'),
-              ),
+              itemBuilder: (context, index) {
+                final member = members[index];
+                return MemberListEntry(
+                  member: member,
+                  space: space,
+                  myMembership: myMembership.valueOrNull,
+                );
+              },
+            );
+          },
+          error: (error, stack) => SliverToBoxAdapter(
+            child: Center(
+              child: Text('Loading failed: $error'),
             ),
           ),
-        ],
-      ),
+          loading: () => const SliverToBoxAdapter(
+            child: Center(
+              child: Text('Loading'),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
