@@ -87,14 +87,11 @@ impl SuperInvitesTokenUpdateBuilder {
 
 impl SuperInvites {
     pub async fn tokens(&self) -> Result<Vec<SuperInviteToken>> {
-        print!("starting");
         let c = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let req = api::list::Request::new();
-                println!("created request");
                 let resp = c.send(req, None).await?;
-                println!("received");
                 Ok(resp
                     .tokens
                     .into_iter()
@@ -158,8 +155,8 @@ impl SuperInvites {
 }
 
 impl Client {
-    pub async fn super_invites(&self) -> Result<SuperInvites> {
+    pub fn super_invites(&self) -> SuperInvites {
         let c = self.clone();
-        Ok(SuperInvites { client: c })
+        SuperInvites { client: c }
     }
 }
