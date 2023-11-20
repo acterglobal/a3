@@ -1,0 +1,1 @@
+- [fix] : bring back the acter gradient background in spaces overview which was unintentionally changed due to some UI changes.

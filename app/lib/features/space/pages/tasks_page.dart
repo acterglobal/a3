@@ -18,67 +18,70 @@ class SpaceTasksPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final taskLists = ref.watch(spaceTasksListsProvider(spaceIdOrAlias));
     // get platform of context.
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'Tasks',
-                    style: Theme.of(context).textTheme.titleMedium,
+    return DecoratedBox(
+      decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Tasks',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                   ),
-                ),
-                IconButton(
-                  icon: Icon(
-                    Atlas.plus_circle_thin,
-                    color: Theme.of(context).colorScheme.neutral5,
+                  IconButton(
+                    icon: Icon(
+                      Atlas.plus_circle_thin,
+                      color: Theme.of(context).colorScheme.neutral5,
+                    ),
+                    iconSize: 28,
+                    color: Theme.of(context).colorScheme.surface,
+                    onPressed: () => context.pushNamed(
+                      Routes.actionAddPin.name,
+                      queryParameters: {'spaceId': spaceIdOrAlias},
+                    ),
                   ),
-                  iconSize: 28,
-                  color: Theme.of(context).colorScheme.surface,
-                  onPressed: () => context.pushNamed(
-                    Routes.actionAddPin.name,
-                    queryParameters: {'spaceId': spaceIdOrAlias},
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          taskLists.when(
-            data: (taskLists) {
-              if (taskLists.isEmpty) {
-                return const SliverToBoxAdapter(child: AllTasksDone());
-              }
-              return SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) {
-                    TaskList taskList = taskLists[index];
-                    return TaskListCard(taskList: taskList);
-                  },
-                  childCount: taskLists.length,
+            taskLists.when(
+              data: (taskLists) {
+                if (taskLists.isEmpty) {
+                  return const SliverToBoxAdapter(child: AllTasksDone());
+                }
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
+                      TaskList taskList = taskLists[index];
+                      return TaskListCard(taskList: taskList);
+                    },
+                    childCount: taskLists.length,
+                  ),
+                );
+              },
+              error: (error, stack) => SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 450,
+                  child: Center(
+                    child: Text('Loading tasks failed: $error'),
+                  ),
                 ),
-              );
-            },
-            error: (error, stack) => SliverToBoxAdapter(
-              child: SizedBox(
-                height: 450,
-                child: Center(
-                  child: Text('Loading tasks failed: $error'),
+              ),
+              loading: () => const SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 450,
+                  child: Center(
+                    child: Text('Loading'),
+                  ),
                 ),
               ),
             ),
-            loading: () => const SliverToBoxAdapter(
-              child: SizedBox(
-                height: 450,
-                child: Center(
-                  child: Text('Loading'),
-                ),
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
