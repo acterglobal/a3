@@ -104,7 +104,7 @@ dependencies:
   string_validator: ^1.0.0
   shake: ^2.2.0
   crypto: ^3.0.2
-  flutter_math_fork: ^0.7.1
+  flutter_math_fork: ^0.7.2
   shared_preferences: ^2.2.0
   image_picker_for_web: ^3.0.1
   flutter_onboarding_slider: ^1.0.9
@@ -123,11 +123,6 @@ dependencies:
 
 # FIXME keep until a new version has been published
 dependency_overrides:
-  flutter_math_fork:
-  # FIXME: we need this fix https://github.com/simpleclub-extended/flutter_math_fork/pull/87
-    git:
-      url: https://github.com/The-Redhat/flutter_math_fork/
-      ref: 3442b36a436880ce1c023e25c868d6f4004c4c24
   flutter_secure_storage:
     git:
       url: https://github.com/mogol/flutter_secure_storage
