@@ -7,9 +7,9 @@ use acter_core::{
     error::Error,
     events::{
         calendar::CalendarEventEventContent,
-        news::{NewsContent, NewsEntryEvent, NewsEntryEventContent},
+        news::NewsEntryEventContent,
         pins::PinEventContent,
-        settings::{ActerAppSettings, ActerAppSettingsContent},
+        settings::ActerAppSettingsContent,
         tasks::{TaskEventContent, TaskListEventContent},
     },
     spaces::is_acter_space,
@@ -33,7 +33,7 @@ use matrix_sdk::{
         },
         assign, Int, UInt,
     },
-    Client, RoomMemberships, RoomState,
+    RoomMemberships, RoomState,
 };
 use ruma_common::{
     room::RoomType, serde::Raw, space::SpaceRoomJoinRule, EventId, OwnedEventId, OwnedMxcUri,
@@ -61,15 +61,9 @@ use ruma_events::{
 use std::{io::Write, ops::Deref, path::PathBuf};
 use tracing::{error, info, warn};
 
-use crate::OptionBuffer;
+use crate::{Account, OptionBuffer, RoomMessage, RoomProfile, UserProfile, RUNTIME};
 
-use super::{
-    account::Account,
-    api::FfiBuffer,
-    message::RoomMessage,
-    profile::{RoomProfile, UserProfile},
-    RUNTIME,
-};
+use super::api::FfiBuffer;
 
 #[derive(Eq, PartialEq, Clone, strum::Display, strum::EnumString, Debug)]
 #[strum(serialize_all = "PascalCase")]
@@ -1010,8 +1004,7 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
                 let content = RoomMessageEventContent::text_plain(message);
-                let txn_id = TransactionId::new();
-                let response = room.send(content, Some(&txn_id)).await?;
+                let response = room.send(content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1061,15 +1054,12 @@ impl Room {
                     bail!("Can't edit an event not sent by own user");
                 }
 
-                let replacement = Replacement::new(
-                    event_id.to_owned(),
-                    MessageType::text_plain(new_msg.to_string()).into(),
-                );
-                let mut edited_content = RoomMessageEventContent::text_plain(new_msg);
+                let mut edited_content = RoomMessageEventContent::text_plain(new_msg.clone());
+                let replacement =
+                    Replacement::new(event_id.to_owned(), MessageType::text_plain(new_msg).into());
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
-                let txn_id = TransactionId::new();
-                let response = room.send(edited_content, Some(&txn_id)).await?;
+                let response = room.send(edited_content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1097,8 +1087,7 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
                 let content = RoomMessageEventContent::text_markdown(markdown);
-                let txn_id = TransactionId::new();
-                let response = room.send(content, Some(&txn_id)).await?;
+                let response = room.send(content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1148,15 +1137,14 @@ impl Room {
                     bail!("Can't edit an event not sent by own user");
                 }
 
+                let mut edited_content = RoomMessageEventContent::text_markdown(new_msg.clone());
                 let replacement = Replacement::new(
                     event_id.to_owned(),
-                    MessageType::text_markdown(new_msg.to_string()).into(),
+                    MessageType::text_markdown(new_msg).into(),
                 );
-                let mut edited_content = RoomMessageEventContent::text_markdown(new_msg);
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
-                let txn_id = TransactionId::new();
-                let response = room.send(edited_content, Some(&txn_id)).await?;
+                let response = room.send(edited_content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1187,8 +1175,7 @@ impl Room {
                 }
                 let relates_to = Annotation::new(event_id, key);
                 let content = ReactionEventContent::new(relates_to);
-                let txn_id = TransactionId::new();
-                let response = room.send(content, Some(&txn_id)).await?;
+                let response = room.send(content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1209,7 +1196,6 @@ impl Room {
             bail!("Can't send message as image to a room we are not in")
         }
         let room = self.room.clone();
-
         let my_id = room
             .client()
             .user_id()
@@ -1217,13 +1203,13 @@ impl Room {
             .to_owned();
 
         let path = PathBuf::from(uri);
+        let content_type = mimetype.parse::<mime::Mime>()?;
         let config = AttachmentConfig::new().info(AttachmentInfo::Image(BaseImageInfo {
             height: height.and_then(UInt::new),
             width: width.and_then(UInt::new),
             size: size.and_then(UInt::new),
             blurhash: None,
         }));
-        let mime_type = mimetype.parse::<mime::Mime>()?;
 
         RUNTIME
             .spawn(async move {
@@ -1236,7 +1222,7 @@ impl Room {
                 }
                 let image_buf = std::fs::read(path).context("File should be read")?;
                 let response = room
-                    .send_attachment(name.as_str(), &mime_type, image_buf, config)
+                    .send_attachment(name.as_str(), &content_type, image_buf, config)
                     .await?;
                 Ok(response.event_id)
             })
@@ -1249,7 +1235,6 @@ impl Room {
         }
         let room = self.room.clone();
         let client = self.room.client();
-
         let event_id = EventId::parse(event_id)?;
 
         RUNTIME
@@ -1288,14 +1273,18 @@ impl Room {
             bail!("Can't edit message as image to a room we are not in");
         }
         let room = self.room.clone();
-        let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
+        let my_id = client.user_id().context("User not found")?.to_owned();
+        let event_id = EventId::parse(event_id)?;
 
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let path = PathBuf::from(uri);
+        let content_type = mimetype.parse::<mime::Mime>()?;
+        let info = assign!(ImageInfo::new(), {
+            height: height.and_then(UInt::new),
+            width: width.and_then(UInt::new),
+            mimetype: Some(mimetype),
+            size: size.and_then(UInt::new),
+        });
 
         RUNTIME
             .spawn(async move {
@@ -1306,9 +1295,6 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-
-                let path = PathBuf::from(uri);
-                let mut image_buf = std::fs::read(path)?;
 
                 let timeline_event = room.event(&event_id).await?;
                 let event_content = timeline_event
@@ -1326,17 +1312,19 @@ impl Room {
                     bail!("Can't edit an event not sent by own user");
                 }
 
-                let content_type: mime::Mime = mimetype.parse()?;
-                let response = client.media().upload(&content_type, image_buf).await?;
-
-                let info = assign!(ImageInfo::new(), {
-                    height: height.and_then(UInt::new),
-                    width: width.and_then(UInt::new),
-                    mimetype: Some(mimetype),
-                    size: size.and_then(UInt::new),
-                });
-                let mut image_content = ImageMessageEventContent::plain(name, response.content_uri);
+                let mut image_content = if room.is_encrypted().await? {
+                    let mut reader = std::fs::File::open(path)?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .await?;
+                    ImageMessageEventContent::encrypted(name, encrypted_file)
+                } else {
+                    let image_buf = std::fs::read(path)?;
+                    let response = client.media().upload(&content_type, image_buf).await?;
+                    ImageMessageEventContent::plain(name, response.content_uri)
+                };
                 image_content.info = Some(Box::new(info));
+
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::Image(image_content.clone()));
                 let replacement = Replacement::new(
@@ -1345,8 +1333,7 @@ impl Room {
                 );
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
-                let txn_id = TransactionId::new();
-                let response = room.send(edited_content, Some(&txn_id)).await?;
+                let response = room.send(edited_content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1364,7 +1351,6 @@ impl Room {
             bail!("Can't send message as audio to a room we are not in");
         }
         let room = self.room.clone();
-
         let my_id = room
             .client()
             .user_id()
@@ -1372,11 +1358,11 @@ impl Room {
             .to_owned();
 
         let path = PathBuf::from(uri);
+        let content_type = mimetype.parse::<mime::Mime>()?;
         let config = AttachmentConfig::new().info(AttachmentInfo::Audio(BaseAudioInfo {
             duration: secs.map(Duration::from_secs),
             size: size.and_then(UInt::new),
         }));
-        let mime_type = mimetype.parse::<mime::Mime>()?;
 
         RUNTIME
             .spawn(async move {
@@ -1389,7 +1375,7 @@ impl Room {
                 }
                 let audio_buf = std::fs::read(path).context("File should be read")?;
                 let response = room
-                    .send_attachment(name.as_str(), &mime_type, audio_buf, config)
+                    .send_attachment(name.as_str(), &content_type, audio_buf, config)
                     .await?;
                 Ok(response.event_id)
             })
@@ -1402,7 +1388,6 @@ impl Room {
         }
         let room = self.room.clone();
         let client = self.room.client();
-
         let event_id = EventId::parse(event_id)?;
 
         RUNTIME
@@ -1440,14 +1425,17 @@ impl Room {
             bail!("Can't edit message as audio to a room we are not in");
         }
         let room = self.room.clone();
-        let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
+        let my_id = client.user_id().context("User not found")?.to_owned();
+        let event_id = EventId::parse(event_id)?;
 
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let path = PathBuf::from(uri);
+        let content_type = mimetype.parse::<mime::Mime>()?;
+        let info = assign!(AudioInfo::new(), {
+            duration: secs.map(Duration::from_secs),
+            mimetype: Some(mimetype),
+            size: size.and_then(UInt::new),
+        });
 
         RUNTIME
             .spawn(async move {
@@ -1458,9 +1446,6 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-
-                let path = PathBuf::from(uri);
-                let mut audio_buf = std::fs::read(path)?;
 
                 let timeline_event = room.event(&event_id).await?;
                 let event_content = timeline_event
@@ -1478,16 +1463,19 @@ impl Room {
                     bail!("Can't edit an event not sent by own user");
                 }
 
-                let content_type: mime::Mime = mimetype.parse()?;
-                let response = client.media().upload(&content_type, audio_buf).await?;
-
-                let info = assign!(AudioInfo::new(), {
-                    duration: secs.map(Duration::from_secs),
-                    mimetype: Some(mimetype),
-                    size: size.and_then(UInt::new),
-                });
-                let mut audio_content = AudioMessageEventContent::plain(name, response.content_uri);
+                let mut audio_content = if room.is_encrypted().await? {
+                    let mut reader = std::fs::File::open(path)?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .await?;
+                    AudioMessageEventContent::encrypted(name, encrypted_file)
+                } else {
+                    let audio_buf = std::fs::read(path)?;
+                    let response = client.media().upload(&content_type, audio_buf).await?;
+                    AudioMessageEventContent::plain(name, response.content_uri)
+                };
                 audio_content.info = Some(Box::new(info));
+
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::Audio(audio_content.clone()));
                 let replacement = Replacement::new(
@@ -1496,8 +1484,7 @@ impl Room {
                 );
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
-                let txn_id = TransactionId::new();
-                let response = room.send(edited_content, Some(&txn_id)).await?;
+                let response = room.send(edited_content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1519,7 +1506,6 @@ impl Room {
             bail!("Can't send message as video to a room we are not in");
         }
         let room = self.room.clone();
-
         let my_id = room
             .client()
             .user_id()
@@ -1527,6 +1513,7 @@ impl Room {
             .to_owned();
 
         let path = PathBuf::from(uri);
+        let content_type = mimetype.parse::<mime::Mime>()?;
         let config = AttachmentConfig::new().info(AttachmentInfo::Video(BaseVideoInfo {
             duration: secs.map(Duration::from_secs),
             height: height.and_then(UInt::new),
@@ -1534,7 +1521,6 @@ impl Room {
             size: size.and_then(UInt::new),
             blurhash,
         }));
-        let mime_type = mimetype.parse::<mime::Mime>()?;
 
         RUNTIME
             .spawn(async move {
@@ -1547,7 +1533,7 @@ impl Room {
                 }
                 let video_buf = std::fs::read(path).context("File should be read")?;
                 let response = room
-                    .send_attachment(name.as_str(), &mime_type, video_buf, config)
+                    .send_attachment(name.as_str(), &content_type, video_buf, config)
                     .await?;
                 Ok(response.event_id)
             })
@@ -1600,14 +1586,19 @@ impl Room {
             bail!("Can't edit message as video to a room we are not in");
         }
         let room = self.room.clone();
-        let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
+        let my_id = client.user_id().context("User not found")?.to_owned();
+        let event_id = EventId::parse(event_id)?;
 
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let path = PathBuf::from(uri);
+        let content_type = mimetype.parse::<mime::Mime>()?;
+        let info = assign!(VideoInfo::new(), {
+            duration: secs.map(Duration::from_secs),
+            height: height.and_then(UInt::new),
+            width: width.and_then(UInt::new),
+            mimetype: Some(mimetype),
+            size: size.and_then(UInt::new),
+        });
 
         RUNTIME
             .spawn(async move {
@@ -1618,9 +1609,6 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-
-                let path = PathBuf::from(uri);
-                let mut video_buf = std::fs::read(path)?;
 
                 let timeline_event = room.event(&event_id).await?;
                 let event_content = timeline_event
@@ -1638,18 +1626,19 @@ impl Room {
                     bail!("Can't edit an event not sent by own user");
                 }
 
-                let content_type: mime::Mime = mimetype.parse()?;
-                let response = client.media().upload(&content_type, video_buf).await?;
-
-                let info = assign!(VideoInfo::new(), {
-                    duration: secs.map(Duration::from_secs),
-                    height: height.and_then(UInt::new),
-                    width: width.and_then(UInt::new),
-                    mimetype: Some(mimetype),
-                    size: size.and_then(UInt::new),
-                });
-                let mut video_content = VideoMessageEventContent::plain(name, response.content_uri);
+                let mut video_content = if room.is_encrypted().await? {
+                    let mut reader = std::fs::File::open(path)?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .await?;
+                    VideoMessageEventContent::encrypted(name, encrypted_file)
+                } else {
+                    let video_buf = std::fs::read(path)?;
+                    let response = client.media().upload(&content_type, video_buf).await?;
+                    VideoMessageEventContent::plain(name, response.content_uri)
+                };
                 video_content.info = Some(Box::new(info));
+
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::Video(video_content.clone()));
                 let replacement = Replacement::new(
@@ -1658,8 +1647,7 @@ impl Room {
                 );
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
-                let txn_id = TransactionId::new();
-                let response = room.send(edited_content, Some(&txn_id)).await?;
+                let response = room.send(edited_content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1676,7 +1664,6 @@ impl Room {
             bail!("Can't send message as file to a room we are not in");
         }
         let room = self.room.clone();
-
         let my_id = room
             .client()
             .user_id()
@@ -1684,10 +1671,10 @@ impl Room {
             .to_owned();
 
         let path = PathBuf::from(uri);
+        let content_type = mimetype.parse::<mime::Mime>()?;
         let config = AttachmentConfig::new().info(AttachmentInfo::File(BaseFileInfo {
             size: size.and_then(UInt::new),
         }));
-        let mime_type = mimetype.parse::<mime::Mime>()?;
 
         RUNTIME
             .spawn(async move {
@@ -1700,7 +1687,7 @@ impl Room {
                 }
                 let file_buf = std::fs::read(path).context("File should be read")?;
                 let response = room
-                    .send_attachment(name.as_str(), &mime_type, file_buf, config)
+                    .send_attachment(name.as_str(), &content_type, file_buf, config)
                     .await?;
                 Ok(response.event_id)
             })
@@ -1749,14 +1736,16 @@ impl Room {
             bail!("Can't edit message as file to a room we are not in");
         }
         let room = self.room.clone();
-        let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
+        let my_id = client.user_id().context("User not found")?.to_owned();
+        let event_id = EventId::parse(event_id)?;
 
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let path = PathBuf::from(uri);
+        let content_type = mimetype.parse::<mime::Mime>()?;
+        let info = assign!(FileInfo::new(), {
+            mimetype: Some(mimetype),
+            size: size.and_then(UInt::new),
+        });
 
         RUNTIME
             .spawn(async move {
@@ -1767,9 +1756,6 @@ impl Room {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-
-                let path = PathBuf::from(uri);
-                let mut file_buf = std::fs::read(path)?;
 
                 let timeline_event = room.event(&event_id).await?;
                 let event_content = timeline_event
@@ -1787,23 +1773,26 @@ impl Room {
                     bail!("Can't edit an event not sent by own user");
                 }
 
-                let content_type: mime::Mime = mimetype.parse()?;
-                let response = client.media().upload(&content_type, file_buf).await?;
-
-                let info = assign!(FileInfo::new(), {
-                    mimetype: Some(mimetype),
-                    size: size.and_then(UInt::new),
-                });
-                let mut file_content = FileMessageEventContent::plain(name, response.content_uri);
+                let mut file_content = if room.is_encrypted().await? {
+                    let mut reader = std::fs::File::open(path)?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .await?;
+                    FileMessageEventContent::encrypted(name, encrypted_file)
+                } else {
+                    let file_buf = std::fs::read(path)?;
+                    let response = client.media().upload(&content_type, file_buf).await?;
+                    FileMessageEventContent::plain(name, response.content_uri)
+                };
                 file_content.info = Some(Box::new(info));
+
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::File(file_content.clone()));
                 let replacement =
                     Replacement::new(event_id.to_owned(), MessageType::File(file_content).into());
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
-                let txn_id = TransactionId::new();
-                let response = room.send(edited_content, Some(&txn_id)).await?;
+                let response = room.send(edited_content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1818,7 +1807,6 @@ impl Room {
             bail!("Can't send message as location to a room we are not in");
         }
         let room = self.room.clone();
-
         let my_id = room
             .client()
             .user_id()
@@ -1836,8 +1824,7 @@ impl Room {
                 }
                 let location_content = LocationMessageEventContent::new(body, geo_uri);
                 let content = RoomMessageEventContent::new(MessageType::Location(location_content));
-                let txn_id = TransactionId::new();
-                let response = room.send(content, Some(&txn_id)).await?;
+                let response = room.send(content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1853,14 +1840,9 @@ impl Room {
             bail!("Can't edit message as location to a room we are not in");
         }
         let room = self.room.clone();
-        let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
-
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
+        let my_id = client.user_id().context("User not found")?.to_owned();
+        let event_id = EventId::parse(event_id)?;
 
         RUNTIME
             .spawn(async move {
@@ -1897,8 +1879,7 @@ impl Room {
                 );
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
-                let txn_id = TransactionId::new();
-                let response = room.send(edited_content, Some(&txn_id)).await?;
+                let response = room.send(edited_content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -2393,12 +2374,7 @@ impl Room {
             .await?
     }
 
-    pub async fn send_text_reply(
-        &self,
-        msg: String,
-        event_id: String,
-        txn_id: Option<String>,
-    ) -> Result<OwnedEventId> {
+    pub async fn send_text_reply(&self, msg: String, event_id: String) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't send reply as text to a room we are not in");
         }
@@ -2423,7 +2399,6 @@ impl Room {
                 }
 
                 let timeline_event = room.event(&event_id).await?;
-
                 let event_content = timeline_event.event.deserialize_as::<RoomMessageEvent>()?;
 
                 let original_message = event_content
@@ -2434,9 +2409,7 @@ impl Room {
                 let content = RoomMessageEventContent::new(MessageType::Text(text_content))
                     .make_reply_to(original_message, ForwardThread::Yes, AddMentions::No);
 
-                let response = room
-                    .send(content, txn_id.as_deref().map(Into::into))
-                    .await?;
+                let response = room.send(content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -2452,7 +2425,6 @@ impl Room {
         width: Option<u64>,
         height: Option<u64>,
         event_id: String,
-        txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't send reply as image to a room we are not in");
@@ -2460,9 +2432,9 @@ impl Room {
         let room = self.room.clone();
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
+        let event_id = EventId::parse(event_id)?;
 
         let path = PathBuf::from(uri);
-        let event_id = EventId::parse(event_id)?;
         let content_type = mimetype.parse::<mime::Mime>()?;
         let info = assign!(ImageInfo::new(), {
             height: height.and_then(UInt::new),
@@ -2481,32 +2453,35 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let image_buf = std::fs::read(path).context("File should be read")?;
-
                 let timeline_event = room.event(&event_id).await?;
-
                 let event_content = timeline_event.event.deserialize_as::<RoomMessageEvent>()?;
 
                 let original_message = event_content
                     .as_original()
                     .context("Couldn't retrieve original message.")?;
 
-                let response = client.media().upload(&content_type, image_buf).await?;
-
-                let mut image_content = ImageMessageEventContent::plain(name, response.content_uri);
+                let mut image_content = if room.is_encrypted().await? {
+                    let mut reader = std::fs::File::open(path)?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .await?;
+                    ImageMessageEventContent::encrypted(name, encrypted_file)
+                } else {
+                    let image_buf = std::fs::read(path).context("File should be read")?;
+                    let response = client.media().upload(&content_type, image_buf).await?;
+                    ImageMessageEventContent::plain(name, response.content_uri)
+                };
                 image_content.info = Some(Box::new(info));
+
                 let content = RoomMessageEventContent::new(MessageType::Image(image_content))
                     .make_reply_to(original_message, ForwardThread::Yes, AddMentions::No);
 
-                let response = room
-                    .send(content, txn_id.as_deref().map(Into::into))
-                    .await?;
+                let response = room.send(content).await?;
                 Ok(response.event_id)
             })
             .await?
     }
 
-    #[allow(clippy::too_many_arguments)]
     pub async fn send_audio_reply(
         &self,
         uri: String,
@@ -2515,7 +2490,6 @@ impl Room {
         size: Option<u64>,
         secs: Option<u64>,
         event_id: String,
-        txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't send reply as audio to a room we are not in");
@@ -2523,9 +2497,9 @@ impl Room {
         let room = self.room.clone();
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
+        let event_id = EventId::parse(event_id)?;
 
         let path = PathBuf::from(uri);
-        let event_id = EventId::parse(event_id)?;
         let content_type = mimetype.parse::<mime::Mime>()?;
         let info = assign!(AudioInfo::new(), {
             mimetype: Some(mimetype),
@@ -2543,26 +2517,30 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let image_buf = std::fs::read(path).context("File should be read")?;
-
                 let timeline_event = room.event(&event_id).await?;
-
                 let event_content = timeline_event.event.deserialize_as::<RoomMessageEvent>()?;
 
                 let original_message = event_content
                     .as_original()
                     .context("Couldn't retrieve original message.")?;
 
-                let response = client.media().upload(&content_type, image_buf).await?;
-
-                let mut audio_content = AudioMessageEventContent::plain(name, response.content_uri);
+                let mut audio_content = if room.is_encrypted().await? {
+                    let mut reader = std::fs::File::open(path)?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .await?;
+                    AudioMessageEventContent::encrypted(name, encrypted_file)
+                } else {
+                    let audio_buf = std::fs::read(path).context("File should be read")?;
+                    let response = client.media().upload(&content_type, audio_buf).await?;
+                    AudioMessageEventContent::plain(name, response.content_uri)
+                };
                 audio_content.info = Some(Box::new(info));
+
                 let content = RoomMessageEventContent::new(MessageType::Audio(audio_content))
                     .make_reply_to(original_message, ForwardThread::Yes, AddMentions::No);
 
-                let response = room
-                    .send(content, txn_id.as_deref().map(Into::into))
-                    .await?;
+                let response = room.send(content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -2580,7 +2558,6 @@ impl Room {
         height: Option<u64>,
         blurhash: Option<String>,
         event_id: String,
-        txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't send reply as video to a room we are not in");
@@ -2588,9 +2565,9 @@ impl Room {
         let room = self.room.clone();
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
+        let event_id = EventId::parse(event_id)?;
 
         let path = PathBuf::from(uri);
-        let event_id = EventId::parse(event_id)?;
         let content_type = mimetype.parse::<mime::Mime>()?;
         let info = assign!(VideoInfo::new(), {
             duration: secs.map(Duration::from_secs),
@@ -2611,26 +2588,30 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let video_buf = std::fs::read(path).context("File should be read")?;
-
                 let timeline_event = room.event(&event_id).await?;
-
                 let event_content = timeline_event.event.deserialize_as::<RoomMessageEvent>()?;
 
                 let original_message = event_content
                     .as_original()
                     .context("Couldn't retrieve original message.")?;
 
-                let response = client.media().upload(&content_type, video_buf).await?;
-
-                let mut video_content = VideoMessageEventContent::plain(name, response.content_uri);
+                let mut video_content = if room.is_encrypted().await? {
+                    let mut reader = std::fs::File::open(path)?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .await?;
+                    VideoMessageEventContent::encrypted(name, encrypted_file)
+                } else {
+                    let video_buf = std::fs::read(path).context("File should be read")?;
+                    let response = client.media().upload(&content_type, video_buf).await?;
+                    VideoMessageEventContent::plain(name, response.content_uri)
+                };
                 video_content.info = Some(Box::new(info));
+
                 let content = RoomMessageEventContent::new(MessageType::Video(video_content))
                     .make_reply_to(original_message, ForwardThread::Yes, AddMentions::No);
 
-                let response = room
-                    .send(content, txn_id.as_deref().map(Into::into))
-                    .await?;
+                let response = room.send(content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -2643,7 +2624,6 @@ impl Room {
         mimetype: String,
         size: Option<u64>,
         event_id: String,
-        txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't send reply as file to a room we are not in");
@@ -2651,9 +2631,9 @@ impl Room {
         let room = self.room.clone();
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
+        let event_id = EventId::parse(event_id)?;
 
         let path = PathBuf::from(uri);
-        let event_id = EventId::parse(event_id)?;
         let content_type = mimetype.parse::<mime::Mime>()?;
         let info = assign!(FileInfo::new(), {
             mimetype: Some(mimetype),
@@ -2670,26 +2650,30 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
 
-                let file_buf = std::fs::read(path).context("File should be read")?;
-
                 let timeline_event = room.event(&event_id).await?;
-
                 let event_content = timeline_event.event.deserialize_as::<RoomMessageEvent>()?;
 
                 let original_message = event_content
                     .as_original()
                     .context("Couldn't retrieve original message.")?;
 
-                let response = client.media().upload(&content_type, file_buf).await?;
-
-                let mut file_content = FileMessageEventContent::plain(name, response.content_uri);
+                let mut file_content = if room.is_encrypted().await? {
+                    let mut reader = std::fs::File::open(path)?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .await?;
+                    FileMessageEventContent::encrypted(name, encrypted_file)
+                } else {
+                    let file_buf = std::fs::read(path).context("File should be read")?;
+                    let response = client.media().upload(&content_type, file_buf).await?;
+                    FileMessageEventContent::plain(name, response.content_uri)
+                };
                 file_content.info = Some(Box::new(info));
+
                 let content = RoomMessageEventContent::new(MessageType::File(file_content))
                     .make_reply_to(original_message, ForwardThread::Yes, AddMentions::No);
 
-                let response = room
-                    .send(content, txn_id.as_deref().map(Into::into))
-                    .await?;
+                let response = room.send(content).await?;
                 Ok(response.event_id)
             })
             .await?

@@ -415,7 +415,6 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
               image.width,
               image.height,
               chatInputState.repliedToMessage!.id,
-              null,
             );
 
             chatInputNotifier.setRepliedToMessage(null);
@@ -444,7 +443,6 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
               mimeType,
               file.lengthSync(),
               chatInputState.repliedToMessage!.id,
-              null,
             );
             chatInputNotifier.setRepliedToMessage(null);
             chatInputNotifier.toggleReplyView(false);
@@ -562,7 +560,6 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       await convo.sendTextReply(
         markdownMessage,
         chatInputState.repliedToMessage!.id,
-        null,
       );
       chatInputNotifier.setRepliedToMessage(null);
       final inputNotifier = ref.read(chatInputProvider(roomId).notifier);

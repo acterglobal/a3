@@ -21,7 +21,7 @@ mime = "0.3.16"
 ruma-common = { workspace = true }
 term-table = "1.3.2"
 tokio = { version = "1", features = ["full", "time"] }
-tracing = { version = "0.1.36", features = ["log"] }
+tracing = { version = "0.1.40", features = ["log"] }
 
 [dependencies.acter-core]
 path = "../core"
