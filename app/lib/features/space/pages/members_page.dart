@@ -3,16 +3,18 @@ import 'dart:math';
 
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/member_list_entry.dart';
+import 'package:acter/features/space/widgets/space_header.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:go_router/go_router.dart';
 
 class SpaceMembersPage extends ConsumerWidget {
   final String spaceIdOrAlias;
+
   const SpaceMembersPage({super.key, required this.spaceIdOrAlias});
 
   @override
@@ -50,13 +52,19 @@ class SpaceMembersPage extends ConsumerWidget {
     }
     // get platform of context.
 
-    return Padding(
-      padding: const EdgeInsets.all(20),
+    return DecoratedBox(
+      decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
       child: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
-            child: Row(
-              children: topMenu,
+            child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              child: Row(
+                children: topMenu,
+              ),
             ),
           ),
           members.when(

@@ -21,19 +21,23 @@ class MemberAvatar extends ConsumerWidget {
       ),
       child: profile.when(
         data: (data) => ActerAvatar(
-          mode: DisplayMode.User,
-          uniqueId: userId,
-          size: data.hasAvatar() ? 18 : 36,
-          avatar: data.getAvatarImage(),
-          displayName: data.displayName,
+          mode: DisplayMode.DM,
+          avatarInfo: AvatarInfo(
+            uniqueId: userId,
+            avatar: data.getAvatarImage(),
+            displayName: data.displayName,
+          ),
+          size: 18,
         ),
         error: (err, stackTrace) {
           debugPrint("Couldn't load avatar");
           return ActerAvatar(
-            mode: DisplayMode.User,
-            uniqueId: userId,
-            size: 36,
-            displayName: userId,
+            mode: DisplayMode.DM,
+            avatarInfo: AvatarInfo(
+              uniqueId: userId,
+              displayName: userId,
+            ),
+            size: 18,
           );
         },
         loading: () => const Center(

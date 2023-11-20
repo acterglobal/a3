@@ -18,19 +18,20 @@ class MentionProfileBuilder extends ConsumerWidget {
     final mentionProfile = ref.watch(memberProfileByIdProvider(authorId));
     return mentionProfile.when(
       data: (profile) => ActerAvatar(
-        mode: DisplayMode.User,
-        uniqueId: authorId,
-        avatar: profile.getAvatarImage(),
-        displayName: title,
-        size: profile.hasAvatar() ? 18 : 36,
+        mode: DisplayMode.DM,
+        avatarInfo: AvatarInfo(
+          uniqueId: authorId,
+          avatar: profile.getAvatarImage(),
+          displayName: title,
+        ),
+        size: 18,
       ),
       error: (e, st) {
         debugPrint('ERROR loading avatar due to $e');
         return ActerAvatar(
-          mode: DisplayMode.User,
-          uniqueId: authorId,
-          displayName: title,
-          size: 36,
+          mode: DisplayMode.DM,
+          avatarInfo: AvatarInfo(uniqueId: authorId, displayName: title),
+          size: 18,
         );
       },
       loading: () => const CircularProgressIndicator(),

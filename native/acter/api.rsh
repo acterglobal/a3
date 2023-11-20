@@ -938,19 +938,19 @@ object Convo {
     fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
 
     /// send reply as text
-    fn send_text_reply(msg: string, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+    fn send_text_reply(msg: string, event_id: string) -> Future<Result<EventId>>;
 
     /// send reply as image
-    fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+    fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, event_id: string) -> Future<Result<EventId>>;
 
     /// send reply as audio
-    fn send_audio_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+    fn send_audio_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, event_id: string) -> Future<Result<EventId>>;
 
     /// send reply as video
-    fn send_video_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+    fn send_video_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string) -> Future<Result<EventId>>;
 
     /// send reply as file
-    fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
+    fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u64>, event_id: string) -> Future<Result<EventId>>;
 
     /// redact any message (including text/image/file and reaction)
     fn redact_message(event_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;

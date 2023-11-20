@@ -2,8 +2,9 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
+import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
+import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -23,10 +24,13 @@ class SpaceChatsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final chats = ref.watch(relatedChatsProvider(spaceIdOrAlias));
     final related = ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias));
-    return Padding(
-      padding: const EdgeInsets.all(20),
+    return DecoratedBox(
+      decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
       child: CustomScrollView(
         slivers: <Widget>[
+          SliverToBoxAdapter(
+            child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
+          ),
           related.maybeWhen(
             data: (spaces) {
               bool checkPermission(String permission) {
@@ -97,13 +101,11 @@ class SpaceChatsPage extends ConsumerWidget {
                     child: ConvoCard(
                       room: rooms[index],
                       showParent: false,
-
-                      /// FIXME: push is broken for switching from subshell to subshell
-                      /// hence we are using `go` here.
-                      /// https://github.com/flutter/flutter/issues/125752
                       onTap: () => context.goNamed(
                         Routes.chatroom.name,
-                        pathParameters: {'roomId': rooms[index].getRoomIdStr()},
+                        pathParameters: {
+                          'roomId': rooms[index].getRoomIdStr(),
+                        },
                       ),
                     ),
                   ),

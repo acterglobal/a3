@@ -314,7 +314,7 @@ impl CalendarEventDraft {
         let inner = self.inner.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(inner, None).await?;
+                let resp = room.send(inner).await?;
                 Ok(resp.event_id)
             })
             .await?
@@ -407,7 +407,7 @@ impl CalendarEventUpdateBuilder {
         let inner = self.inner.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(inner, None).await?;
+                let resp = room.send(inner).await?;
                 Ok(resp.event_id)
             })
             .await?

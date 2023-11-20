@@ -45,10 +45,6 @@ class ChatsCard extends ConsumerWidget {
                     itemBuilder: (context, index) => ConvoCard(
                       room: chats[index],
                       showParent: false,
-
-                      /// FIXME: push is broken for switching from subshell to subshell
-                      /// hence we are using `go` here.
-                      /// https://github.com/flutter/flutter/issues/125752
                       onTap: () => context.goNamed(
                         Routes.chatroom.name,
                         pathParameters: {

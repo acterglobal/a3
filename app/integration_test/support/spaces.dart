@@ -2,7 +2,7 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/space/model/keys.dart';
-import 'package:acter/features/space/widgets/shell_header.dart';
+import 'package:acter/features/space/widgets/space_header_profile.dart';
 import 'package:acter/features/spaces/model/keys.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +47,7 @@ extension ActerSpace on ConvenientTest {
     final spaceHeader = find.byKey(SpaceKeys.header);
     await spaceHeader.should(findsOneWidget);
     // read the actual spaceId
-    final header = spaceHeader.evaluate().first.widget as ShellHeader;
+    final header = spaceHeader.evaluate().first.widget as SpaceHeaderProfile;
     return header.spaceId;
   }
 

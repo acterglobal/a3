@@ -36,11 +36,13 @@ class ReceiptsBuilder extends ConsumerWidget {
                             return Padding(
                               padding: const EdgeInsets.only(right: 10),
                               child: ActerAvatar(
-                                mode: DisplayMode.User,
-                                uniqueId: userId,
-                                displayName: profile.displayName ?? userId,
-                                avatar: profile.getAvatarImage(),
-                                size: profile.hasAvatar() ? 8 : 16,
+                                mode: DisplayMode.DM,
+                                avatarInfo: AvatarInfo(
+                                  uniqueId: userId,
+                                  displayName: profile.displayName ?? userId,
+                                  avatar: profile.getAvatarImage(),
+                                ),
+                                size: 8,
                               ),
                             );
                           },
@@ -49,10 +51,12 @@ class ReceiptsBuilder extends ConsumerWidget {
                             return Padding(
                               padding: const EdgeInsets.only(right: 10),
                               child: ActerAvatar(
-                                uniqueId: userId,
-                                displayName: userId,
-                                mode: DisplayMode.User,
-                                size: 16,
+                                mode: DisplayMode.DM,
+                                avatarInfo: AvatarInfo(
+                                  uniqueId: userId,
+                                  displayName: userId,
+                                ),
+                                size: 8,
                               ),
                             );
                           },
@@ -80,11 +84,13 @@ class ReceiptsBuilder extends ConsumerWidget {
                           return Padding(
                             padding: const EdgeInsets.only(right: 10),
                             child: ActerAvatar(
-                              mode: DisplayMode.User,
-                              uniqueId: userId,
-                              displayName: profile.displayName ?? userId,
-                              avatar: profile.getAvatarImage(),
-                              size: profile.hasAvatar() ? 8 : 16,
+                              mode: DisplayMode.DM,
+                              avatarInfo: AvatarInfo(
+                                uniqueId: userId,
+                                displayName: profile.displayName ?? userId,
+                                avatar: profile.getAvatarImage(),
+                              ),
+                              size: 8,
                             ),
                           );
                         },
@@ -93,10 +99,12 @@ class ReceiptsBuilder extends ConsumerWidget {
                           return Padding(
                             padding: const EdgeInsets.only(right: 10),
                             child: ActerAvatar(
-                              uniqueId: userId,
-                              displayName: userId,
-                              mode: DisplayMode.User,
-                              size: 16,
+                              mode: DisplayMode.DM,
+                              avatarInfo: AvatarInfo(
+                                uniqueId: userId,
+                                displayName: userId,
+                              ),
+                              size: 8,
                             ),
                           );
                         },
@@ -142,11 +150,13 @@ class ReceiptsBuilder extends ConsumerWidget {
                             return Padding(
                               padding: const EdgeInsets.only(right: 10),
                               child: ActerAvatar(
-                                mode: DisplayMode.User,
-                                uniqueId: seenList[index],
-                                displayName: profile.displayName ?? userId,
-                                avatar: profile.getAvatarImage(),
-                                size: profile.hasAvatar() ? 8 : 16,
+                                mode: DisplayMode.DM,
+                                avatarInfo: AvatarInfo(
+                                  uniqueId: seenList[index],
+                                  displayName: profile.displayName ?? userId,
+                                  avatar: profile.getAvatarImage(),
+                                ),
+                                size: 8,
                               ),
                             );
                           },
@@ -155,10 +165,12 @@ class ReceiptsBuilder extends ConsumerWidget {
                             return Padding(
                               padding: const EdgeInsets.only(right: 10),
                               child: ActerAvatar(
-                                uniqueId: userId,
-                                displayName: userId,
-                                mode: DisplayMode.User,
-                                size: 16,
+                                mode: DisplayMode.DM,
+                                avatarInfo: AvatarInfo(
+                                  uniqueId: userId,
+                                  displayName: userId,
+                                ),
+                                size: 8,
                               ),
                             );
                           },

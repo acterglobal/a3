@@ -1,75 +1,21 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
-import 'package:acter/features/space/model/keys.dart';
-import 'package:acter/features/space/widgets/shell_header.dart';
-import 'package:acter/features/space/widgets/top_nav.dart';
-import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Space;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class SpaceShell extends ConsumerStatefulWidget {
-  final String spaceIdOrAlias;
-  final Widget child;
-
-  const SpaceShell({
-    super.key,
-    required this.spaceIdOrAlias,
-    required this.child,
-  });
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _SpaceShellState();
-}
-
-class _SpaceShellState extends ConsumerState<SpaceShell> {
-  @override
-  Widget build(BuildContext context) {
-    // get platform of context.
-    final profileData =
-        ref.watch(spaceProfileDataForSpaceIdProvider(widget.spaceIdOrAlias));
-    return profileData.when(
-      data: (profile) => Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Container(
-          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
-          decoration: const BoxDecoration(
-            gradient: AppTheme.primaryGradient,
-          ),
-          child: Column(
-            children: <Widget>[
-              _ShellToolbar(profile.space, widget.spaceIdOrAlias),
-              ShellHeader(
-                key: SpaceKeys.header,
-                widget.spaceIdOrAlias,
-                profile.profile,
-              ),
-              TopNavBar(
-                spaceId: widget.spaceIdOrAlias,
-                key: Key('${widget.spaceIdOrAlias}::top-nav'),
-              ),
-              Expanded(
-                child: widget.child,
-              ),
-            ],
-          ),
-        ),
-      ),
-      error: (error, stack) => Text('Loading failed: $error'),
-      loading: () => const Text('Loading'),
-    );
-  }
-}
-
-class _ShellToolbar extends ConsumerWidget {
-  final Space space;
+class SpaceToolbar extends ConsumerWidget {
   final String spaceId;
-  const _ShellToolbar(this.space, this.spaceId);
+
+  const SpaceToolbar({
+    super.key,
+    required this.spaceId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -105,7 +51,7 @@ class _ShellToolbar extends ConsumerWidget {
     }
     submenu.add(
       PopupMenuItem(
-        onTap: () => _handleLeaveSpace(context, space, ref),
+        onTap: () => _handleLeaveSpace(context, ref),
         child: const Text('Leave Space'),
       ),
     );
@@ -143,7 +89,6 @@ class _ShellToolbar extends ConsumerWidget {
 
   void _handleLeaveSpace(
     BuildContext context,
-    Space space,
     WidgetRef ref,
   ) {
     showAdaptiveDialog(
@@ -163,13 +108,14 @@ class _ShellToolbar extends ConsumerWidget {
         actions: <Widget>[
           DefaultButton(
             onPressed: () => context.pop(),
-            title: 'No Stay',
+            title: 'No, I stay',
             style: OutlinedButton.styleFrom(
               side: BorderSide(color: Theme.of(context).colorScheme.success),
             ),
           ),
           DefaultButton(
             onPressed: () async {
+              final space = await ref.watch(spaceProvider(spaceId).future);
               await space.leave();
               // refresh spaces list
               ref.invalidate(spacesProvider);
@@ -177,7 +123,7 @@ class _ShellToolbar extends ConsumerWidget {
                 return;
               }
               context.pop();
-              context.pushNamed(Routes.dashboard.name);
+              context.goNamed(Routes.dashboard.name);
             },
             title: 'Yes, Leave',
             style: ElevatedButton.styleFrom(

@@ -21,11 +21,13 @@ class UserAvatarWidget extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ActerAvatar(
-              mode: DisplayMode.User,
-              uniqueId: client.userId().toString(),
-              size: data.profile.hasAvatar() ? size : size * 2,
-              avatar: data.profile.getAvatarImage(),
-              displayName: data.profile.displayName,
+              mode: DisplayMode.DM,
+              avatarInfo: AvatarInfo(
+                uniqueId: client.userId().toString(),
+                displayName: data.profile.displayName,
+                avatar: data.profile.getAvatarImage(),
+              ),
+              size: size,
             ),
           ],
         );

@@ -263,7 +263,7 @@ impl TaskListDraft {
         let content = self.content.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content, None).await?;
+                let resp = room.send(content).await?;
                 Ok(resp.event_id)
             })
             .await?
@@ -742,7 +742,7 @@ impl TaskDraft {
         let content = self.content.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content, None).await?;
+                let resp = room.send(content).await?;
                 Ok(resp.event_id)
             })
             .await?
@@ -963,7 +963,7 @@ impl TaskUpdateBuilder {
         let content = self.content.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content, None).await?;
+                let resp = room.send(content).await?;
                 Ok(resp.event_id)
             })
             .await?
@@ -1078,7 +1078,7 @@ impl TaskListUpdateBuilder {
         let content = self.content.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(content, None).await?;
+                let resp = room.send(content).await?;
                 Ok(resp.event_id)
             })
             .await?

@@ -281,11 +281,13 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             ActerAvatar(
-                              uniqueId: userId,
-                              mode: DisplayMode.User,
-                              displayName: displayName.valueOrNull ?? userId,
-                              avatar: avatarProv.valueOrNull,
-                              size: avatarProv.valueOrNull != null ? 14 : 28,
+                              mode: DisplayMode.DM,
+                              avatarInfo: AvatarInfo(
+                                uniqueId: userId,
+                                displayName: displayName.valueOrNull ?? userId,
+                                avatar: avatarProv.valueOrNull,
+                              ),
+                              size: 14,
                             ),
                             const SizedBox(width: 5),
                             Text(
@@ -366,8 +368,8 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
             contentPadding: const EdgeInsets.only(left: 0),
             leading: selectedUsers.isEmpty
                 ? ActerAvatar(
-                    uniqueId: '#',
-                    mode: DisplayMode.Space,
+                    mode: DisplayMode.GroupChat,
+                    avatarInfo: const AvatarInfo(uniqueId: '#'),
                     size: 48,
                   )
                 : selectedUsers.length > 1
@@ -380,22 +382,17 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                         ),
                       )
                     : ActerAvatar(
-                        uniqueId: selectedUsers[0].userId().toString(),
-                        mode: DisplayMode.User,
-                        displayName: ref
-                            .watch(displayNameProvider(selectedUsers[0]))
-                            .valueOrNull,
-                        avatar: ref
-                            .watch(userAvatarProvider(selectedUsers[0]))
-                            .valueOrNull,
-                        size: ref
-                                    .watch(
-                                      userAvatarProvider(selectedUsers[0]),
-                                    )
-                                    .valueOrNull !=
-                                null
-                            ? 20
-                            : 40,
+                        mode: DisplayMode.DM,
+                        avatarInfo: AvatarInfo(
+                          uniqueId: selectedUsers[0].userId().toString(),
+                          displayName: ref
+                              .watch(displayNameProvider(selectedUsers[0]))
+                              .valueOrNull,
+                          avatar: ref
+                              .watch(userAvatarProvider(selectedUsers[0]))
+                              .valueOrNull,
+                        ),
+                        size: 20,
                       ),
             title: Text(
               tileTitle,
@@ -722,12 +719,13 @@ class _UserWidget extends ConsumerWidget {
         loading: () => const Text('Loading display name'),
       ),
       leading: ActerAvatar(
-        uniqueId: userId,
-        mode: DisplayMode.User,
-        uniqueName: displayName.valueOrNull,
-        displayName: displayName.valueOrNull,
-        avatar: avatarProv.valueOrNull,
-        size: avatarProv.valueOrNull != null ? 18 : 36,
+        mode: DisplayMode.DM,
+        avatarInfo: AvatarInfo(
+          uniqueId: userId,
+          displayName: displayName.valueOrNull,
+          avatar: avatarProv.valueOrNull,
+        ),
+        size: 18,
       ),
     );
   }

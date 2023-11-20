@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/widgets/about_card.dart';
 import 'package:acter/features/space/widgets/chats_card.dart';
 import 'package:acter/features/space/widgets/events_card.dart';
@@ -38,6 +40,7 @@ class ActerSpaceChecker extends ConsumerWidget {
 
 class SpaceOverview extends ConsumerWidget {
   final String spaceIdOrAlias;
+
   const SpaceOverview({super.key, required this.spaceIdOrAlias});
 
   @override
@@ -45,34 +48,38 @@ class SpaceOverview extends ConsumerWidget {
     final widthCount = (MediaQuery.of(context).size.width ~/ 300).toInt();
     const int minCount = 2;
     // get platform of context.
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          StaggeredGrid.count(
-            axisDirection: AxisDirection.down,
-            crossAxisCount: min(widthCount, minCount),
-            children: <Widget>[
-              AboutCard(spaceId: spaceIdOrAlias),
-              ActerSpaceChecker(
-                spaceId: spaceIdOrAlias,
-                expectation: (a) => a == null,
-                child: NonActerSpaceCard(spaceId: spaceIdOrAlias),
-              ),
-              ActerSpaceChecker(
-                spaceId: spaceIdOrAlias,
-                expectation: (a) => a != null ? a.events().active() : false,
-                child: EventsCard(spaceId: spaceIdOrAlias),
-              ),
-              ActerSpaceChecker(
-                spaceId: spaceIdOrAlias,
-                expectation: (a) => a != null ? a.pins().active() : false,
-                child: LinksCard(spaceId: spaceIdOrAlias),
-              ),
-              ChatsCard(spaceId: spaceIdOrAlias),
-              RelatedSpacesCard(spaceId: spaceIdOrAlias),
-            ],
-          ),
-        ],
+    return DecoratedBox(
+      decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
+            StaggeredGrid.count(
+              axisDirection: AxisDirection.down,
+              crossAxisCount: min(widthCount, minCount),
+              children: <Widget>[
+                AboutCard(spaceId: spaceIdOrAlias),
+                ActerSpaceChecker(
+                  spaceId: spaceIdOrAlias,
+                  expectation: (a) => a == null,
+                  child: NonActerSpaceCard(spaceId: spaceIdOrAlias),
+                ),
+                ActerSpaceChecker(
+                  spaceId: spaceIdOrAlias,
+                  expectation: (a) => a != null ? a.events().active() : false,
+                  child: EventsCard(spaceId: spaceIdOrAlias),
+                ),
+                ActerSpaceChecker(
+                  spaceId: spaceIdOrAlias,
+                  expectation: (a) => a != null ? a.pins().active() : false,
+                  child: LinksCard(spaceId: spaceIdOrAlias),
+                ),
+                ChatsCard(spaceId: spaceIdOrAlias),
+                RelatedSpacesCard(spaceId: spaceIdOrAlias),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

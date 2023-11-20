@@ -17084,18 +17084,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
           )>>("__Convo_send_text_reply");
 
   late final _convoSendTextReply = _convoSendTextReplyPtr.asFunction<
       int Function(
-        int,
-        int,
-        int,
-        int,
         int,
         int,
         int,
@@ -17126,18 +17118,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
           )>>("__Convo_send_image_reply");
 
   late final _convoSendImageReply = _convoSendImageReplyPtr.asFunction<
       int Function(
-        int,
-        int,
-        int,
-        int,
         int,
         int,
         int,
@@ -17178,18 +17162,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
           )>>("__Convo_send_audio_reply");
 
   late final _convoSendAudioReply = _convoSendAudioReplyPtr.asFunction<
       int Function(
-        int,
-        int,
-        int,
-        int,
         int,
         int,
         int,
@@ -17236,18 +17212,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
           )>>("__Convo_send_video_reply");
 
   late final _convoSendVideoReply = _convoSendVideoReplyPtr.asFunction<
       int Function(
-        int,
-        int,
-        int,
-        int,
         int,
         int,
         int,
@@ -17292,18 +17260,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
           )>>("__Convo_send_file_reply");
 
   late final _convoSendFileReply = _convoSendFileReplyPtr.asFunction<
       int Function(
-        int,
-        int,
-        int,
-        int,
         int,
         int,
         int,
@@ -37206,11 +37166,9 @@ class Convo {
   Future<EventId> sendTextReply(
     String msg,
     String eventId,
-    String? txnId,
   ) {
     final tmp1 = msg;
     final tmp5 = eventId;
-    final tmp9 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -37218,10 +37176,6 @@ class Convo {
     var tmp6 = 0;
     var tmp7 = 0;
     var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
-    var tmp13 = 0;
-    var tmp14 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -37239,21 +37193,7 @@ class Convo {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      final tmp11_0 = utf8.encode(tmp11);
-      tmp13 = tmp11_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-      tmp12_1.setAll(0, tmp11_0);
-      tmp12 = tmp12_0.address;
-      tmp14 = tmp13;
-    }
-    final tmp15 = _api._convoSendTextReply(
+    final tmp9 = _api._convoSendTextReply(
       tmp0,
       tmp2,
       tmp3,
@@ -37261,17 +37201,13 @@ class Convo {
       tmp6,
       tmp7,
       tmp8,
-      tmp10,
-      tmp12,
-      tmp13,
-      tmp14,
     );
-    final tmp17 = tmp15;
-    final ffi.Pointer<ffi.Void> tmp17_0 = ffi.Pointer.fromAddress(tmp17);
-    final tmp17_1 = _Box(_api, tmp17_0, "__Convo_send_text_reply_future_drop");
-    tmp17_1._finalizer = _api._registerFinalizer(tmp17_1);
-    final tmp16 = _nativeFuture(tmp17_1, _api.__convoSendTextReplyFuturePoll);
-    return tmp16;
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "__Convo_send_text_reply_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(tmp11_1, _api.__convoSendTextReplyFuturePoll);
+    return tmp10;
   }
 
   /// send reply as image
@@ -37283,7 +37219,6 @@ class Convo {
     int? width,
     int? height,
     String eventId,
-    String? txnId,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
@@ -37292,7 +37227,6 @@ class Convo {
     final tmp17 = width;
     final tmp21 = height;
     final tmp25 = eventId;
-    final tmp29 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -37312,10 +37246,6 @@ class Convo {
     var tmp26 = 0;
     var tmp27 = 0;
     var tmp28 = 0;
-    var tmp30 = 0;
-    var tmp32 = 0;
-    var tmp33 = 0;
-    var tmp34 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -37370,21 +37300,7 @@ class Convo {
     tmp26_1.setAll(0, tmp25_0);
     tmp26 = tmp26_0.address;
     tmp28 = tmp27;
-    if (tmp29 == null) {
-      tmp30 = 0;
-    } else {
-      tmp30 = 1;
-      final tmp31 = tmp29;
-      final tmp31_0 = utf8.encode(tmp31);
-      tmp33 = tmp31_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
-      final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
-      tmp32_1.setAll(0, tmp31_0);
-      tmp32 = tmp32_0.address;
-      tmp34 = tmp33;
-    }
-    final tmp35 = _api._convoSendImageReply(
+    final tmp29 = _api._convoSendImageReply(
       tmp0,
       tmp2,
       tmp3,
@@ -37404,17 +37320,13 @@ class Convo {
       tmp26,
       tmp27,
       tmp28,
-      tmp30,
-      tmp32,
-      tmp33,
-      tmp34,
     );
-    final tmp37 = tmp35;
-    final ffi.Pointer<ffi.Void> tmp37_0 = ffi.Pointer.fromAddress(tmp37);
-    final tmp37_1 = _Box(_api, tmp37_0, "__Convo_send_image_reply_future_drop");
-    tmp37_1._finalizer = _api._registerFinalizer(tmp37_1);
-    final tmp36 = _nativeFuture(tmp37_1, _api.__convoSendImageReplyFuturePoll);
-    return tmp36;
+    final tmp31 = tmp29;
+    final ffi.Pointer<ffi.Void> tmp31_0 = ffi.Pointer.fromAddress(tmp31);
+    final tmp31_1 = _Box(_api, tmp31_0, "__Convo_send_image_reply_future_drop");
+    tmp31_1._finalizer = _api._registerFinalizer(tmp31_1);
+    final tmp30 = _nativeFuture(tmp31_1, _api.__convoSendImageReplyFuturePoll);
+    return tmp30;
   }
 
   /// send reply as audio
@@ -37425,7 +37337,6 @@ class Convo {
     int? size,
     int? secs,
     String eventId,
-    String? txnId,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
@@ -37433,7 +37344,6 @@ class Convo {
     final tmp13 = size;
     final tmp17 = secs;
     final tmp21 = eventId;
-    final tmp25 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -37451,10 +37361,6 @@ class Convo {
     var tmp22 = 0;
     var tmp23 = 0;
     var tmp24 = 0;
-    var tmp26 = 0;
-    var tmp28 = 0;
-    var tmp29 = 0;
-    var tmp30 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -37502,21 +37408,7 @@ class Convo {
     tmp22_1.setAll(0, tmp21_0);
     tmp22 = tmp22_0.address;
     tmp24 = tmp23;
-    if (tmp25 == null) {
-      tmp26 = 0;
-    } else {
-      tmp26 = 1;
-      final tmp27 = tmp25;
-      final tmp27_0 = utf8.encode(tmp27);
-      tmp29 = tmp27_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
-      final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
-      tmp28_1.setAll(0, tmp27_0);
-      tmp28 = tmp28_0.address;
-      tmp30 = tmp29;
-    }
-    final tmp31 = _api._convoSendAudioReply(
+    final tmp25 = _api._convoSendAudioReply(
       tmp0,
       tmp2,
       tmp3,
@@ -37534,17 +37426,13 @@ class Convo {
       tmp22,
       tmp23,
       tmp24,
-      tmp26,
-      tmp28,
-      tmp29,
-      tmp30,
     );
-    final tmp33 = tmp31;
-    final ffi.Pointer<ffi.Void> tmp33_0 = ffi.Pointer.fromAddress(tmp33);
-    final tmp33_1 = _Box(_api, tmp33_0, "__Convo_send_audio_reply_future_drop");
-    tmp33_1._finalizer = _api._registerFinalizer(tmp33_1);
-    final tmp32 = _nativeFuture(tmp33_1, _api.__convoSendAudioReplyFuturePoll);
-    return tmp32;
+    final tmp27 = tmp25;
+    final ffi.Pointer<ffi.Void> tmp27_0 = ffi.Pointer.fromAddress(tmp27);
+    final tmp27_1 = _Box(_api, tmp27_0, "__Convo_send_audio_reply_future_drop");
+    tmp27_1._finalizer = _api._registerFinalizer(tmp27_1);
+    final tmp26 = _nativeFuture(tmp27_1, _api.__convoSendAudioReplyFuturePoll);
+    return tmp26;
   }
 
   /// send reply as video
@@ -37558,7 +37446,6 @@ class Convo {
     int? height,
     String? blurhash,
     String eventId,
-    String? txnId,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
@@ -37569,7 +37456,6 @@ class Convo {
     final tmp25 = height;
     final tmp29 = blurhash;
     final tmp35 = eventId;
-    final tmp39 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -37595,10 +37481,6 @@ class Convo {
     var tmp36 = 0;
     var tmp37 = 0;
     var tmp38 = 0;
-    var tmp40 = 0;
-    var tmp42 = 0;
-    var tmp43 = 0;
-    var tmp44 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -37674,21 +37556,7 @@ class Convo {
     tmp36_1.setAll(0, tmp35_0);
     tmp36 = tmp36_0.address;
     tmp38 = tmp37;
-    if (tmp39 == null) {
-      tmp40 = 0;
-    } else {
-      tmp40 = 1;
-      final tmp41 = tmp39;
-      final tmp41_0 = utf8.encode(tmp41);
-      tmp43 = tmp41_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp42_0 = _api.__allocate(tmp43 * 1, 1);
-      final Uint8List tmp42_1 = tmp42_0.asTypedList(tmp43);
-      tmp42_1.setAll(0, tmp41_0);
-      tmp42 = tmp42_0.address;
-      tmp44 = tmp43;
-    }
-    final tmp45 = _api._convoSendVideoReply(
+    final tmp39 = _api._convoSendVideoReply(
       tmp0,
       tmp2,
       tmp3,
@@ -37714,17 +37582,13 @@ class Convo {
       tmp36,
       tmp37,
       tmp38,
-      tmp40,
-      tmp42,
-      tmp43,
-      tmp44,
     );
-    final tmp47 = tmp45;
-    final ffi.Pointer<ffi.Void> tmp47_0 = ffi.Pointer.fromAddress(tmp47);
-    final tmp47_1 = _Box(_api, tmp47_0, "__Convo_send_video_reply_future_drop");
-    tmp47_1._finalizer = _api._registerFinalizer(tmp47_1);
-    final tmp46 = _nativeFuture(tmp47_1, _api.__convoSendVideoReplyFuturePoll);
-    return tmp46;
+    final tmp41 = tmp39;
+    final ffi.Pointer<ffi.Void> tmp41_0 = ffi.Pointer.fromAddress(tmp41);
+    final tmp41_1 = _Box(_api, tmp41_0, "__Convo_send_video_reply_future_drop");
+    tmp41_1._finalizer = _api._registerFinalizer(tmp41_1);
+    final tmp40 = _nativeFuture(tmp41_1, _api.__convoSendVideoReplyFuturePoll);
+    return tmp40;
   }
 
   /// send reply as file
@@ -37734,14 +37598,12 @@ class Convo {
     String mimetype,
     int? size,
     String eventId,
-    String? txnId,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
     final tmp9 = mimetype;
     final tmp13 = size;
     final tmp17 = eventId;
-    final tmp21 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -37757,10 +37619,6 @@ class Convo {
     var tmp18 = 0;
     var tmp19 = 0;
     var tmp20 = 0;
-    var tmp22 = 0;
-    var tmp24 = 0;
-    var tmp25 = 0;
-    var tmp26 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -37801,21 +37659,7 @@ class Convo {
     tmp18_1.setAll(0, tmp17_0);
     tmp18 = tmp18_0.address;
     tmp20 = tmp19;
-    if (tmp21 == null) {
-      tmp22 = 0;
-    } else {
-      tmp22 = 1;
-      final tmp23 = tmp21;
-      final tmp23_0 = utf8.encode(tmp23);
-      tmp25 = tmp23_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
-      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
-      tmp24_1.setAll(0, tmp23_0);
-      tmp24 = tmp24_0.address;
-      tmp26 = tmp25;
-    }
-    final tmp27 = _api._convoSendFileReply(
+    final tmp21 = _api._convoSendFileReply(
       tmp0,
       tmp2,
       tmp3,
@@ -37831,17 +37675,13 @@ class Convo {
       tmp18,
       tmp19,
       tmp20,
-      tmp22,
-      tmp24,
-      tmp25,
-      tmp26,
     );
-    final tmp29 = tmp27;
-    final ffi.Pointer<ffi.Void> tmp29_0 = ffi.Pointer.fromAddress(tmp29);
-    final tmp29_1 = _Box(_api, tmp29_0, "__Convo_send_file_reply_future_drop");
-    tmp29_1._finalizer = _api._registerFinalizer(tmp29_1);
-    final tmp28 = _nativeFuture(tmp29_1, _api.__convoSendFileReplyFuturePoll);
-    return tmp28;
+    final tmp23 = tmp21;
+    final ffi.Pointer<ffi.Void> tmp23_0 = ffi.Pointer.fromAddress(tmp23);
+    final tmp23_1 = _Box(_api, tmp23_0, "__Convo_send_file_reply_future_drop");
+    tmp23_1._finalizer = _api._registerFinalizer(tmp23_1);
+    final tmp22 = _nativeFuture(tmp23_1, _api.__convoSendFileReplyFuturePoll);
+    return tmp22;
   }
 
   /// redact any message (including text/image/file and reaction)

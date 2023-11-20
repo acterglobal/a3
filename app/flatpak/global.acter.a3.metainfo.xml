@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Generator for metainfo & .desktop files: 
+    https://www.freedesktop.org/software/appstream/metainfocreator/#/
+-->
+<component type="desktop-application">
+  <id>global.acter.a3</id>
+  <name>Acter</name>
+  <summary>Casual Community Organizing</summary>
+  <developer_name>Team Acter</developer_name>
+  <url type="homepage">https://acter.global/</url>
+  <metadata_license>CC-BY-SA-4.0</metadata_license>
+  <project_license>Custom</project_license>
+  
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>touch</control>
+  </supports>
+  
+  <description>
+    <p>
+      Organize your community via Matrix
+    </p>
+  </description>
+  
+  <launchable type="desktop-id">global.acter.a3.desktop</launchable>
+</component>

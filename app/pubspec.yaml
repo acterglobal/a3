@@ -104,7 +104,7 @@ dependencies:
   string_validator: ^1.0.0
   shake: ^2.2.0
   crypto: ^3.0.2
-  flutter_math_fork: ^0.7.1
+  flutter_math_fork: ^0.7.2
   shared_preferences: ^2.2.0
   image_picker_for_web: ^3.0.1
   flutter_onboarding_slider: ^1.0.9

@@ -16,7 +16,7 @@ class AsyncSpaceProfileDataNotifier
     final space = arg;
     final profile = space.getProfile();
     OptionString displayName = await profile.getDisplayName();
-    final avatar = await profile.getAvatar();
+    final avatar = await profile.getThumbnail(48, 48);
     return ProfileData(displayName.text(), avatar.data());
   }
 

@@ -1004,8 +1004,7 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
                 let content = RoomMessageEventContent::text_plain(message);
-                let txn_id = TransactionId::new();
-                let response = room.send(content, Some(&txn_id)).await?;
+                let response = room.send(content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1060,8 +1059,7 @@ impl Room {
                     Replacement::new(event_id.to_owned(), MessageType::text_plain(new_msg).into());
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
-                let txn_id = TransactionId::new();
-                let response = room.send(edited_content, Some(&txn_id)).await?;
+                let response = room.send(edited_content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1089,8 +1087,7 @@ impl Room {
                     bail!("No permission to send message in this room");
                 }
                 let content = RoomMessageEventContent::text_markdown(markdown);
-                let txn_id = TransactionId::new();
-                let response = room.send(content, Some(&txn_id)).await?;
+                let response = room.send(content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1147,8 +1144,7 @@ impl Room {
                 );
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
-                let txn_id = TransactionId::new();
-                let response = room.send(edited_content, Some(&txn_id)).await?;
+                let response = room.send(edited_content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1179,8 +1175,7 @@ impl Room {
                 }
                 let relates_to = Annotation::new(event_id, key);
                 let content = ReactionEventContent::new(relates_to);
-                let txn_id = TransactionId::new();
-                let response = room.send(content, Some(&txn_id)).await?;
+                let response = room.send(content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1338,8 +1333,7 @@ impl Room {
                 );
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
-                let txn_id = TransactionId::new();
-                let response = room.send(edited_content, Some(&txn_id)).await?;
+                let response = room.send(edited_content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1490,8 +1484,7 @@ impl Room {
                 );
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
-                let txn_id = TransactionId::new();
-                let response = room.send(edited_content, Some(&txn_id)).await?;
+                let response = room.send(edited_content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1654,8 +1647,7 @@ impl Room {
                 );
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
-                let txn_id = TransactionId::new();
-                let response = room.send(edited_content, Some(&txn_id)).await?;
+                let response = room.send(edited_content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1800,8 +1792,7 @@ impl Room {
                     Replacement::new(event_id.to_owned(), MessageType::File(file_content).into());
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
-                let txn_id = TransactionId::new();
-                let response = room.send(edited_content, Some(&txn_id)).await?;
+                let response = room.send(edited_content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1833,8 +1824,7 @@ impl Room {
                 }
                 let location_content = LocationMessageEventContent::new(body, geo_uri);
                 let content = RoomMessageEventContent::new(MessageType::Location(location_content));
-                let txn_id = TransactionId::new();
-                let response = room.send(content, Some(&txn_id)).await?;
+                let response = room.send(content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1889,8 +1879,7 @@ impl Room {
                 );
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
-                let txn_id = TransactionId::new();
-                let response = room.send(edited_content, Some(&txn_id)).await?;
+                let response = room.send(edited_content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -2385,12 +2374,7 @@ impl Room {
             .await?
     }
 
-    pub async fn send_text_reply(
-        &self,
-        msg: String,
-        event_id: String,
-        txn_id: Option<String>,
-    ) -> Result<OwnedEventId> {
+    pub async fn send_text_reply(&self, msg: String, event_id: String) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't send reply as text to a room we are not in");
         }
@@ -2425,9 +2409,7 @@ impl Room {
                 let content = RoomMessageEventContent::new(MessageType::Text(text_content))
                     .make_reply_to(original_message, ForwardThread::Yes, AddMentions::No);
 
-                let response = room
-                    .send(content, txn_id.as_deref().map(Into::into))
-                    .await?;
+                let response = room.send(content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -2443,7 +2425,6 @@ impl Room {
         width: Option<u64>,
         height: Option<u64>,
         event_id: String,
-        txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't send reply as image to a room we are not in");
@@ -2495,15 +2476,12 @@ impl Room {
                 let content = RoomMessageEventContent::new(MessageType::Image(image_content))
                     .make_reply_to(original_message, ForwardThread::Yes, AddMentions::No);
 
-                let response = room
-                    .send(content, txn_id.as_deref().map(Into::into))
-                    .await?;
+                let response = room.send(content).await?;
                 Ok(response.event_id)
             })
             .await?
     }
 
-    #[allow(clippy::too_many_arguments)]
     pub async fn send_audio_reply(
         &self,
         uri: String,
@@ -2512,7 +2490,6 @@ impl Room {
         size: Option<u64>,
         secs: Option<u64>,
         event_id: String,
-        txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't send reply as audio to a room we are not in");
@@ -2563,9 +2540,7 @@ impl Room {
                 let content = RoomMessageEventContent::new(MessageType::Audio(audio_content))
                     .make_reply_to(original_message, ForwardThread::Yes, AddMentions::No);
 
-                let response = room
-                    .send(content, txn_id.as_deref().map(Into::into))
-                    .await?;
+                let response = room.send(content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -2583,7 +2558,6 @@ impl Room {
         height: Option<u64>,
         blurhash: Option<String>,
         event_id: String,
-        txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't send reply as video to a room we are not in");
@@ -2637,9 +2611,7 @@ impl Room {
                 let content = RoomMessageEventContent::new(MessageType::Video(video_content))
                     .make_reply_to(original_message, ForwardThread::Yes, AddMentions::No);
 
-                let response = room
-                    .send(content, txn_id.as_deref().map(Into::into))
-                    .await?;
+                let response = room.send(content).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -2652,7 +2624,6 @@ impl Room {
         mimetype: String,
         size: Option<u64>,
         event_id: String,
-        txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't send reply as file to a room we are not in");
@@ -2702,9 +2673,7 @@ impl Room {
                 let content = RoomMessageEventContent::new(MessageType::File(file_content))
                     .make_reply_to(original_message, ForwardThread::Yes, AddMentions::No);
 
-                let response = room
-                    .send(content, txn_id.as_deref().map(Into::into))
-                    .await?;
+                let response = room.send(content).await?;
                 Ok(response.event_id)
             })
             .await?

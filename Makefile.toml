@@ -558,6 +558,7 @@ dependencies = [
 [tasks.desktop-build]
 private = true
 condition = { env_true = ["DEV"] }
+env = { MACOSX_DEPLOYMENT_TARGET = 11 }
 command = "cargo"
 args = ["build", "--lib"]
 

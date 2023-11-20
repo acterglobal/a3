@@ -73,8 +73,10 @@ class Dashboard extends ConsumerWidget {
                     replacement: InkWell(
                       onTap: () => context.pushNamed(Routes.authLogin.name),
                       child: ActerAvatar(
-                        uniqueId: UniqueKey().toString(),
-                        mode: DisplayMode.User,
+                        mode: DisplayMode.DM,
+                        avatarInfo: AvatarInfo(
+                          uniqueId: UniqueKey().toString(),
+                        ),
                       ),
                     ),
                     child: !isDesktop

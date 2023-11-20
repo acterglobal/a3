@@ -5,7 +5,6 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/chat_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
-import 'package:acter/common/widgets/spaces/space_parent_badge.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/avatar_builder.dart';
 import 'package:acter/features/chat/widgets/bubble_builder.dart';
@@ -169,10 +168,8 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(right: 10),
-                    child: SpaceParentBadge(
-                      roomId: convo.getRoomIdStr(),
-                      badgeSize: 20,
-                      child: RoomAvatar(roomId: widget.convo.getRoomIdStr()),
+                    child: RoomAvatar(
+                      roomId: widget.convo.getRoomIdStr(),
                     ),
                   ),
                 ),
@@ -213,8 +210,8 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                   // disable image preview
                   disableImageGallery: true,
                   // custom avatar builder
-                  avatarBuilder: (String userId) =>
-                      AvatarBuilder(userId: userId),
+                  avatarBuilder: (types.User user) =>
+                      AvatarBuilder(userId: user.id),
                   isLastPage: !chatState.hasMore,
                   bubbleBuilder: (
                     Widget child, {
