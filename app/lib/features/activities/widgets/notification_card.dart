@@ -90,7 +90,7 @@ class NotificationCard extends ConsumerWidget {
             final profile =
                 ref.watch(notificationChatDataProvider(notification));
             return InkWell(
-              onTap: () => ctx.pushNamed(
+              onTap: () => ctx.goNamed(
                 Routes.chatroom.name,
                 pathParameters: {'roomId': roomId},
               ),
@@ -147,7 +147,7 @@ class NotificationCard extends ConsumerWidget {
         onTap: () {
           switch (brief.route) {
             case Routes.chatroom:
-              context.pushNamed(
+              context.goNamed(
                 Routes.chatroom.name,
                 pathParameters: {
                   'roomId': roomId,

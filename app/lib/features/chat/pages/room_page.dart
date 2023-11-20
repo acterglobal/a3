@@ -170,6 +170,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                     padding: const EdgeInsets.only(right: 10),
                     child: RoomAvatar(
                       roomId: widget.convo.getRoomIdStr(),
+                      showParent: true,
                     ),
                   ),
                 ),
