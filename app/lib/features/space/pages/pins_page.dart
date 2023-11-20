@@ -22,76 +22,79 @@ class SpacePinsPage extends ConsumerWidget {
     final space = ref.watch(spaceProvider(spaceIdOrAlias)).requireValue;
     final pins = ref.watch(spacePinsProvider(space));
     // get platform of context.
-    return CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(
-          child: SpaceHeader(
-            spaceIdOrAlias: spaceIdOrAlias,
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'Pins',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(
-                    Atlas.plus_circle_thin,
-                    color: Theme.of(context).colorScheme.neutral5,
-                  ),
-                  iconSize: 28,
-                  color: Theme.of(context).colorScheme.surface,
-                  onPressed: () => context.pushNamed(
-                    Routes.actionAddPin.name,
-                    queryParameters: {'spaceId': spaceIdOrAlias},
-                  ),
-                ),
-              ],
+    return DecoratedBox(
+      decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: SpaceHeader(
+              spaceIdOrAlias: spaceIdOrAlias,
             ),
           ),
-        ),
-        pins.when(
-          data: (pins) {
-            final widthCount =
-                (MediaQuery.of(context).size.width ~/ 600).toInt();
-            const int minCount = 2;
-            if (pins.isEmpty) {
-              return const SliverToBoxAdapter(
-                child: Center(
-                  child: Text('there is nothing pinned yet'),
-                ),
-              );
-            }
-            return SliverGrid.builder(
-              itemCount: pins.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: max(1, min(widthCount, minCount)),
-                childAspectRatio: 4.0,
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Pins',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Atlas.plus_circle_thin,
+                      color: Theme.of(context).colorScheme.neutral5,
+                    ),
+                    iconSize: 28,
+                    color: Theme.of(context).colorScheme.surface,
+                    onPressed: () => context.pushNamed(
+                      Routes.actionAddPin.name,
+                      queryParameters: {'spaceId': spaceIdOrAlias},
+                    ),
+                  ),
+                ],
               ),
-              itemBuilder: (context, index) {
-                final pin = pins[index];
-                return PinListItem(pin: pin);
-              },
-            );
-          },
-          error: (error, stack) => SliverToBoxAdapter(
-            child: Center(
-              child: Text('Loading failed: $error'),
             ),
           ),
-          loading: () => const SliverToBoxAdapter(
-            child: Center(
-              child: Text('Loading'),
+          pins.when(
+            data: (pins) {
+              final widthCount =
+                  (MediaQuery.of(context).size.width ~/ 600).toInt();
+              const int minCount = 2;
+              if (pins.isEmpty) {
+                return const SliverToBoxAdapter(
+                  child: Center(
+                    child: Text('there is nothing pinned yet'),
+                  ),
+                );
+              }
+              return SliverGrid.builder(
+                itemCount: pins.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: max(1, min(widthCount, minCount)),
+                  childAspectRatio: 4.0,
+                ),
+                itemBuilder: (context, index) {
+                  final pin = pins[index];
+                  return PinListItem(pin: pin);
+                },
+              );
+            },
+            error: (error, stack) => SliverToBoxAdapter(
+              child: Center(
+                child: Text('Loading failed: $error'),
+              ),
+            ),
+            loading: () => const SliverToBoxAdapter(
+              child: Center(
+                child: Text('Loading'),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
