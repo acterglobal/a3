@@ -86,6 +86,7 @@ class RoomProfilePage extends ConsumerWidget {
                     child: RoomAvatar(
                       roomId: roomId,
                       avatarSize: 75,
+                      showParent: true,
                     ),
                   ),
                 ),
