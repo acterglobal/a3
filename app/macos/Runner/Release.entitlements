@@ -11,6 +11,8 @@
 	<key>com.apple.security.network.client</key>
 	<true/>
 	<key>keychain-access-groups</key>
-	<array/>
+	<array>
+		<string>$(AppIdentifierPrefix)global.acter.a3</string>
+	</array>
 </dict>
 </plist>
