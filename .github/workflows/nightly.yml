@@ -428,7 +428,9 @@ jobs:
           git config --global user.name 'Sari'
           git config --global user.email 'acter-sari@users.noreply.github.com'
           git add "docs/content/nightly/${{ needs.tags.outputs.tag }}.md"
-          git commit -F nightly-changes.md
+          echo "Tagging ${{ needs.tags.outputs.tag }}" > notes.md
+          cat nightly-changes.md >> notes.md
+          git commit -F notes.md
           git tag nightly-${{ needs.tags.outputs.tag }}
           git tag -f nightly-latest
           git push -f origin main nightly-${{ needs.tags.outputs.tag }} nightly-latest
