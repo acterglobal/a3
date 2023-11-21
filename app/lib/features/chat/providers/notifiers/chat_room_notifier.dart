@@ -420,7 +420,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     String eventType = eventItem.eventType();
     String sender = eventItem.sender();
     bool isEditable = eventItem.isEditable();
-    bool isEdited = eventItem.isEdited();
+    bool wasEdited = eventItem.wasEdited();
     final author = types.User(
       id: sender,
       firstName: simplifyUserId(sender),
@@ -534,7 +534,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             AudioDesc? description = eventItem.audioDesc();
             if (description != null) {
               Map<String, dynamic> metadata = {'base64': ''};
-              metadata['isEdited'] = isEdited;
+              metadata['was_edited'] = wasEdited;
               metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
@@ -564,7 +564,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               String? formattedBody = description.formattedBody();
               String body = description.body(); // always exists
               Map<String, dynamic> metadata = {};
-              metadata['isEdited'] = isEdited;
+              metadata['was_edited'] = wasEdited;
               metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
@@ -590,7 +590,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             FileDesc? description = eventItem.fileDesc();
             if (description != null) {
               Map<String, dynamic> metadata = {};
-              metadata['isEdited'] = isEdited;
+              metadata['was_edited'] = wasEdited;
               metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
@@ -617,7 +617,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             ImageDesc? description = eventItem.imageDesc();
             if (description != null) {
               Map<String, dynamic> metadata = {};
-              metadata['isEdited'] = isEdited;
+              metadata['was_edited'] = wasEdited;
               metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
@@ -651,7 +651,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 'body': description.body(),
                 'geoUri': description.geoUri(),
               };
-              metadata['isEdited'] = isEdited;
+              metadata['was_edited'] = wasEdited;
               metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
@@ -705,7 +705,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                   'itemType': 'event',
                   'eventType': eventType,
                   'msgType': msgType,
-                  'isEdited': isEdited,
+                  'was_edited': wasEdited,
                   'isEditable': isEditable,
                 },
               );
@@ -725,7 +725,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                   'itemType': 'event',
                   'eventType': eventType,
                   'msgType': msgType,
-                  'isEdited': isEdited,
+                  'was_edited': wasEdited,
                   'isEditable': isEditable,
                 },
               );
@@ -737,7 +737,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               String? formattedBody = description.formattedBody();
               String body = description.body(); // always exists
               Map<String, dynamic> metadata = {};
-              metadata['isEdited'] = isEdited;
+              metadata['was_edited'] = wasEdited;
               metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
@@ -763,7 +763,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             VideoDesc? description = eventItem.videoDesc();
             if (description != null) {
               Map<String, dynamic> metadata = {'base64': ''};
-              metadata['isEdited'] = isEdited;
+              metadata['was_edited'] = wasEdited;
               metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
@@ -817,7 +817,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             'height': description.height()?.toDouble(),
             'base64': '',
           };
-          metadata['isEdited'] = isEdited;
+          metadata['was_edited'] = wasEdited;
           metadata['isEditable'] = isEditable;
           if (inReplyTo != null) {
             metadata['repliedTo'] = inReplyTo;
@@ -849,7 +849,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               'eventType': eventType,
               'msgType': eventItem.msgType(),
               'body': body,
-              'isEdited': isEdited,
+              'was_edited': wasEdited,
               'isEditable': isEditable,
             },
           );

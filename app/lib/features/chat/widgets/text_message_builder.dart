@@ -47,9 +47,9 @@ class _TextMessageBuilderConsumerState
     if (metadata != null && metadata.containsKey('enlargeEmoji')) {
       enlargeEmoji = metadata['enlargeEmoji'];
     }
-    bool isEdited = false;
-    if (metadata != null && metadata.containsKey('isEdited')) {
-      isEdited = metadata['isEdited'];
+    bool wasEdited = false;
+    if (metadata != null && metadata.containsKey('was_edited')) {
+      wasEdited = metadata['was_edited'];
     }
     final authorId = widget.message.author.id;
 
@@ -91,7 +91,7 @@ class _TextMessageBuilderConsumerState
           enlargeEmoji: enlargeEmoji,
           isNotice: isNotice,
           isReply: widget.isReply,
-          isEdited: isEdited,
+          wasEdited: wasEdited,
         ),
         width: widget.messageWidth.toDouble(),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -105,7 +105,7 @@ class _TextMessageBuilderConsumerState
         enlargeEmoji: enlargeEmoji,
         isNotice: isNotice,
         isReply: widget.isReply,
-        isEdited: isEdited,
+        wasEdited: wasEdited,
       ),
     );
   }
@@ -122,7 +122,7 @@ class _TextWidget extends ConsumerWidget {
   final bool enlargeEmoji;
   final bool isNotice;
   final bool isReply;
-  final bool isEdited;
+  final bool wasEdited;
 
   const _TextWidget({
     required this.message,
@@ -130,7 +130,7 @@ class _TextWidget extends ConsumerWidget {
     required this.enlargeEmoji,
     required this.isNotice,
     required this.isReply,
-    required this.isEdited,
+    required this.wasEdited,
   });
 
   @override
@@ -173,7 +173,7 @@ class _TextWidget extends ConsumerWidget {
                 ),
         ),
         Visibility(
-          visible: isEdited,
+          visible: wasEdited,
           child: Text(
             'Edited',
             style: const ActerChatTheme()
