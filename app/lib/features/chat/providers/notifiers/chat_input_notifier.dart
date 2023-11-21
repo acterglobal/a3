@@ -6,10 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class ChatInputNotifier extends StateNotifier<ChatInputState> {
   ChatInputNotifier() : super(const ChatInputState());
 
-  void toggleEditView(bool value) =>
+  void showEditView(bool value) =>
       state = state.copyWith(showEditView: value);
 
-  void toggleReplyView(bool value) =>
+  void showReplyView(bool value) =>
       state = state.copyWith(showReplyView: value);
 
   void showSendBtn(bool value) => state = state.copyWith(sendBtnVisible: value);

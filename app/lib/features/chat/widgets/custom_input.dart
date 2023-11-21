@@ -279,7 +279,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                       ),
                     ),
                   ),
-                  if(showEditButton)
+                  if (showEditButton)
                     InkWell(
                       onTap: () async {
                         final emojiRowVisible = ref.read(
@@ -288,19 +288,19 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                           }),
                         );
                         final inputNotifier =
-                        ref.read(chatInputProvider(roomId).notifier);
+                            ref.read(chatInputProvider(roomId).notifier);
                         if (emojiRowVisible) {
                           inputNotifier.setCurrentMessageId(null);
                           inputNotifier.emojiRowVisible(false);
                         }
 
-                        inputNotifier.toggleEditView(true);
+                        inputNotifier.showEditView(true);
                         final message = ref
                             .read(chatStateProvider(widget.convo))
                             .messages
                             .firstWhere(
                               (element) => element.id == currentMessageId,
-                        );
+                            );
                         chatInputNotifier.setEditMessage(message);
                         if (message is TextMessage) {
                           ref
@@ -309,26 +309,21 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                         }
 
                         final chatInputFocusState =
-                        ref.read(chatInputFocusProvider.notifier);
-                        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                            ref.read(chatInputFocusProvider.notifier);
+                        WidgetsBinding.instance
+                            .addPostFrameCallback((timeStamp) {
                           FocusScope.of(context)
                               .requestFocus(chatInputFocusState.state);
                         });
                       },
-                      child: const Text(
-                        'Edit',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      child: const Text('Edit'),
                     ),
                   InkWell(
                     onTap: () => customMsgSnackbar(
                       context,
                       'More options not implemented yet',
                     ),
-                    child: const Text(
-                      'More',
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    child: const Text('More'),
                   ),
                 ],
               ),
@@ -505,8 +500,8 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
 
             chatInputNotifier.setRepliedToMessage(null);
             chatInputNotifier.setEditMessage(null);
-            chatInputNotifier.toggleReplyView(false);
-            chatInputNotifier.toggleEditView(false);
+            chatInputNotifier.showReplyView(false);
+            chatInputNotifier.showEditView(false);
             chatInputNotifier.setReplyWidget(null);
             chatInputNotifier.setEditWidget(null);
           } else {
@@ -535,8 +530,8 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             );
             chatInputNotifier.setRepliedToMessage(null);
             chatInputNotifier.setEditMessage(null);
-            chatInputNotifier.toggleReplyView(false);
-            chatInputNotifier.toggleEditView(false);
+            chatInputNotifier.showReplyView(false);
+            chatInputNotifier.showEditView(false);
             chatInputNotifier.setReplyWidget(null);
             chatInputNotifier.setEditWidget(null);
           } else {
@@ -596,18 +591,15 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         const Spacer(),
         GestureDetector(
           onTap: () {
-            inputNotifier.toggleReplyView(false);
-            inputNotifier.toggleEditView(false);
+            inputNotifier.showReplyView(false);
+            inputNotifier.showEditView(false);
             inputNotifier.setReplyWidget(null);
             inputNotifier.setEditWidget(null);
             inputNotifier.setRepliedToMessage(null);
             inputNotifier.setEditMessage(null);
             FocusScope.of(context).unfocus();
           },
-          child: const Icon(
-            Atlas.xmark_circle,
-            color: Colors.white,
-          ),
+          child: const Icon(Atlas.xmark_circle),
         ),
       ],
     );
@@ -624,7 +616,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       children: [
         const SizedBox(width: 5),
         const Text(
-          'Edit:',
+          'Edit Message:',
           style: TextStyle(
             color: Colors.grey,
             fontSize: 12,
@@ -637,18 +629,15 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             if (mentionKey.currentState != null) {
               mentionState!.controller!.clear();
             }
-            inputNotifier.toggleReplyView(false);
-            inputNotifier.toggleEditView(false);
+            inputNotifier.showReplyView(false);
+            inputNotifier.showEditView(false);
             inputNotifier.setReplyWidget(null);
             inputNotifier.setEditWidget(null);
             inputNotifier.setRepliedToMessage(null);
             inputNotifier.setEditMessage(null);
             FocusScope.of(context).unfocus();
           },
-          child: const Icon(
-            Atlas.xmark_circle,
-            color: Colors.white,
-          ),
+          child: const Icon(Atlas.xmark_circle),
         ),
       ],
     );
@@ -700,8 +689,8 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       chatInputNotifier.setRepliedToMessage(null);
       chatInputNotifier.setEditMessage(null);
       final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
-      inputNotifier.toggleReplyView(false);
-      inputNotifier.toggleEditView(false);
+      inputNotifier.showReplyView(false);
+      inputNotifier.showEditView(false);
       inputNotifier.setReplyWidget(null);
       inputNotifier.setEditWidget(null);
     } else if (chatInputState.editMessage != null) {
@@ -712,8 +701,8 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       chatInputNotifier.setRepliedToMessage(null);
       chatInputNotifier.setEditMessage(null);
       final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
-      inputNotifier.toggleReplyView(false);
-      inputNotifier.toggleEditView(false);
+      inputNotifier.showReplyView(false);
+      inputNotifier.showEditView(false);
       inputNotifier.setReplyWidget(null);
       inputNotifier.setEditWidget(null);
     } else {
