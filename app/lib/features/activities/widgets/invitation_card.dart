@@ -87,6 +87,7 @@ class InvitationCard extends ConsumerWidget {
     EasyLoading.show(status: 'Joining', dismissOnTap: false);
     bool res = await invitation.accept();
     if (!res) {
+      EasyLoading.dismiss();
       EasyLoading.showError('Failed to join');
       return;
     }
