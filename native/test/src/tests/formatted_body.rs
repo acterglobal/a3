@@ -1,97 +1,114 @@
-use acter::api::{login_new_client, CreateConvoSettingsBuilder};
-use anyhow::{Context, Result};
-use futures::stream::StreamExt;
-use tempfile::TempDir;
-use tokio::time::{sleep, Duration};
-use tracing::error;
+use acter::{api::RoomMessage, ruma_common::OwnedEventId};
+use anyhow::Result;
+use core::time::Duration;
+use futures::{pin_mut, stream::StreamExt, FutureExt};
+use tokio::time::sleep;
+use tracing::info;
 
-use crate::utils::default_user_password;
+use crate::utils::random_users_with_random_convo;
 
 #[tokio::test]
-#[ignore = "test runs forever in github runner, it works well in local synapse :("]
 async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     let _ = env_logger::try_init();
 
-    let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME")
-        .unwrap_or("localhost")
-        .to_string();
-    let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL")
-        .unwrap_or("http://localhost:8118")
-        .to_string();
+    let (mut sisko, mut kyra, _, room_id) = random_users_with_random_convo("markdown").await?;
+    let sisko_sync = sisko.start_sync();
+    sisko_sync.await_has_synced_history().await?;
 
-    // initialize sisko's client
-    let tmp_dir = TempDir::new()?;
-    let mut sisko = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
-        "@sisko".to_string(),
-        default_user_password("sisko"),
-        homeserver_name.clone(),
-        homeserver_url.clone(),
-        Some("SISKO_DEV".to_string()),
-    )
-    .await?;
-    let sisko_syncer = sisko.start_sync();
-    let mut sisko_synced = sisko_syncer.first_synced_rx();
-    while sisko_synced.next().await != Some(true) {} // let's wait for it to have synced
+    let sisko_convo = sisko
+        .convo(room_id.to_string())
+        .await
+        .expect("sisko should belong to convo");
+    let sisko_timeline = sisko_convo
+        .timeline_stream()
+        .await
+        .expect("sisko should get timeline stream");
 
-    // sisko creates room and invites kyra
-    let settings = CreateConvoSettingsBuilder::default()
-        .invites(vec![format!("@kyra:{homeserver_name}").try_into()?])
-        .build()?;
-    let sisko_kyra_dm_id = sisko.create_convo(Box::new(settings)).await?;
+    let kyra_sync = kyra.start_sync();
+    kyra_sync.await_has_synced_history().await?;
 
-    // initialize kyra's client
-    let tmp_dir = TempDir::new()?;
-    let mut kyra = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
-        "@kyra".to_string(),
-        default_user_password("kyra"),
-        homeserver_name.clone(),
-        homeserver_url.clone(),
-        Some("KYRA_DEV".to_string()),
-    )
-    .await?;
-    let kyra_syncer = kyra.start_sync();
-    let mut first_synced = kyra_syncer.first_synced_rx();
-    while first_synced.next().await != Some(true) {} // let's wait for it to have synced
+    let kyra_convo = kyra
+        .convo(room_id.to_string())
+        .await
+        .expect("kyra should belong to convo");
+    let kyra_timeline = kyra_convo
+        .timeline_stream()
+        .await
+        .expect("kyra should get timeline stream");
+    let kyra_stream = kyra_timeline.diff_stream();
+    pin_mut!(kyra_stream);
 
-    // kyra accepts invitation from sisko
-    let invited = kyra.get_room(&sisko_kyra_dm_id).unwrap();
-    let mut delay = 2;
-    while let Err(e) = invited.join().await {
-        sleep(Duration::from_secs(delay)).await;
-        delay *= 2;
-        if delay > 3600 {
-            error!("Can't join room {} ({:?})", invited.room_id(), e);
-            break;
-        }
+    kyra_stream.next().await;
+    for invited in kyra.invited_rooms().iter() {
+        info!(" - accepting {:?}", invited.room_id());
+        invited.join().await?;
     }
 
     // sisko sends the formatted text message to kyra
-    let convo = sisko
-        .convo_typed(&sisko_kyra_dm_id)
-        .await
-        .context("chat not found")?;
-    let _event_id = convo
+    sisko_timeline
         .send_formatted_message("**Hello**".to_string())
         .await?;
 
-    // kyra receives the formatted text message from sisko
-    let convo = kyra
-        .convo_typed(&sisko_kyra_dm_id)
-        .await
-        .context("chat not found")?;
+    // text msg may reach via pushback action or reset action
+    let mut i = 30;
+    let mut received = false;
+    while i > 0 {
+        info!("stream loop - {i}");
+        if let Some(diff) = kyra_stream.next().now_or_never().flatten() {
+            info!("stream diff - {}", diff.action());
+            match diff.action().as_str() {
+                "PushBack" => {
+                    let value = diff
+                        .value()
+                        .expect("diff pushback action should have valid value");
+                    info!("diff pushback - {:?}", value);
+                    if match_room_msg(&value, "<p><strong>Hello</strong></p>\n").is_some() {
+                        received = true;
+                    }
+                }
+                "Reset" => {
+                    let values = diff
+                        .values()
+                        .expect("diff reset action should have valid values");
+                    info!("diff reset - {:?}", values);
+                    for value in values.iter() {
+                        if match_room_msg(value, "<p><strong>Hello</strong></p>\n").is_some() {
+                            received = true;
+                            break;
+                        }
+                    }
+                }
+                _ => {}
+            }
+            // yay
+            if received {
+                break;
+            }
+        }
+        info!("continue loop");
+        i -= 1;
+        sleep(Duration::from_secs(1)).await;
+    }
+    info!("loop finished");
+    assert!(received, "Even after 30 seconds, text msg not received");
 
-    if let Some(msg) = convo.latest_message() {
-        if let Some(event_item) = msg.event_item() {
-            if let Some(text_desc) = event_item.text_desc() {
-                if let Some(formatted) = text_desc.formatted_body() {
-                    let idx = formatted.find("<strong>Hello</strong>");
-                    assert!(idx.is_some(), "formatted body not found");
+    Ok(())
+}
+
+fn match_room_msg(msg: &RoomMessage, body: &str) -> Option<OwnedEventId> {
+    info!("match room msg - {:?}", msg.clone());
+    if msg.item_type() == "event" {
+        let event_item = msg.event_item().expect("room msg should have event item");
+        if let Some(text_desc) = event_item.text_desc() {
+            if let Some(formatted) = text_desc.formatted_body() {
+                if formatted == body {
+                    // exclude the pending msg
+                    if let Some(event_id) = event_item.evt_id() {
+                        return Some(event_id);
+                    }
                 }
             }
         }
     }
-
-    Ok(())
+    None
 }
