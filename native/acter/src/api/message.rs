@@ -133,8 +133,8 @@ impl RoomEventItem {
     }
 
     // for only integration test
-    pub fn pending_to_send(&self) -> bool {
-        self.txn_id.is_some()
+    pub fn evt_id(&self) -> Option<OwnedEventId> {
+        self.evt_id.clone()
     }
 
     pub fn unique_id(&self) -> String {

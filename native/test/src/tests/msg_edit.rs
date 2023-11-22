@@ -1,4 +1,4 @@
-use acter::RoomMessage;
+use acter::{api::RoomMessage, ruma_common::OwnedEventId};
 use anyhow::Result;
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
@@ -75,7 +75,7 @@ async fn edit_text_msg() -> Result<()> {
 
     timeline
         .edit_plain_message(
-            sent_event_id.clone().unwrap(),
+            sent_event_id.clone().unwrap().to_string(),
             "This is message edition".to_string(),
         )
         .await?;
@@ -115,15 +115,16 @@ async fn edit_text_msg() -> Result<()> {
     Ok(())
 }
 
-fn match_room_msg(msg: &RoomMessage, body: &str, modified: bool) -> Option<String> {
+fn match_room_msg(msg: &RoomMessage, body: &str, modified: bool) -> Option<OwnedEventId> {
     info!("match room msg - {:?}", msg.clone());
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
         if let Some(text_desc) = event_item.text_desc() {
             if text_desc.body() == body {
-                assert_eq!(event_item.is_edited(), modified);
-                if !event_item.pending_to_send() {
-                    return Some(event_item.unique_id());
+                assert_eq!(event_item.was_edited(), modified);
+                // exclude the pending msg
+                if let Some(event_id) = event_item.evt_id() {
+                    return Some(event_id);
                 }
             }
         }
@@ -149,7 +150,7 @@ async fn edit_image_msg() -> Result<()> {
         .as_file_mut()
         .write_all(include_bytes!("./fixtures/kingfisher.jpg"))?;
 
-    let event_id = convo
+    timeline
         .send_image_message(
             tmp_jpg.path().to_string_lossy().to_string(),
             "jpg_file".to_string(),
@@ -160,11 +161,10 @@ async fn edit_image_msg() -> Result<()> {
             None,
         )
         .await?;
-    info!("event id: {event_id:?}");
 
     // text msg may reach via pushback action or reset action
     let mut i = 3;
-    let mut received = false;
+    let mut sent_event_id = None;
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
@@ -172,8 +172,8 @@ async fn edit_image_msg() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
-                    if match_image_msg(&value, event_id.to_string(), "image/jpeg", false) {
-                        received = true;
+                    if let Some(event_id) = match_image_msg(&value, "image/jpeg", false) {
+                        sent_event_id = Some(event_id);
                     }
                 }
                 "Reset" => {
@@ -181,8 +181,8 @@ async fn edit_image_msg() -> Result<()> {
                         .values()
                         .expect("diff reset action should have valid values");
                     for value in values.iter() {
-                        if match_image_msg(value, event_id.to_string(), "image/jpeg", false) {
-                            received = true;
+                        if let Some(event_id) = match_image_msg(value, "image/jpeg", false) {
+                            sent_event_id = Some(event_id);
                             break;
                         }
                     }
@@ -190,23 +190,26 @@ async fn edit_image_msg() -> Result<()> {
                 _ => {}
             }
             // yay
-            if received {
+            if sent_event_id.is_some() {
                 break;
             }
         }
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    assert!(received, "Even after 3 seconds, text msg not received");
+    assert!(
+        sent_event_id.is_some(),
+        "Even after 3 seconds, text msg not received"
+    );
 
     let mut tmp_png = NamedTempFile::new()?;
     tmp_png.as_file_mut().write_all(include_bytes!(
         "./fixtures/PNG_transparency_demonstration_1.png"
     ))?;
 
-    let edited_id = convo
+    timeline
         .edit_image_message(
-            event_id.to_string(),
+            sent_event_id.clone().unwrap().to_string(),
             tmp_png.path().to_string_lossy().to_string(),
             "png_file".to_string(),
             "image/png".to_string(),
@@ -215,57 +218,55 @@ async fn edit_image_msg() -> Result<()> {
             None,
         )
         .await?;
-    info!("edited id: {edited_id:?}");
 
     // msg edition may reach via set action
     i = 3;
-    received = false;
+    let mut edited_event_id = None;
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             if diff.action() == "Set" {
                 let value = diff
                     .value()
                     .expect("diff set action should have valid value");
-                if match_image_msg(
-                    &value,
-                    event_id.to_string(), // not edited_id, because stream will replace old msg with new msg in timeline
-                    "image/png",
-                    true,
-                ) {
-                    received = true;
+                if let Some(event_id) = match_image_msg(&value, "image/png", true) {
+                    edited_event_id = Some(event_id);
                 }
             }
             // yay
-            if received {
+            if edited_event_id.is_some() {
                 break;
             }
         }
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    assert!(received, "Even after 3 seconds, msg edition not received");
+    assert!(
+        edited_event_id.is_some(),
+        "Even after 3 seconds, msg edition not received"
+    );
+
+    assert_eq!(
+        edited_event_id,
+        sent_event_id,
+        "edited id should be same as sent id, because stream will replace old msg with new msg in timeline"
+    );
 
     Ok(())
 }
 
-fn match_image_msg(
-    msg: &RoomMessage,
-    event_id: String,
-    content_type: &str,
-    modified: bool,
-) -> bool {
+fn match_image_msg(msg: &RoomMessage, content_type: &str, modified: bool) -> Option<OwnedEventId> {
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
-        if event_item.event_id() == event_id {
+        if let Some(image_desc) = event_item.image_desc() {
             assert_eq!(event_item.was_edited(), modified);
-            let image_desc = event_item
-                .image_desc()
-                .expect("image msg should have image desc");
             if let Some(mimetype) = image_desc.mimetype() {
                 assert_eq!(mimetype, content_type);
             }
-            return true;
+            // exclude the pending msg
+            if let Some(evt_id) = event_item.evt_id() {
+                return Some(evt_id);
+            }
         }
     }
-    false
+    None
 }

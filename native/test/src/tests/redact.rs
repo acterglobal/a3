@@ -1,5 +1,6 @@
 use acter::{
     api::RoomMessage,
+    ruma_common::OwnedEventId,
     ruma_events::{AnyMessageLikeEvent, AnyTimelineEvent},
 };
 use anyhow::{bail, Result};
@@ -76,7 +77,7 @@ async fn message_redaction() -> Result<()> {
 
     let redact_id = convo
         .redact_message(
-            received.clone().unwrap(),
+            received.clone().unwrap().to_string(),
             Some("redact-test".to_string()),
             None,
         )
@@ -89,19 +90,20 @@ async fn message_redaction() -> Result<()> {
     let Some(original) = redaction_event.as_original() else {
         bail!("Redaction event should get original event")
     };
-    assert_eq!(original.redacts.clone().map(|x| x.to_string()), received);
+    assert_eq!(original.redacts, received);
     assert_eq!(original.content.reason, Some("redact-test".to_string()));
 
     Ok(())
 }
 
-fn match_room_msg(msg: &RoomMessage, body: &str) -> Option<String> {
+fn match_room_msg(msg: &RoomMessage, body: &str) -> Option<OwnedEventId> {
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
         if let Some(text_desc) = event_item.text_desc() {
             if text_desc.body() == body {
-                if !event_item.pending_to_send() {
-                    return Some(event_item.unique_id());
+                // exclude the pending msg
+                if let Some(event_id) = event_item.evt_id() {
+                    return Some(event_id);
                 }
             }
         }
