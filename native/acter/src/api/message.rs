@@ -1721,12 +1721,12 @@ impl RoomMessage {
         let mut txn_id = None;
         if event.is_local_echo() {
             if let Some(EventSendState::Sent { event_id }) = event.send_state() {
-                evt_id = Some(event_id.clone());
+                evt_id = Some((*event_id).clone());
             } else {
-                txn_id = event.transaction_id().map(|x| x.clone().to_owned());
+                txn_id = event.transaction_id().map(|x| (*x).to_owned());
             }
         } else {
-            evt_id = event.event_id().map(|x| x.clone().to_owned());
+            evt_id = event.event_id().map(|x| (*x).to_owned());
         }
         let room_id = room.room_id().to_owned();
         let sender = event.sender().to_owned();
