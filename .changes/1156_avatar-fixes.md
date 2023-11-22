@@ -1,0 +1,3 @@
+- [fix] : In previous released version, parent badge for spaces was not appearing in some of the sections .i.e. sidebar navigation, my spaces section. This has been fixed.
+- [fix] : Optimise parent badge size for spaces.
+- [fix] : In previous released version, due to internal changes, made some avatars non-interactive. This has been fixed.

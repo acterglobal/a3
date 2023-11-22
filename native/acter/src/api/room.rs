@@ -954,7 +954,6 @@ impl Room {
         }
         let room = self.room.clone();
         let client = self.room.client();
-
         let event_id = EventId::parse(event_id)?;
 
         RUNTIME
@@ -984,7 +983,6 @@ impl Room {
         }
         let room = self.room.clone();
         let client = self.room.client();
-
         let event_id = EventId::parse(event_id)?;
 
         RUNTIME

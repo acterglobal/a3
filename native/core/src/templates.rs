@@ -455,7 +455,7 @@ impl Engine {
                     ObjectInner::TaskList { fields } => {
                         trace!(?fields, "submitting task list");
                         let id = room
-                            .send(fields, None)
+                            .send(fields)
                             .await
                             .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
                             .event_id;
@@ -469,7 +469,7 @@ impl Engine {
                     ObjectInner::Task { fields } => {
                         trace!(?fields, "submitting task");
                         let id = room
-                            .send(fields, None)
+                            .send(fields)
                             .await
                             .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
                             .event_id;
@@ -483,7 +483,7 @@ impl Engine {
                     ObjectInner::CalendarEvent { fields } => {
                         trace!(?fields, "submitting calendar event");
                         let id = room
-                            .send(fields, None)
+                            .send(fields)
                             .await
                             .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
                             .event_id;
@@ -497,7 +497,7 @@ impl Engine {
                     ObjectInner::Pin { fields } => {
                         trace!(?fields, "submitting pin");
                         let id = room
-                            .send(fields, None)
+                            .send(fields)
                             .await
                             .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
                             .event_id;
@@ -511,7 +511,7 @@ impl Engine {
                     ObjectInner::NewsEntry { fields } => {
                         trace!(?fields, "submitting news entry");
                         let id = room
-                            .send(fields, None)
+                            .send(fields)
                             .await
                             .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
                             .event_id;

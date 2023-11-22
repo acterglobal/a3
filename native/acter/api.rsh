@@ -495,11 +495,11 @@ object RoomEventItem {
     /// the details that users reacted using this emote key in this message
     fn reaction_records(key: string) -> Option<Vec<ReactionRecord>>;
 
-    /// Whether this message is editable
+    /// Whether current user wrote this message and can modify it
     fn is_editable() -> bool;
 
-    /// Whether this message is the edited message
-    fn is_edited() -> bool;
+    /// Whether this message was modified by author
+    fn was_edited() -> bool;
 }
 
 object RoomVirtualItem {
@@ -770,7 +770,7 @@ object TimelineStream {
     fn edit_plain_message(event_id: string, new_msg: string) -> Future<Result<bool>>;
 
     /// send reply as plain text to event
-    fn send_plain_reply(msg: string, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+    fn send_plain_reply(msg: string, event_id: string) -> Future<Result<bool>>;
 
     /// send the formatted text message
     fn send_formatted_message(markdown: string) -> Future<Result<bool>>;
@@ -779,7 +779,7 @@ object TimelineStream {
     fn edit_formatted_message(event_id: string, new_msg: string) -> Future<Result<bool>>;
 
     /// send reply as formatted text to event
-    fn send_formatted_reply(markdown: string, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+    fn send_formatted_reply(markdown: string, event_id: string) -> Future<Result<bool>>;
 
     /// send the image message
     fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<bool>>;
@@ -788,7 +788,7 @@ object TimelineStream {
     fn edit_image_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>) -> Future<Result<bool>>;
 
     /// send reply as image to event
-    fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+    fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string) -> Future<Result<bool>>;
 
     /// send the audio message
     fn send_audio_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>) -> Future<Result<bool>>;
@@ -797,7 +797,7 @@ object TimelineStream {
     fn edit_audio_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>) -> Future<Result<bool>>;
 
     /// send reply as audio to event
-    fn send_audio_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+    fn send_audio_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, event_id: string) -> Future<Result<bool>>;
 
     /// send the video message
     fn send_video_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<bool>>;
@@ -806,7 +806,7 @@ object TimelineStream {
     fn edit_video_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>) -> Future<Result<bool>>;
 
     /// send reply as video to event
-    fn send_video_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+    fn send_video_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string) -> Future<Result<bool>>;
 
     /// send the file message
     fn send_file_message(uri: string, name: string, mimetype: string, size: Option<u64>) -> Future<Result<bool>>;
@@ -815,7 +815,7 @@ object TimelineStream {
     fn edit_file_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>) -> Future<Result<bool>>;
 
     /// send reply as file to event
-    fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+    fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u64>, event_id: string) -> Future<Result<bool>>;
 
     /// send the location message
     fn send_location_message(body: string, geo_uri: string) -> Future<Result<bool>>;
@@ -824,7 +824,7 @@ object TimelineStream {
     fn edit_location_message(event_id: string, body: string, geo_uri: string) -> Future<Result<bool>>;
 
     /// send reply as location to event
-    fn send_location_reply(body: string, geo_uri: string, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+    fn send_location_reply(body: string, geo_uri: string, event_id: string) -> Future<Result<bool>>;
 
     /// send single receipt
     /// receipt_type: FullyRead | Read | ReadPrivate

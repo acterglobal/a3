@@ -68,9 +68,16 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
       }
     }
     final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
+    final userId = ref.watch(myUserIdStrProvider);
+    if(userId == message.author.id && message is types.TextMessage) {
+      inputNotifier.showEditButton(true);
+    } else {
+      inputNotifier.showEditButton(false);
+    }
     if (ref.read(chatInputProvider(roomId)).showReplyView) {
-      inputNotifier.toggleReplyView(false);
+      inputNotifier.showReplyView(false);
       inputNotifier.setReplyWidget(null);
+      inputNotifier.setEditWidget(null);
     }
     inputNotifier.setCurrentMessageId(message.id);
     inputNotifier.emojiRowVisible(true);
@@ -170,6 +177,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                     padding: const EdgeInsets.only(right: 10),
                     child: RoomAvatar(
                       roomId: widget.convo.getRoomIdStr(),
+                      showParent: true,
                     ),
                   ),
                 ),

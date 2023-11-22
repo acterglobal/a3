@@ -74,7 +74,7 @@ impl TimelineStream {
             .spawn(async move {
                 let mut back_pagination_status = timeline.back_pagination_status();
                 let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
-                let options = PaginationOptions::single_request(count);
+                let options = PaginationOptions::simple_request(count);
                 timeline.paginate_backwards(options).await?;
                 loop {
                     if let Some(status) = back_pagination_status.next().await {
@@ -190,12 +190,7 @@ impl TimelineStream {
             .await?
     }
 
-    pub async fn send_plain_reply(
-        &self,
-        msg: String,
-        event_id: String,
-        txn_id: Option<String>,
-    ) -> Result<bool> {
+    pub async fn send_plain_reply(&self, msg: String, event_id: String) -> Result<bool> {
         if !self.is_joined() {
             bail!("Can't send reply as plain text to a room we are not in");
         }
@@ -312,12 +307,7 @@ impl TimelineStream {
             .await?
     }
 
-    pub async fn send_formatted_reply(
-        &self,
-        markdown: String,
-        event_id: String,
-        txn_id: Option<String>,
-    ) -> Result<bool> {
+    pub async fn send_formatted_reply(&self, markdown: String, event_id: String) -> Result<bool> {
         if !self.is_joined() {
             bail!("Can't send reply as formatted text to a room we are not in");
         }
@@ -487,7 +477,6 @@ impl TimelineStream {
         height: Option<u64>,
         blurhash: Option<String>,
         event_id: String,
-        txn_id: Option<String>,
     ) -> Result<bool> {
         if !self.is_joined() {
             bail!("Can't send reply as image to a room we are not in");
@@ -664,7 +653,6 @@ impl TimelineStream {
             .await?
     }
 
-    #[allow(clippy::too_many_arguments)]
     pub async fn send_audio_reply(
         &self,
         uri: String,
@@ -673,7 +661,6 @@ impl TimelineStream {
         size: Option<u64>,
         secs: Option<u64>,
         event_id: String,
-        txn_id: Option<String>,
     ) -> Result<bool> {
         if !self.is_joined() {
             bail!("Can't send reply as audio to a room we are not in");
@@ -870,7 +857,6 @@ impl TimelineStream {
         height: Option<u64>,
         blurhash: Option<String>,
         event_id: String,
-        txn_id: Option<String>,
     ) -> Result<bool> {
         if !self.is_joined() {
             bail!("Can't send reply as video to a room we are not in");
@@ -1040,7 +1026,6 @@ impl TimelineStream {
         mimetype: String,
         size: Option<u64>,
         event_id: String,
-        txn_id: Option<String>,
     ) -> Result<bool> {
         if !self.is_joined() {
             bail!("Can't send reply as file to a room we are not in");
@@ -1185,7 +1170,6 @@ impl TimelineStream {
         body: String,
         geo_uri: String,
         event_id: String,
-        txn_id: Option<String>,
     ) -> Result<bool> {
         if !self.is_joined() {
             bail!("Can't send reply as location to a room we are not in");

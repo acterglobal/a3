@@ -15032,13 +15032,13 @@ class Api {
       int Function(
         int,
       )>();
-  late final _roomEventItemIsEditedPtr = _lookup<
+  late final _roomEventItemWasEditedPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
             ffi.Int64,
-          )>>("__RoomEventItem_is_edited");
+          )>>("__RoomEventItem_was_edited");
 
-  late final _roomEventItemIsEdited = _roomEventItemIsEditedPtr.asFunction<
+  late final _roomEventItemWasEdited = _roomEventItemWasEditedPtr.asFunction<
       int Function(
         int,
       )>();
@@ -15884,19 +15884,11 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
           )>>("__TimelineStream_send_plain_reply");
 
   late final _timelineStreamSendPlainReply =
       _timelineStreamSendPlainReplyPtr.asFunction<
           int Function(
-            int,
-            int,
-            int,
-            int,
             int,
             int,
             int,
@@ -15955,19 +15947,11 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
           )>>("__TimelineStream_send_formatted_reply");
 
   late final _timelineStreamSendFormattedReply =
       _timelineStreamSendFormattedReplyPtr.asFunction<
           int Function(
-            int,
-            int,
-            int,
-            int,
             int,
             int,
             int,
@@ -16098,19 +16082,11 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
           )>>("__TimelineStream_send_image_reply");
 
   late final _timelineStreamSendImageReply =
       _timelineStreamSendImageReplyPtr.asFunction<
           int Function(
-            int,
-            int,
-            int,
-            int,
             int,
             int,
             int,
@@ -16235,19 +16211,11 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
           )>>("__TimelineStream_send_audio_reply");
 
   late final _timelineStreamSendAudioReply =
       _timelineStreamSendAudioReplyPtr.asFunction<
           int Function(
-            int,
-            int,
-            int,
-            int,
             int,
             int,
             int,
@@ -16398,19 +16366,11 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
           )>>("__TimelineStream_send_video_reply");
 
   late final _timelineStreamSendVideoReply =
       _timelineStreamSendVideoReplyPtr.asFunction<
           int Function(
-            int,
-            int,
-            int,
-            int,
             int,
             int,
             int,
@@ -16527,19 +16487,11 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
           )>>("__TimelineStream_send_file_reply");
 
   late final _timelineStreamSendFileReply =
       _timelineStreamSendFileReplyPtr.asFunction<
           int Function(
-            int,
-            int,
-            int,
-            int,
             int,
             int,
             int,
@@ -16621,19 +16573,11 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
           )>>("__TimelineStream_send_location_reply");
 
   late final _timelineStreamSendLocationReply =
       _timelineStreamSendLocationReplyPtr.asFunction<
           int Function(
-            int,
-            int,
-            int,
-            int,
             int,
             int,
             int,
@@ -32709,7 +32653,7 @@ class RoomEventItem {
     return tmp6;
   }
 
-  /// Whether this message is editable
+  /// Whether current user wrote this message and can modify it
   bool isEditable() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -32721,11 +32665,11 @@ class RoomEventItem {
     return tmp2;
   }
 
-  /// Whether this message is the edited message
-  bool isEdited() {
+  /// Whether this message was modified by author
+  bool wasEdited() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemIsEdited(
+    final tmp1 = _api._roomEventItemWasEdited(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -34636,11 +34580,9 @@ class TimelineStream {
   Future<bool> sendPlainReply(
     String msg,
     String eventId,
-    String? txnId,
   ) {
     final tmp1 = msg;
     final tmp5 = eventId;
-    final tmp9 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -34648,10 +34590,6 @@ class TimelineStream {
     var tmp6 = 0;
     var tmp7 = 0;
     var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
-    var tmp13 = 0;
-    var tmp14 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -34669,21 +34607,7 @@ class TimelineStream {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      final tmp11_0 = utf8.encode(tmp11);
-      tmp13 = tmp11_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-      tmp12_1.setAll(0, tmp11_0);
-      tmp12 = tmp12_0.address;
-      tmp14 = tmp13;
-    }
-    final tmp15 = _api._timelineStreamSendPlainReply(
+    final tmp9 = _api._timelineStreamSendPlainReply(
       tmp0,
       tmp2,
       tmp3,
@@ -34691,19 +34615,15 @@ class TimelineStream {
       tmp6,
       tmp7,
       tmp8,
-      tmp10,
-      tmp12,
-      tmp13,
-      tmp14,
     );
-    final tmp17 = tmp15;
-    final ffi.Pointer<ffi.Void> tmp17_0 = ffi.Pointer.fromAddress(tmp17);
-    final tmp17_1 =
-        _Box(_api, tmp17_0, "__TimelineStream_send_plain_reply_future_drop");
-    tmp17_1._finalizer = _api._registerFinalizer(tmp17_1);
-    final tmp16 =
-        _nativeFuture(tmp17_1, _api.__timelineStreamSendPlainReplyFuturePoll);
-    return tmp16;
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 =
+        _Box(_api, tmp11_0, "__TimelineStream_send_plain_reply_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 =
+        _nativeFuture(tmp11_1, _api.__timelineStreamSendPlainReplyFuturePoll);
+    return tmp10;
   }
 
   /// send the formatted text message
@@ -34794,11 +34714,9 @@ class TimelineStream {
   Future<bool> sendFormattedReply(
     String markdown,
     String eventId,
-    String? txnId,
   ) {
     final tmp1 = markdown;
     final tmp5 = eventId;
-    final tmp9 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -34806,10 +34724,6 @@ class TimelineStream {
     var tmp6 = 0;
     var tmp7 = 0;
     var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
-    var tmp13 = 0;
-    var tmp14 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -34827,21 +34741,7 @@ class TimelineStream {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    if (tmp9 == null) {
-      tmp10 = 0;
-    } else {
-      tmp10 = 1;
-      final tmp11 = tmp9;
-      final tmp11_0 = utf8.encode(tmp11);
-      tmp13 = tmp11_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-      tmp12_1.setAll(0, tmp11_0);
-      tmp12 = tmp12_0.address;
-      tmp14 = tmp13;
-    }
-    final tmp15 = _api._timelineStreamSendFormattedReply(
+    final tmp9 = _api._timelineStreamSendFormattedReply(
       tmp0,
       tmp2,
       tmp3,
@@ -34849,19 +34749,15 @@ class TimelineStream {
       tmp6,
       tmp7,
       tmp8,
-      tmp10,
-      tmp12,
-      tmp13,
-      tmp14,
     );
-    final tmp17 = tmp15;
-    final ffi.Pointer<ffi.Void> tmp17_0 = ffi.Pointer.fromAddress(tmp17);
-    final tmp17_1 = _Box(
-        _api, tmp17_0, "__TimelineStream_send_formatted_reply_future_drop");
-    tmp17_1._finalizer = _api._registerFinalizer(tmp17_1);
-    final tmp16 = _nativeFuture(
-        tmp17_1, _api.__timelineStreamSendFormattedReplyFuturePoll);
-    return tmp16;
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(
+        _api, tmp11_0, "__TimelineStream_send_formatted_reply_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(
+        tmp11_1, _api.__timelineStreamSendFormattedReplyFuturePoll);
+    return tmp10;
   }
 
   /// send the image message
@@ -35124,7 +35020,6 @@ class TimelineStream {
     int? height,
     String? blurhash,
     String eventId,
-    String? txnId,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
@@ -35134,7 +35029,6 @@ class TimelineStream {
     final tmp21 = height;
     final tmp25 = blurhash;
     final tmp31 = eventId;
-    final tmp35 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -35158,10 +35052,6 @@ class TimelineStream {
     var tmp32 = 0;
     var tmp33 = 0;
     var tmp34 = 0;
-    var tmp36 = 0;
-    var tmp38 = 0;
-    var tmp39 = 0;
-    var tmp40 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -35230,21 +35120,7 @@ class TimelineStream {
     tmp32_1.setAll(0, tmp31_0);
     tmp32 = tmp32_0.address;
     tmp34 = tmp33;
-    if (tmp35 == null) {
-      tmp36 = 0;
-    } else {
-      tmp36 = 1;
-      final tmp37 = tmp35;
-      final tmp37_0 = utf8.encode(tmp37);
-      tmp39 = tmp37_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp38_0 = _api.__allocate(tmp39 * 1, 1);
-      final Uint8List tmp38_1 = tmp38_0.asTypedList(tmp39);
-      tmp38_1.setAll(0, tmp37_0);
-      tmp38 = tmp38_0.address;
-      tmp40 = tmp39;
-    }
-    final tmp41 = _api._timelineStreamSendImageReply(
+    final tmp35 = _api._timelineStreamSendImageReply(
       tmp0,
       tmp2,
       tmp3,
@@ -35268,19 +35144,15 @@ class TimelineStream {
       tmp32,
       tmp33,
       tmp34,
-      tmp36,
-      tmp38,
-      tmp39,
-      tmp40,
     );
-    final tmp43 = tmp41;
-    final ffi.Pointer<ffi.Void> tmp43_0 = ffi.Pointer.fromAddress(tmp43);
-    final tmp43_1 =
-        _Box(_api, tmp43_0, "__TimelineStream_send_image_reply_future_drop");
-    tmp43_1._finalizer = _api._registerFinalizer(tmp43_1);
-    final tmp42 =
-        _nativeFuture(tmp43_1, _api.__timelineStreamSendImageReplyFuturePoll);
-    return tmp42;
+    final tmp37 = tmp35;
+    final ffi.Pointer<ffi.Void> tmp37_0 = ffi.Pointer.fromAddress(tmp37);
+    final tmp37_1 =
+        _Box(_api, tmp37_0, "__TimelineStream_send_image_reply_future_drop");
+    tmp37_1._finalizer = _api._registerFinalizer(tmp37_1);
+    final tmp36 =
+        _nativeFuture(tmp37_1, _api.__timelineStreamSendImageReplyFuturePoll);
+    return tmp36;
   }
 
   /// send the audio message
@@ -35491,7 +35363,6 @@ class TimelineStream {
     int? size,
     int? secs,
     String eventId,
-    String? txnId,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
@@ -35499,7 +35370,6 @@ class TimelineStream {
     final tmp13 = size;
     final tmp17 = secs;
     final tmp21 = eventId;
-    final tmp25 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -35517,10 +35387,6 @@ class TimelineStream {
     var tmp22 = 0;
     var tmp23 = 0;
     var tmp24 = 0;
-    var tmp26 = 0;
-    var tmp28 = 0;
-    var tmp29 = 0;
-    var tmp30 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -35568,21 +35434,7 @@ class TimelineStream {
     tmp22_1.setAll(0, tmp21_0);
     tmp22 = tmp22_0.address;
     tmp24 = tmp23;
-    if (tmp25 == null) {
-      tmp26 = 0;
-    } else {
-      tmp26 = 1;
-      final tmp27 = tmp25;
-      final tmp27_0 = utf8.encode(tmp27);
-      tmp29 = tmp27_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
-      final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
-      tmp28_1.setAll(0, tmp27_0);
-      tmp28 = tmp28_0.address;
-      tmp30 = tmp29;
-    }
-    final tmp31 = _api._timelineStreamSendAudioReply(
+    final tmp25 = _api._timelineStreamSendAudioReply(
       tmp0,
       tmp2,
       tmp3,
@@ -35600,19 +35452,15 @@ class TimelineStream {
       tmp22,
       tmp23,
       tmp24,
-      tmp26,
-      tmp28,
-      tmp29,
-      tmp30,
     );
-    final tmp33 = tmp31;
-    final ffi.Pointer<ffi.Void> tmp33_0 = ffi.Pointer.fromAddress(tmp33);
-    final tmp33_1 =
-        _Box(_api, tmp33_0, "__TimelineStream_send_audio_reply_future_drop");
-    tmp33_1._finalizer = _api._registerFinalizer(tmp33_1);
-    final tmp32 =
-        _nativeFuture(tmp33_1, _api.__timelineStreamSendAudioReplyFuturePoll);
-    return tmp32;
+    final tmp27 = tmp25;
+    final ffi.Pointer<ffi.Void> tmp27_0 = ffi.Pointer.fromAddress(tmp27);
+    final tmp27_1 =
+        _Box(_api, tmp27_0, "__TimelineStream_send_audio_reply_future_drop");
+    tmp27_1._finalizer = _api._registerFinalizer(tmp27_1);
+    final tmp26 =
+        _nativeFuture(tmp27_1, _api.__timelineStreamSendAudioReplyFuturePoll);
+    return tmp26;
   }
 
   /// send the video message
@@ -35902,7 +35750,6 @@ class TimelineStream {
     int? height,
     String? blurhash,
     String eventId,
-    String? txnId,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
@@ -35913,7 +35760,6 @@ class TimelineStream {
     final tmp25 = height;
     final tmp29 = blurhash;
     final tmp35 = eventId;
-    final tmp39 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -35939,10 +35785,6 @@ class TimelineStream {
     var tmp36 = 0;
     var tmp37 = 0;
     var tmp38 = 0;
-    var tmp40 = 0;
-    var tmp42 = 0;
-    var tmp43 = 0;
-    var tmp44 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -36018,21 +35860,7 @@ class TimelineStream {
     tmp36_1.setAll(0, tmp35_0);
     tmp36 = tmp36_0.address;
     tmp38 = tmp37;
-    if (tmp39 == null) {
-      tmp40 = 0;
-    } else {
-      tmp40 = 1;
-      final tmp41 = tmp39;
-      final tmp41_0 = utf8.encode(tmp41);
-      tmp43 = tmp41_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp42_0 = _api.__allocate(tmp43 * 1, 1);
-      final Uint8List tmp42_1 = tmp42_0.asTypedList(tmp43);
-      tmp42_1.setAll(0, tmp41_0);
-      tmp42 = tmp42_0.address;
-      tmp44 = tmp43;
-    }
-    final tmp45 = _api._timelineStreamSendVideoReply(
+    final tmp39 = _api._timelineStreamSendVideoReply(
       tmp0,
       tmp2,
       tmp3,
@@ -36058,19 +35886,15 @@ class TimelineStream {
       tmp36,
       tmp37,
       tmp38,
-      tmp40,
-      tmp42,
-      tmp43,
-      tmp44,
     );
-    final tmp47 = tmp45;
-    final ffi.Pointer<ffi.Void> tmp47_0 = ffi.Pointer.fromAddress(tmp47);
-    final tmp47_1 =
-        _Box(_api, tmp47_0, "__TimelineStream_send_video_reply_future_drop");
-    tmp47_1._finalizer = _api._registerFinalizer(tmp47_1);
-    final tmp46 =
-        _nativeFuture(tmp47_1, _api.__timelineStreamSendVideoReplyFuturePoll);
-    return tmp46;
+    final tmp41 = tmp39;
+    final ffi.Pointer<ffi.Void> tmp41_0 = ffi.Pointer.fromAddress(tmp41);
+    final tmp41_1 =
+        _Box(_api, tmp41_0, "__TimelineStream_send_video_reply_future_drop");
+    tmp41_1._finalizer = _api._registerFinalizer(tmp41_1);
+    final tmp40 =
+        _nativeFuture(tmp41_1, _api.__timelineStreamSendVideoReplyFuturePoll);
+    return tmp40;
   }
 
   /// send the file message
@@ -36254,14 +36078,12 @@ class TimelineStream {
     String mimetype,
     int? size,
     String eventId,
-    String? txnId,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
     final tmp9 = mimetype;
     final tmp13 = size;
     final tmp17 = eventId;
-    final tmp21 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -36277,10 +36099,6 @@ class TimelineStream {
     var tmp18 = 0;
     var tmp19 = 0;
     var tmp20 = 0;
-    var tmp22 = 0;
-    var tmp24 = 0;
-    var tmp25 = 0;
-    var tmp26 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -36321,21 +36139,7 @@ class TimelineStream {
     tmp18_1.setAll(0, tmp17_0);
     tmp18 = tmp18_0.address;
     tmp20 = tmp19;
-    if (tmp21 == null) {
-      tmp22 = 0;
-    } else {
-      tmp22 = 1;
-      final tmp23 = tmp21;
-      final tmp23_0 = utf8.encode(tmp23);
-      tmp25 = tmp23_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp24_0 = _api.__allocate(tmp25 * 1, 1);
-      final Uint8List tmp24_1 = tmp24_0.asTypedList(tmp25);
-      tmp24_1.setAll(0, tmp23_0);
-      tmp24 = tmp24_0.address;
-      tmp26 = tmp25;
-    }
-    final tmp27 = _api._timelineStreamSendFileReply(
+    final tmp21 = _api._timelineStreamSendFileReply(
       tmp0,
       tmp2,
       tmp3,
@@ -36351,19 +36155,15 @@ class TimelineStream {
       tmp18,
       tmp19,
       tmp20,
-      tmp22,
-      tmp24,
-      tmp25,
-      tmp26,
     );
-    final tmp29 = tmp27;
-    final ffi.Pointer<ffi.Void> tmp29_0 = ffi.Pointer.fromAddress(tmp29);
-    final tmp29_1 =
-        _Box(_api, tmp29_0, "__TimelineStream_send_file_reply_future_drop");
-    tmp29_1._finalizer = _api._registerFinalizer(tmp29_1);
-    final tmp28 =
-        _nativeFuture(tmp29_1, _api.__timelineStreamSendFileReplyFuturePoll);
-    return tmp28;
+    final tmp23 = tmp21;
+    final ffi.Pointer<ffi.Void> tmp23_0 = ffi.Pointer.fromAddress(tmp23);
+    final tmp23_1 =
+        _Box(_api, tmp23_0, "__TimelineStream_send_file_reply_future_drop");
+    tmp23_1._finalizer = _api._registerFinalizer(tmp23_1);
+    final tmp22 =
+        _nativeFuture(tmp23_1, _api.__timelineStreamSendFileReplyFuturePoll);
+    return tmp22;
   }
 
   /// send the location message
@@ -36487,12 +36287,10 @@ class TimelineStream {
     String body,
     String geoUri,
     String eventId,
-    String? txnId,
   ) {
     final tmp1 = body;
     final tmp5 = geoUri;
     final tmp9 = eventId;
-    final tmp13 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -36503,10 +36301,6 @@ class TimelineStream {
     var tmp10 = 0;
     var tmp11 = 0;
     var tmp12 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp17 = 0;
-    var tmp18 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -36532,21 +36326,7 @@ class TimelineStream {
     tmp10_1.setAll(0, tmp9_0);
     tmp10 = tmp10_0.address;
     tmp12 = tmp11;
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      final tmp15_0 = utf8.encode(tmp15);
-      tmp17 = tmp15_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
-      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
-      tmp16_1.setAll(0, tmp15_0);
-      tmp16 = tmp16_0.address;
-      tmp18 = tmp17;
-    }
-    final tmp19 = _api._timelineStreamSendLocationReply(
+    final tmp13 = _api._timelineStreamSendLocationReply(
       tmp0,
       tmp2,
       tmp3,
@@ -36557,19 +36337,15 @@ class TimelineStream {
       tmp10,
       tmp11,
       tmp12,
-      tmp14,
-      tmp16,
-      tmp17,
-      tmp18,
     );
-    final tmp21 = tmp19;
-    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
-    final tmp21_1 =
-        _Box(_api, tmp21_0, "__TimelineStream_send_location_reply_future_drop");
-    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
-    final tmp20 = _nativeFuture(
-        tmp21_1, _api.__timelineStreamSendLocationReplyFuturePoll);
-    return tmp20;
+    final tmp15 = tmp13;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 =
+        _Box(_api, tmp15_0, "__TimelineStream_send_location_reply_future_drop");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp14 = _nativeFuture(
+        tmp15_1, _api.__timelineStreamSendLocationReplyFuturePoll);
+    return tmp14;
   }
 
   /// send single receipt

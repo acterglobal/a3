@@ -97,7 +97,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     );
 
     kyra_timeline
-        .send_plain_reply("Sorry, it's my bad".to_string(), received.unwrap(), None)
+        .send_plain_reply("Sorry, it's my bad".to_string(), received.unwrap())
         .await?;
 
     // msg reply may reach via pushback action

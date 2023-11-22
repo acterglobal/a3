@@ -52,58 +52,64 @@ class SpaceMembersPage extends ConsumerWidget {
     }
     // get platform of context.
 
-    return CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(
-          child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
-        ),
-        SliverToBoxAdapter(
-          child: Row(
-            children: topMenu,
+    return DecoratedBox(
+      decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
           ),
-        ),
-        members.when(
-          data: (members) {
-            final widthCount =
-                (MediaQuery.of(context).size.width ~/ 600).toInt();
-            const int minCount = 2;
-            if (members.isEmpty) {
-              return const SliverToBoxAdapter(
-                child: Center(
-                  child: Text(
-                    'No members found. How can that even be, you are here, aren\'t you?',
-                  ),
-                ),
-              );
-            }
-            return SliverGrid.builder(
-              itemCount: members.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: max(1, min(widthCount, minCount)),
-                childAspectRatio: 4.0,
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              child: Row(
+                children: topMenu,
               ),
-              itemBuilder: (context, index) {
-                final member = members[index];
-                return MemberListEntry(
-                  member: member,
-                  space: space,
-                  myMembership: myMembership.valueOrNull,
+            ),
+          ),
+          members.when(
+            data: (members) {
+              final widthCount =
+                  (MediaQuery.of(context).size.width ~/ 600).toInt();
+              const int minCount = 2;
+              if (members.isEmpty) {
+                return const SliverToBoxAdapter(
+                  child: Center(
+                    child: Text(
+                      'No members found. How can that even be, you are here, aren\'t you?',
+                    ),
+                  ),
                 );
-              },
-            );
-          },
-          error: (error, stack) => SliverToBoxAdapter(
-            child: Center(
-              child: Text('Loading failed: $error'),
+              }
+              return SliverGrid.builder(
+                itemCount: members.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: max(1, min(widthCount, minCount)),
+                  childAspectRatio: 4.0,
+                ),
+                itemBuilder: (context, index) {
+                  final member = members[index];
+                  return MemberListEntry(
+                    member: member,
+                    space: space,
+                    myMembership: myMembership.valueOrNull,
+                  );
+                },
+              );
+            },
+            error: (error, stack) => SliverToBoxAdapter(
+              child: Center(
+                child: Text('Loading failed: $error'),
+              ),
+            ),
+            loading: () => const SliverToBoxAdapter(
+              child: Center(
+                child: Text('Loading'),
+              ),
             ),
           ),
-          loading: () => const SliverToBoxAdapter(
-            child: Center(
-              child: Text('Loading'),
-            ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

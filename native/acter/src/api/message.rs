@@ -277,7 +277,7 @@ impl RoomEventItem {
         self.editable = value;
     }
 
-    pub fn is_edited(&self) -> bool {
+    pub fn was_edited(&self) -> bool {
         self.edited
     }
 

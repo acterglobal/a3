@@ -232,7 +232,7 @@ impl RsvpDraft {
                 }
 
                 trace!("before sending rsvp");
-                let resp = room.send(inner, None).await?;
+                let resp = room.send(inner).await?;
                 trace!("after sending rsvp");
                 Ok(resp.event_id)
             })

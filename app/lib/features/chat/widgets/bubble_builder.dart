@@ -61,10 +61,10 @@ class BubbleBuilder extends ConsumerWidget {
                         if (chatInputState.currentMessageId != null) {
                           chatInputNotifier.emojiRowVisible(false);
                           chatInputNotifier.setRepliedToMessage(message);
-                          chatInputNotifier.toggleReplyView(true);
+                          chatInputNotifier.showReplyView(true);
                           chatInputNotifier.setReplyWidget(child);
                         } else {
-                          chatInputNotifier.toggleReplyView(true);
+                          chatInputNotifier.showReplyView(true);
                           chatInputNotifier.setRepliedToMessage(message);
                           chatInputNotifier.setReplyWidget(child);
                         }
@@ -78,10 +78,10 @@ class BubbleBuilder extends ConsumerWidget {
                           chatInputNotifier.emojiRowVisible(false);
 
                           chatInputNotifier.setRepliedToMessage(message);
-                          chatInputNotifier.toggleReplyView(true);
+                          chatInputNotifier.showReplyView(true);
                           chatInputNotifier.setReplyWidget(child);
                         } else {
-                          chatInputNotifier.toggleReplyView(true);
+                          chatInputNotifier.showReplyView(true);
                           chatInputNotifier.setRepliedToMessage(message);
                           chatInputNotifier.setReplyWidget(child);
                         }
