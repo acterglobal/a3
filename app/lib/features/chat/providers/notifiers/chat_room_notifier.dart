@@ -271,7 +271,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         repliedTo = types.CustomMessage(
           author: types.User(id: orgEventItem.sender()),
           createdAt: orgEventItem.originServerTs(),
-          id: orgEventItem.eventId(),
+          id: orgEventItem.uniqueId(),
           metadata: {
             'itemType': 'event',
             'eventType': eventType,
@@ -282,7 +282,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         repliedTo = types.CustomMessage(
           author: types.User(id: orgEventItem.sender()),
           createdAt: orgEventItem.originServerTs(),
-          id: orgEventItem.eventId(),
+          id: orgEventItem.uniqueId(),
           metadata: {
             'itemType': 'event',
             'eventType': eventType,
@@ -424,7 +424,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       firstName: simplifyUserId(sender),
     );
     int createdAt = eventItem.originServerTs(); // in milliseconds
-    String eventId = eventItem.eventId();
+    String eventId = eventItem.uniqueId();
 
     String? inReplyTo = eventItem.inReplyTo();
     // state event

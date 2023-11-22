@@ -5,7 +5,7 @@ use matrix_sdk_ui::timeline::{
     EventSendState, EventTimelineItem, MembershipChange, TimelineItem, TimelineItemContent,
     TimelineItemKind, VirtualTimelineItem,
 };
-use ruma_common::{serde::Raw, OwnedEventId, OwnedRoomId, OwnedUserId};
+use ruma_common::{serde::Raw, OwnedEventId, OwnedRoomId, OwnedTransactionId, OwnedUserId};
 use ruma_events::{
     call::{
         answer::{OriginalCallAnswerEvent, OriginalSyncCallAnswerEvent},
@@ -84,8 +84,9 @@ use super::common::{
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct RoomEventItem {
-    event_id: String,
-    sender: String,
+    evt_id: Option<OwnedEventId>,
+    txn_id: Option<OwnedTransactionId>,
+    sender: OwnedUserId,
     origin_server_ts: u64,
     event_type: String,
     msg_type: Option<String>,
@@ -103,9 +104,16 @@ pub struct RoomEventItem {
 }
 
 impl RoomEventItem {
-    fn new(event_id: String, sender: String, origin_server_ts: u64, event_type: String) -> Self {
+    fn new(
+        evt_id: Option<OwnedEventId>,
+        txn_id: Option<OwnedTransactionId>,
+        sender: OwnedUserId,
+        origin_server_ts: u64,
+        event_type: String,
+    ) -> Self {
         RoomEventItem {
-            event_id,
+            evt_id,
+            txn_id,
             sender,
             origin_server_ts,
             event_type,
@@ -124,12 +132,23 @@ impl RoomEventItem {
         }
     }
 
-    pub fn event_id(&self) -> String {
-        self.event_id.clone()
+    // for only integration test
+    pub fn pending_to_send(&self) -> bool {
+        self.txn_id.is_some()
+    }
+
+    pub fn unique_id(&self) -> String {
+        if let Some(evt_id) = &self.evt_id {
+            return evt_id.to_string();
+        }
+        self.txn_id
+            .clone()
+            .expect("Either event id or transaction id should be available")
+            .to_string()
     }
 
     pub fn sender(&self) -> String {
-        self.sender.clone()
+        self.sender.to_string()
     }
 
     pub fn origin_server_ts(&self) -> u64 {
@@ -319,8 +338,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.call.answer".to_string(),
         );
@@ -334,8 +354,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.call.answer".to_string(),
         );
@@ -349,8 +370,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.call.candidates".to_string(),
         );
@@ -371,8 +393,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.call.candidates".to_string(),
         );
@@ -393,8 +416,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.call.hangup".to_string(),
         );
@@ -408,8 +432,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.call.hangup".to_string(),
         );
@@ -423,8 +448,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.call.invite".to_string(),
         );
@@ -438,8 +464,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.call.invite".to_string(),
         );
@@ -453,8 +480,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.policy.rule.room".to_string(),
         );
@@ -472,8 +500,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.policy.rule.room".to_string(),
         );
@@ -491,8 +520,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.policy.rule.server".to_string(),
         );
@@ -506,8 +536,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.policy.rule.server".to_string(),
         );
@@ -521,8 +552,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.policy.rule.user".to_string(),
         );
@@ -536,8 +568,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.policy.rule.user".to_string(),
         );
@@ -548,8 +581,9 @@ impl RoomMessage {
 
     pub(crate) fn reaction_from_event(event: OriginalReactionEvent, room_id: OwnedRoomId) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.reaction".to_string(),
         );
@@ -563,8 +597,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.reaction".to_string(),
         );
@@ -578,8 +613,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.aliases".to_string(),
         );
@@ -600,8 +636,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.aliases".to_string(),
         );
@@ -622,8 +659,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.avatar".to_string(),
         );
@@ -637,8 +675,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.avatar".to_string(),
         );
@@ -652,8 +691,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.canonical_alias".to_string(),
         );
@@ -679,8 +719,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.canonical_alias".to_string(),
         );
@@ -706,8 +747,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.create".to_string(),
         );
@@ -721,8 +763,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.create".to_string(),
         );
@@ -736,8 +779,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.encrypted".to_string(),
         );
@@ -756,8 +800,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.encrypted".to_string(),
         );
@@ -776,8 +821,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.encryption".to_string(),
         );
@@ -791,8 +837,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.encryption".to_string(),
         );
@@ -806,8 +853,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.guest.access".to_string(),
         );
@@ -825,8 +873,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.guest.access".to_string(),
         );
@@ -844,8 +893,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.history_visibility".to_string(),
         );
@@ -863,8 +913,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.history_visibility".to_string(),
         );
@@ -882,8 +933,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.join.rules".to_string(),
         );
@@ -901,8 +953,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.join.rules".to_string(),
         );
@@ -920,8 +973,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id.clone()),
+            None,
+            event.sender.clone(),
             event.origin_server_ts.get().into(),
             "m.room.member".to_string(),
         );
@@ -995,8 +1049,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id.clone()),
+            None,
+            event.sender.clone(),
             event.origin_server_ts.get().into(),
             "m.room.member".to_string(),
         );
@@ -1071,8 +1126,9 @@ impl RoomMessage {
         has_editable: bool,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender.clone(),
             event.origin_server_ts.get().into(),
             "m.room.message".to_string(),
         );
@@ -1168,8 +1224,9 @@ impl RoomMessage {
         sent_by_me: bool,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.message".to_string(),
         );
@@ -1255,8 +1312,9 @@ impl RoomMessage {
 
     pub(crate) fn room_name_from_event(event: OriginalRoomNameEvent, room_id: OwnedRoomId) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.name".to_string(),
         );
@@ -1270,8 +1328,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.name".to_string(),
         );
@@ -1285,8 +1344,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.pinned_events".to_string(),
         );
@@ -1300,8 +1360,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.pinned_events".to_string(),
         );
@@ -1315,8 +1376,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.power_levels".to_string(),
         );
@@ -1337,8 +1399,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.power_levels".to_string(),
         );
@@ -1359,8 +1422,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id().to_string(),
-            event.sender().to_string(),
+            Some(event.event_id().to_owned()),
+            None,
+            event.sender().to_owned(),
             event.origin_server_ts().get().into(),
             "m.room.redaction".to_string(),
         );
@@ -1379,8 +1443,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id().to_string(),
-            event.sender().to_string(),
+            Some(event.event_id().to_owned()),
+            None,
+            event.sender().to_owned(),
             event.origin_server_ts().get().into(),
             "m.room.redaction".to_string(),
         );
@@ -1399,8 +1464,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.server_acl".to_string(),
         );
@@ -1422,8 +1488,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.server_acl".to_string(),
         );
@@ -1445,8 +1512,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.third_party_invite".to_string(),
         );
@@ -1460,8 +1528,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.third_party_invite".to_string(),
         );
@@ -1475,8 +1544,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.tombstone".to_string(),
         );
@@ -1490,8 +1560,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.tombstone".to_string(),
         );
@@ -1505,8 +1576,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.topic".to_string(),
         );
@@ -1520,8 +1592,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.room.topic".to_string(),
         );
@@ -1535,8 +1608,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.space.child".to_string(),
         );
@@ -1550,8 +1624,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.space.child".to_string(),
         );
@@ -1565,8 +1640,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.space.parent".to_string(),
         );
@@ -1590,8 +1666,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.space.parent".to_string(),
         );
@@ -1612,8 +1689,9 @@ impl RoomMessage {
 
     pub(crate) fn sticker_from_event(event: OriginalStickerEvent, room_id: OwnedRoomId) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.sticker".to_string(),
         );
@@ -1627,8 +1705,9 @@ impl RoomMessage {
         room_id: OwnedRoomId,
     ) -> Self {
         let mut event_item = RoomEventItem::new(
-            event.event_id.to_string(),
-            event.sender.to_string(),
+            Some(event.event_id),
+            None,
+            event.sender,
             event.origin_server_ts.get().into(),
             "m.sticker".to_string(),
         );
@@ -1638,9 +1717,19 @@ impl RoomMessage {
     }
 
     pub(crate) fn from_timeline_event_item(event: &EventTimelineItem, room: Room) -> Self {
-        let event_id = unique_identifier(event);
+        let mut evt_id = None;
+        let mut txn_id = None;
+        if event.is_local_echo() {
+            if let Some(EventSendState::Sent { event_id }) = event.send_state() {
+                evt_id = Some(event_id.clone());
+            } else {
+                txn_id = event.transaction_id().map(|x| x.clone().to_owned());
+            }
+        } else {
+            evt_id = event.event_id().map(|x| x.clone().to_owned());
+        }
         let room_id = room.room_id().to_owned();
-        let sender = event.sender().to_string();
+        let sender = event.sender().to_owned();
         let origin_server_ts: u64 = event.timestamp().get().into();
         let client = room.client();
         let my_id = client.user_id();
@@ -1649,7 +1738,8 @@ impl RoomMessage {
             TimelineItemContent::Message(msg) => {
                 let msg_type = msg.msgtype();
                 let mut result = RoomEventItem::new(
-                    event_id,
+                    evt_id,
+                    txn_id,
                     sender,
                     origin_server_ts,
                     "m.room.message".to_string(),
@@ -1859,15 +1949,21 @@ impl RoomMessage {
             TimelineItemContent::RedactedMessage => {
                 info!("Edit event applies to a redacted message, discarding");
                 RoomEventItem::new(
-                    event_id,
+                    evt_id,
+                    txn_id,
                     sender,
                     origin_server_ts,
                     "m.room.redaction".to_string(),
                 )
             }
             TimelineItemContent::Sticker(s) => {
-                let mut result =
-                    RoomEventItem::new(event_id, sender, origin_server_ts, "m.sticker".to_string());
+                let mut result = RoomEventItem::new(
+                    evt_id,
+                    txn_id,
+                    sender,
+                    origin_server_ts,
+                    "m.sticker".to_string(),
+                );
                 let content = s.content();
                 let image_desc = ImageDesc::new(
                     content.body.clone(),
@@ -1880,7 +1976,8 @@ impl RoomMessage {
             TimelineItemContent::UnableToDecrypt(encrypted_msg) => {
                 info!("Edit event applies to event that couldn't be decrypted, discarding");
                 RoomEventItem::new(
-                    event_id,
+                    evt_id,
+                    txn_id,
                     sender,
                     origin_server_ts,
                     "m.room.encrypted".to_string(),
@@ -1889,7 +1986,8 @@ impl RoomMessage {
             TimelineItemContent::MembershipChange(m) => {
                 info!("Edit event applies to a state event, discarding");
                 let mut result = RoomEventItem::new(
-                    event_id,
+                    evt_id,
+                    txn_id,
                     sender,
                     origin_server_ts,
                     "m.room.member".to_string(),
@@ -1972,7 +2070,8 @@ impl RoomMessage {
             TimelineItemContent::ProfileChange(p) => {
                 info!("Edit event applies to a state event, discarding");
                 let mut result = RoomEventItem::new(
-                    event_id,
+                    evt_id,
+                    txn_id,
                     sender,
                     origin_server_ts,
                     "m.room.member".to_string(),
@@ -2007,7 +2106,8 @@ impl RoomMessage {
             TimelineItemContent::OtherState(s) => {
                 info!("Edit event applies to a state event, discarding");
                 RoomEventItem::new(
-                    event_id,
+                    evt_id,
+                    txn_id,
                     sender,
                     origin_server_ts,
                     s.content().event_type().to_string(),
@@ -2015,7 +2115,13 @@ impl RoomMessage {
             }
             TimelineItemContent::FailedToParseMessageLike { event_type, error } => {
                 info!("Edit event applies to message that couldn't be parsed, discarding");
-                RoomEventItem::new(event_id, sender, origin_server_ts, event_type.to_string())
+                RoomEventItem::new(
+                    evt_id,
+                    txn_id,
+                    sender,
+                    origin_server_ts,
+                    event_type.to_string(),
+                )
             }
             TimelineItemContent::FailedToParseState {
                 event_type,
@@ -2023,12 +2129,19 @@ impl RoomMessage {
                 error,
             } => {
                 info!("Edit event applies to state that couldn't be parsed, discarding");
-                RoomEventItem::new(event_id, sender, origin_server_ts, event_type.to_string())
+                RoomEventItem::new(
+                    evt_id,
+                    txn_id,
+                    sender,
+                    origin_server_ts,
+                    event_type.to_string(),
+                )
             }
             TimelineItemContent::Poll(s) => {
                 info!("Edit event applies to a poll state, discarding");
                 let mut result = RoomEventItem::new(
-                    event_id,
+                    evt_id,
+                    txn_id,
                     sender,
                     origin_server_ts,
                     "m.poll.start".to_string(),
@@ -2076,7 +2189,7 @@ impl RoomMessage {
     }
 
     pub(crate) fn event_id(&self) -> Option<String> {
-        self.event_item.as_ref().map(|e| e.event_id.clone())
+        self.event_item.as_ref().map(|e| e.unique_id())
     }
 
     pub(crate) fn event_type(&self) -> String {
@@ -2236,17 +2349,5 @@ impl From<(EventTimelineItem, Room)> for RoomMessage {
     fn from(v: (EventTimelineItem, Room)) -> RoomMessage {
         let (event_item, room) = v;
         RoomMessage::from_timeline_event_item(&event_item, room)
-    }
-}
-
-// this function was removed from EventTimelineItem so we clone that function
-fn unique_identifier(event: &EventTimelineItem) -> String {
-    if event.is_local_echo() {
-        match event.send_state() {
-            Some(EventSendState::Sent { event_id }) => event_id.to_string(),
-            _ => event.transaction_id().unwrap().to_string(),
-        }
-    } else {
-        event.event_id().unwrap().to_string()
     }
 }

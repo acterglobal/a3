@@ -448,7 +448,7 @@ object UserId {
 /// A room Message metadata and content
 object RoomEventItem {
     /// Unique ID of this event
-    fn event_id() -> string;
+    fn unique_id() -> string;
 
     /// The User, who sent that event
     fn sender() -> string;

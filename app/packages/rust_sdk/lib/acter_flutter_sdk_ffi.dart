@@ -14846,14 +14846,14 @@ class Api {
       _UserIdToStringReturn Function(
         int,
       )>();
-  late final _roomEventItemEventIdPtr = _lookup<
+  late final _roomEventItemUniqueIdPtr = _lookup<
       ffi.NativeFunction<
-          _RoomEventItemEventIdReturn Function(
+          _RoomEventItemUniqueIdReturn Function(
             ffi.Int64,
-          )>>("__RoomEventItem_event_id");
+          )>>("__RoomEventItem_unique_id");
 
-  late final _roomEventItemEventId = _roomEventItemEventIdPtr.asFunction<
-      _RoomEventItemEventIdReturn Function(
+  late final _roomEventItemUniqueId = _roomEventItemUniqueIdPtr.asFunction<
+      _RoomEventItemUniqueIdReturn Function(
         int,
       )>();
   late final _roomEventItemSenderPtr = _lookup<
@@ -32324,10 +32324,10 @@ class RoomEventItem {
   RoomEventItem._(this._api, this._box);
 
   /// Unique ID of this event
-  String eventId() {
+  String uniqueId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemEventId(
+    final tmp1 = _api._roomEventItemUniqueId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -50336,7 +50336,7 @@ class _UserIdToStringReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _RoomEventItemEventIdReturn extends ffi.Struct {
+class _RoomEventItemUniqueIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
