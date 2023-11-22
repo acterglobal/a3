@@ -122,6 +122,13 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                       ),
                 SettingsTile(
                   title: Text(
+                    'HTTP Proxy',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  value: const Text(httpProxy),
+                ),
+                SettingsTile(
+                  title: Text(
                     'Rust Log Settings',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
