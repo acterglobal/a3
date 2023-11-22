@@ -13,6 +13,7 @@ use matrix_sdk::{
 };
 use ruma_common::OwnedUserId;
 use std::backtrace::Backtrace;
+use std::sync::RwLock;
 use tracing::{error, info};
 
 use super::{
@@ -20,6 +21,15 @@ use super::{
     RUNTIME,
 };
 use crate::platform;
+use lazy_static::lazy_static;
+
+lazy_static! {
+    static ref PROXY_URL: RwLock<Option<String>> = RwLock::new(None);
+}
+
+pub fn set_proxy(new_proxy: Option<String>) {
+    *PROXY_URL.write().expect("Proxy URL couldn't be unlocked") = new_proxy;
+}
 
 // public for only integration test, not api.rsh
 pub async fn sanitize_user(
@@ -61,8 +71,13 @@ pub async fn make_client_config(
     default_homeserver_url: &str,
 ) -> Result<(ClientBuilder, OwnedUserId)> {
     let (user_id, fallback) = sanitize_user(username, default_homeserver_name).await?;
-    let builder =
+    let mut builder =
         platform::new_client_config(base_path, user_id.to_string(), db_passphrase, true).await?;
+
+    if let Some(proxy) = PROXY_URL.read().expect("Reading PROXY_URL failed").clone() {
+        builder = builder.proxy(proxy);
+    }
+
     if fallback {
         Ok((builder.homeserver_url(default_homeserver_url), user_id))
     } else {

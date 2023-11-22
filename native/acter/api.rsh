@@ -1,6 +1,9 @@
 /// Initialize logging
 fn init_logging(log_dir: string, filter: string) -> Result<()>;
 
+/// Set the global proxy to the given string. Will only apply to client initialized after calling this.
+fn set_proxy(proxy: Option<string>) ;
+
 /// Rotate the logging file
 fn rotate_log_file() -> Result<string>;
 
