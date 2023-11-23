@@ -100,6 +100,8 @@ pub struct RoomEventItem {
     reactions: HashMap<String, Vec<ReactionRecord>>,
     editable: bool,
     edited: bool,
+    is_local_echo: bool,
+    send_state: Option<EventSendState>,
 }
 
 impl RoomEventItem {
@@ -121,6 +123,8 @@ impl RoomEventItem {
             reactions: Default::default(),
             editable: false,
             edited: false,
+            is_local_echo: false,
+            send_state: None,
         }
     }
 
@@ -138,6 +142,10 @@ impl RoomEventItem {
 
     pub fn event_type(&self) -> String {
         self.event_type.clone()
+    }
+
+    pub fn is_local_echo(&self) -> bool {
+        self.is_local_echo
     }
 
     pub fn msg_type(&self) -> Option<String> {
