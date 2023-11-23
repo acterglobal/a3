@@ -61,10 +61,10 @@ class BubbleBuilder extends ConsumerWidget {
                         if (chatInputState.currentMessageId != null) {
                           chatInputNotifier.emojiRowVisible(false);
                           chatInputNotifier.setRepliedToMessage(message);
-                          chatInputNotifier.toggleReplyView(true);
+                          chatInputNotifier.showReplyView(true);
                           chatInputNotifier.setReplyWidget(child);
                         } else {
-                          chatInputNotifier.toggleReplyView(true);
+                          chatInputNotifier.showReplyView(true);
                           chatInputNotifier.setRepliedToMessage(message);
                           chatInputNotifier.setReplyWidget(child);
                         }
@@ -78,10 +78,10 @@ class BubbleBuilder extends ConsumerWidget {
                           chatInputNotifier.emojiRowVisible(false);
 
                           chatInputNotifier.setRepliedToMessage(message);
-                          chatInputNotifier.toggleReplyView(true);
+                          chatInputNotifier.showReplyView(true);
                           chatInputNotifier.setReplyWidget(child);
                         } else {
-                          chatInputNotifier.toggleReplyView(true);
+                          chatInputNotifier.showReplyView(true);
                           chatInputNotifier.setRepliedToMessage(message);
                           chatInputNotifier.setReplyWidget(child);
                         }
@@ -270,7 +270,8 @@ class _ChatBubble extends ConsumerWidget {
   // send emoji reaction to message event
   Future<void> sendEmojiReaction(String eventId, String emoji) async {
     try {
-      await convo.sendReaction(eventId, emoji);
+      final stream = await convo.timelineStream();
+      await stream.sendReaction(eventId, emoji);
     } catch (e) {
       debugPrint('$e');
     }

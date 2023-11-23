@@ -371,6 +371,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                     mode: DisplayMode.GroupChat,
                     avatarInfo: const AvatarInfo(uniqueId: '#'),
                     size: 48,
+                    tooltip: TooltipStyle.None,
                   )
                 : selectedUsers.length > 1
                     ? CircleAvatar(
@@ -718,14 +719,20 @@ class _UserWidget extends ConsumerWidget {
         error: (err, stackTrace) => Text('Error: $err'),
         loading: () => const Text('Loading display name'),
       ),
-      leading: ActerAvatar(
-        mode: DisplayMode.DM,
-        avatarInfo: AvatarInfo(
-          uniqueId: userId,
-          displayName: displayName.valueOrNull,
-          avatar: avatarProv.valueOrNull,
-        ),
-        size: 18,
+      leading: avatarProv.when(
+        data: (data) {
+          return ActerAvatar(
+            mode: DisplayMode.DM,
+            avatarInfo: AvatarInfo(
+              uniqueId: userId,
+              displayName: displayName.valueOrNull,
+              avatar: data,
+            ),
+            size: 18,
+          );
+        },
+        error: (e, st) => Text('Error loading avatar $e'),
+        loading: () => const CircularProgressIndicator(),
       ),
     );
   }

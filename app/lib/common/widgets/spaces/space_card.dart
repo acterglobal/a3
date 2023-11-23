@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/spaces/space_with_profile_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -112,11 +113,14 @@ class SpaceCard extends ConsumerWidget {
     final roomId = space.getRoomId().toString();
     final profile = ref.watch(spaceProfileDataProvider(space));
     final subtitle = subtitleFn != null ? subtitleFn!(space) : null;
+    final parent = ref.watch(canonicalParentProvider(roomId));
 
     return profile.when(
       data: (profile) => SpaceWithProfileCard(
         roomId: roomId,
         profile: profile,
+        parentProfile: parent.valueOrNull?.profile,
+        parentRoomId: parent.valueOrNull?.space.getRoomIdStr(),
         subtitle: subtitle,
         onTap: onTap,
         onFocusChange: onFocusChange,

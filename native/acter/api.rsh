@@ -607,7 +607,7 @@ object Rsvp {
 /// A room Message metadata and content
 object RoomEventItem {
     /// Unique ID of this event
-    fn event_id() -> string;
+    fn unique_id() -> string;
 
     /// The User, who sent that event
     fn sender() -> string;
@@ -654,11 +654,11 @@ object RoomEventItem {
     /// the details that users reacted using this emote key in this message
     fn reaction_records(key: string) -> Option<Vec<ReactionRecord>>;
 
-    /// Whether this message is editable
+    /// Whether current user wrote this message and can modify it
     fn is_editable() -> bool;
 
-    /// Whether this message is the edited message
-    fn is_edited() -> bool;
+    /// Whether this message was modified by author
+    fn was_edited() -> bool;
 }
 
 object RoomVirtualItem {
@@ -934,19 +934,82 @@ object TimelineStream {
     /// Get the next count messages backwards, and return whether it has more items
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
 
-    /// modify the room message
-    fn edit(new_msg: string, original_event_id: string) -> Future<Result<bool>>;
+    /// send the plain text message
+    fn send_plain_message(message: string) -> Future<Result<bool>>;
+
+    /// modify the plain text message
+    fn edit_plain_message(event_id: string, new_msg: string) -> Future<Result<bool>>;
+
+    /// send reply as plain text to event
+    fn send_plain_reply(msg: string, event_id: string) -> Future<Result<bool>>;
+
+    /// send the formatted text message
+    fn send_formatted_message(markdown: string) -> Future<Result<bool>>;
+
+    /// modify the formatted text message
+    fn edit_formatted_message(event_id: string, new_msg: string) -> Future<Result<bool>>;
+
+    /// send reply as formatted text to event
+    fn send_formatted_reply(markdown: string, event_id: string) -> Future<Result<bool>>;
+
+    /// send the image message
+    fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<bool>>;
+
+    /// modify the image message
+    fn edit_image_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>) -> Future<Result<bool>>;
+
+    /// send reply as image to event
+    fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string) -> Future<Result<bool>>;
+
+    /// send the audio message
+    fn send_audio_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>) -> Future<Result<bool>>;
+
+    /// modify the audio message
+    fn edit_audio_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>) -> Future<Result<bool>>;
+
+    /// send reply as audio to event
+    fn send_audio_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, event_id: string) -> Future<Result<bool>>;
+
+    /// send the video message
+    fn send_video_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<bool>>;
+
+    /// modify the video message
+    fn edit_video_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>) -> Future<Result<bool>>;
+
+    /// send reply as video to event
+    fn send_video_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string) -> Future<Result<bool>>;
+
+    /// send the file message
+    fn send_file_message(uri: string, name: string, mimetype: string, size: Option<u64>) -> Future<Result<bool>>;
+
+    /// modify the file message
+    fn edit_file_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>) -> Future<Result<bool>>;
+
+    /// send reply as file to event
+    fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u64>, event_id: string) -> Future<Result<bool>>;
+
+    /// send the location message
+    fn send_location_message(body: string, geo_uri: string) -> Future<Result<bool>>;
+
+    /// modify the location message
+    fn edit_location_message(event_id: string, body: string, geo_uri: string) -> Future<Result<bool>>;
+
+    /// send reply as location to event
+    fn send_location_reply(body: string, geo_uri: string, event_id: string) -> Future<Result<bool>>;
 
     /// send single receipt
     /// receipt_type: FullyRead | Read | ReadPrivate
     /// thread: Main | Unthreaded
     fn send_single_receipt(receipt_type: string, thread: string, event_id: string) -> Future<Result<bool>>;
 
-    /// modify the room message
+    /// send 3 types of receipts at once
     /// full_read: optional event id
     /// public_read_receipt: optional event id
     /// private_read_receipt: optional event id
     fn send_multiple_receipts(full_read: Option<string>, public_read_receipt: Option<string>, private_read_receipt: Option<string>) -> Future<Result<bool>>;
+
+    /// send reaction to event
+    fn send_reaction(event_id: string, key: string) -> Future<Result<bool>>;
 }
 
 
@@ -1013,75 +1076,25 @@ object Convo {
     /// on every key stroke, since it will do nothing while typing is active.
     fn typing_notice(typing: bool) -> Future<Result<bool>>;
 
-    /// Send a request to notify this room that the user has read specific event.
-    fn read_receipt(event_id: string) -> Future<Result<bool>>;
-
-    /// Send a simple plain text message to the room
-    /// returns the event_id as given by the server of the event soon after
-    /// received over timeline().next()
-    fn send_plain_message(text_message: string) -> Future<Result<EventId>>;
-
-    /// Edit the existing event with plain text
-    fn edit_plain_message(event_id: string, new_msg: string) -> Future<Result<EventId>>;
-
-    /// Send a text message in MarkDown format to the room
-    fn send_formatted_message(markdown_message: string) -> Future<Result<EventId>>;
-
-    /// Edit the existing event with MarkDown text
-    fn edit_formatted_message(event_id: string, new_msg: string) -> Future<Result<EventId>>;
-
-    /// Send reaction about existing event
-    fn send_reaction(event_id: string, key: string) -> Future<Result<EventId>>;
-
-    /// send the image message to this room
-    fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<EventId>>;
-
     /// decrypted image file data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
-
-    /// edit the image message
-    fn edit_image_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>) -> Future<Result<EventId>>;
-
-    /// send the audio message to this room
-    fn send_audio_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>) -> Future<Result<EventId>>;
 
     /// decrypted audio buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn audio_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
-    /// edit the audio message
-    fn edit_audio_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>) -> Future<Result<EventId>>;
-
-    /// send the video message to this room
-    fn send_video_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<EventId>>;
-
     /// decrypted video buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn video_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
-    /// edit the video message
-    fn edit_video_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>) -> Future<Result<EventId>>;
-
-    /// send the file message to this room
-    fn send_file_message(uri: string, name: string, mimetype: string, size: Option<u64>) -> Future<Result<EventId>>;
-
     /// decrypted file buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn file_binary(event_id: string) -> Future<Result<buffer<u8>>>;
-
-    /// edit the file message
-    fn edit_file_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>) -> Future<Result<EventId>>;
-
-    /// send the location message to this room
-    fn send_location_message(body: string, geo_uri: string) -> Future<Result<EventId>>;
-
-    /// edit the location message
-    fn edit_location_message(event_id: string, body: string, geo_uri: string) -> Future<Result<EventId>>;
 
     /// get the user status on this room
     fn room_type() -> string;
@@ -1118,21 +1131,6 @@ object Convo {
 
     /// get original of reply msg
     fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
-
-    /// send reply as text
-    fn send_text_reply(msg: string, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
-
-    /// send reply as image
-    fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
-
-    /// send reply as audio
-    fn send_audio_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
-
-    /// send reply as video
-    fn send_video_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
-
-    /// send reply as file
-    fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u64>, event_id: string, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// redact any message (including text/image/file and reaction)
     fn redact_message(event_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
@@ -1844,32 +1842,20 @@ object Space {
     /// pin draft builder
     fn pin_draft() -> Result<PinDraft>;
 
-    /// send the image message to this room
-    fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<EventId>>;
-
     /// decrypted image buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
-
-    /// send the audio message to this room
-    fn send_audio_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>) -> Future<Result<EventId>>;
 
     /// decrypted audio buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn audio_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
-    /// send the video message to this room
-    fn send_video_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<EventId>>;
-
     /// decrypted video buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn video_binary(event_id: string) -> Future<Result<buffer<u8>>>;
-
-    /// send the file message to this room
-    fn send_file_message(uri: string, name: string, mimetype: string, size: Option<u64>) -> Future<Result<EventId>>;
 
     /// decrypted file buffer data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable

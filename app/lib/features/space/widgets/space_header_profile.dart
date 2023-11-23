@@ -43,8 +43,20 @@ class SpaceHeaderProfile extends ConsumerWidget {
                         ),
                       ]
                     : [],
-                tooltip: TooltipStyle.None,
-                badgeSize: 40,
+                onAvatarTap: () => context.pushNamed(
+                  Routes.space.name,
+                  pathParameters: {
+                    'spaceId': spaceId,
+                  },
+                ),
+                onParentBadgeTap: () => context.pushNamed(
+                  Routes.space.name,
+                  pathParameters: {
+                    'spaceId':
+                        canonicalParent.valueOrNull!.space.getRoomIdStr(),
+                  },
+                ),
+                badgeSize: 30,
                 size: 80,
               ),
               Column(

@@ -271,7 +271,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         repliedTo = types.CustomMessage(
           author: types.User(id: orgEventItem.sender()),
           createdAt: orgEventItem.originServerTs(),
-          id: orgEventItem.eventId(),
+          id: orgEventItem.uniqueId(),
           metadata: {
             'itemType': 'event',
             'eventType': eventType,
@@ -282,7 +282,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         repliedTo = types.CustomMessage(
           author: types.User(id: orgEventItem.sender()),
           createdAt: orgEventItem.originServerTs(),
-          id: orgEventItem.eventId(),
+          id: orgEventItem.uniqueId(),
           metadata: {
             'itemType': 'event',
             'eventType': eventType,
@@ -419,12 +419,14 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
     String eventType = eventItem.eventType();
     String sender = eventItem.sender();
+    bool isEditable = eventItem.isEditable();
+    bool wasEdited = eventItem.wasEdited();
     final author = types.User(
       id: sender,
       firstName: simplifyUserId(sender),
     );
     int createdAt = eventItem.originServerTs(); // in milliseconds
-    String eventId = eventItem.eventId();
+    String eventId = eventItem.uniqueId();
 
     String? inReplyTo = eventItem.inReplyTo();
     // state event
@@ -532,6 +534,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             AudioDesc? description = eventItem.audioDesc();
             if (description != null) {
               Map<String, dynamic> metadata = {'base64': ''};
+              metadata['was_edited'] = wasEdited;
+              metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
@@ -560,6 +564,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               String? formattedBody = description.formattedBody();
               String body = description.body(); // always exists
               Map<String, dynamic> metadata = {};
+              metadata['was_edited'] = wasEdited;
+              metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
@@ -584,6 +590,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             FileDesc? description = eventItem.fileDesc();
             if (description != null) {
               Map<String, dynamic> metadata = {};
+              metadata['was_edited'] = wasEdited;
+              metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
@@ -609,6 +617,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             ImageDesc? description = eventItem.imageDesc();
             if (description != null) {
               Map<String, dynamic> metadata = {};
+              metadata['was_edited'] = wasEdited;
+              metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
@@ -641,6 +651,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 'body': description.body(),
                 'geoUri': description.geoUri(),
               };
+              metadata['was_edited'] = wasEdited;
+              metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
@@ -693,6 +705,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                   'itemType': 'event',
                   'eventType': eventType,
                   'msgType': msgType,
+                  'was_edited': wasEdited,
+                  'isEditable': isEditable,
                 },
               );
             }
@@ -711,6 +725,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                   'itemType': 'event',
                   'eventType': eventType,
                   'msgType': msgType,
+                  'was_edited': wasEdited,
+                  'isEditable': isEditable,
                 },
               );
             }
@@ -721,6 +737,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               String? formattedBody = description.formattedBody();
               String body = description.body(); // always exists
               Map<String, dynamic> metadata = {};
+              metadata['was_edited'] = wasEdited;
+              metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
@@ -745,6 +763,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             VideoDesc? description = eventItem.videoDesc();
             if (description != null) {
               Map<String, dynamic> metadata = {'base64': ''};
+              metadata['was_edited'] = wasEdited;
+              metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
@@ -797,6 +817,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             'height': description.height()?.toDouble(),
             'base64': '',
           };
+          metadata['was_edited'] = wasEdited;
+          metadata['isEditable'] = isEditable;
           if (inReplyTo != null) {
             metadata['repliedTo'] = inReplyTo;
           }
@@ -827,6 +849,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               'eventType': eventType,
               'msgType': eventItem.msgType(),
               'body': body,
+              'was_edited': wasEdited,
+              'isEditable': isEditable,
             },
           );
         }

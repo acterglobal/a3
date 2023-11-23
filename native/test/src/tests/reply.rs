@@ -1,81 +1,154 @@
-use acter::{
-    api::login_new_client,
-    ruma_events::{AnyMessageLikeEvent, AnyTimelineEvent, MessageLikeEvent},
-};
-use anyhow::{bail, Result};
-use futures::stream::StreamExt;
-use tempfile::TempDir;
+use acter::{api::RoomMessage, ruma_common::OwnedEventId};
+use anyhow::Result;
+use core::time::Duration;
+use futures::{pin_mut, stream::StreamExt, FutureExt};
+use tokio::time::sleep;
+use tracing::info;
 
-use crate::utils::default_user_password;
+use crate::utils::random_users_with_random_convo;
 
 #[tokio::test]
 async fn sisko_reads_kyra_reply() -> Result<()> {
     let _ = env_logger::try_init();
-    let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME")
-        .unwrap_or("localhost")
-        .to_string();
-    let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL")
-        .unwrap_or("http://localhost:8118")
-        .to_string();
+    let (mut sisko, mut kyra, _, room_id) = random_users_with_random_convo("reply").await?;
 
-    let tmp_dir = TempDir::new()?;
-    let mut sisko = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
-        "@sisko".to_string(),
-        default_user_password("sisko"),
-        homeserver_name.clone(),
-        homeserver_url.clone(),
-        Some("SISKO_DEV".to_string()),
-    )
-    .await?;
-    let syncer = sisko.start_sync();
-    let mut synced = syncer.first_synced_rx();
-    while synced.next().await != Some(true) {} // let's wait for it to have synced
+    let sisko_sync = sisko.start_sync();
+    sisko_sync.await_has_synced_history().await?;
 
-    let tmp_dir = TempDir::new()?;
-    let mut kyra = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
-        "@kyra".to_string(),
-        default_user_password("kyra"),
-        homeserver_name.clone(),
-        homeserver_url,
-        Some("KYRA_DEV".to_string()),
-    )
-    .await?;
-    let syncer = kyra.start_sync();
-    let mut synced = syncer.first_synced_rx();
-    while synced.next().await != Some(true) {} // let's wait for it to have synced
-
-    let sisko_space = sisko
-        .space(format!("#ops:{homeserver_name}"))
+    let sisko_convo = sisko
+        .convo(room_id.to_string())
         .await
-        .expect("sisko should belong to ops");
-    let event_id = sisko_space
+        .expect("sisko should belong to convo");
+    let sisko_timeline = sisko_convo
+        .timeline_stream()
+        .await
+        .expect("sisko should get timeline stream");
+    let sisko_stream = sisko_timeline.diff_stream();
+    pin_mut!(sisko_stream);
+
+    let kyra_sync = kyra.start_sync();
+    kyra_sync.await_has_synced_history().await?;
+
+    let kyra_convo = kyra
+        .convo(room_id.to_string())
+        .await
+        .expect("kyra should belong to convo");
+    let kyra_timeline = kyra_convo
+        .timeline_stream()
+        .await
+        .expect("kyra should get timeline stream");
+    let kyra_stream = kyra_timeline.diff_stream();
+    pin_mut!(kyra_stream);
+
+    kyra_stream.next().await;
+    for invited in kyra.invited_rooms().iter() {
+        info!(" - accepting {:?}", invited.room_id());
+        invited.join().await?;
+    }
+
+    sisko_timeline
         .send_plain_message("Hi, everyone".to_string())
         .await?;
 
-    let kyra_space = kyra
-        .space(format!("#ops:{homeserver_name}"))
-        .await
-        .expect("kyra should belong to ops");
-    let reply_id = kyra_space
-        .send_text_reply("Sorry, it's my bad".to_string(), event_id.to_string(), None)
-        .await?;
-
-    let ev = sisko_space.event(&reply_id).await?;
-    println!("reply: {ev:?}");
-
-    let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(MessageLikeEvent::Original(m)))) = ev.event.deserialize() else {
-        bail!("Could not deserialize event");
-    };
-
-    assert_eq!(
-        m.content.body(),
-        format!(
-            "> <@sisko:{}> Hi, everyone\n\nSorry, it's my bad",
-            homeserver_name,
-        )
+    // text msg may reach via reset action or set action
+    let mut i = 30;
+    let mut received = None;
+    while i > 0 {
+        info!("stream loop - {i}");
+        if let Some(diff) = sisko_stream.next().now_or_never().flatten() {
+            info!("stream diff - {}", diff.action());
+            match diff.action().as_str() {
+                "Reset" => {
+                    let values = diff
+                        .values()
+                        .expect("diff reset action should have valid values");
+                    info!("diff reset - {:?}", values);
+                    for value in values.iter() {
+                        if let Some(event_id) = match_room_msg(value, "Hi, everyone") {
+                            received = Some(event_id);
+                            break;
+                        }
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
+                    info!("diff set - {:?}", value);
+                    if let Some(event_id) = match_room_msg(&value, "Hi, everyone") {
+                        received = Some(event_id);
+                    }
+                }
+                _ => {}
+            }
+            // yay
+            if received.is_some() {
+                break;
+            }
+        }
+        info!("continue loop");
+        i -= 1;
+        sleep(Duration::from_secs(1)).await;
+    }
+    info!("loop finished - {:?}", received);
+    assert!(
+        received.is_some(),
+        "Even after 30 seconds, text msg not received"
     );
 
+    kyra_timeline
+        .send_plain_reply(
+            "Sorry, it's my bad".to_string(),
+            received.unwrap().to_string(),
+        )
+        .await?;
+
+    // msg reply may reach via pushback action
+    i = 10;
+    let mut found = false;
+    while i > 0 {
+        info!("stream loop - {i}");
+        if let Some(diff) = sisko_stream.next().now_or_never().flatten() {
+            info!("stream diff - {}", diff.action());
+            match diff.action().as_str() {
+                "PushBack" => {
+                    let value = diff
+                        .value()
+                        .expect("diff pushback action should have valid value");
+                    info!("diff pushback - {:?}", value);
+                    if match_room_msg(&value, "Sorry, it's my bad").is_some() {
+                        found = true;
+                    }
+                }
+                _ => {}
+            }
+            // yay
+            if found {
+                break;
+            }
+        }
+        info!("continue loop");
+        i -= 1;
+        sleep(Duration::from_secs(1)).await;
+    }
+    info!("loop finished");
+    assert!(found, "Even after 10 seconds, msg reply not received");
+
     Ok(())
+}
+
+fn match_room_msg(msg: &RoomMessage, body: &str) -> Option<OwnedEventId> {
+    info!("match room msg - {:?}", msg.clone());
+    if msg.item_type() == "event" {
+        let event_item = msg.event_item().expect("room msg should have event item");
+        if let Some(text_desc) = event_item.text_desc() {
+            if text_desc.body() == body {
+                // exclude the pending msg
+                if let Some(event_id) = event_item.evt_id() {
+                    return Some(event_id);
+                }
+            }
+        }
+    }
+    None
 }

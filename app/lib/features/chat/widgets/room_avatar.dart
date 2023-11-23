@@ -65,6 +65,7 @@ class RoomAvatar extends ConsumerWidget {
                     ),
                   ]
                 : [],
+            badgeSize: avatarSize / 2,
           );
         } else if (profile.hasAvatar()) {
           return ActerAvatar(

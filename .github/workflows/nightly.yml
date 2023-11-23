@@ -51,7 +51,7 @@ jobs:
         run: echo "build_num=`date +%s`" >> $GITHUB_OUTPUT
 
   build:
-    environment: nightly
+    environment: release
     strategy:
       matrix:
        include:
@@ -97,7 +97,7 @@ jobs:
             flutter_build_args: "build macos"
             artifact_prefix: acter-nightly-macosx
             artifact_path: app/build/macos/Build/Products/Release/
-            tar_files: "Acter.app"
+            # tar_files: "Acter.app"
           - name: Windows
             os: windows-latest
             cargo_make_args: desktop
@@ -227,6 +227,18 @@ jobs:
           cp .github/assets/provision_profiles/* ~/Library/MobileDevice/Provisioning\ Profiles/
           ls -ltas ~/Library/MobileDevice/Provisioning\ Profiles/
 
+      - name: Patch macos project
+        if: ${{ matrix.target == 'macos' }}
+        run: |
+          echo "patching project file"
+          sed -i \
+            -e 's/Acter Mac AppStore/Acter Mac Nightly/g' \
+            app/macos/Runner.xcodeproj/project.pbxproj
+          sed -i \
+            -e 's/3rd Party Mac Developer Application/Developer ID Application/g' \
+            app/macos/Runner.xcodeproj/project.pbxproj
+          cat app/macos/Runner.xcodeproj/project.pbxproj
+
       - name: Expose JKS file
         if: matrix.target == 'android'
         working-directory: ./app/android
@@ -256,9 +268,9 @@ jobs:
         run: |
           flutter ${{ matrix.flutter_build_args }} \
             --dart-define VERSION_NAME="Nightly+${{ needs.tags.outputs.tag }}" \
-            --dart-define PUSH_SERVER="${{ secrets.PUSH_SERVER }}" \
+            --dart-define PUSH_SERVER="${{ secrets.NIGHTLY_PUSH_SERVER }}" \
             --dart-define RAGESHAKE_URL="${{ secrets.RAGESHAKE_URL }}" \
-            --dart-define RAGESHAKE_APP_NAME="${{ secrets.RAGESHAKE_APP_NAME_NIGHTLY }}" \
+            --dart-define RAGESHAKE_APP_NAME="${{ secrets.NIGHTLY_RAGESHAKE_APP_NAME }}" \
             --dart-define RAGESHAKE_APP_VERSION="Nightly-${{ needs.tags.outputs.tag }}/${{ matrix.name }}" \
             --dart-define DEFAULT_HOMESERVER_URL="${{vars.DEFAULT_HOMESERVER_URL}}" \
             --dart-define DEFAULT_HOMESERVER_NAME="${{vars.DEFAULT_HOMESERVER_NAME}}"
@@ -272,10 +284,30 @@ jobs:
           ##    ##  ##  ##    ##  ##   ### 
            ######  ####  ######   ##    ## 
 
-      - name: Sign Acter.app
+      - name: Sign & notorize Acter.app
         if: matrix.target == 'macos'
+        env:
+          APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+          APPLE_SIGN_CERTNAME: ${{ secrets.APPLE_MAC_APPSTORE_SIGN_CERTNAME }}
         working-directory: ${{ matrix.artifact_path }}
-        run: codesign --deep --force --verbose --sign "${{ secrets.MAC_SIGNING_IDENTIY}}" Acter.app
+        run: |
+          mkdir private_keys
+          echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
+          ls -ltas private_keys
+          echo "Notorizing"
+          export NEW_NAME=${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.app
+          mv Acter.app "$NEW_NAME"
+          /usr/bin/ditto -c -k --keepParent $NEW_NAME Acter.zip
+          echo "Notarytool"
+          xcrun notarytool submit Acter.zip --wait \
+            --key "private_keys/AuthKey_$APPLE_API_KEY_ID.p8" \
+            --key-id "$APPLE_API_KEY_ID" \
+            --issuer "$APPLE_ISSUER_ID" \
+            --bundle-id global.acter.a3
+          echo "Staple"
+          xcrun stapler staple $NEW_NAME
 
       # Important! Cleanup: remove the certificate and provisioning profile from the runner!
       - name: Clean up keychain and provisioning profile
@@ -398,7 +430,9 @@ jobs:
           git config --global user.name 'Sari'
           git config --global user.email 'acter-sari@users.noreply.github.com'
           git add "docs/content/nightly/${{ needs.tags.outputs.tag }}.md"
-          git commit -F nightly-changes.md
+          echo "Tagging ${{ needs.tags.outputs.tag }}" > notes.md
+          cat nightly-changes.md >> notes.md
+          git commit -F notes.md
           git tag nightly-${{ needs.tags.outputs.tag }}
           git tag -f nightly-latest
           git push -f origin main nightly-${{ needs.tags.outputs.tag }} nightly-latest

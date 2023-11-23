@@ -14,6 +14,18 @@ on:
       prev_tag:
         description: 'The tag to compare the changelog to'
         type: string
+      target:
+        description: 'Build only Target'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - ios
+          - android
+          - macos
+          - linux
+          - windows
 
   schedule:
    - cron: 0 3 * * 4
@@ -24,6 +36,7 @@ jobs:
     name: Check latest commit
     outputs:
       should_run: ${{ steps.check-new-commits.outputs.has-new-commits }}
+      build: ${{ inputs.target || 'all' }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -105,11 +118,11 @@ jobs:
             with_apple_cert: true
             cargo_make_args: desktop
             flutter_config: "--enable-macos-desktop"
-            flutter_build_args: "build macos --split-debug-info=debug_symbols"
+            flutter_build_args: "build macos --split-debug-info=debug_symbols --verbose"
             artifact_prefix: acter-macosx
             artifact_path: app/build/macos/Build/Products/Release/
-            specific_upload_artifacts: app/build/macos/Build/Products/Release/Acter.app
-            tar_files: "Acter.app"
+            rename_file: "Acter.app"
+            rename_suffix: "app"
             with_debug_symbols: true
           - name: Windows
             os: windows-latest
@@ -133,6 +146,10 @@ jobs:
 
     continue-on-error: true
     steps:
+      - if: ${{ needs.run_checker.outputs.build != 'all' && needs.run_checker.outputs.build != matrix.target }}
+        run: |
+          echo "Skipping matrix task ${{ matrix.name }}"
+          exit 1
       - uses: actions/checkout@v2
 
  ######  ######## ######## ##     ## ########  
@@ -644,6 +661,9 @@ jobs:
       - build
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v3
+        with:
+          name: MacOS
       - name: Unlock git-crypt
         run: |
           brew install git-crypt
@@ -683,21 +703,12 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles/
           cp .github/assets/provision_profiles/* ~/Library/MobileDevice/Provisioning\ Profiles/
           ls -ltas ~/Library/MobileDevice/Provisioning\ Profiles/
-      - uses: actions/download-artifact@v3
-        with:
-          name: MacOS
 
-      # for debugging any errors below, print out the bundle version from the IPA/plist
-      - name: Print Bundle Version
-        continue-on-error: true
+      - name: Rename and check pkg
         run: |
-          ls Acter.app/*
-          cat Acter.app/Info.plist
-          echo ""
-          echo " ------- "
-          echo ""
-          defaults read "Acter.app/Info.plist" CFBundleShortVersionString
-
+          mv *.app Acter.app
+          codesign --verify --deep --verbose Acter.app
+          echo "Done"
       - name: Upload to App Store
         env:
           APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
@@ -709,7 +720,7 @@ jobs:
           echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
           ls -ltas private_keys
           echo "Productbuild"
-          productbuild --component Acter.app /Applications --sign "$APPLE_SIGN_CERTNAME" Acter.pkg
+          productbuild --component *.app /Applications --sign "$APPLE_SIGN_CERTNAME" Acter.pkg
           xcrun altool --upload-app --type macos --file Acter.pkg \
               --bundle-id global.acter.a3 \
               --apiKey "$APPLE_API_KEY_ID" \
