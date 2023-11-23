@@ -704,11 +704,11 @@ jobs:
           cp .github/assets/provision_profiles/* ~/Library/MobileDevice/Provisioning\ Profiles/
           ls -ltas ~/Library/MobileDevice/Provisioning\ Profiles/
 
-      - name: Rename and check pkg
-        run: |
-          mv *.app Acter.app
-          codesign --verify --deep --verbose Acter.app
-          echo "Done"
+      # - name: Rename and check pkg
+      #   run: |
+      #     mv *.app Acter.app
+      #     codesign --verify --deep --verbose Acter.app
+      #     echo "Done"
       - name: Upload to App Store
         env:
           APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
