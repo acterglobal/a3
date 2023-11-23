@@ -4645,7 +4645,7 @@ class Api {
     return tmp7;
   }
 
-  FfiBufferUint8? __convoImageBinaryFuturePoll(
+  FfiBufferUint8? __convoMediaBinaryFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -4659,151 +4659,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _convoImageBinaryFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiBufferUint8._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
-  FfiBufferUint8? __convoAudioBinaryFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _convoAudioBinaryFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiBufferUint8._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
-  FfiBufferUint8? __convoVideoBinaryFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _convoVideoBinaryFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiBufferUint8._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
-  FfiBufferUint8? __convoFileBinaryFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _convoFileBinaryFuturePoll(
+    final tmp6 = _convoMediaBinaryFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -7382,198 +7238,6 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListActerPin");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp14 = FfiListActerPin._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
-  FfiBufferUint8? __spaceImageBinaryFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _spaceImageBinaryFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiBufferUint8._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
-  FfiBufferUint8? __spaceAudioBinaryFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _spaceAudioBinaryFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiBufferUint8._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
-  FfiBufferUint8? __spaceVideoBinaryFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _spaceVideoBinaryFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiBufferUint8._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
-  FfiBufferUint8? __spaceFileBinaryFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _spaceFileBinaryFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiBufferUint8._(this, tmp13_1);
     final tmp7 = tmp14;
     return tmp7;
   }
@@ -16856,64 +16520,16 @@ class Api {
         int,
         int,
       )>();
-  late final _convoImageBinaryPtr = _lookup<
+  late final _convoMediaBinaryPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__Convo_image_binary");
+          )>>("__Convo_media_binary");
 
-  late final _convoImageBinary = _convoImageBinaryPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-      )>();
-  late final _convoAudioBinaryPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__Convo_audio_binary");
-
-  late final _convoAudioBinary = _convoAudioBinaryPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-      )>();
-  late final _convoVideoBinaryPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__Convo_video_binary");
-
-  late final _convoVideoBinary = _convoVideoBinaryPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-      )>();
-  late final _convoFileBinaryPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__Convo_file_binary");
-
-  late final _convoFileBinary = _convoFileBinaryPtr.asFunction<
+  late final _convoMediaBinary = _convoMediaBinaryPtr.asFunction<
       int Function(
         int,
         int,
@@ -20253,70 +19869,6 @@ class Api {
 
   late final _spacePinDraft = _spacePinDraftPtr.asFunction<
       _SpacePinDraftReturn Function(
-        int,
-      )>();
-  late final _spaceImageBinaryPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__Space_image_binary");
-
-  late final _spaceImageBinary = _spaceImageBinaryPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-      )>();
-  late final _spaceAudioBinaryPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__Space_audio_binary");
-
-  late final _spaceAudioBinary = _spaceAudioBinaryPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-      )>();
-  late final _spaceVideoBinaryPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__Space_video_binary");
-
-  late final _spaceVideoBinary = _spaceVideoBinaryPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-      )>();
-  late final _spaceFileBinaryPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__Space_file_binary");
-
-  late final _spaceFileBinary = _spaceFileBinaryPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
         int,
       )>();
   late final _spaceJoinPtr = _lookup<
@@ -24209,62 +23761,17 @@ class Api {
             int,
             int,
           )>();
-  late final _convoImageBinaryFuturePollPtr = _lookup<
+  late final _convoMediaBinaryFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConvoImageBinaryFuturePollReturn Function(
+          _ConvoMediaBinaryFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__Convo_image_binary_future_poll");
+          )>>("__Convo_media_binary_future_poll");
 
-  late final _convoImageBinaryFuturePoll =
-      _convoImageBinaryFuturePollPtr.asFunction<
-          _ConvoImageBinaryFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _convoAudioBinaryFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoAudioBinaryFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Convo_audio_binary_future_poll");
-
-  late final _convoAudioBinaryFuturePoll =
-      _convoAudioBinaryFuturePollPtr.asFunction<
-          _ConvoAudioBinaryFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _convoVideoBinaryFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoVideoBinaryFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Convo_video_binary_future_poll");
-
-  late final _convoVideoBinaryFuturePoll =
-      _convoVideoBinaryFuturePollPtr.asFunction<
-          _ConvoVideoBinaryFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _convoFileBinaryFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoFileBinaryFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Convo_file_binary_future_poll");
-
-  late final _convoFileBinaryFuturePoll =
-      _convoFileBinaryFuturePollPtr.asFunction<
-          _ConvoFileBinaryFuturePollReturn Function(
+  late final _convoMediaBinaryFuturePoll =
+      _convoMediaBinaryFuturePollPtr.asFunction<
+          _ConvoMediaBinaryFuturePollReturn Function(
             int,
             int,
             int,
@@ -25065,66 +24572,6 @@ class Api {
   late final _spacePinnedLinksFuturePoll =
       _spacePinnedLinksFuturePollPtr.asFunction<
           _SpacePinnedLinksFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _spaceImageBinaryFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceImageBinaryFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Space_image_binary_future_poll");
-
-  late final _spaceImageBinaryFuturePoll =
-      _spaceImageBinaryFuturePollPtr.asFunction<
-          _SpaceImageBinaryFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _spaceAudioBinaryFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceAudioBinaryFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Space_audio_binary_future_poll");
-
-  late final _spaceAudioBinaryFuturePoll =
-      _spaceAudioBinaryFuturePollPtr.asFunction<
-          _SpaceAudioBinaryFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _spaceVideoBinaryFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceVideoBinaryFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Space_video_binary_future_poll");
-
-  late final _spaceVideoBinaryFuturePoll =
-      _spaceVideoBinaryFuturePollPtr.asFunction<
-          _SpaceVideoBinaryFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _spaceFileBinaryFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceFileBinaryFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Space_file_binary_future_poll");
-
-  late final _spaceFileBinaryFuturePoll =
-      _spaceFileBinaryFuturePollPtr.asFunction<
-          _SpaceFileBinaryFuturePollReturn Function(
             int,
             int,
             int,
@@ -36907,10 +36354,10 @@ class Convo {
     return tmp4;
   }
 
-  /// decrypted image file data
+  /// decrypted media file data
   /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
   /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-  Future<FfiBufferUint8> imageBinary(
+  Future<FfiBufferUint8> mediaBinary(
     String eventId,
   ) {
     final tmp1 = eventId;
@@ -36927,7 +36374,7 @@ class Convo {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._convoImageBinary(
+    final tmp5 = _api._convoMediaBinary(
       tmp0,
       tmp2,
       tmp3,
@@ -36935,111 +36382,9 @@ class Convo {
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_image_binary_future_drop");
+    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_media_binary_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__convoImageBinaryFuturePoll);
-    return tmp6;
-  }
-
-  /// decrypted audio buffer data
-  /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-  /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-  Future<FfiBufferUint8> audioBinary(
-    String eventId,
-  ) {
-    final tmp1 = eventId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._convoAudioBinary(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_audio_binary_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__convoAudioBinaryFuturePoll);
-    return tmp6;
-  }
-
-  /// decrypted video buffer data
-  /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-  /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-  Future<FfiBufferUint8> videoBinary(
-    String eventId,
-  ) {
-    final tmp1 = eventId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._convoVideoBinary(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_video_binary_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__convoVideoBinaryFuturePoll);
-    return tmp6;
-  }
-
-  /// decrypted file buffer data
-  /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-  /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-  Future<FfiBufferUint8> fileBinary(
-    String eventId,
-  ) {
-    final tmp1 = eventId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._convoFileBinary(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_file_binary_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__convoFileBinaryFuturePoll);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__convoMediaBinaryFuturePoll);
     return tmp6;
   }
 
@@ -43164,142 +42509,6 @@ class Space {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp2 = PinDraft._(_api, tmp7_1);
     return tmp2;
-  }
-
-  /// decrypted image buffer data
-  /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-  /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-  Future<FfiBufferUint8> imageBinary(
-    String eventId,
-  ) {
-    final tmp1 = eventId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._spaceImageBinary(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Space_image_binary_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__spaceImageBinaryFuturePoll);
-    return tmp6;
-  }
-
-  /// decrypted audio buffer data
-  /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-  /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-  Future<FfiBufferUint8> audioBinary(
-    String eventId,
-  ) {
-    final tmp1 = eventId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._spaceAudioBinary(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Space_audio_binary_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__spaceAudioBinaryFuturePoll);
-    return tmp6;
-  }
-
-  /// decrypted video buffer data
-  /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-  /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-  Future<FfiBufferUint8> videoBinary(
-    String eventId,
-  ) {
-    final tmp1 = eventId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._spaceVideoBinary(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Space_video_binary_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__spaceVideoBinaryFuturePoll);
-    return tmp6;
-  }
-
-  /// decrypted file buffer data
-  /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-  /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-  Future<FfiBufferUint8> fileBinary(
-    String eventId,
-  ) {
-    final tmp1 = eventId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._spaceFileBinary(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Space_file_binary_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__spaceFileBinaryFuturePoll);
-    return tmp6;
   }
 
   /// join this room
@@ -52923,52 +52132,7 @@ class _ConvoTypingNoticeFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConvoImageBinaryFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _ConvoAudioBinaryFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _ConvoVideoBinaryFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _ConvoFileBinaryFuturePollReturn extends ffi.Struct {
+class _ConvoMediaBinaryFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -53783,66 +52947,6 @@ class _SpacePinsFuturePollReturn extends ffi.Struct {
 }
 
 class _SpacePinnedLinksFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _SpaceImageBinaryFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _SpaceAudioBinaryFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _SpaceVideoBinaryFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _SpaceFileBinaryFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

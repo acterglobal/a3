@@ -36,9 +36,10 @@ class _ImageMessageBuilderState extends State<ImageMessageBuilder> {
       ///This can be improve by having provider management for this
       imageData = AsyncValue.data(
         await widget.convo
-            .imageBinary(widget.message.id)
+            .mediaBinary(widget.message.id)
             .then((value) => value.asTypedList()),
       );
+
       /// Need to render updated imageData object on UI (Build Method) as this is AsyncValue
       setState(() {});
     } catch (e, s) {

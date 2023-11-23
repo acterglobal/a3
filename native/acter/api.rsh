@@ -894,25 +894,10 @@ object Convo {
     /// on every key stroke, since it will do nothing while typing is active.
     fn typing_notice(typing: bool) -> Future<Result<bool>>;
 
-    /// decrypted image file data
+    /// decrypted media file data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-    fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
-
-    /// decrypted audio buffer data
-    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-    fn audio_binary(event_id: string) -> Future<Result<buffer<u8>>>;
-
-    /// decrypted video buffer data
-    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-    fn video_binary(event_id: string) -> Future<Result<buffer<u8>>>;
-
-    /// decrypted file buffer data
-    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-    fn file_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+    fn media_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// get the user status on this room
     fn room_type() -> string;
@@ -1606,26 +1591,6 @@ object Space {
 
     /// pin draft builder
     fn pin_draft() -> Result<PinDraft>;
-
-    /// decrypted image buffer data
-    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-    fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
-
-    /// decrypted audio buffer data
-    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-    fn audio_binary(event_id: string) -> Future<Result<buffer<u8>>>;
-
-    /// decrypted video buffer data
-    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-    fn video_binary(event_id: string) -> Future<Result<buffer<u8>>>;
-
-    /// decrypted file buffer data
-    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-    fn file_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// join this room
     fn join() -> Future<Result<bool>>;

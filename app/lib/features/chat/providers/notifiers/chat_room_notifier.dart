@@ -209,7 +209,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
         RoomEventItem? eventItem = m.eventItem();
         if (eventItem != null) {
-          await _fetchEventBinary(eventItem.msgType(), message.id);
+          await _fetchMediaBinary(eventItem.msgType(), message.id);
         }
       }
     }
@@ -317,7 +317,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.image':
             ImageDesc? description = orgEventItem.imageDesc();
             if (description != null) {
-              convo.imageBinary(originalId).then((data) {
+              convo.mediaBinary(originalId).then((data) {
                 repliedToContent['base64'] = base64Encode(data.asTypedList());
               });
               repliedTo = types.ImageMessage(
@@ -335,7 +335,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.audio':
             AudioDesc? description = orgEventItem.audioDesc();
             if (description != null) {
-              convo.audioBinary(originalId).then((data) {
+              convo.mediaBinary(originalId).then((data) {
                 repliedToContent['content'] = base64Encode(data.asTypedList());
               });
               repliedTo = types.AudioMessage(
@@ -353,7 +353,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.video':
             VideoDesc? description = orgEventItem.videoDesc();
             if (description != null) {
-              convo.videoBinary(originalId).then((data) {
+              convo.mediaBinary(originalId).then((data) {
                 repliedToContent['content'] = base64Encode(data.asTypedList());
               });
               repliedTo = types.VideoMessage(
@@ -866,40 +866,20 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   // fetch event media binary for message.
-  Future<void> _fetchEventBinary(String? msgType, String eventId) async {
+  Future<void> _fetchMediaBinary(String? msgType, String eventId) async {
     switch (msgType) {
       case 'm.audio':
-        await _fetchAudioBinary(eventId);
-        break;
       case 'm.video':
-        await _fetchVideoBinary(eventId);
+        final messages = state.messages;
+        final data = await convo.mediaBinary(eventId);
+        int index = messages.indexWhere((x) => x.id == eventId);
+        if (index != -1) {
+          final metadata = {...messages[index].metadata ?? {}};
+          metadata['base64'] = base64Encode(data.asTypedList());
+          final message = messages[index].copyWith(metadata: metadata);
+          replaceMessage(message);
+        }
         break;
-    }
-  }
-
-  // fetch audio content for message.
-  Future<void> _fetchAudioBinary(String eventId) async {
-    final messages = state.messages;
-    final data = await convo.audioBinary(eventId);
-    int index = messages.indexWhere((x) => x.id == eventId);
-    if (index != -1) {
-      final metadata = {...messages[index].metadata ?? {}};
-      metadata['base64'] = base64Encode(data.asTypedList());
-      final message = messages[index].copyWith(metadata: metadata);
-      replaceMessage(message);
-    }
-  }
-
-  // fetch video content for message
-  Future<void> _fetchVideoBinary(String eventId) async {
-    final messages = state.messages;
-    final data = await convo.videoBinary(eventId);
-    int index = messages.indexWhere((x) => x.id == eventId);
-    if (index != -1) {
-      final metadata = {...messages[index].metadata ?? {}};
-      metadata['base64'] = base64Encode(data.asTypedList());
-      final message = messages[index].copyWith(metadata: metadata);
-      replaceMessage(message);
     }
   }
 
