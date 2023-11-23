@@ -301,7 +301,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                             .firstWhere(
                               (element) => element.id == currentMessageId,
                             );
-                        chatInputNotifier.setEditMessage(message);
+                        inputNotifier.setEditMessage(message);
                         if (message is TextMessage) {
                           ref
                               .read(_textValuesProvider(roomId).notifier)
@@ -475,8 +475,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
 
   Future<void> handleFileUpload(List<File> files) async {
     final roomId = widget.convo.getRoomIdStr();
-    final chatInputState = ref.read(chatInputProvider(roomId));
-    final chatInputNotifier = ref.read(chatInputProvider(roomId).notifier);
+    final inputState = ref.read(chatInputProvider(roomId));
     final stream = await widget.convo.timelineStream();
 
     try {
@@ -487,7 +486,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         if (mimeType!.startsWith('image/')) {
           var bytes = file.readAsBytesSync();
           var image = await decodeImageFromList(bytes);
-          if (chatInputState.repliedToMessage != null) {
+          if (inputState.repliedToMessage != null) {
             await stream.sendImageReply(
               file.path,
               fileName,
@@ -496,15 +495,8 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
               image.width,
               image.height,
               null,
-              chatInputState.repliedToMessage!.id,
+              inputState.repliedToMessage!.id,
             );
-
-            chatInputNotifier.setRepliedToMessage(null);
-            chatInputNotifier.setEditMessage(null);
-            chatInputNotifier.showReplyView(false);
-            chatInputNotifier.showEditView(false);
-            chatInputNotifier.setReplyWidget(null);
-            chatInputNotifier.setEditWidget(null);
           } else {
             await stream.sendImageMessage(
               file.path,
@@ -517,24 +509,18 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             );
           }
         } else if (mimeType.startsWith('/audio')) {
-          if (chatInputState.repliedToMessage != null) {
+          if (inputState.repliedToMessage != null) {
           } else {}
         } else if (mimeType.startsWith('/video')) {
         } else {
-          if (chatInputState.repliedToMessage != null) {
+          if (inputState.repliedToMessage != null) {
             await stream.sendFileReply(
               file.path,
               fileName,
               mimeType,
               file.lengthSync(),
-              chatInputState.repliedToMessage!.id,
+              inputState.repliedToMessage!.id,
             );
-            chatInputNotifier.setRepliedToMessage(null);
-            chatInputNotifier.setEditMessage(null);
-            chatInputNotifier.showReplyView(false);
-            chatInputNotifier.showEditView(false);
-            chatInputNotifier.setReplyWidget(null);
-            chatInputNotifier.setEditWidget(null);
           } else {
             await stream.sendFileMessage(
               file.path,
@@ -547,6 +533,16 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       }
     } catch (e) {
       debugPrint('error occurred: $e');
+    }
+
+    if (inputState.repliedToMessage != null) {
+      final notifier = ref.read(chatInputProvider(roomId).notifier);
+      notifier.setRepliedToMessage(null);
+      notifier.setEditMessage(null);
+      notifier.showReplyView(false);
+      notifier.showEditView(false);
+      notifier.setReplyWidget(null);
+      notifier.setEditWidget(null);
     }
   }
 
@@ -653,13 +649,12 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     final mentionState = mentionKey.currentState!;
     inputNotifier.prepareSending();
     String markdownText = mentionState.controller!.text;
-    int messageLength = markdownText.length;
     mentionReplacements.forEach((key, value) {
       markdownText = markdownText.replaceAll(key, value);
     });
 
     try {
-      await handleSendPressed(markdownText, messageLength);
+      await handleSendPressed(markdownText);
       inputNotifier.messageSent();
       mentionState.controller!.clear();
     } catch (e) {
@@ -671,52 +666,43 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   }
 
   // push messages in convo
-  Future<void> handleSendPressed(
-    String markdownMessage,
-    int messageLength,
-  ) async {
+  Future<void> handleSendPressed(String markdownMessage) async {
     final roomId = widget.convo.getRoomIdStr();
-    final chatInputState = ref.watch(chatInputProvider(roomId));
-    final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
+    final inputState = ref.read(chatInputProvider(roomId));
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
     await widget.convo.typingNotice(false);
     final stream = await widget.convo.timelineStream();
-    if (chatInputState.repliedToMessage != null) {
+    if (inputState.repliedToMessage != null) {
       await stream.sendPlainReply(
         markdownMessage,
-        chatInputState.repliedToMessage!.id,
+        inputState.repliedToMessage!.id,
       );
-      chatInputNotifier.setRepliedToMessage(null);
-      chatInputNotifier.setEditMessage(null);
-      final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
-      inputNotifier.showReplyView(false);
-      inputNotifier.showEditView(false);
-      inputNotifier.setReplyWidget(null);
-      inputNotifier.setEditWidget(null);
-    } else if (chatInputState.editMessage != null) {
+    } else if (inputState.editMessage != null) {
       await stream.editFormattedMessage(
-        chatInputState.editMessage!.id,
+        inputState.editMessage!.id,
         markdownMessage,
       );
-      chatInputNotifier.setRepliedToMessage(null);
-      chatInputNotifier.setEditMessage(null);
-      final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
-      inputNotifier.showReplyView(false);
-      inputNotifier.showEditView(false);
-      inputNotifier.setReplyWidget(null);
-      inputNotifier.setEditWidget(null);
     } else {
       await stream.sendFormattedMessage(markdownMessage);
+    }
+    if (inputState.repliedToMessage != null || inputState.editMessage != null) {
+      final notifier = ref.read(chatInputProvider(roomId).notifier);
+      notifier.setRepliedToMessage(null);
+      notifier.setEditMessage(null);
+      notifier.showReplyView(false);
+      notifier.showEditView(false);
+      notifier.setReplyWidget(null);
+      notifier.setEditWidget(null);
     }
   }
 }
 
 class _FileWidget extends ConsumerWidget {
-  const _FileWidget(this.mimeType, this.file);
-
   final String? mimeType;
   final File file;
+
+  const _FileWidget(this.mimeType, this.file);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
