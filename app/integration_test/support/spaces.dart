@@ -13,6 +13,10 @@ typedef StepCallback = Future<void> Function(ConvenientTest);
 
 extension ActerSpace on ConvenientTest {
   Future<void> ensureIsMemberOfSpace(String spaceId) async {
+    await ensureIsMemberOfSpaces([spaceId]);
+  }
+
+  Future<void> ensureIsMemberOfSpaces(List<String> spaceIds) async {
     await find.byKey(Keys.mainNav).should(findsOneWidget);
     final homeKey = find.byKey(MainNavKeys.dashboardHome);
     await homeKey.should(findsOneWidget);
@@ -22,8 +26,11 @@ extension ActerSpace on ConvenientTest {
     await spacesKey.should(findsOneWidget);
     await spacesKey.tap();
 
-    final select = find.byKey(Key('space-list-item-$spaceId'));
-    await tester.ensureVisible(select);
+    for (final spaceId in spaceIds) {
+      final select = find.byKey(Key('space-list-item-$spaceId'));
+      await tester.ensureVisible(select);
+      await select.should(findsOneWidget);
+    }
   }
 
   Future<String> createSpace(String title, {StepCallback? onCreateForm}) async {

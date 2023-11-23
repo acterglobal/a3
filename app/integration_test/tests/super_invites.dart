@@ -8,13 +8,16 @@ import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path/path.dart';
 import 'package:uuid/uuid.dart';
 import '../support/login.dart';
 import '../support/setup.dart';
 import '../support/spaces.dart';
+import '../support/chats.dart';
 
 extension SuperInvites on ConvenientTest {
-  Future<String> createSuperInvite(List<String> spaceIds) async {
+  Future<String> createSuperInvite(List<String> spaceIds,
+      {StepCallback? onCreateForm}) async {
     final newToken = 't${const Uuid().v4().toString()}'.substring(0, 8);
     await find.byKey(Keys.mainNav).should(findsOneWidget);
     final quickJumpKey = find.byKey(MainNavKeys.quickJump);
@@ -47,7 +50,12 @@ extension SuperInvites on ConvenientTest {
       await select.tap();
     }
 
+    if (onCreateForm != null) {
+      await onCreateForm(this);
+    }
+
     final submitBtn = find.byKey(CreateSuperInviteTokenPage.submitBtn);
+    await tester.ensureVisible(submitBtn);
     await submitBtn.should(findsOneWidget);
     await submitBtn.tap();
 
@@ -92,6 +100,7 @@ void superInvitesTests() {
     // check that we have been added.
     await t.ensureIsMemberOfSpace(spaceId);
   });
+
   tTestWidgets('Full user flow redeeming after registration', (t) async {
     disableOverflowErrors();
     final spaceId = await t.freshAccountWithSpace();
@@ -105,5 +114,45 @@ void superInvitesTests() {
     // redeeming with the registration token should automatically trigger the invite process
     // check that we have been added.
     await t.ensureIsMemberOfSpace(spaceId);
+    await t.ensureHasChats(counter: 0);
+  });
+
+  tTestWidgets('Full user flow with registration many spaces', (t) async {
+    disableOverflowErrors();
+    final spaceId = await t.freshAccountWithSpace();
+    final spaceId2 = await t.createSpace('Second test space');
+    final spaceId3 = await t.createSpace('Arils cave');
+    final token = await t.createSuperInvite([spaceId, spaceId2, spaceId3]);
+
+    // now let's try to create a new account with that token
+    await t.logout();
+    await t.freshAccount(registrationToken: token);
+
+    // redeeming with the registration token should automatically trigger the invite process
+    // check that we have been added.
+    await t.ensureIsMemberOfSpaces([spaceId, spaceId2, spaceId3]);
+  });
+
+  tTestWidgets('Token with DM', (t) async {
+    disableOverflowErrors();
+    final spaceId = await t.freshAccountWithSpace();
+    final token = await t.createSuperInvite(
+      [spaceId],
+      onCreateForm: (t) async {
+        // activate create-dm
+        final spacesKey = find.byKey(CreateSuperInviteTokenPage.createDmKey);
+        await spacesKey.should(findsOneWidget);
+        await spacesKey.tap();
+      },
+    );
+
+    // now let's try to create a new account with that token
+    await t.logout();
+    await t.freshAccount(registrationToken: token);
+
+    // redeeming with the registration token should automatically trigger the invite process
+    // check that we have been added.
+    await t.ensureIsMemberOfSpace(spaceId);
+    await t.ensureHasChats(counter: 1);
   });
 }

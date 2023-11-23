@@ -29,7 +29,7 @@ class _CreateSuperInviteTokenPageConsumerState
   final TextEditingController _tokenController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late SuperInvitesTokenUpdateBuilder tokenUpdater;
-  final List<String> _roomIds = [];
+  List<String> _roomIds = [];
 
   @override
   void initState() {
@@ -66,19 +66,13 @@ class _CreateSuperInviteTokenPageConsumerState
                         : null,
               ),
               CheckboxFormField(
+                key: CreateSuperInviteTokenPage.createDmKey,
                 title: const Text('Create DM when redeeming'),
+                onChanged: (newValue) =>
+                    setState(() => tokenUpdater.createDm(newValue ?? false)),
                 initialValue: false,
               ),
               const Text('Spaces & Chats to add them to'),
-              // ListView.builder(
-              //   itemBuilder: (context, idx) {
-              //     final roomId = _roomIds[idx];
-              //     return Card(
-              //       child: ListTile(title: Text(roomId)),
-              //     );
-              //   },
-              //   itemCount: _roomIds.length,
-              // ),
               Card(
                 child: ListTile(
                   title: ButtonBar(
@@ -95,7 +89,10 @@ class _CreateSuperInviteTokenPageConsumerState
                           if (newSpace != null) {
                             if (!_roomIds.contains(newSpace)) {
                               tokenUpdater.addRoom(newSpace);
-                              setState(() => _roomIds.add(newSpace));
+                              setState(
+                                () => _roomIds = List.from(_roomIds)
+                                  ..add(newSpace),
+                              );
                             }
                           }
                         },
@@ -114,6 +111,18 @@ class _CreateSuperInviteTokenPageConsumerState
           ),
         ),
       ),
+      delegates: [
+        ListView.builder(
+          shrinkWrap: true,
+          itemBuilder: (context, idx) {
+            final roomId = _roomIds[idx];
+            return Card(
+              child: ListTile(title: Text(roomId)),
+            );
+          },
+          itemCount: _roomIds.length,
+        ),
+      ],
       confirmActionTitle: 'Create Token',
       confirmActionKey: CreateSuperInviteTokenPage.submitBtn,
       confirmActionOnPressed: _submit,

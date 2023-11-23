@@ -54,7 +54,7 @@ class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
     try {
       EasyLoading.show(status: 'redeeming $token');
       final rooms = (await superInvites.redeem(token)).toList();
-      EasyLoading.showSuccess('Added to ${rooms.length} rooms');
+      EasyLoading.showSuccess('Added to ${rooms.length} spaces & chats');
       _tokenController.clear();
       FocusManager.instance.primaryFocus?.unfocus();
     } catch (err) {
