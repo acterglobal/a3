@@ -29,6 +29,8 @@ final _titleProvider = StateProvider.autoDispose<String>((ref) => '');
 final _avatarProvider = StateProvider.autoDispose<String>((ref) => '');
 
 class CreateChatPage extends ConsumerStatefulWidget {
+  static const chatTitleKey = Key('create-chat-title');
+  static const submiteKey = Key('create-chat-submit');
   final String? initialSelectedSpaceId;
   final int? initialPage;
   const CreateChatPage({
@@ -581,6 +583,7 @@ class _CreateRoomFormWidgetConsumerState
                       child: Text('Name'),
                     ),
                     InputTextField(
+                      key: CreateChatPage.chatTitleKey,
                       hintText: 'What to call this chat?',
                       textInputType: TextInputType.multiline,
                       controller: _titleController,
@@ -621,6 +624,7 @@ class _CreateRoomFormWidgetConsumerState
               ),
               const SizedBox(width: 10),
               DefaultButton(
+                key: CreateChatPage.submiteKey,
                 onPressed: titleInput.trim().isEmpty
                     ? null
                     : () async {

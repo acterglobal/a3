@@ -8,33 +8,27 @@ import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:path/path.dart';
 import 'package:uuid/uuid.dart';
 import '../support/login.dart';
 import '../support/setup.dart';
 import '../support/spaces.dart';
 import '../support/chats.dart';
+import '../support/util.dart';
 
 extension SuperInvites on ConvenientTest {
-  Future<String> createSuperInvite(List<String> spaceIds,
-      {StepCallback? onCreateForm}) async {
+  Future<String> createSuperInvite(
+    List<String> spaceIds, {
+    List<String>? chats,
+    StepCallback? onCreateForm,
+  }) async {
     final newToken = 't${const Uuid().v4().toString()}'.substring(0, 8);
     await find.byKey(Keys.mainNav).should(findsOneWidget);
-    final quickJumpKey = find.byKey(MainNavKeys.quickJump);
-    await quickJumpKey.should(findsOneWidget);
-    await quickJumpKey.tap();
-
-    final spacesKey = find.byKey(QuickJumpKeys.settings);
-    await spacesKey.should(findsOneWidget);
-    await spacesKey.tap();
-
-    final updateField = find.byKey(SettingsMenu.superInvitations);
-    await updateField.should(findsOneWidget);
-    await updateField.tap();
-
-    final newTokenBtn = find.byKey(SuperInvitesPage.createNewToken);
-    await newTokenBtn.should(findsOneWidget);
-    await newTokenBtn.tap();
+    await navigateTo([
+      MainNavKeys.quickJump,
+      QuickJumpKeys.settings,
+      SettingsMenu.superInvitations,
+      SuperInvitesPage.createNewToken,
+    ]);
 
     final tokenTxt = find.byKey(CreateSuperInviteTokenPage.tokenFieldKey);
     await tokenTxt.should(findsOneWidget);
@@ -48,6 +42,18 @@ extension SuperInvites on ConvenientTest {
       final select = find.byKey(Key('select-space-$spaceId'));
       await tester.ensureVisible(select);
       await select.tap();
+    }
+
+    if (chats != null && chats.isNotEmpty) {
+      for (final chatId in chats) {
+        final addSpaceBtn = find.byKey(CreateSuperInviteTokenPage.addChatKey);
+        await addSpaceBtn.should(findsOneWidget);
+        await addSpaceBtn.tap();
+
+        final select = find.byKey(Key('select-chat-$chatId'));
+        await tester.ensureVisible(select);
+        await select.tap();
+      }
     }
 
     if (onCreateForm != null) {
@@ -117,12 +123,17 @@ void superInvitesTests() {
     await t.ensureHasChats(counter: 0);
   });
 
-  tTestWidgets('Full user flow with registration many spaces', (t) async {
+  tTestWidgets('Full user flow with registration many spaces and chats',
+      (t) async {
     disableOverflowErrors();
     final spaceId = await t.freshAccountWithSpace();
+    final chats = await t.createSpaceChats(spaceId, ['Random', 'General']);
     final spaceId2 = await t.createSpace('Second test space');
     final spaceId3 = await t.createSpace('Arils cave');
-    final token = await t.createSuperInvite([spaceId, spaceId2, spaceId3]);
+    final token = await t.createSuperInvite(
+      [spaceId, spaceId2, spaceId3],
+      chats: chats,
+    );
 
     // now let's try to create a new account with that token
     await t.logout();
@@ -131,6 +142,7 @@ void superInvitesTests() {
     // redeeming with the registration token should automatically trigger the invite process
     // check that we have been added.
     await t.ensureIsMemberOfSpaces([spaceId, spaceId2, spaceId3]);
+    await t.ensureHasChats(ids: chats);
   });
 
   tTestWidgets('Token with DM', (t) async {
@@ -154,5 +166,19 @@ void superInvitesTests() {
     // check that we have been added.
     await t.ensureIsMemberOfSpace(spaceId);
     await t.ensureHasChats(counter: 1);
+  });
+
+  tTestWidgets('Edit and redeem', (t) async {
+    disableOverflowErrors();
+    final spaceId = await t.freshAccountWithSpace();
+    final token = await t.createSuperInvite([spaceId]);
+
+    // now let's try to create a new account with that token
+    await t.logout();
+    await t.freshAccount(registrationToken: token);
+
+    // redeeming with the registration token should automatically trigger the invite process
+    // check that we have been added.
+    await t.ensureIsMemberOfSpace(spaceId);
   });
 }

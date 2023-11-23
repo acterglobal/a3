@@ -16,6 +16,8 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
 class SpaceChatsPage extends ConsumerWidget {
+  static const createChatKey = Key('space-chat-create');
+  static const actionsMenuKey = Key('space-chat-actions-menu');
   final String spaceIdOrAlias;
 
   const SpaceChatsPage({super.key, required this.spaceIdOrAlias});
@@ -49,6 +51,7 @@ class SpaceChatsPage extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     PopupMenuButton(
+                      key: actionsMenuKey,
                       icon: Icon(
                         Atlas.plus_circle,
                         color: Theme.of(context).colorScheme.neutral5,
@@ -57,6 +60,7 @@ class SpaceChatsPage extends ConsumerWidget {
                       color: Theme.of(context).colorScheme.surface,
                       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                         PopupMenuItem(
+                          key: createChatKey,
                           onTap: () => context.pushNamed(
                             Routes.createChat.name,
                             queryParameters: {'spaceId': spaceIdOrAlias},
