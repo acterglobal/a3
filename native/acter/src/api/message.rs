@@ -132,7 +132,8 @@ impl RoomEventItem {
         }
     }
 
-    // for only integration test
+    #[cfg(feature = "testing")]
+    #[doc(hidden)]
     pub fn evt_id(&self) -> Option<OwnedEventId> {
         self.evt_id.clone()
     }
