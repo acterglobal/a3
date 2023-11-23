@@ -94,21 +94,6 @@ impl TimelineStream {
         matches!(self.room.state(), RoomState::Joined)
     }
 
-    // for integration test, not api
-    pub async fn event(&self, event_id: OwnedEventId) -> Result<EventTimelineItem> {
-        let timeline = self.timeline.clone();
-
-        RUNTIME
-            .spawn(async move {
-                let item = timeline
-                    .item_by_event_id(&event_id)
-                    .await
-                    .context("The event not found")?;
-                Ok(item)
-            })
-            .await?
-    }
-
     pub async fn send_plain_message(&self, message: String) -> Result<bool> {
         if !self.is_joined() {
             bail!("Can't send message as plain text to a room we are not in");
