@@ -1,5 +1,4 @@
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Invitation;
@@ -7,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class InvitationCard extends ConsumerWidget {
   final Invitation invitation;
@@ -63,7 +61,8 @@ class InvitationCard extends ConsumerWidget {
                   ),
                   // Accept Invitation Button
                   ElevatedButton(
-                    onPressed: () => _onInviteAccept(context, data.roomId),
+                    onPressed: () =>
+                        _onTapAcceptInvite(ref, context, data.roomId),
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
                         Theme.of(context).colorScheme.success,
@@ -83,7 +82,8 @@ class InvitationCard extends ConsumerWidget {
   }
 
   // method for post-process invitation accept
-  void _onInviteAccept(BuildContext ctx, String roomId) async {
+  void _onTapAcceptInvite(
+      WidgetRef ref, BuildContext ctx, String roomId) async {
     EasyLoading.show(status: 'Joining', dismissOnTap: false);
     bool res = await invitation.accept();
     if (!res) {
@@ -92,8 +92,6 @@ class InvitationCard extends ConsumerWidget {
       return;
     }
     EasyLoading.dismiss();
-    if (ctx.mounted) {
-      ctx.goNamed(Routes.chatroom.name, pathParameters: {'roomId': roomId});
-    }
+    EasyLoading.showSuccess('Joined');
   }
 }
