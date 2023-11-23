@@ -1,9 +1,9 @@
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/home/data/keys.dart';
-import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/settings/super_invites/pages/create.dart';
 import 'package:acter/features/settings/super_invites/pages/super_invites.dart';
+import 'package:acter/features/settings/super_invites/widgets/redeem_token.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
@@ -53,10 +53,33 @@ extension SuperInvites on ConvenientTest {
 
     return newToken;
   }
+
+  Future<void> redeemSuperInvite(String token) async {
+    await find.byKey(Keys.mainNav).should(findsOneWidget);
+    final quickJumpKey = find.byKey(MainNavKeys.quickJump);
+    await quickJumpKey.should(findsOneWidget);
+    await quickJumpKey.tap();
+
+    final spacesKey = find.byKey(QuickJumpKeys.settings);
+    await spacesKey.should(findsOneWidget);
+    await spacesKey.tap();
+
+    final updateField = find.byKey(SettingsMenu.superInvitations);
+    await updateField.should(findsOneWidget);
+    await updateField.tap();
+
+    final tokenTxt = find.byKey(RedeemToken.redeemTokenField);
+    await tokenTxt.should(findsOneWidget);
+    await tokenTxt.enterTextWithoutReplace(token);
+
+    final submitBtn = find.byKey(RedeemToken.redeemTokenSubmit);
+    await submitBtn.should(findsOneWidget);
+    await submitBtn.tap();
+  }
 }
 
 void superInvitesTests() {
-  tTestWidgets('Full User Flow', (t) async {
+  tTestWidgets('Full user flow with registration', (t) async {
     disableOverflowErrors();
     final spaceId = await t.freshAccountWithSpace();
     final token = await t.createSuperInvite([spaceId]);
@@ -64,6 +87,20 @@ void superInvitesTests() {
     // now let's try to create a new account with that token
     await t.logout();
     await t.freshAccount(registrationToken: token);
+
+    // redeeming with the registration token should automatically trigger the invite process
+    // check that we have been added.
+    await t.ensureIsMemberOfSpace(spaceId);
+  });
+  tTestWidgets('Full user flow redeeming after registration', (t) async {
+    disableOverflowErrors();
+    final spaceId = await t.freshAccountWithSpace();
+    final token = await t.createSuperInvite([spaceId]);
+
+    // now let's try to create a new account with that token
+    await t.logout();
+    await t.freshAccount();
+    await t.redeemSuperInvite(token);
 
     // redeeming with the registration token should automatically trigger the invite process
     // check that we have been added.

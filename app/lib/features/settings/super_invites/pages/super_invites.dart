@@ -2,6 +2,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/super_invites/providers/super_invites_providers.dart';
+import 'package:acter/features/settings/super_invites/widgets/redeem_token.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -38,11 +39,12 @@ class SuperInvitesPage extends ConsumerWidget {
             ),
           ],
         ),
-        body: tokens.when(
-          data: (tokens) => tokens.isNotEmpty
-              ? CustomScrollView(
-                  slivers: [
-                    SliverList.builder(
+        body: CustomScrollView(
+          slivers: [
+            const SliverToBoxAdapter(child: RedeemToken()),
+            tokens.when(
+              data: (tokens) => tokens.isNotEmpty
+                  ? SliverList.builder(
                       itemBuilder: (BuildContext context, int index) {
                         final token = tokens[index];
                         return Card(
@@ -50,7 +52,7 @@ class SuperInvitesPage extends ConsumerWidget {
                           child: ListTile(
                             title: Padding(
                               padding: const EdgeInsets.all(10),
-                              child: Text(token.toString()),
+                              child: Text(token.token().toString()),
                             ),
                             subtitle:
                                 Text('Used ${token.acceptedCount()} times'),
@@ -58,20 +60,25 @@ class SuperInvitesPage extends ConsumerWidget {
                         );
                       },
                       itemCount: tokens.length,
+                    )
+                  : const SliverToBoxAdapter(
+                      child: Center(
+                        child:
+                            Text('You have not yet created any invite tokens'),
+                      ),
                     ),
-                  ],
-                )
-              : const Center(
-                  child: Text('You have not yet created any invite tokens'),
-                ),
-          error: (error, stack) {
-            return Center(
-              child: Text('Failed to load Invite tokens: $error'),
-            );
-          },
-          loading: () => const Center(
-            child: CircularProgressIndicator(),
-          ),
+              error: (error, stack) {
+                return SliverToBoxAdapter(
+                  child: Center(
+                    child: Text('Failed to load Invite tokens: $error'),
+                  ),
+                );
+              },
+              loading: () => const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          ],
         ),
       ),
     );
