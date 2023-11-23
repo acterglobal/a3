@@ -83,7 +83,10 @@ class InvitationCard extends ConsumerWidget {
 
   // method for post-process invitation accept
   void _onTapAcceptInvite(
-      WidgetRef ref, BuildContext ctx, String roomId) async {
+    WidgetRef ref,
+    BuildContext ctx,
+    String roomId,
+  ) async {
     EasyLoading.show(status: 'Joining', dismissOnTap: false);
     bool res = await invitation.accept();
     if (!res) {
