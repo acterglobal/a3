@@ -758,6 +758,8 @@ jobs:
       - build-flatpak
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.PAT }}
       - uses: actions/download-artifact@v3
         with:
           name: Changelog
