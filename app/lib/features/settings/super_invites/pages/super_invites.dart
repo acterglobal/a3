@@ -1,4 +1,5 @@
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
@@ -24,6 +25,7 @@ class SuperInvitesPage extends ConsumerWidget {
           centerTitle: true,
           actions: [
             IconButton(
+              key: createNewToken,
               icon: Icon(
                 Atlas.plus_circle_thin,
                 color: Theme.of(context).colorScheme.neutral5,
@@ -31,7 +33,7 @@ class SuperInvitesPage extends ConsumerWidget {
               iconSize: 28,
               color: Theme.of(context).colorScheme.surface,
               onPressed: () async {
-                // context.go(Routes.)
+                context.pushNamed(Routes.actionCreateSuperInvite.name);
               },
             ),
           ],

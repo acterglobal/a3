@@ -2445,6 +2445,9 @@ object SuperInvites {
 
     /// delete the given token
     fn delete(token: string) -> Future<Result<bool>>;
+
+    /// try to redeem a token
+    fn redeem(token: string) -> Future<Result<Vec<string>>>;
 }
 
 object SuperInviteToken {

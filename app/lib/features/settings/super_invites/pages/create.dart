@@ -3,6 +3,7 @@ import 'package:acter/common/widgets/checkbox_form_field.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/features/settings/super_invites/providers/super_invites_providers.dart';
+import 'package:acter/features/spaces/sheets/space_selector_sheet.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -28,6 +29,7 @@ class _CreateSuperInviteTokenPageConsumerState
   final TextEditingController _tokenController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late SuperInvitesTokenUpdateBuilder tokenUpdater;
+  final List<String> _roomIds = [];
 
   @override
   void initState() {
@@ -67,13 +69,36 @@ class _CreateSuperInviteTokenPageConsumerState
                 title: const Text('Create DM when redeeming'),
                 initialValue: false,
               ),
+              const Text('Spaces & Chats to add them to'),
+              // ListView.builder(
+              //   itemBuilder: (context, idx) {
+              //     final roomId = _roomIds[idx];
+              //     return Card(
+              //       child: ListTile(title: Text(roomId)),
+              //     );
+              //   },
+              //   itemCount: _roomIds.length,
+              // ),
               Card(
                 child: ListTile(
                   title: ButtonBar(
                     children: [
                       OutlinedButton(
                         key: CreateSuperInviteTokenPage.addSpaceKey,
-                        onPressed: () {},
+                        onPressed: () async {
+                          final newSpace = await selectSpaceDrawer(
+                            context: context,
+                            currentSpaceId: null,
+                            canCheck: 'CanInvite',
+                            title: const Text('Add Space'),
+                          );
+                          if (newSpace != null) {
+                            if (!_roomIds.contains(newSpace)) {
+                              tokenUpdater.addRoom(newSpace);
+                              setState(() => _roomIds.add(newSpace));
+                            }
+                          }
+                        },
                         child: const Text('Add Space'),
                       ),
                       OutlinedButton(
@@ -91,7 +116,7 @@ class _CreateSuperInviteTokenPageConsumerState
       ),
       confirmActionTitle: 'Create Token',
       confirmActionKey: CreateSuperInviteTokenPage.submitBtn,
-      confirmActionOnPressed: () => _submit(),
+      confirmActionOnPressed: _submit,
       cancelActionTitle: 'Cancel',
       cancelActionOnPressed: () =>
           context.canPop() ? context.pop() : context.goNamed(Routes.main.name),
