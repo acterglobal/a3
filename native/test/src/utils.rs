@@ -8,6 +8,29 @@ use futures::{pin_mut, stream::StreamExt};
 use tracing::trace;
 use uuid::Uuid;
 
+pub async fn random_user_with_random_space(prefix: &str) -> Result<(Client, OwnedRoomId)> {
+    let uuid = Uuid::new_v4().to_string();
+    let user = ensure_user(
+        option_env!("DEFAULT_HOMESERVER_URL")
+            .unwrap_or("http://localhost:8118")
+            .to_string(),
+        option_env!("DEFAULT_HOMESERVER_NAME")
+            .unwrap_or("localhost")
+            .to_string(),
+        format!("it-{prefix}-{uuid}"),
+        option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
+        "acter-integration-tests".to_owned(),
+        StoreConfig::default(),
+    )
+    .await?;
+
+    let settings = CreateSpaceSettingsBuilder::default()
+        .name(format!("it-room-{prefix}-{uuid}"))
+        .build()?;
+    let room_id = user.create_acter_space(Box::new(settings)).await?;
+    Ok((user, room_id))
+}
+
 pub async fn random_user_with_random_convo(prefix: &str) -> Result<(Client, OwnedRoomId)> {
     let uuid = Uuid::new_v4().to_string();
     let user = ensure_user(
@@ -31,9 +54,11 @@ pub async fn random_user_with_random_convo(prefix: &str) -> Result<(Client, Owne
     Ok((user, room_id))
 }
 
-pub async fn random_user_with_random_space(prefix: &str) -> Result<(Client, OwnedRoomId)> {
+pub async fn random_users_with_random_convo(
+    prefix: &str,
+) -> Result<(Client, Client, Client, OwnedRoomId)> {
     let uuid = Uuid::new_v4().to_string();
-    let user = ensure_user(
+    let sisko = ensure_user(
         option_env!("DEFAULT_HOMESERVER_URL")
             .unwrap_or("http://localhost:8118")
             .to_string(),
@@ -47,11 +72,44 @@ pub async fn random_user_with_random_space(prefix: &str) -> Result<(Client, Owne
     )
     .await?;
 
-    let settings = CreateSpaceSettingsBuilder::default()
+    let uuid = Uuid::new_v4().to_string();
+    let kyra = ensure_user(
+        option_env!("DEFAULT_HOMESERVER_URL")
+            .unwrap_or("http://localhost:8118")
+            .to_string(),
+        option_env!("DEFAULT_HOMESERVER_NAME")
+            .unwrap_or("localhost")
+            .to_string(),
+        format!("it-{prefix}-{uuid}"),
+        option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
+        "acter-integration-tests".to_owned(),
+        StoreConfig::default(),
+    )
+    .await?;
+
+    let uuid = Uuid::new_v4().to_string();
+    let worf = ensure_user(
+        option_env!("DEFAULT_HOMESERVER_URL")
+            .unwrap_or("http://localhost:8118")
+            .to_string(),
+        option_env!("DEFAULT_HOMESERVER_NAME")
+            .unwrap_or("localhost")
+            .to_string(),
+        format!("it-{prefix}-{uuid}"),
+        option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
+        "acter-integration-tests".to_owned(),
+        StoreConfig::default(),
+    )
+    .await?;
+
+    let uuid = Uuid::new_v4().to_string();
+    let settings = CreateConvoSettingsBuilder::default()
         .name(format!("it-room-{prefix}-{uuid}"))
+        .invites(vec![kyra.user_id()?, worf.user_id()?])
         .build()?;
-    let room_id = user.create_acter_space(Box::new(settings)).await?;
-    Ok((user, room_id))
+    let room_id = sisko.create_convo(Box::new(settings)).await?;
+
+    Ok((sisko, kyra, worf, room_id))
 }
 
 pub fn default_user_password(username: &str) -> String {

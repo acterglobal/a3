@@ -2,20 +2,16 @@ use acter_core::{statics::default_acter_convo_states, Error};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use futures::stream::{Stream, StreamExt};
-
 use matrix_sdk::{
-    deserialized_responses::SyncTimelineEvent,
-    event_handler::{Ctx, EventHandlerHandle},
     executor::JoinHandle,
-    room::MessagesOptions,
     ruma::{
         api::client::room::{create_room, Visibility},
         assign,
     },
-    Client as SdkClient, RoomMemberships,
+    RoomMemberships,
 };
 use matrix_sdk_ui::{
-    timeline::{EventTimelineItem, PaginationOptions, RoomExt, TimelineItem},
+    timeline::{PaginationOptions, RoomExt},
     Timeline,
 };
 use ruma_common::{
@@ -26,24 +22,20 @@ use ruma_events::{
     receipt::{ReceiptThread, ReceiptType},
     room::{
         avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
-        encrypted::OriginalSyncRoomEncryptedEvent,
         join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
-        member::{MembershipState, OriginalSyncRoomMemberEvent},
-        message::OriginalSyncRoomMessageEvent,
-        redaction::SyncRoomRedactionEvent,
     },
     space::parent::SpaceParentEventContent,
-    AnySyncTimelineEvent, InitialStateEvent,
+    InitialStateEvent,
 };
 use std::{
     ops::Deref,
     path::PathBuf,
-    sync::{Arc, RwLock as StdRwLock},
+    sync::{Arc, RwLock},
 };
 use tokio_retry::{strategy::FixedInterval, Retry};
 use tracing::{error, info, trace, warn};
 
-use crate::{SpaceRelations, TimelineStream};
+use crate::TimelineStream;
 
 use super::{
     client::Client,
@@ -55,7 +47,7 @@ use super::{
 };
 
 pub type ConvoDiff = ApiVectorDiff<Convo>;
-type LatestMsgLock = Arc<StdRwLock<Option<RoomMessage>>>;
+type LatestMsgLock = Arc<RwLock<Option<RoomMessage>>>;
 
 #[derive(Clone, Debug)]
 pub struct Convo {
@@ -130,7 +122,7 @@ impl Convo {
             .ok();
 
         let has_latest_msg = latest_message_content.is_some();
-        let latest_message: LatestMsgLock = Arc::new(StdRwLock::new(latest_message_content));
+        let latest_message = Arc::new(RwLock::new(latest_message_content));
 
         let latest_msg_room = inner.clone();
         let latest_msg_client = client.clone();

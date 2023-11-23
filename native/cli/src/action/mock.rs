@@ -232,8 +232,8 @@ impl<'a> Mock<'a> {
             .build()?;
 
         match admin.create_acter_space(Box::new(promenade_settings)).await {
-            Ok(promenade_room_id) => {
-                info!("Promenade Room Id: {:?}", promenade_room_id);
+            Ok(promenade_id) => {
+                info!("Promenade Room Id: {:?}", promenade_id);
             }
             Err(x) if x.is::<HttpError>() => {
                 let inner = x.downcast::<HttpError>().expect("already checked");
@@ -245,7 +245,7 @@ impl<'a> Mock<'a> {
         }
 
         let quarks_settings = CreateSpaceSettingsBuilder::default()
-            .name("Quarks'".to_owned())
+            .name("Quarks".to_owned())
             .alias("quarks".to_owned())
             .visibility(Visibility::Public)
             .invites(quark_customer_ids)

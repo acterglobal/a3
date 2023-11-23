@@ -664,10 +664,6 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: MacOS
-      - name: Rename and check pkg
-        run: |
-          mv *.app Acter.app
-          codesign --verify --deep --verbose Acter.app
       - name: Unlock git-crypt
         run: |
           brew install git-crypt
@@ -707,10 +703,12 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles/
           cp .github/assets/provision_profiles/* ~/Library/MobileDevice/Provisioning\ Profiles/
           ls -ltas ~/Library/MobileDevice/Provisioning\ Profiles/
-      - uses: actions/download-artifact@v3
-        with:
-          name: MacOS
 
+      - name: Rename and check pkg
+        run: |
+          mv *.app Acter.app
+          codesign --verify --deep --verbose Acter.app
+          echo "Done"
       - name: Upload to App Store
         env:
           APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}

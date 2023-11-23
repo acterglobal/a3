@@ -2,19 +2,16 @@ use acter_core::{
     client::CoreClient, executor::Executor, models::AnyActerModel, spaces::is_acter_space,
     store::Store, templates::Engine, CustomAuthSession, RestoreToken,
 };
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result};
 use core::time::Duration;
 use derive_builder::Builder;
-use eyeball_im::{ObservableVector, Vector, VectorSubscriber};
+use eyeball_im::{ObservableVector, Vector};
 use futures::{
     future::join_all,
     pin_mut,
     stream::{Stream, StreamExt},
 };
-use futures_signals::{
-    signal::{Mutable, MutableLockMut, MutableSignalCloned, SignalExt, SignalStream},
-    signal_vec::{MutableVec, MutableVecLockMut},
-};
+use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
     config::SyncSettings,
     event_handler::EventHandlerHandle,
@@ -52,12 +49,11 @@ use tokio::{
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
 
-use crate::Notification;
+use crate::{Account, Convo, Notification, OptionString, Room, Space, UserProfile, RUNTIME};
 
 use super::{
-    account::Account, api::FfiBuffer, common::OptionString, convo::Convo, device::DeviceController,
-    invitation::InvitationController, profile::UserProfile, receipt::ReceiptController, room::Room,
-    spaces::Space, typing::TypingController, verification::VerificationController, RUNTIME,
+    api::FfiBuffer, device::DeviceController, invitation::InvitationController,
+    receipt::ReceiptController, typing::TypingController, verification::VerificationController,
 };
 
 #[derive(Default, Builder, Debug)]
@@ -970,11 +966,8 @@ impl Client {
     }
 
     pub async fn logout(&mut self) -> Result<bool> {
-        match self.state.try_write() {
-            Ok(mut w) => {
-                w.should_stop_syncing = true;
-            }
-            Err(e) => {}
+        if let Ok(mut w) = self.state.try_write() {
+            w.should_stop_syncing = true;
         }
         let client = self.core.client().clone();
 
