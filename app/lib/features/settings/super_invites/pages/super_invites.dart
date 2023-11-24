@@ -47,15 +47,23 @@ class SuperInvitesPage extends ConsumerWidget {
                   ? SliverList.builder(
                       itemBuilder: (BuildContext context, int index) {
                         final token = tokens[index];
+                        final tokenStr = token.token().toString();
                         return Card(
+                          key: Key('edit-token-$tokenStr'),
                           margin: const EdgeInsets.all(5),
                           child: ListTile(
                             title: Padding(
                               padding: const EdgeInsets.all(10),
-                              child: Text(token.token().toString()),
+                              child: Text(tokenStr),
                             ),
                             subtitle:
                                 Text('Used ${token.acceptedCount()} times'),
+                            onTap: () {
+                              context.pushNamed(
+                                Routes.actionCreateSuperInvite.name,
+                                extra: token,
+                              );
+                            },
                           ),
                         );
                       },

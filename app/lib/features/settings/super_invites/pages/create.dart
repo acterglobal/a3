@@ -18,8 +18,8 @@ class CreateSuperInviteTokenPage extends ConsumerStatefulWidget {
   static Key addSpaceKey = const Key('super-invites-create-token-add-space');
   static Key addChatKey = const Key('super-invites-create-token-add-chat');
   static Key submitBtn = const Key('super-invites-create-submitBtn');
-  final SuperInvitesTokenUpdateBuilder? tokenUpdater;
-  const CreateSuperInviteTokenPage({super.key, this.tokenUpdater});
+  final SuperInviteToken? token;
+  const CreateSuperInviteTokenPage({super.key, this.token});
 
   @override
   ConsumerState<CreateSuperInviteTokenPage> createState() =>
@@ -31,23 +31,34 @@ class _CreateSuperInviteTokenPageConsumerState
   final TextEditingController _tokenController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late SuperInvitesTokenUpdateBuilder tokenUpdater;
+  bool isEdit = false;
+  int _acceptedCount = 0;
+  bool _initialDmCheck = false;
   List<String> _roomIds = [];
 
   @override
   void initState() {
     super.initState();
     final provider = ref.read(superInvitesProvider);
-    tokenUpdater = widget.tokenUpdater ?? provider.newTokenUpdater();
-    // WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-    //   final parentNotifier = ref.read(selectedSpaceIdProvider.notifier);
-    //   parentNotifier.state = widget.initialParentsSpaceId;
-    // });
+    if (widget.token != null) {
+      // given an update builder we are in an edit mode
+
+      isEdit = true;
+      final token = widget.token!;
+      _tokenController.text = token.token();
+      _roomIds = token.rooms().map((e) => e.toDartString()).toList();
+      _acceptedCount = token.acceptedCount();
+      _initialDmCheck = token.createDm();
+      tokenUpdater = token.updateBuilder();
+    } else {
+      tokenUpdater = provider.newTokenUpdater();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return SideSheet(
-      header: 'Create Invite Token',
+      header: isEdit ? 'Edit Invite Token' : 'Create Invite Token',
       addActions: true,
       body: Form(
         key: _formKey,
@@ -57,22 +68,27 @@ class _CreateSuperInviteTokenPageConsumerState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               const SizedBox(height: 15),
-              InputTextField(
-                hintText: 'Token',
-                key: CreateSuperInviteTokenPage.tokenFieldKey,
-                textInputType: TextInputType.text,
-                controller: _tokenController,
-                validator: (String? val) =>
-                    (val != null && val.isNotEmpty && val.length < 6)
-                        ? 'Token must be at least 6 characters long'
-                        : null,
-              ),
+              isEdit
+                  ? ListTile(
+                      title: Text(_tokenController.text),
+                      subtitle: Text('Claimed $_acceptedCount times'),
+                    )
+                  : InputTextField(
+                      hintText: 'Token',
+                      key: CreateSuperInviteTokenPage.tokenFieldKey,
+                      textInputType: TextInputType.text,
+                      controller: _tokenController,
+                      validator: (String? val) =>
+                          (val != null && val.isNotEmpty && val.length < 6)
+                              ? 'Token must be at least 6 characters long'
+                              : null,
+                    ),
               CheckboxFormField(
                 key: CreateSuperInviteTokenPage.createDmKey,
                 title: const Text('Create DM when redeeming'),
                 onChanged: (newValue) =>
                     setState(() => tokenUpdater.createDm(newValue ?? false)),
-                initialValue: false,
+                initialValue: _initialDmCheck,
               ),
               const Text('Spaces & Chats to add them to'),
               Card(
@@ -137,6 +153,7 @@ class _CreateSuperInviteTokenPageConsumerState
             return RoomToInviteTo(
               roomId: roomId,
               onRemove: () {
+                tokenUpdater.removeRoom(roomId);
                 setState(
                   () => _roomIds = List.from(_roomIds)..remove(roomId),
                 );
@@ -146,7 +163,7 @@ class _CreateSuperInviteTokenPageConsumerState
           itemCount: _roomIds.length,
         ),
       ],
-      confirmActionTitle: 'Create Token',
+      confirmActionTitle: isEdit ? 'Save' : 'Create Token',
       confirmActionKey: CreateSuperInviteTokenPage.submitBtn,
       confirmActionOnPressed: _submit,
       cancelActionTitle: 'Cancel',
@@ -156,7 +173,7 @@ class _CreateSuperInviteTokenPageConsumerState
   }
 
   Future<void> _submit() async {
-    EasyLoading.show(status: 'Creating Token');
+    EasyLoading.show(status: isEdit ? 'Saving token' : 'Creating Token');
     try {
       final tokenTxt = _tokenController.text;
       if (tokenTxt.isNotEmpty) {
@@ -175,7 +192,7 @@ class _CreateSuperInviteTokenPageConsumerState
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
     } catch (err) {
       EasyLoading.showError(
-        'Creating token failed $err',
+        isEdit ? 'Saving token failed $err' : 'Creating token failed $err',
         duration: const Duration(seconds: 3),
       );
     }

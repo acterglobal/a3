@@ -15,10 +15,15 @@ const defaultRegistrationToken = String.fromEnvironment(
 );
 
 extension ActerLogin on ConvenientTest {
-  Future<String> freshAccount({String? registrationToken}) async {
+  Future<String> freshAccount(
+      {String? registrationToken, String? displayName}) async {
     final newId = 'it-${const Uuid().v4().toString()}';
     startFreshTestApp(newId);
-    await register(newId, registrationToken: registrationToken);
+    await register(
+      newId,
+      registrationToken: registrationToken,
+      displayName: displayName,
+    );
     return newId;
   }
 
@@ -32,7 +37,11 @@ extension ActerLogin on ConvenientTest {
     }
   }
 
-  Future<void> register(String username, {String? registrationToken}) async {
+  Future<void> register(
+    String username, {
+    String? registrationToken,
+    String? displayName,
+  }) async {
     String passwordText =
         passwordFor(username, registrationToken: registrationToken);
 
@@ -48,7 +57,7 @@ extension ActerLogin on ConvenientTest {
 
     Finder name = find.byKey(RegisterPage.nameField);
     await name.should(findsOneWidget);
-    await name.enterTextWithoutReplace('Test Account');
+    await name.enterTextWithoutReplace(displayName ?? 'Test Account');
 
     Finder user = find.byKey(RegisterPage.usernameField);
     await user.should(findsOneWidget);

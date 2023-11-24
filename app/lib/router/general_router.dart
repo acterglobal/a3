@@ -24,6 +24,7 @@ import 'package:acter/features/space/sheets/link_room_sheet.dart';
 import 'package:acter/features/spaces/sheets/create_space_sheet.dart';
 import 'package:acter/features/tasks/dialogs/create_task_list_sheet.dart';
 import 'package:acter/router/router.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -227,7 +228,9 @@ List<RouteBase> makeGeneralRoutes() {
               child: child,
             );
           },
-          child: const CreateSuperInviteTokenPage(),
+          child: CreateSuperInviteTokenPage(
+            token: state.extra != null ? state.extra as SuperInviteToken : null,
+          ),
         );
       },
     ),

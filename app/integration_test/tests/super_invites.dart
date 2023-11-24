@@ -95,12 +95,12 @@ extension SuperInvites on ConvenientTest {
 void superInvitesTests() {
   tTestWidgets('Full user flow with registration', (t) async {
     disableOverflowErrors();
-    final spaceId = await t.freshAccountWithSpace();
+    final spaceId = await t.freshAccountWithSpace(userDisplayName: 'Alice');
     final token = await t.createSuperInvite([spaceId]);
 
     // now let's try to create a new account with that token
     await t.logout();
-    await t.freshAccount(registrationToken: token);
+    await t.freshAccount(registrationToken: token, displayName: 'Bob');
 
     // redeeming with the registration token should automatically trigger the invite process
     // check that we have been added.
@@ -109,12 +109,12 @@ void superInvitesTests() {
 
   tTestWidgets('Full user flow redeeming after registration', (t) async {
     disableOverflowErrors();
-    final spaceId = await t.freshAccountWithSpace();
+    final spaceId = await t.freshAccountWithSpace(userDisplayName: 'Alice');
     final token = await t.createSuperInvite([spaceId]);
 
     // now let's try to create a new account with that token
     await t.logout();
-    await t.freshAccount();
+    await t.freshAccount(displayName: 'Bob');
     await t.redeemSuperInvite(token);
 
     // redeeming with the registration token should automatically trigger the invite process
@@ -126,7 +126,7 @@ void superInvitesTests() {
   tTestWidgets('Full user flow with registration many spaces and chats',
       (t) async {
     disableOverflowErrors();
-    final spaceId = await t.freshAccountWithSpace();
+    final spaceId = await t.freshAccountWithSpace(userDisplayName: 'Alice');
     final chats = await t.createSpaceChats(spaceId, ['Random', 'General']);
     final spaceId2 = await t.createSpace('Second test space');
     final spaceId3 = await t.createSpace('Arils cave');
@@ -137,7 +137,7 @@ void superInvitesTests() {
 
     // now let's try to create a new account with that token
     await t.logout();
-    await t.freshAccount(registrationToken: token);
+    await t.freshAccount(registrationToken: token, displayName: 'Bob');
 
     // redeeming with the registration token should automatically trigger the invite process
     // check that we have been added.
@@ -147,7 +147,7 @@ void superInvitesTests() {
 
   tTestWidgets('Token with DM', (t) async {
     disableOverflowErrors();
-    final spaceId = await t.freshAccountWithSpace();
+    final spaceId = await t.freshAccountWithSpace(userDisplayName: 'Alice');
     final token = await t.createSuperInvite(
       [spaceId],
       onCreateForm: (t) async {
@@ -160,7 +160,7 @@ void superInvitesTests() {
 
     // now let's try to create a new account with that token
     await t.logout();
-    await t.freshAccount(registrationToken: token);
+    await t.freshAccount(registrationToken: token, displayName: 'Bob');
 
     // redeeming with the registration token should automatically trigger the invite process
     // check that we have been added.
@@ -170,15 +170,41 @@ void superInvitesTests() {
 
   tTestWidgets('Edit and redeem', (t) async {
     disableOverflowErrors();
-    final spaceId = await t.freshAccountWithSpace();
+    final spaceId = await t.freshAccountWithSpace(userDisplayName: 'Alice');
+    final spaceId2 = await t.createSpace('Second test space');
+
     final token = await t.createSuperInvite([spaceId]);
+    final tokenKey = find.byKey(Key('edit-token-$token'));
+    await tokenKey.should(findsOneWidget);
+    await tokenKey.tap();
+
+    // remove the current space
+    final removeSpace1 = find.byKey(Key('room-to-invite-$spaceId-remove'));
+    await removeSpace1.should(findsOneWidget);
+    await removeSpace1.tap();
+
+    // add the new space
+
+    final addSpaceBtn = find.byKey(CreateSuperInviteTokenPage.addSpaceKey);
+    await addSpaceBtn.should(findsOneWidget);
+    await addSpaceBtn.tap();
+
+    final select = find.byKey(Key('select-space-$spaceId2'));
+    await t.tester.ensureVisible(select);
+    await select.tap();
+
+    // submit with the new list
+    final submitBtn = find.byKey(CreateSuperInviteTokenPage.submitBtn);
+    await t.tester.ensureVisible(submitBtn);
+    await submitBtn.should(findsOneWidget);
+    await submitBtn.tap();
 
     // now let's try to create a new account with that token
     await t.logout();
-    await t.freshAccount(registrationToken: token);
+    await t.freshAccount(registrationToken: token, displayName: 'Bob');
 
     // redeeming with the registration token should automatically trigger the invite process
     // check that we have been added.
-    await t.ensureIsMemberOfSpace(spaceId);
+    await t.ensureIsMemberOfSpace(spaceId2);
   });
 }

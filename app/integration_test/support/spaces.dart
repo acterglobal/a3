@@ -138,8 +138,11 @@ extension ActerSpace on ConvenientTest {
     await select.tap();
   }
 
-  Future<String> freshAccountWithSpace() async {
-    await freshAccount();
-    return await createSpace('My home Space');
+  Future<String> freshAccountWithSpace({
+    String? userDisplayName,
+    String? spaceDisplayName,
+  }) async {
+    await freshAccount(displayName: userDisplayName);
+    return await createSpace(spaceDisplayName ?? 'My home Space');
   }
 }
