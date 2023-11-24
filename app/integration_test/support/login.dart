@@ -16,7 +16,7 @@ const defaultRegistrationToken = String.fromEnvironment(
 
 extension ActerLogin on ConvenientTest {
   Future<String> freshAccount(
-      {String? registrationToken, String? displayName}) async {
+      {String? registrationToken, String? displayName,}) async {
     final newId = 'it-${const Uuid().v4().toString()}';
     startFreshTestApp(newId);
     await register(

@@ -47,6 +47,11 @@ pub struct SuperInvites {
 pub struct SuperInvitesTokenUpdateBuilder {
     token: CreateToken,
 }
+impl Default for SuperInvitesTokenUpdateBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 impl SuperInvitesTokenUpdateBuilder {
     pub fn new() -> SuperInvitesTokenUpdateBuilder {

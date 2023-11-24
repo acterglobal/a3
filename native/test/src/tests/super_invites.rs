@@ -1,6 +1,5 @@
 use acter::api::SuperInvitesTokenUpdateBuilder;
 use anyhow::Result;
-use tokio;
 
 use crate::utils::{random_user_under_token, random_user_with_random_space};
 
@@ -11,7 +10,7 @@ async fn super_invites_flow_with_registration_and_rooms() -> Result<()> {
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
     let _space = user.space(room_id.to_string()).await?;
-    let super_invites = user.super_invites().await?;
+    let super_invites = user.super_invites();
     let tokens = super_invites.tokens().await?;
     assert_eq!(tokens.len(), 0); // we start with zero tokens
 
@@ -19,7 +18,9 @@ async fn super_invites_flow_with_registration_and_rooms() -> Result<()> {
     let mut builder = SuperInvitesTokenUpdateBuilder::new();
     builder.add_room(room_id.to_string());
 
-    let token = super_invites.create_or_update_token(builder).await?;
+    let token = super_invites
+        .create_or_update_token(Box::new(builder))
+        .await?;
     assert_eq!(token.accepted_count(), 0);
     let rooms = token.rooms();
     assert_eq!(rooms.len(), 1);
@@ -32,7 +33,7 @@ async fn super_invites_flow_with_registration_and_rooms() -> Result<()> {
 
     // try to use that token as registration
     let mut new_user = random_user_under_token("super_invites_flow_other", &token_str).await?;
-    let new_super_invites = new_user.super_invites().await?;
+    let new_super_invites = new_user.super_invites();
     let new_rooms = new_super_invites.redeem(token_str).await?;
     assert_eq!(new_rooms.len(), 1);
     assert_eq!(new_rooms[0], room_id.to_string());
@@ -57,7 +58,7 @@ async fn super_invites_manage() -> Result<()> {
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
     let _space = user.space(room_id.to_string()).await?;
-    let super_invites = user.super_invites().await?;
+    let super_invites = user.super_invites();
     let tokens = super_invites.tokens().await?;
     assert_eq!(tokens.len(), 0); // we start with zero tokens
 
@@ -65,11 +66,13 @@ async fn super_invites_manage() -> Result<()> {
 
     let mut builder = SuperInvitesTokenUpdateBuilder::new();
     builder.add_room(room_id.to_string());
-    let token = super_invites.create_or_update_token(builder).await?;
+    let token = super_invites
+        .create_or_update_token(Box::new(builder))
+        .await?;
     let rooms = token.rooms();
     assert_eq!(rooms.len(), 1);
     assert_eq!(rooms[0], room_id.to_string());
-    assert_eq!(token.create_dm(), false);
+    assert!(!token.create_dm());
 
     let tokens = super_invites.tokens().await?;
     assert_eq!(tokens.len(), 1); // we start with zero tokens
@@ -77,10 +80,12 @@ async fn super_invites_manage() -> Result<()> {
     let mut builder = token.update_builder();
     builder.remove_room(room_id.to_string());
     builder.create_dm(true);
-    let token = super_invites.create_or_update_token(builder).await?;
+    let token = super_invites
+        .create_or_update_token(Box::new(builder))
+        .await?;
     let rooms = token.rooms();
     assert_eq!(rooms.len(), 0);
-    assert_eq!(token.create_dm(), true);
+    assert!(token.create_dm());
 
     let token_str = token.token();
 

@@ -110,17 +110,14 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
         info!("stream loop - {i}");
         if let Some(diff) = sisko_stream.next().now_or_never().flatten() {
             info!("stream diff - {}", diff.action());
-            match diff.action().as_str() {
-                "PushBack" => {
-                    let value = diff
-                        .value()
-                        .expect("diff pushback action should have valid value");
-                    info!("diff pushback - {:?}", value);
-                    if match_room_msg(&value, "Sorry, it's my bad").is_some() {
-                        found = true;
-                    }
+            if diff.action().as_str() == "PushBack" {
+                let value = diff
+                    .value()
+                    .expect("diff pushback action should have valid value");
+                info!("diff pushback - {:?}", value);
+                if match_room_msg(&value, "Sorry, it's my bad").is_some() {
+                    found = true;
                 }
-                _ => {}
             }
             // yay
             if found {
