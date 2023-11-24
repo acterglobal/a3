@@ -1,9 +1,11 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
 import 'package:acter/common/widgets/checkbox_form_field.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/features/settings/super_invites/providers/super_invites_providers.dart';
-import 'package:acter/features/spaces/sheets/space_selector_sheet.dart';
+import 'package:acter/features/settings/super_invites/widgets/to_join_room.dart';
+import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -100,7 +102,23 @@ class _CreateSuperInviteTokenPageConsumerState
                       ),
                       OutlinedButton(
                         key: CreateSuperInviteTokenPage.addChatKey,
-                        onPressed: () {},
+                        onPressed: () async {
+                          final newSpace = await selectChatDrawer(
+                            context: context,
+                            currentChatId: null,
+                            canCheck: 'CanInvite',
+                            title: const Text('Add Chat'),
+                          );
+                          if (newSpace != null) {
+                            if (!_roomIds.contains(newSpace)) {
+                              tokenUpdater.addRoom(newSpace);
+                              setState(
+                                () => _roomIds = List.from(_roomIds)
+                                  ..add(newSpace),
+                              );
+                            }
+                          }
+                        },
                         child: const Text('Add Chat'),
                       ),
                     ],
@@ -116,8 +134,13 @@ class _CreateSuperInviteTokenPageConsumerState
           shrinkWrap: true,
           itemBuilder: (context, idx) {
             final roomId = _roomIds[idx];
-            return Card(
-              child: ListTile(title: Text(roomId)),
+            return RoomToInviteTo(
+              roomId: roomId,
+              onRemove: () {
+                setState(
+                  () => _roomIds = List.from(_roomIds)..remove(roomId),
+                );
+              },
             );
           },
           itemCount: _roomIds.length,

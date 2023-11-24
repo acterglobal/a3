@@ -70,6 +70,9 @@ class SpaceCard extends ConsumerWidget {
   /// the default border.
   final bool withBorder;
 
+  /// Custom Trailing Widget
+  final Widget? trailing;
+
   /// Whether or not to render the parent Icon
   ///
   final bool showParent;
@@ -89,6 +92,7 @@ class SpaceCard extends ConsumerWidget {
     this.shape,
     this.withBorder = true,
     this.showParent = true,
+    this.trailing,
   });
 
   const SpaceCard.small({
@@ -106,6 +110,7 @@ class SpaceCard extends ConsumerWidget {
     this.shape,
     this.withBorder = false,
     this.showParent = false,
+    this.trailing,
   });
 
   @override
@@ -130,6 +135,7 @@ class SpaceCard extends ConsumerWidget {
         shape: shape,
         withBorder: withBorder,
         showParent: showParent,
+        trailing: trailing,
       ),
       error: (error, stack) => ListTile(
         title: Text('Error loading: $roomId'),

@@ -15955,6 +15955,16 @@ class Api {
       int Function(
         int,
       )>();
+  late final _roomIsSpacePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__Room_is_space");
+
+  late final _roomIsSpace = _roomIsSpacePtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _roomAddParentRoomPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -34895,6 +34905,18 @@ class Room {
     final tmp3_1 = _Box(_api, tmp3_0, "__Room_space_relations_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__roomSpaceRelationsFuturePoll);
+    return tmp2;
+  }
+
+  /// Whether this is a space (or, if this returns `false`, consider it a chat)
+  bool isSpace() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomIsSpace(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
     return tmp2;
   }
 
