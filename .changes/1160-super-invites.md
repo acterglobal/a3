@@ -1,0 +1,2 @@
+- Introducing SuperInvites: Allow any user to create an invitation token and associate any number of Spaces and Chats to it. Upon redeeming that new user is automatically added to all associated spaces and chats.
+- SuperInvites as registration tokens: You can use the super invitation tokens as registration tokens, too. When registering with that token, the app will automatically redeem the given super invite, too, thus adding the new user to the given chats and spaces automatically.
