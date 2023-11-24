@@ -861,6 +861,9 @@ object Room {
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
 
+    /// Whether this is a space (or, if this returns `false`, consider it a chat)
+    fn is_space() -> bool;
+
     /// add the following as a parent room and return event id of that event
     /// room can have multiple parents
     fn add_parent_room(room_id: string, canonical: bool) -> Future<Result<string>>;
