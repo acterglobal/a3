@@ -93,7 +93,8 @@ class SpaceEventsPage extends ConsumerWidget {
                 },
                 error: (error, stackTrace) => SliverToBoxAdapter(
                   child: Center(
-                      child: Text('Failed to load events due to $error')),
+                    child: Text('Failed to load events due to $error'),
+                  ),
                 ),
                 loading: () => const SliverToBoxAdapter(
                   child: Center(child: CircularProgressIndicator()),
