@@ -76,7 +76,8 @@ jobs:
             modules:
               - module: "synapse_super_invites.SynapseSuperInvites"
                 config:
-                  enable_registration: true
+                  sql_url: "sqlite://"
+                  generate_registration_token: true
 
       - uses: rui314/setup-mold@v1
         name: "Setup mold linker"
@@ -158,6 +159,13 @@ jobs:
           uploadLogs: true
           httpPort: 8118
           disableRateLimiting: true
+          customModules: synapse_super_invites
+          customConfig: |
+            modules:
+              - module: "synapse_super_invites.SynapseSuperInvites"
+                config:
+                  sql_url: "sqlite://"
+                  generate_registration_token: true
 
       - name: Initialize e2ee mock data
         run: cargo run -p acter-cli -- mock
@@ -302,6 +310,13 @@ jobs:
           uploadLogs: true
           httpPort: 8118
           disableRateLimiting: true
+          customModules: synapse_super_invites
+          customConfig: |
+            modules:
+              - module: "synapse_super_invites.SynapseSuperInvites"
+                config:
+                  sql_url: "sqlite://"
+                  generate_registration_token: true
 
       - name: Initialize e2ee mock data
         run: cargo run -p acter-cli -- mock
@@ -397,6 +412,13 @@ jobs:
           uploadLogs: true
           httpPort: 8118
           disableRateLimiting: true
+          customModules: synapse_super_invites
+          customConfig: |
+            modules:
+              - module: "synapse_super_invites.SynapseSuperInvites"
+                config:
+                  sql_url: "sqlite://"
+                  generate_registration_token: true
 
       - name: Initialize e2ee mock data
         run: cargo run -p acter-cli -- mock
