@@ -207,4 +207,48 @@ void superInvitesTests() {
     // check that we have been added.
     await t.ensureIsMemberOfSpace(spaceId2);
   });
+
+  tTestWidgets("Deleted can't be reused", (t) async {
+    disableOverflowErrors();
+    await t.freshAccount(displayName: 'Alice');
+
+    final token = await t.createSuperInvite([]);
+    final tokenKey = find.byKey(Key('edit-token-$token'));
+    await tokenKey.should(findsOneWidget);
+    await tokenKey.tap();
+
+    final deleteToken = find.byKey(CreateSuperInviteTokenPage.deleteBtn);
+    await deleteToken.should(findsOneWidget);
+    await deleteToken.tap();
+
+    // confirm...
+
+    final deleteConfirm = find.byKey(CreateSuperInviteTokenPage.deleteConfirm);
+    await deleteConfirm.should(findsOneWidget);
+    await deleteConfirm.tap();
+
+    final editTokenKey = find.byKey(Key('edit-token-$token'));
+    await editTokenKey.should(findsNothing);
+
+    // let's try to create the same token again
+
+    final createBtn = find.byKey(SuperInvitesPage.createNewToken);
+    await createBtn.should(findsOneWidget);
+    await createBtn.tap();
+
+    final tokenTxt = find.byKey(CreateSuperInviteTokenPage.tokenFieldKey);
+    await tokenTxt.should(findsOneWidget);
+    await tokenTxt.enterTextWithoutReplace(token);
+
+    final submitBtn = find.byKey(CreateSuperInviteTokenPage.submitBtn);
+    await t.tester.ensureVisible(submitBtn);
+    await submitBtn.should(findsOneWidget);
+    await submitBtn.tap();
+
+    // we are staying on the create screen.
+    final tokenTxtField = find.byKey(CreateSuperInviteTokenPage.tokenFieldKey);
+    await tokenTxtField.should(findsOneWidget);
+    // not added
+    await editTokenKey.should(findsNothing);
+  });
 }

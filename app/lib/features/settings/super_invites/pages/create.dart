@@ -7,6 +7,7 @@ import 'package:acter/features/settings/super_invites/providers/super_invites_pr
 import 'package:acter/features/settings/super_invites/widgets/to_join_room.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,6 +19,8 @@ class CreateSuperInviteTokenPage extends ConsumerStatefulWidget {
   static Key addSpaceKey = const Key('super-invites-create-token-add-space');
   static Key addChatKey = const Key('super-invites-create-token-add-chat');
   static Key submitBtn = const Key('super-invites-create-submitBtn');
+  static Key deleteBtn = const Key('super-invites-create-delete');
+  static Key deleteConfirm = const Key('super-invites-create-delete-confirm');
   final SuperInviteToken? token;
   const CreateSuperInviteTokenPage({super.key, this.token});
 
@@ -72,6 +75,11 @@ class _CreateSuperInviteTokenPageConsumerState
                   ? ListTile(
                       title: Text(_tokenController.text),
                       subtitle: Text('Claimed $_acceptedCount times'),
+                      trailing: IconButton(
+                        key: CreateSuperInviteTokenPage.deleteBtn,
+                        icon: const Icon(Atlas.trash_can_thin),
+                        onPressed: () => _deleteIt(context),
+                      ),
                     )
                   : InputTextField(
                       hintText: 'Token',
@@ -193,6 +201,85 @@ class _CreateSuperInviteTokenPageConsumerState
     } catch (err) {
       EasyLoading.showError(
         isEdit ? 'Saving token failed $err' : 'Creating token failed $err',
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
+
+  Future<void> _deleteIt(BuildContext context) async {
+    final bool? confirm = await showAdaptiveDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          title: const Text('Delete token'),
+          content: const Text(
+            "Do you really want to irreversibly delete the token? It can't be used again after.",
+          ),
+          actions: <Widget>[
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: TextButton(
+                      onPressed: () => ctx.pop(),
+                      child: const Text(
+                        'No',
+                        style: TextStyle(color: Colors.white, fontSize: 17),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      border: Border.all(color: Colors.red),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: TextButton(
+                      key: CreateSuperInviteTokenPage.deleteConfirm,
+                      onPressed: () async {
+                        ctx.pop(true);
+                      },
+                      child: const Text(
+                        'Delete ',
+                        style: TextStyle(color: Colors.white, fontSize: 17),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+    if (confirm != true) {
+      return;
+    }
+
+    EasyLoading.show(status: 'Deleting Token');
+    try {
+      final tokenTxt = _tokenController.text;
+      // all other changes happen on the object itself;
+      final provider = ref.read(superInvitesProvider);
+      await provider.delete(tokenTxt);
+      ref.invalidate(superInvitesTokensProvider);
+      EasyLoading.dismiss();
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
+      Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
+    } catch (err) {
+      EasyLoading.showError(
+        'Deleting token failed $err',
         duration: const Duration(seconds: 3),
       );
     }
