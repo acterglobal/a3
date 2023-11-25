@@ -5418,7 +5418,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __convoRedactContentFuturePoll(
+  EventId? __convoRedactContentFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -5458,7 +5458,10 @@ class Api {
       }
       throw tmp9_0;
     }
-    final tmp7 = tmp13 > 0;
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
     return tmp7;
   }
 
@@ -7957,7 +7960,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __spaceRedactContentFuturePoll(
+  EventId? __spaceRedactContentFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -7997,7 +8000,10 @@ class Api {
       }
       throw tmp9_0;
     }
-    final tmp7 = tmp13 > 0;
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
     return tmp7;
   }
 
@@ -37510,7 +37516,7 @@ class Convo {
 
   /// redact an event from this room
   /// reason - The reason for the event being reported (optional).
-  Future<bool> redactContent(
+  Future<EventId> redactContent(
     String eventId,
     String? reason,
   ) {
@@ -43541,7 +43547,7 @@ class Space {
 
   /// redact an event from this room
   /// reason - The reason for the event being reported (optional).
-  Future<bool> redactContent(
+  Future<EventId> redactContent(
     String eventId,
     String? reason,
   ) {
@@ -53182,7 +53188,7 @@ class _ConvoRedactContentFuturePollReturn extends ffi.Struct {
   external int arg3;
   @ffi.Uint64()
   external int arg4;
-  @ffi.Uint8()
+  @ffi.Int64()
   external int arg5;
 }
 
@@ -53992,7 +53998,7 @@ class _SpaceRedactContentFuturePollReturn extends ffi.Struct {
   external int arg3;
   @ffi.Uint64()
   external int arg4;
-  @ffi.Uint8()
+  @ffi.Int64()
   external int arg5;
 }
 

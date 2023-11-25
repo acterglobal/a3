@@ -19,6 +19,7 @@ class RedactContentWidget extends ConsumerWidget {
   final bool isSpace;
   final void Function()? onRemove;
   final Function()? onSuccess;
+
   const RedactContentWidget({
     super.key,
     this.title,
@@ -83,7 +84,6 @@ class RedactContentWidget extends ConsumerWidget {
   }
 
   void redactContent(BuildContext ctx, WidgetRef ref, String reason) async {
-    bool res = false;
     showAdaptiveDialog(
       context: (ctx),
       builder: (ctx) => const DefaultDialog(
@@ -94,44 +94,25 @@ class RedactContentWidget extends ConsumerWidget {
     try {
       if (isSpace) {
         final space = await ref.read(spaceProvider(roomId).future);
-        res = await space.redactContent(eventId, reason);
+        final redactedId = await space.redactContent(eventId, reason);
         debugPrint(
-          'Content from user:{$senderId redacted $res reason:$reason}',
+          'Content from user:{$senderId redacted $redactedId reason:$reason}',
         );
       } else {
         final room = await ref.read(chatProvider(roomId).future);
-        res = await room.redactContent(eventId, reason);
+        final redactedId = await room.redactContent(eventId, reason);
         ref.invalidate(spaceEventsProvider);
         debugPrint(
-          'Content from user:{$senderId redacted $res reason:$reason}',
+          'Content from user:{$senderId redacted $redactedId reason:$reason}',
         );
       }
 
-      if (res) {
-        if (ctx.mounted) {
-          Navigator.of(ctx, rootNavigator: true).pop();
-          Navigator.of(ctx, rootNavigator: true).pop(true);
-          customMsgSnackbar(ctx, 'Content successfully removed');
-          if (onSuccess != null) {
-            onSuccess!();
-          }
-        }
-      } else {
-        if (ctx.mounted) {
-          Navigator.of(ctx, rootNavigator: true).pop();
-          showAdaptiveDialog(
-            context: ctx,
-            builder: (ctx) => DefaultDialog(
-              title: const Text('Removing content failed'),
-              actions: <Widget>[
-                DefaultButton(
-                  onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
-                  title: 'Close',
-                  isOutlined: true,
-                ),
-              ],
-            ),
-          );
+      if (ctx.mounted) {
+        Navigator.of(ctx, rootNavigator: true).pop();
+        Navigator.of(ctx, rootNavigator: true).pop(true);
+        customMsgSnackbar(ctx, 'Content successfully removed');
+        if (onSuccess != null) {
+          onSuccess!();
         }
       }
     } catch (e) {
