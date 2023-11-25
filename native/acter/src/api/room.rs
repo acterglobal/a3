@@ -1649,7 +1649,11 @@ impl Room {
             .await?
     }
 
-    pub async fn redact_content(&self, event_id: String, reason: Option<String>) -> Result<OwnedEventId> {
+    pub async fn redact_content(
+        &self,
+        event_id: String,
+        reason: Option<String>,
+    ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't redact content in a room we are not in");
         }
