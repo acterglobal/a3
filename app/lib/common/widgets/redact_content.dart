@@ -19,8 +19,9 @@ class RedactContentWidget extends ConsumerWidget {
   final bool isSpace;
   final void Function()? onRemove;
   final Function()? onSuccess;
+  final TextEditingController reasonController = TextEditingController();
 
-  const RedactContentWidget({
+  RedactContentWidget({
     super.key,
     this.title,
     this.description,
@@ -34,7 +35,6 @@ class RedactContentWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final TextEditingController textController = TextEditingController();
     return DefaultDialog(
       title: Align(
         alignment: Alignment.topLeft,
@@ -59,7 +59,7 @@ class RedactContentWidget extends ConsumerWidget {
       description: Padding(
         padding: const EdgeInsets.all(8.0),
         child: InputTextField(
-          controller: textController,
+          controller: reasonController,
           hintText: 'Reason',
           textInputType: TextInputType.multiline,
           maxLines: 5,
@@ -73,7 +73,7 @@ class RedactContentWidget extends ConsumerWidget {
         ),
         DefaultButton(
           onPressed: onRemove ??
-              () => redactContent(context, ref, textController.text),
+              () => redactContent(context, ref, reasonController.text),
           title: 'Remove',
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.errorContainer,
