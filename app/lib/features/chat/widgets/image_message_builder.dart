@@ -53,7 +53,7 @@ class _ImageMessageBuilderState extends State<ImageMessageBuilder> {
       barrierDismissible: false,
       useRootNavigator: false,
       builder: (ctx) => ImageDialog(
-        title: 'Image',
+        title: widget.message.name,
         imageData: data,
       ),
     );
