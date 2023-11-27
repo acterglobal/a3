@@ -2,7 +2,7 @@ import 'package:acter/common/models/keys.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
-import 'package:acter/features/profile/model/keys.dart';
+import 'package:acter/features/profile/pages/my_profile_page.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,8 +15,10 @@ const defaultRegistrationToken = String.fromEnvironment(
 );
 
 extension ActerLogin on ConvenientTest {
-  Future<String> freshAccount(
-      {String? registrationToken, String? displayName,}) async {
+  Future<String> freshAccount({
+    String? registrationToken,
+    String? displayName,
+  }) async {
     final newId = 'it-${const Uuid().v4().toString()}';
     startFreshTestApp(newId);
     await register(
@@ -90,7 +92,7 @@ extension ActerLogin on ConvenientTest {
     await profileKey.should(findsOneWidget);
     await profileKey.tap();
 
-    final logoutKey = find.byKey(MyProfileKeys.logout);
+    final logoutKey = find.byKey(MyProfile.logoutKey);
     await logoutKey.should(findsOneWidget);
     await logoutKey.tap();
 

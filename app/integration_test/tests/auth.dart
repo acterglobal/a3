@@ -1,10 +1,14 @@
+import 'dart:ui';
+
 import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/activities/pages/activities_page.dart';
 import 'package:acter/features/home/data/keys.dart';
+import 'package:acter/features/profile/pages/my_profile_page.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../support/login.dart';
 import '../support/setup.dart';
@@ -70,5 +74,20 @@ void authTests() {
     // items _not_ present!
     find.byKey(ActivitiesPage.oneUnverifiedSessionsCard).should(findsNothing);
     find.byKey(ActivitiesPage.unverifiedSessionsCard).should(findsNothing);
+  });
+  tTestWidgets('ensure unicode registration works', (t) async {
+    disableOverflowErrors();
+    final testName = "Dwayne 'the 🪨' Johnson";
+    await t.freshAccount(displayName: testName);
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      QuickJumpKeys.profile,
+    ]);
+
+    // items _not_ present!
+    final displayName = find.byKey(MyProfile.displayNameKey);
+    displayName.should(findsOneWidget);
+    final text = displayName.evaluate().single.widget as Text;
+    assert(text.data == testName, "${text.data} isn't the expected $testName");
   });
 }
