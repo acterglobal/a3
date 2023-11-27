@@ -592,6 +592,38 @@ class Api {
     return;
   }
 
+  /// Set the global proxy to the given string. Will only apply to client initialized after calling this.
+  void setProxy(
+    String? proxy,
+  ) {
+    final tmp0 = proxy;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp5 = 0;
+    if (tmp0 == null) {
+      tmp1 = 0;
+    } else {
+      tmp1 = 1;
+      final tmp2 = tmp0;
+      final tmp2_0 = utf8.encode(tmp2);
+      tmp4 = tmp2_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp3_0 = this.__allocate(tmp4 * 1, 1);
+      final Uint8List tmp3_1 = tmp3_0.asTypedList(tmp4);
+      tmp3_1.setAll(0, tmp2_0);
+      tmp3 = tmp3_0.address;
+      tmp5 = tmp4;
+    }
+    _setProxy(
+      tmp1,
+      tmp3,
+      tmp4,
+      tmp5,
+    );
+    return;
+  }
+
   /// Rotate the logging file
   String rotateLogFile() {
     final tmp0 = _rotateLogFile();
@@ -12972,6 +13004,22 @@ class Api {
       _InitLoggingReturn Function(
         int,
         int,
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _setProxyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__set_proxy");
+
+  late final _setProxy = _setProxyPtr.asFunction<
+      void Function(
         int,
         int,
         int,
