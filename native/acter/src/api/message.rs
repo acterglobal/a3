@@ -2,8 +2,8 @@ use chrono::{DateTime, Utc};
 use core::time::Duration;
 use matrix_sdk::{deserialized_responses::SyncTimelineEvent, room::Room};
 use matrix_sdk_ui::timeline::{
-    EventSendState, EventTimelineItem, MembershipChange, TimelineItem, TimelineItemContent,
-    TimelineItemKind, VirtualTimelineItem,
+    EventSendState as SdkEventSendState, EventTimelineItem, MembershipChange, TimelineItem,
+    TimelineItemContent, TimelineItemKind, VirtualTimelineItem,
 };
 use ruma_common::{serde::Raw, OwnedEventId, OwnedRoomId, OwnedTransactionId, OwnedUserId};
 use ruma_events::{
@@ -83,10 +83,54 @@ use super::common::{
 };
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct EventSendState {
+    state: String,
+    error: Option<String>,
+    event_id: Option<OwnedEventId>,
+}
+
+impl EventSendState {
+    fn new(inner: &SdkEventSendState) -> Self {
+        let mut evt_id = None;
+        let mut err = None;
+        let state = match inner {
+            SdkEventSendState::NotSentYet => "NotSentYet".to_string(),
+            SdkEventSendState::Cancelled => "Cancelled".to_string(),
+            SdkEventSendState::SendingFailed { error } => {
+                err = Some(error.to_owned().to_string());
+                "SendingFailed".to_string()
+            }
+            SdkEventSendState::Sent { event_id } => {
+                evt_id = Some(event_id.clone());
+                "Sent".to_string()
+            }
+        };
+        EventSendState {
+            state,
+            error: err,
+            event_id: evt_id,
+        }
+    }
+
+    pub fn state(&self) -> String {
+        self.state.clone()
+    }
+
+    pub fn error(&self) -> Option<String> {
+        self.error.clone()
+    }
+
+    pub fn event_id(&self) -> Option<OwnedEventId> {
+        self.event_id.clone()
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct RoomEventItem {
     evt_id: Option<OwnedEventId>,
     txn_id: Option<OwnedTransactionId>,
     sender: OwnedUserId,
+    send_state: Option<EventSendState>,
     origin_server_ts: u64,
     event_type: String,
     msg_type: Option<String>,
@@ -101,8 +145,6 @@ pub struct RoomEventItem {
     reactions: HashMap<String, Vec<ReactionRecord>>,
     editable: bool,
     edited: bool,
-    is_local_echo: bool,
-    send_state: Option<EventSendState>,
 }
 
 impl RoomEventItem {
@@ -117,6 +159,7 @@ impl RoomEventItem {
             evt_id,
             txn_id,
             sender,
+            send_state: None,
             origin_server_ts,
             event_type,
             msg_type: None,
@@ -131,8 +174,6 @@ impl RoomEventItem {
             reactions: Default::default(),
             editable: false,
             edited: false,
-            is_local_echo: false,
-            send_state: None,
         }
     }
 
@@ -155,16 +196,20 @@ impl RoomEventItem {
         self.sender.to_string()
     }
 
+    fn set_send_state(&mut self, send_state: &SdkEventSendState) {
+        self.send_state = Some(EventSendState::new(send_state));
+    }
+
+    pub fn send_state(&self) -> Option<EventSendState> {
+        self.send_state.clone()
+    }
+
     pub fn origin_server_ts(&self) -> u64 {
         self.origin_server_ts
     }
 
     pub fn event_type(&self) -> String {
         self.event_type.clone()
-    }
-
-    pub fn is_local_echo(&self) -> bool {
-        self.is_local_echo
     }
 
     pub fn msg_type(&self) -> Option<String> {
@@ -1728,7 +1773,7 @@ impl RoomMessage {
         let mut evt_id = None;
         let mut txn_id = None;
         if event.is_local_echo() {
-            if let Some(EventSendState::Sent { event_id }) = event.send_state() {
+            if let Some(SdkEventSendState::Sent { event_id }) = event.send_state() {
                 evt_id = Some((*event_id).clone());
             } else {
                 txn_id = event.transaction_id().map(|x| (*x).to_owned());
@@ -1736,13 +1781,14 @@ impl RoomMessage {
         } else {
             evt_id = event.event_id().map(|x| (*x).to_owned());
         }
+
         let room_id = room.room_id().to_owned();
         let sender = event.sender().to_owned();
         let origin_server_ts: u64 = event.timestamp().get().into();
         let client = room.client();
         let my_id = client.user_id();
 
-        let event_item = match event.content() {
+        let mut event_item = match event.content() {
             TimelineItemContent::Message(msg) => {
                 let msg_type = msg.msgtype();
                 let mut result = RoomEventItem::new(
@@ -2161,6 +2207,9 @@ impl RoomMessage {
                 result
             }
         };
+        if let Some(send_state) = event.send_state() {
+            event_item.set_send_state(send_state)
+        }
         RoomMessage::new_event_item(room_id, event_item)
     }
 
