@@ -157,11 +157,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              inputFormatters: [
-                                FilteringTextInputFormatter.deny(
-                                  RegExp(r'\s'),
-                                ),
-                              ],
                               style: Theme.of(context).textTheme.labelLarge,
                               cursorColor:
                                   Theme.of(context).colorScheme.tertiary2,
