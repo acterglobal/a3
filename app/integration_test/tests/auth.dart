@@ -1,5 +1,6 @@
 import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/features/activities/pages/activities_page.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
@@ -7,6 +8,7 @@ import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../support/login.dart';
 import '../support/setup.dart';
+import '../support/util.dart';
 
 void authTests() {
   tTestWidgets('registration smoke test', (t) async {
@@ -57,5 +59,16 @@ void authTests() {
     await t.tryLogin(userId); // we try
     // but should fail.
     // FIXME: how to check for a failure...
+  });
+  tTestWidgets('fresh registration has no unauthenticated sessions', (t) async {
+    disableOverflowErrors();
+    await t.freshAccount();
+    await t.navigateTo([
+      MainNavKeys.activities,
+    ]);
+
+    // items _not_ present!
+    find.byKey(ActivitiesPage.oneUnverifiedSessionsCard).should(findsNothing);
+    find.byKey(ActivitiesPage.unverifiedSessionsCard).should(findsNothing);
   });
 }

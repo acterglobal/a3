@@ -19,6 +19,10 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
 class ActivitiesPage extends ConsumerWidget {
+  static const Key oneUnverifiedSessionsCard =
+      Key('activities-one-unverified-session');
+  static const Key unverifiedSessionsCard =
+      Key('activities-unverified-sessions');
   const ActivitiesPage({super.key});
 
   @override
@@ -35,13 +39,17 @@ class ActivitiesPage extends ConsumerWidget {
         if (sessions.length == 1) {
           children.add(
             SliverToBoxAdapter(
-              child: SessionCard(deviceRecord: sessions[0]),
+              child: SessionCard(
+                key: oneUnverifiedSessionsCard,
+                deviceRecord: sessions[0],
+              ),
             ),
           );
         } else if (sessions.length > 1) {
           children.add(
             SliverToBoxAdapter(
               child: Card(
+                key: unverifiedSessionsCard,
                 child: ListTile(
                   leading: const Icon(Atlas.warning_bold),
                   title: Text(
