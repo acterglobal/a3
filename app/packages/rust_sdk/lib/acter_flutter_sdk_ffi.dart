@@ -15272,6 +15272,36 @@ class Api {
       _RsvpStatusReturn Function(
         int,
       )>();
+  late final _eventSendStateStatePtr = _lookup<
+      ffi.NativeFunction<
+          _EventSendStateStateReturn Function(
+            ffi.Int64,
+          )>>("__EventSendState_state");
+
+  late final _eventSendStateState = _eventSendStateStatePtr.asFunction<
+      _EventSendStateStateReturn Function(
+        int,
+      )>();
+  late final _eventSendStateErrorPtr = _lookup<
+      ffi.NativeFunction<
+          _EventSendStateErrorReturn Function(
+            ffi.Int64,
+          )>>("__EventSendState_error");
+
+  late final _eventSendStateError = _eventSendStateErrorPtr.asFunction<
+      _EventSendStateErrorReturn Function(
+        int,
+      )>();
+  late final _eventSendStateEventIdPtr = _lookup<
+      ffi.NativeFunction<
+          _EventSendStateEventIdReturn Function(
+            ffi.Int64,
+          )>>("__EventSendState_event_id");
+
+  late final _eventSendStateEventId = _eventSendStateEventIdPtr.asFunction<
+      _EventSendStateEventIdReturn Function(
+        int,
+      )>();
   late final _roomEventItemUniqueIdPtr = _lookup<
       ffi.NativeFunction<
           _RoomEventItemUniqueIdReturn Function(
@@ -15290,6 +15320,16 @@ class Api {
 
   late final _roomEventItemSender = _roomEventItemSenderPtr.asFunction<
       _RoomEventItemSenderReturn Function(
+        int,
+      )>();
+  late final _roomEventItemSendStatePtr = _lookup<
+      ffi.NativeFunction<
+          _RoomEventItemSendStateReturn Function(
+            ffi.Int64,
+          )>>("__RoomEventItem_send_state");
+
+  late final _roomEventItemSendState = _roomEventItemSendStatePtr.asFunction<
+      _RoomEventItemSendStateReturn Function(
         int,
       )>();
   late final _roomEventItemOriginServerTsPtr = _lookup<
@@ -33264,6 +33304,99 @@ class Rsvp {
   }
 }
 
+/// Sending state of outgoing message.
+class EventSendState {
+  final Api _api;
+  final _Box _box;
+
+  EventSendState._(this._api, this._box);
+
+  String state() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventSendStateState(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? error() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventSendStateError(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  EventId? eventId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventSendStateEventId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EventId");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = EventId._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 /// A room Message metadata and content
 class RoomEventItem {
   final Api _api;
@@ -33328,6 +33461,26 @@ class RoomEventItem {
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
       _api.__deallocate(tmp3_0, tmp5 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// Send state of the message to server
+  /// valid only when initialized from timeline event item
+  EventSendState? sendState() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemSendState(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EventSendState");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = EventSendState._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -51080,6 +51233,33 @@ class _RsvpStatusReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _EventSendStateStateReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _EventSendStateErrorReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _EventSendStateEventIdReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
 class _RoomEventItemUniqueIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -51096,6 +51276,13 @@ class _RoomEventItemSenderReturn extends ffi.Struct {
   external int arg1;
   @ffi.Uint64()
   external int arg2;
+}
+
+class _RoomEventItemSendStateReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
 }
 
 class _RoomEventItemEventTypeReturn extends ffi.Struct {

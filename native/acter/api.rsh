@@ -616,7 +616,7 @@ object EventSendState {
     fn error() -> Option<string>;
 
     // gives event id for Sent only
-    fn event_id() -> Option<OwnedEventId>;
+    fn event_id() -> Option<EventId>;
 }
 
 
