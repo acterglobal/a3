@@ -1,0 +1,3 @@
+- [bugfix] : Improved back navigation between sub-spaces and space
+- [bugfix] : Pin/Event creation is now based on the required permission
+- [enhancement] : User can now see chat image in full screen view
