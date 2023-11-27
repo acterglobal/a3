@@ -59,12 +59,15 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
       itemCount: chats.length,
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemBuilder: (context, index) => ConvoCard(
-        room: chats[index],
-        onTap: () => widget.onSelected != null
-            ? widget.onSelected!(chats[index].getRoomIdStr())
-            : null,
-      ),
+      itemBuilder: (context, index) {
+        final roomId = chats[index].getRoomIdStr();
+        return ConvoCard(
+          key: Key('convo-card-$roomId'),
+          room: chats[index],
+          onTap: () =>
+              widget.onSelected != null ? widget.onSelected!(roomId) : null,
+        );
+      },
     );
   }
 }

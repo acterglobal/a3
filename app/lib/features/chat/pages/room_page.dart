@@ -24,11 +24,12 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class RoomPage extends ConsumerWidget {
+  static const roomPageKey = Key('chat-room-page');
   final String roomId;
 
   const RoomPage({
     required this.roomId,
-    super.key,
+    super.key = roomPageKey,
   });
 
   @override
@@ -69,7 +70,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
     }
     final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
     final userId = ref.watch(myUserIdStrProvider);
-    if(userId == message.author.id && message is types.TextMessage) {
+    if (userId == message.author.id && message is types.TextMessage) {
       inputNotifier.showEditButton(true);
     } else {
       inputNotifier.showEditButton(false);

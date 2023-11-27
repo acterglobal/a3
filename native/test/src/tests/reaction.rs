@@ -1,170 +1,205 @@
-use acter::api::login_new_client;
+use acter::{api::RoomMessage, ruma_common::OwnedEventId};
 use anyhow::Result;
-use futures::stream::StreamExt;
-use tempfile::TempDir;
+use core::time::Duration;
+use futures::{pin_mut, stream::StreamExt, FutureExt};
+use tokio::time::sleep;
+use tracing::info;
 
-use crate::utils::default_user_password;
+use crate::utils::random_users_with_random_convo;
 
 #[tokio::test]
 async fn sisko_reads_msg_reactions() -> Result<()> {
     let _ = env_logger::try_init();
-    let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME")
-        .unwrap_or("localhost")
-        .to_string();
-    let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL")
-        .unwrap_or("http://localhost:8118")
-        .to_string();
+    let (mut sisko, mut kyra, mut worf, room_id) =
+        random_users_with_random_convo("reaction").await?;
 
-    let tmp_dir = TempDir::new()?;
-    let mut sisko = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
-        "@sisko".to_string(),
-        default_user_password("sisko"),
-        homeserver_name.clone(),
-        homeserver_url.clone(),
-        Some("SISKO_DEV".to_string()),
-    )
-    .await?;
-    let sisko_syncer = sisko.start_sync();
-    let mut sisko_synced = sisko_syncer.first_synced_rx();
-    while sisko_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let sisko_space = sisko
-        .space(format!("#ops:{homeserver_name}"))
+    info!("1");
+
+    let sisko_sync = sisko.start_sync();
+    sisko_sync.await_has_synced_history().await?;
+
+    info!("2");
+
+    let sisko_convo = sisko
+        .convo(room_id.to_string())
         .await
-        .expect("sisko should belong to ops");
-    let event_id = sisko_space
+        .expect("sisko should belong to convo");
+    let sisko_timeline = sisko_convo
+        .timeline_stream()
+        .await
+        .expect("sisko should get timeline stream");
+    let sisko_stream = sisko_timeline.diff_stream();
+    pin_mut!(sisko_stream);
+
+    info!("3");
+
+    let kyra_sync = kyra.start_sync();
+    kyra_sync.await_has_synced_history().await?;
+
+    info!("4");
+
+    let kyra_convo = kyra
+        .convo(room_id.to_string())
+        .await
+        .expect("kyra should belong to convo");
+    let kyra_timeline = kyra_convo
+        .timeline_stream()
+        .await
+        .expect("kyra should get timeline stream");
+    let kyra_stream = kyra_timeline.diff_stream();
+    pin_mut!(kyra_stream);
+
+    kyra_stream.next().await;
+    for invited in kyra.invited_rooms().iter() {
+        info!(" - accepting {:?}", invited.room_id());
+        invited.join().await?;
+    }
+
+    info!("5");
+
+    let worf_sync = worf.start_sync();
+    worf_sync.await_has_synced_history().await?;
+
+    let worf_convo = worf
+        .convo(room_id.to_string())
+        .await
+        .expect("worf should belong to convo");
+    let worf_timeline = worf_convo
+        .timeline_stream()
+        .await
+        .expect("worf should get timeline stream");
+    let worf_stream = worf_timeline.diff_stream();
+    pin_mut!(worf_stream);
+
+    worf_stream.next().await;
+    for invited in worf.invited_rooms().iter() {
+        info!(" - accepting {:?}", invited.room_id());
+        invited.join().await?;
+    }
+
+    info!("6");
+
+    sisko_timeline
         .send_plain_message("Hi, everyone".to_string())
         .await?;
 
-    let tmp_dir = TempDir::new()?;
-    let mut kyra = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
-        "@kyra".to_string(),
-        default_user_password("kyra"),
-        homeserver_name.clone(),
-        homeserver_url.clone(),
-        Some("KYRA_DEV".to_string()),
-    )
-    .await?;
-    let kyra_syncer = kyra.start_sync();
-    let mut first_synced = kyra_syncer.first_synced_rx();
-    while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let kyra_space = kyra
-        .space(format!("#ops:{homeserver_name}"))
-        .await
-        .expect("kyra should belong to ops");
+    info!("7");
 
-    let tmp_dir = TempDir::new()?;
-    let mut worf = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
-        "@worf".to_string(),
-        default_user_password("worf"),
-        homeserver_name.clone(),
-        homeserver_url.clone(),
-        Some("WORF_DEV".to_string()),
-    )
-    .await?;
-    let worf_syncer = worf.start_sync();
-    let mut first_synced = worf_syncer.first_synced_rx();
-    while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let worf_space = worf
-        .space(format!("#ops:{homeserver_name}"))
-        .await
-        .expect("worf should belong to ops");
+    // text msg may reach via reset action or set action
+    let mut i = 30;
+    let mut received = None;
+    while i > 0 {
+        info!("stream loop - {i}");
+        if let Some(diff) = sisko_stream.next().now_or_never().flatten() {
+            info!("stream diff - {}", diff.action());
+            match diff.action().as_str() {
+                "Reset" => {
+                    let values = diff
+                        .values()
+                        .expect("diff reset action should have valid values");
+                    info!("diff reset - {:?}", values);
+                    for value in values.iter() {
+                        if let Some(event_id) = match_text_msg(value, "Hi, everyone") {
+                            received = Some(event_id);
+                            break;
+                        }
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
+                    info!("diff set - {:?}", value);
+                    if let Some(event_id) = match_text_msg(&value, "Hi, everyone") {
+                        received = Some(event_id);
+                    }
+                }
+                _ => {}
+            }
+            // yay
+            if received.is_some() {
+                break;
+            }
+        }
+        info!("continue loop");
+        i -= 1;
+        sleep(Duration::from_secs(1)).await;
+    }
+    info!("loop finished");
+    assert!(
+        received.is_some(),
+        "Even after 30 seconds, text msg not received"
+    );
 
-    let tmp_dir = TempDir::new()?;
-    let mut bashir = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
-        "@bashir".to_string(),
-        default_user_password("bashir"),
-        homeserver_name.clone(),
-        homeserver_url.clone(),
-        Some("BASHIR_DEV".to_string()),
-    )
-    .await?;
-    let bashir_syncer = bashir.start_sync();
-    let mut first_synced = bashir_syncer.first_synced_rx();
-    while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let bashir_space = bashir
-        .space(format!("#ops:{homeserver_name}"))
-        .await
-        .expect("bashir should belong to ops");
+    info!("8");
 
-    let tmp_dir = TempDir::new()?;
-    let mut miles = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
-        "@miles".to_string(),
-        default_user_password("miles"),
-        homeserver_name.clone(),
-        homeserver_url.clone(),
-        Some("MILES_DEV".to_string()),
-    )
-    .await?;
-    let miles_syncer = miles.start_sync();
-    let mut first_synced = miles_syncer.first_synced_rx();
-    while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let miles_space = miles
-        .space(format!("#ops:{homeserver_name}"))
-        .await
-        .expect("miles should belong to ops");
-
-    let tmp_dir = TempDir::new()?;
-    let mut jadzia = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
-        "@jadzia".to_string(),
-        default_user_password("jadzia"),
-        homeserver_name.clone(),
-        homeserver_url.clone(),
-        Some("JADZIA_DEV".to_string()),
-    )
-    .await?;
-    let jadzia_syncer = jadzia.start_sync();
-    let mut first_synced = jadzia_syncer.first_synced_rx();
-    while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let jadzia_space = jadzia
-        .space(format!("#ops:{homeserver_name}"))
-        .await
-        .expect("jadzia should belong to ops");
-
-    let tmp_dir = TempDir::new()?;
-    let mut odo = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
-        "@odo".to_string(),
-        default_user_password("odo"),
-        homeserver_name.clone(),
-        homeserver_url.clone(),
-        Some("ODO_DEV".to_string()),
-    )
-    .await?;
-    let odo_syncer = odo.start_sync();
-    let mut first_synced = odo_syncer.first_synced_rx();
-    while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let odo_space = odo
-        .space(format!("#ops:{homeserver_name}"))
-        .await
-        .expect("odo should belong to ops");
-
-    kyra_space
-        .send_reaction(event_id.to_string(), "👏".to_string())
+    kyra_timeline
+        .send_reaction(received.clone().unwrap().to_string(), "👏".to_string())
         .await?;
-    worf_space
-        .send_reaction(event_id.to_string(), "😎".to_string())
-        .await?;
-    bashir_space
-        .send_reaction(event_id.to_string(), "😜".to_string())
-        .await?;
-    miles_space
-        .send_reaction(event_id.to_string(), "🤩".to_string())
-        .await?;
-    jadzia_space
-        .send_reaction(event_id.to_string(), "😍".to_string())
-        .await?;
-    odo_space
-        .send_reaction(event_id.to_string(), "😂".to_string())
+    worf_timeline
+        .send_reaction(received.clone().unwrap().to_string(), "😎".to_string())
         .await?;
 
-    let event = sisko_space.event(&event_id).await?;
-    println!("reactions: {event:?}");
+    info!("9 - {:?}", received);
+
+    // msg reaction may reach via set action
+    i = 10;
+    let mut found = false;
+    while i > 0 {
+        info!("stream loop - {i}");
+        if let Some(diff) = sisko_stream.next().now_or_never().flatten() {
+            info!("stream diff - {}", diff.action());
+            if diff.action().as_str() == "Set" {
+                let value = diff
+                    .value()
+                    .expect("diff set action should have valid value");
+                info!("diff set - {:?}", value);
+                if match_msg_reaction(&value, "Hi, everyone", "👏".to_string())
+                    && match_msg_reaction(&value, "Hi, everyone", "😎".to_string())
+                {
+                    found = true;
+                }
+            }
+            // yay
+            if found {
+                break;
+            }
+        }
+        info!("continue loop");
+        i -= 1;
+        sleep(Duration::from_secs(1)).await;
+    }
+    info!("loop finished");
+    assert!(found, "Even after 10 seconds, msg reaction not received");
 
     Ok(())
+}
+
+fn match_text_msg(msg: &RoomMessage, body: &str) -> Option<OwnedEventId> {
+    info!("match room msg - {:?}", msg.clone());
+    if msg.item_type() == "event" {
+        let event_item = msg.event_item().expect("room msg should have event item");
+        if let Some(text_desc) = event_item.text_desc() {
+            if text_desc.body() == body {
+                // exclude the pending msg
+                if let Some(event_id) = event_item.evt_id() {
+                    return Some(event_id);
+                }
+            }
+        }
+    }
+    None
+}
+
+fn match_msg_reaction(msg: &RoomMessage, body: &str, key: String) -> bool {
+    info!("match room msg - {:?}", msg.clone());
+    if msg.item_type() == "event" {
+        let event_item = msg.event_item().expect("room msg should have event item");
+        if let Some(text_desc) = event_item.text_desc() {
+            if text_desc.body() == body && event_item.reaction_keys().contains(&key) {
+                return true;
+            }
+        }
+    }
+    false
 }

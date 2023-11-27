@@ -5,6 +5,7 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
+import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -14,7 +15,6 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -477,7 +477,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     final roomId = widget.convo.getRoomIdStr();
     final chatInputState = ref.read(chatInputProvider(roomId));
     final chatInputNotifier = ref.read(chatInputProvider(roomId).notifier);
-    final convo = widget.convo;
+    final stream = await widget.convo.timelineStream();
 
     try {
       for (File file in files) {
@@ -488,13 +488,14 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
           var bytes = file.readAsBytesSync();
           var image = await decodeImageFromList(bytes);
           if (chatInputState.repliedToMessage != null) {
-            await convo.sendImageReply(
+            await stream.sendImageReply(
               file.path,
               fileName,
               mimeType,
               file.lengthSync(),
               image.width,
               image.height,
+              null,
               chatInputState.repliedToMessage!.id,
             );
 
@@ -505,7 +506,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             chatInputNotifier.setReplyWidget(null);
             chatInputNotifier.setEditWidget(null);
           } else {
-            await convo.sendImageMessage(
+            await stream.sendImageMessage(
               file.path,
               fileName,
               mimeType,
@@ -521,7 +522,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         } else if (mimeType.startsWith('/video')) {
         } else {
           if (chatInputState.repliedToMessage != null) {
-            await convo.sendFileReply(
+            await stream.sendFileReply(
               file.path,
               fileName,
               mimeType,
@@ -535,7 +536,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             chatInputNotifier.setReplyWidget(null);
             chatInputNotifier.setEditWidget(null);
           } else {
-            await convo.sendFileMessage(
+            await stream.sendFileMessage(
               file.path,
               fileName,
               mimeType,
@@ -674,15 +675,15 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     String markdownMessage,
     int messageLength,
   ) async {
-    final convo = widget.convo;
     final roomId = widget.convo.getRoomIdStr();
     final chatInputState = ref.watch(chatInputProvider(roomId));
     final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
-    await convo.typingNotice(false);
+    await widget.convo.typingNotice(false);
+    final stream = await widget.convo.timelineStream();
     if (chatInputState.repliedToMessage != null) {
-      await convo.sendTextReply(
+      await stream.sendPlainReply(
         markdownMessage,
         chatInputState.repliedToMessage!.id,
       );
@@ -694,7 +695,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       inputNotifier.setReplyWidget(null);
       inputNotifier.setEditWidget(null);
     } else if (chatInputState.editMessage != null) {
-      await convo.editFormattedMessage(
+      await stream.editFormattedMessage(
         chatInputState.editMessage!.id,
         markdownMessage,
       );
@@ -706,7 +707,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       inputNotifier.setReplyWidget(null);
       inputNotifier.setEditWidget(null);
     } else {
-      await convo.sendFormattedMessage(markdownMessage);
+      await stream.sendFormattedMessage(markdownMessage);
     }
   }
 }
@@ -824,9 +825,7 @@ class _TextInputWidget extends ConsumerWidget {
               });
             }
           },
-          textInputAction: (Platform.isAndroid || Platform.isIOS)
-              ? TextInputAction.send
-              : TextInputAction.newline,
+          textInputAction: TextInputAction.newline,
           enabled: chatInputState.allowEdit,
           onSubmitted: (value) => onSendButtonPressed(),
           style: Theme.of(context).textTheme.bodySmall,

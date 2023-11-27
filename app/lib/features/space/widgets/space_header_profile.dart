@@ -9,9 +9,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class SpaceHeaderProfile extends ConsumerWidget {
+  static const headerKey = Key('space-header');
+
   final String spaceId;
 
-  const SpaceHeaderProfile(this.spaceId, {super.key});
+  const SpaceHeaderProfile(this.spaceId, {super.key = headerKey});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

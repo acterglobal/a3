@@ -138,7 +138,7 @@ async fn news_markdown_raw_text_test() -> Result<()> {
     let final_entry = slides.first().expect("Item is there");
     let text_slide = final_entry.get_slide(0).expect("we have a slide");
     assert_eq!(text_slide.type_str(), "text");
-    assert_eq!(text_slide.has_formatted_text(), false);
+    assert!(!text_slide.has_formatted_text());
     assert_eq!(text_slide.text(), "This is a simple text".to_owned());
 
     Ok(())
@@ -185,7 +185,7 @@ async fn news_markdown_text_test() -> Result<()> {
     let final_entry = slides.first().expect("Item is there");
     let text_slide = final_entry.get_slide(0).expect("we have a slide");
     assert_eq!(text_slide.type_str(), "text");
-    assert_eq!(text_slide.has_formatted_text(), true);
+    assert!(text_slide.has_formatted_text());
     assert_eq!(
         text_slide.text(),
         "<h2>This is a simple text</h2>\n".to_owned()
@@ -251,7 +251,7 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
     let final_entry = slides.first().expect("Item is there");
     let text_slide = final_entry.get_slide(0).expect("we have a slide");
     assert_eq!(text_slide.type_str(), "image");
-    assert_eq!(text_slide.has_formatted_text(), false);
+    assert!(!text_slide.has_formatted_text());
     assert_eq!(text_slide.text(), "This is a simple text".to_owned());
 
     Ok(())
@@ -314,7 +314,7 @@ async fn news_png_image_with_text_test() -> Result<()> {
     let final_entry = slides.first().expect("Item is there");
     let text_slide = final_entry.get_slide(0).expect("we have a slide");
     assert_eq!(text_slide.type_str(), "image");
-    assert_eq!(text_slide.has_formatted_text(), false);
+    assert!(!text_slide.has_formatted_text());
     assert_eq!(text_slide.text(), "This is a simple text".to_owned());
 
     Ok(())

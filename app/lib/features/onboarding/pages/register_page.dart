@@ -6,6 +6,8 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
+import 'package:acter/features/settings/super_invites/providers/super_invites_providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,6 +16,20 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final log = Logger('Register');
+
+Future<void> tryRedeem(SuperInvites superInvites, String token) async {
+  // try to redeem the token in a fire-and-forget-manner
+  try {
+    await superInvites.redeem(
+      token,
+    );
+  } catch (error) {
+    log.warning('redeeming super invite failed: $error');
+  }
+}
 
 class RegisterPage extends ConsumerStatefulWidget {
   static const usernameField = Key('reg-username-txt');
@@ -54,6 +70,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         );
         if (errorMsg != null) {
           EasyLoading.showError(errorMsg);
+        }
+        if (token.text.isNotEmpty) {
+          final superInvites = ref.read(superInvitesProvider);
+          tryRedeem(superInvites, token.text);
         }
       }
     }
@@ -130,9 +150,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .tertiary,
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary,
                                     width: 0.5,
                                   ),
                                   borderRadius: BorderRadius.circular(12),
@@ -177,9 +196,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .tertiary,
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary,
                                     width: 0.5,
                                   ),
                                   borderRadius: BorderRadius.circular(12),
@@ -211,8 +229,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                               },
                               onChanged: (value) {
                                 username.text = value;
-                                username.selection =
-                                    TextSelection.fromPosition(
+                                username.selection = TextSelection.fromPosition(
                                   TextPosition(offset: username.text.length),
                                 );
                               },
@@ -234,9 +251,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .tertiary,
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary,
                                     width: 0.5,
                                   ),
                                   borderRadius: BorderRadius.circular(12),
@@ -258,8 +274,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                               },
                               onChanged: (value) {
                                 password.text = value;
-                                password.selection =
-                                    TextSelection.fromPosition(
+                                password.selection = TextSelection.fromPosition(
                                   TextPosition(offset: password.text.length),
                                 );
                               },
@@ -280,9 +295,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .tertiary,
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary,
                                     width: 0.5,
                                   ),
                                   borderRadius: BorderRadius.circular(12),
