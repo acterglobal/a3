@@ -610,10 +610,10 @@ object Rsvp {
 /// Sending state of outgoing message.
 object EventSendState {
     // one of NotSentYet/SendingFailed/Cancelled/Sent
-    fn state() -> String;
+    fn state() -> string;
     
     // gives error value for SendingFailed only
-    fn error() -> Option<String>;
+    fn error() -> Option<string>;
 
     // gives event id for Sent only
     fn event_id() -> Option<OwnedEventId>;
