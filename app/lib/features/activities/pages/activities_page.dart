@@ -30,7 +30,7 @@ class ActivitiesPage extends ConsumerWidget {
     final size = MediaQuery.of(context).size;
     // ignore: unused_local_variable
     final allDone = ref.watch(hasActivitiesProvider) == HasActivities.none;
-    final allSessions = ref.watch(allSessionsProvider);
+    final allSessions = ref.watch(unknownSessionsProvider);
     final invitations = ref.watch(invitationListProvider);
     final children = [];
     allSessions.when(

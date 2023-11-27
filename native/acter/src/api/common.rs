@@ -403,6 +403,7 @@ pub struct DeviceRecord {
     last_seen_ip: Option<String>,
     is_verified: bool,
     is_active: bool,
+    is_me: bool,
 }
 
 impl DeviceRecord {
@@ -413,6 +414,7 @@ impl DeviceRecord {
         last_seen_ip: Option<String>,
         is_verified: bool,
         is_active: bool,
+        is_me: bool,
     ) -> Self {
         DeviceRecord {
             device_id,
@@ -421,6 +423,7 @@ impl DeviceRecord {
             last_seen_ip,
             is_verified,
             is_active,
+            is_me,
         }
     }
 
@@ -442,6 +445,10 @@ impl DeviceRecord {
 
     pub fn is_verified(&self) -> bool {
         self.is_verified
+    }
+
+    pub fn is_me(&self) -> bool {
+        self.is_me
     }
 
     pub fn is_active(&self) -> bool {
