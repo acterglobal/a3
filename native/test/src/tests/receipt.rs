@@ -38,10 +38,6 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     let sisko_stream = sisko_timeline.diff_stream();
     pin_mut!(sisko_stream);
 
-    let Some(mut event_rx) = sisko.receipt_event_rx() else {
-        bail!("sisko needs receipt event receiver")
-    };
-
     sisko_timeline
         .send_plain_message("Hi, everyone".to_string())
         .await?;
@@ -115,6 +111,9 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     info!("5");
 
     i = 30; // sometimes read receipt not reached
+    let Some(mut event_rx) = sisko.receipt_event_rx() else {
+        bail!("sisko needs receipt event receiver")
+    };
     let mut found = false;
     while i > 0 {
         info!("receipt loop ---------------------------------- {i}");
