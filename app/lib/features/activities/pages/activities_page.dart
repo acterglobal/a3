@@ -3,10 +3,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
-import 'package:acter/features/activities/providers/notifications_providers.dart';
-import 'package:acter/features/activities/providers/notifiers/notifications_list_notifier.dart';
 import 'package:acter/features/activities/widgets/invitation_card.dart';
-import 'package:acter/features/activities/widgets/notification_card.dart';
 import 'package:acter/features/settings/providers/session_providers.dart';
 import 'package:acter/features/settings/widgets/session_card.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -14,9 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
 class ActivitiesPage extends ConsumerWidget {
   static const Key oneUnverifiedSessionsCard =
@@ -115,7 +109,26 @@ class ActivitiesPage extends ConsumerWidget {
         ),
       );
     }
-    final weAreEmpty = children.isEmpty;
+    if (children.isEmpty) {
+      children.add(
+        SliverToBoxAdapter(
+          child: Center(
+            child: Column(
+              children: [
+                SizedBox(
+                  // nothing found, even in the section before. Show nice fallback
+                  height: 250,
+                  child: SvgPicture.asset(
+                    'assets/images/undraw_project_completed_re_jr7u.svg',
+                  ),
+                ),
+                const Text('All caught up!'),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.neutral,
@@ -135,28 +148,6 @@ class ActivitiesPage extends ConsumerWidget {
                   ),
           ),
           ...children,
-          RiverPagedBuilder<Next?, ffi.Notification>.autoDispose(
-            firstPageKey: const Next(isStart: true),
-            provider: notificationsListProvider,
-            itemBuilder: (ctx, item, index) => NotificationCard(
-              notification: item,
-            ),
-            noItemsFoundIndicatorBuilder: (ctx, controller) => weAreEmpty
-                ? SizedBox(
-                    // nothing found, even in the section before. Show nice fallback
-                    height: 250,
-                    child: Center(
-                      child: SvgPicture.asset(
-                        'assets/images/undraw_project_completed_re_jr7u.svg',
-                      ),
-                    ),
-                  )
-                : const Text(''),
-            pagedBuilder: (controller, builder) => PagedSliverList(
-              pagingController: controller,
-              builderDelegate: builder,
-            ),
-          ),
         ],
       ),
     );
