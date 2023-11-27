@@ -41,6 +41,7 @@ mod search;
 mod settings;
 mod spaces;
 mod stream;
+mod super_invites;
 mod tasks;
 mod three_pid;
 mod typing;
@@ -62,7 +63,7 @@ pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use auth::{
     destroy_local_data, guest_client, login_new_client, login_new_client_under_config,
     login_with_token, login_with_token_under_config, make_client_config, register_under_config,
-    register_with_token, register_with_token_under_config, sanitize_user,
+    register_with_token, register_with_token_under_config, sanitize_user, set_proxy,
 };
 pub use calendar_events::{CalendarEvent, CalendarEventDraft, CalendarEventUpdateBuilder};
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
@@ -100,6 +101,7 @@ pub use spaces::{
     RelationTargetType, Space, SpaceDiff,
 };
 pub use stream::{TimelineDiff, TimelineStream};
+pub use super_invites::{SuperInviteToken, SuperInvites, SuperInvitesTokenUpdateBuilder};
 pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };

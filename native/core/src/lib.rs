@@ -14,6 +14,7 @@ pub mod models;
 pub mod spaces;
 pub mod statics;
 pub mod store;
+pub mod super_invites;
 pub mod support;
 
 pub use error::{Error, Result};

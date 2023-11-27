@@ -12,6 +12,7 @@ mod redact;
 mod reply;
 mod rsvp;
 mod spaces;
+mod super_invites;
 mod tasks;
 mod templates;
 mod typing;

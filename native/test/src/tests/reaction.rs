@@ -149,19 +149,16 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
         info!("stream loop - {i}");
         if let Some(diff) = sisko_stream.next().now_or_never().flatten() {
             info!("stream diff - {}", diff.action());
-            match diff.action().as_str() {
-                "Set" => {
-                    let value = diff
-                        .value()
-                        .expect("diff set action should have valid value");
-                    info!("diff set - {:?}", value);
-                    if match_msg_reaction(&value, "Hi, everyone", "👏".to_string()) {
-                        if match_msg_reaction(&value, "Hi, everyone", "😎".to_string()) {
-                            found = true;
-                        }
-                    }
+            if diff.action().as_str() == "Set" {
+                let value = diff
+                    .value()
+                    .expect("diff set action should have valid value");
+                info!("diff set - {:?}", value);
+                if match_msg_reaction(&value, "Hi, everyone", "👏".to_string())
+                    && match_msg_reaction(&value, "Hi, everyone", "😎".to_string())
+                {
+                    found = true;
                 }
-                _ => {}
             }
             // yay
             if found {
@@ -199,10 +196,8 @@ fn match_msg_reaction(msg: &RoomMessage, body: &str, key: String) -> bool {
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
         if let Some(text_desc) = event_item.text_desc() {
-            if text_desc.body() == body {
-                if event_item.reaction_keys().contains(&key) {
-                    return true;
-                }
+            if text_desc.body() == body && event_item.reaction_keys().contains(&key) {
+                return true;
             }
         }
     }
