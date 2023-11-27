@@ -41,6 +41,7 @@ mod search;
 mod settings;
 mod spaces;
 mod stream;
+mod super_invites;
 mod tasks;
 mod three_pid;
 mod typing;
@@ -100,6 +101,7 @@ pub use spaces::{
     RelationTargetType, Space, SpaceDiff,
 };
 pub use stream::{TimelineDiff, TimelineStream};
+pub use super_invites::{SuperInviteToken, SuperInvites, SuperInvitesTokenUpdateBuilder};
 pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };

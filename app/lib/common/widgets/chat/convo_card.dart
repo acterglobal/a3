@@ -22,11 +22,15 @@ class ConvoCard extends ConsumerStatefulWidget {
   ///
   final bool showParent;
 
+  /// Custom Trailing Widget
+  final Widget? trailing;
+
   const ConvoCard({
     Key? key,
     required this.room,
     this.onTap,
     this.showParent = true,
+    this.trailing,
   }) : super(key: key);
 
   @override
@@ -63,71 +67,72 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
                 latestMessage: latestMsg,
               )
             : const SizedBox.shrink(),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            latestMsg != null
-                ? _TrailingWidget(
-                    room: widget.room,
-                    latestMessage: latestMsg,
-                    activeMembers: activeMembers,
-                    userId: userId,
-                  )
-                : const SizedBox.shrink(),
-            mutedStatus.valueOrNull == true
-                ? Expanded(
-                    child: MenuAnchor(
-                      builder: (
-                        BuildContext context,
-                        MenuController controller,
-                        Widget? child,
-                      ) {
-                        return IconButton(
-                          padding: EdgeInsets.zero,
-                          iconSize: 14,
-                          onPressed: () {
-                            if (controller.isOpen) {
-                              controller.close();
-                            } else {
-                              controller.open();
-                            }
-                          },
-                          icon: const Icon(Atlas.bell_dash_bold),
-                        );
-                      },
-                      menuChildren: [
-                        MenuItemButton(
-                          child: const Text('Unmute'),
-                          onPressed: () async {
-                            final room = await ref.read(
-                              maybeRoomProvider(widget.room.getRoomIdStr())
-                                  .future,
+        trailing: widget.trailing ??
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                latestMsg != null
+                    ? _TrailingWidget(
+                        room: widget.room,
+                        latestMessage: latestMsg,
+                        activeMembers: activeMembers,
+                        userId: userId,
+                      )
+                    : const SizedBox.shrink(),
+                mutedStatus.valueOrNull == true
+                    ? Expanded(
+                        child: MenuAnchor(
+                          builder: (
+                            BuildContext context,
+                            MenuController controller,
+                            Widget? child,
+                          ) {
+                            return IconButton(
+                              padding: EdgeInsets.zero,
+                              iconSize: 14,
+                              onPressed: () {
+                                if (controller.isOpen) {
+                                  controller.close();
+                                } else {
+                                  controller.open();
+                                }
+                              },
+                              icon: const Icon(Atlas.bell_dash_bold),
                             );
-                            if (room == null) {
-                              EasyLoading.showError(
-                                'Room not found',
-                              );
-                              return;
-                            }
-                            await room.unmute();
-                            EasyLoading.showSuccess(
-                              'Notifications unmuted',
-                            );
-                            await Future.delayed(const Duration(seconds: 1),
-                                () {
-                              // FIXME: we want to refresh the view but don't know
-                              //        when the event was confirmed form sync :(
-                              // let's hope that a second delay is reasonable enough
-                              ref.invalidate(maybeRoomProvider(roomId));
-                            });
                           },
+                          menuChildren: [
+                            MenuItemButton(
+                              child: const Text('Unmute'),
+                              onPressed: () async {
+                                final room = await ref.read(
+                                  maybeRoomProvider(widget.room.getRoomIdStr())
+                                      .future,
+                                );
+                                if (room == null) {
+                                  EasyLoading.showError(
+                                    'Room not found',
+                                  );
+                                  return;
+                                }
+                                await room.unmute();
+                                EasyLoading.showSuccess(
+                                  'Notifications unmuted',
+                                );
+                                await Future.delayed(const Duration(seconds: 1),
+                                    () {
+                                  // FIXME: we want to refresh the view but don't know
+                                  //        when the event was confirmed form sync :(
+                                  // let's hope that a second delay is reasonable enough
+                                  ref.invalidate(maybeRoomProvider(roomId));
+                                });
+                              },
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  )
-                : const SizedBox.shrink(),
-          ],
-        ),
+                      )
+                    : const SizedBox.shrink(),
+              ],
+            ),
       ),
       error: (error, stackTrace) => LoadingConvoCard(
         roomId: roomId,

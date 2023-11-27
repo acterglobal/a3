@@ -141,6 +141,7 @@ class MyProfile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final account = ref.watch(accountProfileProvider);
+    final size = MediaQuery.of(context).size;
 
     return account.when(
       data: (data) {
@@ -199,8 +200,13 @@ class MyProfile extends ConsumerWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                data.profile.displayName ?? '',
+                              ConstrainedBox(
+                                constraints:
+                                    BoxConstraints(maxWidth: size.width * 0.8),
+                                child: Text(
+                                  data.profile.displayName ?? '',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                               const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 5),
@@ -225,8 +231,13 @@ class MyProfile extends ConsumerWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                userId,
+                              ConstrainedBox(
+                                constraints:
+                                    BoxConstraints(maxWidth: size.width * 0.8),
+                                child: Text(
+                                  userId,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                               const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 5),

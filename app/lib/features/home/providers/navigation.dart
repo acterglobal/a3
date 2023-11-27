@@ -137,7 +137,10 @@ final sidebarItemsProvider = Provider.autoDispose
     ),
     SidebarNavigationItem(
       // icon: const Badge(child: Icon(Atlas.chats_thin)), // TODO: Badge example
-      icon: const Icon(Atlas.chats_thin),
+      icon: const Icon(
+        Atlas.chats_thin,
+        key: MainNavKeys.chats,
+      ),
       label: Text(
         'Chat',
         style: Theme.of(context).textTheme.labelSmall,
@@ -214,9 +217,13 @@ final bottomBarNavProvider =
       initialLocation: Routes.updates.route,
     ),
     BottomBarNavigationItem(
-      icon: const Icon(Atlas.chats_thin),
+      icon: const Icon(
+        Atlas.chats_thin,
+        key: MainNavKeys.chats,
+      ),
       activeIcon: const CustomSelectedIcon(
         icon: Icon(Atlas.chats_thin),
+        key: MainNavKeys.chats,
       ),
       label: 'Chat',
       initialLocation: Routes.chat.route,
