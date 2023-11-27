@@ -85,6 +85,7 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                 final roomId = space.getRoomIdStr();
                 return SpaceCard(
                   onTap: () => context.go('/$roomId'),
+                  key: Key('space-list-item-$roomId'),
                   space: space,
                 );
               },

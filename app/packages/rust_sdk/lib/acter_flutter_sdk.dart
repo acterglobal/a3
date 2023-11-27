@@ -38,6 +38,11 @@ const defaultSessionKey = String.fromEnvironment(
   defaultValue: 'sessions',
 );
 
+const httpProxy = String.fromEnvironment(
+  'HTTP_PROXY',
+  defaultValue: '',
+);
+
 // allows us to use a different AppGroup Section to store
 // the app group under
 const appleKeychainAppGroupName = String.fromEnvironment(
@@ -381,6 +386,19 @@ class ActerSdk {
     final logSettings = (await sharedPrefs()).getString(rustLogKey);
     try {
       api.initLogging(appPath, logSettings ?? defaultLogSetting);
+    } catch (e) {
+      developer.log(
+        'Logging setup failed',
+        level: 900, // warning
+        error: e,
+      );
+    }
+
+    try {
+      if (httpProxy.isNotEmpty) {
+        developer.log('Setting http proxy to $httpProxy');
+        api.setProxy(httpProxy);
+      }
     } catch (e) {
       developer.log(
         'Logging setup failed',

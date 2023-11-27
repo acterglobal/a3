@@ -10,7 +10,12 @@ repository = "https://github.com/acterglobal/a3"
 license-file = "../../LICENSE.txt"
 
 [features]
+default = ["client"]
 templates = ["toml", "minijinja", "indexmap", "tokio-retry"]
+
+# for ruma macros
+client = [] 
+server = []
 
 [dependencies]
 tokio = { version = "1", features = ["rt", "macros"]}

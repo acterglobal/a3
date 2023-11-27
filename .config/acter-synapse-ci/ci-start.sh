@@ -4,7 +4,7 @@ export SYNAPSE_SERVER_NAME=localhost
 export SYNAPSE_REPORT_STATS=no
 echo " ====== Generating config  ====== "
 /start.py generate
-echo " ====== Patching for CI  ====== "
+echo " ====== Patching for local fixes  ====== "
 echo """
 
 allow_guest_access: true
@@ -54,6 +54,12 @@ rc_invites:
   per_user:
     per_second: 1000
     burst_count: 1000
+
+modules:
+  - module: "synapse_super_invites.SynapseSuperInvites"
+    config:
+      sql_url: sqlite:///data/super_invites.db
+      generate_registration_token: true
 
 """ >>  /data/homeserver.yaml
 
