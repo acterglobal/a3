@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/activities/pages/activities_page.dart';
@@ -15,18 +13,15 @@ import '../support/setup.dart';
 import '../support/util.dart';
 
 void authTests() {
-  tTestWidgets('registration smoke test', (t) async {
-    disableOverflowErrors();
+  acterTestWidget('registration smoke test', (t) async {
     await t.freshAccount();
   });
-  tTestWidgets('register and login test', (t) async {
-    disableOverflowErrors();
+  acterTestWidget('register and login test', (t) async {
     final userId = await t.freshAccount();
     await t.logout();
     await t.login(userId);
   });
-  tTestWidgets('deactivate account test', (t) async {
-    disableOverflowErrors();
+  acterTestWidget('deactivate account test', (t) async {
     final userId = await t.freshAccount();
 
     await find.byKey(Keys.mainNav).should(findsOneWidget);
@@ -64,8 +59,8 @@ void authTests() {
     // but should fail.
     // FIXME: how to check for a failure...
   });
-  tTestWidgets('fresh registration has no unauthenticated sessions', (t) async {
-    disableOverflowErrors();
+  acterTestWidget('fresh registration has no unauthenticated sessions',
+      (t) async {
     await t.freshAccount();
     await t.navigateTo([
       MainNavKeys.activities,
@@ -75,19 +70,16 @@ void authTests() {
     find.byKey(ActivitiesPage.oneUnverifiedSessionsCard).should(findsNothing);
     find.byKey(ActivitiesPage.unverifiedSessionsCard).should(findsNothing);
   });
-  tTestWidgets('ensure unicode registration works', (t) async {
-    disableOverflowErrors();
-    final testName = "Dwayne 'the 🪨' Johnson";
+  acterTestWidget('ensure unicode registration works', (t) async {
+    const testName = "Dwayne 'the 🪨' Johnson";
     await t.freshAccount(displayName: testName);
     await t.navigateTo([
       MainNavKeys.quickJump,
       QuickJumpKeys.profile,
     ]);
 
-    // items _not_ present!
     final displayName = find.byKey(MyProfile.displayNameKey);
-    displayName.should(findsOneWidget);
-    final text = displayName.evaluate().single.widget as Text;
-    assert(text.data == testName, "${text.data} isn't the expected $testName");
+    await displayName.should(findsOneWidget);
+    await find.text(testName).should(findsOneWidget);
   });
 }
