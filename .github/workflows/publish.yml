@@ -482,6 +482,16 @@ jobs:
         with:
           name: Linux x64
 
+      - name: Import GPG key
+        id: gpg
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_KEY }}
+          passphrase: ${{ secrets.GPG_KEY_PASSPHRASE }}
+          trust_level: 5
+      - name: List GPG keys
+        run: gpg -K
+
       # - uses: actions/download-artifact@v3
       #   with:
       #     name: Linux arm64
@@ -502,6 +512,7 @@ jobs:
         id: flatpak
         with:
           upload-bundles: true
+          gpg-sign: ${{ steps.gpg.outputs.fingerprint }}
           files: |
               app/flatpak/global.acter.a3.yml
           flatpak-builder-args: |
