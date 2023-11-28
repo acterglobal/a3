@@ -572,15 +572,16 @@ jobs:
           CLIENTSECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
           MS_STORE_APP_ID: ${{ secrets.MS_STORE_APP_ID }}
         run: |
+            $DebugPreference = 'Continue'
             # prepare te package
             Write-Debug "Logging in"
             # login with the StoreBroker
             $sec = ConvertTo-SecureString $env:CLIENTSECRET -AsPlainText -Force
             $cred = New-Object System.Management.Automation.PSCredential $env:CLIENTID, $sec
-            Set-StoreBrokerAuthentication -TenantId $env:TENANTID -Credential $cred
+            Set-StoreBrokerAuthentication -TenantId $env:TENANTID -Credential $cred -Verbose
             Write-Debug "Logged in. Preparing submission"
             # create the submission and add new package
-            $sub = New-ApplicationSubmission -AppId $env:MS_STORE_APP_ID -Force
+            $sub = New-ApplicationSubmission -AppId $env:MS_STORE_APP_ID -Force -Verbose
             $sub.applicationPackages | ForEach-Object { $_.fileStatus = "PendingDelete" }
             $pkg = $sub.applicationPackages[0].PSObject.Copy()
             $pkg.fileName = "acter.msix"
