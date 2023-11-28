@@ -2393,6 +2393,9 @@ object Client {
     /// super invites interface
     fn super_invites() -> SuperInvites;
 
+    /// the list of devices
+    fn device_records(verified: bool) -> Future<Result<Vec<DeviceRecord>>>;
+
 }
 
 
@@ -2594,9 +2597,6 @@ object DeviceNewEvent {
     /// get device id
     fn device_id() -> DeviceId;
 
-    /// Get the device list, excluding verified ones
-    fn device_records(verified: bool) -> Future<Result<Vec<DeviceRecord>>>;
-
     /// Request verification to any devices of user
     fn request_verification_to_user() -> Future<Result<bool>>;
 
@@ -2615,8 +2615,6 @@ object DeviceChangedEvent {
     /// get device id
     fn device_id() -> DeviceId;
 
-    /// Get the device list, including deleted ones
-    fn device_records(deleted: bool) -> Future<Result<Vec<DeviceRecord>>>;
 }
 
 /// Provide various device infos
@@ -2638,4 +2636,6 @@ object DeviceRecord {
 
     /// whether it is active
     fn is_active() -> bool;
+    /// whether it is this session
+    fn is_me() -> bool;
 }

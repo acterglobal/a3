@@ -1,20 +1,22 @@
-import 'package:flutter/material.dart';
+import 'package:convenient_test_dev/convenient_test_dev.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_test/flutter_test.dart';
 
-bool _patched = false;
+// ignore: avoid_init_to_null
+FlutterExceptionHandler? originalOnError = null;
 
 // allows us to disable RenderFlex overflow errors.
 // by https://stackoverflow.com/questions/57499131/how-to-deactivate-or-ignore-layout-overflow-messages-in-flutter-widget-tests
-void disableOverflowErrors() {
-  if (_patched) {
+void _disableOverflowErrors() {
+  if (originalOnError != null) {
     return; // do not recursively do this, once is enough.
   }
-  _patched = true;
   // Avoid tripping up on
   //   Actual: FlutterError:<A RenderFlex overflowed by X pixels on the bottom.>
   // #0      fail (package:matcher/src/expect/expect.dart:149:31)
   //    ....
   //
-  final originalOnError = FlutterError.onError;
+  originalOnError = FlutterError.onError;
   FlutterError.onError = (FlutterErrorDetails details) {
     final exception = details.exception;
     final isOverflowError = exception is FlutterError &&
@@ -26,10 +28,36 @@ void disableOverflowErrors() {
       debugPrint('$details');
     } else {
       if (originalOnError != null) {
-        originalOnError(details);
+        originalOnError!(details);
       } else {
         FlutterError.presentError(details);
       }
     }
   };
+}
+
+void _resetDisableOverflowErrors() {
+  if (originalOnError != null) {
+    FlutterError.onError = originalOnError;
+    originalOnError = null;
+  }
+}
+
+void acterTestWidget(
+  // ... forward the arguments ...
+  String description,
+  TWidgetTesterCallback callback, {
+  bool skip = false,
+  bool settle = true,
+  Timeout? timeout,
+}) {
+  tTestWidgets(description, (t) async {
+    _disableOverflowErrors();
+    try {
+      await callback(t);
+    } finally {
+      // reset regardless
+      _resetDisableOverflowErrors();
+    }
+  });
 }
