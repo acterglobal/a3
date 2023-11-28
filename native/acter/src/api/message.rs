@@ -2207,8 +2207,10 @@ impl RoomMessage {
                 result
             }
         };
-        if let Some(send_state) = event.send_state() {
-            event_item.set_send_state(send_state)
+        if event.is_local_echo() {
+            if let Some(send_state) = event.send_state() {
+                event_item.set_send_state(send_state)
+            }
         }
         RoomMessage::new_event_item(room_id, event_item)
     }

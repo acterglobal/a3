@@ -120,7 +120,6 @@ class _ChatBubble extends ConsumerWidget {
     final isAuthor = (myId == message.author.id);
     final roomId = convo.getRoomIdStr();
     bool hasRepliedMessage = message.repliedMessage != null;
-    final receipts = message.metadata?['receipts'];
 
     return Column(
       crossAxisAlignment:
@@ -207,15 +206,15 @@ class _ChatBubble extends ConsumerWidget {
             nextMessageInGroup: nextMessageInGroup,
           ),
         ),
-        if (receipts != null)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              ReceiptsBuilder(
-                seenList: (receipts as Map<String, int>).keys.toList(),
-              ),
-            ],
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            ReceiptsBuilder(
+              convo: convo,
+              message: message,
+            ),
+          ],
+        ),
       ],
     );
   }

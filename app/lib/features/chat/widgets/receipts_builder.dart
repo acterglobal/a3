@@ -1,17 +1,77 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Convo;
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quds_popup_menu/quds_popup_menu.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 class ReceiptsBuilder extends ConsumerWidget {
-  final List<String> seenList;
-
+  final Convo convo;
+  final types.Message message;
   const ReceiptsBuilder({
     super.key,
-    required this.seenList,
+    required this.convo,
+    required this.message,
   });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final receipts = message.metadata?['receipts'];
+    final sendState = message.metadata?['eventState'];
+    if (receipts != null) {
+      return _UserReceiptsWidget(
+        seenList: (receipts as Map<String, int>).keys.toList(),
+      );
+    } else {
+      if (sendState != null) {
+        switch (sendState) {
+          case 'NotSentYet':
+            return const SizedBox(
+              height: 8,
+              width: 8,
+              child: CircularProgressIndicator(),
+            );
+          case 'SendingFailed':
+            return GestureDetector(
+              onTap: () => _handleRetry(),
+              child: Row(
+                children: <Widget>[
+                  Text(
+                    'Retry',
+                    style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                          color: Theme.of(context).colorScheme.neutral5,
+                        ),
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Icon(
+                    Atlas.warning_thin,
+                    color: Theme.of(context).colorScheme.error,
+                    size: 8,
+                  ),
+                ],
+              ),
+            );
+          case 'Sent':
+            return const Icon(Atlas.check_circle_thin, size: 8);
+        }
+      }
+      return const SizedBox.shrink();
+    }
+  }
+
+  Future<void> _handleRetry() async {
+    // FIXME: how to handle retry here
+  }
+}
+
+class _UserReceiptsWidget extends ConsumerWidget {
+  final List<String> seenList;
+  const _UserReceiptsWidget({required this.seenList});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -60,7 +120,11 @@ class ReceiptsBuilder extends ConsumerWidget {
                               ),
                             );
                           },
-                          loading: () => const CircularProgressIndicator(),
+                          loading: () => const SizedBox(
+                            height: 8,
+                            width: 8,
+                            child: CircularProgressIndicator(),
+                          ),
                         );
                       },
                     ),
@@ -108,7 +172,11 @@ class ReceiptsBuilder extends ConsumerWidget {
                             ),
                           );
                         },
-                        loading: () => const CircularProgressIndicator(),
+                        loading: () => const SizedBox(
+                          height: 8,
+                          width: 8,
+                          child: CircularProgressIndicator(),
+                        ),
                       );
                     },
                   ),
@@ -174,7 +242,11 @@ class ReceiptsBuilder extends ConsumerWidget {
                               ),
                             );
                           },
-                          loading: () => const CircularProgressIndicator(),
+                          loading: () => const SizedBox(
+                            height: 8,
+                            width: 8,
+                            child: CircularProgressIndicator(),
+                          ),
                         ),
                         title: Text(
                           member.hasValue
