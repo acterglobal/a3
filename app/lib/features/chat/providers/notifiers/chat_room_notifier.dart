@@ -417,9 +417,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
     // If not virtual item, it should be event item
     RoomEventItem eventItem = message.eventItem()!;
-    String? eventState;
+    EventSendState? eventState;
     if (eventItem.sendState() != null) {
-      eventState = eventItem.sendState()!.state();
+      eventState = eventItem.sendState();
     }
 
     String eventType = eventItem.eventType();

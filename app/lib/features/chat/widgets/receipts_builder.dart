@@ -1,7 +1,8 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Convo;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show Convo, EventSendState;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,14 +21,14 @@ class ReceiptsBuilder extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final receipts = message.metadata?['receipts'];
-    final sendState = message.metadata?['eventState'];
+    EventSendState? sendState = message.metadata?['eventState'];
     if (receipts != null && receipts.isNotEmpty) {
       return _UserReceiptsWidget(
         seenList: (receipts as Map<String, int>).keys.toList(),
       );
     } else {
       if (sendState != null) {
-        switch (sendState) {
+        switch (sendState.state()) {
           case 'NotSentYet':
             return const SizedBox(
               height: 8,
@@ -40,7 +41,7 @@ class ReceiptsBuilder extends ConsumerWidget {
               child: Row(
                 children: <Widget>[
                   Text(
-                    'Retry',
+                    'Failed to sent: ${sendState.error()}. Retry',
                     style: Theme.of(context).textTheme.labelSmall!.copyWith(
                           color: Theme.of(context).colorScheme.neutral5,
                         ),
