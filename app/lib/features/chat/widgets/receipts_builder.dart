@@ -21,7 +21,7 @@ class ReceiptsBuilder extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final receipts = message.metadata?['receipts'];
     final sendState = message.metadata?['eventState'];
-    if (receipts != null) {
+    if (receipts != null && receipts.isNotEmpty) {
       return _UserReceiptsWidget(
         seenList: (receipts as Map<String, int>).keys.toList(),
       );

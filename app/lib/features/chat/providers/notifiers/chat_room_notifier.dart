@@ -494,6 +494,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           'itemType': 'event',
           'eventType': eventType,
           'eventState': eventState,
+          'receipts': receipts,
         };
         if (inReplyTo != null) {
           metadata['repliedTo'] = inReplyTo;
@@ -509,6 +510,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           'itemType': 'event',
           'eventType': eventType,
           'eventState': eventState,
+          'receipts': receipts,
         };
         if (inReplyTo != null) {
           metadata['repliedTo'] = inReplyTo;
@@ -534,6 +536,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               'msgType': eventItem.msgType(),
               'body': formattedBody ?? body,
               'eventState': eventState,
+              'receipts': receipts,
             },
           );
         }
@@ -555,15 +558,14 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               Map<String, dynamic> metadata = {
                 'base64': '',
                 'eventState': eventState,
+                'receipts': receipts,
               };
               metadata['was_edited'] = wasEdited;
               metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
-              if (receipts.isNotEmpty) {
-                metadata['receipts'] = receipts;
-              }
+
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
@@ -585,15 +587,16 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             if (description != null) {
               String? formattedBody = description.formattedBody();
               String body = description.body(); // always exists
-              Map<String, dynamic> metadata = {'eventState': eventState};
+              Map<String, dynamic> metadata = {
+                'eventState': eventState,
+                'receipts': receipts,
+              };
               metadata['was_edited'] = wasEdited;
               metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
-              if (receipts.isNotEmpty) {
-                metadata['receipts'] = receipts;
-              }
+
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
@@ -611,15 +614,16 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.file':
             FileDesc? description = eventItem.fileDesc();
             if (description != null) {
-              Map<String, dynamic> metadata = {'eventState': eventState};
+              Map<String, dynamic> metadata = {
+                'eventState': eventState,
+                'receipts': receipts,
+              };
               metadata['was_edited'] = wasEdited;
               metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
-              if (receipts.isNotEmpty) {
-                metadata['receipts'] = receipts;
-              }
+
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
@@ -638,15 +642,16 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.image':
             ImageDesc? description = eventItem.imageDesc();
             if (description != null) {
-              Map<String, dynamic> metadata = {'eventState': eventState};
+              Map<String, dynamic> metadata = {
+                'eventState': eventState,
+                'receipts': receipts,
+              };
               metadata['was_edited'] = wasEdited;
               metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
-              if (receipts.isNotEmpty) {
-                metadata['receipts'] = receipts;
-              }
+
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
@@ -672,16 +677,15 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 'msgType': msgType,
                 'body': description.body(),
                 'geoUri': description.geoUri(),
-                'eventState': eventState
+                'eventState': eventState,
+                'receipts': receipts,
               };
               metadata['was_edited'] = wasEdited;
               metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
-              if (receipts.isNotEmpty) {
-                metadata['receipts'] = receipts;
-              }
+
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
@@ -731,6 +735,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                   'was_edited': wasEdited,
                   'isEditable': isEditable,
                   'eventState': eventState,
+                  'receipts': receipts,
                 },
               );
             }
@@ -752,6 +757,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                   'was_edited': wasEdited,
                   'isEditable': isEditable,
                   'eventState': eventState,
+                  'receipts': receipts,
                 },
               );
             }
@@ -761,15 +767,16 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             if (description != null) {
               String? formattedBody = description.formattedBody();
               String body = description.body(); // always exists
-              Map<String, dynamic> metadata = {'eventState': eventState};
+              Map<String, dynamic> metadata = {
+                'eventState': eventState,
+                'receipts': receipts,
+              };
               metadata['was_edited'] = wasEdited;
               metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
-              if (receipts.isNotEmpty) {
-                metadata['receipts'] = receipts;
-              }
+
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
@@ -790,15 +797,14 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               Map<String, dynamic> metadata = {
                 'base64': '',
                 'eventState': eventState,
+                'receipts': receipts,
               };
               metadata['was_edited'] = wasEdited;
               metadata['isEditable'] = isEditable;
               if (inReplyTo != null) {
                 metadata['repliedTo'] = inReplyTo;
               }
-              if (receipts.isNotEmpty) {
-                metadata['receipts'] = receipts;
-              }
+
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
@@ -845,15 +851,14 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             'height': description.height()?.toDouble(),
             'base64': '',
             'eventState': eventState,
+            'receipts': receipts,
           };
           metadata['was_edited'] = wasEdited;
           metadata['isEditable'] = isEditable;
           if (inReplyTo != null) {
             metadata['repliedTo'] = inReplyTo;
           }
-          if (receipts.isNotEmpty) {
-            metadata['receipts'] = receipts;
-          }
+
           if (reactions.isNotEmpty) {
             metadata['reactions'] = reactions;
           }
@@ -881,6 +886,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               'was_edited': wasEdited,
               'isEditable': isEditable,
               'eventState': eventState,
+              'receipts': receipts,
             },
           );
         }
