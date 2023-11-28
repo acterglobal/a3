@@ -1,7 +1,7 @@
 name: Publish Release
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.target || 'all' }}
   cancel-in-progress: true
 
 on:
@@ -133,7 +133,7 @@ jobs:
             rename_file: acter.msix
             artifact_prefix: acter-windows
             rename_suffix: msix
-            artifact_path: "app\\build\\windows\\runner\\Release\\"
+            artifact_path: app\\build\\windows\\x64\\runner\\Release
             zip_files: false
             with_debug_symbols: true
 
@@ -482,6 +482,16 @@ jobs:
         with:
           name: Linux x64
 
+      - name: Import GPG key
+        id: gpg
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_KEY }}
+          passphrase: ${{ secrets.GPG_KEY_PASSPHRASE }}
+          trust_level: 5
+      - name: List GPG keys
+        run: gpg -K
+
       # - uses: actions/download-artifact@v3
       #   with:
       #     name: Linux arm64
@@ -502,6 +512,7 @@ jobs:
         id: flatpak
         with:
           upload-bundles: true
+          gpg-sign: ${{ steps.gpg.outputs.fingerprint }}
           files: |
               app/flatpak/global.acter.a3.yml
           flatpak-builder-args: |
@@ -544,6 +555,10 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: Windows
+      - name: Create Archive
+        run: |
+          Rename-Item -Path acter-windows-${{ needs.tags.outputs.tag }}.msix  -NewName acter.msix
+          Compress-Archive -Path acter.msix acter.zip
 
       - name: setup storebroker
         run: |
@@ -551,31 +566,35 @@ jobs:
           Import-Module StoreBroker
       # do the submission
       - name: submit to MSStore via StoreBroker
+        env:
+          TENANTID: ${{ secrets.AZURE_AD_TENANT_ID }}
+          CLIENTID: ${{ secrets.AZURE_AD_CLIENT_ID }}
+          CLIENTSECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+          MS_STORE_APP_ID: ${{ secrets.MS_STORE_APP_ID }}
         run: |
+            $DebugPreference = 'Continue'
             # prepare te package
-            Move-Item -Path .\build\windows\runner\Release\acter-windows-${{ needs.tags.outputs.tag }}.msix
-            Compress-Archive -Path acter-windows-${{ needs.tags.outputs.tag }}.msix acter.zip
-            Write-Debug "Done compressing. Logging in"
+            Write-Debug "Logging in"
             # login with the StoreBroker
-            $password = ConvertTo-SecureString "${{ secrets.AZURE_AD_CLIENT_SECRET }}" -AsPlainText -Force
-            $cred = New-Object System.Management.Automation.PSCredential ("${{ secrets.AZURE_AD_CLIENT_ID }}", $password)
-            Set-StoreBrokerAuthentication -TenantId ${{ secrets.AZURE_AD_TENANT_ID }} -Credential $cred
+            $sec = ConvertTo-SecureString $env:CLIENTSECRET -AsPlainText -Force
+            $cred = New-Object System.Management.Automation.PSCredential $env:CLIENTID, $sec
+            Set-StoreBrokerAuthentication -TenantId $env:TENANTID -Credential $cred -Verbose
             Write-Debug "Logged in. Preparing submission"
             # create the submission and add new package
-            $sub = New-ApplicationSubmission -AppId ${{ secrets.MS_STORE_APP_ID }} -Force
+            $sub = New-ApplicationSubmission -AppId $env:MS_STORE_APP_ID -Force -Verbose
             $sub.applicationPackages | ForEach-Object { $_.fileStatus = "PendingDelete" }
             $pkg = $sub.applicationPackages[0].PSObject.Copy()
-            $pkg.fileName = "acter-windows-${{ needs.tags.outputs.tag }}.msix"
+            $pkg.fileName = "acter.msix"
             $pkg.fileStatus = "PendingUpload"
             $pkg.PSObject.Properties.Remove("version")
             $pkg.PSObject.Properties.Remove("id")
             $sub.applicationPackages += $pkg
             Write-Debug "Setting Submission ID"
-            Set-ApplicationSubmission -AppId ${{ secrets.MS_STORE_APP_ID }} -UpdatedSubmission $sub
+            Set-ApplicationSubmission -AppId $env:MS_STORE_APP_ID -UpdatedSubmission $sub
             Write-Debug "Setting Submission Package"
             Set-SubmissionPackage -PackagePath 'acter.zip' -UploadUrl ($sub.fileUploadUrl)
             Write-Debug "Completing submission"
-            Complete-ApplicationSubmission -AppId ${{ secrets.MS_STORE_APP_ID }} -SubmissionId ($sub.id)
+            Complete-ApplicationSubmission -AppId $env:MS_STORE_APP_ID -SubmissionId ($sub.id)
             Write-Debug "Submitted successfully"
 
 
@@ -704,11 +723,11 @@ jobs:
           cp .github/assets/provision_profiles/* ~/Library/MobileDevice/Provisioning\ Profiles/
           ls -ltas ~/Library/MobileDevice/Provisioning\ Profiles/
 
-      - name: Rename and check pkg
-        run: |
-          mv *.app Acter.app
-          codesign --verify --deep --verbose Acter.app
-          echo "Done"
+      # - name: Rename and check pkg
+      #   run: |
+      #     mv *.app Acter.app
+      #     codesign --verify --deep --verbose Acter.app
+      #     echo "Done"
       - name: Upload to App Store
         env:
           APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
@@ -758,6 +777,8 @@ jobs:
       - build-flatpak
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.PAT }}
       - uses: actions/download-artifact@v3
         with:
           name: Changelog

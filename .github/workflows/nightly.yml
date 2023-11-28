@@ -14,6 +14,18 @@ on:
       prev_tag:
         description: 'The tag to compare the changelog to'
         type: string
+      target:
+        description: 'Build only Target'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - ios
+          - android
+          - macos
+          - linux
+          - windows
 
   schedule:
    - cron: 0 3 * * *
@@ -24,6 +36,7 @@ jobs:
     name: Check latest commit
     outputs:
       should_run: ${{ steps.check-new-commits.outputs.has-new-commits }}
+      build: ${{ inputs.target || 'all' }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -116,6 +129,10 @@ jobs:
 
     continue-on-error: true
     steps:
+      - if: ${{ needs.run_checker.outputs.build != 'all' && needs.run_checker.outputs.build != matrix.target }}
+        run: |
+          echo "Skipping matrix task ${{ matrix.name }}"
+          exit 1
       - uses: actions/checkout@v2
 
  ######  ######## ######## ##     ## ########  
