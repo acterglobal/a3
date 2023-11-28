@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 
 class SideSheet extends StatelessWidget {
   final String header;
-  final Widget body;
+  final Widget? body;
+  final List<Widget>? delegates;
   final bool addBackIconButton;
   final bool addCloseIconButton;
   final bool addActions;
@@ -22,7 +23,8 @@ class SideSheet extends StatelessWidget {
   const SideSheet({
     super.key,
     required this.header,
-    required this.body,
+    this.body,
+    this.delegates,
     this.actions,
     this.addBackIconButton = false,
     this.addActions = false,
@@ -72,7 +74,8 @@ class SideSheet extends StatelessWidget {
                       backButtonTooltip: backButtonTooltip,
                       closeButtonTooltip: closeButtonTooltip,
                     ),
-                    SingleChildScrollView(child: body),
+                    if (body != null) SingleChildScrollView(child: body),
+                    ...(delegates ?? []),
                   ],
                 ),
               ),

@@ -9,29 +9,41 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:uuid/uuid.dart';
 import './appstart.dart';
 
-const registrationToken = String.fromEnvironment(
+const defaultRegistrationToken = String.fromEnvironment(
   'REGISTRATION_TOKEN',
   defaultValue: 'TEST_TOKEN',
 );
 
 extension ActerLogin on ConvenientTest {
-  Future<String> freshAccount() async {
+  Future<String> freshAccount(
+      {String? registrationToken, String? displayName,}) async {
     final newId = 'it-${const Uuid().v4().toString()}';
     startFreshTestApp(newId);
-    await register(newId);
+    await register(
+      newId,
+      registrationToken: registrationToken,
+      displayName: displayName,
+    );
     return newId;
   }
 
-  String passwordFor(String username) {
-    if (registrationToken.isNotEmpty) {
+  String passwordFor(String username, {String? registrationToken}) {
+    if (registrationToken != null && registrationToken.isNotEmpty) {
       return '$registrationToken:$username';
+    } else if (defaultRegistrationToken.isNotEmpty) {
+      return '$defaultRegistrationToken:$username';
     } else {
       return username;
     }
   }
 
-  Future<void> register(String username) async {
-    String passwordText = passwordFor(username);
+  Future<void> register(
+    String username, {
+    String? registrationToken,
+    String? displayName,
+  }) async {
+    String passwordText =
+        passwordFor(username, registrationToken: registrationToken);
 
     Finder skip = find.byKey(Keys.skipBtn);
     await skip.should(findsOneWidget);
@@ -45,7 +57,7 @@ extension ActerLogin on ConvenientTest {
 
     Finder name = find.byKey(RegisterPage.nameField);
     await name.should(findsOneWidget);
-    await name.enterTextWithoutReplace('Test Account');
+    await name.enterTextWithoutReplace(displayName ?? 'Test Account');
 
     Finder user = find.byKey(RegisterPage.usernameField);
     await user.should(findsOneWidget);
@@ -57,7 +69,8 @@ extension ActerLogin on ConvenientTest {
 
     Finder token = find.byKey(RegisterPage.tokenField);
     await token.should(findsOneWidget);
-    await token.enterTextWithoutReplace(registrationToken);
+    await token
+        .enterTextWithoutReplace(registrationToken ?? defaultRegistrationToken);
 
     Finder submitBtn = find.byKey(RegisterPage.submitBtn);
     await tester.ensureVisible(submitBtn);
@@ -89,8 +102,9 @@ extension ActerLogin on ConvenientTest {
     await find.byKey(Keys.mainNav).should(findsNothing);
   }
 
-  Future<void> tryLogin(String username) async {
-    String passwordText = passwordFor(username);
+  Future<void> tryLogin(String username, {String? registrationToken}) async {
+    String passwordText =
+        passwordFor(username, registrationToken: registrationToken);
 
     Finder skip = find.byKey(Keys.skipBtn);
     await skip.should(findsOneWidget);

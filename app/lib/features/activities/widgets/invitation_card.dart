@@ -1,10 +1,9 @@
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Invitation;
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -62,26 +61,8 @@ class InvitationCard extends ConsumerWidget {
                   ),
                   // Accept Invitation Button
                   ElevatedButton(
-                    onPressed: () async {
-                      showAdaptiveDialog(
-                        context: context,
-                        builder: (context) => DefaultDialog(
-                          title: Text(
-                            'Joining',
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                          isLoader: true,
-                        ),
-                      );
-                      if (await invitation.accept() != true) {
-                        if (context.mounted) {
-                          customMsgSnackbar(context, 'Failed to join.');
-                        }
-                      } // FIXME: route there? But we don't know if room or space ... :(
-                      if (context.mounted) {
-                        Navigator.of(context, rootNavigator: true).pop();
-                      }
-                    },
+                    onPressed: () =>
+                        _onTapAcceptInvite(ref, context, data.roomId),
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
                         Theme.of(context).colorScheme.success,
@@ -98,5 +79,22 @@ class InvitationCard extends ConsumerWidget {
       error: (error, stackTrace) => const Text('Error loading invitation'),
       loading: () => const CircularProgressIndicator(),
     );
+  }
+
+  // method for post-process invitation accept
+  void _onTapAcceptInvite(
+    WidgetRef ref,
+    BuildContext ctx,
+    String roomId,
+  ) async {
+    EasyLoading.show(status: 'Joining', dismissOnTap: false);
+    bool res = await invitation.accept();
+    if (!res) {
+      EasyLoading.dismiss();
+      EasyLoading.showError('Failed to join');
+      return;
+    }
+    EasyLoading.dismiss();
+    EasyLoading.showSuccess('Joined');
   }
 }

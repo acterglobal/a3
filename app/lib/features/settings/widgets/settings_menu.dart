@@ -2,6 +2,7 @@ import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/settings/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ const defaultSettingsMenuKey = Key('settings-menu');
 class SettingsMenu extends ConsumerWidget {
   static Key deactivateAccount = const Key('settings-auth-deactivate-account');
   static Key logoutAccount = const Key('settings-auth-logout-account');
+  static Key superInvitations = const Key('settings-super-invitations');
 
   const SettingsMenu({super.key = defaultSettingsMenuKey});
 
@@ -120,6 +122,32 @@ class SettingsMenu extends ConsumerWidget {
                   shouldGoNotNamed
                       ? context.goNamed(Routes.blockedUsers.name)
                       : context.pushNamed(Routes.blockedUsers.name);
+                },
+              ),
+            ],
+          ),
+          SettingsSection(
+            title: const Text('Community'),
+            tiles: <SettingsTile>[
+              SettingsTile.navigation(
+                key: superInvitations,
+                enabled: ref.watch(hasSuperTokensAccess).valueOrNull == true,
+                title: Text(
+                  'Super Invitations',
+                  style: titleStylesSelected(Routes.settingsSuperInvites),
+                ),
+                description: Text(
+                  'Manage your invitation tokens',
+                  style: titleStylesSelected(Routes.settingsSuperInvites),
+                ),
+                leading: Icon(
+                  Atlas.plus_envelope_thin,
+                  color: colorSelected(Routes.settingsSuperInvites),
+                ),
+                onPressed: (context) {
+                  shouldGoNotNamed
+                      ? context.goNamed(Routes.settingsSuperInvites.name)
+                      : context.pushNamed(Routes.settingsSuperInvites.name);
                 },
               ),
             ],

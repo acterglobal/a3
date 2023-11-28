@@ -10,14 +10,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-const defaultRoomListMenuKey = Key('room-list');
 final bucketGlobal = PageStorageBucket();
 // interface providers
 final _searchToggleProvider = StateProvider.autoDispose<bool>((ref) => false);
 
 class RoomsListWidget extends ConsumerWidget {
+  static const roomListMenuKey = Key('room-list');
   const RoomsListWidget({
-    super.key = defaultRoomListMenuKey,
+    super.key = roomListMenuKey,
   });
 
   @override

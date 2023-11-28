@@ -10,6 +10,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 typedef MakeIconFn = Widget Function(BuildContext);
 
 class TabEntry {
+  static const chatsKey = Key('chat');
   final Key key;
   final String label;
   final String target;
@@ -85,7 +86,7 @@ final tabsProvider =
 
   tabs.add(
     TabEntry(
-      key: const Key('chat'),
+      key: TabEntry.chatsKey,
       label: 'Chats',
       makeIcon: (ctx) => const Icon(Atlas.chats_thin),
       target: Routes.spaceChats.name,

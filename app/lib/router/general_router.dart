@@ -18,11 +18,13 @@ import 'package:acter/features/onboarding/pages/start_page.dart';
 import 'package:acter/features/pins/sheets/create_pin_sheet.dart';
 import 'package:acter/features/pins/sheets/edit_pin_sheet.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
+import 'package:acter/features/settings/super_invites/pages/create.dart';
 import 'package:acter/features/space/sheets/edit_space_sheet.dart';
 import 'package:acter/features/space/sheets/link_room_sheet.dart';
 import 'package:acter/features/spaces/sheets/create_space_sheet.dart';
 import 'package:acter/features/tasks/dialogs/create_task_list_sheet.dart';
 import 'package:acter/router/router.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -204,6 +206,30 @@ List<RouteBase> makeGeneralRoutes() {
           },
           child: CreateTaskListSheet(
             initialSelectedSpace: state.uri.queryParameters['spaceId'],
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.actionCreateSuperInvite.name,
+      path: Routes.actionCreateSuperInvite.route,
+      pageBuilder: (context, state) {
+        return SideSheetPage(
+          key: state.pageKey,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween(
+                begin: const Offset(1, 0),
+                end: const Offset(0, 0),
+              ).animate(
+                animation,
+              ),
+              child: child,
+            );
+          },
+          child: CreateSuperInviteTokenPage(
+            token: state.extra != null ? state.extra as SuperInviteToken : null,
           ),
         );
       },

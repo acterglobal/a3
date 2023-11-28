@@ -1,9 +1,9 @@
 import 'dart:math';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/events_item.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -34,13 +34,9 @@ class SpaceEventsPage extends ConsumerWidget {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const Spacer(),
-                  IconButton(
-                    icon: Icon(
-                      Atlas.plus_circle_thin,
-                      color: Theme.of(context).colorScheme.neutral5,
-                    ),
-                    iconSize: 28,
-                    color: Theme.of(context).colorScheme.surface,
+                  AddButtonWithCanPermission(
+                    roomId: spaceIdOrAlias,
+                    canString: 'CanPostEvent',
                     onPressed: () => context.pushNamed(
                       Routes.createEvent.name,
                       queryParameters: {'spaceId': spaceIdOrAlias},
@@ -75,7 +71,9 @@ class SpaceEventsPage extends ConsumerWidget {
               );
             },
             error: (error, stackTrace) => SliverToBoxAdapter(
-              child: Center(child: Text('Failed to load events due to $error')),
+              child: Center(
+                child: Text('Failed to load events due to $error'),
+              ),
             ),
             loading: () => const SliverToBoxAdapter(
               child: Center(child: CircularProgressIndicator()),
