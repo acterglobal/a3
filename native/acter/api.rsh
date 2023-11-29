@@ -1034,6 +1034,12 @@ object TimelineStream {
 
     /// send reaction to event
     fn send_reaction(event_id: string, key: string) -> Future<Result<bool>>;
+
+    /// retry local echo message send
+    fn retry_send(txn_id: string) -> Future<Result<bool>>;
+
+    /// cancel local echo message
+    fn cancel_send(txn_id: string) -> Future<Result<bool>>;
 }
 
 

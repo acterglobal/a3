@@ -36,26 +36,53 @@ class ReceiptsBuilder extends ConsumerWidget {
               child: CircularProgressIndicator(),
             );
           case 'SendingFailed':
-            return GestureDetector(
-              onTap: () => _handleRetry(),
-              child: Row(
-                children: <Widget>[
-                  Text(
-                    'Failed to sent: ${sendState.error()}. Retry',
+            return Row(
+              children: <Widget>[
+                GestureDetector(
+                  onTap: () => _handleCancelRetrySend(),
+                  child: Text(
+                    'Cancel Send',
                     style: Theme.of(context).textTheme.labelSmall!.copyWith(
                           color: Theme.of(context).colorScheme.neutral5,
+                          decoration: TextDecoration.underline,
                         ),
                   ),
-                  const SizedBox(
-                    width: 5,
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                GestureDetector(
+                  onTap: () => _handleRetry(),
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Failed to sent: ${sendState.error()}. ',
+                      style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                            color: Theme.of(context).colorScheme.neutral5,
+                          ),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: 'Retry',
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelSmall!
+                              .copyWith(
+                                color: Theme.of(context).colorScheme.neutral5,
+                                decoration: TextDecoration.underline,
+                              ),
+                        ),
+                      ],
+                    ),
                   ),
-                  Icon(
-                    Atlas.warning_thin,
-                    color: Theme.of(context).colorScheme.error,
-                    size: 8,
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                Icon(
+                  Atlas.warning_thin,
+                  color: Theme.of(context).colorScheme.error,
+                  size: 8,
+                ),
+              ],
             );
           case 'Sent':
             return const Icon(Atlas.check_circle_thin, size: 8);
@@ -66,7 +93,15 @@ class ReceiptsBuilder extends ConsumerWidget {
   }
 
   Future<void> _handleRetry() async {
-    // FIXME: how to handle retry here
+    final stream = await convo.timelineStream();
+    // attempts to retry sending local echo to server
+    await stream.retrySend(message.id);
+  }
+
+  Future<void> _handleCancelRetrySend() async {
+    final stream = await convo.timelineStream();
+    // cancels the retry sending of local echos
+    await stream.cancelSend(message.id);
   }
 }
 
