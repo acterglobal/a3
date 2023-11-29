@@ -1341,7 +1341,7 @@ impl TimelineStream {
                     bail!("No permission to send message in this room");
                 }
 
-                timeline.retry_send(&(*transaction_id)).await;
+                timeline.retry_send(&transaction_id).await;
                 Ok(true)
             })
             .await?
@@ -1368,7 +1368,7 @@ impl TimelineStream {
                     bail!("No permission to send message in this room");
                 }
 
-                timeline.cancel_send(&(*transaction_id)).await;
+                timeline.cancel_send(&transaction_id).await;
                 Ok(true)
             })
             .await?
