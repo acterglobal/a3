@@ -157,7 +157,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     final chatList = ref.watch(briefRoomItemsWithMembershipProvider);
     return chatList.when(
       data: (chats) =>
-      chats.isEmpty ? const Text('no chats found') : chatListUI(chats),
+          chats.isEmpty ? const Text('no chats found') : chatListUI(chats),
       error: (e, s) => errorUI('Error loading chats', e),
       loading: () => loadingUI(),
     );
@@ -167,8 +167,9 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   Widget searchedChatsList() {
     final searchedList = ref.watch(roomSearchedChatsProvider);
     return searchedList.when(
-      data: (chats) =>
-      chats.isEmpty ? const Text('No chats found matching your search term') : chatListUI(chats),
+      data: (chats) => chats.isEmpty
+          ? const Text('No chats found matching your search term')
+          : chatListUI(chats),
       error: (e, s) => errorUI('Searching failed', e),
       loading: () => loadingUI(),
     );
@@ -289,6 +290,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     return widget.parentSpaceId == roomId
         ? const SizedBox.shrink()
         : ListTile(
+            key: Key('room-list-item-$roomId'),
             enabled: canLink,
             leading: ActerAvatar(
               mode: displayMode,
@@ -311,6 +313,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
                   ? DefaultButton(
                       onPressed: () => onTapUnlinkChildRoom(roomId),
                       title: 'Unlink',
+                      key: Key('room-list-unlink-$roomId'),
                       isOutlined: true,
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(
@@ -322,6 +325,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
                       ? DefaultButton(
                           onPressed: () => onTapLinkChildRoom(roomId),
                           title: 'Link',
+                          key: Key('room-list-link-$roomId'),
                           isOutlined: true,
                           style: OutlinedButton.styleFrom(
                             side: BorderSide(
