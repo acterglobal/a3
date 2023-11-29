@@ -145,7 +145,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                       itemBuilder: (context, index) {
                         final space = spaces.parents[index];
                         return SpaceCard(
-                          key: Key(space.getRoomIdStr()),
+                          key: Key('parent-list-item-${space.getRoomIdStr()}'),
                           space: space,
                           showParent: false,
                         );
@@ -170,7 +170,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                     itemBuilder: (context, index) {
                       final space = spaces.knownSubspaces[index];
                       return SpaceCard(
-                        key: Key(space.getRoomIdStr()),
+                        key: Key('subspace-list-item-${space.getRoomIdStr()}'),
                         space: space,
                         showParent: false,
                       );
@@ -188,8 +188,9 @@ class RelatedSpacesPage extends ConsumerWidget {
                   RiverPagedBuilder<Next?, SpaceHierarchyRoomInfo>.autoDispose(
                     firstPageKey: const Next(isStart: true),
                     provider: remoteSpaceHierarchyProvider(spaces),
-                    itemBuilder: (context, item, index) =>
-                        SpaceHierarchyCard(space: item),
+                    itemBuilder: (context, item, index) => SpaceHierarchyCard(
+                        key: Key('subspace-list-item-${item.roomIdStr()}'),
+                        space: item,),
                     pagedBuilder: (controller, builder) => PagedSliverList(
                       pagingController: controller,
                       builderDelegate: builder,
@@ -238,7 +239,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                     itemBuilder: (context, index) {
                       final space = spaces.otherRelations[index];
                       return SpaceCard(
-                        key: Key(space.getRoomIdStr()),
+                        key: Key('subspace-list-item-${space.getRoomIdStr()}'),
                         space: space,
                       );
                     },
