@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/default_button.dart';
@@ -21,6 +22,9 @@ class LinkRoomPage extends ConsumerStatefulWidget {
   final String parentSpaceId;
   final String pageTitle;
   final ChildRoomType childRoomType;
+
+  static const confirmJoinRuleUpdateKey = Key('link-room-confirm-join-rule');
+  static const denyJoinRuleUpdateKey = Key('link-room-deny-join-rule');
 
   const LinkRoomPage({
     super.key,
@@ -323,7 +327,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
                     )
                   : canLink
                       ? DefaultButton(
-                          onPressed: () => onTapLinkChildRoom(roomId),
+                          onPressed: () => onTapLinkChildRoom(context, roomId),
                           title: 'Link',
                           key: Key('room-list-link-$roomId'),
                           isOutlined: true,
@@ -339,7 +343,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   }
 
 //Link child room
-  void onTapLinkChildRoom(String roomId) async {
+  void onTapLinkChildRoom(BuildContext context, String roomId) async {
     final selectedParentSpaceId = ref.watch(selectedSpaceIdProvider);
     if (selectedParentSpaceId == null) return;
 
@@ -353,6 +357,62 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       final room = await ref.watch(maybeRoomProvider(roomId).future);
       if (room != null) {
         room.addParentRoom(selectedParentSpaceId, true);
+        final joinRule = room.joinRuleStr();
+        List<String> currentRooms = [];
+        bool parentCanSee = joinRule == 'public';
+        String newRule = 'restricted';
+        if (joinRule == 'restricted' || joinRule == 'knock_restricted') {
+          currentRooms =
+              room.restrictedRoomIdsStr().map((t) => t.toString()).toList();
+          parentCanSee = currentRooms.contains(selectedParentSpaceId);
+          newRule = joinRule;
+        }
+
+        if (!parentCanSee) {
+          // ignore: use_build_context_synchronously
+          bool shouldChange = await showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('Not visible'),
+                content: const Wrap(
+                  children: [
+                    Text(
+                      "The current join rules of the child mean it won't be visible in the parent space to non-members. Should we update the join rules to allow for any parent space member to see and join the sub space?",
+                    ),
+                  ],
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    key: LinkRoomPage.denyJoinRuleUpdateKey,
+                    child: const Text('No'),
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                  ),
+                  TextButton(
+                    key: LinkRoomPage.confirmJoinRuleUpdateKey,
+                    child: const Text('Yes, please update'),
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+          if (shouldChange) {
+            currentRooms.add(selectedParentSpaceId);
+
+            final sdk = await ref.read(sdkProvider.future);
+            final update = sdk.newJoinRuleBuilder();
+            update.joinRule(newRule);
+            for (final roomId in currentRooms) {
+              update.addRoom(roomId);
+            }
+            await room.setJoinRule(update);
+          }
+        }
       }
     }
     if (widget.childRoomType == ChildRoomType.recommendedSpace) {
