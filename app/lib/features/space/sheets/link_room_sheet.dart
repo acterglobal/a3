@@ -8,6 +8,7 @@ import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -342,6 +343,69 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
           );
   }
 
+  Future<void> checkJoinRule(
+    BuildContext context,
+    Room room,
+    String parentSpaceId,
+  ) async {
+    final joinRule = room.joinRuleStr();
+    List<String> currentRooms = [];
+    bool parentCanSee = joinRule == 'public';
+    String newRule = 'restricted';
+    if (joinRule == 'restricted' || joinRule == 'knock_restricted') {
+      currentRooms =
+          room.restrictedRoomIdsStr().map((t) => t.toString()).toList();
+      parentCanSee = currentRooms.contains(parentSpaceId);
+      newRule = joinRule;
+    }
+
+    if (!parentCanSee) {
+      // ignore: use_build_context_synchronously
+      bool shouldChange = await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Not visible'),
+            content: const Wrap(
+              children: [
+                Text(
+                  "The current join rules of the child mean it won't be visible in the parent space to non-members. Should we update the join rules to allow for any parent space member to see and join the sub space?",
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                key: LinkRoomPage.denyJoinRuleUpdateKey,
+                child: const Text('No'),
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+              ),
+              TextButton(
+                key: LinkRoomPage.confirmJoinRuleUpdateKey,
+                child: const Text('Yes, please update'),
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+              ),
+            ],
+          );
+        },
+      );
+      if (shouldChange) {
+        currentRooms.add(parentSpaceId);
+
+        final sdk = await ref.read(sdkProvider.future);
+        final update = sdk.newJoinRuleBuilder();
+        update.joinRule(newRule);
+        for (final roomId in currentRooms) {
+          update.addRoom(roomId);
+        }
+        await room.setJoinRule(update);
+      }
+    }
+  }
+
 //Link child room
   void onTapLinkChildRoom(BuildContext context, String roomId) async {
     final selectedParentSpaceId = ref.watch(selectedSpaceIdProvider);
@@ -357,68 +421,13 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       final room = await ref.watch(maybeRoomProvider(roomId).future);
       if (room != null) {
         room.addParentRoom(selectedParentSpaceId, true);
-        final joinRule = room.joinRuleStr();
-        List<String> currentRooms = [];
-        bool parentCanSee = joinRule == 'public';
-        String newRule = 'restricted';
-        if (joinRule == 'restricted' || joinRule == 'knock_restricted') {
-          currentRooms =
-              room.restrictedRoomIdsStr().map((t) => t.toString()).toList();
-          parentCanSee = currentRooms.contains(selectedParentSpaceId);
-          newRule = joinRule;
-        }
-
-        if (!parentCanSee) {
-          // ignore: use_build_context_synchronously
-          bool shouldChange = await showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text('Not visible'),
-                content: const Wrap(
-                  children: [
-                    Text(
-                      "The current join rules of the child mean it won't be visible in the parent space to non-members. Should we update the join rules to allow for any parent space member to see and join the sub space?",
-                    ),
-                  ],
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    key: LinkRoomPage.denyJoinRuleUpdateKey,
-                    child: const Text('No'),
-                    onPressed: () {
-                      Navigator.pop(context, false);
-                    },
-                  ),
-                  TextButton(
-                    key: LinkRoomPage.confirmJoinRuleUpdateKey,
-                    child: const Text('Yes, please update'),
-                    onPressed: () {
-                      Navigator.pop(context, true);
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-          if (shouldChange) {
-            currentRooms.add(selectedParentSpaceId);
-
-            final sdk = await ref.read(sdkProvider.future);
-            final update = sdk.newJoinRuleBuilder();
-            update.joinRule(newRule);
-            for (final roomId in currentRooms) {
-              update.addRoom(roomId);
-            }
-            await room.setJoinRule(update);
-          }
-        }
+        await checkJoinRule(context, room, selectedParentSpaceId);
       }
-    }
-    if (widget.childRoomType == ChildRoomType.recommendedSpace) {
-      recommendedChildSpaceIds.add(roomId);
-    } else {
-      childRoomsIds.add(roomId);
+      if (widget.childRoomType == ChildRoomType.recommendedSpace) {
+        recommendedChildSpaceIds.add(roomId);
+      } else {
+        childRoomsIds.add(roomId);
+      }
     }
   }
 
