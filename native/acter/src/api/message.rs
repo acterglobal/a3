@@ -101,7 +101,7 @@ impl EventSendState {
             ),
 
             SdkEventSendState::Sent { event_id } => {
-                ("Sent".to_string(), None, Some((event_id.clone())))
+                ("Sent".to_string(), None, Some(event_id.clone()))
             }
         };
         EventSendState {
