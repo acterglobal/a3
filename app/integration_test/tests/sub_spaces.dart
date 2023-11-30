@@ -94,7 +94,7 @@ void subSpaceTests() {
     await roomListEntry.tap();
 
     // deny the join_rule update
-    find.byKey(LinkRoomPage.denyJoinRuleUpdateKey).tap();
+    await find.byKey(LinkRoomPage.denyJoinRuleUpdateKey).tap();
 
     // close the box
     final closeKey = find.byKey(SideSheet.closeKey);
@@ -117,7 +117,6 @@ void subSpaceTests() {
     // brings us to the related spaces view
 
     // and we can't see the sub space
-    final subSpaceSelector = find.byKey(Key('subspace-list-item-$subSpace'));
-    await t.tester.ensureVisible(subSpaceSelector);
+    await find.byKey(Key('subspace-list-item-$subSpace')).should(findsNothing);
   });
 }
