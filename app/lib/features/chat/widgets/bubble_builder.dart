@@ -209,7 +209,7 @@ class _ChatBubble extends ConsumerWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            ReceiptsBuilder(
+            MessageMetadataBuilder(
               convo: convo,
               message: message,
             ),

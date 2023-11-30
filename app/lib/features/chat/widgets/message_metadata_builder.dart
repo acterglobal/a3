@@ -9,10 +9,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quds_popup_menu/quds_popup_menu.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
-class ReceiptsBuilder extends ConsumerWidget {
+class MessageMetadataBuilder extends ConsumerWidget {
   final Convo convo;
   final types.Message message;
-  const ReceiptsBuilder({
+  const MessageMetadataBuilder({
     super.key,
     required this.convo,
     required this.message,

@@ -91,24 +91,23 @@ pub struct EventSendState {
 
 impl EventSendState {
     fn new(inner: &SdkEventSendState) -> Self {
-        let mut evt_id = None;
-        let mut err = None;
-        let state = match inner {
-            SdkEventSendState::NotSentYet => "NotSentYet".to_string(),
-            SdkEventSendState::Cancelled => "Cancelled".to_string(),
-            SdkEventSendState::SendingFailed { error } => {
-                err = Some(error.to_owned().to_string());
-                "SendingFailed".to_string()
-            }
+        let (state, error, event_id) = match inner {
+            SdkEventSendState::NotSentYet => ("NotSentYet".to_string(), None, None),
+            SdkEventSendState::Cancelled => ("Cancelled".to_string(), None, None),
+            SdkEventSendState::SendingFailed { error } => (
+                "SendingFailed".to_string(),
+                Some(error.to_owned().to_string()),
+                None,
+            ),
+
             SdkEventSendState::Sent { event_id } => {
-                evt_id = Some(event_id.clone());
-                "Sent".to_string()
+                ("Sent".to_string(), None, Some((event_id.clone())))
             }
         };
         EventSendState {
             state,
-            error: err,
-            event_id: evt_id,
+            error,
+            event_id,
         }
     }
 
