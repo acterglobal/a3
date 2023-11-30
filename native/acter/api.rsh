@@ -607,6 +607,20 @@ object Rsvp {
 //  ##    ##  ##     ## ##     ## ##     ##    ##         ## ##   ##       ##   ###    ##    ##    ## 
 //  ##     ##  #######   #######  ##     ##    ########    ###    ######## ##    ##    ##     ######  
 
+/// Sending state of outgoing message.
+object EventSendState {
+    // one of NotSentYet/SendingFailed/Cancelled/Sent
+    fn state() -> string;
+    
+    // gives error value for SendingFailed only
+    fn error() -> Option<string>;
+
+    // gives event id for Sent only
+    fn event_id() -> Option<EventId>;
+}
+
+
+
 /// A room Message metadata and content
 object RoomEventItem {
     /// Unique ID of this event
@@ -614,6 +628,10 @@ object RoomEventItem {
 
     /// The User, who sent that event
     fn sender() -> string;
+
+    /// Send state of the message to server
+    /// valid only when initialized from timeline event item
+    fn send_state() -> Option<EventSendState>;
 
     /// the server receiving timestamp in milliseconds
     fn origin_server_ts() -> u64;
@@ -1016,6 +1034,12 @@ object TimelineStream {
 
     /// send reaction to event
     fn send_reaction(event_id: string, key: string) -> Future<Result<bool>>;
+
+    /// retry local echo message send
+    fn retry_send(txn_id: string) -> Future<Result<bool>>;
+
+    /// cancel local echo message
+    fn cancel_send(txn_id: string) -> Future<Result<bool>>;
 }
 
 
