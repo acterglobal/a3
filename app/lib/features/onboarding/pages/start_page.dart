@@ -284,7 +284,6 @@ class _StartPageState extends State<StartPage> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 20,
-                      vertical: 10,
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -299,15 +298,17 @@ class _StartPageState extends State<StartPage> {
                             onBoardingPages[index].image,
                           ),
                         ),
+                        const SizedBox(
+                          height: 15,
+                        ),
                         SizedBox(
-                          height: imageHeight,
                           child: FittedBox(
                             child: onBoardingPages[index].description,
                             fit: BoxFit.scaleDown,
                           ),
                         ),
                         const SizedBox(
-                          height: 20,
+                          height: 15,
                         ),
                       ],
                     ),
