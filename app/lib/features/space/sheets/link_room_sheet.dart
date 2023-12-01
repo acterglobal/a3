@@ -360,23 +360,30 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     }
 
     if (!parentCanSee) {
+      final spaceProfile = await ref
+          .read(spaceProfileDataForSpaceIdProvider(parentSpaceId).future);
+      final parentSpaceName =
+          spaceProfile.profile.displayName ?? 'the parent space';
+      final roomProfile =
+          await ref.read(roomProfileDataProvider(room.roomIdStr()).future);
+      final roomName = roomProfile.displayName ?? 'the selected rooms';
       // ignore: use_build_context_synchronously
       bool shouldChange = await showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
             title: const Text('Not visible'),
-            content: const Wrap(
+            content: Wrap(
               children: [
                 Text(
-                  "The current join rules of the child mean it won't be visible in the parent space to non-members. Should we update the join rules to allow for any parent space member to see and join the sub space?",
+                  "The current join rules of $roomName mean it won't be visible for $parentSpaceName's members. Should we update the join rules to allow for $parentSpaceName's space member to see and join the $roomName?",
                 ),
               ],
             ),
             actions: <Widget>[
               TextButton(
                 key: LinkRoomPage.denyJoinRuleUpdateKey,
-                child: const Text('No'),
+                child: const Text('No, thanks'),
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
