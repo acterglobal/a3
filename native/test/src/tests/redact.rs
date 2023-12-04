@@ -70,14 +70,13 @@ async fn message_redaction() -> Result<()> {
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    assert!(
-        received.is_some(),
-        "Even after 30 seconds, text msg not received"
-    );
+    let Some(received) = received else {
+        bail!("Even after 30 seconds, text msg not received")
+    };
 
     let redact_id = convo
         .redact_message(
-            received.clone().unwrap().to_string(),
+            received.clone().to_string(),
             Some("redact-test".to_string()),
             None,
         )
@@ -90,7 +89,7 @@ async fn message_redaction() -> Result<()> {
     let Some(original) = redaction_event.as_original() else {
         bail!("Redaction event should get original event")
     };
-    assert_eq!(original.redacts, received);
+    assert_eq!(original.redacts, Some(received));
     assert_eq!(original.content.reason, Some("redact-test".to_string()));
 
     Ok(())
