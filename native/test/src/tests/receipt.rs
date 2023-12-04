@@ -101,11 +101,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
         .await
         .expect("kyra should get timeline stream");
     kyra_timeline
-        .send_single_receipt(
-            "Read".to_string(),
-            "Main".to_string(),
-            received.to_string(),
-        )
+        .send_single_receipt("Read".to_string(), "Main".to_string(), received.to_string())
         .await?;
 
     info!("5");
