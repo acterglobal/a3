@@ -4589,6 +4589,94 @@ class Api {
     return tmp7;
   }
 
+  bool? __timelineStreamRetrySendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _timelineStreamRetrySendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __timelineStreamCancelSendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _timelineStreamCancelSendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   SpaceRelations? __convoSpaceRelationsFuturePoll(
     int boxed,
     int postCobject,
@@ -15285,6 +15373,36 @@ class Api {
       _RsvpStatusReturn Function(
         int,
       )>();
+  late final _eventSendStateStatePtr = _lookup<
+      ffi.NativeFunction<
+          _EventSendStateStateReturn Function(
+            ffi.Int64,
+          )>>("__EventSendState_state");
+
+  late final _eventSendStateState = _eventSendStateStatePtr.asFunction<
+      _EventSendStateStateReturn Function(
+        int,
+      )>();
+  late final _eventSendStateErrorPtr = _lookup<
+      ffi.NativeFunction<
+          _EventSendStateErrorReturn Function(
+            ffi.Int64,
+          )>>("__EventSendState_error");
+
+  late final _eventSendStateError = _eventSendStateErrorPtr.asFunction<
+      _EventSendStateErrorReturn Function(
+        int,
+      )>();
+  late final _eventSendStateEventIdPtr = _lookup<
+      ffi.NativeFunction<
+          _EventSendStateEventIdReturn Function(
+            ffi.Int64,
+          )>>("__EventSendState_event_id");
+
+  late final _eventSendStateEventId = _eventSendStateEventIdPtr.asFunction<
+      _EventSendStateEventIdReturn Function(
+        int,
+      )>();
   late final _roomEventItemUniqueIdPtr = _lookup<
       ffi.NativeFunction<
           _RoomEventItemUniqueIdReturn Function(
@@ -15303,6 +15421,16 @@ class Api {
 
   late final _roomEventItemSender = _roomEventItemSenderPtr.asFunction<
       _RoomEventItemSenderReturn Function(
+        int,
+      )>();
+  late final _roomEventItemSendStatePtr = _lookup<
+      ffi.NativeFunction<
+          _RoomEventItemSendStateReturn Function(
+            ffi.Int64,
+          )>>("__RoomEventItem_send_state");
+
+  late final _roomEventItemSendState = _roomEventItemSendStatePtr.asFunction<
+      _RoomEventItemSendStateReturn Function(
         int,
       )>();
   late final _roomEventItemOriginServerTsPtr = _lookup<
@@ -17185,6 +17313,39 @@ class Api {
             int,
             int,
             int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _timelineStreamRetrySendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__TimelineStream_retry_send");
+
+  late final _timelineStreamRetrySend = _timelineStreamRetrySendPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _timelineStreamCancelSendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__TimelineStream_cancel_send");
+
+  late final _timelineStreamCancelSend =
+      _timelineStreamCancelSendPtr.asFunction<
+          int Function(
             int,
             int,
             int,
@@ -24688,6 +24849,36 @@ class Api {
   late final _timelineStreamSendReactionFuturePoll =
       _timelineStreamSendReactionFuturePollPtr.asFunction<
           _TimelineStreamSendReactionFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _timelineStreamRetrySendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineStreamRetrySendFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__TimelineStream_retry_send_future_poll");
+
+  late final _timelineStreamRetrySendFuturePoll =
+      _timelineStreamRetrySendFuturePollPtr.asFunction<
+          _TimelineStreamRetrySendFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _timelineStreamCancelSendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineStreamCancelSendFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__TimelineStream_cancel_send_future_poll");
+
+  late final _timelineStreamCancelSendFuturePoll =
+      _timelineStreamCancelSendFuturePollPtr.asFunction<
+          _TimelineStreamCancelSendFuturePollReturn Function(
             int,
             int,
             int,
@@ -33338,6 +33529,99 @@ class Rsvp {
   }
 }
 
+/// Sending state of outgoing message.
+class EventSendState {
+  final Api _api;
+  final _Box _box;
+
+  EventSendState._(this._api, this._box);
+
+  String state() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventSendStateState(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? error() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventSendStateError(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  EventId? eventId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventSendStateEventId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EventId");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = EventId._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 /// A room Message metadata and content
 class RoomEventItem {
   final Api _api;
@@ -33402,6 +33686,26 @@ class RoomEventItem {
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
       _api.__deallocate(tmp3_0, tmp5 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// Send state of the message to server
+  /// valid only when initialized from timeline event item
+  EventSendState? sendState() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemSendState(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EventSendState");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = EventSendState._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -37778,6 +38082,74 @@ class TimelineStream {
     final tmp10 =
         _nativeFuture(tmp11_1, _api.__timelineStreamSendReactionFuturePoll);
     return tmp10;
+  }
+
+  /// retry local echo message send
+  Future<bool> retrySend(
+    String txnId,
+  ) {
+    final tmp1 = txnId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._timelineStreamRetrySend(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__TimelineStream_retry_send_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__timelineStreamRetrySendFuturePoll);
+    return tmp6;
+  }
+
+  /// cancel local echo message
+  Future<bool> cancelSend(
+    String txnId,
+  ) {
+    final tmp1 = txnId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._timelineStreamCancelSend(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__TimelineStream_cancel_send_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__timelineStreamCancelSendFuturePoll);
+    return tmp6;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -51272,6 +51644,33 @@ class _RsvpStatusReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _EventSendStateStateReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _EventSendStateErrorReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _EventSendStateEventIdReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
 class _RoomEventItemUniqueIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -51288,6 +51687,13 @@ class _RoomEventItemSenderReturn extends ffi.Struct {
   external int arg1;
   @ffi.Uint64()
   external int arg2;
+}
+
+class _RoomEventItemSendStateReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
 }
 
 class _RoomEventItemEventTypeReturn extends ffi.Struct {
@@ -54001,6 +54407,36 @@ class _TimelineStreamSendMultipleReceiptsFuturePollReturn extends ffi.Struct {
 }
 
 class _TimelineStreamSendReactionFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _TimelineStreamRetrySendFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _TimelineStreamCancelSendFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
