@@ -103,7 +103,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     kyra_timeline
         .send_single_receipt(
             "Read".to_string(),
-            "Unthreaded".to_string(),
+            "Main".to_string(),
             received.to_string(),
         )
         .await?;
