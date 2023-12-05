@@ -103,7 +103,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     kyra_timeline
         .send_single_receipt(
             "Read".to_string(),
-            "Main".to_string(), // when not main, below event receiver will fail
+            "Main".to_string(), // when not main, below event receiver will not receive this event
             received.to_string(),
         )
         .await?;
