@@ -1,5 +1,5 @@
 use acter::{api::RoomMessage, ruma_common::OwnedEventId};
-use anyhow::Result;
+use anyhow::{bail, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
 use tokio::time::sleep;
@@ -35,6 +35,12 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
 
     let kyra_sync = kyra.start_sync();
     kyra_sync.await_has_synced_history().await?;
+    let mut kyra_stream = Box::pin(kyra.sync_stream(Default::default()).await);
+    kyra_stream.next().await;
+    for invited in kyra.invited_rooms().iter() {
+        info!(" - accepting {:?}", invited.room_id());
+        invited.join().await?;
+    }
 
     info!("4");
 
@@ -46,19 +52,17 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
         .timeline_stream()
         .await
         .expect("kyra should get timeline stream");
-    let kyra_stream = kyra_timeline.diff_stream();
-    pin_mut!(kyra_stream);
-
-    kyra_stream.next().await;
-    for invited in kyra.invited_rooms().iter() {
-        info!(" - accepting {:?}", invited.room_id());
-        invited.join().await?;
-    }
 
     info!("5");
 
     let worf_sync = worf.start_sync();
     worf_sync.await_has_synced_history().await?;
+    let mut worf_stream = Box::pin(worf.sync_stream(Default::default()).await);
+    worf_stream.next().await;
+    for invited in worf.invited_rooms().iter() {
+        info!(" - accepting {:?}", invited.room_id());
+        invited.join().await?;
+    }
 
     let worf_convo = worf
         .convo(room_id.to_string())
@@ -68,14 +72,6 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
         .timeline_stream()
         .await
         .expect("worf should get timeline stream");
-    let worf_stream = worf_timeline.diff_stream();
-    pin_mut!(worf_stream);
-
-    worf_stream.next().await;
-    for invited in worf.invited_rooms().iter() {
-        info!(" - accepting {:?}", invited.room_id());
-        invited.join().await?;
-    }
 
     info!("6");
 
@@ -126,18 +122,17 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     info!("loop finished");
-    assert!(
-        received.is_some(),
-        "Even after 30 seconds, text msg not received"
-    );
+    let Some(received) = received else {
+        bail!("Even after 30 seconds, text msg not received")
+    };
 
     info!("8");
 
     kyra_timeline
-        .send_reaction(received.clone().unwrap().to_string(), "👏".to_string())
+        .send_reaction(received.to_string(), "👏".to_string())
         .await?;
     worf_timeline
-        .send_reaction(received.clone().unwrap().to_string(), "😎".to_string())
+        .send_reaction(received.to_string(), "😎".to_string())
         .await?;
 
     info!("9 - {:?}", received);
