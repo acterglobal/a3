@@ -477,10 +477,7 @@ impl Task {
     }
 
     pub fn description(&self) -> Option<ContentDesc> {
-        self.content
-            .description
-            .as_ref()
-            .map(ContentDesc::from)
+        self.content.description.as_ref().map(ContentDesc::from)
     }
 
     pub fn sort_order(&self) -> u32 {

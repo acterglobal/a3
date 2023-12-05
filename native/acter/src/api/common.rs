@@ -398,12 +398,12 @@ impl ContentDesc {
 
     pub fn duration(&self) -> Option<u64> {
         match self {
-            ContentDesc::Audio { info, .. } => info
-                .as_ref()
-                .and_then(|x| x.duration.map(|y| y.as_secs())),
-            ContentDesc::Video { info, .. } => info
-                .as_ref()
-                .and_then(|x| x.duration.map(|y| y.as_secs())),
+            ContentDesc::Audio { info, .. } => {
+                info.as_ref().and_then(|x| x.duration.map(|y| y.as_secs()))
+            }
+            ContentDesc::Video { info, .. } => {
+                info.as_ref().and_then(|x| x.duration.map(|y| y.as_secs()))
+            }
             _ => None,
         }
     }
