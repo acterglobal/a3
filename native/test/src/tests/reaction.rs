@@ -182,8 +182,8 @@ fn match_text_msg(msg: &RoomMessage, body: &str) -> Option<OwnedEventId> {
     info!("match room msg - {:?}", msg.clone());
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(text_desc) = event_item.text_desc() {
-            if text_desc.body() == body {
+        if let Some(content_desc) = event_item.content_desc() {
+            if content_desc.body() == body {
                 // exclude the pending msg
                 if let Some(event_id) = event_item.evt_id() {
                     return Some(event_id);
@@ -198,8 +198,8 @@ fn match_msg_reaction(msg: &RoomMessage, body: &str, key: String) -> bool {
     info!("match room msg - {:?}", msg.clone());
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(text_desc) = event_item.text_desc() {
-            if text_desc.body() == body {
+        if let Some(content_desc) = event_item.content_desc() {
+            if content_desc.body() == body {
                 if event_item.reaction_keys().contains(&key) {
                     return true;
                 }

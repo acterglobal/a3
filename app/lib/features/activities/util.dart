@@ -55,7 +55,10 @@ NotificationBrief briefForChat(ffi.Notification notification) {
         case 'm.notice':
         case 'm.server_notice':
         case 'm.text':
-          return NotificationBrief.fromTextDesc(eventItem.textDesc(), route);
+          return NotificationBrief.fromContentDesc(
+            eventItem.contentDesc(),
+            route,
+          );
       }
       return NotificationBrief(title: msgType ?? eventType, route: route);
 
@@ -63,7 +66,7 @@ NotificationBrief briefForChat(ffi.Notification notification) {
     case 'm.sticker':
     case 'm.room.member':
     case 'm.poll.start':
-      return NotificationBrief.fromTextDesc(eventItem.textDesc(), route);
+      return NotificationBrief.fromContentDesc(eventItem.contentDesc(), route);
     case 'm.room.redaction':
       return const NotificationBrief(title: 'Message deleted', route: route);
     case 'm.room.encrypted':

@@ -47,8 +47,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
     final userId = ref.watch(myUserIdStrProvider);
     String roomId = widget.room.getRoomIdStr();
     final convoProfile = ref.watch(chatProfileDataProvider(widget.room));
-    final mutedStatus =
-        ref.watch(roomIsMutedProvider(widget.room.getRoomIdStr()));
+    final mutedStatus = ref.watch(roomIsMutedProvider(roomId));
     final latestMsg = ref.watch(latestMessageProvider(widget.room));
     // ToDo: UnreadCounter
     return convoProfile.when(
@@ -100,19 +99,14 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
                           child: const Text('Unmute'),
                           onPressed: () async {
                             final room = await ref.read(
-                              maybeRoomProvider(widget.room.getRoomIdStr())
-                                  .future,
+                              maybeRoomProvider(roomId).future,
                             );
                             if (room == null) {
-                              EasyLoading.showError(
-                                'Room not found',
-                              );
+                              EasyLoading.showError('Room not found');
                               return;
                             }
                             await room.unmute();
-                            EasyLoading.showSuccess(
-                              'Notifications unmuted',
-                            );
+                            EasyLoading.showSuccess('Notifications unmuted');
                             await Future.delayed(const Duration(seconds: 1),
                                 () {
                               // FIXME: we want to refresh the view but don't know
@@ -145,12 +139,13 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
 }
 
 class _SubtitleWidget extends ConsumerWidget {
+  final Convo room;
+  final RoomMessage latestMessage;
+
   const _SubtitleWidget({
     required this.room,
     required this.latestMessage,
   });
-  final Convo room;
-  final RoomMessage latestMessage;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -196,12 +191,12 @@ class _SubtitleWidget extends ConsumerWidget {
           case 'm.notice':
           case 'm.server_notice':
           case 'm.text':
-            TextDesc? textDesc = eventItem.textDesc();
-            if (textDesc == null) {
+            ContentDesc? contentDesc = eventItem.contentDesc();
+            if (contentDesc == null) {
               return const SizedBox.shrink();
             }
-            String body = textDesc.body();
-            String? formattedBody = textDesc.formattedBody();
+            String body = contentDesc.body();
+            String? formattedBody = contentDesc.formattedBody();
             if (formattedBody != null) {
               body = simplifyBody(formattedBody);
             }
@@ -239,12 +234,12 @@ class _SubtitleWidget extends ConsumerWidget {
             );
         }
       case 'm.reaction':
-        TextDesc? textDesc = eventItem.textDesc();
-        if (textDesc == null) {
+        ContentDesc? contentDesc = eventItem.contentDesc();
+        if (contentDesc == null) {
           return const SizedBox();
         }
-        String body = textDesc.body();
-        String? formattedBody = textDesc.formattedBody();
+        String body = contentDesc.body();
+        String? formattedBody = contentDesc.formattedBody();
         if (formattedBody != null) {
           body = simplifyBody(formattedBody);
         }
@@ -298,7 +293,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Flexible(
               child: Text(
-                eventItem.textDesc()!.body(),
+                eventItem.contentDesc()!.body(),
                 style: Theme.of(context).textTheme.bodySmall,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -365,12 +360,12 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.room.member':
-        TextDesc? textDesc = eventItem.textDesc();
-        if (textDesc == null) {
+        ContentDesc? contentDesc = eventItem.contentDesc();
+        if (contentDesc == null) {
           return const SizedBox();
         }
-        String body = textDesc.body();
-        String? formattedBody = textDesc.formattedBody();
+        String body = contentDesc.body();
+        String? formattedBody = contentDesc.formattedBody();
         if (formattedBody != null) {
           body = simplifyBody(formattedBody);
         }
@@ -424,7 +419,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Flexible(
               child: Text(
-                eventItem.textDesc()!.body(),
+                eventItem.contentDesc()!.body(),
                 style: Theme.of(context).textTheme.bodySmall,
                 overflow: TextOverflow.ellipsis,
               ),

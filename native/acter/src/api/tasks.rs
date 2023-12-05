@@ -18,7 +18,7 @@ use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::warn;
 
-use crate::TextDesc;
+use crate::ContentDesc;
 
 use super::{client::Client, spaces::Space, RUNTIME};
 
@@ -475,8 +475,12 @@ impl Task {
     pub fn title(&self) -> String {
         self.content.title().to_owned()
     }
-    pub fn description(&self) -> Option<TextDesc> {
-        self.content.description.as_ref().map(Into::into)
+
+    pub fn description(&self) -> Option<ContentDesc> {
+        self.content
+            .description
+            .as_ref()
+            .map(|x| ContentDesc::from(x))
     }
 
     pub fn sort_order(&self) -> u32 {

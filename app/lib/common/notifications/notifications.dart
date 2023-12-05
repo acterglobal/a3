@@ -1,23 +1,22 @@
-import 'dart:io';
-import 'dart:convert';
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/router.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:convert/convert.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:push/push.dart';
-import 'package:device_info_plus/device_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
@@ -330,9 +329,9 @@ Future<bool> handleMessage(
       if (roomMsg != null) {
         final eventItem = roomMsg.eventItem();
         if (eventItem != null) {
-          final textDesc = eventItem.textDesc();
-          if (textDesc != null) {
-            body = textDesc.body();
+          final contentDesc = eventItem.contentDesc();
+          if (contentDesc != null) {
+            body = contentDesc.body();
           }
         }
       }
@@ -341,9 +340,9 @@ Future<bool> handleMessage(
       if (roomMsg != null) {
         final eventItem = roomMsg.eventItem();
         if (eventItem != null) {
-          final textDesc = eventItem.textDesc();
-          if (textDesc != null) {
-            body = textDesc.body();
+          final contentDesc = eventItem.contentDesc();
+          if (contentDesc != null) {
+            body = contentDesc.body();
           }
         }
       }

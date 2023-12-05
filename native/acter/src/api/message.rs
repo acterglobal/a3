@@ -78,9 +78,7 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Deref, sync::Arc};
 use tracing::info;
 
-use super::common::{
-    AudioDesc, FileDesc, ImageDesc, LocationDesc, ReactionRecord, TextDesc, VideoDesc,
-};
+use super::common::{ContentDesc, ReactionRecord};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct RoomEventItem {
@@ -90,12 +88,7 @@ pub struct RoomEventItem {
     origin_server_ts: u64,
     event_type: String,
     msg_type: Option<String>,
-    text_desc: Option<TextDesc>,
-    image_desc: Option<ImageDesc>,
-    audio_desc: Option<AudioDesc>,
-    video_desc: Option<VideoDesc>,
-    file_desc: Option<FileDesc>,
-    location_desc: Option<LocationDesc>,
+    content_desc: Option<ContentDesc>,
     in_reply_to: Option<OwnedEventId>,
     read_receipts: HashMap<String, Receipt>,
     reactions: HashMap<String, Vec<ReactionRecord>>,
@@ -118,12 +111,7 @@ impl RoomEventItem {
             origin_server_ts,
             event_type,
             msg_type: None,
-            text_desc: None,
-            image_desc: None,
-            audio_desc: None,
-            video_desc: None,
-            file_desc: None,
-            location_desc: None,
+            content_desc: None,
             in_reply_to: None,
             read_receipts: Default::default(),
             reactions: Default::default(),
@@ -168,52 +156,12 @@ impl RoomEventItem {
         self.msg_type = Some(value);
     }
 
-    pub fn text_desc(&self) -> Option<TextDesc> {
-        self.text_desc.clone()
+    pub fn content_desc(&self) -> Option<ContentDesc> {
+        self.content_desc.clone()
     }
 
-    pub(crate) fn set_text_desc(&mut self, value: TextDesc) {
-        self.text_desc = Some(value);
-    }
-
-    pub fn image_desc(&self) -> Option<ImageDesc> {
-        self.image_desc.clone()
-    }
-
-    pub(crate) fn set_image_desc(&mut self, value: ImageDesc) {
-        self.image_desc = Some(value);
-    }
-
-    pub fn audio_desc(&self) -> Option<AudioDesc> {
-        self.audio_desc.clone()
-    }
-
-    pub(crate) fn set_audio_desc(&mut self, value: AudioDesc) {
-        self.audio_desc = Some(value);
-    }
-
-    pub fn video_desc(&self) -> Option<VideoDesc> {
-        self.video_desc.clone()
-    }
-
-    pub(crate) fn set_video_desc(&mut self, value: VideoDesc) {
-        self.video_desc = Some(value);
-    }
-
-    pub fn file_desc(&self) -> Option<FileDesc> {
-        self.file_desc.clone()
-    }
-
-    pub(crate) fn set_file_desc(&mut self, value: FileDesc) {
-        self.file_desc = Some(value);
-    }
-
-    pub fn location_desc(&self) -> Option<LocationDesc> {
-        self.location_desc.clone()
-    }
-
-    pub(crate) fn set_location_desc(&mut self, value: LocationDesc) {
-        self.location_desc = Some(value);
+    pub(crate) fn set_content_desc(&mut self, value: ContentDesc) {
+        self.content_desc = Some(value);
     }
 
     pub fn in_reply_to(&self) -> Option<String> {
@@ -345,8 +293,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.call.answer".to_string(),
         );
-        let text_desc = TextDesc::new(event.content.answer.sdp);
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text(event.content.answer.sdp);
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -361,8 +309,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.call.answer".to_string(),
         );
-        let text_desc = TextDesc::new(event.content.answer.sdp);
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text(event.content.answer.sdp);
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -384,8 +332,8 @@ impl RoomMessage {
             .map(|x| x.candidate)
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc::new(format!("changed candidates to {candidates}"));
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text(format!("changed candidates to {candidates}"));
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -407,8 +355,8 @@ impl RoomMessage {
             .map(|x| x.candidate)
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc::new(format!("changed candidates to {candidates}"));
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text(format!("changed candidates to {candidates}"));
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -423,8 +371,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.call.hangup".to_string(),
         );
-        let text_desc = TextDesc::new(format!("hangup this call because {}", event.content.reason));
-        event_item.set_text_desc(text_desc);
+        let body = format!("hangup this call because {}", event.content.reason);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -439,8 +387,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.call.hangup".to_string(),
         );
-        let text_desc = TextDesc::new(format!("hangup this call because {}", event.content.reason));
-        event_item.set_text_desc(text_desc);
+        let body = format!("hangup this call because {}", event.content.reason);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -455,8 +403,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.call.invite".to_string(),
         );
-        let text_desc = TextDesc::new(event.content.offer.sdp);
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text(event.content.offer.sdp);
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -471,8 +419,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.call.invite".to_string(),
         );
-        let text_desc = TextDesc::new(event.content.offer.sdp);
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text(event.content.offer.sdp);
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -491,8 +439,7 @@ impl RoomMessage {
             "recommended {} about {} because {}",
             event.content.0.recommendation, event.content.0.entity, event.content.0.reason,
         );
-        let text_desc = TextDesc::new(body);
-        event_item.set_text_desc(text_desc);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -511,8 +458,7 @@ impl RoomMessage {
             "recommended {} about {} because {}",
             event.content.0.recommendation, event.content.0.entity, event.content.0.reason,
         );
-        let text_desc = TextDesc::new(body);
-        event_item.set_text_desc(text_desc);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -527,8 +473,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.policy.rule.server".to_string(),
         );
-        let text_desc = TextDesc::new("changed policy rule server".to_string());
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text("changed policy rule server".to_string());
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -543,8 +489,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.policy.rule.server".to_string(),
         );
-        let text_desc = TextDesc::new("changed policy rule server".to_string());
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text("changed policy rule server".to_string());
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -559,8 +505,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.policy.rule.user".to_string(),
         );
-        let text_desc = TextDesc::new("changed policy rule user".to_string());
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text("changed policy rule user".to_string());
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -575,8 +521,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.policy.rule.user".to_string(),
         );
-        let text_desc = TextDesc::new("changed policy rule user".to_string());
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text("changed policy rule user".to_string());
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -588,8 +534,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.reaction".to_string(),
         );
-        let text_desc = TextDesc::new(format!("reacted by {}", event.content.relates_to.key));
-        event_item.set_text_desc(text_desc);
+        let body = format!("reacted by {}", event.content.relates_to.key);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -604,8 +550,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.reaction".to_string(),
         );
-        let text_desc = TextDesc::new(format!("reacted by {}", event.content.relates_to.key));
-        event_item.set_text_desc(text_desc);
+        let body = format!("reacted by {}", event.content.relates_to.key);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -627,8 +573,8 @@ impl RoomMessage {
             .map(|x| x.to_string())
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc::new(format!("changed room aliases to {aliases}"));
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text(format!("changed room aliases to {aliases}"));
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -650,8 +596,8 @@ impl RoomMessage {
             .map(|x| x.to_string())
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc::new(format!("changed room aliases to {aliases}"));
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text(format!("changed room aliases to {aliases}"));
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -666,8 +612,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.avatar".to_string(),
         );
-        let text_desc = TextDesc::new("changed room avatar".to_string());
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text("changed room avatar".to_string());
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -682,8 +628,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.avatar".to_string(),
         );
-        let text_desc = TextDesc::new("changed room avatar".to_string());
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text("changed room avatar".to_string());
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -710,8 +656,7 @@ impl RoomMessage {
             alt_aliases,
             event.content.alias.map(|x| x.to_string()),
         );
-        let text_desc = TextDesc::new(body);
-        event_item.set_text_desc(text_desc);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -738,8 +683,7 @@ impl RoomMessage {
             alt_aliases,
             event.content.alias.map(|x| x.to_string()),
         );
-        let text_desc = TextDesc::new(body);
-        event_item.set_text_desc(text_desc);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -754,8 +698,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.create".to_string(),
         );
-        let text_desc = TextDesc::new("created this room".to_string());
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text("created this room".to_string());
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -770,8 +714,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.create".to_string(),
         );
-        let text_desc = TextDesc::new("created this room".to_string());
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text("created this room".to_string());
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -791,8 +735,8 @@ impl RoomMessage {
             EncryptedEventScheme::OlmV1Curve25519AesSha2(s) => "OlmV1Curve25519AesSha2".to_string(),
             _ => "Unknown".to_string(),
         };
-        let text_desc = TextDesc::new(format!("encrypted by {scheme}"));
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text(format!("encrypted by {scheme}"));
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -812,8 +756,8 @@ impl RoomMessage {
             EncryptedEventScheme::OlmV1Curve25519AesSha2(s) => "OlmV1Curve25519AesSha2".to_string(),
             _ => "Unknown".to_string(),
         };
-        let text_desc = TextDesc::new(format!("encrypted by {scheme}"));
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text(format!("encrypted by {scheme}"));
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -828,8 +772,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.encryption".to_string(),
         );
-        let text_desc = TextDesc::new(format!("changed encryption to {}", event.content.algorithm));
-        event_item.set_text_desc(text_desc);
+        let body = format!("changed encryption to {}", event.content.algorithm);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -844,8 +788,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.encryption".to_string(),
         );
-        let text_desc = TextDesc::new(format!("changed encryption to {}", event.content.algorithm));
-        event_item.set_text_desc(text_desc);
+        let body = format!("changed encryption to {}", event.content.algorithm);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -864,8 +808,7 @@ impl RoomMessage {
             "changed room's guest access to {}",
             event.content.guest_access,
         );
-        let text_desc = TextDesc::new(body);
-        event_item.set_text_desc(text_desc);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -884,8 +827,7 @@ impl RoomMessage {
             "changed room's guest access to {}",
             event.content.guest_access,
         );
-        let text_desc = TextDesc::new(body);
-        event_item.set_text_desc(text_desc);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -904,8 +846,7 @@ impl RoomMessage {
             "changed room's history visibility to {}",
             event.content.history_visibility,
         );
-        let text_desc = TextDesc::new(body);
-        event_item.set_text_desc(text_desc);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -924,8 +865,7 @@ impl RoomMessage {
             "changed room's history visibility to {}",
             event.content.history_visibility,
         );
-        let text_desc = TextDesc::new(body);
-        event_item.set_text_desc(text_desc);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -944,8 +884,7 @@ impl RoomMessage {
             "changed room's join rules to {}",
             event.content.join_rule.as_str(),
         );
-        let text_desc = TextDesc::new(body);
-        event_item.set_text_desc(text_desc);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -964,8 +903,7 @@ impl RoomMessage {
             "changed room's join rules to {}",
             event.content.join_rule.as_str(),
         );
-        let text_desc = TextDesc::new(body);
-        event_item.set_text_desc(text_desc);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1040,8 +978,8 @@ impl RoomMessage {
                 }
             }
         };
-        let text_desc = TextDesc::new(fallback);
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text(fallback);
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1116,8 +1054,8 @@ impl RoomMessage {
                 }
             }
         };
-        let text_desc = TextDesc::new(fallback);
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text(fallback);
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1153,66 +1091,41 @@ impl RoomMessage {
             MessageType::Video(content) => "sent a video.".to_string(),
             _ => "Unknown sync item".to_string(),
         };
-        let mut text_desc = TextDesc::new(fallback);
         match event.content.msgtype {
             MessageType::Audio(content) => {
-                if let Some(info) = &content.info {
-                    let audio_desc =
-                        AudioDesc::new(content.body.clone(), content.source.clone(), *info.clone());
-                    event_item.set_audio_desc(audio_desc);
-                }
+                let content_desc = ContentDesc::from(&content);
+                event_item.set_content_desc(content_desc);
             }
             MessageType::Emote(content) => {
-                if let Some(formatted) = &content.formatted {
-                    if formatted.format == MessageFormat::Html {
-                        text_desc.set_formatted_body(Some(formatted.body.clone()));
-                    }
-                }
+                let content_desc = ContentDesc::from(&content);
+                event_item.set_content_desc(content_desc);
             }
             MessageType::File(content) => {
-                if let Some(info) = &content.info {
-                    let file_desc =
-                        FileDesc::new(content.body.clone(), content.source.clone(), *info.clone());
-                    event_item.set_file_desc(file_desc);
-                }
+                let content_desc = ContentDesc::from(&content);
+                event_item.set_content_desc(content_desc);
             }
             MessageType::Image(content) => {
-                if let Some(info) = &content.info {
-                    let image_desc =
-                        ImageDesc::new(content.body.clone(), content.source.clone(), *info.clone());
-                    event_item.set_image_desc(image_desc);
-                }
+                let content_desc = ContentDesc::from(&content);
+                event_item.set_content_desc(content_desc);
             }
             MessageType::Location(content) => {
-                if let Some(info) = &content.info {
-                    let mut location_desc =
-                        LocationDesc::new(content.body.clone(), content.geo_uri.clone());
-                    if let Some(thumbnail_source) = &info.thumbnail_source {
-                        location_desc.set_thumbnail_source(thumbnail_source.clone());
-                    }
-                    if let Some(thumbnail_info) = &info.thumbnail_info {
-                        location_desc.set_thumbnail_info(*thumbnail_info.clone());
-                    }
-                    event_item.set_location_desc(location_desc);
-                }
+                let content_desc = ContentDesc::from(&content);
+                event_item.set_content_desc(content_desc);
             }
             MessageType::Text(content) => {
-                if let Some(formatted) = &content.formatted {
-                    if formatted.format == MessageFormat::Html {
-                        text_desc.set_formatted_body(Some(formatted.body.clone()));
-                    }
-                }
+                let content_desc = ContentDesc::from(&content);
+                event_item.set_content_desc(content_desc);
             }
             MessageType::Video(content) => {
-                if let Some(info) = &content.info {
-                    let video_desc =
-                        VideoDesc::new(content.body.clone(), content.source.clone(), *info.clone());
-                    event_item.set_video_desc(video_desc);
-                }
+                let content_desc = ContentDesc::from(&content);
+                event_item.set_content_desc(content_desc);
             }
             _ => {}
         }
-        event_item.set_text_desc(text_desc);
+        if event_item.content_desc.is_none() {
+            let content_desc = ContentDesc::from_text(fallback);
+            event_item.set_content_desc(content_desc);
+        }
         if let Some(Relation::Replacement(r)) = event.content.relates_to {
             event_item.set_edited(true);
         }
@@ -1245,66 +1158,41 @@ impl RoomMessage {
             MessageType::Video(content) => "sent a video.".to_string(),
             _ => "Unknown sync item".to_string(),
         };
-        let mut text_desc = TextDesc::new(fallback);
         match event.content.msgtype {
             MessageType::Audio(content) => {
-                if let Some(info) = &content.info {
-                    let audio_desc =
-                        AudioDesc::new(content.body.clone(), content.source.clone(), *info.clone());
-                    event_item.set_audio_desc(audio_desc);
-                }
+                let content_desc = ContentDesc::from(&content);
+                event_item.set_content_desc(content_desc);
             }
             MessageType::Emote(content) => {
-                if let Some(formatted) = &content.formatted {
-                    if formatted.format == MessageFormat::Html {
-                        text_desc.set_formatted_body(Some(formatted.body.clone()));
-                    }
-                }
+                let content_desc = ContentDesc::from(&content);
+                event_item.set_content_desc(content_desc);
             }
             MessageType::File(content) => {
-                if let Some(info) = &content.info {
-                    let file_desc =
-                        FileDesc::new(content.body.clone(), content.source.clone(), *info.clone());
-                    event_item.set_file_desc(file_desc);
-                }
+                let content_desc = ContentDesc::from(&content);
+                event_item.set_content_desc(content_desc);
             }
             MessageType::Image(content) => {
-                if let Some(info) = &content.info {
-                    let image_desc =
-                        ImageDesc::new(content.body.clone(), content.source.clone(), *info.clone());
-                    event_item.set_image_desc(image_desc);
-                }
+                let content_desc = ContentDesc::from(&content);
+                event_item.set_content_desc(content_desc);
             }
             MessageType::Location(content) => {
-                if let Some(info) = &content.info {
-                    let mut location_desc =
-                        LocationDesc::new(content.body.clone(), content.geo_uri.clone());
-                    if let Some(thumbnail_source) = &info.thumbnail_source {
-                        location_desc.set_thumbnail_source(thumbnail_source.clone());
-                    }
-                    if let Some(thumbnail_info) = &info.thumbnail_info {
-                        location_desc.set_thumbnail_info(*thumbnail_info.clone());
-                    }
-                    event_item.set_location_desc(location_desc);
-                }
+                let content_desc = ContentDesc::from(&content);
+                event_item.set_content_desc(content_desc);
             }
             MessageType::Text(content) => {
-                if let Some(formatted) = &content.formatted {
-                    if formatted.format == MessageFormat::Html {
-                        text_desc.set_formatted_body(Some(formatted.body.clone()));
-                    }
-                }
+                let content_desc = ContentDesc::from(&content);
+                event_item.set_content_desc(content_desc);
             }
             MessageType::Video(content) => {
-                if let Some(info) = &content.info {
-                    let video_desc =
-                        VideoDesc::new(content.body.clone(), content.source.clone(), *info.clone());
-                    event_item.set_video_desc(video_desc);
-                }
+                let content_desc = ContentDesc::from(&content);
+                event_item.set_content_desc(content_desc);
             }
             _ => {}
         }
-        event_item.set_text_desc(text_desc);
+        if event_item.content_desc.is_none() {
+            let content_desc = ContentDesc::from_text(fallback);
+            event_item.set_content_desc(content_desc);
+        }
         if let Some(Relation::Replacement(r)) = event.content.relates_to {
             event_item.set_edited(true);
         }
@@ -1319,8 +1207,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.name".to_string(),
         );
-        let text_desc = TextDesc::new(format!("changed name to {}", event.content.name));
-        event_item.set_text_desc(text_desc);
+        let body = format!("changed name to {}", event.content.name);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1335,8 +1223,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.name".to_string(),
         );
-        let text_desc = TextDesc::new(format!("changed name to {}", event.content.name));
-        event_item.set_text_desc(text_desc);
+        let body = format!("changed name to {}", event.content.name);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1351,8 +1239,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.pinned_events".to_string(),
         );
-        let text_desc = TextDesc::new(format!("pinned {} events", event.content.pinned.len()));
-        event_item.set_text_desc(text_desc);
+        let body = format!("pinned {} events", event.content.pinned.len());
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1367,8 +1255,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.pinned_events".to_string(),
         );
-        let text_desc = TextDesc::new(format!("pinned {} events", event.content.pinned.len()));
-        event_item.set_text_desc(text_desc);
+        let body = format!("pinned {} events", event.content.pinned.len());
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1390,8 +1278,8 @@ impl RoomMessage {
             .map(|(user_id, value)| format!("power level of {user_id} to {value}"))
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc::new(format!("changed {users}"));
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text(format!("changed {users}"));
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1413,8 +1301,8 @@ impl RoomMessage {
             .map(|(user_id, value)| format!("power level of {user_id} to {value}"))
             .collect::<Vec<String>>()
             .join(", ");
-        let text_desc = TextDesc::new(format!("changed {users}"));
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text(format!("changed {users}"));
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1434,8 +1322,7 @@ impl RoomMessage {
             Some(reason) => format!("deleted this item because {reason}"),
             None => "deleted this item".to_string(),
         };
-        let text_desc = TextDesc::new(body);
-        event_item.set_text_desc(text_desc);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1455,8 +1342,7 @@ impl RoomMessage {
             Some(reason) => format!("deleted this item because {reason}"),
             None => "deleted this item".to_string(),
         };
-        let text_desc = TextDesc::new(body);
-        event_item.set_text_desc(text_desc);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1479,8 +1365,7 @@ impl RoomMessage {
             (false, true) => format!("denied {deny}"),
             (false, false) => "".to_string(),
         };
-        let text_desc = TextDesc::new(body);
-        event_item.set_text_desc(text_desc);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1503,8 +1388,7 @@ impl RoomMessage {
             (false, true) => format!("denied {deny}"),
             (false, false) => "".to_string(),
         };
-        let text_desc = TextDesc::new(body);
-        event_item.set_text_desc(text_desc);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1519,8 +1403,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.third_party_invite".to_string(),
         );
-        let text_desc = TextDesc::new(format!("invited {}", event.content.display_name));
-        event_item.set_text_desc(text_desc);
+        let body = format!("invited {}", event.content.display_name);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1535,8 +1419,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.third_party_invite".to_string(),
         );
-        let text_desc = TextDesc::new(format!("invited {}", event.content.display_name));
-        event_item.set_text_desc(text_desc);
+        let body = format!("invited {}", event.content.display_name);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1551,8 +1435,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.tombstone".to_string(),
         );
-        let text_desc = TextDesc::new(event.content.body);
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text(event.content.body);
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1567,8 +1451,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.tombstone".to_string(),
         );
-        let text_desc = TextDesc::new(event.content.body);
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text(event.content.body);
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1583,8 +1467,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.topic".to_string(),
         );
-        let text_desc = TextDesc::new(format!("changed topic to {}", event.content.topic));
-        event_item.set_text_desc(text_desc);
+        let body = format!("changed topic to {}", event.content.topic);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1599,8 +1483,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.room.topic".to_string(),
         );
-        let text_desc = TextDesc::new(format!("changed topic to {}", event.content.topic));
-        event_item.set_text_desc(text_desc);
+        let body = format!("changed topic to {}", event.content.topic);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1615,8 +1499,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.space.child".to_string(),
         );
-        let text_desc = TextDesc::new(event.content.order.unwrap_or_default());
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text(event.content.order.unwrap_or_default());
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1631,8 +1515,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.space.child".to_string(),
         );
-        let text_desc = TextDesc::new(event.content.order.unwrap_or_default());
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text(event.content.order.unwrap_or_default());
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1657,8 +1541,7 @@ impl RoomMessage {
                 .collect::<Vec<String>>()
                 .join(", "),
         );
-        let text_desc = TextDesc::new(body);
-        event_item.set_text_desc(text_desc);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1683,8 +1566,7 @@ impl RoomMessage {
                 .collect::<Vec<String>>()
                 .join(", "),
         );
-        let text_desc = TextDesc::new(body);
-        event_item.set_text_desc(text_desc);
+        event_item.set_content_desc(ContentDesc::from_text(body));
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1696,8 +1578,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.sticker".to_string(),
         );
-        let text_desc = TextDesc::new(event.content.body);
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text(event.content.body);
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1712,8 +1594,8 @@ impl RoomMessage {
             event.origin_server_ts.get().into(),
             "m.sticker".to_string(),
         );
-        let text_desc = TextDesc::new(event.content.body);
-        event_item.set_text_desc(text_desc);
+        let content_desc = ContentDesc::from_text(event.content.body);
+        event_item.set_content_desc(content_desc);
         RoomMessage::new_event_item(room_id, event_item)
     }
 
@@ -1794,74 +1676,40 @@ impl RoomMessage {
                         };
                     }
                 }
-                let mut text_desc = TextDesc::new(fallback);
                 match msg_type {
                     MessageType::Text(content) => {
-                        if let Some(formatted) = &content.formatted {
-                            if formatted.format == MessageFormat::Html {
-                                text_desc.set_formatted_body(Some(formatted.body.clone()));
-                            }
-                        }
+                        let content_desc = ContentDesc::from(content);
+                        result.set_content_desc(content_desc);
                         if sent_by_me {
                             result.set_editable(true);
                         }
                     }
                     MessageType::Emote(content) => {
-                        if let Some(formatted) = &content.formatted {
-                            if formatted.format == MessageFormat::Html {
-                                text_desc.set_formatted_body(Some(formatted.body.clone()));
-                            }
-                        }
+                        let content_desc = ContentDesc::from(content);
+                        result.set_content_desc(content_desc);
                         if sent_by_me {
                             result.set_editable(true);
                         }
                     }
                     MessageType::Image(content) => {
-                        if let Some(info) = &content.info {
-                            let image_desc = ImageDesc::new(
-                                content.body.clone(),
-                                content.source.clone(),
-                                *info.clone(),
-                            );
-                            result.set_image_desc(image_desc);
-                        }
+                        let content_desc = ContentDesc::from(content);
+                        result.set_content_desc(content_desc);
                     }
                     MessageType::Audio(content) => {
-                        if let Some(info) = &content.info {
-                            let audio_desc = AudioDesc::new(
-                                content.body.clone(),
-                                content.source.clone(),
-                                *info.clone(),
-                            );
-                            result.set_audio_desc(audio_desc);
-                        }
+                        let content_desc = ContentDesc::from(content);
+                        result.set_content_desc(content_desc);
                     }
                     MessageType::Video(content) => {
-                        if let Some(info) = &content.info {
-                            let video_desc = VideoDesc::new(
-                                content.body.clone(),
-                                content.source.clone(),
-                                *info.clone(),
-                            );
-                            result.set_video_desc(video_desc);
-                        }
+                        let content_desc = ContentDesc::from(content);
+                        result.set_content_desc(content_desc);
                     }
                     MessageType::File(content) => {
-                        if let Some(info) = &content.info {
-                            let file_desc = FileDesc::new(
-                                content.body.clone(),
-                                content.source.clone(),
-                                *info.clone(),
-                            );
-                            result.set_file_desc(file_desc);
-                        }
+                        let content_desc = ContentDesc::from(content);
+                        result.set_content_desc(content_desc);
                     }
                     MessageType::Location(content) => {
-                        if let Some(info) = &content.info {
-                            let location_desc =
-                                LocationDesc::new(content.body.clone(), content.geo_uri.clone());
-                            result.set_location_desc(location_desc);
-                        }
+                        let content_desc = ContentDesc::from(content);
+                        result.set_content_desc(content_desc);
                     }
                     _ => {}
                 }
@@ -1872,73 +1720,41 @@ impl RoomMessage {
                     {
                         match ev.content.msgtype {
                             MessageType::Text(content) => {
-                                if let Some(formatted) = &content.formatted {
-                                    if formatted.format == MessageFormat::Html {
-                                        text_desc.set_formatted_body(Some(formatted.body.clone()));
-                                    }
-                                }
+                                let content_desc = ContentDesc::from(&content);
+                                result.set_content_desc(content_desc);
                             }
                             MessageType::Emote(content) => {
-                                if let Some(formatted) = &content.formatted {
-                                    if formatted.format == MessageFormat::Html {
-                                        text_desc.set_formatted_body(Some(formatted.body.clone()));
-                                    }
-                                }
+                                let content_desc = ContentDesc::from(&content);
+                                result.set_content_desc(content_desc);
                             }
                             MessageType::Image(content) => {
-                                if let Some(info) = &content.info {
-                                    let image_desc = ImageDesc::new(
-                                        content.body.clone(),
-                                        content.source.clone(),
-                                        *info.clone(),
-                                    );
-                                    result.set_image_desc(image_desc);
-                                }
+                                let content_desc = ContentDesc::from(&content);
+                                result.set_content_desc(content_desc);
                             }
                             MessageType::Audio(content) => {
-                                if let Some(info) = &content.info {
-                                    let audio_desc = AudioDesc::new(
-                                        content.body.clone(),
-                                        content.source.clone(),
-                                        *info.clone(),
-                                    );
-                                    result.set_audio_desc(audio_desc);
-                                }
+                                let content_desc = ContentDesc::from(&content);
+                                result.set_content_desc(content_desc);
                             }
                             MessageType::Video(content) => {
-                                if let Some(info) = &content.info {
-                                    let video_desc = VideoDesc::new(
-                                        content.body.clone(),
-                                        content.source.clone(),
-                                        *info.clone(),
-                                    );
-                                    result.set_video_desc(video_desc);
-                                }
+                                let content_desc = ContentDesc::from(&content);
+                                result.set_content_desc(content_desc);
                             }
                             MessageType::File(content) => {
-                                if let Some(info) = &content.info {
-                                    let file_desc = FileDesc::new(
-                                        content.body.clone(),
-                                        content.source.clone(),
-                                        *info.clone(),
-                                    );
-                                    result.set_file_desc(file_desc);
-                                }
+                                let content_desc = ContentDesc::from(&content);
+                                result.set_content_desc(content_desc);
                             }
                             MessageType::Location(content) => {
-                                if let Some(info) = &content.info {
-                                    let location_desc = LocationDesc::new(
-                                        content.body.clone(),
-                                        content.geo_uri.clone(),
-                                    );
-                                    result.set_location_desc(location_desc);
-                                }
+                                let content_desc = ContentDesc::from(&content);
+                                result.set_content_desc(content_desc);
                             }
                             _ => {}
                         }
                     }
                 }
-                result.set_text_desc(text_desc);
+                if result.content_desc.is_none() {
+                    let content_desc = ContentDesc::from_text(fallback);
+                    result.set_content_desc(content_desc);
+                }
                 if let Some(in_reply_to) = msg.in_reply_to() {
                     result.set_in_reply_to(in_reply_to.clone().event_id);
                 }
@@ -1965,13 +1781,8 @@ impl RoomMessage {
                     origin_server_ts,
                     "m.sticker".to_string(),
                 );
-                let content = s.content();
-                let image_desc = ImageDesc::new(
-                    content.body.clone(),
-                    MediaSource::Plain(content.url.clone()),
-                    content.info.clone(),
-                );
-                result.set_image_desc(image_desc);
+                let content_desc = ContentDesc::from(s.content());
+                result.set_content_desc(content_desc);
                 result
             }
             TimelineItemContent::UnableToDecrypt(encrypted_msg) => {
@@ -2064,8 +1875,8 @@ impl RoomMessage {
                     }
                     None => "unknown error".to_string(),
                 };
-                let text_desc = TextDesc::new(fallback);
-                result.set_text_desc(text_desc);
+                let content_desc = ContentDesc::from_text(fallback);
+                result.set_content_desc(content_desc);
                 result
             }
             TimelineItemContent::ProfileChange(p) => {
@@ -2079,27 +1890,24 @@ impl RoomMessage {
                 );
                 result.set_msg_type("ProfileChange".to_string());
                 if let Some(change) = p.displayname_change() {
-                    let text_desc = match (&change.old, &change.new) {
+                    let content_desc = match (&change.old, &change.new) {
                         (Some(old), Some(new)) => {
-                            TextDesc::new(format!("changed name {old} -> {new}"))
+                            ContentDesc::from_text(format!("changed name {old} -> {new}"))
                         }
-                        (None, Some(new)) => TextDesc::new(format!("set name to {new}")),
-                        (Some(_), None) => TextDesc::new("removed name".to_string()),
+                        (None, Some(new)) => ContentDesc::from_text(format!("set name to {new}")),
+                        (Some(_), None) => ContentDesc::from_text("removed name".to_string()),
                         (None, None) => {
-                            //  why would that ever happen?
-                            TextDesc::new("kept name unset".to_string())
+                            // why would that ever happen?
+                            ContentDesc::from_text("kept name unset".to_string())
                         }
                     };
-                    result.set_text_desc(text_desc);
+                    result.set_content_desc(content_desc);
                 }
                 if let Some(change) = p.avatar_url_change() {
                     if let Some(uri) = change.new.as_ref() {
-                        let image_desc = ImageDesc::new(
-                            "new_picture".to_string(),
-                            MediaSource::Plain(uri.clone()),
-                            ImageInfo::new(),
-                        );
-                        result.set_image_desc(image_desc);
+                        let content_desc =
+                            ContentDesc::from_image("new_picture".to_string(), uri.clone());
+                        result.set_content_desc(content_desc);
                     }
                 }
                 result
@@ -2148,8 +1956,8 @@ impl RoomMessage {
                     "m.poll.start".to_string(),
                 );
                 if let Some(fallback) = s.fallback_text() {
-                    let text_desc = TextDesc::new(fallback);
-                    result.set_text_desc(text_desc);
+                    let content_desc = ContentDesc::from_text(fallback);
+                    result.set_content_desc(content_desc);
                 }
                 result
             }

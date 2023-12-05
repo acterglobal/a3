@@ -1,12 +1,12 @@
 import 'dart:typed_data';
 
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/widgets/news_side_bar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -206,7 +206,8 @@ class ImageSlide extends StatefulWidget {
 
 class _ImageSlideState extends State<ImageSlide> {
   late Future<FfiBufferUint8> newsImage;
-  late ImageDesc? imageDesc;
+  late ContentDesc? contentDesc;
+
   @override
   void initState() {
     super.initState();
@@ -214,8 +215,8 @@ class _ImageSlideState extends State<ImageSlide> {
   }
 
   Future<void> getNewsImage() async {
-    newsImage = widget.slide.imageBinary();
-    imageDesc = widget.slide.imageDesc();
+    newsImage = widget.slide.sourceBinary();
+    contentDesc = widget.slide.contentDesc();
     if (mounted) {
       setState(() {});
     }

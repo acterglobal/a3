@@ -13,6 +13,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 class PostProcessItem {
   final types.Message message;
   final RoomMessage event;
+
   const PostProcessItem(this.event, this.message);
 }
 
@@ -298,7 +299,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         String? orgMsgType = orgEventItem.msgType();
         switch (orgMsgType) {
           case 'm.text':
-            TextDesc? description = orgEventItem.textDesc();
+            ContentDesc? description = orgEventItem.contentDesc();
             if (description != null) {
               String body = description.body();
               repliedToContent = {
@@ -315,7 +316,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.image':
-            ImageDesc? description = orgEventItem.imageDesc();
+            ContentDesc? description = orgEventItem.contentDesc();
             if (description != null) {
               convo.mediaBinary(originalId).then((data) {
                 repliedToContent['base64'] = base64Encode(data.asTypedList());
@@ -324,16 +325,16 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
                 createdAt: orgEventItem.originServerTs(),
-                name: description.name(),
+                name: description.body(),
                 size: description.size() ?? 0,
-                uri: description.source().url(),
+                uri: description.source()!.url(),
                 width: description.width()?.toDouble() ?? 0,
                 metadata: repliedToContent,
               );
             }
             break;
           case 'm.audio':
-            AudioDesc? description = orgEventItem.audioDesc();
+            ContentDesc? description = orgEventItem.contentDesc();
             if (description != null) {
               convo.mediaBinary(originalId).then((data) {
                 repliedToContent['content'] = base64Encode(data.asTypedList());
@@ -342,16 +343,16 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
                 createdAt: orgEventItem.originServerTs(),
-                name: description.name(),
+                name: description.body(),
                 duration: Duration(seconds: description.duration() ?? 0),
                 size: description.size() ?? 0,
-                uri: description.source().url(),
+                uri: description.source()!.url(),
                 metadata: repliedToContent,
               );
             }
             break;
           case 'm.video':
-            VideoDesc? description = orgEventItem.videoDesc();
+            ContentDesc? description = orgEventItem.contentDesc();
             if (description != null) {
               convo.mediaBinary(originalId).then((data) {
                 repliedToContent['content'] = base64Encode(data.asTypedList());
@@ -360,26 +361,26 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
                 createdAt: orgEventItem.originServerTs(),
-                name: description.name(),
+                name: description.body(),
                 size: description.size() ?? 0,
-                uri: description.source().url(),
+                uri: description.source()!.url(),
                 metadata: repliedToContent,
               );
             }
             break;
           case 'm.file':
-            FileDesc? description = orgEventItem.fileDesc();
+            ContentDesc? description = orgEventItem.contentDesc();
             if (description != null) {
               repliedToContent = {
-                'content': description.name(),
+                'content': description.body(),
               };
               repliedTo = types.FileMessage(
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
                 createdAt: orgEventItem.originServerTs(),
-                name: description.name(),
+                name: description.body(),
                 size: description.size() ?? 0,
-                uri: description.source().url(),
+                uri: description.source()!.url(),
                 metadata: repliedToContent,
               );
             }
@@ -458,7 +459,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           metadata: {
             'itemType': 'event',
             'eventType': eventType,
-            'body': eventItem.textDesc()?.body(),
+            'body': eventItem.contentDesc()?.body(),
           },
         );
     }
@@ -494,7 +495,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           metadata: metadata,
         );
       case 'm.room.member':
-        TextDesc? description = eventItem.textDesc();
+        ContentDesc? description = eventItem.contentDesc();
         if (description != null) {
           String? formattedBody = description.formattedBody();
           String body = description.body(); // always exists
@@ -531,7 +532,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         String? msgType = eventItem.msgType();
         switch (msgType) {
           case 'm.audio':
-            AudioDesc? description = eventItem.audioDesc();
+            ContentDesc? description = eventItem.contentDesc();
             if (description != null) {
               Map<String, dynamic> metadata = {'base64': ''};
               metadata['was_edited'] = wasEdited;
@@ -552,14 +553,14 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 id: eventId,
                 metadata: metadata,
                 mimeType: description.mimetype(),
-                name: description.name(),
+                name: description.body(),
                 size: description.size() ?? 0,
-                uri: description.source().url(),
+                uri: description.source()!.url(),
               );
             }
             break;
           case 'm.emote':
-            TextDesc? description = eventItem.textDesc();
+            ContentDesc? description = eventItem.contentDesc();
             if (description != null) {
               String? formattedBody = description.formattedBody();
               String body = description.body(); // always exists
@@ -587,7 +588,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.file':
-            FileDesc? description = eventItem.fileDesc();
+            ContentDesc? description = eventItem.contentDesc();
             if (description != null) {
               Map<String, dynamic> metadata = {};
               metadata['was_edited'] = wasEdited;
@@ -607,14 +608,14 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 id: eventId,
                 metadata: metadata,
                 mimeType: description.mimetype(),
-                name: description.name(),
+                name: description.body(),
                 size: description.size() ?? 0,
-                uri: description.source().url(),
+                uri: description.source()!.url(),
               );
             }
             break;
           case 'm.image':
-            ImageDesc? description = eventItem.imageDesc();
+            ContentDesc? description = eventItem.contentDesc();
             if (description != null) {
               Map<String, dynamic> metadata = {};
               metadata['was_edited'] = wasEdited;
@@ -634,15 +635,15 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 height: description.height()?.toDouble(),
                 id: eventId,
                 metadata: metadata,
-                name: description.name(),
+                name: description.body(),
                 size: description.size() ?? 0,
-                uri: description.source().url(),
+                uri: description.source()!.url(),
                 width: description.width()?.toDouble(),
               );
             }
             break;
           case 'm.location':
-            LocationDesc? description = eventItem.locationDesc();
+            ContentDesc? description = eventItem.contentDesc();
             if (description != null) {
               Map<String, dynamic> metadata = {
                 'itemType': 'event',
@@ -692,7 +693,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.notice':
-            TextDesc? description = eventItem.textDesc();
+            ContentDesc? description = eventItem.contentDesc();
             if (description != null) {
               String? formattedBody = description.formattedBody();
               String body = description.body(); // always exists
@@ -712,7 +713,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.server_notice':
-            TextDesc? description = eventItem.textDesc();
+            ContentDesc? description = eventItem.contentDesc();
             if (description != null) {
               String? formattedBody = description.formattedBody();
               String body = description.body(); // always exists
@@ -732,7 +733,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.text':
-            TextDesc? description = eventItem.textDesc();
+            ContentDesc? description = eventItem.contentDesc();
             if (description != null) {
               String? formattedBody = description.formattedBody();
               String body = description.body(); // always exists
@@ -760,7 +761,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.video':
-            VideoDesc? description = eventItem.videoDesc();
+            ContentDesc? description = eventItem.contentDesc();
             if (description != null) {
               Map<String, dynamic> metadata = {'base64': ''};
               metadata['was_edited'] = wasEdited;
@@ -779,9 +780,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 createdAt: createdAt,
                 id: eventId,
                 metadata: metadata,
-                name: description.name(),
+                name: description.body(),
                 size: description.size() ?? 0,
-                uri: description.source().url(),
+                uri: description.source()!.url(),
               );
             }
             break;
@@ -806,12 +807,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             reactions[k] = records.toList();
           }
         }
-        ImageDesc? description = eventItem.imageDesc();
+        ContentDesc? description = eventItem.contentDesc();
         if (description != null) {
           Map<String, dynamic> metadata = {
             'itemType': 'event',
             'eventType': eventType,
-            'name': description.name(),
+            'name': description.body(),
             'size': description.size() ?? 0,
             'width': description.width()?.toDouble(),
             'height': description.height()?.toDouble(),
@@ -837,7 +838,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
         break;
       case 'm.poll.start':
-        TextDesc? description = eventItem.textDesc();
+        ContentDesc? description = eventItem.contentDesc();
         if (description != null) {
           String body = description.body();
           return types.CustomMessage(

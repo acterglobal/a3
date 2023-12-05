@@ -1,9 +1,19 @@
-use acter_core::models::TextMessageContent;
+use acter_core::{events::attachments::AttachmentContent, models::TextMessageContent};
 use core::time::Duration;
-use ruma_common::{MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedUserId};
-use ruma_events::room::{
-    message::{AudioInfo, FileInfo, TextMessageEventContent, VideoInfo},
-    ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
+use ruma_common::{MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri, OwnedUserId};
+use ruma_events::{
+    location::{AssetContent, LocationContent},
+    message::TextContentBlock,
+    room::{
+        message::{
+            AudioInfo, AudioMessageEventContent, EmoteMessageEventContent, FileInfo,
+            FileMessageEventContent, ImageMessageEventContent, LocationInfo,
+            LocationMessageEventContent, TextMessageEventContent, UnstableAudioDetailsContentBlock,
+            VideoInfo, VideoMessageEventContent,
+        },
+        ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
+    },
+    sticker::StickerEventContent,
 };
 use serde::{Deserialize, Serialize};
 
@@ -78,287 +88,346 @@ impl ThumbnailInfo {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct TextDesc {
-    body: String,
-    formatted_body: Option<String>,
+pub enum ContentDesc {
+    Text {
+        body: String,
+        formatted_body: Option<String>,
+    },
+    Image {
+        body: String,
+        source: SdkMediaSource,
+        info: Option<ImageInfo>,
+    },
+    Audio {
+        body: String,
+        source: SdkMediaSource,
+        info: Option<AudioInfo>,
+        audio: Option<UnstableAudioDetailsContentBlock>,
+    },
+    Video {
+        body: String,
+        source: SdkMediaSource,
+        info: Option<VideoInfo>,
+    },
+    File {
+        body: String,
+        source: SdkMediaSource,
+        info: Option<FileInfo>,
+        filename: Option<String>,
+    },
+    Location {
+        body: String,
+        geo_uri: String,
+        info: Option<LocationInfo>,
+        asset: Option<AssetContent>,
+        location: Option<LocationContent>,
+        message: Option<TextContentBlock>,
+        ts: Option<MilliSecondsSinceUnixEpoch>,
+    },
 }
 
-impl TextDesc {
-    pub fn new(body: String) -> Self {
-        TextDesc {
-            body,
-            formatted_body: None,
-        }
-    }
-
-    pub fn body(&self) -> String {
-        self.body.clone()
-    }
-
-    pub(crate) fn set_body(&mut self, text: String) {
-        self.body = text;
-    }
-
-    pub fn formatted_body(&self) -> Option<String> {
-        self.formatted_body.clone()
-    }
-
-    pub(crate) fn set_formatted_body(&mut self, text: Option<String>) {
-        self.formatted_body = text;
-    }
-
-    pub fn has_formatted(&self) -> bool {
-        self.formatted_body.is_some()
-    }
-}
-
-impl From<&TextMessageEventContent> for TextDesc {
+impl From<&TextMessageEventContent> for ContentDesc {
     fn from(value: &TextMessageEventContent) -> Self {
-        Self {
+        ContentDesc::Text {
             body: value.body.clone(),
             formatted_body: value.formatted.as_ref().map(|x| x.body.clone()),
         }
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct ImageDesc {
-    name: String,
-    source: SdkMediaSource,
-    info: ImageInfo,
-}
-
-impl ImageDesc {
-    pub fn new(name: String, source: SdkMediaSource, info: ImageInfo) -> Self {
-        ImageDesc { name, source, info }
-    }
-
-    pub fn name(&self) -> String {
-        self.name.clone()
-    }
-
-    pub fn source(&self) -> MediaSource {
-        MediaSource {
-            inner: self.source.clone(),
+impl From<&ImageMessageEventContent> for ContentDesc {
+    fn from(value: &ImageMessageEventContent) -> Self {
+        ContentDesc::Image {
+            body: value.body.clone(),
+            source: value.source.clone(),
+            info: value.info.as_ref().map(|x| *x.clone()),
         }
     }
-
-    pub fn mimetype(&self) -> Option<String> {
-        self.info.mimetype.clone()
-    }
-
-    pub fn size(&self) -> Option<u64> {
-        self.info.size.map(|x| x.into())
-    }
-
-    pub fn width(&self) -> Option<u64> {
-        self.info.width.map(|x| x.into())
-    }
-
-    pub fn height(&self) -> Option<u64> {
-        self.info.height.map(|x| x.into())
-    }
-
-    pub fn thumbnail_info(&self) -> Option<ThumbnailInfo> {
-        self.info
-            .thumbnail_info
-            .clone()
-            .map(|x| ThumbnailInfo { inner: *x })
-    }
-
-    pub fn thumbnail_source(&self) -> Option<MediaSource> {
-        self.info
-            .thumbnail_source
-            .clone()
-            .map(|inner| MediaSource { inner })
-    }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct AudioDesc {
-    name: String,
-    source: SdkMediaSource,
-    info: AudioInfo,
-}
-
-impl AudioDesc {
-    pub fn new(name: String, source: SdkMediaSource, info: AudioInfo) -> Self {
-        AudioDesc { name, source, info }
-    }
-
-    pub fn name(&self) -> String {
-        self.name.clone()
-    }
-
-    pub fn source(&self) -> MediaSource {
-        MediaSource {
-            inner: self.source.clone(),
+impl From<&AudioMessageEventContent> for ContentDesc {
+    fn from(value: &AudioMessageEventContent) -> Self {
+        ContentDesc::Audio {
+            body: value.body.clone(),
+            source: value.source.clone(),
+            info: value.info.as_ref().map(|x| *x.clone()),
+            audio: value.audio.clone(),
         }
     }
-
-    pub fn duration(&self) -> Option<u64> {
-        self.info.duration.map(|x| x.as_secs())
-    }
-
-    pub fn mimetype(&self) -> Option<String> {
-        self.info.mimetype.clone()
-    }
-
-    pub fn size(&self) -> Option<u64> {
-        self.info.size.map(|x| x.into())
-    }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct VideoDesc {
-    name: String,
-    source: SdkMediaSource,
-    info: VideoInfo,
-}
-
-impl VideoDesc {
-    pub fn new(name: String, source: SdkMediaSource, info: VideoInfo) -> Self {
-        VideoDesc { name, source, info }
-    }
-
-    pub fn name(&self) -> String {
-        self.name.clone()
-    }
-
-    pub fn source(&self) -> MediaSource {
-        MediaSource {
-            inner: self.source.clone(),
+impl From<&VideoMessageEventContent> for ContentDesc {
+    fn from(value: &VideoMessageEventContent) -> Self {
+        ContentDesc::Video {
+            body: value.body.clone(),
+            source: value.source.clone(),
+            info: value.info.as_ref().map(|x| *x.clone()),
         }
     }
-
-    pub fn blurhash(&self) -> Option<String> {
-        self.info.blurhash.clone()
-    }
-
-    pub fn duration(&self) -> Option<u64> {
-        self.info.duration.map(|x| x.as_secs())
-    }
-
-    pub fn mimetype(&self) -> Option<String> {
-        self.info.mimetype.clone()
-    }
-
-    pub fn size(&self) -> Option<u64> {
-        self.info.size.map(|x| x.into())
-    }
-
-    pub fn width(&self) -> Option<u64> {
-        self.info.width.map(|x| x.into())
-    }
-
-    pub fn height(&self) -> Option<u64> {
-        self.info.height.map(|x| x.into())
-    }
-
-    pub fn thumbnail_info(&self) -> Option<ThumbnailInfo> {
-        self.info
-            .thumbnail_info
-            .clone()
-            .map(|x| ThumbnailInfo { inner: *x })
-    }
-
-    pub fn thumbnail_source(&self) -> Option<MediaSource> {
-        self.info
-            .thumbnail_source
-            .clone()
-            .map(|inner| MediaSource { inner })
-    }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct FileDesc {
-    name: String,
-    source: SdkMediaSource,
-    info: FileInfo,
-}
-
-impl FileDesc {
-    pub fn new(name: String, source: SdkMediaSource, info: FileInfo) -> Self {
-        FileDesc { name, source, info }
-    }
-
-    pub fn name(&self) -> String {
-        self.name.clone()
-    }
-
-    pub fn source(&self) -> MediaSource {
-        MediaSource {
-            inner: self.source.clone(),
+impl From<&FileMessageEventContent> for ContentDesc {
+    fn from(value: &FileMessageEventContent) -> Self {
+        ContentDesc::File {
+            body: value.body.clone(),
+            source: value.source.clone(),
+            info: value.info.as_ref().map(|x| *x.clone()),
+            filename: value.filename.clone(),
         }
     }
+}
 
-    pub fn mimetype(&self) -> Option<String> {
-        self.info.mimetype.clone()
-    }
-
-    pub fn size(&self) -> Option<u64> {
-        self.info.size.map(|x| x.into())
-    }
-
-    pub fn thumbnail_info(&self) -> Option<ThumbnailInfo> {
-        self.info
-            .thumbnail_info
-            .clone()
-            .map(|x| ThumbnailInfo { inner: *x })
-    }
-
-    pub fn thumbnail_source(&self) -> Option<MediaSource> {
-        self.info
-            .thumbnail_source
-            .clone()
-            .map(|inner| MediaSource { inner })
+impl From<&LocationMessageEventContent> for ContentDesc {
+    fn from(value: &LocationMessageEventContent) -> Self {
+        ContentDesc::Location {
+            body: value.body.clone(),
+            geo_uri: value.geo_uri.clone(),
+            info: value.info.as_ref().map(|x| *x.clone()),
+            asset: value.asset.clone(),
+            location: value.location.clone(),
+            message: value.message.clone(),
+            ts: value.ts.clone(),
+        }
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct LocationDesc {
-    body: String,
-    geo_uri: String,
-    thumbnail_source: Option<SdkMediaSource>,
-    thumbnail_info: Option<SdkThumbnailInfo>,
+impl From<&EmoteMessageEventContent> for ContentDesc {
+    fn from(value: &EmoteMessageEventContent) -> Self {
+        ContentDesc::Text {
+            body: value.body.clone(),
+            formatted_body: value.formatted.as_ref().map(|x| x.body.clone()),
+        }
+    }
 }
 
-impl LocationDesc {
-    pub fn new(body: String, geo_uri: String) -> Self {
-        LocationDesc {
+impl From<&StickerEventContent> for ContentDesc {
+    fn from(value: &StickerEventContent) -> Self {
+        ContentDesc::Image {
+            body: value.body.clone(),
+            source: SdkMediaSource::Plain(value.url.clone()),
+            info: Some(value.info.clone()),
+        }
+    }
+}
+
+impl From<&AttachmentContent> for ContentDesc {
+    fn from(value: &AttachmentContent) -> Self {
+        match value {
+            AttachmentContent::Image(content) => ContentDesc::Image {
+                body: content.body.clone(),
+                source: content.source.clone(),
+                info: content.info.as_ref().map(|x| *x.clone()),
+            },
+            AttachmentContent::Audio(content) => ContentDesc::Audio {
+                body: content.body.clone(),
+                source: content.source.clone(),
+                info: content.info.as_ref().map(|x| *x.clone()),
+                audio: content.audio.clone(),
+            },
+            AttachmentContent::Video(content) => ContentDesc::Video {
+                body: content.body.clone(),
+                source: content.source.clone(),
+                info: content.info.as_ref().map(|x| *x.clone()),
+            },
+            AttachmentContent::File(content) => ContentDesc::File {
+                body: content.body.clone(),
+                source: content.source.clone(),
+                info: content.info.as_ref().map(|x| *x.clone()),
+                filename: content.filename.clone(),
+            },
+            AttachmentContent::Location(content) => ContentDesc::Location {
+                body: content.body.clone(),
+                geo_uri: content.geo_uri.clone(),
+                info: content.info.as_ref().map(|x| *x.clone()),
+                asset: content.asset.clone(),
+                location: content.location.clone(),
+                message: content.message.clone(),
+                ts: content.ts,
+            },
+        }
+    }
+}
+
+impl ContentDesc {
+    pub(crate) fn from_text(body: String) -> Self {
+        ContentDesc::Text {
             body,
-            geo_uri,
-            thumbnail_source: None,
-            thumbnail_info: None,
+            formatted_body: None,
+        }
+    }
+
+    pub(crate) fn from_image(body: String, source: OwnedMxcUri) -> Self {
+        ContentDesc::Image {
+            body,
+            source: SdkMediaSource::Plain(source),
+            info: Some(ImageInfo::new()),
         }
     }
 
     pub fn body(&self) -> String {
-        self.body.clone()
+        match self {
+            ContentDesc::Text { body, .. } => body.clone(),
+            ContentDesc::Image { body, .. } => body.clone(),
+            ContentDesc::Audio { body, .. } => body.clone(),
+            ContentDesc::Video { body, .. } => body.clone(),
+            ContentDesc::File { body, .. } => body.clone(),
+            ContentDesc::Location { body, .. } => body.clone(),
+        }
     }
 
-    pub fn geo_uri(&self) -> String {
-        self.geo_uri.clone()
+    pub fn formatted_body(&self) -> Option<String> {
+        match self {
+            ContentDesc::Text { formatted_body, .. } => formatted_body.clone(),
+            _ => None,
+        }
     }
 
-    pub(crate) fn set_thumbnail_source(&mut self, value: SdkMediaSource) {
-        self.thumbnail_source = Some(value);
+    pub fn source(&self) -> Option<MediaSource> {
+        match self {
+            ContentDesc::Image { source, .. } => Some(MediaSource {
+                inner: source.clone(),
+            }),
+            ContentDesc::Audio { source, .. } => Some(MediaSource {
+                inner: source.clone(),
+            }),
+            ContentDesc::Video { source, .. } => Some(MediaSource {
+                inner: source.clone(),
+            }),
+            ContentDesc::File { source, .. } => Some(MediaSource {
+                inner: source.clone(),
+            }),
+            _ => None,
+        }
+    }
+
+    pub fn mimetype(&self) -> Option<String> {
+        match self {
+            ContentDesc::Image { info, .. } => info.as_ref().and_then(|x| x.mimetype.clone()),
+            ContentDesc::Audio { info, .. } => info.as_ref().and_then(|x| x.mimetype.clone()),
+            ContentDesc::Video { info, .. } => info.as_ref().and_then(|x| x.mimetype.clone()),
+            ContentDesc::File { info, .. } => info.as_ref().and_then(|x| x.mimetype.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn size(&self) -> Option<u64> {
+        match self {
+            ContentDesc::Image { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
+            ContentDesc::Audio { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
+            ContentDesc::Video { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
+            ContentDesc::File { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
+            _ => None,
+        }
+    }
+
+    pub fn width(&self) -> Option<u64> {
+        match self {
+            ContentDesc::Image { info, .. } => {
+                info.as_ref().and_then(|x| x.width.map(|x| x.into()))
+            }
+            ContentDesc::Video { info, .. } => {
+                info.as_ref().and_then(|x| x.width.map(|x| x.into()))
+            }
+            _ => None,
+        }
+    }
+
+    pub fn height(&self) -> Option<u64> {
+        match self {
+            ContentDesc::Image { info, .. } => {
+                info.as_ref().and_then(|x| x.height.map(|x| x.into()))
+            }
+            ContentDesc::Video { info, .. } => {
+                info.as_ref().and_then(|x| x.height.map(|x| x.into()))
+            }
+            _ => None,
+        }
     }
 
     pub fn thumbnail_source(&self) -> Option<MediaSource> {
-        self.thumbnail_source
-            .clone()
-            .map(|inner| MediaSource { inner })
-    }
-
-    pub(crate) fn set_thumbnail_info(&mut self, value: SdkThumbnailInfo) {
-        self.thumbnail_info = Some(value);
+        match self {
+            ContentDesc::Image { info, .. } => info.as_ref().and_then(|x| {
+                x.thumbnail_source
+                    .as_ref()
+                    .map(|y| MediaSource { inner: y.clone() })
+            }),
+            ContentDesc::Video { info, .. } => info.as_ref().and_then(|x| {
+                x.thumbnail_source
+                    .as_ref()
+                    .map(|y| MediaSource { inner: y.clone() })
+            }),
+            ContentDesc::File { info, .. } => info.as_ref().and_then(|x| {
+                x.thumbnail_source
+                    .as_ref()
+                    .map(|y| MediaSource { inner: y.clone() })
+            }),
+            ContentDesc::Location { info, .. } => info.as_ref().and_then(|x| {
+                x.thumbnail_source
+                    .as_ref()
+                    .map(|y| MediaSource { inner: y.clone() })
+            }),
+            _ => None,
+        }
     }
 
     pub fn thumbnail_info(&self) -> Option<ThumbnailInfo> {
-        self.thumbnail_info
-            .clone()
-            .map(|inner| ThumbnailInfo { inner })
+        match self {
+            ContentDesc::Image { info, .. } => info.as_ref().and_then(|x| {
+                x.thumbnail_info
+                    .as_ref()
+                    .map(|y| ThumbnailInfo { inner: *y.clone() })
+            }),
+            ContentDesc::Video { info, .. } => info.as_ref().and_then(|x| {
+                x.thumbnail_info
+                    .as_ref()
+                    .map(|y| ThumbnailInfo { inner: *y.clone() })
+            }),
+            ContentDesc::File { info, .. } => info.as_ref().and_then(|x| {
+                x.thumbnail_info
+                    .as_ref()
+                    .map(|y| ThumbnailInfo { inner: *y.clone() })
+            }),
+            ContentDesc::Location { info, .. } => info.as_ref().and_then(|x| {
+                x.thumbnail_info
+                    .as_ref()
+                    .map(|y| ThumbnailInfo { inner: *y.clone() })
+            }),
+            _ => None,
+        }
+    }
+
+    pub fn duration(&self) -> Option<u64> {
+        match self {
+            ContentDesc::Audio { info, .. } => info
+                .as_ref()
+                .and_then(|x| x.duration.map(|y| y.as_secs().into())),
+            ContentDesc::Video { info, .. } => info
+                .as_ref()
+                .and_then(|x| x.duration.map(|y| y.as_secs().into())),
+            _ => None,
+        }
+    }
+
+    pub fn blurhash(&self) -> Option<String> {
+        match self {
+            ContentDesc::Image { info, .. } => info.as_ref().and_then(|x| x.blurhash.clone()),
+            ContentDesc::Video { info, .. } => info.as_ref().and_then(|x| x.blurhash.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn filename(&self) -> Option<String> {
+        match self {
+            ContentDesc::File { filename, .. } => filename.clone(),
+            _ => None,
+        }
+    }
+
+    pub fn geo_uri(&self) -> Option<String> {
+        match self {
+            ContentDesc::Location { geo_uri, .. } => Some(geo_uri.clone()),
+            _ => None,
+        }
     }
 }
 

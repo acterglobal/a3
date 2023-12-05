@@ -88,27 +88,9 @@ object NewsSlide {
     fn references() -> Vec<ObjRef>;
 
     /// if this is an image, hand over the description
-    fn image_desc() -> Option<ImageDesc>;
+    fn content_desc() -> ContentDesc;
     /// if this is an image, hand over the data
-    fn image_binary() -> Future<Result<buffer<u8>>>;
-
-    /// if this is an audio, hand over the description
-    fn audio_desc() -> Option<AudioDesc>;
-    /// if this is an audio, hand over the data
-    fn audio_binary() -> Future<Result<buffer<u8>>>;
-
-    /// if this is a video, hand over the description
-    fn video_desc() -> Option<VideoDesc>;
-    /// if this is a video, hand over the data
-    fn video_binary() -> Future<Result<buffer<u8>>>;
-
-    /// if this is a file, hand over the description
-    fn file_desc() -> Option<FileDesc>;
-    /// if this is a file, hand over the data
-    fn file_binary() -> Future<Result<buffer<u8>>>;
-
-    /// if this is a location, hand over the description
-    fn location_desc() -> Option<LocationDesc>;
+    fn source_binary() -> Future<Result<buffer<u8>>>;
 }
 
 /// A news entry
@@ -462,23 +444,8 @@ object RoomEventItem {
     /// the type of massage, like text, image, audio, video, file etc
     fn msg_type() -> Option<string>;
 
-    /// contains text fallback and formatted text
-    fn text_desc() -> Option<TextDesc>;
-
-    /// contains source data, name, mimetype, size, width and height
-    fn image_desc() -> Option<ImageDesc>;
-
-    /// contains source data, name, mimetype, duration and size
-    fn audio_desc() -> Option<AudioDesc>;
-
-    /// contains source data, name, mimetype, duration, size, width, height and blurhash
-    fn video_desc() -> Option<VideoDesc>;
-
-    /// contains source data, name, mimetype and size
-    fn file_desc() -> Option<FileDesc>;
-
-    /// contains body and geo uri
-    fn location_desc() -> Option<LocationDesc>;
+    /// covers text/image/audio/video/file/location/emote/sticker
+    fn content_desc() -> Option<ContentDesc>;
 
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
@@ -525,124 +492,45 @@ object RoomMessage {
     fn virtual_item() -> Option<RoomVirtualItem>;
 }
 
-object TextDesc {
-    /// fallback text
+object ContentDesc {
+    /// available always
     fn body() -> string;
 
-    /// formatted text
+    /// available for text msg
     fn formatted_body() -> Option<string>;
 
-    /// whether this has a formatted version
-    fn has_formatted() -> bool;
-}
+    /// available for image/audio/video/file msg
+    fn source() -> Option<MediaSource>;
 
-object ImageDesc {
-    /// file name
-    fn name() -> string;
-
-    /// image source
-    fn source() -> MediaSource;
-
-    /// MIME
+    /// available for image/audio/video/file msg
     fn mimetype() -> Option<string>;
 
-    /// file size in bytes
+    /// available for image/audio/video/file msg
     fn size() -> Option<u64>;
 
-    /// image width
+    /// available for image/video msg
     fn width() -> Option<u64>;
 
-    /// image height
+    /// available for image/video msg
     fn height() -> Option<u64>;
 
-    /// thumbnail info
+    /// available for image/video/file/location msg
+    fn thumbnail_source() -> Option<MediaSource>;
+
+    /// available for image/video/file/location msg
     fn thumbnail_info() -> Option<ThumbnailInfo>;
 
-    /// thumbnail source
-    fn thumbnail_source() -> Option<MediaSource>;
-}
-
-object AudioDesc {
-    /// file name
-    fn name() -> string;
-
-    /// audio source
-    fn source() -> MediaSource;
-
-    /// MIME
-    fn mimetype() -> Option<string>;
-
-    /// file size in bytes
-    fn size() -> Option<u64>;
-
-    /// duration in seconds
+    /// available for audio/video msg
     fn duration() -> Option<u64>;
-}
 
-object VideoDesc {
-    /// file name
-    fn name() -> string;
-
-    /// video source
-    fn source() -> MediaSource;
-
-    /// MIME
-    fn mimetype() -> Option<string>;
-
-    /// file size in bytes
-    fn size() -> Option<u64>;
-
-    /// image width
-    fn width() -> Option<u64>;
-
-    /// image height
-    fn height() -> Option<u64>;
-
-    /// blurhash
+    /// available for image/video msg
     fn blurhash() -> Option<string>;
 
-    /// duration in seconds
-    fn duration() -> Option<u64>;
+    /// available for file msg
+    fn filename() -> Option<string>;
 
-    /// thumbnail info
-    fn thumbnail_info() -> Option<ThumbnailInfo>;
-
-    /// thumbnail source
-    fn thumbnail_source() -> Option<MediaSource>;
-}
-
-object FileDesc {
-    /// file name
-    fn name() -> string;
-
-    /// file source
-    fn source() -> MediaSource;
-
-    /// MIME
-    fn mimetype() -> Option<string>;
-
-    /// file size in bytes
-    fn size() -> Option<u64>;
-
-    /// thumbnail info
-    fn thumbnail_info() -> Option<ThumbnailInfo>;
-
-    /// thumbnail source
-    fn thumbnail_source() -> Option<MediaSource>;
-}
-
-object LocationDesc {
-    /// body
-    fn body() -> string;
-
-    /// geo uri
-    fn geo_uri() -> string;
-
-    /// thumbnail info
-    fn thumbnail_info() -> Option<ThumbnailInfo>;
-
-    /// thumbnail source
-    fn thumbnail_source() -> Option<MediaSource>;
+    /// available for location msg
+    fn geo_uri() -> Option<string>;
 }
 
 object ReactionRecord {
@@ -1004,27 +892,9 @@ object Attachment {
     fn origin_server_ts() -> u64;
 
     /// if this is an image, hand over the description
-    fn image_desc() -> Option<ImageDesc>;
+    fn content_desc() -> ContentDesc;
     /// if this is an image, hand over the data
-    fn image_binary() -> Future<Result<buffer<u8>>>;
-
-    /// if this is an audio, hand over the description
-    fn audio_desc() -> Option<AudioDesc>;
-    /// if this is an audio, hand over the data
-    fn audio_binary() -> Future<Result<buffer<u8>>>;
-
-    /// if this is a video, hand over the description
-    fn video_desc() -> Option<VideoDesc>;
-    /// if this is a video, hand over the data
-    fn video_binary() -> Future<Result<buffer<u8>>>;
-
-    /// if this is a file, hand over the description
-    fn file_desc() -> Option<FileDesc>;
-    /// if this is a file, hand over the data
-    fn file_binary() -> Future<Result<buffer<u8>>>;
-
-    /// if this is a location, hand over the description
-    fn location_desc() -> Option<LocationDesc>;
+    fn source_binary() -> Future<Result<buffer<u8>>>;
 }
 
 /// Reference to the attachments section of a particular item
@@ -1059,7 +929,7 @@ object Task {
     fn title() -> string;
 
     /// the description of this task
-    fn description() -> Option<TextDesc>;
+    fn description() -> Option<ContentDesc>;
 
     /// the users assigned
     fn assignees() -> Vec<UserId>;
@@ -1251,7 +1121,7 @@ object TaskList {
     fn name() -> string;
 
     /// the description of this task list
-    fn description() -> Option<TextDesc>;
+    fn description() -> Option<ContentDesc>;
 
     /// who wants to be informed on updates about this?
     fn subscribers() -> Vec<UserId>;

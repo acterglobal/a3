@@ -1476,7 +1476,7 @@ class Api {
     return tmp7;
   }
 
-  FfiBufferUint8? __newsSlideImageBinaryFuturePoll(
+  FfiBufferUint8? __newsSlideSourceBinaryFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -1490,151 +1490,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _newsSlideImageBinaryFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiBufferUint8._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
-  FfiBufferUint8? __newsSlideAudioBinaryFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _newsSlideAudioBinaryFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiBufferUint8._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
-  FfiBufferUint8? __newsSlideVideoBinaryFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _newsSlideVideoBinaryFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiBufferUint8._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
-  FfiBufferUint8? __newsSlideFileBinaryFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _newsSlideFileBinaryFuturePoll(
+    final tmp6 = _newsSlideSourceBinaryFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -5460,7 +5316,7 @@ class Api {
     return tmp7;
   }
 
-  FfiBufferUint8? __attachmentImageBinaryFuturePoll(
+  FfiBufferUint8? __attachmentSourceBinaryFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -5474,151 +5330,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _attachmentImageBinaryFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiBufferUint8._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
-  FfiBufferUint8? __attachmentAudioBinaryFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _attachmentAudioBinaryFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiBufferUint8._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
-  FfiBufferUint8? __attachmentVideoBinaryFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _attachmentVideoBinaryFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiBufferUint8._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
-  FfiBufferUint8? __attachmentFileBinaryFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _attachmentFileBinaryFuturePoll(
+    final tmp6 = _attachmentSourceBinaryFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -12895,94 +12607,24 @@ class Api {
       int Function(
         int,
       )>();
-  late final _newsSlideImageDescPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsSlideImageDescReturn Function(
-            ffi.Int64,
-          )>>("__NewsSlide_image_desc");
-
-  late final _newsSlideImageDesc = _newsSlideImageDescPtr.asFunction<
-      _NewsSlideImageDescReturn Function(
-        int,
-      )>();
-  late final _newsSlideImageBinaryPtr = _lookup<
+  late final _newsSlideContentDescPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__NewsSlide_image_binary");
+          )>>("__NewsSlide_content_desc");
 
-  late final _newsSlideImageBinary = _newsSlideImageBinaryPtr.asFunction<
+  late final _newsSlideContentDesc = _newsSlideContentDescPtr.asFunction<
       int Function(
         int,
       )>();
-  late final _newsSlideAudioDescPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsSlideAudioDescReturn Function(
-            ffi.Int64,
-          )>>("__NewsSlide_audio_desc");
-
-  late final _newsSlideAudioDesc = _newsSlideAudioDescPtr.asFunction<
-      _NewsSlideAudioDescReturn Function(
-        int,
-      )>();
-  late final _newsSlideAudioBinaryPtr = _lookup<
+  late final _newsSlideSourceBinaryPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__NewsSlide_audio_binary");
+          )>>("__NewsSlide_source_binary");
 
-  late final _newsSlideAudioBinary = _newsSlideAudioBinaryPtr.asFunction<
+  late final _newsSlideSourceBinary = _newsSlideSourceBinaryPtr.asFunction<
       int Function(
-        int,
-      )>();
-  late final _newsSlideVideoDescPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsSlideVideoDescReturn Function(
-            ffi.Int64,
-          )>>("__NewsSlide_video_desc");
-
-  late final _newsSlideVideoDesc = _newsSlideVideoDescPtr.asFunction<
-      _NewsSlideVideoDescReturn Function(
-        int,
-      )>();
-  late final _newsSlideVideoBinaryPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__NewsSlide_video_binary");
-
-  late final _newsSlideVideoBinary = _newsSlideVideoBinaryPtr.asFunction<
-      int Function(
-        int,
-      )>();
-  late final _newsSlideFileDescPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsSlideFileDescReturn Function(
-            ffi.Int64,
-          )>>("__NewsSlide_file_desc");
-
-  late final _newsSlideFileDesc = _newsSlideFileDescPtr.asFunction<
-      _NewsSlideFileDescReturn Function(
-        int,
-      )>();
-  late final _newsSlideFileBinaryPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__NewsSlide_file_binary");
-
-  late final _newsSlideFileBinary = _newsSlideFileBinaryPtr.asFunction<
-      int Function(
-        int,
-      )>();
-  late final _newsSlideLocationDescPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsSlideLocationDescReturn Function(
-            ffi.Int64,
-          )>>("__NewsSlide_location_desc");
-
-  late final _newsSlideLocationDesc = _newsSlideLocationDescPtr.asFunction<
-      _NewsSlideLocationDescReturn Function(
         int,
       )>();
   late final _newsEntrySlidesCountPtr = _lookup<
@@ -14561,65 +14203,15 @@ class Api {
       _RoomEventItemMsgTypeReturn Function(
         int,
       )>();
-  late final _roomEventItemTextDescPtr = _lookup<
+  late final _roomEventItemContentDescPtr = _lookup<
       ffi.NativeFunction<
-          _RoomEventItemTextDescReturn Function(
+          _RoomEventItemContentDescReturn Function(
             ffi.Int64,
-          )>>("__RoomEventItem_text_desc");
+          )>>("__RoomEventItem_content_desc");
 
-  late final _roomEventItemTextDesc = _roomEventItemTextDescPtr.asFunction<
-      _RoomEventItemTextDescReturn Function(
-        int,
-      )>();
-  late final _roomEventItemImageDescPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomEventItemImageDescReturn Function(
-            ffi.Int64,
-          )>>("__RoomEventItem_image_desc");
-
-  late final _roomEventItemImageDesc = _roomEventItemImageDescPtr.asFunction<
-      _RoomEventItemImageDescReturn Function(
-        int,
-      )>();
-  late final _roomEventItemAudioDescPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomEventItemAudioDescReturn Function(
-            ffi.Int64,
-          )>>("__RoomEventItem_audio_desc");
-
-  late final _roomEventItemAudioDesc = _roomEventItemAudioDescPtr.asFunction<
-      _RoomEventItemAudioDescReturn Function(
-        int,
-      )>();
-  late final _roomEventItemVideoDescPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomEventItemVideoDescReturn Function(
-            ffi.Int64,
-          )>>("__RoomEventItem_video_desc");
-
-  late final _roomEventItemVideoDesc = _roomEventItemVideoDescPtr.asFunction<
-      _RoomEventItemVideoDescReturn Function(
-        int,
-      )>();
-  late final _roomEventItemFileDescPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomEventItemFileDescReturn Function(
-            ffi.Int64,
-          )>>("__RoomEventItem_file_desc");
-
-  late final _roomEventItemFileDesc = _roomEventItemFileDescPtr.asFunction<
-      _RoomEventItemFileDescReturn Function(
-        int,
-      )>();
-  late final _roomEventItemLocationDescPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomEventItemLocationDescReturn Function(
-            ffi.Int64,
-          )>>("__RoomEventItem_location_desc");
-
-  late final _roomEventItemLocationDesc =
-      _roomEventItemLocationDescPtr.asFunction<
-          _RoomEventItemLocationDescReturn Function(
+  late final _roomEventItemContentDesc =
+      _roomEventItemContentDescPtr.asFunction<
+          _RoomEventItemContentDescReturn Function(
             int,
           )>();
   late final _roomEventItemInReplyToPtr = _lookup<
@@ -14767,370 +14359,139 @@ class Api {
       _RoomMessageVirtualItemReturn Function(
         int,
       )>();
-  late final _textDescBodyPtr = _lookup<
+  late final _contentDescBodyPtr = _lookup<
       ffi.NativeFunction<
-          _TextDescBodyReturn Function(
+          _ContentDescBodyReturn Function(
             ffi.Int64,
-          )>>("__TextDesc_body");
+          )>>("__ContentDesc_body");
 
-  late final _textDescBody = _textDescBodyPtr.asFunction<
-      _TextDescBodyReturn Function(
+  late final _contentDescBody = _contentDescBodyPtr.asFunction<
+      _ContentDescBodyReturn Function(
         int,
       )>();
-  late final _textDescFormattedBodyPtr = _lookup<
+  late final _contentDescFormattedBodyPtr = _lookup<
       ffi.NativeFunction<
-          _TextDescFormattedBodyReturn Function(
+          _ContentDescFormattedBodyReturn Function(
             ffi.Int64,
-          )>>("__TextDesc_formatted_body");
+          )>>("__ContentDesc_formatted_body");
 
-  late final _textDescFormattedBody = _textDescFormattedBodyPtr.asFunction<
-      _TextDescFormattedBodyReturn Function(
-        int,
-      )>();
-  late final _textDescHasFormattedPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Uint8 Function(
-            ffi.Int64,
-          )>>("__TextDesc_has_formatted");
-
-  late final _textDescHasFormatted = _textDescHasFormattedPtr.asFunction<
-      int Function(
-        int,
-      )>();
-  late final _imageDescNamePtr = _lookup<
-      ffi.NativeFunction<
-          _ImageDescNameReturn Function(
-            ffi.Int64,
-          )>>("__ImageDesc_name");
-
-  late final _imageDescName = _imageDescNamePtr.asFunction<
-      _ImageDescNameReturn Function(
-        int,
-      )>();
-  late final _imageDescSourcePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__ImageDesc_source");
-
-  late final _imageDescSource = _imageDescSourcePtr.asFunction<
-      int Function(
-        int,
-      )>();
-  late final _imageDescMimetypePtr = _lookup<
-      ffi.NativeFunction<
-          _ImageDescMimetypeReturn Function(
-            ffi.Int64,
-          )>>("__ImageDesc_mimetype");
-
-  late final _imageDescMimetype = _imageDescMimetypePtr.asFunction<
-      _ImageDescMimetypeReturn Function(
-        int,
-      )>();
-  late final _imageDescSizePtr = _lookup<
-      ffi.NativeFunction<
-          _ImageDescSizeReturn Function(
-            ffi.Int64,
-          )>>("__ImageDesc_size");
-
-  late final _imageDescSize = _imageDescSizePtr.asFunction<
-      _ImageDescSizeReturn Function(
-        int,
-      )>();
-  late final _imageDescWidthPtr = _lookup<
-      ffi.NativeFunction<
-          _ImageDescWidthReturn Function(
-            ffi.Int64,
-          )>>("__ImageDesc_width");
-
-  late final _imageDescWidth = _imageDescWidthPtr.asFunction<
-      _ImageDescWidthReturn Function(
-        int,
-      )>();
-  late final _imageDescHeightPtr = _lookup<
-      ffi.NativeFunction<
-          _ImageDescHeightReturn Function(
-            ffi.Int64,
-          )>>("__ImageDesc_height");
-
-  late final _imageDescHeight = _imageDescHeightPtr.asFunction<
-      _ImageDescHeightReturn Function(
-        int,
-      )>();
-  late final _imageDescThumbnailInfoPtr = _lookup<
-      ffi.NativeFunction<
-          _ImageDescThumbnailInfoReturn Function(
-            ffi.Int64,
-          )>>("__ImageDesc_thumbnail_info");
-
-  late final _imageDescThumbnailInfo = _imageDescThumbnailInfoPtr.asFunction<
-      _ImageDescThumbnailInfoReturn Function(
-        int,
-      )>();
-  late final _imageDescThumbnailSourcePtr = _lookup<
-      ffi.NativeFunction<
-          _ImageDescThumbnailSourceReturn Function(
-            ffi.Int64,
-          )>>("__ImageDesc_thumbnail_source");
-
-  late final _imageDescThumbnailSource =
-      _imageDescThumbnailSourcePtr.asFunction<
-          _ImageDescThumbnailSourceReturn Function(
+  late final _contentDescFormattedBody =
+      _contentDescFormattedBodyPtr.asFunction<
+          _ContentDescFormattedBodyReturn Function(
             int,
           )>();
-  late final _audioDescNamePtr = _lookup<
+  late final _contentDescSourcePtr = _lookup<
       ffi.NativeFunction<
-          _AudioDescNameReturn Function(
+          _ContentDescSourceReturn Function(
             ffi.Int64,
-          )>>("__AudioDesc_name");
+          )>>("__ContentDesc_source");
 
-  late final _audioDescName = _audioDescNamePtr.asFunction<
-      _AudioDescNameReturn Function(
+  late final _contentDescSource = _contentDescSourcePtr.asFunction<
+      _ContentDescSourceReturn Function(
         int,
       )>();
-  late final _audioDescSourcePtr = _lookup<
+  late final _contentDescMimetypePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          _ContentDescMimetypeReturn Function(
             ffi.Int64,
-          )>>("__AudioDesc_source");
+          )>>("__ContentDesc_mimetype");
 
-  late final _audioDescSource = _audioDescSourcePtr.asFunction<
-      int Function(
+  late final _contentDescMimetype = _contentDescMimetypePtr.asFunction<
+      _ContentDescMimetypeReturn Function(
         int,
       )>();
-  late final _audioDescMimetypePtr = _lookup<
+  late final _contentDescSizePtr = _lookup<
       ffi.NativeFunction<
-          _AudioDescMimetypeReturn Function(
+          _ContentDescSizeReturn Function(
             ffi.Int64,
-          )>>("__AudioDesc_mimetype");
+          )>>("__ContentDesc_size");
 
-  late final _audioDescMimetype = _audioDescMimetypePtr.asFunction<
-      _AudioDescMimetypeReturn Function(
+  late final _contentDescSize = _contentDescSizePtr.asFunction<
+      _ContentDescSizeReturn Function(
         int,
       )>();
-  late final _audioDescSizePtr = _lookup<
+  late final _contentDescWidthPtr = _lookup<
       ffi.NativeFunction<
-          _AudioDescSizeReturn Function(
+          _ContentDescWidthReturn Function(
             ffi.Int64,
-          )>>("__AudioDesc_size");
+          )>>("__ContentDesc_width");
 
-  late final _audioDescSize = _audioDescSizePtr.asFunction<
-      _AudioDescSizeReturn Function(
+  late final _contentDescWidth = _contentDescWidthPtr.asFunction<
+      _ContentDescWidthReturn Function(
         int,
       )>();
-  late final _audioDescDurationPtr = _lookup<
+  late final _contentDescHeightPtr = _lookup<
       ffi.NativeFunction<
-          _AudioDescDurationReturn Function(
+          _ContentDescHeightReturn Function(
             ffi.Int64,
-          )>>("__AudioDesc_duration");
+          )>>("__ContentDesc_height");
 
-  late final _audioDescDuration = _audioDescDurationPtr.asFunction<
-      _AudioDescDurationReturn Function(
+  late final _contentDescHeight = _contentDescHeightPtr.asFunction<
+      _ContentDescHeightReturn Function(
         int,
       )>();
-  late final _videoDescNamePtr = _lookup<
+  late final _contentDescThumbnailSourcePtr = _lookup<
       ffi.NativeFunction<
-          _VideoDescNameReturn Function(
+          _ContentDescThumbnailSourceReturn Function(
             ffi.Int64,
-          )>>("__VideoDesc_name");
+          )>>("__ContentDesc_thumbnail_source");
 
-  late final _videoDescName = _videoDescNamePtr.asFunction<
-      _VideoDescNameReturn Function(
-        int,
-      )>();
-  late final _videoDescSourcePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__VideoDesc_source");
-
-  late final _videoDescSource = _videoDescSourcePtr.asFunction<
-      int Function(
-        int,
-      )>();
-  late final _videoDescMimetypePtr = _lookup<
-      ffi.NativeFunction<
-          _VideoDescMimetypeReturn Function(
-            ffi.Int64,
-          )>>("__VideoDesc_mimetype");
-
-  late final _videoDescMimetype = _videoDescMimetypePtr.asFunction<
-      _VideoDescMimetypeReturn Function(
-        int,
-      )>();
-  late final _videoDescSizePtr = _lookup<
-      ffi.NativeFunction<
-          _VideoDescSizeReturn Function(
-            ffi.Int64,
-          )>>("__VideoDesc_size");
-
-  late final _videoDescSize = _videoDescSizePtr.asFunction<
-      _VideoDescSizeReturn Function(
-        int,
-      )>();
-  late final _videoDescWidthPtr = _lookup<
-      ffi.NativeFunction<
-          _VideoDescWidthReturn Function(
-            ffi.Int64,
-          )>>("__VideoDesc_width");
-
-  late final _videoDescWidth = _videoDescWidthPtr.asFunction<
-      _VideoDescWidthReturn Function(
-        int,
-      )>();
-  late final _videoDescHeightPtr = _lookup<
-      ffi.NativeFunction<
-          _VideoDescHeightReturn Function(
-            ffi.Int64,
-          )>>("__VideoDesc_height");
-
-  late final _videoDescHeight = _videoDescHeightPtr.asFunction<
-      _VideoDescHeightReturn Function(
-        int,
-      )>();
-  late final _videoDescBlurhashPtr = _lookup<
-      ffi.NativeFunction<
-          _VideoDescBlurhashReturn Function(
-            ffi.Int64,
-          )>>("__VideoDesc_blurhash");
-
-  late final _videoDescBlurhash = _videoDescBlurhashPtr.asFunction<
-      _VideoDescBlurhashReturn Function(
-        int,
-      )>();
-  late final _videoDescDurationPtr = _lookup<
-      ffi.NativeFunction<
-          _VideoDescDurationReturn Function(
-            ffi.Int64,
-          )>>("__VideoDesc_duration");
-
-  late final _videoDescDuration = _videoDescDurationPtr.asFunction<
-      _VideoDescDurationReturn Function(
-        int,
-      )>();
-  late final _videoDescThumbnailInfoPtr = _lookup<
-      ffi.NativeFunction<
-          _VideoDescThumbnailInfoReturn Function(
-            ffi.Int64,
-          )>>("__VideoDesc_thumbnail_info");
-
-  late final _videoDescThumbnailInfo = _videoDescThumbnailInfoPtr.asFunction<
-      _VideoDescThumbnailInfoReturn Function(
-        int,
-      )>();
-  late final _videoDescThumbnailSourcePtr = _lookup<
-      ffi.NativeFunction<
-          _VideoDescThumbnailSourceReturn Function(
-            ffi.Int64,
-          )>>("__VideoDesc_thumbnail_source");
-
-  late final _videoDescThumbnailSource =
-      _videoDescThumbnailSourcePtr.asFunction<
-          _VideoDescThumbnailSourceReturn Function(
+  late final _contentDescThumbnailSource =
+      _contentDescThumbnailSourcePtr.asFunction<
+          _ContentDescThumbnailSourceReturn Function(
             int,
           )>();
-  late final _fileDescNamePtr = _lookup<
+  late final _contentDescThumbnailInfoPtr = _lookup<
       ffi.NativeFunction<
-          _FileDescNameReturn Function(
+          _ContentDescThumbnailInfoReturn Function(
             ffi.Int64,
-          )>>("__FileDesc_name");
+          )>>("__ContentDesc_thumbnail_info");
 
-  late final _fileDescName = _fileDescNamePtr.asFunction<
-      _FileDescNameReturn Function(
-        int,
-      )>();
-  late final _fileDescSourcePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__FileDesc_source");
-
-  late final _fileDescSource = _fileDescSourcePtr.asFunction<
-      int Function(
-        int,
-      )>();
-  late final _fileDescMimetypePtr = _lookup<
-      ffi.NativeFunction<
-          _FileDescMimetypeReturn Function(
-            ffi.Int64,
-          )>>("__FileDesc_mimetype");
-
-  late final _fileDescMimetype = _fileDescMimetypePtr.asFunction<
-      _FileDescMimetypeReturn Function(
-        int,
-      )>();
-  late final _fileDescSizePtr = _lookup<
-      ffi.NativeFunction<
-          _FileDescSizeReturn Function(
-            ffi.Int64,
-          )>>("__FileDesc_size");
-
-  late final _fileDescSize = _fileDescSizePtr.asFunction<
-      _FileDescSizeReturn Function(
-        int,
-      )>();
-  late final _fileDescThumbnailInfoPtr = _lookup<
-      ffi.NativeFunction<
-          _FileDescThumbnailInfoReturn Function(
-            ffi.Int64,
-          )>>("__FileDesc_thumbnail_info");
-
-  late final _fileDescThumbnailInfo = _fileDescThumbnailInfoPtr.asFunction<
-      _FileDescThumbnailInfoReturn Function(
-        int,
-      )>();
-  late final _fileDescThumbnailSourcePtr = _lookup<
-      ffi.NativeFunction<
-          _FileDescThumbnailSourceReturn Function(
-            ffi.Int64,
-          )>>("__FileDesc_thumbnail_source");
-
-  late final _fileDescThumbnailSource = _fileDescThumbnailSourcePtr.asFunction<
-      _FileDescThumbnailSourceReturn Function(
-        int,
-      )>();
-  late final _locationDescBodyPtr = _lookup<
-      ffi.NativeFunction<
-          _LocationDescBodyReturn Function(
-            ffi.Int64,
-          )>>("__LocationDesc_body");
-
-  late final _locationDescBody = _locationDescBodyPtr.asFunction<
-      _LocationDescBodyReturn Function(
-        int,
-      )>();
-  late final _locationDescGeoUriPtr = _lookup<
-      ffi.NativeFunction<
-          _LocationDescGeoUriReturn Function(
-            ffi.Int64,
-          )>>("__LocationDesc_geo_uri");
-
-  late final _locationDescGeoUri = _locationDescGeoUriPtr.asFunction<
-      _LocationDescGeoUriReturn Function(
-        int,
-      )>();
-  late final _locationDescThumbnailInfoPtr = _lookup<
-      ffi.NativeFunction<
-          _LocationDescThumbnailInfoReturn Function(
-            ffi.Int64,
-          )>>("__LocationDesc_thumbnail_info");
-
-  late final _locationDescThumbnailInfo =
-      _locationDescThumbnailInfoPtr.asFunction<
-          _LocationDescThumbnailInfoReturn Function(
+  late final _contentDescThumbnailInfo =
+      _contentDescThumbnailInfoPtr.asFunction<
+          _ContentDescThumbnailInfoReturn Function(
             int,
           )>();
-  late final _locationDescThumbnailSourcePtr = _lookup<
+  late final _contentDescDurationPtr = _lookup<
       ffi.NativeFunction<
-          _LocationDescThumbnailSourceReturn Function(
+          _ContentDescDurationReturn Function(
             ffi.Int64,
-          )>>("__LocationDesc_thumbnail_source");
+          )>>("__ContentDesc_duration");
 
-  late final _locationDescThumbnailSource =
-      _locationDescThumbnailSourcePtr.asFunction<
-          _LocationDescThumbnailSourceReturn Function(
-            int,
-          )>();
+  late final _contentDescDuration = _contentDescDurationPtr.asFunction<
+      _ContentDescDurationReturn Function(
+        int,
+      )>();
+  late final _contentDescBlurhashPtr = _lookup<
+      ffi.NativeFunction<
+          _ContentDescBlurhashReturn Function(
+            ffi.Int64,
+          )>>("__ContentDesc_blurhash");
+
+  late final _contentDescBlurhash = _contentDescBlurhashPtr.asFunction<
+      _ContentDescBlurhashReturn Function(
+        int,
+      )>();
+  late final _contentDescFilenamePtr = _lookup<
+      ffi.NativeFunction<
+          _ContentDescFilenameReturn Function(
+            ffi.Int64,
+          )>>("__ContentDesc_filename");
+
+  late final _contentDescFilename = _contentDescFilenamePtr.asFunction<
+      _ContentDescFilenameReturn Function(
+        int,
+      )>();
+  late final _contentDescGeoUriPtr = _lookup<
+      ffi.NativeFunction<
+          _ContentDescGeoUriReturn Function(
+            ffi.Int64,
+          )>>("__ContentDesc_geo_uri");
+
+  late final _contentDescGeoUri = _contentDescGeoUriPtr.asFunction<
+      _ContentDescGeoUriReturn Function(
+        int,
+      )>();
   late final _reactionRecordSenderIdPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -16971,94 +16332,24 @@ class Api {
           int Function(
             int,
           )>();
-  late final _attachmentImageDescPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentImageDescReturn Function(
-            ffi.Int64,
-          )>>("__Attachment_image_desc");
-
-  late final _attachmentImageDesc = _attachmentImageDescPtr.asFunction<
-      _AttachmentImageDescReturn Function(
-        int,
-      )>();
-  late final _attachmentImageBinaryPtr = _lookup<
+  late final _attachmentContentDescPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__Attachment_image_binary");
+          )>>("__Attachment_content_desc");
 
-  late final _attachmentImageBinary = _attachmentImageBinaryPtr.asFunction<
+  late final _attachmentContentDesc = _attachmentContentDescPtr.asFunction<
       int Function(
         int,
       )>();
-  late final _attachmentAudioDescPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentAudioDescReturn Function(
-            ffi.Int64,
-          )>>("__Attachment_audio_desc");
-
-  late final _attachmentAudioDesc = _attachmentAudioDescPtr.asFunction<
-      _AttachmentAudioDescReturn Function(
-        int,
-      )>();
-  late final _attachmentAudioBinaryPtr = _lookup<
+  late final _attachmentSourceBinaryPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__Attachment_audio_binary");
+          )>>("__Attachment_source_binary");
 
-  late final _attachmentAudioBinary = _attachmentAudioBinaryPtr.asFunction<
+  late final _attachmentSourceBinary = _attachmentSourceBinaryPtr.asFunction<
       int Function(
-        int,
-      )>();
-  late final _attachmentVideoDescPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentVideoDescReturn Function(
-            ffi.Int64,
-          )>>("__Attachment_video_desc");
-
-  late final _attachmentVideoDesc = _attachmentVideoDescPtr.asFunction<
-      _AttachmentVideoDescReturn Function(
-        int,
-      )>();
-  late final _attachmentVideoBinaryPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__Attachment_video_binary");
-
-  late final _attachmentVideoBinary = _attachmentVideoBinaryPtr.asFunction<
-      int Function(
-        int,
-      )>();
-  late final _attachmentFileDescPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentFileDescReturn Function(
-            ffi.Int64,
-          )>>("__Attachment_file_desc");
-
-  late final _attachmentFileDesc = _attachmentFileDescPtr.asFunction<
-      _AttachmentFileDescReturn Function(
-        int,
-      )>();
-  late final _attachmentFileBinaryPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__Attachment_file_binary");
-
-  late final _attachmentFileBinary = _attachmentFileBinaryPtr.asFunction<
-      int Function(
-        int,
-      )>();
-  late final _attachmentLocationDescPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentLocationDescReturn Function(
-            ffi.Int64,
-          )>>("__Attachment_location_desc");
-
-  late final _attachmentLocationDesc = _attachmentLocationDescPtr.asFunction<
-      _AttachmentLocationDescReturn Function(
         int,
       )>();
   late final _attachmentsManagerAttachmentsPtr = _lookup<
@@ -22746,62 +22037,17 @@ class Api {
             int,
             int,
           )>();
-  late final _newsSlideImageBinaryFuturePollPtr = _lookup<
+  late final _newsSlideSourceBinaryFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _NewsSlideImageBinaryFuturePollReturn Function(
+          _NewsSlideSourceBinaryFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__NewsSlide_image_binary_future_poll");
+          )>>("__NewsSlide_source_binary_future_poll");
 
-  late final _newsSlideImageBinaryFuturePoll =
-      _newsSlideImageBinaryFuturePollPtr.asFunction<
-          _NewsSlideImageBinaryFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _newsSlideAudioBinaryFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsSlideAudioBinaryFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__NewsSlide_audio_binary_future_poll");
-
-  late final _newsSlideAudioBinaryFuturePoll =
-      _newsSlideAudioBinaryFuturePollPtr.asFunction<
-          _NewsSlideAudioBinaryFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _newsSlideVideoBinaryFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsSlideVideoBinaryFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__NewsSlide_video_binary_future_poll");
-
-  late final _newsSlideVideoBinaryFuturePoll =
-      _newsSlideVideoBinaryFuturePollPtr.asFunction<
-          _NewsSlideVideoBinaryFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _newsSlideFileBinaryFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsSlideFileBinaryFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__NewsSlide_file_binary_future_poll");
-
-  late final _newsSlideFileBinaryFuturePoll =
-      _newsSlideFileBinaryFuturePollPtr.asFunction<
-          _NewsSlideFileBinaryFuturePollReturn Function(
+  late final _newsSlideSourceBinaryFuturePoll =
+      _newsSlideSourceBinaryFuturePollPtr.asFunction<
+          _NewsSlideSourceBinaryFuturePollReturn Function(
             int,
             int,
             int,
@@ -24014,62 +23260,17 @@ class Api {
             int,
             int,
           )>();
-  late final _attachmentImageBinaryFuturePollPtr = _lookup<
+  late final _attachmentSourceBinaryFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _AttachmentImageBinaryFuturePollReturn Function(
+          _AttachmentSourceBinaryFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__Attachment_image_binary_future_poll");
+          )>>("__Attachment_source_binary_future_poll");
 
-  late final _attachmentImageBinaryFuturePoll =
-      _attachmentImageBinaryFuturePollPtr.asFunction<
-          _AttachmentImageBinaryFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _attachmentAudioBinaryFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentAudioBinaryFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Attachment_audio_binary_future_poll");
-
-  late final _attachmentAudioBinaryFuturePoll =
-      _attachmentAudioBinaryFuturePollPtr.asFunction<
-          _AttachmentAudioBinaryFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _attachmentVideoBinaryFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentVideoBinaryFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Attachment_video_binary_future_poll");
-
-  late final _attachmentVideoBinaryFuturePoll =
-      _attachmentVideoBinaryFuturePollPtr.asFunction<
-          _AttachmentVideoBinaryFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _attachmentFileBinaryFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentFileBinaryFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Attachment_file_binary_future_poll");
-
-  late final _attachmentFileBinaryFuturePoll =
-      _attachmentFileBinaryFuturePollPtr.asFunction<
-          _AttachmentFileBinaryFuturePollReturn Function(
+  late final _attachmentSourceBinaryFuturePoll =
+      _attachmentSourceBinaryFuturePollPtr.asFunction<
+          _AttachmentSourceBinaryFuturePollReturn Function(
             int,
             int,
             int,
@@ -28297,157 +27498,32 @@ class NewsSlide {
   }
 
   /// if this is an image, hand over the description
-  ImageDesc? imageDesc() {
+  ContentDesc contentDesc() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._newsSlideImageDesc(
+    final tmp1 = _api._newsSlideContentDesc(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ImageDesc");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = ImageDesc._(_api, tmp4_1);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_ContentDesc");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = ContentDesc._(_api, tmp3_1);
     return tmp2;
   }
 
   /// if this is an image, hand over the data
-  Future<FfiBufferUint8> imageBinary() {
+  Future<FfiBufferUint8> sourceBinary() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._newsSlideImageBinary(
+    final tmp1 = _api._newsSlideSourceBinary(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__NewsSlide_image_binary_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__NewsSlide_source_binary_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__newsSlideImageBinaryFuturePoll);
-    return tmp2;
-  }
-
-  /// if this is an audio, hand over the description
-  AudioDesc? audioDesc() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._newsSlideAudioDesc(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_AudioDesc");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = AudioDesc._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// if this is an audio, hand over the data
-  Future<FfiBufferUint8> audioBinary() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._newsSlideAudioBinary(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__NewsSlide_audio_binary_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__newsSlideAudioBinaryFuturePoll);
-    return tmp2;
-  }
-
-  /// if this is a video, hand over the description
-  VideoDesc? videoDesc() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._newsSlideVideoDesc(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_VideoDesc");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = VideoDesc._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// if this is a video, hand over the data
-  Future<FfiBufferUint8> videoBinary() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._newsSlideVideoBinary(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__NewsSlide_video_binary_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__newsSlideVideoBinaryFuturePoll);
-    return tmp2;
-  }
-
-  /// if this is a file, hand over the description
-  FileDesc? fileDesc() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._newsSlideFileDesc(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FileDesc");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = FileDesc._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// if this is a file, hand over the data
-  Future<FfiBufferUint8> fileBinary() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._newsSlideFileBinary(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__NewsSlide_file_binary_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__newsSlideFileBinaryFuturePoll);
-    return tmp2;
-  }
-
-  /// if this is a location, hand over the description
-  LocationDesc? locationDesc() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._newsSlideLocationDesc(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_LocationDesc");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = LocationDesc._(_api, tmp4_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__newsSlideSourceBinaryFuturePoll);
     return tmp2;
   }
 
@@ -31850,11 +30926,11 @@ class RoomEventItem {
     return tmp2;
   }
 
-  /// contains text fallback and formatted text
-  TextDesc? textDesc() {
+  /// covers text/image/audio/video/file/location/emote/sticker
+  ContentDesc? contentDesc() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemTextDesc(
+    final tmp1 = _api._roomEventItemContentDesc(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -31863,104 +30939,9 @@ class RoomEventItem {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_TextDesc");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ContentDesc");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = TextDesc._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// contains source data, name, mimetype, size, width and height
-  ImageDesc? imageDesc() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemImageDesc(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ImageDesc");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = ImageDesc._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// contains source data, name, mimetype, duration and size
-  AudioDesc? audioDesc() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemAudioDesc(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_AudioDesc");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = AudioDesc._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// contains source data, name, mimetype, duration, size, width, height and blurhash
-  VideoDesc? videoDesc() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemVideoDesc(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_VideoDesc");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = VideoDesc._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// contains source data, name, mimetype and size
-  FileDesc? fileDesc() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemFileDesc(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FileDesc");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = FileDesc._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// contains body and geo uri
-  LocationDesc? locationDesc() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemLocationDesc(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_LocationDesc");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = LocationDesc._(_api, tmp4_1);
+    final tmp2 = ContentDesc._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -32302,17 +31283,17 @@ class RoomMessage {
   }
 }
 
-class TextDesc {
+class ContentDesc {
   final Api _api;
   final _Box _box;
 
-  TextDesc._(this._api, this._box);
+  ContentDesc._(this._api, this._box);
 
-  /// fallback text
+  /// available always
   String body() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._textDescBody(
+    final tmp1 = _api._contentDescBody(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32338,11 +31319,11 @@ class TextDesc {
     return tmp2;
   }
 
-  /// formatted text
+  /// available for text msg
   String? formattedBody() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._textDescFormattedBody(
+    final tmp1 = _api._contentDescFormattedBody(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32372,181 +31353,11 @@ class TextDesc {
     return tmp2;
   }
 
-  /// whether this has a formatted version
-  bool hasFormatted() {
+  /// available for image/audio/video/file msg
+  MediaSource? source() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._textDescHasFormatted(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3 > 0;
-    return tmp2;
-  }
-
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
-class ImageDesc {
-  final Api _api;
-  final _Box _box;
-
-  ImageDesc._(this._api, this._box);
-
-  /// file name
-  String name() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescName(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  /// image source
-  MediaSource source() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescSource(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_MediaSource");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = MediaSource._(_api, tmp3_1);
-    return tmp2;
-  }
-
-  /// MIME
-  String? mimetype() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescMimetype(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  /// file size in bytes
-  int? size() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescSize(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4;
-    return tmp2;
-  }
-
-  /// image width
-  int? width() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescWidth(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4;
-    return tmp2;
-  }
-
-  /// image height
-  int? height() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescHeight(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4;
-    return tmp2;
-  }
-
-  /// thumbnail info
-  ThumbnailInfo? thumbnailInfo() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescThumbnailInfo(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ThumbnailInfo");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = ThumbnailInfo._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// thumbnail source
-  MediaSource? thumbnailSource() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescThumbnailSource(
+    final tmp1 = _api._contentDescSource(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32561,68 +31372,11 @@ class ImageDesc {
     return tmp2;
   }
 
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
-class AudioDesc {
-  final Api _api;
-  final _Box _box;
-
-  AudioDesc._(this._api, this._box);
-
-  /// file name
-  String name() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._audioDescName(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  /// audio source
-  MediaSource source() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._audioDescSource(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_MediaSource");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = MediaSource._(_api, tmp3_1);
-    return tmp2;
-  }
-
-  /// MIME
+  /// available for image/audio/video/file msg
   String? mimetype() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._audioDescMimetype(
+    final tmp1 = _api._contentDescMimetype(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32652,11 +31406,11 @@ class AudioDesc {
     return tmp2;
   }
 
-  /// file size in bytes
+  /// available for image/audio/video/file msg
   int? size() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._audioDescSize(
+    final tmp1 = _api._contentDescSize(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32668,134 +31422,11 @@ class AudioDesc {
     return tmp2;
   }
 
-  /// duration in seconds
-  int? duration() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._audioDescDuration(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4;
-    return tmp2;
-  }
-
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
-class VideoDesc {
-  final Api _api;
-  final _Box _box;
-
-  VideoDesc._(this._api, this._box);
-
-  /// file name
-  String name() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._videoDescName(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  /// video source
-  MediaSource source() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._videoDescSource(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_MediaSource");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = MediaSource._(_api, tmp3_1);
-    return tmp2;
-  }
-
-  /// MIME
-  String? mimetype() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._videoDescMimetype(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  /// file size in bytes
-  int? size() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._videoDescSize(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4;
-    return tmp2;
-  }
-
-  /// image width
+  /// available for image/video msg
   int? width() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._videoDescWidth(
+    final tmp1 = _api._contentDescWidth(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32807,11 +31438,11 @@ class VideoDesc {
     return tmp2;
   }
 
-  /// image height
+  /// available for image/video msg
   int? height() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._videoDescHeight(
+    final tmp1 = _api._contentDescHeight(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32823,11 +31454,65 @@ class VideoDesc {
     return tmp2;
   }
 
-  /// blurhash
+  /// available for image/video/file/location msg
+  MediaSource? thumbnailSource() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._contentDescThumbnailSource(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MediaSource");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = MediaSource._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// available for image/video/file/location msg
+  ThumbnailInfo? thumbnailInfo() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._contentDescThumbnailInfo(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ThumbnailInfo");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = ThumbnailInfo._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// available for audio/video msg
+  int? duration() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._contentDescDuration(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// available for image/video msg
   String? blurhash() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._videoDescBlurhash(
+    final tmp1 = _api._contentDescBlurhash(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32857,122 +31542,11 @@ class VideoDesc {
     return tmp2;
   }
 
-  /// duration in seconds
-  int? duration() {
+  /// available for file msg
+  String? filename() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._videoDescDuration(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4;
-    return tmp2;
-  }
-
-  /// thumbnail info
-  ThumbnailInfo? thumbnailInfo() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._videoDescThumbnailInfo(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ThumbnailInfo");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = ThumbnailInfo._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// thumbnail source
-  MediaSource? thumbnailSource() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._videoDescThumbnailSource(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MediaSource");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = MediaSource._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
-class FileDesc {
-  final Api _api;
-  final _Box _box;
-
-  FileDesc._(this._api, this._box);
-
-  /// file name
-  String name() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._fileDescName(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  /// file source
-  MediaSource source() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._fileDescSource(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_MediaSource");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = MediaSource._(_api, tmp3_1);
-    return tmp2;
-  }
-
-  /// MIME
-  String? mimetype() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._fileDescMimetype(
+    final tmp1 = _api._contentDescFilename(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -33002,167 +31576,37 @@ class FileDesc {
     return tmp2;
   }
 
-  /// file size in bytes
-  int? size() {
+  /// available for location msg
+  String? geoUri() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._fileDescSize(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4;
-    return tmp2;
-  }
-
-  /// thumbnail info
-  ThumbnailInfo? thumbnailInfo() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._fileDescThumbnailInfo(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ThumbnailInfo");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = ThumbnailInfo._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// thumbnail source
-  MediaSource? thumbnailSource() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._fileDescThumbnailSource(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MediaSource");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = MediaSource._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
-class LocationDesc {
-  final Api _api;
-  final _Box _box;
-
-  LocationDesc._(this._api, this._box);
-
-  /// body
-  String body() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._locationDescBody(
+    final tmp1 = _api._contentDescGeoUri(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  /// geo uri
-  String geoUri() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._locationDescGeoUri(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  /// thumbnail info
-  ThumbnailInfo? thumbnailInfo() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._locationDescThumbnailInfo(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
+    final tmp6 = tmp1.arg3;
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ThumbnailInfo");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = ThumbnailInfo._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// thumbnail source
-  MediaSource? thumbnailSource() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._locationDescThumbnailSource(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
     }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MediaSource");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = MediaSource._(_api, tmp4_1);
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -37271,157 +35715,32 @@ class Attachment {
   }
 
   /// if this is an image, hand over the description
-  ImageDesc? imageDesc() {
+  ContentDesc contentDesc() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._attachmentImageDesc(
+    final tmp1 = _api._attachmentContentDesc(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ImageDesc");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = ImageDesc._(_api, tmp4_1);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_ContentDesc");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = ContentDesc._(_api, tmp3_1);
     return tmp2;
   }
 
   /// if this is an image, hand over the data
-  Future<FfiBufferUint8> imageBinary() {
+  Future<FfiBufferUint8> sourceBinary() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._attachmentImageBinary(
+    final tmp1 = _api._attachmentSourceBinary(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Attachment_image_binary_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Attachment_source_binary_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__attachmentImageBinaryFuturePoll);
-    return tmp2;
-  }
-
-  /// if this is an audio, hand over the description
-  AudioDesc? audioDesc() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._attachmentAudioDesc(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_AudioDesc");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = AudioDesc._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// if this is an audio, hand over the data
-  Future<FfiBufferUint8> audioBinary() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._attachmentAudioBinary(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Attachment_audio_binary_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__attachmentAudioBinaryFuturePoll);
-    return tmp2;
-  }
-
-  /// if this is a video, hand over the description
-  VideoDesc? videoDesc() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._attachmentVideoDesc(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_VideoDesc");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = VideoDesc._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// if this is a video, hand over the data
-  Future<FfiBufferUint8> videoBinary() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._attachmentVideoBinary(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Attachment_video_binary_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__attachmentVideoBinaryFuturePoll);
-    return tmp2;
-  }
-
-  /// if this is a file, hand over the description
-  FileDesc? fileDesc() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._attachmentFileDesc(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FileDesc");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = FileDesc._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// if this is a file, hand over the data
-  Future<FfiBufferUint8> fileBinary() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._attachmentFileBinary(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Attachment_file_binary_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__attachmentFileBinaryFuturePoll);
-    return tmp2;
-  }
-
-  /// if this is a location, hand over the description
-  LocationDesc? locationDesc() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._attachmentLocationDesc(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_LocationDesc");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = LocationDesc._(_api, tmp4_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__attachmentSourceBinaryFuturePoll);
     return tmp2;
   }
 
@@ -38003,7 +36322,7 @@ class Task {
   }
 
   /// the description of this task
-  TextDesc? description() {
+  ContentDesc? description() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._taskDescription(
@@ -38015,9 +36334,9 @@ class Task {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_TextDesc");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ContentDesc");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = TextDesc._(_api, tmp4_1);
+    final tmp2 = ContentDesc._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -39606,7 +37925,7 @@ class TaskList {
   }
 
   /// the description of this task list
-  TextDesc? description() {
+  ContentDesc? description() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._taskListDescription(
@@ -39618,9 +37937,9 @@ class TaskList {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_TextDesc");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ContentDesc");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = TextDesc._(_api, tmp4_1);
+    final tmp2 = ContentDesc._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -48869,41 +47188,6 @@ class _NewsSlideTextReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _NewsSlideImageDescReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _NewsSlideAudioDescReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _NewsSlideVideoDescReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _NewsSlideFileDescReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _NewsSlideLocationDescReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
 class _NewsEntryGetSlideReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -49359,42 +47643,7 @@ class _RoomEventItemMsgTypeReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _RoomEventItemTextDescReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _RoomEventItemImageDescReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _RoomEventItemAudioDescReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _RoomEventItemVideoDescReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _RoomEventItemFileDescReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _RoomEventItemLocationDescReturn extends ffi.Struct {
+class _RoomEventItemContentDescReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -49469,7 +47718,7 @@ class _RoomMessageVirtualItemReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _TextDescBodyReturn extends ffi.Struct {
+class _ContentDescBodyReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -49478,27 +47727,7 @@ class _TextDescBodyReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _TextDescFormattedBodyReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-}
-
-class _ImageDescNameReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
-class _ImageDescMimetypeReturn extends ffi.Struct {
+class _ContentDescFormattedBodyReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -49509,51 +47738,14 @@ class _ImageDescMimetypeReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ImageDescSizeReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _ImageDescWidthReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _ImageDescHeightReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _ImageDescThumbnailInfoReturn extends ffi.Struct {
+class _ContentDescSourceReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
 }
 
-class _ImageDescThumbnailSourceReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _AudioDescNameReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
-class _AudioDescMimetypeReturn extends ffi.Struct {
+class _ContentDescMimetypeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -49564,62 +47756,49 @@ class _AudioDescMimetypeReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _AudioDescSizeReturn extends ffi.Struct {
+class _ContentDescSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint64()
   external int arg1;
 }
 
-class _AudioDescDurationReturn extends ffi.Struct {
+class _ContentDescWidthReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint64()
   external int arg1;
 }
 
-class _VideoDescNameReturn extends ffi.Struct {
-  @ffi.Int64()
+class _ContentDescHeightReturn extends ffi.Struct {
+  @ffi.Uint8()
   external int arg0;
   @ffi.Uint64()
   external int arg1;
-  @ffi.Uint64()
-  external int arg2;
 }
 
-class _VideoDescMimetypeReturn extends ffi.Struct {
+class _ContentDescThumbnailSourceReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
 }
 
-class _VideoDescSizeReturn extends ffi.Struct {
+class _ContentDescThumbnailInfoReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _ContentDescDurationReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint64()
   external int arg1;
 }
 
-class _VideoDescWidthReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _VideoDescHeightReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _VideoDescBlurhashReturn extends ffi.Struct {
+class _ContentDescBlurhashReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -49630,37 +47809,7 @@ class _VideoDescBlurhashReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _VideoDescDurationReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _VideoDescThumbnailInfoReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _VideoDescThumbnailSourceReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _FileDescNameReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
-class _FileDescMimetypeReturn extends ffi.Struct {
+class _ContentDescFilenameReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -49671,57 +47820,15 @@ class _FileDescMimetypeReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _FileDescSizeReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _FileDescThumbnailInfoReturn extends ffi.Struct {
+class _ContentDescGeoUriReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
-  external int arg1;
-}
-
-class _FileDescThumbnailSourceReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _LocationDescBodyReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
   external int arg1;
   @ffi.Uint64()
   external int arg2;
-}
-
-class _LocationDescGeoUriReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
   @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
-class _LocationDescThumbnailInfoReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _LocationDescThumbnailSourceReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
+  external int arg3;
 }
 
 class _TimelineDiffActionReturn extends ffi.Struct {
@@ -49877,41 +47984,6 @@ class _CommentContentFormattedReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-}
-
-class _AttachmentImageDescReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _AttachmentAudioDescReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _AttachmentVideoDescReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _AttachmentFileDescReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _AttachmentLocationDescReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
 }
 
 class _TaskTitleReturn extends ffi.Struct {
@@ -51100,52 +49172,7 @@ class _DestroyLocalDataFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _NewsSlideImageBinaryFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _NewsSlideAudioBinaryFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _NewsSlideVideoBinaryFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _NewsSlideFileBinaryFuturePollReturn extends ffi.Struct {
+class _NewsSlideSourceBinaryFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -52395,52 +50422,7 @@ class _AttachmentDraftSendFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _AttachmentImageBinaryFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _AttachmentAudioBinaryFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _AttachmentVideoBinaryFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _AttachmentFileBinaryFuturePollReturn extends ffi.Struct {
+class _AttachmentSourceBinaryFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

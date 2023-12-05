@@ -33,13 +33,7 @@ use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::trace;
 
-use super::{
-    api::FfiBuffer,
-    client::Client,
-    common::{AudioDesc, FileDesc, ImageDesc, LocationDesc, VideoDesc},
-    spaces::Space,
-    RUNTIME,
-};
+use super::{api::FfiBuffer, client::Client, common::ContentDesc, spaces::Space, RUNTIME};
 
 impl Client {
     pub async fn wait_for_news(
@@ -204,68 +198,33 @@ impl NewsSlide {
         }
     }
 
-    pub fn image_desc(&self) -> Option<ImageDesc> {
-        self.inner.content().image().and_then(|content| {
-            content
-                .info
-                .map(|info| ImageDesc::new(content.body, content.source, *info))
-        })
+    pub fn content_desc(&self) -> ContentDesc {
+        match &self.inner.content {
+            NewsContent::Text(content) => ContentDesc::from(content),
+            NewsContent::Image(content) => ContentDesc::from(content),
+            NewsContent::Audio(content) => ContentDesc::from(content),
+            NewsContent::Video(content) => ContentDesc::from(content),
+            NewsContent::File(content) => ContentDesc::from(content),
+            NewsContent::Location(content) => ContentDesc::from(content),
+        }
     }
 
-    pub async fn image_binary(&self) -> Result<FfiBuffer<u8>> {
+    pub async fn source_binary(&self) -> Result<FfiBuffer<u8>> {
         // any variable in self can't be called directly in spawn
-        let content = self.inner.content().image().context("Not an image")?;
-        self.client.source_binary(content.source).await
-    }
-
-    pub fn audio_desc(&self) -> Option<AudioDesc> {
-        self.inner.content().audio().and_then(|content| {
-            content
-                .info
-                .map(|info| AudioDesc::new(content.body, content.source, *info))
-        })
-    }
-
-    pub async fn audio_binary(&self) -> Result<FfiBuffer<u8>> {
-        // any variable in self can't be called directly in spawn
-        let content = self.inner.content().audio().context("Not an audio")?;
-        self.client.source_binary(content.source).await
-    }
-
-    pub fn video_desc(&self) -> Option<VideoDesc> {
-        self.inner.content().video().and_then(|content| {
-            content
-                .info
-                .map(|info| VideoDesc::new(content.body, content.source, *info))
-        })
-    }
-
-    pub async fn video_binary(&self) -> Result<FfiBuffer<u8>> {
-        // any variable in self can't be called directly in spawn
-        let content = self.inner.content().video().context("Not a video")?;
-        self.client.source_binary(content.source).await
-    }
-
-    pub fn file_desc(&self) -> Option<FileDesc> {
-        self.inner.content().file().and_then(|content| {
-            content
-                .info
-                .map(|info| FileDesc::new(content.body, content.source, *info))
-        })
-    }
-
-    pub async fn file_binary(&self) -> Result<FfiBuffer<u8>> {
-        // any variable in self can't be called directly in spawn
-        let content = self.inner.content().file().context("Not a file")?;
-        self.client.source_binary(content.source).await
-    }
-
-    pub fn location_desc(&self) -> Option<LocationDesc> {
-        self.inner.content().location().and_then(|content| {
-            content
-                .info
-                .map(|info| LocationDesc::new(content.body, content.geo_uri))
-        })
+        match &self.inner.content {
+            NewsContent::Text(content) => {
+                let buf = Vec::<u8>::new();
+                Ok(FfiBuffer::new(buf))
+            }
+            NewsContent::Image(content) => self.client.source_binary(content.source.clone()).await,
+            NewsContent::Audio(content) => self.client.source_binary(content.source.clone()).await,
+            NewsContent::Video(content) => self.client.source_binary(content.source.clone()).await,
+            NewsContent::File(content) => self.client.source_binary(content.source.clone()).await,
+            NewsContent::Location(content) => {
+                let buf = Vec::<u8>::new();
+                Ok(FfiBuffer::new(buf))
+            }
+        }
     }
 }
 
