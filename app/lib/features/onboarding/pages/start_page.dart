@@ -300,14 +300,10 @@ class _StartPageState extends State<StartPage> {
                           ),
                         ),
                         SizedBox(
-                          height: imageHeight,
                           child: FittedBox(
                             child: onBoardingPages[index].description,
                             fit: BoxFit.scaleDown,
                           ),
-                        ),
-                        const SizedBox(
-                          height: 20,
                         ),
                       ],
                     ),

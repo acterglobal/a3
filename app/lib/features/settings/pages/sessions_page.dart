@@ -12,7 +12,7 @@ class SessionsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final allSessions = ref.watch(allSessionsProvider);
+    final allSessions = ref.watch(unknownSessionsProvider);
     return WithSidebar(
       sidebar: const SettingsMenu(),
       child: Scaffold(

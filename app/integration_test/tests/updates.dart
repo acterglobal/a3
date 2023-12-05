@@ -31,8 +31,7 @@ extension ActerNews on ConvenientTest {
 }
 
 void updateTests() {
-  tTestWidgets('Simple Text Update', (t) async {
-    disableOverflowErrors();
+  acterTestWidget('Simple Text Update', (t) async {
     final spaceId = await t.freshAccountWithSpace();
     await t.createTextNews(spaceId, 'Welcome to the show');
 

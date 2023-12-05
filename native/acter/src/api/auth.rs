@@ -13,6 +13,7 @@ use matrix_sdk::{
 };
 use ruma_common::OwnedUserId;
 use std::backtrace::Backtrace;
+use std::sync::RwLock;
 use tracing::{error, info};
 
 use super::{
@@ -20,6 +21,15 @@ use super::{
     RUNTIME,
 };
 use crate::platform;
+use lazy_static::lazy_static;
+
+lazy_static! {
+    static ref PROXY_URL: RwLock<Option<String>> = RwLock::new(None);
+}
+
+pub fn set_proxy(new_proxy: Option<String>) {
+    *PROXY_URL.write().expect("Proxy URL couldn't be unlocked") = new_proxy;
+}
 
 pub async fn sanitize_user(
     username: &str,
@@ -59,8 +69,13 @@ pub async fn make_client_config(
     default_homeserver_url: &str,
 ) -> Result<(ClientBuilder, OwnedUserId)> {
     let (user_id, fallback) = sanitize_user(username, default_homeserver_name).await?;
-    let builder =
+    let mut builder =
         platform::new_client_config(base_path, user_id.to_string(), db_passphrase, true).await?;
+
+    if let Some(proxy) = PROXY_URL.read().expect("Reading PROXY_URL failed").clone() {
+        builder = builder.proxy(proxy);
+    }
+
     if fallback {
         Ok((builder.homeserver_url(default_homeserver_url), user_id))
     } else {
@@ -309,8 +324,16 @@ pub async fn register_under_config(
                 "Successfully registered user {user_id}, device {:?}",
                 client.device_id(),
             );
-
-            login_client(client, user_id, password, db_passphrase, Some(user_agent)).await
+            if (client.logged_in()) {
+                let state = ClientStateBuilder::default()
+                    .is_guest(false)
+                    .db_passphrase(db_passphrase)
+                    .build()?;
+                Client::new(client, state).await
+            } else {
+                // we didn't receive the login details yet, do a full login attempt
+                login_client(client, user_id, password, db_passphrase, Some(user_agent)).await
+            }
         })
         .await?
 }
@@ -355,36 +378,46 @@ pub async fn register_with_token_under_config(
     // First we need to log in.
     RUNTIME
         .spawn(async move {
-            let client = {
-                let client = config.build().await?;
-                let request = assign!(register::v3::Request::new(), {
-                    username: Some(user_id.localpart().to_owned()),
-                    password: Some(password.clone()),
-                    initial_device_display_name: Some(user_agent.clone()),
-                    auth: Some(AuthData::Dummy(Dummy::new())),
-                });
+            let client = config.build().await?;
+            let request = assign!(register::v3::Request::new(), {
+                username: Some(user_id.localpart().to_owned()),
+                password: Some(password.clone()),
+                initial_device_display_name: Some(user_agent.clone()),
+                auth: Some(AuthData::Dummy(Dummy::new())),
+            });
 
-                if let Err(err) = client.matrix_auth().register(request).await {
-                    let Some(response) = err.as_uiaa_response() else {
+            if let Err(err) = client.matrix_auth().register(request).await {
+                let Some(response) = err.as_uiaa_response() else {
                         bail!("Server did not indicate how to allow registration.");
                     };
 
-                    info!("Acceptable auth flows: {response:?}");
+                info!("Acceptable auth flows: {response:?}");
 
-                    // FIXME: do actually check the registration types...
-                    let token_request = assign!(register::v3::Request::new(), {
-                        auth: Some(AuthData::RegistrationToken(
-                            assign!(RegistrationToken::new(registration_token), {
-                                session: response.session.clone(),
-                            }),
-                        )),
-                    });
-                    client.matrix_auth().register(token_request).await?;
-                } // else all went well.
-                client
-            };
+                // FIXME: do actually check the registration types...
+                let token_request = assign!(register::v3::Request::new(), {
+                    auth: Some(AuthData::RegistrationToken(
+                        assign!(RegistrationToken::new(registration_token), {
+                            session: response.session.clone(),
+                        }),
+                    )),
+                });
+                client.matrix_auth().register(token_request).await?;
+            } // else all went well.
 
-            login_client(client, user_id, password, db_passphrase, Some(user_agent)).await
+            info!(
+                "Successfully registered user {user_id}, device {:?}",
+                client.device_id(),
+            );
+            if (client.logged_in()) {
+                let state = ClientStateBuilder::default()
+                    .is_guest(false)
+                    .db_passphrase(db_passphrase)
+                    .build()?;
+                Client::new(client, state).await
+            } else {
+                // we didn't receive the login details yet, do a full login attempt
+                login_client(client, user_id, password, db_passphrase, Some(user_agent)).await
+            }
         })
         .await?
 }

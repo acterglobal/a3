@@ -9,9 +9,21 @@ final allSessionsProvider = FutureProvider<List<DeviceRecord>>(
       throw 'Client is not logged in';
     }
     final manager = client.sessionManager();
-    final sessions = (await manager.allSessions()).toList();
+    return (await manager.allSessions()).toList();
+  },
+);
+
+final unknownSessionsProvider = FutureProvider<List<DeviceRecord>>(
+  (ref) async {
+    final client = ref.watch(clientProvider);
+    if (client == null) {
+      throw 'Client is not logged in';
+    }
+    final sessions = await ref.watch(allSessionsProvider.future);
     return sessions
-        .where((sess) => sess.deviceId() != client.deviceId()) // exclude me
+        .where(
+          (session) => !session.isMe(),
+        ) // exclude me
         .toList();
   },
 );

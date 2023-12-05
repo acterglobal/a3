@@ -4,7 +4,6 @@ import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
-import 'package:acter/features/profile/model/keys.dart';
 import 'package:acter/features/profile/widgets/profile_item_tile.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -79,6 +78,8 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
 }
 
 class MyProfile extends ConsumerWidget {
+  static const logoutKey = Key('my-profile-logout');
+  static const displayNameKey = Key('my-profile-display-name');
   const MyProfile({super.key});
 
   Future<void> updateDisplayName(
@@ -141,6 +142,7 @@ class MyProfile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final account = ref.watch(accountProfileProvider);
+    final size = MediaQuery.of(context).size;
 
     return account.when(
       data: (data) {
@@ -199,8 +201,14 @@ class MyProfile extends ConsumerWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                data.profile.displayName ?? '',
+                              ConstrainedBox(
+                                constraints:
+                                    BoxConstraints(maxWidth: size.width * 0.8),
+                                child: Text(
+                                  key: displayNameKey,
+                                  data.profile.displayName ?? '',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                               const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 5),
@@ -225,8 +233,13 @@ class MyProfile extends ConsumerWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                userId,
+                              ConstrainedBox(
+                                constraints:
+                                    BoxConstraints(maxWidth: size.width * 0.8),
+                                child: Text(
+                                  userId,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                               const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 5),
@@ -322,7 +335,7 @@ class MyProfile extends ConsumerWidget {
                         child: Column(
                           children: [
                             ProfileItemTile(
-                              gestureKey: MyProfileKeys.logout,
+                              gestureKey: logoutKey,
                               icon: Atlas.exit,
                               title: 'Logout',
                               onPressed: () =>

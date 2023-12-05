@@ -1,6 +1,6 @@
 use anyhow::{bail, Result};
 use core::time::Duration;
-use futures::{pin_mut, stream::StreamExt};
+use futures::stream::StreamExt;
 use tokio::time::sleep;
 use tracing::info;
 
@@ -21,18 +21,7 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
 
     let kyra_sync = kyra.start_sync();
     kyra_sync.await_has_synced_history().await?;
-
-    let kyra_convo = kyra
-        .convo(room_id.to_string())
-        .await
-        .expect("kyra should belong to convo");
-    let kyra_timeline = kyra_convo
-        .timeline_stream()
-        .await
-        .expect("kyra should get timeline stream");
-    let kyra_stream = kyra_timeline.diff_stream();
-    pin_mut!(kyra_stream);
-
+    let mut kyra_stream = Box::pin(kyra.sync_stream(Default::default()).await);
     kyra_stream.next().await;
     for invited in kyra.invited_rooms().iter() {
         info!(" - accepting {:?}", invited.room_id());

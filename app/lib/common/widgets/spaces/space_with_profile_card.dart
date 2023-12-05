@@ -126,7 +126,7 @@ class SpaceWithProfileCard extends StatelessWidget {
       shape: renderShape(context),
       child: ListTile(
         contentPadding: contentPadding,
-        onTap: onTap ?? () => context.go('/$roomId'),
+        onTap: onTap ?? () => context.push('/$roomId'),
         onFocusChange: onFocusChange,
         onLongPress: onLongPress,
         titleTextStyle: titleTextStyle,

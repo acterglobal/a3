@@ -11,8 +11,20 @@ use crate::utils::random_users_with_random_convo;
 async fn sisko_detects_kyra_read() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut sisko, mut kyra, _, room_id) = random_users_with_random_convo("detect_read").await?;
+
     let sisko_sync = sisko.start_sync();
     sisko_sync.await_has_synced_history().await?;
+
+    let sisko_convo = sisko
+        .convo(room_id.to_string())
+        .await
+        .expect("sisko should belong to convo");
+    let sisko_timeline = sisko_convo
+        .timeline_stream()
+        .await
+        .expect("sisko should get timeline stream");
+    let sisko_stream = sisko_timeline.diff_stream();
+    pin_mut!(sisko_stream);
 
     info!("1");
 
@@ -26,21 +38,6 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     }
 
     info!("2");
-
-    let sisko_convo = sisko
-        .convo(room_id.to_string())
-        .await
-        .expect("sisko should belong to convo");
-    let sisko_timeline = sisko_convo
-        .timeline_stream()
-        .await
-        .expect("sisko should get timeline stream");
-    let sisko_stream = sisko_timeline.diff_stream();
-    pin_mut!(sisko_stream);
-
-    let Some(mut event_rx) = sisko.receipt_event_rx() else {
-        bail!("sisko needs receipt event receiver")
-    };
 
     sisko_timeline
         .send_plain_message("Hi, everyone".to_string())
@@ -89,10 +86,9 @@ async fn sisko_detects_kyra_read() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     info!("loop finished");
-    assert!(
-        received.is_some(),
-        "Even after 30 seconds, text msg not received"
-    );
+    let Some(received) = received else {
+        bail!("Even after 30 seconds, text msg not received")
+    };
 
     info!("4 - {:?}", received);
 
@@ -107,12 +103,16 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     kyra_timeline
         .send_single_receipt(
             "Read".to_string(),
-            "Unthreaded".to_string(),
-            received.unwrap().to_string(),
+            "Main".to_string(), // when not main, below event receiver will not receive this event
+            received.to_string(),
         )
         .await?;
 
     info!("5");
+
+    let Some(mut event_rx) = sisko.receipt_event_rx() else {
+        bail!("sisko needs receipt event receiver")
+    };
 
     i = 30; // sometimes read receipt not reached
     let mut found = false;
@@ -122,7 +122,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
             Ok(Some(event)) => {
                 info!("received: {:?}", event.clone());
                 for record in event.receipt_records() {
-                    if record.seen_by() == kyra.user_id()?.to_string() {
+                    if record.seen_by() == kyra.user_id()? {
                         found = true;
                         break;
                     }

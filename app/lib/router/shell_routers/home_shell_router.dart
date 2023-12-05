@@ -13,6 +13,7 @@ import 'package:acter/features/settings/pages/labs_page.dart';
 import 'package:acter/features/settings/pages/licenses_page.dart';
 import 'package:acter/features/settings/pages/notifications_page.dart';
 import 'package:acter/features/settings/pages/sessions_page.dart';
+import 'package:acter/features/settings/super_invites/pages/super_invites.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/pages/events_page.dart';
 import 'package:acter/features/space/pages/members_page.dart';
@@ -88,6 +89,17 @@ List<RouteBase> makeHomeShellRoutes(ref) {
         return NoTransitionPage(
           key: state.pageKey,
           child: const NotificationsSettingsPage(),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.settingsSuperInvites.name,
+      path: Routes.settingsSuperInvites.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const SuperInvitesPage(),
         );
       },
     ),

@@ -1,5 +1,5 @@
 use acter::{api::RoomMessage, ruma_common::OwnedEventId};
-use anyhow::Result;
+use anyhow::{bail, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
 use tokio::time::sleep;
@@ -91,16 +91,12 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     info!("loop finished - {:?}", received);
-    assert!(
-        received.is_some(),
-        "Even after 30 seconds, text msg not received"
-    );
+    let Some(received) = received else {
+        bail!("Even after 30 seconds, text msg not received")
+    };
 
     kyra_timeline
-        .send_plain_reply(
-            "Sorry, it's my bad".to_string(),
-            received.unwrap().to_string(),
-        )
+        .send_plain_reply("Sorry, it's my bad".to_string(), received.to_string())
         .await?;
 
     // msg reply may reach via pushback action
@@ -110,17 +106,14 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
         info!("stream loop - {i}");
         if let Some(diff) = sisko_stream.next().now_or_never().flatten() {
             info!("stream diff - {}", diff.action());
-            match diff.action().as_str() {
-                "PushBack" => {
-                    let value = diff
-                        .value()
-                        .expect("diff pushback action should have valid value");
-                    info!("diff pushback - {:?}", value);
-                    if match_room_msg(&value, "Sorry, it's my bad").is_some() {
-                        found = true;
-                    }
+            if diff.action().as_str() == "PushBack" {
+                let value = diff
+                    .value()
+                    .expect("diff pushback action should have valid value");
+                info!("diff pushback - {:?}", value);
+                if match_room_msg(&value, "Sorry, it's my bad").is_some() {
+                    found = true;
                 }
-                _ => {}
             }
             // yay
             if found {

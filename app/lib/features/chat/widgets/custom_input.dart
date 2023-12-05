@@ -811,9 +811,7 @@ class _TextInputWidget extends ConsumerWidget {
               });
             }
           },
-          textInputAction: (Platform.isAndroid || Platform.isIOS)
-              ? TextInputAction.send
-              : TextInputAction.newline,
+          textInputAction: TextInputAction.newline,
           enabled: chatInputState.allowEdit,
           onSubmitted: (value) => onSendButtonPressed(),
           style: Theme.of(context).textTheme.bodySmall,

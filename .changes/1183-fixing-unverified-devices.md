@@ -1,0 +1,2 @@
+- Registration fixes: allow spaces in display name, make sure we only register one device and don't confuse users with unverified-devices warnings
+- Removed useless notifications listing from activities screen

@@ -5,6 +5,7 @@ enum Routes {
   actionAddPin('/actions/addPin'),
   actionAddEvent('/actions/addEvent'),
   actionAddUpdate('/actions/addUpdate'),
+  actionCreateSuperInvite('/actions/createSuperInvite'),
 
   // --- Auth
   intro('/intro'),
@@ -31,6 +32,7 @@ enum Routes {
   chatProfile('/chat/:roomId([!#][^/]+)/profile'),
   chatInvite('/:roomId([!#][^/]+)/invite'),
 
+  // --- tasks
   tasks('/tasks'),
   task('/tasks/:taskListId([!#][^/]+)/:taskId([!#][^/]+)'),
   taskList('/tasks/:taskListId([!#][^/]+)'),
@@ -76,6 +78,9 @@ enum Routes {
   info('/info'),
   licenses('/info/licenses'),
 
+  // -- super invites
+  settingsSuperInvites('/settings/super_invites'),
+  settingsSuperInvitesUpdate('/settings/super_invites/:token/update'),
   // -- utils
   bugReport('/bug-report'),
   quickJump('/quick-jump'),

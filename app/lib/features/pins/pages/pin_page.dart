@@ -64,10 +64,7 @@ class PinPage extends ConsumerWidget {
                 onSuccess: () {
                   ref.invalidate(pinsProvider);
                   if (context.mounted) {
-                    context.goNamed(
-                      Routes.spaceEvents.name,
-                      pathParameters: {'spaceId': roomId},
-                    );
+                    context.pop();
                   }
                 },
                 senderId: pin.sender().toString(),

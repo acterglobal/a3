@@ -12,7 +12,7 @@ use matrix_sdk::{
 use matrix_sdk_ui::timeline::{
     BackPaginationStatus, EventTimelineItem, PaginationOptions, Timeline,
 };
-use ruma_common::{EventId, OwnedEventId};
+use ruma_common::{EventId, OwnedEventId, OwnedTransactionId, TransactionId};
 use ruma_events::{
     reaction::ReactionEventContent,
     receipt::ReceiptThread,
@@ -1300,6 +1300,60 @@ impl TimelineStream {
                 let relates_to = Annotation::new(event_id, key);
                 let content = ReactionEventContent::new(relates_to);
                 timeline.send(content.into()).await;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn retry_send(&self, txn_id: String) -> Result<bool> {
+        let timeline = self.timeline.clone();
+        let transaction_id = OwnedTransactionId::from(txn_id);
+
+        let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+
+                timeline.retry_send(&transaction_id).await;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn cancel_send(&self, txn_id: String) -> Result<bool> {
+        let timeline = self.timeline.clone();
+        let transaction_id = OwnedTransactionId::from(txn_id);
+
+        let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+
+                timeline.cancel_send(&transaction_id).await;
                 Ok(true)
             })
             .await?
