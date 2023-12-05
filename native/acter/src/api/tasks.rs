@@ -480,7 +480,7 @@ impl Task {
         self.content
             .description
             .as_ref()
-            .map(|x| ContentDesc::from(x))
+            .map(ContentDesc::from)
     }
 
     pub fn sort_order(&self) -> u32 {

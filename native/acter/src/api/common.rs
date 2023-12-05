@@ -186,7 +186,7 @@ impl From<&LocationMessageEventContent> for ContentDesc {
             asset: value.asset.clone(),
             location: value.location.clone(),
             message: value.message.clone(),
-            ts: value.ts.clone(),
+            ts: value.ts,
         }
     }
 }
@@ -400,10 +400,10 @@ impl ContentDesc {
         match self {
             ContentDesc::Audio { info, .. } => info
                 .as_ref()
-                .and_then(|x| x.duration.map(|y| y.as_secs().into())),
+                .and_then(|x| x.duration.map(|y| y.as_secs())),
             ContentDesc::Video { info, .. } => info
                 .as_ref()
-                .and_then(|x| x.duration.map(|y| y.as_secs().into())),
+                .and_then(|x| x.duration.map(|y| y.as_secs())),
             _ => None,
         }
     }
