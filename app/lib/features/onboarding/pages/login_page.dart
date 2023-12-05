@@ -138,7 +138,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             }
                             return null;
                           },
-                          onChanged: (value) {},
                         ),
                         const SizedBox(height: 20),
                         TextFormField(
@@ -173,7 +172,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             }
                             return null;
                           },
-                          onChanged: (value) {},
                         ),
                         const SizedBox(height: 40),
                         authState

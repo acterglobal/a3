@@ -167,7 +167,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                 }
                                 return null;
                               },
-                              onChanged: (value) {},
                             ),
                             const SizedBox(height: 10),
                             TextFormField(
@@ -217,7 +216,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                 }
                                 return null;
                               },
-                              onChanged: (value) {},
                             ),
                             const SizedBox(height: 10),
                             TextFormField(
@@ -257,7 +255,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                 }
                                 return null;
                               },
-                              onChanged: (value) {},
                             ),
                             const SizedBox(height: 10),
                             TextFormField(
@@ -295,7 +292,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                 }
                                 return null;
                               },
-                              onChanged: (value) {},
                             ),
                             const SizedBox(height: 30),
                             RichText(
