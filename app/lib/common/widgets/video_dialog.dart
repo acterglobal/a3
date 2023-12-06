@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 
 class VideoDialog extends StatelessWidget {
   final String title;
@@ -30,6 +31,12 @@ class VideoDialog extends StatelessWidget {
                     title,
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Share.shareXFiles([XFile(videoFile.path)]);
+                  },
+                  icon: const Icon(Icons.share),
                 ),
                 IconButton(
                   onPressed: () => Navigator.pop(context),

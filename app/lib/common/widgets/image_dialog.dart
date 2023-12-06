@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:share_plus/share_plus.dart';
 
 class ImageDialog extends ConsumerWidget {
   final String title;
@@ -31,6 +31,12 @@ class ImageDialog extends ConsumerWidget {
                     title,
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Share.shareXFiles([XFile(imageFile.path)]);
+                  },
+                  icon: const Icon(Icons.share),
                 ),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
