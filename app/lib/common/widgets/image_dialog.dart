@@ -1,16 +1,16 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 
 class ImageDialog extends ConsumerWidget {
   final String title;
-  final Uint8List imageData;
+  final File imageFile;
 
   const ImageDialog({
     super.key,
     required this.title,
-    required this.imageData,
+    required this.imageFile,
   });
 
   @override
@@ -40,8 +40,8 @@ class ImageDialog extends ConsumerWidget {
             ),
             const SizedBox(height: 15),
             Expanded(
-              child: Image.memory(
-                imageData,
+              child: Image.file(
+                imageFile,
                 frameBuilder: (
                     BuildContext context,
                     Widget child,

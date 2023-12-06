@@ -130,6 +130,29 @@ final memberProvider =
   return await convo.getMember(userId);
 });
 
+final imageFileFromMessageIdProvider =
+    FutureProvider.family<File, String>((ref, messageId) async {
+  final convo = await ref.read(currentConvoProvider.future);
+  //Check if video file is available
+  final tempDir = await getTemporaryDirectory();
+  var imageFile = File('${tempDir.path}/image-$messageId.jpg');
+  var isImageAvailable = await imageFile.exists();
+
+  if (!isImageAvailable) {
+    if (convo != null) {
+      //If video file is not available on local store then save it
+      AsyncValue<Uint8List> videoData = AsyncValue.data(
+        await convo.imageBinary(messageId).then((value) => value.asTypedList()),
+      );
+      if (videoData.asData != null) {
+        imageFile.create();
+        imageFile.writeAsBytesSync(videoData.asData!.value);
+      }
+    }
+  }
+  return imageFile;
+});
+
 final videoFileFromMessageIdProvider =
     FutureProvider.family<File, String>((ref, messageId) async {
   final convo = await ref.read(currentConvoProvider.future);
