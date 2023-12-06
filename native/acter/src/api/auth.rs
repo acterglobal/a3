@@ -12,7 +12,6 @@ use matrix_sdk::{
     Client as SdkClient, ClientBuilder, SessionMeta,
 };
 use ruma_common::OwnedUserId;
-use std::backtrace::Backtrace;
 use std::sync::RwLock;
 use tracing::{error, info};
 

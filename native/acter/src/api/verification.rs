@@ -18,10 +18,7 @@ use matrix_sdk::{
 use ruma_common::{device_id, OwnedDeviceId, OwnedEventId, OwnedTransactionId, OwnedUserId};
 use ruma_events::{
     key::verification::{accept::AcceptMethod, start::StartMethod, VerificationMethod},
-    room::{
-        encrypted::OriginalSyncRoomEncryptedEvent,
-        message::{MessageType, OriginalSyncRoomMessageEvent},
-    },
+    room::message::{MessageType, OriginalSyncRoomMessageEvent},
     AnyToDeviceEvent, EventContent,
 };
 use std::{

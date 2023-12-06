@@ -1,6 +1,5 @@
 use chrono::{DateTime, Utc};
-use core::time::Duration;
-use matrix_sdk::{deserialized_responses::SyncTimelineEvent, room::Room};
+use matrix_sdk::room::Room;
 use matrix_sdk_ui::timeline::{
     EventSendState as SdkEventSendState, EventTimelineItem, MembershipChange, TimelineItem,
     TimelineItemContent, TimelineItemKind, VirtualTimelineItem,
@@ -12,21 +11,6 @@ use ruma_events::{
         candidates::{OriginalCallCandidatesEvent, OriginalSyncCallCandidatesEvent},
         hangup::{OriginalCallHangupEvent, OriginalSyncCallHangupEvent},
         invite::{OriginalCallInviteEvent, OriginalSyncCallInviteEvent},
-    },
-    key::verification::{
-        accept::{
-            AcceptMethod, OriginalKeyVerificationAcceptEvent,
-            OriginalSyncKeyVerificationAcceptEvent,
-        },
-        cancel::{OriginalKeyVerificationCancelEvent, OriginalSyncKeyVerificationCancelEvent},
-        done::{OriginalKeyVerificationDoneEvent, OriginalSyncKeyVerificationDoneEvent},
-        key::{OriginalKeyVerificationKeyEvent, OriginalSyncKeyVerificationKeyEvent},
-        mac::{OriginalKeyVerificationMacEvent, OriginalSyncKeyVerificationMacEvent},
-        ready::{OriginalKeyVerificationReadyEvent, OriginalSyncKeyVerificationReadyEvent},
-        start::{
-            OriginalKeyVerificationStartEvent, OriginalSyncKeyVerificationStartEvent, StartMethod,
-        },
-        VerificationMethod,
     },
     policy::rule::{
         room::{OriginalPolicyRuleRoomEvent, OriginalSyncPolicyRuleRoomEvent},
@@ -51,8 +35,8 @@ use ruma_events::{
         join_rules::{OriginalRoomJoinRulesEvent, OriginalSyncRoomJoinRulesEvent},
         member::{MembershipState, OriginalRoomMemberEvent, OriginalSyncRoomMemberEvent},
         message::{
-            AudioInfo, FileInfo, MessageFormat, MessageType, OriginalRoomMessageEvent,
-            OriginalSyncRoomMessageEvent, Relation, VideoInfo,
+            MessageFormat, MessageType, OriginalRoomMessageEvent, OriginalSyncRoomMessageEvent,
+            Relation,
         },
         name::{OriginalRoomNameEvent, OriginalSyncRoomNameEvent},
         pinned_events::{OriginalRoomPinnedEventsEvent, OriginalSyncRoomPinnedEventsEvent},
@@ -71,8 +55,8 @@ use ruma_events::{
         parent::{OriginalSpaceParentEvent, OriginalSyncSpaceParentEvent},
     },
     sticker::{OriginalStickerEvent, OriginalSyncStickerEvent},
-    AnySyncMessageLikeEvent, AnySyncStateEvent, AnySyncTimelineEvent, OriginalSyncMessageLikeEvent,
-    SyncMessageLikeEvent, SyncStateEvent,
+    AnySyncMessageLikeEvent, AnySyncStateEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
+    SyncStateEvent,
 };
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Deref, sync::Arc};
