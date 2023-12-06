@@ -40,7 +40,7 @@ async fn edit_text_msg() -> Result<()> {
                         .expect("diff reset action should have valid values");
                     info!("diff reset - {:?}", values);
                     for value in values.iter() {
-                        if let Some(event_id) = match_room_msg(value, "Hi, everyone", false) {
+                        if let Some(event_id) = match_text_msg(value, "Hi, everyone", false) {
                             sent_event_id = Some(event_id);
                             break;
                         }
@@ -51,7 +51,7 @@ async fn edit_text_msg() -> Result<()> {
                         .value()
                         .expect("diff set action should have valid value");
                     info!("diff set - {:?}", value);
-                    if let Some(event_id) = match_room_msg(&value, "Hi, everyone", false) {
+                    if let Some(event_id) = match_text_msg(&value, "Hi, everyone", false) {
                         sent_event_id = Some(event_id);
                     }
                 }
@@ -88,7 +88,7 @@ async fn edit_text_msg() -> Result<()> {
                 let value = diff
                     .value()
                     .expect("diff set action should have valid value");
-                if let Some(event_id) = match_room_msg(&value, "This is message edition", true) {
+                if let Some(event_id) = match_text_msg(&value, "This is message edition", true) {
                     edited_event_id = Some(event_id);
                 }
             }
@@ -113,7 +113,7 @@ async fn edit_text_msg() -> Result<()> {
     Ok(())
 }
 
-fn match_room_msg(msg: &RoomMessage, body: &str, modified: bool) -> Option<OwnedEventId> {
+fn match_text_msg(msg: &RoomMessage, body: &str, modified: bool) -> Option<OwnedEventId> {
     info!("match room msg - {:?}", msg.clone());
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
