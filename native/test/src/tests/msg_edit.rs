@@ -119,10 +119,11 @@ fn match_room_msg(msg: &RoomMessage, body: &str, modified: bool) -> Option<Owned
         let event_item = msg.event_item().expect("room msg should have event item");
         if let Some(content_desc) = event_item.content_desc() {
             if content_desc.body() == body {
-                assert_eq!(event_item.was_edited(), modified);
-                // exclude the pending msg
-                if let Some(event_id) = event_item.evt_id() {
-                    return Some(event_id);
+                if event_item.was_edited() == modified {
+                    // exclude the pending msg
+                    if let Some(event_id) = event_item.evt_id() {
+                        return Some(event_id);
+                    }
                 }
             }
         }
@@ -254,13 +255,15 @@ fn match_image_msg(msg: &RoomMessage, content_type: &str, modified: bool) -> Opt
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
         if let Some(content_desc) = event_item.content_desc() {
-            assert_eq!(event_item.was_edited(), modified);
-            if let Some(mimetype) = content_desc.mimetype() {
-                assert_eq!(mimetype, content_type);
-            }
-            // exclude the pending msg
-            if let Some(evt_id) = event_item.evt_id() {
-                return Some(evt_id);
+            if event_item.was_edited() == modified {
+                if let Some(mimetype) = content_desc.mimetype() {
+                    if mimetype == content_type {
+                        // exclude the pending msg
+                        if let Some(evt_id) = event_item.evt_id() {
+                            return Some(evt_id);
+                        }
+                    }
+                }
             }
         }
     }
