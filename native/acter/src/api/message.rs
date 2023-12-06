@@ -35,8 +35,8 @@ use ruma_events::{
         join_rules::{OriginalRoomJoinRulesEvent, OriginalSyncRoomJoinRulesEvent},
         member::{MembershipState, OriginalRoomMemberEvent, OriginalSyncRoomMemberEvent},
         message::{
-            MessageFormat, MessageType, OriginalRoomMessageEvent, OriginalSyncRoomMessageEvent,
-            Relation, RoomMessageEvent,
+            MessageType, OriginalRoomMessageEvent, OriginalSyncRoomMessageEvent, Relation,
+            RoomMessageEvent,
         },
         name::{OriginalRoomNameEvent, OriginalSyncRoomNameEvent},
         pinned_events::{OriginalRoomPinnedEventsEvent, OriginalSyncRoomPinnedEventsEvent},
@@ -1199,9 +1199,7 @@ impl RoomMessage {
             }
             MessageType::Emote(content) => {
                 if let Some(formatted) = &content.formatted {
-                    if formatted.format == MessageFormat::Html {
-                        text_desc.set_formatted_body(Some(formatted.body.clone()));
-                    }
+                    text_desc.set_formatted_body(Some(formatted.body.clone()));
                 }
             }
             MessageType::File(content) => {
@@ -1233,9 +1231,7 @@ impl RoomMessage {
             }
             MessageType::Text(content) => {
                 if let Some(formatted) = &content.formatted {
-                    if formatted.format == MessageFormat::Html {
-                        text_desc.set_formatted_body(Some(formatted.body.clone()));
-                    }
+                    text_desc.set_formatted_body(Some(formatted.body.clone()));
                 }
             }
             MessageType::Video(content) => {
@@ -1291,9 +1287,7 @@ impl RoomMessage {
             }
             MessageType::Emote(content) => {
                 if let Some(formatted) = &content.formatted {
-                    if formatted.format == MessageFormat::Html {
-                        text_desc.set_formatted_body(Some(formatted.body.clone()));
-                    }
+                    text_desc.set_formatted_body(Some(formatted.body.clone()));
                 }
             }
             MessageType::File(content) => {
@@ -1325,9 +1319,7 @@ impl RoomMessage {
             }
             MessageType::Text(content) => {
                 if let Some(formatted) = &content.formatted {
-                    if formatted.format == MessageFormat::Html {
-                        text_desc.set_formatted_body(Some(formatted.body.clone()));
-                    }
+                    text_desc.set_formatted_body(Some(formatted.body.clone()));
                 }
             }
             MessageType::Video(content) => {
@@ -1833,9 +1825,7 @@ impl RoomMessage {
                 match msg_type {
                     MessageType::Text(content) => {
                         if let Some(formatted) = &content.formatted {
-                            if formatted.format == MessageFormat::Html {
-                                text_desc.set_formatted_body(Some(formatted.body.clone()));
-                            }
+                            text_desc.set_formatted_body(Some(formatted.body.clone()));
                         }
                         if sent_by_me {
                             result.set_editable(true);
@@ -1843,9 +1833,7 @@ impl RoomMessage {
                     }
                     MessageType::Emote(content) => {
                         if let Some(formatted) = &content.formatted {
-                            if formatted.format == MessageFormat::Html {
-                                text_desc.set_formatted_body(Some(formatted.body.clone()));
-                            }
+                            text_desc.set_formatted_body(Some(formatted.body.clone()));
                         }
                         if sent_by_me {
                             result.set_editable(true);
