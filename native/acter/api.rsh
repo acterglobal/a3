@@ -1300,6 +1300,9 @@ object AttachmentsManager {
 
     /// create news slide for file msg
     fn file_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>) -> AttachmentDraft;
+
+    /// create news slide for location msg
+    fn location_attachment_draft(body: string, geo_uri: string) -> AttachmentDraft;
 }
 
 

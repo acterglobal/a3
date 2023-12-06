@@ -14,7 +14,8 @@ use ruma_common::{MxcUri, OwnedEventId, OwnedUserId};
 use ruma_events::room::{
     message::{
         AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-        ImageMessageEventContent, LocationMessageEventContent, VideoInfo, VideoMessageEventContent,
+        ImageMessageEventContent, LocationInfo, LocationMessageEventContent, VideoInfo,
+        VideoMessageEventContent,
     },
     ImageInfo,
 };
@@ -354,6 +355,26 @@ impl AttachmentsManager {
         let mut file_content = FileMessageEventContent::plain(body, url.into());
         file_content.info = Some(Box::new(info));
         builder.content(AttachmentContent::File(file_content));
+        Ok(AttachmentDraft {
+            client: self.client.clone(),
+            room: self.room.clone(),
+            inner: builder,
+        })
+    }
+
+    pub fn location_attachment_draft(
+        &self,
+        body: String,
+        geo_uri: String,
+    ) -> Result<AttachmentDraft> {
+        if !self.is_joined() {
+            bail!("Can only attachment in joined rooms");
+        }
+        let mut builder = self.inner.draft_builder();
+        let info = LocationInfo::new();
+        let mut location_content = LocationMessageEventContent::new(body, geo_uri);
+        location_content.info = Some(Box::new(info));
+        builder.content(AttachmentContent::Location(location_content));
         Ok(AttachmentDraft {
             client: self.client.clone(),
             room: self.room.clone(),
