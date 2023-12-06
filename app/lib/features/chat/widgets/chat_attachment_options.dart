@@ -1,3 +1,4 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
@@ -22,14 +23,15 @@ class ChatAttachmentOptions extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: [
-        ListTile(
-          onTap: () {
-            Navigator.of(context).pop();
-            if (onTapCamera != null) onTapCamera!();
-          },
-          leading: Icon(Atlas.camera, color: iconColor),
-          title: const Text('Camera'),
-        ),
+        if (!isDesktop)
+          ListTile(
+            onTap: () {
+              Navigator.of(context).pop();
+              if (onTapCamera != null) onTapCamera!();
+            },
+            leading: Icon(Atlas.camera, color: iconColor),
+            title: const Text('Camera'),
+          ),
         ListTile(
           onTap: () {
             Navigator.of(context).pop();

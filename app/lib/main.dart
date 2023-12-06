@@ -13,6 +13,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:video_player_media_kit/video_player_media_kit.dart';
 
 void main(List<String> args) async {
   if (args.isNotEmpty) {
@@ -20,6 +21,13 @@ void main(List<String> args) async {
   } else {
     await startApp();
   }
+  VideoPlayerMediaKit.ensureInitialized(
+    android: true,
+    iOS: true,
+    macOS: true,
+    windows: true,
+    linux: true,
+  );
 }
 
 Widget makeApp() {

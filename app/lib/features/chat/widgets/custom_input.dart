@@ -362,7 +362,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                   .pickImage(source: ImageSource.camera);
                               if (imageFile != null) {
                                 List<File> files = [File(imageFile.path)];
-                                await handleFileUpload(files);
+                                handleAttachment(ref, files);
                               }
                             },
                             onTapImage: () async {
@@ -370,7 +370,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                   .pickImage(source: ImageSource.gallery);
                               if (imageFile != null) {
                                 List<File> files = [File(imageFile.path)];
-                                await handleFileUpload(files);
+                                handleAttachment(ref, files);
                               }
                             },
                             onTapVideo: () async {
@@ -378,10 +378,15 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                   .pickVideo(source: ImageSource.gallery);
                               if (imageFile != null) {
                                 List<File> files = [File(imageFile.path)];
-                                await handleFileUpload(files);
+                                handleAttachment(ref, files);
                               }
                             },
-                            onTapFile: () => handleAttachment(ref, context),
+                            onTapFile: () async {
+                              var selectedFiles = await handleFileSelection(
+                                ctx,
+                              );
+                              handleAttachment(ref, selectedFiles);
+                            },
                           ),
                         ),
                         child: const Icon(
@@ -453,15 +458,16 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     return null;
   }
 
-  void handleAttachment(WidgetRef ref, BuildContext ctx) async {
-    var selectedFiles = await handleFileSelection(ctx);
-
-    if (ctx.mounted) {
+  void handleAttachment(
+    WidgetRef ref,
+    List<File>? selectedFiles,
+  ) async {
+    if (context.mounted) {
       if (selectedFiles != null && selectedFiles.isNotEmpty) {
         String fileName = selectedFiles.first.path.split('/').last;
         final mimeType = lookupMimeType(selectedFiles.first.path);
         showAdaptiveDialog(
-          context: ctx,
+          context: context,
           builder: (ctx) => DefaultDialog(
             title: Row(
               mainAxisAlignment: MainAxisAlignment.start,
