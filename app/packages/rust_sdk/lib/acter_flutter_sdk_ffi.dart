@@ -18027,7 +18027,7 @@ class Api {
           int Function(
             int,
           )>();
-  late final _attachmentsManagerImageAttachmentDraftPtr = _lookup<
+  late final _attachmentsManagerImageDraftPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -18051,10 +18051,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__AttachmentsManager_image_attachment_draft");
+          )>>("__AttachmentsManager_image_draft");
 
-  late final _attachmentsManagerImageAttachmentDraft =
-      _attachmentsManagerImageAttachmentDraftPtr.asFunction<
+  late final _attachmentsManagerImageDraft =
+      _attachmentsManagerImageDraftPtr.asFunction<
           int Function(
             int,
             int,
@@ -18078,7 +18078,7 @@ class Api {
             int,
             int,
           )>();
-  late final _attachmentsManagerAudioAttachmentDraftPtr = _lookup<
+  late final _attachmentsManagerAudioDraftPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -18096,10 +18096,10 @@ class Api {
             ffi.Uint64,
             ffi.Uint8,
             ffi.Uint64,
-          )>>("__AttachmentsManager_audio_attachment_draft");
+          )>>("__AttachmentsManager_audio_draft");
 
-  late final _attachmentsManagerAudioAttachmentDraft =
-      _attachmentsManagerAudioAttachmentDraftPtr.asFunction<
+  late final _attachmentsManagerAudioDraft =
+      _attachmentsManagerAudioDraftPtr.asFunction<
           int Function(
             int,
             int,
@@ -18117,7 +18117,7 @@ class Api {
             int,
             int,
           )>();
-  late final _attachmentsManagerVideoAttachmentDraftPtr = _lookup<
+  late final _attachmentsManagerVideoDraftPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -18143,10 +18143,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__AttachmentsManager_video_attachment_draft");
+          )>>("__AttachmentsManager_video_draft");
 
-  late final _attachmentsManagerVideoAttachmentDraft =
-      _attachmentsManagerVideoAttachmentDraftPtr.asFunction<
+  late final _attachmentsManagerVideoDraft =
+      _attachmentsManagerVideoDraftPtr.asFunction<
           int Function(
             int,
             int,
@@ -18172,7 +18172,7 @@ class Api {
             int,
             int,
           )>();
-  late final _attachmentsManagerFileAttachmentDraftPtr = _lookup<
+  late final _attachmentsManagerFileDraftPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -18188,10 +18188,10 @@ class Api {
             ffi.Uint64,
             ffi.Uint8,
             ffi.Uint64,
-          )>>("__AttachmentsManager_file_attachment_draft");
+          )>>("__AttachmentsManager_file_draft");
 
-  late final _attachmentsManagerFileAttachmentDraft =
-      _attachmentsManagerFileAttachmentDraftPtr.asFunction<
+  late final _attachmentsManagerFileDraft =
+      _attachmentsManagerFileDraftPtr.asFunction<
           int Function(
             int,
             int,
@@ -18207,7 +18207,7 @@ class Api {
             int,
             int,
           )>();
-  late final _attachmentsManagerLocationAttachmentDraftPtr = _lookup<
+  late final _attachmentsManagerLocationDraftPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -18217,10 +18217,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__AttachmentsManager_location_attachment_draft");
+          )>>("__AttachmentsManager_location_draft");
 
-  late final _attachmentsManagerLocationAttachmentDraft =
-      _attachmentsManagerLocationAttachmentDraftPtr.asFunction<
+  late final _attachmentsManagerLocationDraft =
+      _attachmentsManagerLocationDraftPtr.asFunction<
           int Function(
             int,
             int,
@@ -39468,7 +39468,7 @@ class AttachmentsManager {
   }
 
   /// create news slide for image msg
-  AttachmentDraft imageAttachmentDraft(
+  AttachmentDraft imageDraft(
     String body,
     String url,
     String? mimetype,
@@ -39571,7 +39571,7 @@ class AttachmentsManager {
       tmp30 = tmp30_0.address;
       tmp32 = tmp31;
     }
-    final tmp33 = _api._attachmentsManagerImageAttachmentDraft(
+    final tmp33 = _api._attachmentsManagerImageDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -39603,7 +39603,7 @@ class AttachmentsManager {
   }
 
   /// create news slide for audio msg
-  AttachmentDraft audioAttachmentDraft(
+  AttachmentDraft audioDraft(
     String body,
     String url,
     String? mimetype,
@@ -39675,7 +39675,7 @@ class AttachmentsManager {
       final tmp21 = tmp19;
       tmp22 = tmp21;
     }
-    final tmp23 = _api._attachmentsManagerAudioAttachmentDraft(
+    final tmp23 = _api._attachmentsManagerAudioDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -39701,7 +39701,7 @@ class AttachmentsManager {
   }
 
   /// create news slide for video msg
-  AttachmentDraft videoAttachmentDraft(
+  AttachmentDraft videoDraft(
     String body,
     String url,
     String? mimetype,
@@ -39815,7 +39815,7 @@ class AttachmentsManager {
       tmp34 = tmp34_0.address;
       tmp36 = tmp35;
     }
-    final tmp37 = _api._attachmentsManagerVideoAttachmentDraft(
+    final tmp37 = _api._attachmentsManagerVideoDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -39849,7 +39849,7 @@ class AttachmentsManager {
   }
 
   /// create news slide for file msg
-  AttachmentDraft fileAttachmentDraft(
+  AttachmentDraft fileDraft(
     String body,
     String url,
     String? mimetype,
@@ -39910,7 +39910,7 @@ class AttachmentsManager {
       final tmp17 = tmp15;
       tmp18 = tmp17;
     }
-    final tmp19 = _api._attachmentsManagerFileAttachmentDraft(
+    final tmp19 = _api._attachmentsManagerFileDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -39934,7 +39934,7 @@ class AttachmentsManager {
   }
 
   /// create news slide for location msg
-  AttachmentDraft locationAttachmentDraft(
+  AttachmentDraft locationDraft(
     String body,
     String geoUri,
   ) {
@@ -39964,7 +39964,7 @@ class AttachmentsManager {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9 = _api._attachmentsManagerLocationAttachmentDraft(
+    final tmp9 = _api._attachmentsManagerLocationDraft(
       tmp0,
       tmp2,
       tmp3,

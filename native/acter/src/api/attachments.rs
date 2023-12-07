@@ -248,7 +248,7 @@ impl AttachmentsManager {
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub fn image_attachment_draft(
+    pub fn image_draft(
         &self,
         body: String,
         url: String,
@@ -278,7 +278,7 @@ impl AttachmentsManager {
         })
     }
 
-    pub fn audio_attachment_draft(
+    pub fn audio_draft(
         &self,
         body: String,
         url: String,
@@ -305,7 +305,7 @@ impl AttachmentsManager {
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub fn video_attachment_draft(
+    pub fn video_draft(
         &self,
         body: String,
         url: String,
@@ -337,7 +337,7 @@ impl AttachmentsManager {
         })
     }
 
-    pub fn file_attachment_draft(
+    pub fn file_draft(
         &self,
         body: String,
         url: String,
@@ -357,11 +357,7 @@ impl AttachmentsManager {
         })
     }
 
-    pub fn location_attachment_draft(
-        &self,
-        body: String,
-        geo_uri: String,
-    ) -> Result<AttachmentDraft> {
+    pub fn location_draft(&self, body: String, geo_uri: String) -> Result<AttachmentDraft> {
         let mut builder = self.inner.draft_builder();
         let info = LocationInfo::new();
         let mut location_content = LocationMessageEventContent::new(body, geo_uri);
