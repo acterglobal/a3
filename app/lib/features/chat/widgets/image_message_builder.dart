@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/widgets/image_dialog.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
