@@ -10,7 +10,6 @@ use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use futures::stream::StreamExt;
 use matrix_sdk::{
-    media::{MediaFormat, MediaRequest},
     room::Room,
     ruma::{assign, UInt},
     RoomState,
@@ -18,9 +17,8 @@ use matrix_sdk::{
 use ruma_common::{MxcUri, OwnedEventId, OwnedRoomId, OwnedUserId};
 use ruma_events::room::{
     message::{
-        AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-        ImageMessageEventContent, LocationMessageEventContent, TextMessageEventContent, VideoInfo,
-        VideoMessageEventContent,
+        AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
+        LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
     },
     ImageInfo,
 };

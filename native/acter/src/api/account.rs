@@ -5,7 +5,6 @@ use ruma_events::ignored_user_list::IgnoredUserListEventContent;
 use std::{ops::Deref, path::PathBuf, str::FromStr};
 
 use super::{
-    api::FfiBuffer,
     common::{OptionBuffer, OptionString},
     RUNTIME,
 };

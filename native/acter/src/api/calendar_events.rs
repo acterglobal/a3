@@ -1,9 +1,9 @@
 use acter_core::{
     events::{
         calendar::{self as calendar_events, CalendarEventBuilder},
-        Icon, UtcDateTime,
+        UtcDateTime,
     },
-    models::{self, ActerModel, AnyActerModel, Color},
+    models::{self, ActerModel, AnyActerModel},
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};

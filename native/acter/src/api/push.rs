@@ -1,9 +1,3 @@
-use crate::{RoomMessage, RUNTIME};
-
-use super::{
-    message::{any_sync_event_to_message, sync_event_to_message},
-    Client,
-};
 use anyhow::{bail, Context, Result};
 use matrix_sdk::ruma::{
     api::client::push::{
@@ -18,6 +12,10 @@ use matrix_sdk_ui::notification_client::{
     NotificationProcessSetup,
 };
 use ruma_common::{OwnedEventId, OwnedRoomId};
+
+use super::{message::any_sync_event_to_message, Client};
+
+use crate::{RoomMessage, RUNTIME};
 
 pub struct NotificationItem {
     pub(crate) inner: SdkNotificationItem,
