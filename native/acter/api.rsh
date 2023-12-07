@@ -1286,9 +1286,6 @@ object AttachmentsManager {
     /// How many attachments does this item have
     fn attachments_count() -> u32;
 
-    /// draft a new attachment for this item
-    fn attachment_draft() -> AttachmentDraft;
-
     /// create news slide for image msg
     fn image_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> AttachmentDraft;
 

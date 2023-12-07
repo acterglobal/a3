@@ -18027,17 +18027,6 @@ class Api {
           int Function(
             int,
           )>();
-  late final _attachmentsManagerAttachmentDraftPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__AttachmentsManager_attachment_draft");
-
-  late final _attachmentsManagerAttachmentDraft =
-      _attachmentsManagerAttachmentDraftPtr.asFunction<
-          int Function(
-            int,
-          )>();
   late final _attachmentsManagerImageAttachmentDraftPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -39475,21 +39464,6 @@ class AttachmentsManager {
     );
     final tmp3 = tmp1;
     final tmp2 = tmp3;
-    return tmp2;
-  }
-
-  /// draft a new attachment for this item
-  AttachmentDraft attachmentDraft() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._attachmentsManagerAttachmentDraft(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_AttachmentDraft");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = AttachmentDraft._(_api, tmp3_1);
     return tmp2;
   }
 
