@@ -1,4 +1,4 @@
-use acter::ActerModel;
+use acter::{ruma_events::room::MediaSource, ActerModel, MsgContent};
 use anyhow::{bail, Result};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -185,12 +185,23 @@ async fn pin_attachments() -> Result<()> {
     let attachment = attachments.first().unwrap();
     assert_eq!(attachment.event_id(), attachment_1_id);
     assert_eq!(attachment.type_str(), "image");
-    let image_desc = attachment.image_desc().expect("image desc needed");
-    assert_eq!(image_desc.name(), "acter logo");
-    assert_eq!(
-        image_desc.source().url(),
-        "https://raw.githubusercontent.com/acterglobal/a3/main/app/assets/icon/acter-logo.svg"
-    );
+    match attachment.msg_content() {
+        MsgContent::Image { body, source, .. } => {
+            assert_eq!(body, "acter logo");
+            match source {
+                MediaSource::Plain(uri) => {
+                    assert_eq!(
+                        uri.to_string(),
+                        "https://raw.githubusercontent.com/acterglobal/a3/main/app/assets/icon/acter-logo.svg"
+                    );
+                }
+                _ => {}
+            }
+        }
+        _ => {
+            bail!("should be image content")
+        }
+    }
 
     // go for the second
 
