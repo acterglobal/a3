@@ -1132,20 +1132,20 @@ object AttachmentsManager {
     /// How many attachments does this item have
     fn attachments_count() -> u32;
 
-    /// draft a new attachment for this item
-    fn attachment_draft() -> AttachmentDraft;
-
     /// create news slide for image msg
-    fn image_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> AttachmentDraft;
+    fn image_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> AttachmentDraft;
 
     /// create news slide for audio msg
-    fn audio_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>) -> AttachmentDraft;
+    fn audio_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>) -> AttachmentDraft;
 
     /// create news slide for video msg
-    fn video_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> AttachmentDraft;
+    fn video_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> AttachmentDraft;
 
     /// create news slide for file msg
-    fn file_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>) -> AttachmentDraft;
+    fn file_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>) -> AttachmentDraft;
+
+    /// create news slide for location msg
+    fn location_draft(body: string, geo_uri: string) -> AttachmentDraft;
 }
 
 

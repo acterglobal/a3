@@ -1,7 +1,5 @@
 use acter::{
-    api::RoomMessage,
-    ruma_common::OwnedEventId,
-    ruma_events::{AnyMessageLikeEvent, AnyTimelineEvent},
+    api::RoomMessage, ruma_common::OwnedEventId, ruma_events::room::redaction::RoomRedactionEvent,
 };
 use anyhow::{bail, Result};
 use core::time::Duration;
@@ -82,12 +80,12 @@ async fn message_redaction() -> Result<()> {
         .await?;
 
     let ev = convo.event(&redact_id).await?;
-    let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomRedaction(redaction_event))) = ev.event.deserialize() else {
+    let Ok(event_content) = ev.event.deserialize_as::<RoomRedactionEvent>() else {
         bail!("This should be m.room.redaction event")
     };
-    let Some(original) = redaction_event.as_original() else {
-        bail!("Redaction event should get original event")
-    };
+    let original = event_content
+        .as_original()
+        .expect("Redaction event should get original event");
     assert_eq!(original.redacts, Some(received));
     assert_eq!(original.content.reason, Some("redact-test".to_string()));
 

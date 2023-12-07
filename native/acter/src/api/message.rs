@@ -1,6 +1,5 @@
 use chrono::{DateTime, Utc};
-use core::time::Duration;
-use matrix_sdk::{deserialized_responses::SyncTimelineEvent, room::Room};
+use matrix_sdk::room::Room;
 use matrix_sdk_ui::timeline::{
     EventSendState as SdkEventSendState, EventTimelineItem, MembershipChange, TimelineItem,
     TimelineItemContent, TimelineItemKind, VirtualTimelineItem,
@@ -12,21 +11,6 @@ use ruma_events::{
         candidates::{OriginalCallCandidatesEvent, OriginalSyncCallCandidatesEvent},
         hangup::{OriginalCallHangupEvent, OriginalSyncCallHangupEvent},
         invite::{OriginalCallInviteEvent, OriginalSyncCallInviteEvent},
-    },
-    key::verification::{
-        accept::{
-            AcceptMethod, OriginalKeyVerificationAcceptEvent,
-            OriginalSyncKeyVerificationAcceptEvent,
-        },
-        cancel::{OriginalKeyVerificationCancelEvent, OriginalSyncKeyVerificationCancelEvent},
-        done::{OriginalKeyVerificationDoneEvent, OriginalSyncKeyVerificationDoneEvent},
-        key::{OriginalKeyVerificationKeyEvent, OriginalSyncKeyVerificationKeyEvent},
-        mac::{OriginalKeyVerificationMacEvent, OriginalSyncKeyVerificationMacEvent},
-        ready::{OriginalKeyVerificationReadyEvent, OriginalSyncKeyVerificationReadyEvent},
-        start::{
-            OriginalKeyVerificationStartEvent, OriginalSyncKeyVerificationStartEvent, StartMethod,
-        },
-        VerificationMethod,
     },
     policy::rule::{
         room::{OriginalPolicyRuleRoomEvent, OriginalSyncPolicyRuleRoomEvent},
@@ -51,8 +35,8 @@ use ruma_events::{
         join_rules::{OriginalRoomJoinRulesEvent, OriginalSyncRoomJoinRulesEvent},
         member::{MembershipState, OriginalRoomMemberEvent, OriginalSyncRoomMemberEvent},
         message::{
-            AudioInfo, FileInfo, MessageFormat, MessageType, OriginalRoomMessageEvent,
-            OriginalSyncRoomMessageEvent, Relation, VideoInfo,
+            MessageType, OriginalRoomMessageEvent, OriginalSyncRoomMessageEvent, Relation,
+            RoomMessageEvent,
         },
         name::{OriginalRoomNameEvent, OriginalSyncRoomNameEvent},
         pinned_events::{OriginalRoomPinnedEventsEvent, OriginalSyncRoomPinnedEventsEvent},
@@ -71,8 +55,8 @@ use ruma_events::{
         parent::{OriginalSpaceParentEvent, OriginalSyncSpaceParentEvent},
     },
     sticker::{OriginalStickerEvent, OriginalSyncStickerEvent},
-    AnySyncMessageLikeEvent, AnySyncStateEvent, AnySyncTimelineEvent, OriginalSyncMessageLikeEvent,
-    SyncMessageLikeEvent, SyncStateEvent,
+    AnySyncMessageLikeEvent, AnySyncStateEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
+    SyncStateEvent,
 };
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Deref, sync::Arc};
@@ -1711,22 +1695,21 @@ impl RoomMessage {
                     _ => "Unknown timeline item".to_string(),
                 };
                 if let Some(json) = event.latest_edit_json() {
-                    if let Ok(AnySyncTimelineEvent::MessageLike(
-                        AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(ev)),
-                    )) = json.deserialize()
-                    {
-                        fallback = match ev.content.msgtype {
-                            MessageType::Audio(content) => "sent an audio.".to_string(),
-                            MessageType::Emote(content) => content.body,
-                            MessageType::File(content) => "sent a file.".to_string(),
-                            MessageType::Image(content) => "sent an image.".to_string(),
-                            MessageType::Location(content) => content.body,
-                            MessageType::Notice(content) => content.body,
-                            MessageType::ServerNotice(content) => content.body,
-                            MessageType::Text(content) => content.body,
-                            MessageType::Video(content) => "sent a video.".to_string(),
-                            _ => "Unknown timeline item".to_string(),
-                        };
+                    if let Ok(event_content) = json.deserialize_as::<RoomMessageEvent>() {
+                        if let Some(original) = event_content.as_original() {
+                            fallback = match &original.content.msgtype {
+                                MessageType::Audio(content) => "sent an audio.".to_string(),
+                                MessageType::Emote(content) => content.body.clone(),
+                                MessageType::File(content) => "sent a file.".to_string(),
+                                MessageType::Image(content) => "sent an image.".to_string(),
+                                MessageType::Location(content) => content.body.clone(),
+                                MessageType::Notice(content) => content.body.clone(),
+                                MessageType::ServerNotice(content) => content.body.clone(),
+                                MessageType::Text(content) => content.body.clone(),
+                                MessageType::Video(content) => "sent a video.".to_string(),
+                                _ => "Unknown timeline item".to_string(),
+                            };
+                        }
                     }
                 }
                 match msg_type {
@@ -1767,40 +1750,39 @@ impl RoomMessage {
                     _ => {}
                 }
                 if let Some(json) = event.latest_edit_json() {
-                    if let Ok(AnySyncTimelineEvent::MessageLike(
-                        AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(ev)),
-                    )) = json.deserialize()
-                    {
-                        match ev.content.msgtype {
-                            MessageType::Text(content) => {
-                                let msg_content = MsgContent::from(&content);
-                                result.set_msg_content(msg_content);
+                    if let Ok(event_content) = json.deserialize_as::<RoomMessageEvent>() {
+                        if let Some(original) = event_content.as_original() {
+                            match &original.content.msgtype {
+                                MessageType::Text(content) => {
+                                    let msg_content = MsgContent::from(&content);
+                                    result.set_msg_content(msg_content);
+                                }
+                                MessageType::Emote(content) => {
+                                    let msg_content = MsgContent::from(&content);
+                                    result.set_msg_content(msg_content);
+                                }
+                                MessageType::Image(content) => {
+                                    let msg_content = MsgContent::from(&content);
+                                    result.set_msg_content(msg_content);
+                                }
+                                MessageType::Audio(content) => {
+                                    let msg_content = MsgContent::from(&content);
+                                    result.set_msg_content(msg_content);
+                                }
+                                MessageType::Video(content) => {
+                                    let msg_content = MsgContent::from(&content);
+                                    result.set_msg_content(msg_content);
+                                }
+                                MessageType::File(content) => {
+                                    let msg_content = MsgContent::from(&content);
+                                    result.set_msg_content(msg_content);
+                                }
+                                MessageType::Location(content) => {
+                                    let msg_content = MsgContent::from(&content);
+                                    result.set_msg_content(msg_content);
+                                }
+                                _ => {}
                             }
-                            MessageType::Emote(content) => {
-                                let msg_content = MsgContent::from(&content);
-                                result.set_msg_content(msg_content);
-                            }
-                            MessageType::Image(content) => {
-                                let msg_content = MsgContent::from(&content);
-                                result.set_msg_content(msg_content);
-                            }
-                            MessageType::Audio(content) => {
-                                let msg_content = MsgContent::from(&content);
-                                result.set_msg_content(msg_content);
-                            }
-                            MessageType::Video(content) => {
-                                let msg_content = MsgContent::from(&content);
-                                result.set_msg_content(msg_content);
-                            }
-                            MessageType::File(content) => {
-                                let msg_content = MsgContent::from(&content);
-                                result.set_msg_content(msg_content);
-                            }
-                            MessageType::Location(content) => {
-                                let msg_content = MsgContent::from(&content);
-                                result.set_msg_content(msg_content);
-                            }
-                            _ => {}
                         }
                     }
                 }

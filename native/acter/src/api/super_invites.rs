@@ -1,8 +1,9 @@
 // internal API
 
-use crate::{Client, RUNTIME};
 use acter_core::super_invites::{api, CreateToken, Token, UpdateToken};
 use anyhow::Result;
+
+use crate::{Client, RUNTIME};
 
 pub struct SuperInviteToken {
     token: Token,

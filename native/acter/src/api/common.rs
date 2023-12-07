@@ -1,4 +1,4 @@
-use acter_core::{events::attachments::AttachmentContent, models::TextMessageContent};
+use acter_core::events::attachments::AttachmentContent;
 use core::time::Duration;
 use ruma_common::{MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri, OwnedUserId};
 use ruma_events::{

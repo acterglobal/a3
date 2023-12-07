@@ -1,6 +1,6 @@
 use acter_core::{
     events::attachments::{AttachmentBuilder, AttachmentContent},
-    models::{self, ActerModel, AnyActerModel, Color},
+    models::{self, ActerModel, AnyActerModel},
 };
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
@@ -11,12 +11,16 @@ use matrix_sdk::{
     RoomState,
 };
 use ruma_common::{MxcUri, OwnedEventId, OwnedUserId};
-use ruma_events::room::{
-    message::{
-        AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-        ImageMessageEventContent, LocationMessageEventContent, VideoInfo, VideoMessageEventContent,
+use ruma_events::{
+    room::{
+        message::{
+            AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
+            ImageMessageEventContent, LocationInfo, LocationMessageEventContent, VideoInfo,
+            VideoMessageEventContent,
+        },
+        ImageInfo,
     },
-    ImageInfo,
+    MessageLikeEventType,
 };
 use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
@@ -127,13 +131,32 @@ pub struct AttachmentDraft {
 }
 
 impl AttachmentDraft {
+    fn is_joined(&self) -> bool {
+        matches!(self.room.state(), RoomState::Joined)
+    }
+
     pub async fn send(&self) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Can only attachment in joined rooms");
+        }
         let room = self.room.clone();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
         let inner = self.inner.build()?;
         RUNTIME
             .spawn(async move {
-                let resp = room.send(inner).await?;
-                Ok(resp.event_id)
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+                let response = room.send(inner).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -186,23 +209,8 @@ impl AttachmentsManager {
             .await?
     }
 
-    fn is_joined(&self) -> bool {
-        matches!(self.room.state(), RoomState::Joined)
-    }
-
-    pub fn attachment_draft(&self) -> Result<AttachmentDraft> {
-        if !self.is_joined() {
-            bail!("Can only attachment in joined rooms");
-        }
-        Ok(AttachmentDraft {
-            client: self.client.clone(),
-            room: self.room.clone(),
-            inner: self.inner.draft_builder(),
-        })
-    }
-
     #[allow(clippy::too_many_arguments)]
-    pub fn image_attachment_draft(
+    pub fn image_draft(
         &self,
         body: String,
         url: String,
@@ -212,9 +220,6 @@ impl AttachmentsManager {
         height: Option<u64>,
         blurhash: Option<String>,
     ) -> Result<AttachmentDraft> {
-        if !self.is_joined() {
-            bail!("Can only attachment in joined rooms");
-        }
         let info = assign!(ImageInfo::new(), {
             height: height.and_then(UInt::new),
             width: width.and_then(UInt::new),
@@ -235,7 +240,7 @@ impl AttachmentsManager {
         })
     }
 
-    pub fn audio_attachment_draft(
+    pub fn audio_draft(
         &self,
         body: String,
         url: String,
@@ -243,9 +248,6 @@ impl AttachmentsManager {
         size: Option<u64>,
         secs: Option<u64>,
     ) -> Result<AttachmentDraft> {
-        if !self.is_joined() {
-            bail!("Can only attachment in joined rooms");
-        }
         let info = assign!(AudioInfo::new(), {
             duration: secs.map(|x| Duration::new(x, 0)),
             mimetype,
@@ -265,7 +267,7 @@ impl AttachmentsManager {
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub fn video_attachment_draft(
+    pub fn video_draft(
         &self,
         body: String,
         url: String,
@@ -276,9 +278,6 @@ impl AttachmentsManager {
         height: Option<u64>,
         blurhash: Option<String>,
     ) -> Result<AttachmentDraft> {
-        if !self.is_joined() {
-            bail!("Can only attachment in joined rooms");
-        }
         let info = assign!(VideoInfo::new(), {
             duration: secs.map(|x| Duration::new(x, 0)),
             height: height.and_then(UInt::new),
@@ -300,22 +299,32 @@ impl AttachmentsManager {
         })
     }
 
-    pub fn file_attachment_draft(
+    pub fn file_draft(
         &self,
         body: String,
         url: String,
         mimetype: Option<String>,
         size: Option<u64>,
     ) -> Result<AttachmentDraft> {
-        if !self.is_joined() {
-            bail!("Can only attachment in joined rooms");
-        }
         let mut builder = self.inner.draft_builder();
         let size = size.and_then(UInt::new);
         let info = assign!(FileInfo::new(), { mimetype, size });
         let mut file_content = FileMessageEventContent::plain(body, url.into());
         file_content.info = Some(Box::new(info));
         builder.content(AttachmentContent::File(file_content));
+        Ok(AttachmentDraft {
+            client: self.client.clone(),
+            room: self.room.clone(),
+            inner: builder,
+        })
+    }
+
+    pub fn location_draft(&self, body: String, geo_uri: String) -> Result<AttachmentDraft> {
+        let mut builder = self.inner.draft_builder();
+        let info = LocationInfo::new();
+        let mut location_content = LocationMessageEventContent::new(body, geo_uri);
+        location_content.info = Some(Box::new(info));
+        builder.content(AttachmentContent::Location(location_content));
         Ok(AttachmentDraft {
             client: self.client.clone(),
             room: self.room.clone(),

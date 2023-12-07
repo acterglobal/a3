@@ -1,6 +1,6 @@
 use acter_core::{
     events::rsvp::{RsvpBuilder, RsvpStatus},
-    models::{self, ActerModel, AnyActerModel, Color},
+    models::{self, ActerModel, AnyActerModel},
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
@@ -8,13 +8,13 @@ use core::time::Duration;
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
 use ruma_common::{OwnedEventId, OwnedUserId};
-use ruma_events::{room::message::TextMessageEventContent, MessageLikeEventType};
+use ruma_events::MessageLikeEventType;
 use std::{ops::Deref, str::FromStr};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::{error, trace, warn};
 
-use super::{calendar_events::CalendarEvent, client::Client, common::OptionString, RUNTIME};
+use super::{calendar_events::CalendarEvent, client::Client, RUNTIME};
 
 impl Client {
     pub async fn wait_for_rsvp(&self, key: String, timeout: Option<Box<Duration>>) -> Result<Rsvp> {
