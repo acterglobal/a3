@@ -1754,31 +1754,31 @@ impl RoomMessage {
                         if let Some(original) = event_content.as_original() {
                             match &original.content.msgtype {
                                 MessageType::Text(content) => {
-                                    let msg_content = MsgContent::from(&content);
+                                    let msg_content = MsgContent::from(content);
                                     result.set_msg_content(msg_content);
                                 }
                                 MessageType::Emote(content) => {
-                                    let msg_content = MsgContent::from(&content);
+                                    let msg_content = MsgContent::from(content);
                                     result.set_msg_content(msg_content);
                                 }
                                 MessageType::Image(content) => {
-                                    let msg_content = MsgContent::from(&content);
+                                    let msg_content = MsgContent::from(content);
                                     result.set_msg_content(msg_content);
                                 }
                                 MessageType::Audio(content) => {
-                                    let msg_content = MsgContent::from(&content);
+                                    let msg_content = MsgContent::from(content);
                                     result.set_msg_content(msg_content);
                                 }
                                 MessageType::Video(content) => {
-                                    let msg_content = MsgContent::from(&content);
+                                    let msg_content = MsgContent::from(content);
                                     result.set_msg_content(msg_content);
                                 }
                                 MessageType::File(content) => {
-                                    let msg_content = MsgContent::from(&content);
+                                    let msg_content = MsgContent::from(content);
                                     result.set_msg_content(msg_content);
                                 }
                                 MessageType::Location(content) => {
-                                    let msg_content = MsgContent::from(&content);
+                                    let msg_content = MsgContent::from(content);
                                     result.set_msg_content(msg_content);
                                 }
                                 _ => {}
