@@ -13224,13 +13224,13 @@ class Api {
       int Function(
         int,
       )>();
-  late final _newsSlideContentDescPtr = _lookup<
+  late final _newsSlideMsgContentPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__NewsSlide_content_desc");
+          )>>("__NewsSlide_msg_content");
 
-  late final _newsSlideContentDesc = _newsSlideContentDescPtr.asFunction<
+  late final _newsSlideMsgContent = _newsSlideMsgContentPtr.asFunction<
       int Function(
         int,
       )>();
@@ -14709,17 +14709,16 @@ class Api {
       _RoomEventItemMsgTypeReturn Function(
         int,
       )>();
-  late final _roomEventItemContentDescPtr = _lookup<
+  late final _roomEventItemMsgContentPtr = _lookup<
       ffi.NativeFunction<
-          _RoomEventItemContentDescReturn Function(
+          _RoomEventItemMsgContentReturn Function(
             ffi.Int64,
-          )>>("__RoomEventItem_content_desc");
+          )>>("__RoomEventItem_msg_content");
 
-  late final _roomEventItemContentDesc =
-      _roomEventItemContentDescPtr.asFunction<
-          _RoomEventItemContentDescReturn Function(
-            int,
-          )>();
+  late final _roomEventItemMsgContent = _roomEventItemMsgContentPtr.asFunction<
+      _RoomEventItemMsgContentReturn Function(
+        int,
+      )>();
   late final _roomEventItemInReplyToPtr = _lookup<
       ffi.NativeFunction<
           _RoomEventItemInReplyToReturn Function(
@@ -14865,137 +14864,135 @@ class Api {
       _RoomMessageVirtualItemReturn Function(
         int,
       )>();
-  late final _contentDescBodyPtr = _lookup<
+  late final _msgContentBodyPtr = _lookup<
       ffi.NativeFunction<
-          _ContentDescBodyReturn Function(
+          _MsgContentBodyReturn Function(
             ffi.Int64,
-          )>>("__ContentDesc_body");
+          )>>("__MsgContent_body");
 
-  late final _contentDescBody = _contentDescBodyPtr.asFunction<
-      _ContentDescBodyReturn Function(
+  late final _msgContentBody = _msgContentBodyPtr.asFunction<
+      _MsgContentBodyReturn Function(
         int,
       )>();
-  late final _contentDescFormattedBodyPtr = _lookup<
+  late final _msgContentFormattedBodyPtr = _lookup<
       ffi.NativeFunction<
-          _ContentDescFormattedBodyReturn Function(
+          _MsgContentFormattedBodyReturn Function(
             ffi.Int64,
-          )>>("__ContentDesc_formatted_body");
+          )>>("__MsgContent_formatted_body");
 
-  late final _contentDescFormattedBody =
-      _contentDescFormattedBodyPtr.asFunction<
-          _ContentDescFormattedBodyReturn Function(
+  late final _msgContentFormattedBody = _msgContentFormattedBodyPtr.asFunction<
+      _MsgContentFormattedBodyReturn Function(
+        int,
+      )>();
+  late final _msgContentSourcePtr = _lookup<
+      ffi.NativeFunction<
+          _MsgContentSourceReturn Function(
+            ffi.Int64,
+          )>>("__MsgContent_source");
+
+  late final _msgContentSource = _msgContentSourcePtr.asFunction<
+      _MsgContentSourceReturn Function(
+        int,
+      )>();
+  late final _msgContentMimetypePtr = _lookup<
+      ffi.NativeFunction<
+          _MsgContentMimetypeReturn Function(
+            ffi.Int64,
+          )>>("__MsgContent_mimetype");
+
+  late final _msgContentMimetype = _msgContentMimetypePtr.asFunction<
+      _MsgContentMimetypeReturn Function(
+        int,
+      )>();
+  late final _msgContentSizePtr = _lookup<
+      ffi.NativeFunction<
+          _MsgContentSizeReturn Function(
+            ffi.Int64,
+          )>>("__MsgContent_size");
+
+  late final _msgContentSize = _msgContentSizePtr.asFunction<
+      _MsgContentSizeReturn Function(
+        int,
+      )>();
+  late final _msgContentWidthPtr = _lookup<
+      ffi.NativeFunction<
+          _MsgContentWidthReturn Function(
+            ffi.Int64,
+          )>>("__MsgContent_width");
+
+  late final _msgContentWidth = _msgContentWidthPtr.asFunction<
+      _MsgContentWidthReturn Function(
+        int,
+      )>();
+  late final _msgContentHeightPtr = _lookup<
+      ffi.NativeFunction<
+          _MsgContentHeightReturn Function(
+            ffi.Int64,
+          )>>("__MsgContent_height");
+
+  late final _msgContentHeight = _msgContentHeightPtr.asFunction<
+      _MsgContentHeightReturn Function(
+        int,
+      )>();
+  late final _msgContentThumbnailSourcePtr = _lookup<
+      ffi.NativeFunction<
+          _MsgContentThumbnailSourceReturn Function(
+            ffi.Int64,
+          )>>("__MsgContent_thumbnail_source");
+
+  late final _msgContentThumbnailSource =
+      _msgContentThumbnailSourcePtr.asFunction<
+          _MsgContentThumbnailSourceReturn Function(
             int,
           )>();
-  late final _contentDescSourcePtr = _lookup<
+  late final _msgContentThumbnailInfoPtr = _lookup<
       ffi.NativeFunction<
-          _ContentDescSourceReturn Function(
+          _MsgContentThumbnailInfoReturn Function(
             ffi.Int64,
-          )>>("__ContentDesc_source");
+          )>>("__MsgContent_thumbnail_info");
 
-  late final _contentDescSource = _contentDescSourcePtr.asFunction<
-      _ContentDescSourceReturn Function(
+  late final _msgContentThumbnailInfo = _msgContentThumbnailInfoPtr.asFunction<
+      _MsgContentThumbnailInfoReturn Function(
         int,
       )>();
-  late final _contentDescMimetypePtr = _lookup<
+  late final _msgContentDurationPtr = _lookup<
       ffi.NativeFunction<
-          _ContentDescMimetypeReturn Function(
+          _MsgContentDurationReturn Function(
             ffi.Int64,
-          )>>("__ContentDesc_mimetype");
+          )>>("__MsgContent_duration");
 
-  late final _contentDescMimetype = _contentDescMimetypePtr.asFunction<
-      _ContentDescMimetypeReturn Function(
+  late final _msgContentDuration = _msgContentDurationPtr.asFunction<
+      _MsgContentDurationReturn Function(
         int,
       )>();
-  late final _contentDescSizePtr = _lookup<
+  late final _msgContentBlurhashPtr = _lookup<
       ffi.NativeFunction<
-          _ContentDescSizeReturn Function(
+          _MsgContentBlurhashReturn Function(
             ffi.Int64,
-          )>>("__ContentDesc_size");
+          )>>("__MsgContent_blurhash");
 
-  late final _contentDescSize = _contentDescSizePtr.asFunction<
-      _ContentDescSizeReturn Function(
+  late final _msgContentBlurhash = _msgContentBlurhashPtr.asFunction<
+      _MsgContentBlurhashReturn Function(
         int,
       )>();
-  late final _contentDescWidthPtr = _lookup<
+  late final _msgContentFilenamePtr = _lookup<
       ffi.NativeFunction<
-          _ContentDescWidthReturn Function(
+          _MsgContentFilenameReturn Function(
             ffi.Int64,
-          )>>("__ContentDesc_width");
+          )>>("__MsgContent_filename");
 
-  late final _contentDescWidth = _contentDescWidthPtr.asFunction<
-      _ContentDescWidthReturn Function(
+  late final _msgContentFilename = _msgContentFilenamePtr.asFunction<
+      _MsgContentFilenameReturn Function(
         int,
       )>();
-  late final _contentDescHeightPtr = _lookup<
+  late final _msgContentGeoUriPtr = _lookup<
       ffi.NativeFunction<
-          _ContentDescHeightReturn Function(
+          _MsgContentGeoUriReturn Function(
             ffi.Int64,
-          )>>("__ContentDesc_height");
+          )>>("__MsgContent_geo_uri");
 
-  late final _contentDescHeight = _contentDescHeightPtr.asFunction<
-      _ContentDescHeightReturn Function(
-        int,
-      )>();
-  late final _contentDescThumbnailSourcePtr = _lookup<
-      ffi.NativeFunction<
-          _ContentDescThumbnailSourceReturn Function(
-            ffi.Int64,
-          )>>("__ContentDesc_thumbnail_source");
-
-  late final _contentDescThumbnailSource =
-      _contentDescThumbnailSourcePtr.asFunction<
-          _ContentDescThumbnailSourceReturn Function(
-            int,
-          )>();
-  late final _contentDescThumbnailInfoPtr = _lookup<
-      ffi.NativeFunction<
-          _ContentDescThumbnailInfoReturn Function(
-            ffi.Int64,
-          )>>("__ContentDesc_thumbnail_info");
-
-  late final _contentDescThumbnailInfo =
-      _contentDescThumbnailInfoPtr.asFunction<
-          _ContentDescThumbnailInfoReturn Function(
-            int,
-          )>();
-  late final _contentDescDurationPtr = _lookup<
-      ffi.NativeFunction<
-          _ContentDescDurationReturn Function(
-            ffi.Int64,
-          )>>("__ContentDesc_duration");
-
-  late final _contentDescDuration = _contentDescDurationPtr.asFunction<
-      _ContentDescDurationReturn Function(
-        int,
-      )>();
-  late final _contentDescBlurhashPtr = _lookup<
-      ffi.NativeFunction<
-          _ContentDescBlurhashReturn Function(
-            ffi.Int64,
-          )>>("__ContentDesc_blurhash");
-
-  late final _contentDescBlurhash = _contentDescBlurhashPtr.asFunction<
-      _ContentDescBlurhashReturn Function(
-        int,
-      )>();
-  late final _contentDescFilenamePtr = _lookup<
-      ffi.NativeFunction<
-          _ContentDescFilenameReturn Function(
-            ffi.Int64,
-          )>>("__ContentDesc_filename");
-
-  late final _contentDescFilename = _contentDescFilenamePtr.asFunction<
-      _ContentDescFilenameReturn Function(
-        int,
-      )>();
-  late final _contentDescGeoUriPtr = _lookup<
-      ffi.NativeFunction<
-          _ContentDescGeoUriReturn Function(
-            ffi.Int64,
-          )>>("__ContentDesc_geo_uri");
-
-  late final _contentDescGeoUri = _contentDescGeoUriPtr.asFunction<
-      _ContentDescGeoUriReturn Function(
+  late final _msgContentGeoUri = _msgContentGeoUriPtr.asFunction<
+      _MsgContentGeoUriReturn Function(
         int,
       )>();
   late final _reactionRecordSenderIdPtr = _lookup<
@@ -16881,13 +16878,13 @@ class Api {
           int Function(
             int,
           )>();
-  late final _attachmentContentDescPtr = _lookup<
+  late final _attachmentMsgContentPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__Attachment_content_desc");
+          )>>("__Attachment_msg_content");
 
-  late final _attachmentContentDesc = _attachmentContentDescPtr.asFunction<
+  late final _attachmentMsgContent = _attachmentMsgContentPtr.asFunction<
       int Function(
         int,
       )>();
@@ -29130,22 +29127,22 @@ class NewsSlide {
     return tmp2;
   }
 
-  /// if this is an image, hand over the description
-  ContentDesc contentDesc() {
+  /// if this is a media, hand over the description
+  MsgContent msgContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._newsSlideContentDesc(
+    final tmp1 = _api._newsSlideMsgContent(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_ContentDesc");
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_MsgContent");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = ContentDesc._(_api, tmp3_1);
+    final tmp2 = MsgContent._(_api, tmp3_1);
     return tmp2;
   }
 
-  /// if this is an image, hand over the data
+  /// if this is a media, hand over the data
   Future<FfiBufferUint8> sourceBinary() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -32168,10 +32165,10 @@ class RoomEventItem {
   }
 
   /// covers text/image/audio/video/file/location/emote/sticker
-  ContentDesc? contentDesc() {
+  MsgContent? msgContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemContentDesc(
+    final tmp1 = _api._roomEventItemMsgContent(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32180,9 +32177,9 @@ class RoomEventItem {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ContentDesc");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MsgContent");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = ContentDesc._(_api, tmp4_1);
+    final tmp2 = MsgContent._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -32524,17 +32521,17 @@ class RoomMessage {
   }
 }
 
-class ContentDesc {
+class MsgContent {
   final Api _api;
   final _Box _box;
 
-  ContentDesc._(this._api, this._box);
+  MsgContent._(this._api, this._box);
 
   /// available always
   String body() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._contentDescBody(
+    final tmp1 = _api._msgContentBody(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32564,7 +32561,7 @@ class ContentDesc {
   String? formattedBody() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._contentDescFormattedBody(
+    final tmp1 = _api._msgContentFormattedBody(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32598,7 +32595,7 @@ class ContentDesc {
   MediaSource? source() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._contentDescSource(
+    final tmp1 = _api._msgContentSource(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32617,7 +32614,7 @@ class ContentDesc {
   String? mimetype() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._contentDescMimetype(
+    final tmp1 = _api._msgContentMimetype(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32651,7 +32648,7 @@ class ContentDesc {
   int? size() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._contentDescSize(
+    final tmp1 = _api._msgContentSize(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32667,7 +32664,7 @@ class ContentDesc {
   int? width() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._contentDescWidth(
+    final tmp1 = _api._msgContentWidth(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32683,7 +32680,7 @@ class ContentDesc {
   int? height() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._contentDescHeight(
+    final tmp1 = _api._msgContentHeight(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32699,7 +32696,7 @@ class ContentDesc {
   MediaSource? thumbnailSource() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._contentDescThumbnailSource(
+    final tmp1 = _api._msgContentThumbnailSource(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32718,7 +32715,7 @@ class ContentDesc {
   ThumbnailInfo? thumbnailInfo() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._contentDescThumbnailInfo(
+    final tmp1 = _api._msgContentThumbnailInfo(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32737,7 +32734,7 @@ class ContentDesc {
   int? duration() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._contentDescDuration(
+    final tmp1 = _api._msgContentDuration(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32753,7 +32750,7 @@ class ContentDesc {
   String? blurhash() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._contentDescBlurhash(
+    final tmp1 = _api._msgContentBlurhash(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32787,7 +32784,7 @@ class ContentDesc {
   String? filename() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._contentDescFilename(
+    final tmp1 = _api._msgContentFilename(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32821,7 +32818,7 @@ class ContentDesc {
   String? geoUri() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._contentDescGeoUri(
+    final tmp1 = _api._msgContentGeoUri(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -37035,22 +37032,22 @@ class Attachment {
     return tmp2;
   }
 
-  /// if this is an image, hand over the description
-  ContentDesc contentDesc() {
+  /// if this is a media, hand over the description
+  MsgContent msgContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._attachmentContentDesc(
+    final tmp1 = _api._attachmentMsgContent(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_ContentDesc");
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_MsgContent");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = ContentDesc._(_api, tmp3_1);
+    final tmp2 = MsgContent._(_api, tmp3_1);
     return tmp2;
   }
 
-  /// if this is an image, hand over the data
+  /// if this is a media, hand over the data
   Future<FfiBufferUint8> sourceBinary() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -37643,7 +37640,7 @@ class Task {
   }
 
   /// the description of this task
-  ContentDesc? description() {
+  MsgContent? description() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._taskDescription(
@@ -37655,9 +37652,9 @@ class Task {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ContentDesc");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MsgContent");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = ContentDesc._(_api, tmp4_1);
+    final tmp2 = MsgContent._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -39246,7 +39243,7 @@ class TaskList {
   }
 
   /// the description of this task list
-  ContentDesc? description() {
+  MsgContent? description() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._taskListDescription(
@@ -39258,9 +39255,9 @@ class TaskList {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ContentDesc");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MsgContent");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = ContentDesc._(_api, tmp4_1);
+    final tmp2 = MsgContent._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -48937,7 +48934,7 @@ class _RoomEventItemMsgTypeReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _RoomEventItemContentDescReturn extends ffi.Struct {
+class _RoomEventItemMsgContentReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -49012,7 +49009,7 @@ class _RoomMessageVirtualItemReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ContentDescBodyReturn extends ffi.Struct {
+class _MsgContentBodyReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -49021,25 +49018,7 @@ class _ContentDescBodyReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ContentDescFormattedBodyReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-}
-
-class _ContentDescSourceReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _ContentDescMimetypeReturn extends ffi.Struct {
+class _MsgContentFormattedBodyReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -49050,49 +49029,14 @@ class _ContentDescMimetypeReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ContentDescSizeReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _ContentDescWidthReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _ContentDescHeightReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _ContentDescThumbnailSourceReturn extends ffi.Struct {
+class _MsgContentSourceReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
 }
 
-class _ContentDescThumbnailInfoReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _ContentDescDurationReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _ContentDescBlurhashReturn extends ffi.Struct {
+class _MsgContentMimetypeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -49103,7 +49047,49 @@ class _ContentDescBlurhashReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ContentDescFilenameReturn extends ffi.Struct {
+class _MsgContentSizeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _MsgContentWidthReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _MsgContentHeightReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _MsgContentThumbnailSourceReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _MsgContentThumbnailInfoReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _MsgContentDurationReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _MsgContentBlurhashReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -49114,7 +49100,18 @@ class _ContentDescFilenameReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ContentDescGeoUriReturn extends ffi.Struct {
+class _MsgContentFilenameReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _MsgContentGeoUriReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

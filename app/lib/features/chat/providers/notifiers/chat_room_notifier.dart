@@ -300,9 +300,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         String? orgMsgType = orgEventItem.msgType();
         switch (orgMsgType) {
           case 'm.text':
-            ContentDesc? description = orgEventItem.contentDesc();
-            if (description != null) {
-              String body = description.body();
+            MsgContent? msgContent = orgEventItem.msgContent();
+            if (msgContent != null) {
+              String body = msgContent.body();
               repliedToContent = {
                 'content': body,
                 'messageLength': body.length,
@@ -317,8 +317,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.image':
-            ContentDesc? description = orgEventItem.contentDesc();
-            if (description != null) {
+            MsgContent? msgContent = orgEventItem.msgContent();
+            if (msgContent != null) {
               convo.mediaBinary(originalId).then((data) {
                 repliedToContent['base64'] = base64Encode(data.asTypedList());
               });
@@ -326,17 +326,17 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
                 createdAt: orgEventItem.originServerTs(),
-                name: description.body(),
-                size: description.size() ?? 0,
-                uri: description.source()!.url(),
-                width: description.width()?.toDouble() ?? 0,
+                name: msgContent.body(),
+                size: msgContent.size() ?? 0,
+                uri: msgContent.source()!.url(),
+                width: msgContent.width()?.toDouble() ?? 0,
                 metadata: repliedToContent,
               );
             }
             break;
           case 'm.audio':
-            ContentDesc? description = orgEventItem.contentDesc();
-            if (description != null) {
+            MsgContent? msgContent = orgEventItem.msgContent();
+            if (msgContent != null) {
               convo.mediaBinary(originalId).then((data) {
                 repliedToContent['content'] = base64Encode(data.asTypedList());
               });
@@ -344,17 +344,17 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
                 createdAt: orgEventItem.originServerTs(),
-                name: description.body(),
-                duration: Duration(seconds: description.duration() ?? 0),
-                size: description.size() ?? 0,
-                uri: description.source()!.url(),
+                name: msgContent.body(),
+                duration: Duration(seconds: msgContent.duration() ?? 0),
+                size: msgContent.size() ?? 0,
+                uri: msgContent.source()!.url(),
                 metadata: repliedToContent,
               );
             }
             break;
           case 'm.video':
-            ContentDesc? description = orgEventItem.contentDesc();
-            if (description != null) {
+            MsgContent? msgContent = orgEventItem.msgContent();
+            if (msgContent != null) {
               convo.mediaBinary(originalId).then((data) {
                 repliedToContent['content'] = base64Encode(data.asTypedList());
               });
@@ -362,26 +362,26 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
                 createdAt: orgEventItem.originServerTs(),
-                name: description.body(),
-                size: description.size() ?? 0,
-                uri: description.source()!.url(),
+                name: msgContent.body(),
+                size: msgContent.size() ?? 0,
+                uri: msgContent.source()!.url(),
                 metadata: repliedToContent,
               );
             }
             break;
           case 'm.file':
-            ContentDesc? description = orgEventItem.contentDesc();
-            if (description != null) {
+            MsgContent? msgContent = orgEventItem.msgContent();
+            if (msgContent != null) {
               repliedToContent = {
-                'content': description.body(),
+                'content': msgContent.body(),
               };
               repliedTo = types.FileMessage(
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
                 createdAt: orgEventItem.originServerTs(),
-                name: description.body(),
-                size: description.size() ?? 0,
-                uri: description.source()!.url(),
+                name: msgContent.body(),
+                size: msgContent.size() ?? 0,
+                uri: msgContent.source()!.url(),
                 metadata: repliedToContent,
               );
             }
@@ -475,7 +475,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           metadata: {
             'itemType': 'event',
             'eventType': eventType,
-            'body': eventItem.contentDesc()?.body(),
+            'body': eventItem.msgContent()?.body(),
             'eventState': eventItem.sendState(),
             'receipts': receipts,
           },
@@ -523,10 +523,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           metadata: metadata,
         );
       case 'm.room.member':
-        ContentDesc? description = eventItem.contentDesc();
-        if (description != null) {
-          String? formattedBody = description.formattedBody();
-          String body = description.body(); // always exists
+        MsgContent? msgContent = eventItem.msgContent();
+        if (msgContent != null) {
+          String? formattedBody = msgContent.formattedBody();
+          String body = msgContent.body(); // always exists
           return types.CustomMessage(
             author: author,
             createdAt: createdAt,
@@ -554,8 +554,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         String? msgType = eventItem.msgType();
         switch (msgType) {
           case 'm.audio':
-            ContentDesc? description = eventItem.contentDesc();
-            if (description != null) {
+            MsgContent? msgContent = eventItem.msgContent();
+            if (msgContent != null) {
               Map<String, dynamic> metadata = {
                 'base64': '',
                 'eventState': eventState,
@@ -573,21 +573,21 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               return types.AudioMessage(
                 author: author,
                 createdAt: createdAt,
-                duration: Duration(seconds: description.duration() ?? 0),
+                duration: Duration(seconds: msgContent.duration() ?? 0),
                 id: eventId,
                 metadata: metadata,
-                mimeType: description.mimetype(),
-                name: description.body(),
-                size: description.size() ?? 0,
-                uri: description.source()!.url(),
+                mimeType: msgContent.mimetype(),
+                name: msgContent.body(),
+                size: msgContent.size() ?? 0,
+                uri: msgContent.source()!.url(),
               );
             }
             break;
           case 'm.emote':
-            ContentDesc? description = eventItem.contentDesc();
-            if (description != null) {
-              String? formattedBody = description.formattedBody();
-              String body = description.body(); // always exists
+            MsgContent? msgContent = eventItem.msgContent();
+            if (msgContent != null) {
+              String? formattedBody = msgContent.formattedBody();
+              String body = msgContent.body(); // always exists
               Map<String, dynamic> metadata = {
                 'eventState': eventState,
                 'receipts': receipts,
@@ -613,8 +613,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.file':
-            ContentDesc? description = eventItem.contentDesc();
-            if (description != null) {
+            MsgContent? msgContent = eventItem.msgContent();
+            if (msgContent != null) {
               Map<String, dynamic> metadata = {
                 'eventState': eventState,
                 'receipts': receipts,
@@ -633,16 +633,16 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 createdAt: createdAt,
                 id: eventId,
                 metadata: metadata,
-                mimeType: description.mimetype(),
-                name: description.body(),
-                size: description.size() ?? 0,
-                uri: description.source()!.url(),
+                mimeType: msgContent.mimetype(),
+                name: msgContent.body(),
+                size: msgContent.size() ?? 0,
+                uri: msgContent.source()!.url(),
               );
             }
             break;
           case 'm.image':
-            ContentDesc? description = eventItem.contentDesc();
-            if (description != null) {
+            MsgContent? msgContent = eventItem.msgContent();
+            if (msgContent != null) {
               Map<String, dynamic> metadata = {
                 'eventState': eventState,
                 'receipts': receipts,
@@ -659,25 +659,25 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               return types.ImageMessage(
                 author: author,
                 createdAt: createdAt,
-                height: description.height()?.toDouble(),
+                height: msgContent.height()?.toDouble(),
                 id: eventId,
                 metadata: metadata,
-                name: description.body(),
-                size: description.size() ?? 0,
-                uri: description.source()!.url(),
-                width: description.width()?.toDouble(),
+                name: msgContent.body(),
+                size: msgContent.size() ?? 0,
+                uri: msgContent.source()!.url(),
+                width: msgContent.width()?.toDouble(),
               );
             }
             break;
           case 'm.location':
-            ContentDesc? description = eventItem.contentDesc();
-            if (description != null) {
+            MsgContent? msgContent = eventItem.msgContent();
+            if (msgContent != null) {
               Map<String, dynamic> metadata = {
                 'itemType': 'event',
                 'eventType': eventType,
                 'msgType': msgType,
-                'body': description.body(),
-                'geoUri': description.geoUri(),
+                'body': msgContent.body(),
+                'geoUri': msgContent.geoUri(),
                 'eventState': eventState,
                 'receipts': receipts,
               };
@@ -690,11 +690,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
-              final thumbnailSource = description.thumbnailSource();
+              final thumbnailSource = msgContent.thumbnailSource();
               if (thumbnailSource != null) {
-                metadata['thumbnailSource'] = thumbnailSource.toString();
+                metadata['thumbnailSource'] = thumbnailSource.url();
               }
-              final thumbnailInfo = description.thumbnailInfo();
+              final thumbnailInfo = msgContent.thumbnailInfo();
               final mimetype = thumbnailInfo?.mimetype();
               final size = thumbnailInfo?.size();
               final width = thumbnailInfo?.width();
@@ -720,10 +720,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.notice':
-            ContentDesc? description = eventItem.contentDesc();
-            if (description != null) {
-              String? formattedBody = description.formattedBody();
-              String body = description.body(); // always exists
+            MsgContent? msgContent = eventItem.msgContent();
+            if (msgContent != null) {
+              String? formattedBody = msgContent.formattedBody();
+              String body = msgContent.body(); // always exists
               return types.TextMessage(
                 author: author,
                 createdAt: createdAt,
@@ -742,10 +742,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.server_notice':
-            ContentDesc? description = eventItem.contentDesc();
-            if (description != null) {
-              String? formattedBody = description.formattedBody();
-              String body = description.body(); // always exists
+            MsgContent? msgContent = eventItem.msgContent();
+            if (msgContent != null) {
+              String? formattedBody = msgContent.formattedBody();
+              String body = msgContent.body(); // always exists
               return types.TextMessage(
                 author: author,
                 createdAt: createdAt,
@@ -764,10 +764,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.text':
-            ContentDesc? description = eventItem.contentDesc();
-            if (description != null) {
-              String? formattedBody = description.formattedBody();
-              String body = description.body(); // always exists
+            MsgContent? msgContent = eventItem.msgContent();
+            if (msgContent != null) {
+              String? formattedBody = msgContent.formattedBody();
+              String body = msgContent.body(); // always exists
               Map<String, dynamic> metadata = {
                 'eventState': eventState,
                 'receipts': receipts,
@@ -793,8 +793,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.video':
-            ContentDesc? description = eventItem.contentDesc();
-            if (description != null) {
+            MsgContent? msgContent = eventItem.msgContent();
+            if (msgContent != null) {
               Map<String, dynamic> metadata = {
                 'base64': '',
                 'eventState': eventState,
@@ -814,9 +814,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 createdAt: createdAt,
                 id: eventId,
                 metadata: metadata,
-                name: description.body(),
-                size: description.size() ?? 0,
-                uri: description.source()!.url(),
+                name: msgContent.body(),
+                size: msgContent.size() ?? 0,
+                uri: msgContent.source()!.url(),
               );
             }
             break;
@@ -841,15 +841,15 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             reactions[k] = records.toList();
           }
         }
-        ContentDesc? description = eventItem.contentDesc();
-        if (description != null) {
+        MsgContent? msgContent = eventItem.msgContent();
+        if (msgContent != null) {
           Map<String, dynamic> metadata = {
             'itemType': 'event',
             'eventType': eventType,
-            'name': description.body(),
-            'size': description.size() ?? 0,
-            'width': description.width()?.toDouble(),
-            'height': description.height()?.toDouble(),
+            'name': msgContent.body(),
+            'size': msgContent.size() ?? 0,
+            'width': msgContent.width()?.toDouble(),
+            'height': msgContent.height()?.toDouble(),
             'base64': '',
             'eventState': eventState,
             'receipts': receipts,
@@ -872,9 +872,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
         break;
       case 'm.poll.start':
-        ContentDesc? description = eventItem.contentDesc();
-        if (description != null) {
-          String body = description.body();
+        MsgContent? msgContent = eventItem.msgContent();
+        if (msgContent != null) {
+          String body = msgContent.body();
           return types.CustomMessage(
             author: author,
             createdAt: createdAt,

@@ -117,8 +117,8 @@ fn match_text_msg(msg: &RoomMessage, body: &str, modified: bool) -> Option<Owned
     info!("match room msg - {:?}", msg.clone());
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(content_desc) = event_item.content_desc() {
-            if content_desc.body() == body {
+        if let Some(msg_content) = event_item.msg_content() {
+            if msg_content.body() == body {
                 if event_item.was_edited() == modified {
                     // exclude the pending msg
                     if let Some(event_id) = event_item.evt_id() {
@@ -254,9 +254,9 @@ async fn edit_image_msg() -> Result<()> {
 fn match_image_msg(msg: &RoomMessage, content_type: &str, modified: bool) -> Option<OwnedEventId> {
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(content_desc) = event_item.content_desc() {
+        if let Some(msg_content) = event_item.msg_content() {
             if event_item.was_edited() == modified {
-                if let Some(mimetype) = content_desc.mimetype() {
+                if let Some(mimetype) = msg_content.mimetype() {
                     if mimetype == content_type {
                         // exclude the pending msg
                         if let Some(evt_id) = event_item.evt_id() {

@@ -23,7 +23,7 @@ use tokio::sync::broadcast::Receiver;
 use tokio_stream::Stream;
 
 use super::{api::FfiBuffer, client::Client, RUNTIME};
-use crate::ContentDesc;
+use crate::MsgContent;
 
 impl Client {
     pub async fn wait_for_attachment(
@@ -79,8 +79,8 @@ impl Attachment {
         self.inner.meta.origin_server_ts.get().into()
     }
 
-    pub fn content_desc(&self) -> Option<ContentDesc> {
-        Some(ContentDesc::from(&self.inner.content))
+    pub fn msg_content(&self) -> MsgContent {
+        MsgContent::from(&self.inner.content)
     }
 
     pub async fn source_binary(&self) -> Result<FfiBuffer<u8>> {

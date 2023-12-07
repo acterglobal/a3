@@ -329,9 +329,9 @@ Future<bool> handleMessage(
       if (roomMsg != null) {
         final eventItem = roomMsg.eventItem();
         if (eventItem != null) {
-          final contentDesc = eventItem.contentDesc();
-          if (contentDesc != null) {
-            body = contentDesc.body();
+          final msgContent = eventItem.msgContent();
+          if (msgContent != null) {
+            body = msgContent.body();
           }
         }
       }
@@ -340,9 +340,9 @@ Future<bool> handleMessage(
       if (roomMsg != null) {
         final eventItem = roomMsg.eventItem();
         if (eventItem != null) {
-          final contentDesc = eventItem.contentDesc();
-          if (contentDesc != null) {
-            body = contentDesc.body();
+          final msgContent = eventItem.msgContent();
+          if (msgContent != null) {
+            body = msgContent.body();
           }
         }
       }

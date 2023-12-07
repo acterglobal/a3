@@ -88,7 +88,7 @@ impl ThumbnailInfo {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub enum ContentDesc {
+pub enum MsgContent {
     Text {
         body: String,
         formatted_body: Option<String>,
@@ -126,18 +126,18 @@ pub enum ContentDesc {
     },
 }
 
-impl From<&TextMessageEventContent> for ContentDesc {
+impl From<&TextMessageEventContent> for MsgContent {
     fn from(value: &TextMessageEventContent) -> Self {
-        ContentDesc::Text {
+        MsgContent::Text {
             body: value.body.clone(),
             formatted_body: value.formatted.as_ref().map(|x| x.body.clone()),
         }
     }
 }
 
-impl From<&ImageMessageEventContent> for ContentDesc {
+impl From<&ImageMessageEventContent> for MsgContent {
     fn from(value: &ImageMessageEventContent) -> Self {
-        ContentDesc::Image {
+        MsgContent::Image {
             body: value.body.clone(),
             source: value.source.clone(),
             info: value.info.as_ref().map(|x| *x.clone()),
@@ -145,9 +145,9 @@ impl From<&ImageMessageEventContent> for ContentDesc {
     }
 }
 
-impl From<&AudioMessageEventContent> for ContentDesc {
+impl From<&AudioMessageEventContent> for MsgContent {
     fn from(value: &AudioMessageEventContent) -> Self {
-        ContentDesc::Audio {
+        MsgContent::Audio {
             body: value.body.clone(),
             source: value.source.clone(),
             info: value.info.as_ref().map(|x| *x.clone()),
@@ -156,9 +156,9 @@ impl From<&AudioMessageEventContent> for ContentDesc {
     }
 }
 
-impl From<&VideoMessageEventContent> for ContentDesc {
+impl From<&VideoMessageEventContent> for MsgContent {
     fn from(value: &VideoMessageEventContent) -> Self {
-        ContentDesc::Video {
+        MsgContent::Video {
             body: value.body.clone(),
             source: value.source.clone(),
             info: value.info.as_ref().map(|x| *x.clone()),
@@ -166,9 +166,9 @@ impl From<&VideoMessageEventContent> for ContentDesc {
     }
 }
 
-impl From<&FileMessageEventContent> for ContentDesc {
+impl From<&FileMessageEventContent> for MsgContent {
     fn from(value: &FileMessageEventContent) -> Self {
-        ContentDesc::File {
+        MsgContent::File {
             body: value.body.clone(),
             source: value.source.clone(),
             info: value.info.as_ref().map(|x| *x.clone()),
@@ -177,9 +177,9 @@ impl From<&FileMessageEventContent> for ContentDesc {
     }
 }
 
-impl From<&LocationMessageEventContent> for ContentDesc {
+impl From<&LocationMessageEventContent> for MsgContent {
     fn from(value: &LocationMessageEventContent) -> Self {
-        ContentDesc::Location {
+        MsgContent::Location {
             body: value.body.clone(),
             geo_uri: value.geo_uri.clone(),
             info: value.info.as_ref().map(|x| *x.clone()),
@@ -191,18 +191,18 @@ impl From<&LocationMessageEventContent> for ContentDesc {
     }
 }
 
-impl From<&EmoteMessageEventContent> for ContentDesc {
+impl From<&EmoteMessageEventContent> for MsgContent {
     fn from(value: &EmoteMessageEventContent) -> Self {
-        ContentDesc::Text {
+        MsgContent::Text {
             body: value.body.clone(),
             formatted_body: value.formatted.as_ref().map(|x| x.body.clone()),
         }
     }
 }
 
-impl From<&StickerEventContent> for ContentDesc {
+impl From<&StickerEventContent> for MsgContent {
     fn from(value: &StickerEventContent) -> Self {
-        ContentDesc::Image {
+        MsgContent::Image {
             body: value.body.clone(),
             source: SdkMediaSource::Plain(value.url.clone()),
             info: Some(value.info.clone()),
@@ -210,32 +210,32 @@ impl From<&StickerEventContent> for ContentDesc {
     }
 }
 
-impl From<&AttachmentContent> for ContentDesc {
+impl From<&AttachmentContent> for MsgContent {
     fn from(value: &AttachmentContent) -> Self {
         match value {
-            AttachmentContent::Image(content) => ContentDesc::Image {
+            AttachmentContent::Image(content) => MsgContent::Image {
                 body: content.body.clone(),
                 source: content.source.clone(),
                 info: content.info.as_ref().map(|x| *x.clone()),
             },
-            AttachmentContent::Audio(content) => ContentDesc::Audio {
+            AttachmentContent::Audio(content) => MsgContent::Audio {
                 body: content.body.clone(),
                 source: content.source.clone(),
                 info: content.info.as_ref().map(|x| *x.clone()),
                 audio: content.audio.clone(),
             },
-            AttachmentContent::Video(content) => ContentDesc::Video {
+            AttachmentContent::Video(content) => MsgContent::Video {
                 body: content.body.clone(),
                 source: content.source.clone(),
                 info: content.info.as_ref().map(|x| *x.clone()),
             },
-            AttachmentContent::File(content) => ContentDesc::File {
+            AttachmentContent::File(content) => MsgContent::File {
                 body: content.body.clone(),
                 source: content.source.clone(),
                 info: content.info.as_ref().map(|x| *x.clone()),
                 filename: content.filename.clone(),
             },
-            AttachmentContent::Location(content) => ContentDesc::Location {
+            AttachmentContent::Location(content) => MsgContent::Location {
                 body: content.body.clone(),
                 geo_uri: content.geo_uri.clone(),
                 info: content.info.as_ref().map(|x| *x.clone()),
@@ -248,16 +248,16 @@ impl From<&AttachmentContent> for ContentDesc {
     }
 }
 
-impl ContentDesc {
+impl MsgContent {
     pub(crate) fn from_text(body: String) -> Self {
-        ContentDesc::Text {
+        MsgContent::Text {
             body,
             formatted_body: None,
         }
     }
 
     pub(crate) fn from_image(body: String, source: OwnedMxcUri) -> Self {
-        ContentDesc::Image {
+        MsgContent::Image {
             body,
             source: SdkMediaSource::Plain(source),
             info: Some(ImageInfo::new()),
@@ -266,34 +266,34 @@ impl ContentDesc {
 
     pub fn body(&self) -> String {
         match self {
-            ContentDesc::Text { body, .. } => body.clone(),
-            ContentDesc::Image { body, .. } => body.clone(),
-            ContentDesc::Audio { body, .. } => body.clone(),
-            ContentDesc::Video { body, .. } => body.clone(),
-            ContentDesc::File { body, .. } => body.clone(),
-            ContentDesc::Location { body, .. } => body.clone(),
+            MsgContent::Text { body, .. } => body.clone(),
+            MsgContent::Image { body, .. } => body.clone(),
+            MsgContent::Audio { body, .. } => body.clone(),
+            MsgContent::Video { body, .. } => body.clone(),
+            MsgContent::File { body, .. } => body.clone(),
+            MsgContent::Location { body, .. } => body.clone(),
         }
     }
 
     pub fn formatted_body(&self) -> Option<String> {
         match self {
-            ContentDesc::Text { formatted_body, .. } => formatted_body.clone(),
+            MsgContent::Text { formatted_body, .. } => formatted_body.clone(),
             _ => None,
         }
     }
 
     pub fn source(&self) -> Option<MediaSource> {
         match self {
-            ContentDesc::Image { source, .. } => Some(MediaSource {
+            MsgContent::Image { source, .. } => Some(MediaSource {
                 inner: source.clone(),
             }),
-            ContentDesc::Audio { source, .. } => Some(MediaSource {
+            MsgContent::Audio { source, .. } => Some(MediaSource {
                 inner: source.clone(),
             }),
-            ContentDesc::Video { source, .. } => Some(MediaSource {
+            MsgContent::Video { source, .. } => Some(MediaSource {
                 inner: source.clone(),
             }),
-            ContentDesc::File { source, .. } => Some(MediaSource {
+            MsgContent::File { source, .. } => Some(MediaSource {
                 inner: source.clone(),
             }),
             _ => None,
@@ -302,42 +302,38 @@ impl ContentDesc {
 
     pub fn mimetype(&self) -> Option<String> {
         match self {
-            ContentDesc::Image { info, .. } => info.as_ref().and_then(|x| x.mimetype.clone()),
-            ContentDesc::Audio { info, .. } => info.as_ref().and_then(|x| x.mimetype.clone()),
-            ContentDesc::Video { info, .. } => info.as_ref().and_then(|x| x.mimetype.clone()),
-            ContentDesc::File { info, .. } => info.as_ref().and_then(|x| x.mimetype.clone()),
+            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| x.mimetype.clone()),
+            MsgContent::Audio { info, .. } => info.as_ref().and_then(|x| x.mimetype.clone()),
+            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| x.mimetype.clone()),
+            MsgContent::File { info, .. } => info.as_ref().and_then(|x| x.mimetype.clone()),
             _ => None,
         }
     }
 
     pub fn size(&self) -> Option<u64> {
         match self {
-            ContentDesc::Image { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
-            ContentDesc::Audio { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
-            ContentDesc::Video { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
-            ContentDesc::File { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
+            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
+            MsgContent::Audio { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
+            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
+            MsgContent::File { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
             _ => None,
         }
     }
 
     pub fn width(&self) -> Option<u64> {
         match self {
-            ContentDesc::Image { info, .. } => {
-                info.as_ref().and_then(|x| x.width.map(|x| x.into()))
-            }
-            ContentDesc::Video { info, .. } => {
-                info.as_ref().and_then(|x| x.width.map(|x| x.into()))
-            }
+            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| x.width.map(|x| x.into())),
+            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| x.width.map(|x| x.into())),
             _ => None,
         }
     }
 
     pub fn height(&self) -> Option<u64> {
         match self {
-            ContentDesc::Image { info, .. } => {
+            MsgContent::Image { info, .. } => {
                 info.as_ref().and_then(|x| x.height.map(|x| x.into()))
             }
-            ContentDesc::Video { info, .. } => {
+            MsgContent::Video { info, .. } => {
                 info.as_ref().and_then(|x| x.height.map(|x| x.into()))
             }
             _ => None,
@@ -346,22 +342,22 @@ impl ContentDesc {
 
     pub fn thumbnail_source(&self) -> Option<MediaSource> {
         match self {
-            ContentDesc::Image { info, .. } => info.as_ref().and_then(|x| {
+            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| {
                 x.thumbnail_source
                     .as_ref()
                     .map(|y| MediaSource { inner: y.clone() })
             }),
-            ContentDesc::Video { info, .. } => info.as_ref().and_then(|x| {
+            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| {
                 x.thumbnail_source
                     .as_ref()
                     .map(|y| MediaSource { inner: y.clone() })
             }),
-            ContentDesc::File { info, .. } => info.as_ref().and_then(|x| {
+            MsgContent::File { info, .. } => info.as_ref().and_then(|x| {
                 x.thumbnail_source
                     .as_ref()
                     .map(|y| MediaSource { inner: y.clone() })
             }),
-            ContentDesc::Location { info, .. } => info.as_ref().and_then(|x| {
+            MsgContent::Location { info, .. } => info.as_ref().and_then(|x| {
                 x.thumbnail_source
                     .as_ref()
                     .map(|y| MediaSource { inner: y.clone() })
@@ -372,22 +368,22 @@ impl ContentDesc {
 
     pub fn thumbnail_info(&self) -> Option<ThumbnailInfo> {
         match self {
-            ContentDesc::Image { info, .. } => info.as_ref().and_then(|x| {
+            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| {
                 x.thumbnail_info
                     .as_ref()
                     .map(|y| ThumbnailInfo { inner: *y.clone() })
             }),
-            ContentDesc::Video { info, .. } => info.as_ref().and_then(|x| {
+            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| {
                 x.thumbnail_info
                     .as_ref()
                     .map(|y| ThumbnailInfo { inner: *y.clone() })
             }),
-            ContentDesc::File { info, .. } => info.as_ref().and_then(|x| {
+            MsgContent::File { info, .. } => info.as_ref().and_then(|x| {
                 x.thumbnail_info
                     .as_ref()
                     .map(|y| ThumbnailInfo { inner: *y.clone() })
             }),
-            ContentDesc::Location { info, .. } => info.as_ref().and_then(|x| {
+            MsgContent::Location { info, .. } => info.as_ref().and_then(|x| {
                 x.thumbnail_info
                     .as_ref()
                     .map(|y| ThumbnailInfo { inner: *y.clone() })
@@ -398,10 +394,10 @@ impl ContentDesc {
 
     pub fn duration(&self) -> Option<u64> {
         match self {
-            ContentDesc::Audio { info, .. } => {
+            MsgContent::Audio { info, .. } => {
                 info.as_ref().and_then(|x| x.duration.map(|y| y.as_secs()))
             }
-            ContentDesc::Video { info, .. } => {
+            MsgContent::Video { info, .. } => {
                 info.as_ref().and_then(|x| x.duration.map(|y| y.as_secs()))
             }
             _ => None,
@@ -410,22 +406,22 @@ impl ContentDesc {
 
     pub fn blurhash(&self) -> Option<String> {
         match self {
-            ContentDesc::Image { info, .. } => info.as_ref().and_then(|x| x.blurhash.clone()),
-            ContentDesc::Video { info, .. } => info.as_ref().and_then(|x| x.blurhash.clone()),
+            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| x.blurhash.clone()),
+            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| x.blurhash.clone()),
             _ => None,
         }
     }
 
     pub fn filename(&self) -> Option<String> {
         match self {
-            ContentDesc::File { filename, .. } => filename.clone(),
+            MsgContent::File { filename, .. } => filename.clone(),
             _ => None,
         }
     }
 
     pub fn geo_uri(&self) -> Option<String> {
         match self {
-            ContentDesc::Location { geo_uri, .. } => Some(geo_uri.clone()),
+            MsgContent::Location { geo_uri, .. } => Some(geo_uri.clone()),
             _ => None,
         }
     }

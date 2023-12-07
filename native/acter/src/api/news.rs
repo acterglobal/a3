@@ -33,7 +33,7 @@ use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::trace;
 
-use super::{api::FfiBuffer, client::Client, common::ContentDesc, spaces::Space, RUNTIME};
+use super::{api::FfiBuffer, client::Client, common::MsgContent, spaces::Space, RUNTIME};
 
 impl Client {
     pub async fn wait_for_news(
@@ -198,14 +198,14 @@ impl NewsSlide {
         }
     }
 
-    pub fn content_desc(&self) -> ContentDesc {
+    pub fn msg_content(&self) -> MsgContent {
         match &self.inner.content {
-            NewsContent::Text(content) => ContentDesc::from(content),
-            NewsContent::Image(content) => ContentDesc::from(content),
-            NewsContent::Audio(content) => ContentDesc::from(content),
-            NewsContent::Video(content) => ContentDesc::from(content),
-            NewsContent::File(content) => ContentDesc::from(content),
-            NewsContent::Location(content) => ContentDesc::from(content),
+            NewsContent::Text(content) => MsgContent::from(content),
+            NewsContent::Image(content) => MsgContent::from(content),
+            NewsContent::Audio(content) => MsgContent::from(content),
+            NewsContent::Video(content) => MsgContent::from(content),
+            NewsContent::File(content) => MsgContent::from(content),
+            NewsContent::Location(content) => MsgContent::from(content),
         }
     }
 

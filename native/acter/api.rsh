@@ -272,9 +272,9 @@ object NewsSlide {
     /// the references linked in this slide
     fn references() -> Vec<ObjRef>;
 
-    /// if this is an image, hand over the description
-    fn content_desc() -> ContentDesc;
-    /// if this is an image, hand over the data
+    /// if this is a media, hand over the description
+    fn msg_content() -> MsgContent;
+    /// if this is a media, hand over the data
     fn source_binary() -> Future<Result<buffer<u8>>>;
 }
 
@@ -625,7 +625,7 @@ object RoomEventItem {
     fn msg_type() -> Option<string>;
 
     /// covers text/image/audio/video/file/location/emote/sticker
-    fn content_desc() -> Option<ContentDesc>;
+    fn msg_content() -> Option<MsgContent>;
 
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
@@ -672,7 +672,7 @@ object RoomMessage {
     fn virtual_item() -> Option<RoomVirtualItem>;
 }
 
-object ContentDesc {
+object MsgContent {
     /// available always
     fn body() -> string;
 
@@ -1124,9 +1124,9 @@ object Attachment {
     /// When was this attachment acknowledged by the server
     fn origin_server_ts() -> u64;
 
-    /// if this is an image, hand over the description
-    fn content_desc() -> ContentDesc;
-    /// if this is an image, hand over the data
+    /// if this is a media, hand over the description
+    fn msg_content() -> MsgContent;
+    /// if this is a media, hand over the data
     fn source_binary() -> Future<Result<buffer<u8>>>;
 }
 
@@ -1173,7 +1173,7 @@ object Task {
     fn title() -> string;
 
     /// the description of this task
-    fn description() -> Option<ContentDesc>;
+    fn description() -> Option<MsgContent>;
 
     /// the users assigned
     fn assignees() -> Vec<UserId>;
@@ -1365,7 +1365,7 @@ object TaskList {
     fn name() -> string;
 
     /// the description of this task list
-    fn description() -> Option<ContentDesc>;
+    fn description() -> Option<MsgContent>;
 
     /// who wants to be informed on updates about this?
     fn subscribers() -> Vec<UserId>;

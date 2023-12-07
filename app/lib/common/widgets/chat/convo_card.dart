@@ -201,12 +201,12 @@ class _SubtitleWidget extends ConsumerWidget {
           case 'm.notice':
           case 'm.server_notice':
           case 'm.text':
-            ContentDesc? contentDesc = eventItem.contentDesc();
-            if (contentDesc == null) {
+            MsgContent? msgContent = eventItem.msgContent();
+            if (msgContent == null) {
               return const SizedBox.shrink();
             }
-            String body = contentDesc.body();
-            String? formattedBody = contentDesc.formattedBody();
+            String body = msgContent.body();
+            String? formattedBody = msgContent.formattedBody();
             if (formattedBody != null) {
               body = simplifyBody(formattedBody);
             }
@@ -244,12 +244,12 @@ class _SubtitleWidget extends ConsumerWidget {
             );
         }
       case 'm.reaction':
-        ContentDesc? contentDesc = eventItem.contentDesc();
-        if (contentDesc == null) {
+        MsgContent? msgContent = eventItem.msgContent();
+        if (msgContent == null) {
           return const SizedBox();
         }
-        String body = contentDesc.body();
-        String? formattedBody = contentDesc.formattedBody();
+        String body = msgContent.body();
+        String? formattedBody = msgContent.formattedBody();
         if (formattedBody != null) {
           body = simplifyBody(formattedBody);
         }
@@ -303,7 +303,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Flexible(
               child: Text(
-                eventItem.contentDesc()!.body(),
+                eventItem.msgContent()!.body(),
                 style: Theme.of(context).textTheme.bodySmall,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -370,12 +370,12 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.room.member':
-        ContentDesc? contentDesc = eventItem.contentDesc();
-        if (contentDesc == null) {
+        MsgContent? msgContent = eventItem.msgContent();
+        if (msgContent == null) {
           return const SizedBox();
         }
-        String body = contentDesc.body();
-        String? formattedBody = contentDesc.formattedBody();
+        String body = msgContent.body();
+        String? formattedBody = msgContent.formattedBody();
         if (formattedBody != null) {
           body = simplifyBody(formattedBody);
         }
@@ -429,7 +429,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Flexible(
               child: Text(
-                eventItem.contentDesc()!.body(),
+                eventItem.msgContent()!.body(),
                 style: Theme.of(context).textTheme.bodySmall,
                 overflow: TextOverflow.ellipsis,
               ),

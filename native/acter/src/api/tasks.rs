@@ -18,7 +18,7 @@ use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::warn;
 
-use crate::ContentDesc;
+use crate::MsgContent;
 
 use super::{client::Client, spaces::Space, RUNTIME};
 
@@ -289,8 +289,9 @@ impl TaskList {
     pub fn name(&self) -> String {
         self.content.name.to_owned()
     }
-    pub fn description(&self) -> Option<String> {
-        self.content.description.as_ref().map(|t| t.body.clone())
+
+    pub fn description(&self) -> Option<MsgContent> {
+        self.content.description.as_ref().map(MsgContent::from)
     }
 
     pub fn role(&self) -> Option<String> {
@@ -476,8 +477,8 @@ impl Task {
         self.content.title().to_owned()
     }
 
-    pub fn description(&self) -> Option<ContentDesc> {
-        self.content.description.as_ref().map(ContentDesc::from)
+    pub fn description(&self) -> Option<MsgContent> {
+        self.content.description.as_ref().map(MsgContent::from)
     }
 
     pub fn sort_order(&self) -> u32 {

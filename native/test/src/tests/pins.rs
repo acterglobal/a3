@@ -185,12 +185,10 @@ async fn pin_attachments() -> Result<()> {
     let attachment = attachments.first().unwrap();
     assert_eq!(attachment.event_id(), attachment_1_id);
     assert_eq!(attachment.type_str(), "image");
-    let Some(content_desc) = attachment.content_desc() else {
-        bail!("content desc needed")
-    };
-    assert_eq!(content_desc.body(), "acter logo");
+    let msg_content = attachment.msg_content();
+    assert_eq!(msg_content.body(), "acter logo");
     assert_eq!(
-        content_desc.source().unwrap().url(),
+        msg_content.source().unwrap().url(),
         "https://raw.githubusercontent.com/acterglobal/a3/main/app/assets/icon/acter-logo.svg"
     );
 

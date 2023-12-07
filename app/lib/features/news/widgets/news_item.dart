@@ -206,7 +206,7 @@ class ImageSlide extends StatefulWidget {
 
 class _ImageSlideState extends State<ImageSlide> {
   late Future<FfiBufferUint8> newsImage;
-  late ContentDesc? contentDesc;
+  late MsgContent? msgContent;
 
   @override
   void initState() {
@@ -216,7 +216,7 @@ class _ImageSlideState extends State<ImageSlide> {
 
   Future<void> getNewsImage() async {
     newsImage = widget.slide.sourceBinary();
-    contentDesc = widget.slide.contentDesc();
+    msgContent = widget.slide.msgContent();
     if (mounted) {
       setState(() {});
     }
