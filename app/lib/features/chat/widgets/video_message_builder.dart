@@ -49,7 +49,11 @@ class VideoMessageBuilder extends ConsumerWidget {
         );
       },
       error: (error, stack) => Center(child: Text('Loading failed: $error')),
-      loading: () => const Center(child: Text('Loading video..')),
+      loading: () => const SizedBox(
+        height: 150,
+        width: 150,
+        child: Icon(Icons.video_collection_outlined),
+      ),
     );
   }
 }
