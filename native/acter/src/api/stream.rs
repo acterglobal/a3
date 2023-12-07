@@ -20,9 +20,9 @@ use ruma_events::{
     room::{
         message::{
             AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent, ForwardThread,
-            ImageMessageEventContent, LocationMessageEventContent, MessageType, Relation,
-            RoomMessageEvent, RoomMessageEventContent, RoomMessageEventContentWithoutRelation,
-            VideoInfo, VideoMessageEventContent,
+            ImageMessageEventContent, LocationInfo, LocationMessageEventContent, MessageType,
+            Relation, RoomMessageEvent, RoomMessageEventContent,
+            RoomMessageEventContentWithoutRelation, VideoInfo, VideoMessageEventContent,
         },
         ImageInfo,
     },
@@ -94,9 +94,58 @@ impl TimelineStream {
         matches!(self.room.state(), RoomState::Joined)
     }
 
-    pub async fn send_plain_message(&self, message: String) -> Result<bool> {
+    pub fn text_plain_draft(&self, body: String) -> MsgContentDraft {
+        MsgContentDraft::TextPlain { body }
+    }
+
+    pub fn text_markdown_draft(&self, body: String) -> MsgContentDraft {
+        MsgContentDraft::TextMarkdown { body }
+    }
+
+    pub fn image_draft(&self, body: String, source: String) -> MsgContentDraft {
+        MsgContentDraft::Image {
+            body,
+            source,
+            info: None,
+        }
+    }
+
+    pub fn audio_draft(&self, body: String, source: String) -> MsgContentDraft {
+        MsgContentDraft::Audio {
+            body,
+            source,
+            info: None,
+        }
+    }
+
+    pub fn video_draft(&self, body: String, source: String) -> MsgContentDraft {
+        MsgContentDraft::Video {
+            body,
+            source,
+            info: None,
+        }
+    }
+
+    pub fn file_draft(&self, body: String, source: String) -> MsgContentDraft {
+        MsgContentDraft::File {
+            body,
+            source,
+            info: None,
+            filename: None,
+        }
+    }
+
+    pub fn location_draft(&self, body: String, geo_uri: String) -> MsgContentDraft {
+        MsgContentDraft::Location {
+            body,
+            geo_uri,
+            info: None,
+        }
+    }
+
+    pub async fn send_message(&self, draft: Box<MsgContentDraft>) -> Result<bool> {
         if !self.is_joined() {
-            bail!("Can't send message as plain text to a room we are not in");
+            bail!("Can't send message to a room we are not in");
         }
         let room = self.room.clone();
         let my_id = room
@@ -115,14 +164,104 @@ impl TimelineStream {
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
-                let content = RoomMessageEventContent::text_plain(message);
-                timeline.send(content.into()).await;
+                match *draft {
+                    MsgContentDraft::TextPlain { body } => {
+                        let content = RoomMessageEventContent::text_plain(body);
+                        timeline.send(content.into()).await;
+                    }
+                    MsgContentDraft::TextMarkdown { body } => {
+                        let content = RoomMessageEventContent::text_markdown(body);
+                        timeline.send(content.into()).await;
+                    }
+                    MsgContentDraft::Image { body, source, info } => {
+                        let mut config = AttachmentConfig::new();
+                        let mut mime_type = None;
+                        if let Some(value) = info {
+                            config = config.info(AttachmentInfo::Image(BaseImageInfo {
+                                height: value.height,
+                                width: value.width,
+                                size: value.size,
+                                blurhash: value.blurhash.clone(),
+                            }));
+                            if let Some(mimetype) = value.mimetype {
+                                mime_type = Some(mimetype.parse::<mime::Mime>()?);
+                            }
+                        }
+                        let mime_type = mime_type.expect("mime type needed");
+                        timeline.send_attachment(source, mime_type, config).await?;
+                    }
+                    MsgContentDraft::Audio { body, source, info } => {
+                        let mut config = AttachmentConfig::new();
+                        let mut mime_type = None;
+                        if let Some(value) = info {
+                            config = config.info(AttachmentInfo::Audio(BaseAudioInfo {
+                                duration: value.duration,
+                                size: value.size,
+                            }));
+                            if let Some(mimetype) = value.mimetype {
+                                mime_type = Some(mimetype.parse::<mime::Mime>()?);
+                            }
+                        }
+                        let mime_type = mime_type.expect("mime type needed");
+                        timeline.send_attachment(source, mime_type, config).await?;
+                    }
+                    MsgContentDraft::Video { body, source, info } => {
+                        let mut config = AttachmentConfig::new();
+                        let mut mime_type = None;
+                        if let Some(value) = info {
+                            config = config.info(AttachmentInfo::Video(BaseVideoInfo {
+                                duration: value.duration,
+                                width: value.width,
+                                height: value.height,
+                                size: value.size,
+                                blurhash: value.blurhash.clone(),
+                            }));
+                            if let Some(mimetype) = value.mimetype {
+                                mime_type = Some(mimetype.parse::<mime::Mime>()?);
+                            }
+                        }
+                        let mime_type = mime_type.expect("mime type needed");
+                        timeline.send_attachment(source, mime_type, config).await?;
+                    }
+                    MsgContentDraft::File {
+                        body,
+                        source,
+                        info,
+                        filename,
+                    } => {
+                        let mut config = AttachmentConfig::new();
+                        let mut mime_type = None;
+                        if let Some(value) = info {
+                            config = config
+                                .info(AttachmentInfo::File(BaseFileInfo { size: value.size }));
+                            if let Some(mimetype) = value.mimetype {
+                                mime_type = Some(mimetype.parse::<mime::Mime>()?);
+                            }
+                        }
+                        let mime_type = mime_type.expect("mime type needed");
+                        timeline.send_attachment(source, mime_type, config).await?;
+                    }
+                    MsgContentDraft::Location {
+                        body,
+                        geo_uri,
+                        info,
+                    } => {
+                        let location_content = LocationMessageEventContent::new(body, geo_uri);
+                        let content =
+                            RoomMessageEventContent::new(MessageType::Location(location_content));
+                        timeline.send(content.into()).await;
+                    }
+                }
                 Ok(true)
             })
             .await?
     }
 
-    pub async fn edit_plain_message(&self, event_id: String, new_msg: String) -> Result<bool> {
+    pub async fn edit_message(
+        &self,
+        event_id: String,
+        draft: Box<MsgContentDraft>,
+    ) -> Result<bool> {
         if !self.is_joined() {
             bail!("Can't edit message as plain text to a room we are not in");
         }
@@ -162,12 +301,135 @@ impl TimelineStream {
                     bail!("Can't edit an event not sent by own user");
                 }
 
-                let replacement = Replacement::new(
-                    event_id.to_owned(),
-                    MessageType::text_plain(new_msg.to_string()).into(),
-                );
-                let mut edited_content = RoomMessageEventContent::text_plain(new_msg);
-                edited_content.relates_to = Some(Relation::Replacement(replacement));
+                let edited_content = match *draft {
+                    MsgContentDraft::TextPlain { body } => {
+                        let replacement = Replacement::new(
+                            event_id.to_owned(),
+                            MessageType::text_plain(body.clone()).into(),
+                        );
+                        let mut edited_content = RoomMessageEventContent::text_plain(body);
+                        edited_content.relates_to = Some(Relation::Replacement(replacement));
+                        edited_content
+                    }
+                    MsgContentDraft::TextMarkdown { body } => {
+                        let replacement = Replacement::new(
+                            event_id.to_owned(),
+                            MessageType::text_markdown(body.clone()).into(),
+                        );
+                        let mut edited_content = RoomMessageEventContent::text_markdown(body);
+                        edited_content.relates_to = Some(Relation::Replacement(replacement));
+                        edited_content
+                    }
+                    MsgContentDraft::Image { body, source, info } => {
+                        let path = PathBuf::from(source);
+                        let mut image_buf = std::fs::read(path)?;
+
+                        let info = info.expect("image info needed");
+                        let mimetype = info.mimetype.clone().expect("mimetype needed");
+                        let content_type = mimetype.parse::<mime::Mime>()?;
+                        let response = client.media().upload(&content_type, image_buf).await?;
+
+                        let mut image_content =
+                            ImageMessageEventContent::plain(body, response.content_uri);
+                        image_content.info = Some(Box::new(info));
+                        let mut edited_content =
+                            RoomMessageEventContent::new(MessageType::Image(image_content.clone()));
+                        let replacement = Replacement::new(
+                            event_id.to_owned(),
+                            MessageType::Image(image_content).into(),
+                        );
+                        edited_content.relates_to = Some(Relation::Replacement(replacement));
+                        edited_content
+                    }
+                    MsgContentDraft::Audio { body, source, info } => {
+                        let path = PathBuf::from(source);
+                        let mut audio_buf = std::fs::read(path)?;
+
+                        let info = info.expect("audio info needed");
+                        let mimetype = info.mimetype.clone().expect("mimetype needed");
+                        let content_type = mimetype.parse::<mime::Mime>()?;
+                        let response = client.media().upload(&content_type, audio_buf).await?;
+
+                        let mut audio_content =
+                            AudioMessageEventContent::plain(body, response.content_uri);
+                        audio_content.info = Some(Box::new(info));
+                        let mut edited_content =
+                            RoomMessageEventContent::new(MessageType::Audio(audio_content.clone()));
+                        let replacement = Replacement::new(
+                            event_id.to_owned(),
+                            MessageType::Audio(audio_content).into(),
+                        );
+                        edited_content.relates_to = Some(Relation::Replacement(replacement));
+                        edited_content
+                    }
+                    MsgContentDraft::Video { body, source, info } => {
+                        let path = PathBuf::from(source);
+                        let mut video_buf = std::fs::read(path)?;
+
+                        let info = info.expect("video info needed");
+                        let mimetype = info.mimetype.clone().expect("mimetype needed");
+                        let content_type = mimetype.parse::<mime::Mime>()?;
+                        let response = client.media().upload(&content_type, video_buf).await?;
+
+                        let mut video_content =
+                            VideoMessageEventContent::plain(body, response.content_uri);
+                        video_content.info = Some(Box::new(info));
+                        let mut edited_content =
+                            RoomMessageEventContent::new(MessageType::Video(video_content.clone()));
+                        let replacement = Replacement::new(
+                            event_id.to_owned(),
+                            MessageType::Video(video_content).into(),
+                        );
+                        edited_content.relates_to = Some(Relation::Replacement(replacement));
+                        edited_content
+                    }
+                    MsgContentDraft::File {
+                        body,
+                        source,
+                        info,
+                        filename,
+                    } => {
+                        let path = PathBuf::from(source);
+                        let mut file_buf = std::fs::read(path)?;
+
+                        let info = info.expect("file info needed");
+                        let mimetype = info.mimetype.clone().expect("mimetype needed");
+                        let content_type = mimetype.parse::<mime::Mime>()?;
+                        let response = client.media().upload(&content_type, file_buf).await?;
+
+                        let mut file_content =
+                            FileMessageEventContent::plain(body, response.content_uri);
+                        file_content.info = Some(Box::new(info));
+                        file_content.filename = filename.clone();
+                        let mut edited_content =
+                            RoomMessageEventContent::new(MessageType::File(file_content.clone()));
+                        let replacement = Replacement::new(
+                            event_id.to_owned(),
+                            MessageType::File(file_content).into(),
+                        );
+                        edited_content.relates_to = Some(Relation::Replacement(replacement));
+                        edited_content
+                    }
+                    MsgContentDraft::Location {
+                        body,
+                        geo_uri,
+                        info,
+                    } => {
+                        let mut location_content = LocationMessageEventContent::new(body, geo_uri);
+                        if let Some(info) = info {
+                            location_content.info = Some(Box::new(info));
+                        }
+                        let mut edited_content = RoomMessageEventContent::new(
+                            MessageType::Location(location_content.clone()),
+                        );
+                        let replacement = Replacement::new(
+                            event_id.to_owned(),
+                            MessageType::Location(location_content).into(),
+                        );
+                        edited_content.relates_to = Some(Relation::Replacement(replacement));
+                        edited_content
+                    }
+                };
 
                 timeline.send(edited_content.into()).await;
                 Ok(true)
@@ -175,7 +437,11 @@ impl TimelineStream {
             .await?
     }
 
-    pub async fn send_plain_reply(&self, msg: String, event_id: String) -> Result<bool> {
+    pub async fn reply_message(
+        &self,
+        event_id: String,
+        draft: Box<MsgContentDraft>,
+    ) -> Result<bool> {
         if !self.is_joined() {
             bail!("Can't send reply as plain text to a room we are not in");
         }
@@ -187,70 +453,6 @@ impl TimelineStream {
             .to_owned();
         let timeline = self.timeline.clone();
         let event_id = EventId::parse(event_id)?;
-
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
-                }
-
-                let content = RoomMessageEventContentWithoutRelation::text_plain(msg);
-                let Some(reply_item) = timeline.item_by_event_id(&event_id).await else {
-                    bail!("Not found which item would be replied to")
-                };
-
-                timeline
-                    .send_reply(content, &reply_item, ForwardThread::Yes)
-                    .await?;
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn send_formatted_message(&self, markdown: String) -> Result<bool> {
-        if !self.is_joined() {
-            bail!("Can't send message as formatted text to a room we are not in");
-        }
-        let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
-        let timeline = self.timeline.clone();
-
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
-                }
-                let content = RoomMessageEventContent::text_markdown(markdown);
-                timeline.send(content.into()).await;
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn edit_formatted_message(&self, event_id: String, new_msg: String) -> Result<bool> {
-        if !self.is_joined() {
-            bail!("Can't edit message as formatted text to a room we are not in");
-        }
-        let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
-        let timeline = self.timeline.clone();
-        let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
 
         RUNTIME
@@ -263,929 +465,99 @@ impl TimelineStream {
                     bail!("No permission to send message in this room");
                 }
 
-                let timeline_event = room.event(&event_id).await?;
-                let event_content = timeline_event
-                    .event
-                    .deserialize_as::<RoomMessageEvent>()
-                    .context("Couldn't deserialise event")?;
-
-                let mut sent_by_me = false;
-                if let Some(user_id) = client.user_id() {
-                    if user_id == event_content.sender() {
-                        sent_by_me = true;
+                let content = match *draft {
+                    MsgContentDraft::TextPlain { body } => {
+                        RoomMessageEventContentWithoutRelation::text_plain(body)
                     }
-                }
-                if !sent_by_me {
-                    bail!("Can't edit an event not sent by own user");
-                }
-
-                let replacement = Replacement::new(
-                    event_id.to_owned(),
-                    MessageType::text_markdown(new_msg.to_string()).into(),
-                );
-                let mut edited_content = RoomMessageEventContent::text_markdown(new_msg);
-                edited_content.relates_to = Some(Relation::Replacement(replacement));
-
-                timeline.send(edited_content.into()).await;
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn send_formatted_reply(&self, markdown: String, event_id: String) -> Result<bool> {
-        if !self.is_joined() {
-            bail!("Can't send reply as formatted text to a room we are not in");
-        }
-        let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
-        let timeline = self.timeline.clone();
-        let event_id = EventId::parse(event_id)?;
-
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
-                }
-
-                let content = RoomMessageEventContentWithoutRelation::text_markdown(markdown);
-                let Some(reply_item) = timeline.item_by_event_id(&event_id).await else {
-                    bail!("Not found which item would be replied to")
-                };
-
-                timeline
-                    .send_reply(content, &reply_item, ForwardThread::Yes)
-                    .await?;
-                Ok(true)
-            })
-            .await?
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    pub async fn send_image_message(
-        &self,
-        uri: String,
-        name: String,
-        mimetype: String,
-        size: Option<u64>,
-        width: Option<u64>,
-        height: Option<u64>,
-        blurhash: Option<String>,
-    ) -> Result<bool> {
-        if !self.is_joined() {
-            bail!("Can't send message as image to a room we are not in")
-        }
-        let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
-        let timeline = self.timeline.clone();
-
-        let config = AttachmentConfig::new().info(AttachmentInfo::Image(BaseImageInfo {
-            height: height.and_then(UInt::new),
-            width: width.and_then(UInt::new),
-            size: size.and_then(UInt::new),
-            blurhash,
-        }));
-        let mime_type = mimetype.parse::<mime::Mime>()?;
-
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
-                }
-                timeline.send_attachment(uri, mime_type, config).await?;
-                Ok(true)
-            })
-            .await?
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    pub async fn edit_image_message(
-        &self,
-        event_id: String,
-        uri: String,
-        name: String,
-        mimetype: String,
-        size: Option<u64>,
-        width: Option<u64>,
-        height: Option<u64>,
-    ) -> Result<bool> {
-        if !self.is_joined() {
-            bail!("Can't edit message as image to a room we are not in");
-        }
-        let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
-        let timeline = self.timeline.clone();
-        let event_id = EventId::parse(event_id)?;
-        let client = self.room.client();
-
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
-                }
-
-                let path = PathBuf::from(uri);
-                let mut image_buf = std::fs::read(path)?;
-
-                let timeline_event = room.event(&event_id).await?;
-                let event_content = timeline_event
-                    .event
-                    .deserialize_as::<RoomMessageEvent>()
-                    .context("Couldn't deserialise event")?;
-
-                let mut sent_by_me = false;
-                if let Some(user_id) = client.user_id() {
-                    if user_id == event_content.sender() {
-                        sent_by_me = true;
+                    MsgContentDraft::TextMarkdown { body } => {
+                        RoomMessageEventContentWithoutRelation::text_markdown(body)
                     }
-                }
-                if !sent_by_me {
-                    bail!("Can't edit an event not sent by own user");
-                }
+                    MsgContentDraft::Image { body, source, info } => {
+                        let path = PathBuf::from(source);
+                        let mut image_buf = std::fs::read(path)?;
 
-                let content_type = mimetype.parse::<mime::Mime>()?;
-                let response = client.media().upload(&content_type, image_buf).await?;
+                        let info = info.expect("image info needed");
+                        let mimetype = info.mimetype.clone().expect("mimetype needed");
+                        let content_type = mimetype.parse::<mime::Mime>()?;
+                        let response = client.media().upload(&content_type, image_buf).await?;
 
-                let info = assign!(ImageInfo::new(), {
-                    height: height.and_then(UInt::new),
-                    width: width.and_then(UInt::new),
-                    mimetype: Some(mimetype),
-                    size: size.and_then(UInt::new),
-                });
-                let mut image_content = ImageMessageEventContent::plain(name, response.content_uri);
-                image_content.info = Some(Box::new(info));
-                let mut edited_content =
-                    RoomMessageEventContent::new(MessageType::Image(image_content.clone()));
-                let replacement = Replacement::new(
-                    event_id.to_owned(),
-                    MessageType::Image(image_content).into(),
-                );
-                edited_content.relates_to = Some(Relation::Replacement(replacement));
-
-                timeline.send(edited_content.into()).await;
-                Ok(true)
-            })
-            .await?
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    pub async fn send_image_reply(
-        &self,
-        uri: String,
-        name: String,
-        mimetype: String,
-        size: Option<u64>,
-        width: Option<u64>,
-        height: Option<u64>,
-        blurhash: Option<String>,
-        event_id: String,
-    ) -> Result<bool> {
-        if !self.is_joined() {
-            bail!("Can't send reply as image to a room we are not in");
-        }
-        let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
-        let timeline = self.timeline.clone();
-        let event_id = EventId::parse(event_id)?;
-        let client = self.room.client();
-
-        let config = AttachmentConfig::new().info(AttachmentInfo::Image(BaseImageInfo {
-            height: height.and_then(UInt::new),
-            width: width.and_then(UInt::new),
-            size: size.and_then(UInt::new),
-            blurhash,
-        }));
-        let mime_type = mimetype.parse::<mime::Mime>()?;
-
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
-                }
-
-                let path = PathBuf::from(uri);
-                let mut image_buf = std::fs::read(path)?;
-
-                let content_type = mimetype.parse::<mime::Mime>()?;
-                let response = client.media().upload(&content_type, image_buf).await?;
-
-                let info = assign!(ImageInfo::new(), {
-                    height: height.and_then(UInt::new),
-                    width: width.and_then(UInt::new),
-                    mimetype: Some(mimetype),
-                    size: size.and_then(UInt::new),
-                });
-                let mut image_content = ImageMessageEventContent::plain(name, response.content_uri);
-                image_content.info = Some(Box::new(info));
-                let content =
-                    RoomMessageEventContentWithoutRelation::new(MessageType::Image(image_content));
-                let Some(reply_item) = timeline.item_by_event_id(&event_id).await else {
-                    bail!("Not found which item would be replied to")
-                };
-
-                timeline
-                    .send_reply(content, &reply_item, ForwardThread::Yes)
-                    .await?;
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn send_audio_message(
-        &self,
-        uri: String,
-        name: String,
-        mimetype: String,
-        size: Option<u64>,
-        secs: Option<u64>,
-    ) -> Result<bool> {
-        if !self.is_joined() {
-            bail!("Can't send message as audio to a room we are not in");
-        }
-        let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
-        let timeline = self.timeline.clone();
-
-        let config = AttachmentConfig::new().info(AttachmentInfo::Audio(BaseAudioInfo {
-            duration: secs.map(Duration::from_secs),
-            size: size.and_then(UInt::new),
-        }));
-        let mime_type = mimetype.parse::<mime::Mime>()?;
-
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
-                }
-                timeline.send_attachment(uri, mime_type, config).await?;
-                Ok(true)
-            })
-            .await?
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    pub async fn edit_audio_message(
-        &self,
-        event_id: String,
-        uri: String,
-        name: String,
-        mimetype: String,
-        size: Option<u64>,
-        secs: Option<u64>,
-    ) -> Result<bool> {
-        if !self.is_joined() {
-            bail!("Can't edit message as audio to a room we are not in");
-        }
-        let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
-        let timeline = self.timeline.clone();
-        let event_id = EventId::parse(event_id)?;
-        let client = self.room.client();
-
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
-                }
-
-                let path = PathBuf::from(uri);
-                let mut audio_buf = std::fs::read(path)?;
-
-                let timeline_event = room.event(&event_id).await?;
-                let event_content = timeline_event
-                    .event
-                    .deserialize_as::<RoomMessageEvent>()
-                    .context("Couldn't deserialise event")?;
-
-                let mut sent_by_me = false;
-                if let Some(user_id) = client.user_id() {
-                    if user_id == event_content.sender() {
-                        sent_by_me = true;
+                        let mut image_content =
+                            ImageMessageEventContent::plain(body, response.content_uri);
+                        image_content.info = Some(Box::new(info));
+                        RoomMessageEventContentWithoutRelation::new(MessageType::Image(
+                            image_content,
+                        ))
                     }
-                }
-                if !sent_by_me {
-                    bail!("Can't edit an event not sent by own user");
-                }
+                    MsgContentDraft::Audio { body, source, info } => {
+                        let path = PathBuf::from(source);
+                        let mut audio_buf = std::fs::read(path)?;
 
-                let content_type = mimetype.parse::<mime::Mime>()?;
-                let response = client.media().upload(&content_type, audio_buf).await?;
+                        let info = info.expect("audio info needed");
+                        let mimetype = info.mimetype.clone().expect("mimetype needed");
+                        let content_type = mimetype.parse::<mime::Mime>()?;
+                        let response = client.media().upload(&content_type, audio_buf).await?;
 
-                let info = assign!(AudioInfo::new(), {
-                    duration: secs.map(Duration::from_secs),
-                    mimetype: Some(mimetype),
-                    size: size.and_then(UInt::new),
-                });
-                let mut audio_content = AudioMessageEventContent::plain(name, response.content_uri);
-                audio_content.info = Some(Box::new(info));
-                let mut edited_content =
-                    RoomMessageEventContent::new(MessageType::Audio(audio_content.clone()));
-                let replacement = Replacement::new(
-                    event_id.to_owned(),
-                    MessageType::Audio(audio_content).into(),
-                );
-                edited_content.relates_to = Some(Relation::Replacement(replacement));
-
-                timeline.send(edited_content.into()).await;
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn send_audio_reply(
-        &self,
-        uri: String,
-        name: String,
-        mimetype: String,
-        size: Option<u64>,
-        secs: Option<u64>,
-        event_id: String,
-    ) -> Result<bool> {
-        if !self.is_joined() {
-            bail!("Can't send reply as audio to a room we are not in");
-        }
-        let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
-        let timeline = self.timeline.clone();
-        let event_id = EventId::parse(event_id)?;
-        let client = self.room.client();
-
-        let config = AttachmentConfig::new().info(AttachmentInfo::Audio(BaseAudioInfo {
-            duration: secs.map(Duration::from_secs),
-            size: size.and_then(UInt::new),
-        }));
-        let mime_type = mimetype.parse::<mime::Mime>()?;
-
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
-                }
-
-                let path = PathBuf::from(uri);
-                let mut audio_buf = std::fs::read(path)?;
-
-                let content_type = mimetype.parse::<mime::Mime>()?;
-                let response = client.media().upload(&content_type, audio_buf).await?;
-
-                let info = assign!(AudioInfo::new(), {
-                    duration: secs.map(Duration::from_secs),
-                    mimetype: Some(mimetype),
-                    size: size.and_then(UInt::new),
-                });
-                let mut audio_content = AudioMessageEventContent::plain(name, response.content_uri);
-                audio_content.info = Some(Box::new(info));
-                let content =
-                    RoomMessageEventContentWithoutRelation::new(MessageType::Audio(audio_content));
-                let Some(reply_item) = timeline.item_by_event_id(&event_id).await else {
-                    bail!("Not found which item would be replied to")
-                };
-
-                timeline
-                    .send_reply(content, &reply_item, ForwardThread::Yes)
-                    .await?;
-                Ok(true)
-            })
-            .await?
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    pub async fn send_video_message(
-        &self,
-        uri: String,
-        name: String,
-        mimetype: String,
-        size: Option<u64>,
-        secs: Option<u64>,
-        width: Option<u64>,
-        height: Option<u64>,
-        blurhash: Option<String>,
-    ) -> Result<bool> {
-        if !self.is_joined() {
-            bail!("Can't send message as video to a room we are not in");
-        }
-        let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
-        let timeline = self.timeline.clone();
-
-        let config = AttachmentConfig::new().info(AttachmentInfo::Video(BaseVideoInfo {
-            duration: secs.map(Duration::from_secs),
-            height: height.and_then(UInt::new),
-            width: width.and_then(UInt::new),
-            size: size.and_then(UInt::new),
-            blurhash,
-        }));
-        let mime_type = mimetype.parse::<mime::Mime>()?;
-
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
-                }
-                timeline.send_attachment(uri, mime_type, config).await?;
-                Ok(true)
-            })
-            .await?
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    pub async fn edit_video_message(
-        &self,
-        event_id: String,
-        uri: String,
-        name: String,
-        mimetype: String,
-        size: Option<u64>,
-        secs: Option<u64>,
-        width: Option<u64>,
-        height: Option<u64>,
-    ) -> Result<bool> {
-        if !self.is_joined() {
-            bail!("Can't edit message as video to a room we are not in");
-        }
-        let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
-        let timeline = self.timeline.clone();
-        let event_id = EventId::parse(event_id)?;
-        let client = self.room.client();
-
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
-                }
-
-                let path = PathBuf::from(uri);
-                let mut video_buf = std::fs::read(path)?;
-
-                let timeline_event = room.event(&event_id).await?;
-                let event_content = timeline_event
-                    .event
-                    .deserialize_as::<RoomMessageEvent>()
-                    .context("Couldn't deserialise event")?;
-
-                let mut sent_by_me = false;
-                if let Some(user_id) = client.user_id() {
-                    if user_id == event_content.sender() {
-                        sent_by_me = true;
+                        let mut audio_content =
+                            AudioMessageEventContent::plain(body, response.content_uri);
+                        audio_content.info = Some(Box::new(info));
+                        RoomMessageEventContentWithoutRelation::new(MessageType::Audio(
+                            audio_content,
+                        ))
                     }
-                }
-                if !sent_by_me {
-                    bail!("Can't edit an event not sent by own user");
-                }
+                    MsgContentDraft::Video { body, source, info } => {
+                        let path = PathBuf::from(source);
+                        let mut video_buf = std::fs::read(path)?;
 
-                let content_type = mimetype.parse::<mime::Mime>()?;
-                let response = client.media().upload(&content_type, video_buf).await?;
+                        let info = info.expect("video info needed");
+                        let mimetype = info.mimetype.clone().expect("mimetype needed");
+                        let content_type = mimetype.parse::<mime::Mime>()?;
+                        let response = client.media().upload(&content_type, video_buf).await?;
 
-                let info = assign!(VideoInfo::new(), {
-                    duration: secs.map(Duration::from_secs),
-                    height: height.and_then(UInt::new),
-                    width: width.and_then(UInt::new),
-                    mimetype: Some(mimetype),
-                    size: size.and_then(UInt::new),
-                });
-                let mut video_content = VideoMessageEventContent::plain(name, response.content_uri);
-                video_content.info = Some(Box::new(info));
-                let mut edited_content =
-                    RoomMessageEventContent::new(MessageType::Video(video_content.clone()));
-                let replacement = Replacement::new(
-                    event_id.to_owned(),
-                    MessageType::Video(video_content).into(),
-                );
-                edited_content.relates_to = Some(Relation::Replacement(replacement));
-
-                timeline.send(edited_content.into()).await;
-                Ok(true)
-            })
-            .await?
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    pub async fn send_video_reply(
-        &self,
-        uri: String,
-        name: String,
-        mimetype: String,
-        size: Option<u64>,
-        secs: Option<u64>,
-        width: Option<u64>,
-        height: Option<u64>,
-        blurhash: Option<String>,
-        event_id: String,
-    ) -> Result<bool> {
-        if !self.is_joined() {
-            bail!("Can't send reply as video to a room we are not in");
-        }
-        let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
-        let timeline = self.timeline.clone();
-        let event_id = EventId::parse(event_id)?;
-        let client = self.room.client();
-
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
-                }
-
-                let path = PathBuf::from(uri);
-                let mut video_buf = std::fs::read(path)?;
-
-                let content_type = mimetype.parse::<mime::Mime>()?;
-                let response = client.media().upload(&content_type, video_buf).await?;
-
-                let info = assign!(VideoInfo::new(), {
-                    duration: secs.map(Duration::from_secs),
-                    height: height.and_then(UInt::new),
-                    width: width.and_then(UInt::new),
-                    mimetype: Some(mimetype),
-                    size: size.and_then(UInt::new),
-                });
-                let mut video_content = VideoMessageEventContent::plain(name, response.content_uri);
-                video_content.info = Some(Box::new(info));
-                let content =
-                    RoomMessageEventContentWithoutRelation::new(MessageType::Video(video_content));
-                let Some(reply_item) = timeline.item_by_event_id(&event_id).await else {
-                    bail!("Not found which item would be replied to")
-                };
-
-                timeline
-                    .send_reply(content, &reply_item, ForwardThread::Yes)
-                    .await?;
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn send_file_message(
-        &self,
-        uri: String,
-        name: String,
-        mimetype: String,
-        size: Option<u64>,
-    ) -> Result<bool> {
-        if !self.is_joined() {
-            bail!("Can't send message as file to a room we are not in");
-        }
-        let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
-        let timeline = self.timeline.clone();
-
-        let config = AttachmentConfig::new().info(AttachmentInfo::File(BaseFileInfo {
-            size: size.and_then(UInt::new),
-        }));
-        let mime_type = mimetype.parse::<mime::Mime>()?;
-
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
-                }
-                timeline.send_attachment(uri, mime_type, config).await?;
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn edit_file_message(
-        &self,
-        event_id: String,
-        uri: String,
-        name: String,
-        mimetype: String,
-        size: Option<u64>,
-    ) -> Result<bool> {
-        if !self.is_joined() {
-            bail!("Can't edit message as file to a room we are not in");
-        }
-        let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
-        let timeline = self.timeline.clone();
-        let event_id = EventId::parse(event_id)?;
-        let client = self.room.client();
-
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
-                }
-
-                let path = PathBuf::from(uri);
-                let mut file_buf = std::fs::read(path)?;
-
-                let timeline_event = room.event(&event_id).await?;
-                let event_content = timeline_event
-                    .event
-                    .deserialize_as::<RoomMessageEvent>()
-                    .context("Couldn't deserialise event")?;
-
-                let mut sent_by_me = false;
-                if let Some(user_id) = client.user_id() {
-                    if user_id == event_content.sender() {
-                        sent_by_me = true;
+                        let mut video_content =
+                            VideoMessageEventContent::plain(body, response.content_uri);
+                        video_content.info = Some(Box::new(info));
+                        RoomMessageEventContentWithoutRelation::new(MessageType::Video(
+                            video_content,
+                        ))
                     }
-                }
-                if !sent_by_me {
-                    bail!("Can't edit an event not sent by own user");
-                }
+                    MsgContentDraft::File {
+                        body,
+                        source,
+                        info,
+                        filename,
+                    } => {
+                        let path = PathBuf::from(source);
+                        let mut file_buf = std::fs::read(path)?;
 
-                let content_type = mimetype.parse::<mime::Mime>()?;
-                let response = client.media().upload(&content_type, file_buf).await?;
+                        let info = info.expect("image info needed");
+                        let mimetype = info.mimetype.clone().expect("mimetype needed");
+                        let content_type = mimetype.parse::<mime::Mime>()?;
+                        let response = client.media().upload(&content_type, file_buf).await?;
 
-                let info = assign!(FileInfo::new(), {
-                    mimetype: Some(mimetype),
-                    size: size.and_then(UInt::new),
-                });
-                let mut file_content = FileMessageEventContent::plain(name, response.content_uri);
-                file_content.info = Some(Box::new(info));
-                let mut edited_content =
-                    RoomMessageEventContent::new(MessageType::File(file_content.clone()));
-                let replacement =
-                    Replacement::new(event_id.to_owned(), MessageType::File(file_content).into());
-                edited_content.relates_to = Some(Relation::Replacement(replacement));
-
-                timeline.send(edited_content.into()).await;
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn send_file_reply(
-        &self,
-        uri: String,
-        name: String,
-        mimetype: String,
-        size: Option<u64>,
-        event_id: String,
-    ) -> Result<bool> {
-        if !self.is_joined() {
-            bail!("Can't send reply as file to a room we are not in");
-        }
-        let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
-        let timeline = self.timeline.clone();
-        let event_id = EventId::parse(event_id)?;
-        let client = self.room.client();
-
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
-                }
-
-                let path = PathBuf::from(uri);
-                let mut file_buf = std::fs::read(path)?;
-
-                let content_type = mimetype.parse::<mime::Mime>()?;
-                let response = client.media().upload(&content_type, file_buf).await?;
-
-                let info = assign!(FileInfo::new(), {
-                    mimetype: Some(mimetype),
-                    size: size.and_then(UInt::new),
-                });
-                let mut file_content = FileMessageEventContent::plain(name, response.content_uri);
-                file_content.info = Some(Box::new(info));
-                let content =
-                    RoomMessageEventContentWithoutRelation::new(MessageType::File(file_content));
-                let Some(reply_item) = timeline.item_by_event_id(&event_id).await else {
-                    bail!("Not found which item would be replied to")
-                };
-
-                timeline
-                    .send_reply(content, &reply_item, ForwardThread::Yes)
-                    .await?;
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn send_location_message(&self, body: String, geo_uri: String) -> Result<bool> {
-        if !self.is_joined() {
-            bail!("Can't send message as location to a room we are not in");
-        }
-        let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
-        let timeline = self.timeline.clone();
-
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
-                }
-                let location_content = LocationMessageEventContent::new(body, geo_uri);
-                let content = RoomMessageEventContent::new(MessageType::Location(location_content));
-                timeline.send(content.into()).await;
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn edit_location_message(
-        &self,
-        event_id: String,
-        body: String,
-        geo_uri: String,
-    ) -> Result<bool> {
-        if !self.is_joined() {
-            bail!("Can't edit message as location to a room we are not in");
-        }
-        let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
-        let timeline = self.timeline.clone();
-        let event_id = EventId::parse(event_id)?;
-        let client = self.room.client();
-
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
-                }
-
-                let timeline_event = room.event(&event_id).await?;
-                let event_content = timeline_event
-                    .event
-                    .deserialize_as::<RoomMessageEvent>()
-                    .context("Couldn't deserialise event")?;
-
-                let mut sent_by_me = false;
-                if let Some(user_id) = client.user_id() {
-                    if user_id == event_content.sender() {
-                        sent_by_me = true;
+                        let mut file_content =
+                            FileMessageEventContent::plain(body, response.content_uri);
+                        file_content.info = Some(Box::new(info));
+                        file_content.filename = filename.clone();
+                        RoomMessageEventContentWithoutRelation::new(MessageType::File(file_content))
                     }
-                }
-                if !sent_by_me {
-                    bail!("Can't edit an event not sent by own user");
-                }
+                    MsgContentDraft::Location {
+                        body,
+                        geo_uri,
+                        info,
+                    } => {
+                        let mut location_content = LocationMessageEventContent::new(body, geo_uri);
+                        if let Some(info) = info {
+                            location_content.info = Some(Box::new(info));
+                        }
+                        RoomMessageEventContentWithoutRelation::new(MessageType::Location(
+                            location_content,
+                        ))
+                    }
+                };
 
-                let location_content = LocationMessageEventContent::new(body, geo_uri);
-                let mut edited_content =
-                    RoomMessageEventContent::new(MessageType::Location(location_content.clone()));
-                let replacement = Replacement::new(
-                    event_id.to_owned(),
-                    MessageType::Location(location_content).into(),
-                );
-                edited_content.relates_to = Some(Relation::Replacement(replacement));
-
-                timeline.send(edited_content.into()).await;
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn send_location_reply(
-        &self,
-        body: String,
-        geo_uri: String,
-        event_id: String,
-    ) -> Result<bool> {
-        if !self.is_joined() {
-            bail!("Can't send reply as location to a room we are not in");
-        }
-        let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
-        let timeline = self.timeline.clone();
-        let event_id = EventId::parse(event_id)?;
-
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
-                }
-
-                let location_content = LocationMessageEventContent::new(body, geo_uri);
-                let content = RoomMessageEventContentWithoutRelation::new(MessageType::Location(
-                    location_content,
-                ));
                 let Some(reply_item) = timeline.item_by_event_id(&event_id).await else {
                     bail!("Not found which item would be replied to")
                 };
-
                 timeline
                     .send_reply(content, &reply_item, ForwardThread::Yes)
                     .await?;
@@ -1357,5 +729,376 @@ impl TimelineStream {
                 Ok(true)
             })
             .await?
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum MsgContentDraft {
+    TextPlain {
+        body: String,
+    },
+    TextMarkdown {
+        body: String,
+    },
+    Image {
+        body: String,
+        source: String,
+        info: Option<ImageInfo>,
+    },
+    Audio {
+        body: String,
+        source: String,
+        info: Option<AudioInfo>,
+    },
+    Video {
+        body: String,
+        source: String,
+        info: Option<VideoInfo>,
+    },
+    File {
+        body: String,
+        source: String,
+        info: Option<FileInfo>,
+        filename: Option<String>,
+    },
+    Location {
+        body: String,
+        geo_uri: String,
+        info: Option<LocationInfo>,
+    },
+}
+
+impl MsgContentDraft {
+    pub fn mimetype(&self, value: String) -> Self {
+        match self {
+            MsgContentDraft::Image { body, source, info } => {
+                let new_info = if let Some(mut new_info) = info.clone() {
+                    new_info.mimetype = Some(value);
+                    new_info
+                } else {
+                    assign!(ImageInfo::new(), {
+                        mimetype: Some(value),
+                    })
+                };
+                MsgContentDraft::Image {
+                    body: body.clone(),
+                    source: source.clone(),
+                    info: Some(new_info),
+                }
+            }
+            MsgContentDraft::Audio { body, source, info } => {
+                let new_info = if let Some(mut new_info) = info.clone() {
+                    new_info.mimetype = Some(value);
+                    new_info
+                } else {
+                    assign!(AudioInfo::new(), {
+                        mimetype: Some(value),
+                    })
+                };
+                MsgContentDraft::Audio {
+                    body: body.clone(),
+                    source: source.clone(),
+                    info: Some(new_info),
+                }
+            }
+            MsgContentDraft::Video { body, source, info } => {
+                let new_info = if let Some(mut new_info) = info.clone() {
+                    new_info.mimetype = Some(value);
+                    new_info
+                } else {
+                    assign!(VideoInfo::new(), {
+                        mimetype: Some(value),
+                    })
+                };
+                MsgContentDraft::Video {
+                    body: body.clone(),
+                    source: source.clone(),
+                    info: Some(new_info),
+                }
+            }
+            MsgContentDraft::File {
+                body,
+                source,
+                info,
+                filename,
+            } => {
+                let new_info = if let Some(mut new_info) = info.clone() {
+                    new_info.mimetype = Some(value);
+                    new_info
+                } else {
+                    assign!(FileInfo::new(), {
+                        mimetype: Some(value),
+                    })
+                };
+                MsgContentDraft::File {
+                    body: body.clone(),
+                    source: source.clone(),
+                    info: Some(new_info),
+                    filename: filename.clone(),
+                }
+            }
+            _ => {
+                unreachable!("mimetype is available for only image/audio/video/file");
+            }
+        }
+    }
+
+    pub fn size(&self, value: u64) -> Self {
+        match self {
+            MsgContentDraft::Image { body, source, info } => {
+                let new_info = if let Some(mut new_info) = info.clone() {
+                    new_info.size = UInt::new(value);
+                    new_info
+                } else {
+                    assign!(ImageInfo::new(), {
+                        size: UInt::new(value),
+                    })
+                };
+                MsgContentDraft::Image {
+                    body: body.clone(),
+                    source: source.clone(),
+                    info: Some(new_info),
+                }
+            }
+            MsgContentDraft::Audio { body, source, info } => {
+                let new_info = if let Some(mut new_info) = info.clone() {
+                    new_info.size = UInt::new(value);
+                    new_info
+                } else {
+                    assign!(AudioInfo::new(), {
+                        size: UInt::new(value),
+                    })
+                };
+                MsgContentDraft::Audio {
+                    body: body.clone(),
+                    source: source.clone(),
+                    info: Some(new_info),
+                }
+            }
+            MsgContentDraft::Video { body, source, info } => {
+                let new_info = if let Some(mut new_info) = info.clone() {
+                    new_info.size = UInt::new(value);
+                    new_info
+                } else {
+                    assign!(VideoInfo::new(), {
+                        size: UInt::new(value),
+                    })
+                };
+                MsgContentDraft::Video {
+                    body: body.clone(),
+                    source: source.clone(),
+                    info: Some(new_info),
+                }
+            }
+            MsgContentDraft::File {
+                body,
+                source,
+                info,
+                filename,
+            } => {
+                let new_info = if let Some(mut new_info) = info.clone() {
+                    new_info.size = UInt::new(value);
+                    new_info
+                } else {
+                    assign!(FileInfo::new(), {
+                        size: UInt::new(value),
+                    })
+                };
+                MsgContentDraft::File {
+                    body: body.clone(),
+                    source: source.clone(),
+                    info: Some(new_info),
+                    filename: filename.clone(),
+                }
+            }
+            _ => {
+                unreachable!("size is available for only image/audio/video/file");
+            }
+        }
+    }
+
+    pub fn width(&self, value: u64) -> Self {
+        match self {
+            MsgContentDraft::Image { body, source, info } => {
+                let new_info = if let Some(mut new_info) = info.clone() {
+                    new_info.width = UInt::new(value);
+                    new_info
+                } else {
+                    assign!(ImageInfo::new(), {
+                        width: UInt::new(value),
+                    })
+                };
+                MsgContentDraft::Image {
+                    body: body.clone(),
+                    source: source.clone(),
+                    info: Some(new_info),
+                }
+            }
+            MsgContentDraft::Video { body, source, info } => {
+                let new_info = if let Some(mut new_info) = info.clone() {
+                    new_info.width = UInt::new(value);
+                    new_info
+                } else {
+                    assign!(VideoInfo::new(), {
+                        width: UInt::new(value),
+                    })
+                };
+                MsgContentDraft::Video {
+                    body: body.clone(),
+                    source: source.clone(),
+                    info: Some(new_info),
+                }
+            }
+            _ => {
+                unreachable!("width is available for only image/video");
+            }
+        }
+    }
+
+    pub fn height(&self, value: u64) -> Self {
+        match self {
+            MsgContentDraft::Image { body, source, info } => {
+                let new_info = if let Some(mut new_info) = info.clone() {
+                    new_info.height = UInt::new(value);
+                    new_info
+                } else {
+                    assign!(ImageInfo::new(), {
+                        height: UInt::new(value),
+                    })
+                };
+                MsgContentDraft::Image {
+                    body: body.clone(),
+                    source: source.clone(),
+                    info: Some(new_info),
+                }
+            }
+            MsgContentDraft::Video { body, source, info } => {
+                let new_info = if let Some(mut new_info) = info.clone() {
+                    new_info.height = UInt::new(value);
+                    new_info
+                } else {
+                    assign!(VideoInfo::new(), {
+                        height: UInt::new(value),
+                    })
+                };
+                MsgContentDraft::Video {
+                    body: body.clone(),
+                    source: source.clone(),
+                    info: Some(new_info),
+                }
+            }
+            _ => {
+                unreachable!("height is available for only image/video");
+            }
+        }
+    }
+
+    pub fn duration(&self, value: u64) -> Self {
+        match self {
+            MsgContentDraft::Audio { body, source, info } => {
+                let new_info = if let Some(mut new_info) = info.clone() {
+                    new_info.duration = Some(Duration::from_secs(value));
+                    new_info
+                } else {
+                    assign!(AudioInfo::new(), {
+                        duration: Some(Duration::from_secs(value)),
+                    })
+                };
+                MsgContentDraft::Audio {
+                    body: body.clone(),
+                    source: source.clone(),
+                    info: Some(new_info),
+                }
+            }
+            MsgContentDraft::Video { body, source, info } => {
+                let new_info = if let Some(mut new_info) = info.clone() {
+                    new_info.duration = Some(Duration::from_secs(value));
+                    new_info
+                } else {
+                    assign!(VideoInfo::new(), {
+                        duration: Some(Duration::from_secs(value)),
+                    })
+                };
+                MsgContentDraft::Video {
+                    body: body.clone(),
+                    source: source.clone(),
+                    info: Some(new_info),
+                }
+            }
+            _ => {
+                unreachable!("duration is available for only audio/video");
+            }
+        }
+    }
+
+    pub fn blurhash(&self, value: String) -> Self {
+        match self {
+            MsgContentDraft::Image { body, source, info } => {
+                let new_info = if let Some(mut new_info) = info.clone() {
+                    new_info.blurhash = Some(value);
+                    new_info
+                } else {
+                    assign!(ImageInfo::new(), {
+                        blurhash: Some(value),
+                    })
+                };
+                MsgContentDraft::Image {
+                    body: body.clone(),
+                    source: source.clone(),
+                    info: Some(new_info),
+                }
+            }
+            MsgContentDraft::Video { body, source, info } => {
+                let new_info = if let Some(mut new_info) = info.clone() {
+                    new_info.blurhash = Some(value);
+                    new_info
+                } else {
+                    assign!(VideoInfo::new(), {
+                        blurhash: Some(value),
+                    })
+                };
+                MsgContentDraft::Video {
+                    body: body.clone(),
+                    source: source.clone(),
+                    info: Some(new_info),
+                }
+            }
+            _ => {
+                unreachable!("blurhash is available for only image/video");
+            }
+        }
+    }
+
+    pub fn filename(&self, value: String) -> Self {
+        match self {
+            MsgContentDraft::File {
+                body, source, info, ..
+            } => MsgContentDraft::File {
+                body: body.clone(),
+                source: source.clone(),
+                info: info.clone(),
+                filename: Some(value),
+            },
+            _ => {
+                unreachable!("filename is available for only file");
+            }
+        }
+    }
+
+    pub fn geo_uri(&self, value: String) -> Self {
+        match self {
+            MsgContentDraft::Location {
+                body,
+                geo_uri,
+                info,
+            } => MsgContentDraft::Location {
+                body: body.clone(),
+                geo_uri: geo_uri.clone(),
+                info: info.clone(),
+            },
+            _ => {
+                unreachable!("geo_uri is available for only location");
+            }
+        }
     }
 }

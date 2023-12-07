@@ -106,7 +106,7 @@ pub use spaces::{
     new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
     RelationTargetType, Space, SpaceDiff,
 };
-pub use stream::{TimelineDiff, TimelineStream};
+pub use stream::{MsgContentDraft, TimelineDiff, TimelineStream};
 pub use super_invites::{SuperInviteToken, SuperInvites, SuperInvitesTokenUpdateBuilder};
 pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,

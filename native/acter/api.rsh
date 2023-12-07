@@ -601,8 +601,6 @@ object EventSendState {
     fn event_id() -> Option<EventId>;
 }
 
-
-
 /// A room Message metadata and content
 object RoomEventItem {
     /// Unique ID of this event
@@ -838,6 +836,32 @@ object SpaceDiff {
     fn value() -> Option<Space>;
 }
 
+object MsgContentDraft {
+    /// available for only image/audio/video/file
+    fn mimetype(value: string) -> MsgContentDraft;
+
+    /// available for only image/audio/video/file
+    fn size(value: u64) -> MsgContentDraft;
+
+    /// available for only image/video
+    fn width(value: u64) -> MsgContentDraft;
+
+    /// available for only image/video
+    fn height(value: u64) -> MsgContentDraft;
+
+    /// available for only audio/video
+    fn duration(value: u64) -> MsgContentDraft;
+
+    /// available for only image/video
+    fn blurhash(value: string) -> MsgContentDraft;
+
+    /// available for only file
+    fn filename(value: string) -> MsgContentDraft;
+
+    /// available for only location
+    fn geo_uri(value: string) -> MsgContentDraft;
+}
+
 /// Timeline with Room Events
 object TimelineStream {
     /// Fires whenever new diff found
@@ -846,68 +870,35 @@ object TimelineStream {
     /// Get the next count messages backwards, and return whether it has more items
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
 
-    /// send the plain text message
-    fn send_plain_message(message: string) -> Future<Result<bool>>;
+    /// make draft to send text plain msg
+    fn text_plain_draft(body: string) -> MsgContentDraft;
 
-    /// modify the plain text message
-    fn edit_plain_message(event_id: string, new_msg: string) -> Future<Result<bool>>;
+    /// make draft to send text markdown msg
+    fn text_markdown_draft(body: string) -> MsgContentDraft;
 
-    /// send reply as plain text to event
-    fn send_plain_reply(msg: string, event_id: string) -> Future<Result<bool>>;
+    /// make draft to send image msg
+    fn image_draft(body: string, source: string) -> MsgContentDraft;
 
-    /// send the formatted text message
-    fn send_formatted_message(markdown: string) -> Future<Result<bool>>;
+    /// make draft to send audio msg
+    fn audio_draft(body: string, source: string) -> MsgContentDraft;
 
-    /// modify the formatted text message
-    fn edit_formatted_message(event_id: string, new_msg: string) -> Future<Result<bool>>;
+    /// make draft to send video msg
+    fn video_draft(body: string, source: string) -> MsgContentDraft;
 
-    /// send reply as formatted text to event
-    fn send_formatted_reply(markdown: string, event_id: string) -> Future<Result<bool>>;
+    /// make draft to send file msg
+    fn file_draft(body: string, source: string) -> MsgContentDraft;
 
-    /// send the image message
-    fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<bool>>;
+    /// make draft to send location msg
+    fn location_draft(body: string, source: string) -> MsgContentDraft;
 
-    /// modify the image message
-    fn edit_image_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>) -> Future<Result<bool>>;
+    /// send message using draft
+    fn send_message(draft: MsgContentDraft) -> Future<Result<bool>>;
 
-    /// send reply as image to event
-    fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string) -> Future<Result<bool>>;
+    /// modify message using draft
+    fn edit_message(event_id: string, draft: MsgContentDraft) -> Future<Result<bool>>;
 
-    /// send the audio message
-    fn send_audio_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>) -> Future<Result<bool>>;
-
-    /// modify the audio message
-    fn edit_audio_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>) -> Future<Result<bool>>;
-
-    /// send reply as audio to event
-    fn send_audio_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, event_id: string) -> Future<Result<bool>>;
-
-    /// send the video message
-    fn send_video_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<bool>>;
-
-    /// modify the video message
-    fn edit_video_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>) -> Future<Result<bool>>;
-
-    /// send reply as video to event
-    fn send_video_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string) -> Future<Result<bool>>;
-
-    /// send the file message
-    fn send_file_message(uri: string, name: string, mimetype: string, size: Option<u64>) -> Future<Result<bool>>;
-
-    /// modify the file message
-    fn edit_file_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>) -> Future<Result<bool>>;
-
-    /// send reply as file to event
-    fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u64>, event_id: string) -> Future<Result<bool>>;
-
-    /// send the location message
-    fn send_location_message(body: string, geo_uri: string) -> Future<Result<bool>>;
-
-    /// modify the location message
-    fn edit_location_message(event_id: string, body: string, geo_uri: string) -> Future<Result<bool>>;
-
-    /// send reply as location to event
-    fn send_location_reply(body: string, geo_uri: string, event_id: string) -> Future<Result<bool>>;
+    /// send reply to event
+    fn reply_message(event_id: string, draft: MsgContentDraft) -> Future<Result<bool>>;
 
     /// send single receipt
     /// receipt_type: FullyRead | Read | ReadPrivate

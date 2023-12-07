@@ -75,9 +75,8 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
 
     info!("6");
 
-    sisko_timeline
-        .send_plain_message("Hi, everyone".to_string())
-        .await?;
+    let draft = sisko_timeline.text_plain_draft("Hi, everyone".to_string());
+    sisko_timeline.send_message(Box::new(draft)).await?;
 
     info!("7");
 

@@ -45,9 +45,8 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     }
 
     // sisko sends the formatted text message to kyra
-    sisko_timeline
-        .send_formatted_message("**Hello**".to_string())
-        .await?;
+    let draft = sisko_timeline.text_markdown_draft("**Hello**".to_string());
+    sisko_timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via pushback action or reset action
     let mut i = 30;

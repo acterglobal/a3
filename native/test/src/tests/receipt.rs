@@ -39,9 +39,8 @@ async fn sisko_detects_kyra_read() -> Result<()> {
 
     info!("2");
 
-    sisko_timeline
-        .send_plain_message("Hi, everyone".to_string())
-        .await?;
+    let draft = sisko_timeline.text_plain_draft("Hi, everyone".to_string());
+    sisko_timeline.send_message(Box::new(draft)).await?;
 
     info!("3");
 

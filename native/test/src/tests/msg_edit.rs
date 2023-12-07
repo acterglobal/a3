@@ -22,9 +22,8 @@ async fn edit_text_msg() -> Result<()> {
     let stream = timeline.diff_stream();
     pin_mut!(stream);
 
-    timeline
-        .send_plain_message("Hi, everyone".to_string())
-        .await?;
+    let draft = timeline.text_plain_draft("Hi, everyone".to_string());
+    timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via reset action or set action
     let mut i = 30;
@@ -72,11 +71,9 @@ async fn edit_text_msg() -> Result<()> {
         bail!("Even after 30 seconds, text msg not received")
     };
 
+    let draft = timeline.text_plain_draft("This is message edition".to_string());
     timeline
-        .edit_plain_message(
-            sent_event_id.to_string(),
-            "This is message edition".to_string(),
-        )
+        .edit_message(sent_event_id.to_string(), Box::new(draft))
         .await?;
 
     // msg edition may reach via set action
@@ -149,17 +146,13 @@ async fn edit_image_msg() -> Result<()> {
         .as_file_mut()
         .write_all(include_bytes!("./fixtures/kingfisher.jpg"))?;
 
-    timeline
-        .send_image_message(
-            tmp_jpg.path().to_string_lossy().to_string(),
+    let draft = timeline
+        .image_draft(
             "jpg_file".to_string(),
-            "image/jpeg".to_string(),
-            None,
-            None,
-            None,
-            None,
+            tmp_jpg.path().to_string_lossy().to_string(),
         )
-        .await?;
+        .mimetype("image/jpeg".to_string());
+    timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via pushback action or reset action
     let mut i = 3;
@@ -205,16 +198,14 @@ async fn edit_image_msg() -> Result<()> {
         "./fixtures/PNG_transparency_demonstration_1.png"
     ))?;
 
-    timeline
-        .edit_image_message(
-            sent_event_id.to_string(),
-            tmp_png.path().to_string_lossy().to_string(),
+    let draft = timeline
+        .image_draft(
             "png_file".to_string(),
-            "image/png".to_string(),
-            None,
-            None,
-            None,
+            tmp_png.path().to_string_lossy().to_string(),
         )
+        .mimetype("image/png".to_string());
+    timeline
+        .edit_message(sent_event_id.to_string(), Box::new(draft))
         .await?;
 
     // msg edition may reach via set action

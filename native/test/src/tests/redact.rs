@@ -30,9 +30,8 @@ async fn message_redaction() -> Result<()> {
     let stream = timeline.diff_stream();
     pin_mut!(stream);
 
-    timeline
-        .send_plain_message("Hi, everyone".to_string())
-        .await?;
+    let draft = timeline.text_plain_draft("Hi, everyone".to_string());
+    timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via reset action or set action
     let mut i = 30;

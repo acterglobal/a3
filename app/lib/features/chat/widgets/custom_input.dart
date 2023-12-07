@@ -484,50 +484,32 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         String? mimeType = lookupMimeType(file.path);
 
         if (mimeType!.startsWith('image/')) {
-          var bytes = file.readAsBytesSync();
-          var image = await decodeImageFromList(bytes);
+          final bytes = file.readAsBytesSync();
+          final image = await decodeImageFromList(bytes);
+          final draft = stream
+              .imageDraft(fileName, file.path)
+              .mimetype(mimeType)
+              .size(file.lengthSync())
+              .width(image.width)
+              .height(image.height);
           if (inputState.repliedToMessage != null) {
-            await stream.sendImageReply(
-              file.path,
-              fileName,
-              mimeType,
-              file.lengthSync(),
-              image.width,
-              image.height,
-              null,
-              inputState.repliedToMessage!.id,
-            );
+            await stream.replyMessage(inputState.repliedToMessage!.id, draft);
           } else {
-            await stream.sendImageMessage(
-              file.path,
-              fileName,
-              mimeType,
-              file.lengthSync(),
-              image.width,
-              image.height,
-              null,
-            );
+            await stream.sendMessage(draft);
           }
         } else if (mimeType.startsWith('/audio')) {
           if (inputState.repliedToMessage != null) {
           } else {}
         } else if (mimeType.startsWith('/video')) {
         } else {
+          final draft = stream
+              .fileDraft(fileName, file.path)
+              .mimetype(mimeType)
+              .size(file.lengthSync());
           if (inputState.repliedToMessage != null) {
-            await stream.sendFileReply(
-              file.path,
-              fileName,
-              mimeType,
-              file.lengthSync(),
-              inputState.repliedToMessage!.id,
-            );
+            await stream.replyMessage(inputState.repliedToMessage!.id, draft);
           } else {
-            await stream.sendFileMessage(
-              file.path,
-              fileName,
-              mimeType,
-              file.lengthSync(),
-            );
+            await stream.sendMessage(draft);
           }
         }
       }
@@ -673,18 +655,13 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     // user will click "send" button explicitly for text only
     await widget.convo.typingNotice(false);
     final stream = await widget.convo.timelineStream();
+    final draft = stream.textMarkdownDraft(markdownMessage);
     if (inputState.repliedToMessage != null) {
-      await stream.sendPlainReply(
-        markdownMessage,
-        inputState.repliedToMessage!.id,
-      );
+      await stream.replyMessage(inputState.repliedToMessage!.id, draft);
     } else if (inputState.editMessage != null) {
-      await stream.editFormattedMessage(
-        inputState.editMessage!.id,
-        markdownMessage,
-      );
+      await stream.editMessage(inputState.editMessage!.id, draft);
     } else {
-      await stream.sendFormattedMessage(markdownMessage);
+      await stream.sendMessage(draft);
     }
     if (inputState.repliedToMessage != null || inputState.editMessage != null) {
       final notifier = ref.read(chatInputProvider(roomId).notifier);
