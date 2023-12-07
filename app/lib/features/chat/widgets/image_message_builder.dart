@@ -33,7 +33,7 @@ class ImageMessageBuilder extends ConsumerWidget {
               barrierDismissible: false,
               useRootNavigator: false,
               builder: (ctx) => ImageDialog(
-                title: 'Image',
+                title: message.name,
                 imageFile: imageFileData,
               ),
             );
