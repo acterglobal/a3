@@ -27625,9 +27625,9 @@ class NewsEntryDraft {
 
   /// create news slide
   Future<bool> addSlide(
-    MsgContentDraft contentDraft,
+    MsgContentDraft baseDraft,
   ) {
-    final tmp1 = contentDraft;
+    final tmp1 = baseDraft;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();

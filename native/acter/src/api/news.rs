@@ -348,13 +348,13 @@ pub struct NewsEntryDraft {
 }
 
 impl NewsEntryDraft {
-    pub async fn add_slide(&mut self, content_draft: Box<MsgContentDraft>) -> Result<bool> {
+    pub async fn add_slide(&mut self, base_draft: Box<MsgContentDraft>) -> Result<bool> {
         let room = self.room.clone();
         let client = self.room.client();
 
         let inner = RUNTIME
             .spawn(async move {
-                match *content_draft {
+                match *base_draft {
                     MsgContentDraft::TextPlain { body } => {
                         let text_content = TextMessageEventContent::plain(body);
                         anyhow::Ok(news::NewsSlide {

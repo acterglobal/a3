@@ -303,7 +303,7 @@ object NewsEntry {
 
 object NewsEntryDraft {
     /// create news slide
-    fn add_slide(content_draft: MsgContentDraft) -> Future<Result<bool>>;
+    fn add_slide(base_draft: MsgContentDraft) -> Future<Result<bool>>;
 
     /// clear slides
     fn unset_slides();
