@@ -129,7 +129,8 @@ int hexOfRGBA(int r, int g, int b, {double opacity = 1}) {
   b = (b > 255) ? 255 : b;
   int a = opacity.toInt();
   return int.parse(
-    '0x${a.toRadixString(16)}${r.toRadixString(16)}${g.toRadixString(16)}${b.toRadixString(16)}',
+    '${a.toRadixString(16)}${r.toRadixString(16)}${g.toRadixString(16)}${b.toRadixString(16)}',
+    radix: 16,
   );
 }
 
@@ -190,7 +191,11 @@ String? simplifyUserId(String name) {
     if (userId != null) {
       // replace symbol with string
       return userId.replaceAllMapped(RegExp(r'=([0-9a-fA-F]{2})'), (m2) {
-        int charCode = int.parse('0x${m2.group(1)}');
+        String? seg = m2.group(1);
+        if (seg == null) {
+          return '';
+        }
+        int charCode = int.parse(seg, radix: 16);
         return String.fromCharCode(charCode);
       });
     }

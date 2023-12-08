@@ -1,12 +1,11 @@
-use crate::{api::NotificationItem as ApiNotificationItem, login_with_token};
-use matrix_sdk::ruma::events::room::message::MessageType;
-use matrix_sdk::ruma::events::AnySyncMessageLikeEvent;
-use matrix_sdk::ruma::events::AnySyncTimelineEvent;
-use matrix_sdk::ruma::events::SyncMessageLikeEvent;
-
-use matrix_sdk_ui::notification_client::{
-    NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
+use matrix_sdk::ruma::events::{
+    room::message::MessageType, AnySyncMessageLikeEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
 };
+use matrix_sdk_ui::notification_client::{
+    NotificationEvent, NotificationItem as SdkNotificationItem,
+};
+
+use crate::{api::NotificationItem as ApiNotificationItem, login_with_token};
 
 #[derive(Debug, uniffi::Error, thiserror::Error)]
 #[uniffi(flat_error)]

@@ -93,8 +93,7 @@ extension SuperInvites on ConvenientTest {
 }
 
 void superInvitesTests() {
-  tTestWidgets('Full user flow with registration', (t) async {
-    disableOverflowErrors();
+  acterTestWidget('Full user flow with registration', (t) async {
     final spaceId = await t.freshAccountWithSpace(userDisplayName: 'Alice');
     final token = await t.createSuperInvite([spaceId]);
 
@@ -107,8 +106,7 @@ void superInvitesTests() {
     await t.ensureIsMemberOfSpace(spaceId);
   });
 
-  tTestWidgets('Full user flow redeeming after registration', (t) async {
-    disableOverflowErrors();
+  acterTestWidget('Full user flow redeeming after registration', (t) async {
     final spaceId = await t.freshAccountWithSpace(userDisplayName: 'Alice');
     final token = await t.createSuperInvite([spaceId]);
 
@@ -123,9 +121,8 @@ void superInvitesTests() {
     await t.ensureHasChats(counter: 0);
   });
 
-  tTestWidgets('Full user flow with registration many spaces and chats',
+  acterTestWidget('Full user flow with registration many spaces and chats',
       (t) async {
-    disableOverflowErrors();
     final spaceId = await t.freshAccountWithSpace(userDisplayName: 'Alice');
     final chats = await t.createSpaceChats(spaceId, ['Random', 'General']);
     final spaceId2 = await t.createSpace('Second test space');
@@ -145,8 +142,7 @@ void superInvitesTests() {
     await t.ensureHasChats(ids: chats);
   });
 
-  tTestWidgets('Token with DM', (t) async {
-    disableOverflowErrors();
+  acterTestWidget('Token with DM', (t) async {
     final spaceId = await t.freshAccountWithSpace(userDisplayName: 'Alice');
     final token = await t.createSuperInvite(
       [spaceId],
@@ -168,8 +164,7 @@ void superInvitesTests() {
     await t.ensureHasChats(counter: 1);
   });
 
-  tTestWidgets('Edit and redeem', (t) async {
-    disableOverflowErrors();
+  acterTestWidget('Edit and redeem', (t) async {
     final spaceId = await t.freshAccountWithSpace(userDisplayName: 'Alice');
     final spaceId2 = await t.createSpace('Second test space');
 
@@ -208,8 +203,7 @@ void superInvitesTests() {
     await t.ensureIsMemberOfSpace(spaceId2);
   });
 
-  tTestWidgets("Deleted can't be reused", (t) async {
-    disableOverflowErrors();
+  acterTestWidget("Deleted can't be reused", (t) async {
     await t.freshAccount(displayName: 'Alice');
 
     final token = await t.createSuperInvite([]);

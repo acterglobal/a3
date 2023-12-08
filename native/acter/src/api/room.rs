@@ -38,7 +38,7 @@ use ruma_events::{
     room::{
         avatar::ImageInfo as AvatarImageInfo,
         join_rules::{AllowRule, JoinRule},
-        message::MessageType,
+        message::{MessageType, RoomMessageEvent},
         MediaSource,
     },
     space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
@@ -959,12 +959,13 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let evt = room.event(&event_id).await?;
-                let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
-                    MessageLikeEvent::Original(m),
-                ))) = evt.event.deserialize() else {
-                    bail!("It is not message");
+                let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
+                    bail!("It is not message")
                 };
-                let MessageType::Image(content) = &m.content.msgtype else {
+                let original = event_content
+                    .as_original()
+                    .expect("Couldn't get original msg");
+                let MessageType::Image(content) = &original.content.msgtype else {
                     bail!("Invalid file format");
                 };
                 let request = MediaRequest {
@@ -988,12 +989,13 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let evt = room.event(&event_id).await?;
-                let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
-                    MessageLikeEvent::Original(m),
-                ))) = evt.event.deserialize() else {
-                    bail!("It is not message");
+                let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
+                    bail!("It is not message")
                 };
-                let MessageType::Audio(content) = &m.content.msgtype else {
+                let original = event_content
+                    .as_original()
+                    .expect("Couldn't get original msg");
+                let MessageType::Audio(content) = &original.content.msgtype else {
                     bail!("Invalid file format");
                 };
                 let request = MediaRequest {
@@ -1018,12 +1020,13 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let evt = room.event(&event_id).await?;
-                let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
-                    MessageLikeEvent::Original(m),
-                ))) = evt.event.deserialize() else {
-                    bail!("It is not message");
+                let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
+                    bail!("It is not message")
                 };
-                let MessageType::Video(content) = &m.content.msgtype else {
+                let original = event_content
+                    .as_original()
+                    .expect("Couldn't get original msg");
+                let MessageType::Video(content) = &original.content.msgtype else {
                     bail!("Invalid file format");
                 };
                 let request = MediaRequest {
@@ -1048,12 +1051,13 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let evt = room.event(&event_id).await?;
-                let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
-                    MessageLikeEvent::Original(m),
-                ))) = evt.event.deserialize() else {
-                    bail!("It is not message");
+                let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
+                    bail!("It is not message")
                 };
-                let MessageType::File(content) = &m.content.msgtype else {
+                let original = event_content
+                    .as_original()
+                    .expect("Couldn't get original msg");
+                let MessageType::File(content) = &original.content.msgtype else {
                     bail!("Invalid file format");
                 };
                 let request = MediaRequest {
@@ -1192,39 +1196,40 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let evt = room.event(&eid).await?;
-                let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
-                    MessageLikeEvent::Original(m),
-                ))) = evt.event.deserialize() else {
-                    bail!("It is not message");
+                let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
+                    bail!("It is not message")
                 };
-                let (request, name) = match m.content.msgtype {
+                let original = event_content
+                    .as_original()
+                    .expect("Couldn't get original msg");
+                let (request, name) = match &original.content.msgtype {
                     MessageType::Image(content) => {
                         let request = MediaRequest {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        (request, content.body)
+                        (request, content.body.clone())
                     }
                     MessageType::Audio(content) => {
                         let request = MediaRequest {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        (request, content.body)
+                        (request, content.body.clone())
                     }
                     MessageType::Video(content) => {
                         let request = MediaRequest {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        (request, content.body)
+                        (request, content.body.clone())
                     }
                     MessageType::File(content) => {
                         let request = MediaRequest {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        (request, content.body)
+                        (request, content.body.clone())
                     }
                     _ => bail!("This message type is not downloadable"),
                 };
@@ -1263,12 +1268,13 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let evt = room.event(&eid).await?;
-                let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
-                    MessageLikeEvent::Original(m),
-                ))) = evt.event.deserialize() else {
-                    bail!("It is not message");
+                let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
+                    bail!("It is not message")
                 };
-                match m.content.msgtype {
+                let original = event_content
+                    .as_original()
+                    .expect("Couldn't get original msg");
+                match &original.content.msgtype {
                     MessageType::Image(content) => {}
                     MessageType::Audio(content) => {}
                     MessageType::Video(content) => {}

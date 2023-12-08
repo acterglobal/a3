@@ -1,0 +1,3 @@
+- Chat Feature:
+  - Now room messages are supported as local echo events which gives option of retry/cancel sending in case of failure from server acknowledgment.
+  - [fix]: User receipts have been generalised to support and seen on all room state events rather than only user room messages.

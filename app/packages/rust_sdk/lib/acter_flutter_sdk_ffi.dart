@@ -4534,6 +4534,94 @@ class Api {
     return tmp7;
   }
 
+  bool? __timelineStreamRetrySendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _timelineStreamRetrySendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __timelineStreamCancelSendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _timelineStreamCancelSendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   SpaceRelations? __convoSpaceRelationsFuturePoll(
     int boxed,
     int postCobject,
@@ -11105,6 +11193,54 @@ class Api {
     return tmp7;
   }
 
+  FfiListDeviceRecord? __clientDeviceRecordsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientDeviceRecordsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListDeviceRecord");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListDeviceRecord._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   String? __invitationRoomNameFuturePoll(
     int boxed,
     int postCobject,
@@ -12114,54 +12250,6 @@ class Api {
     return tmp7;
   }
 
-  FfiListDeviceRecord? __deviceNewEventDeviceRecordsFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _deviceNewEventDeviceRecordsFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListDeviceRecord");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiListDeviceRecord._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
   bool? __deviceNewEventRequestVerificationToUserFuturePoll(
     int boxed,
     int postCobject,
@@ -12336,54 +12424,6 @@ class Api {
       throw tmp9_0;
     }
     final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
-  FfiListDeviceRecord? __deviceChangedEventDeviceRecordsFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _deviceChangedEventDeviceRecordsFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListDeviceRecord");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiListDeviceRecord._(this, tmp13_1);
-    final tmp7 = tmp14;
     return tmp7;
   }
 
@@ -15278,6 +15318,36 @@ class Api {
       _RsvpStatusReturn Function(
         int,
       )>();
+  late final _eventSendStateStatePtr = _lookup<
+      ffi.NativeFunction<
+          _EventSendStateStateReturn Function(
+            ffi.Int64,
+          )>>("__EventSendState_state");
+
+  late final _eventSendStateState = _eventSendStateStatePtr.asFunction<
+      _EventSendStateStateReturn Function(
+        int,
+      )>();
+  late final _eventSendStateErrorPtr = _lookup<
+      ffi.NativeFunction<
+          _EventSendStateErrorReturn Function(
+            ffi.Int64,
+          )>>("__EventSendState_error");
+
+  late final _eventSendStateError = _eventSendStateErrorPtr.asFunction<
+      _EventSendStateErrorReturn Function(
+        int,
+      )>();
+  late final _eventSendStateEventIdPtr = _lookup<
+      ffi.NativeFunction<
+          _EventSendStateEventIdReturn Function(
+            ffi.Int64,
+          )>>("__EventSendState_event_id");
+
+  late final _eventSendStateEventId = _eventSendStateEventIdPtr.asFunction<
+      _EventSendStateEventIdReturn Function(
+        int,
+      )>();
   late final _roomEventItemUniqueIdPtr = _lookup<
       ffi.NativeFunction<
           _RoomEventItemUniqueIdReturn Function(
@@ -15296,6 +15366,16 @@ class Api {
 
   late final _roomEventItemSender = _roomEventItemSenderPtr.asFunction<
       _RoomEventItemSenderReturn Function(
+        int,
+      )>();
+  late final _roomEventItemSendStatePtr = _lookup<
+      ffi.NativeFunction<
+          _RoomEventItemSendStateReturn Function(
+            ffi.Int64,
+          )>>("__RoomEventItem_send_state");
+
+  late final _roomEventItemSendState = _roomEventItemSendStatePtr.asFunction<
+      _RoomEventItemSendStateReturn Function(
         int,
       )>();
   late final _roomEventItemOriginServerTsPtr = _lookup<
@@ -17118,6 +17198,39 @@ class Api {
             int,
             int,
           )>();
+  late final _timelineStreamRetrySendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__TimelineStream_retry_send");
+
+  late final _timelineStreamRetrySend = _timelineStreamRetrySendPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _timelineStreamCancelSendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__TimelineStream_cancel_send");
+
+  late final _timelineStreamCancelSend =
+      _timelineStreamCancelSendPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _convoGetProfilePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -17920,18 +18033,7 @@ class Api {
           int Function(
             int,
           )>();
-  late final _attachmentsManagerAttachmentDraftPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__AttachmentsManager_attachment_draft");
-
-  late final _attachmentsManagerAttachmentDraft =
-      _attachmentsManagerAttachmentDraftPtr.asFunction<
-          int Function(
-            int,
-          )>();
-  late final _attachmentsManagerImageAttachmentDraftPtr = _lookup<
+  late final _attachmentsManagerImageDraftPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -17955,10 +18057,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__AttachmentsManager_image_attachment_draft");
+          )>>("__AttachmentsManager_image_draft");
 
-  late final _attachmentsManagerImageAttachmentDraft =
-      _attachmentsManagerImageAttachmentDraftPtr.asFunction<
+  late final _attachmentsManagerImageDraft =
+      _attachmentsManagerImageDraftPtr.asFunction<
           int Function(
             int,
             int,
@@ -17982,7 +18084,7 @@ class Api {
             int,
             int,
           )>();
-  late final _attachmentsManagerAudioAttachmentDraftPtr = _lookup<
+  late final _attachmentsManagerAudioDraftPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -18000,10 +18102,10 @@ class Api {
             ffi.Uint64,
             ffi.Uint8,
             ffi.Uint64,
-          )>>("__AttachmentsManager_audio_attachment_draft");
+          )>>("__AttachmentsManager_audio_draft");
 
-  late final _attachmentsManagerAudioAttachmentDraft =
-      _attachmentsManagerAudioAttachmentDraftPtr.asFunction<
+  late final _attachmentsManagerAudioDraft =
+      _attachmentsManagerAudioDraftPtr.asFunction<
           int Function(
             int,
             int,
@@ -18021,7 +18123,7 @@ class Api {
             int,
             int,
           )>();
-  late final _attachmentsManagerVideoAttachmentDraftPtr = _lookup<
+  late final _attachmentsManagerVideoDraftPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -18047,10 +18149,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__AttachmentsManager_video_attachment_draft");
+          )>>("__AttachmentsManager_video_draft");
 
-  late final _attachmentsManagerVideoAttachmentDraft =
-      _attachmentsManagerVideoAttachmentDraftPtr.asFunction<
+  late final _attachmentsManagerVideoDraft =
+      _attachmentsManagerVideoDraftPtr.asFunction<
           int Function(
             int,
             int,
@@ -18076,7 +18178,7 @@ class Api {
             int,
             int,
           )>();
-  late final _attachmentsManagerFileAttachmentDraftPtr = _lookup<
+  late final _attachmentsManagerFileDraftPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -18092,10 +18194,10 @@ class Api {
             ffi.Uint64,
             ffi.Uint8,
             ffi.Uint64,
-          )>>("__AttachmentsManager_file_attachment_draft");
+          )>>("__AttachmentsManager_file_draft");
 
-  late final _attachmentsManagerFileAttachmentDraft =
-      _attachmentsManagerFileAttachmentDraftPtr.asFunction<
+  late final _attachmentsManagerFileDraft =
+      _attachmentsManagerFileDraftPtr.asFunction<
           int Function(
             int,
             int,
@@ -18103,6 +18205,29 @@ class Api {
             int,
             int,
             int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _attachmentsManagerLocationDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__AttachmentsManager_location_draft");
+
+  late final _attachmentsManagerLocationDraft =
+      _attachmentsManagerLocationDraftPtr.asFunction<
+          int Function(
             int,
             int,
             int,
@@ -22885,6 +23010,18 @@ class Api {
       int Function(
         int,
       )>();
+  late final _clientDeviceRecordsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint8,
+          )>>("__Client_device_records");
+
+  late final _clientDeviceRecords = _clientDeviceRecordsPtr.asFunction<
+      int Function(
+        int,
+        int,
+      )>();
   late final _invitationOriginServerTsPtr = _lookup<
       ffi.NativeFunction<
           _InvitationOriginServerTsReturn Function(
@@ -23407,19 +23544,6 @@ class Api {
       int Function(
         int,
       )>();
-  late final _deviceNewEventDeviceRecordsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Uint8,
-          )>>("__DeviceNewEvent_device_records");
-
-  late final _deviceNewEventDeviceRecords =
-      _deviceNewEventDeviceRecordsPtr.asFunction<
-          int Function(
-            int,
-            int,
-          )>();
   late final _deviceNewEventRequestVerificationToUserPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -23491,19 +23615,6 @@ class Api {
           int Function(
             int,
           )>();
-  late final _deviceChangedEventDeviceRecordsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Uint8,
-          )>>("__DeviceChangedEvent_device_records");
-
-  late final _deviceChangedEventDeviceRecords =
-      _deviceChangedEventDeviceRecordsPtr.asFunction<
-          int Function(
-            int,
-            int,
-          )>();
   late final _deviceRecordDeviceIdPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -23561,6 +23672,16 @@ class Api {
           )>>("__DeviceRecord_is_active");
 
   late final _deviceRecordIsActive = _deviceRecordIsActivePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _deviceRecordIsMePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__DeviceRecord_is_me");
+
+  late final _deviceRecordIsMe = _deviceRecordIsMePtr.asFunction<
       int Function(
         int,
       )>();
@@ -24605,6 +24726,36 @@ class Api {
   late final _timelineStreamSendReactionFuturePoll =
       _timelineStreamSendReactionFuturePollPtr.asFunction<
           _TimelineStreamSendReactionFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _timelineStreamRetrySendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineStreamRetrySendFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__TimelineStream_retry_send_future_poll");
+
+  late final _timelineStreamRetrySendFuturePoll =
+      _timelineStreamRetrySendFuturePollPtr.asFunction<
+          _TimelineStreamRetrySendFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _timelineStreamCancelSendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineStreamCancelSendFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__TimelineStream_cancel_send_future_poll");
+
+  late final _timelineStreamCancelSendFuturePoll =
+      _timelineStreamCancelSendFuturePollPtr.asFunction<
+          _TimelineStreamCancelSendFuturePollReturn Function(
             int,
             int,
             int,
@@ -26685,6 +26836,21 @@ class Api {
             int,
             int,
           )>();
+  late final _clientDeviceRecordsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientDeviceRecordsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_device_records_future_poll");
+
+  late final _clientDeviceRecordsFuturePoll =
+      _clientDeviceRecordsFuturePollPtr.asFunction<
+          _ClientDeviceRecordsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _invitationRoomNameFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _InvitationRoomNameFuturePollReturn Function(
@@ -27020,21 +27186,6 @@ class Api {
             int,
             int,
           )>();
-  late final _deviceNewEventDeviceRecordsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _DeviceNewEventDeviceRecordsFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__DeviceNewEvent_device_records_future_poll");
-
-  late final _deviceNewEventDeviceRecordsFuturePoll =
-      _deviceNewEventDeviceRecordsFuturePollPtr.asFunction<
-          _DeviceNewEventDeviceRecordsFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
   late final _deviceNewEventRequestVerificationToUserFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _DeviceNewEventRequestVerificationToUserFuturePollReturn Function(
@@ -27105,21 +27256,6 @@ class Api {
                 int,
                 int,
               )>();
-  late final _deviceChangedEventDeviceRecordsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _DeviceChangedEventDeviceRecordsFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__DeviceChangedEvent_device_records_future_poll");
-
-  late final _deviceChangedEventDeviceRecordsFuturePoll =
-      _deviceChangedEventDeviceRecordsFuturePollPtr.asFunction<
-          _DeviceChangedEventDeviceRecordsFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
   late final _acterPinSubscribeStreamStreamPollPtr = _lookup<
       ffi.NativeFunction<
           _ActerPinSubscribeStreamStreamPollReturn Function(
@@ -33270,6 +33406,99 @@ class Rsvp {
   }
 }
 
+/// Sending state of outgoing message.
+class EventSendState {
+  final Api _api;
+  final _Box _box;
+
+  EventSendState._(this._api, this._box);
+
+  String state() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventSendStateState(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? error() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventSendStateError(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  EventId? eventId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventSendStateEventId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EventId");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = EventId._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 /// A room Message metadata and content
 class RoomEventItem {
   final Api _api;
@@ -33334,6 +33563,26 @@ class RoomEventItem {
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
       _api.__deallocate(tmp3_0, tmp5 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// Send state of the message to server
+  /// valid only when initialized from timeline event item
+  EventSendState? sendState() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemSendState(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EventSendState");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = EventSendState._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -37581,6 +37830,74 @@ class TimelineStream {
     return tmp10;
   }
 
+  /// retry local echo message send
+  Future<bool> retrySend(
+    String txnId,
+  ) {
+    final tmp1 = txnId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._timelineStreamRetrySend(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__TimelineStream_retry_send_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__timelineStreamRetrySendFuturePoll);
+    return tmp6;
+  }
+
+  /// cancel local echo message
+  Future<bool> cancelSend(
+    String txnId,
+  ) {
+    final tmp1 = txnId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._timelineStreamCancelSend(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__TimelineStream_cancel_send_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__timelineStreamCancelSendFuturePoll);
+    return tmp6;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -39156,23 +39473,8 @@ class AttachmentsManager {
     return tmp2;
   }
 
-  /// draft a new attachment for this item
-  AttachmentDraft attachmentDraft() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._attachmentsManagerAttachmentDraft(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_AttachmentDraft");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = AttachmentDraft._(_api, tmp3_1);
-    return tmp2;
-  }
-
   /// create news slide for image msg
-  AttachmentDraft imageAttachmentDraft(
+  AttachmentDraft imageDraft(
     String body,
     String url,
     String? mimetype,
@@ -39275,7 +39577,7 @@ class AttachmentsManager {
       tmp30 = tmp30_0.address;
       tmp32 = tmp31;
     }
-    final tmp33 = _api._attachmentsManagerImageAttachmentDraft(
+    final tmp33 = _api._attachmentsManagerImageDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -39307,7 +39609,7 @@ class AttachmentsManager {
   }
 
   /// create news slide for audio msg
-  AttachmentDraft audioAttachmentDraft(
+  AttachmentDraft audioDraft(
     String body,
     String url,
     String? mimetype,
@@ -39379,7 +39681,7 @@ class AttachmentsManager {
       final tmp21 = tmp19;
       tmp22 = tmp21;
     }
-    final tmp23 = _api._attachmentsManagerAudioAttachmentDraft(
+    final tmp23 = _api._attachmentsManagerAudioDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -39405,7 +39707,7 @@ class AttachmentsManager {
   }
 
   /// create news slide for video msg
-  AttachmentDraft videoAttachmentDraft(
+  AttachmentDraft videoDraft(
     String body,
     String url,
     String? mimetype,
@@ -39519,7 +39821,7 @@ class AttachmentsManager {
       tmp34 = tmp34_0.address;
       tmp36 = tmp35;
     }
-    final tmp37 = _api._attachmentsManagerVideoAttachmentDraft(
+    final tmp37 = _api._attachmentsManagerVideoDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -39553,7 +39855,7 @@ class AttachmentsManager {
   }
 
   /// create news slide for file msg
-  AttachmentDraft fileAttachmentDraft(
+  AttachmentDraft fileDraft(
     String body,
     String url,
     String? mimetype,
@@ -39614,7 +39916,7 @@ class AttachmentsManager {
       final tmp17 = tmp15;
       tmp18 = tmp17;
     }
-    final tmp19 = _api._attachmentsManagerFileAttachmentDraft(
+    final tmp19 = _api._attachmentsManagerFileDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -39635,6 +39937,54 @@ class AttachmentsManager {
     tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
     final tmp20 = AttachmentDraft._(_api, tmp21_1);
     return tmp20;
+  }
+
+  /// create news slide for location msg
+  AttachmentDraft locationDraft(
+    String body,
+    String geoUri,
+  ) {
+    final tmp1 = body;
+    final tmp5 = geoUri;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._attachmentsManagerLocationDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_AttachmentDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = AttachmentDraft._(_api, tmp11_1);
+    return tmp10;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -48768,6 +49118,27 @@ class Client {
     return tmp2;
   }
 
+  /// the list of devices
+  Future<FfiListDeviceRecord> deviceRecords(
+    bool verified,
+  ) {
+    final tmp1 = verified;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    final tmp3 = _api._clientDeviceRecords(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "__Client_device_records_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(tmp5_1, _api.__clientDeviceRecordsFuturePoll);
+    return tmp4;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -49792,29 +50163,6 @@ class DeviceNewEvent {
     return tmp2;
   }
 
-  /// Get the device list, excluding verified ones
-  Future<FfiListDeviceRecord> deviceRecords(
-    bool verified,
-  ) {
-    final tmp1 = verified;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    tmp0 = _box.borrow();
-    tmp2 = tmp1 ? 1 : 0;
-    final tmp3 = _api._deviceNewEventDeviceRecords(
-      tmp0,
-      tmp2,
-    );
-    final tmp5 = tmp3;
-    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 =
-        _Box(_api, tmp5_0, "__DeviceNewEvent_device_records_future_drop");
-    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 =
-        _nativeFuture(tmp5_1, _api.__deviceNewEventDeviceRecordsFuturePoll);
-    return tmp4;
-  }
-
   /// Request verification to any devices of user
   Future<bool> requestVerificationToUser() {
     var tmp0 = 0;
@@ -49956,29 +50304,6 @@ class DeviceChangedEvent {
     return tmp2;
   }
 
-  /// Get the device list, including deleted ones
-  Future<FfiListDeviceRecord> deviceRecords(
-    bool deleted,
-  ) {
-    final tmp1 = deleted;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    tmp0 = _box.borrow();
-    tmp2 = tmp1 ? 1 : 0;
-    final tmp3 = _api._deviceChangedEventDeviceRecords(
-      tmp0,
-      tmp2,
-    );
-    final tmp5 = tmp3;
-    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 =
-        _Box(_api, tmp5_0, "__DeviceChangedEvent_device_records_future_drop");
-    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 =
-        _nativeFuture(tmp5_1, _api.__deviceChangedEventDeviceRecordsFuturePoll);
-    return tmp4;
-  }
-
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -50108,6 +50433,18 @@ class DeviceRecord {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._deviceRecordIsActive(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// whether it is this session
+  bool isMe() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._deviceRecordIsMe(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -51086,6 +51423,33 @@ class _RsvpStatusReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _EventSendStateStateReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _EventSendStateErrorReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _EventSendStateEventIdReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
 class _RoomEventItemUniqueIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -51102,6 +51466,13 @@ class _RoomEventItemSenderReturn extends ffi.Struct {
   external int arg1;
   @ffi.Uint64()
   external int arg2;
+}
+
+class _RoomEventItemSendStateReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
 }
 
 class _RoomEventItemEventTypeReturn extends ffi.Struct {
@@ -53805,6 +54176,36 @@ class _TimelineStreamSendReactionFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _TimelineStreamRetrySendFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _TimelineStreamCancelSendFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _ConvoSpaceRelationsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -55911,6 +56312,21 @@ class _ClientMyPastEventsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ClientDeviceRecordsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _InvitationRoomNameFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -56254,21 +56670,6 @@ class _SessionManagerRequestVerificationFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _DeviceNewEventDeviceRecordsFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
 class _DeviceNewEventRequestVerificationToUserFuturePollReturn
     extends ffi.Struct {
   @ffi.Uint8()
@@ -56330,21 +56731,6 @@ class _DeviceNewEventRequestVerificationToDeviceWithMethodsFuturePollReturn
   @ffi.Uint64()
   external int arg4;
   @ffi.Uint8()
-  external int arg5;
-}
-
-class _DeviceChangedEventDeviceRecordsFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
   external int arg5;
 }
 

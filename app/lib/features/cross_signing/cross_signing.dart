@@ -63,7 +63,7 @@ class CrossSigning {
 
   void _installDeviceEvent() {
     _deviceNewPoller = client.deviceNewEventRx()?.listen((event) async {
-      final records = await event.deviceRecords(false);
+      final records = await client.deviceRecords(false);
       final myDevId = client.deviceId();
       var newDevFound = false;
       for (var record in records) {

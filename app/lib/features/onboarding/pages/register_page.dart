@@ -157,11 +157,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              inputFormatters: [
-                                FilteringTextInputFormatter.deny(
-                                  RegExp(r'\s'),
-                                ),
-                              ],
                               style: Theme.of(context).textTheme.labelLarge,
                               cursorColor:
                                   Theme.of(context).colorScheme.tertiary2,
@@ -171,12 +166,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                       .missingName;
                                 }
                                 return null;
-                              },
-                              onChanged: (value) {
-                                name.text = value;
-                                name.selection = TextSelection.fromPosition(
-                                  TextPosition(offset: name.text.length),
-                                );
                               },
                             ),
                             const SizedBox(height: 10),
@@ -227,12 +216,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                 }
                                 return null;
                               },
-                              onChanged: (value) {
-                                username.text = value;
-                                username.selection = TextSelection.fromPosition(
-                                  TextPosition(offset: username.text.length),
-                                );
-                              },
                             ),
                             const SizedBox(height: 10),
                             TextFormField(
@@ -272,12 +255,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                 }
                                 return null;
                               },
-                              onChanged: (value) {
-                                password.text = value;
-                                password.selection = TextSelection.fromPosition(
-                                  TextPosition(offset: password.text.length),
-                                );
-                              },
                             ),
                             const SizedBox(height: 10),
                             TextFormField(
@@ -314,12 +291,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                       .emptyToken;
                                 }
                                 return null;
-                              },
-                              onChanged: (value) {
-                                token.text = value;
-                                token.selection = TextSelection.fromPosition(
-                                  TextPosition(offset: token.text.length),
-                                );
                               },
                             ),
                             const SizedBox(height: 30),

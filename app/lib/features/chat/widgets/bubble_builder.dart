@@ -7,7 +7,7 @@ import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/emoji_reaction_item.dart';
 import 'package:acter/features/chat/widgets/emoji_row.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
-import 'package:acter/features/chat/widgets/receipts_builder.dart';
+import 'package:acter/features/chat/widgets/message_metadata_builder.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -120,7 +120,6 @@ class _ChatBubble extends ConsumerWidget {
     final isAuthor = (myId == message.author.id);
     final roomId = convo.getRoomIdStr();
     bool hasRepliedMessage = message.repliedMessage != null;
-    final receipts = message.metadata?['receipts'];
 
     return Column(
       crossAxisAlignment:
@@ -207,15 +206,15 @@ class _ChatBubble extends ConsumerWidget {
             nextMessageInGroup: nextMessageInGroup,
           ),
         ),
-        if (receipts != null)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              ReceiptsBuilder(
-                seenList: (receipts as Map<String, int>).keys.toList(),
-              ),
-            ],
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            MessageMetadataBuilder(
+              convo: convo,
+              message: message,
+            ),
+          ],
+        ),
       ],
     );
   }

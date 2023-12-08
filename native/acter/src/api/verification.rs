@@ -18,10 +18,7 @@ use matrix_sdk::{
 use ruma_common::{device_id, OwnedDeviceId, OwnedEventId, OwnedTransactionId, OwnedUserId};
 use ruma_events::{
     key::verification::{accept::AcceptMethod, start::StartMethod, VerificationMethod},
-    room::{
-        encrypted::OriginalSyncRoomEncryptedEvent,
-        message::{MessageType, OriginalSyncRoomMessageEvent},
-    },
+    room::message::{MessageType, OriginalSyncRoomMessageEvent},
     AnyToDeviceEvent, EventContent,
 };
 use std::{
@@ -1180,6 +1177,7 @@ impl SessionManager {
         RUNTIME
             .spawn(async move {
                 let user_id = client.user_id().context("User not found")?;
+                let device_id = client.device_id().context("Client had no device. Wat?!?")?;
                 let response = client.devices().await?;
                 let crypto_devices = client
                     .encryption()
@@ -1210,6 +1208,7 @@ impl SessionManager {
                         device.last_seen_ip.clone(),
                         is_verified,
                         is_active,
+                        device.device_id == device_id,
                     ));
                 }
                 info!("all sessions: {:?}", sessions);

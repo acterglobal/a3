@@ -12,7 +12,6 @@ use matrix_sdk::{
     Client as SdkClient, ClientBuilder, SessionMeta,
 };
 use ruma_common::OwnedUserId;
-use std::backtrace::Backtrace;
 use std::sync::RwLock;
 use tracing::{error, info};
 
@@ -328,8 +327,16 @@ pub async fn register_under_config(
                 "Successfully registered user {user_id}, device {:?}",
                 client.device_id(),
             );
-
-            login_client(client, user_id, password, db_passphrase, Some(user_agent)).await
+            if (client.logged_in()) {
+                let state = ClientStateBuilder::default()
+                    .is_guest(false)
+                    .db_passphrase(db_passphrase)
+                    .build()?;
+                Client::new(client, state).await
+            } else {
+                // we didn't receive the login details yet, do a full login attempt
+                login_client(client, user_id, password, db_passphrase, Some(user_agent)).await
+            }
         })
         .await?
 }
@@ -374,36 +381,46 @@ pub async fn register_with_token_under_config(
     // First we need to log in.
     RUNTIME
         .spawn(async move {
-            let client = {
-                let client = config.build().await?;
-                let request = assign!(register::v3::Request::new(), {
-                    username: Some(user_id.localpart().to_owned()),
-                    password: Some(password.clone()),
-                    initial_device_display_name: Some(user_agent.clone()),
-                    auth: Some(AuthData::Dummy(Dummy::new())),
-                });
+            let client = config.build().await?;
+            let request = assign!(register::v3::Request::new(), {
+                username: Some(user_id.localpart().to_owned()),
+                password: Some(password.clone()),
+                initial_device_display_name: Some(user_agent.clone()),
+                auth: Some(AuthData::Dummy(Dummy::new())),
+            });
 
-                if let Err(err) = client.matrix_auth().register(request).await {
-                    let Some(response) = err.as_uiaa_response() else {
+            if let Err(err) = client.matrix_auth().register(request).await {
+                let Some(response) = err.as_uiaa_response() else {
                         bail!("Server did not indicate how to allow registration.");
                     };
 
-                    info!("Acceptable auth flows: {response:?}");
+                info!("Acceptable auth flows: {response:?}");
 
-                    // FIXME: do actually check the registration types...
-                    let token_request = assign!(register::v3::Request::new(), {
-                        auth: Some(AuthData::RegistrationToken(
-                            assign!(RegistrationToken::new(registration_token), {
-                                session: response.session.clone(),
-                            }),
-                        )),
-                    });
-                    client.matrix_auth().register(token_request).await?;
-                } // else all went well.
-                client
-            };
+                // FIXME: do actually check the registration types...
+                let token_request = assign!(register::v3::Request::new(), {
+                    auth: Some(AuthData::RegistrationToken(
+                        assign!(RegistrationToken::new(registration_token), {
+                            session: response.session.clone(),
+                        }),
+                    )),
+                });
+                client.matrix_auth().register(token_request).await?;
+            } // else all went well.
 
-            login_client(client, user_id, password, db_passphrase, Some(user_agent)).await
+            info!(
+                "Successfully registered user {user_id}, device {:?}",
+                client.device_id(),
+            );
+            if (client.logged_in()) {
+                let state = ClientStateBuilder::default()
+                    .is_guest(false)
+                    .db_passphrase(db_passphrase)
+                    .build()?;
+                Client::new(client, state).await
+            } else {
+                // we didn't receive the login details yet, do a full login attempt
+                login_client(client, user_id, password, db_passphrase, Some(user_agent)).await
+            }
         })
         .await?
 }

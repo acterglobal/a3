@@ -2,7 +2,7 @@ use anyhow::{bail, Context, Result};
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
-    room::{Room, RoomMember},
+    room::Room,
     ruma::api::client::user_directory::search_users,
     Client as SdkClient, RoomMemberships, RoomState,
 };

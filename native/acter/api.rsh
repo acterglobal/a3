@@ -607,6 +607,20 @@ object Rsvp {
 //  ##    ##  ##     ## ##     ## ##     ##    ##         ## ##   ##       ##   ###    ##    ##    ## 
 //  ##     ##  #######   #######  ##     ##    ########    ###    ######## ##    ##    ##     ######  
 
+/// Sending state of outgoing message.
+object EventSendState {
+    // one of NotSentYet/SendingFailed/Cancelled/Sent
+    fn state() -> string;
+    
+    // gives error value for SendingFailed only
+    fn error() -> Option<string>;
+
+    // gives event id for Sent only
+    fn event_id() -> Option<EventId>;
+}
+
+
+
 /// A room Message metadata and content
 object RoomEventItem {
     /// Unique ID of this event
@@ -614,6 +628,10 @@ object RoomEventItem {
 
     /// The User, who sent that event
     fn sender() -> string;
+
+    /// Send state of the message to server
+    /// valid only when initialized from timeline event item
+    fn send_state() -> Option<EventSendState>;
 
     /// the server receiving timestamp in milliseconds
     fn origin_server_ts() -> u64;
@@ -1016,6 +1034,12 @@ object TimelineStream {
 
     /// send reaction to event
     fn send_reaction(event_id: string, key: string) -> Future<Result<bool>>;
+
+    /// retry local echo message send
+    fn retry_send(txn_id: string) -> Future<Result<bool>>;
+
+    /// cancel local echo message
+    fn cancel_send(txn_id: string) -> Future<Result<bool>>;
 }
 
 
@@ -1262,20 +1286,20 @@ object AttachmentsManager {
     /// How many attachments does this item have
     fn attachments_count() -> u32;
 
-    /// draft a new attachment for this item
-    fn attachment_draft() -> AttachmentDraft;
-
     /// create news slide for image msg
-    fn image_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> AttachmentDraft;
+    fn image_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> AttachmentDraft;
 
     /// create news slide for audio msg
-    fn audio_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>) -> AttachmentDraft;
+    fn audio_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>) -> AttachmentDraft;
 
     /// create news slide for video msg
-    fn video_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> AttachmentDraft;
+    fn video_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> AttachmentDraft;
 
     /// create news slide for file msg
-    fn file_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>) -> AttachmentDraft;
+    fn file_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>) -> AttachmentDraft;
+
+    /// create news slide for location msg
+    fn location_draft(body: string, geo_uri: string) -> AttachmentDraft;
 }
 
 
@@ -2393,6 +2417,9 @@ object Client {
     /// super invites interface
     fn super_invites() -> SuperInvites;
 
+    /// the list of devices
+    fn device_records(verified: bool) -> Future<Result<Vec<DeviceRecord>>>;
+
 }
 
 
@@ -2594,9 +2621,6 @@ object DeviceNewEvent {
     /// get device id
     fn device_id() -> DeviceId;
 
-    /// Get the device list, excluding verified ones
-    fn device_records(verified: bool) -> Future<Result<Vec<DeviceRecord>>>;
-
     /// Request verification to any devices of user
     fn request_verification_to_user() -> Future<Result<bool>>;
 
@@ -2615,8 +2639,6 @@ object DeviceChangedEvent {
     /// get device id
     fn device_id() -> DeviceId;
 
-    /// Get the device list, including deleted ones
-    fn device_records(deleted: bool) -> Future<Result<Vec<DeviceRecord>>>;
 }
 
 /// Provide various device infos
@@ -2638,4 +2660,6 @@ object DeviceRecord {
 
     /// whether it is active
     fn is_active() -> bool;
+    /// whether it is this session
+    fn is_me() -> bool;
 }
