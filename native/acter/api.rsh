@@ -1100,19 +1100,7 @@ object AttachmentsManager {
     fn attachments_count() -> u32;
 
     /// create news slide for image msg
-    fn image_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> AttachmentDraft;
-
-    /// create news slide for audio msg
-    fn audio_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>) -> AttachmentDraft;
-
-    /// create news slide for video msg
-    fn video_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> AttachmentDraft;
-
-    /// create news slide for file msg
-    fn file_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>) -> AttachmentDraft;
-
-    /// create news slide for location msg
-    fn location_draft(body: string, geo_uri: string) -> AttachmentDraft;
+    fn content_draft(base_draft: MsgContentDraft) -> Future<Result<AttachmentDraft>>;
 }
 
 

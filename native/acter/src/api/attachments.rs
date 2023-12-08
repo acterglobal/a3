@@ -22,11 +22,11 @@ use ruma_events::{
     },
     MessageLikeEventType,
 };
-use std::ops::Deref;
+use std::{ops::Deref, path::PathBuf};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::Stream;
 
-use super::{api::FfiBuffer, client::Client, RUNTIME};
+use super::{api::FfiBuffer, client::Client, stream::MsgContentDraft, RUNTIME};
 use crate::MsgContent;
 
 impl Client {
@@ -209,122 +209,118 @@ impl AttachmentsManager {
             .await?
     }
 
-    #[allow(clippy::too_many_arguments)]
-    pub fn image_draft(
-        &self,
-        body: String,
-        url: String,
-        mimetype: Option<String>,
-        size: Option<u64>,
-        width: Option<u64>,
-        height: Option<u64>,
-        blurhash: Option<String>,
-    ) -> Result<AttachmentDraft> {
-        let info = assign!(ImageInfo::new(), {
-            height: height.and_then(UInt::new),
-            width: width.and_then(UInt::new),
-            mimetype,
-            size: size.and_then(UInt::new),
-            blurhash,
-        });
-        let url = Box::<MxcUri>::from(url.as_str());
+    pub async fn content_draft(&self, base_draft: Box<MsgContentDraft>) -> Result<AttachmentDraft> {
+        let room = self.room.clone();
+        let client = self.room.client();
+
+        let content = RUNTIME
+            .spawn(async move {
+                match *base_draft {
+                    MsgContentDraft::TextPlain { .. } => {
+                        bail!("non-media content not allowed")
+                    }
+                    MsgContentDraft::TextMarkdown { .. } => {
+                        bail!("non-media content not allowed")
+                    }
+                    MsgContentDraft::Image { body, source, info } => {
+                        let info = info.expect("image info needed");
+                        let mimetype = info.mimetype.clone().expect("mimetype needed");
+                        let content_type = mimetype.parse::<mime::Mime>()?;
+                        let mut image_content = if room.is_encrypted().await? {
+                            let mut reader = std::fs::File::open(source)?;
+                            let encrypted_file = client
+                                .prepare_encrypted_file(&content_type, &mut reader)
+                                .await?;
+                            ImageMessageEventContent::encrypted(body, encrypted_file)
+                        } else {
+                            let path = PathBuf::from(source);
+                            let mut image_buf = std::fs::read(path)?;
+                            let response = client.media().upload(&content_type, image_buf).await?;
+                            ImageMessageEventContent::plain(body, response.content_uri)
+                        };
+                        image_content.info = Some(Box::new(info));
+                        anyhow::Ok(AttachmentContent::Image(image_content))
+                    }
+                    MsgContentDraft::Audio { body, source, info } => {
+                        let info = info.expect("audio info needed");
+                        let mimetype = info.mimetype.clone().expect("mimetype needed");
+                        let content_type = mimetype.parse::<mime::Mime>()?;
+                        let mut audio_content = if room.is_encrypted().await? {
+                            let mut reader = std::fs::File::open(source)?;
+                            let encrypted_file = client
+                                .prepare_encrypted_file(&content_type, &mut reader)
+                                .await?;
+                            AudioMessageEventContent::encrypted(body, encrypted_file)
+                        } else {
+                            let path = PathBuf::from(source);
+                            let mut audio_buf = std::fs::read(path)?;
+                            let response = client.media().upload(&content_type, audio_buf).await?;
+                            AudioMessageEventContent::plain(body, response.content_uri)
+                        };
+                        audio_content.info = Some(Box::new(info));
+                        anyhow::Ok(AttachmentContent::Audio(audio_content))
+                    }
+                    MsgContentDraft::Video { body, source, info } => {
+                        let info = info.expect("video info needed");
+                        let mimetype = info.mimetype.clone().expect("mimetype needed");
+                        let content_type = mimetype.parse::<mime::Mime>()?;
+                        let mut video_content = if room.is_encrypted().await? {
+                            let mut reader = std::fs::File::open(source)?;
+                            let encrypted_file = client
+                                .prepare_encrypted_file(&content_type, &mut reader)
+                                .await?;
+                            VideoMessageEventContent::encrypted(body, encrypted_file)
+                        } else {
+                            let path = PathBuf::from(source);
+                            let mut video_buf = std::fs::read(path)?;
+                            let response = client.media().upload(&content_type, video_buf).await?;
+                            VideoMessageEventContent::plain(body, response.content_uri)
+                        };
+                        video_content.info = Some(Box::new(info));
+                        anyhow::Ok(AttachmentContent::Video(video_content))
+                    }
+                    MsgContentDraft::File {
+                        body,
+                        source,
+                        info,
+                        filename,
+                    } => {
+                        let info = info.expect("file info needed");
+                        let mimetype = info.mimetype.clone().expect("mimetype needed");
+                        let content_type = mimetype.parse::<mime::Mime>()?;
+                        let mut file_content = if room.is_encrypted().await? {
+                            let mut reader = std::fs::File::open(source)?;
+                            let encrypted_file = client
+                                .prepare_encrypted_file(&content_type, &mut reader)
+                                .await?;
+                            FileMessageEventContent::encrypted(body, encrypted_file)
+                        } else {
+                            let path = PathBuf::from(source);
+                            let mut file_buf = std::fs::read(path)?;
+                            let response = client.media().upload(&content_type, file_buf).await?;
+                            FileMessageEventContent::plain(body, response.content_uri)
+                        };
+                        file_content.info = Some(Box::new(info));
+                        file_content.filename = filename.clone();
+                        anyhow::Ok(AttachmentContent::File(file_content))
+                    }
+                    MsgContentDraft::Location {
+                        body,
+                        geo_uri,
+                        info,
+                    } => {
+                        let mut location_content = LocationMessageEventContent::new(body, geo_uri);
+                        if let Some(info) = info {
+                            location_content.info = Some(Box::new(info));
+                        }
+                        anyhow::Ok(AttachmentContent::Location(location_content))
+                    }
+                }
+            })
+            .await??;
+
         let mut builder = self.inner.draft_builder();
-
-        let mut image_content = ImageMessageEventContent::plain(body, url.into());
-        image_content.info = Some(Box::new(info));
-        builder.content(AttachmentContent::Image(image_content));
-        Ok(AttachmentDraft {
-            client: self.client.clone(),
-            room: self.room.clone(),
-            inner: builder,
-        })
-    }
-
-    pub fn audio_draft(
-        &self,
-        body: String,
-        url: String,
-        mimetype: Option<String>,
-        size: Option<u64>,
-        secs: Option<u64>,
-    ) -> Result<AttachmentDraft> {
-        let info = assign!(AudioInfo::new(), {
-            duration: secs.map(|x| Duration::new(x, 0)),
-            mimetype,
-            size: size.and_then(UInt::new),
-        });
-        let url = Box::<MxcUri>::from(url.as_str());
-        let mut builder = self.inner.draft_builder();
-
-        let mut audio_content = AudioMessageEventContent::plain(body, url.into());
-        audio_content.info = Some(Box::new(info));
-        builder.content(AttachmentContent::Audio(audio_content));
-        Ok(AttachmentDraft {
-            client: self.client.clone(),
-            room: self.room.clone(),
-            inner: builder,
-        })
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    pub fn video_draft(
-        &self,
-        body: String,
-        url: String,
-        mimetype: Option<String>,
-        size: Option<u64>,
-        secs: Option<u64>,
-        width: Option<u64>,
-        height: Option<u64>,
-        blurhash: Option<String>,
-    ) -> Result<AttachmentDraft> {
-        let info = assign!(VideoInfo::new(), {
-            duration: secs.map(|x| Duration::new(x, 0)),
-            height: height.and_then(UInt::new),
-            width: width.and_then(UInt::new),
-            mimetype,
-            size: size.and_then(UInt::new),
-            blurhash,
-        });
-        let url = Box::<MxcUri>::from(url.as_str());
-        let mut builder = self.inner.draft_builder();
-
-        let mut video_content = VideoMessageEventContent::plain(body, url.into());
-        video_content.info = Some(Box::new(info));
-        builder.content(AttachmentContent::Video(video_content));
-        Ok(AttachmentDraft {
-            client: self.client.clone(),
-            room: self.room.clone(),
-            inner: builder,
-        })
-    }
-
-    pub fn file_draft(
-        &self,
-        body: String,
-        url: String,
-        mimetype: Option<String>,
-        size: Option<u64>,
-    ) -> Result<AttachmentDraft> {
-        let mut builder = self.inner.draft_builder();
-        let size = size.and_then(UInt::new);
-        let info = assign!(FileInfo::new(), { mimetype, size });
-        let mut file_content = FileMessageEventContent::plain(body, url.into());
-        file_content.info = Some(Box::new(info));
-        builder.content(AttachmentContent::File(file_content));
-        Ok(AttachmentDraft {
-            client: self.client.clone(),
-            room: self.room.clone(),
-            inner: builder,
-        })
-    }
-
-    pub fn location_draft(&self, body: String, geo_uri: String) -> Result<AttachmentDraft> {
-        let mut builder = self.inner.draft_builder();
-        let info = LocationInfo::new();
-        let mut location_content = LocationMessageEventContent::new(body, geo_uri);
-        location_content.info = Some(Box::new(info));
-        builder.content(AttachmentContent::Location(location_content));
+        builder.content(content);
         Ok(AttachmentDraft {
             client: self.client.clone(),
             room: self.room.clone(),
