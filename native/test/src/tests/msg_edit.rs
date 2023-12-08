@@ -146,7 +146,7 @@ async fn edit_image_msg() -> Result<()> {
         .as_file_mut()
         .write_all(include_bytes!("./fixtures/kingfisher.jpg"))?;
 
-    let draft = timeline
+    let draft = user
         .image_draft(
             "jpg_file".to_string(),
             tmp_jpg.path().to_string_lossy().to_string(),
@@ -198,7 +198,7 @@ async fn edit_image_msg() -> Result<()> {
         "./fixtures/PNG_transparency_demonstration_1.png"
     ))?;
 
-    let draft = timeline
+    let draft = user
         .image_draft(
             "png_file".to_string(),
             tmp_png.path().to_string_lossy().to_string(),
