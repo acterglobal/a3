@@ -14420,22 +14420,6 @@ class Api {
       _SpaceDiffValueReturn Function(
         int,
       )>();
-  late final _msgContentDraftMimetypePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__MsgContentDraft_mimetype");
-
-  late final _msgContentDraftMimetype = _msgContentDraftMimetypePtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-      )>();
   late final _msgContentDraftSizePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -20188,10 +20172,16 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
           )>>("__Client_image_draft");
 
   late final _clientImageDraft = _clientImageDraftPtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -20210,10 +20200,16 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
           )>>("__Client_audio_draft");
 
   late final _clientAudioDraft = _clientAudioDraftPtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -20232,10 +20228,16 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
           )>>("__Client_video_draft");
 
   late final _clientVideoDraft = _clientVideoDraftPtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -20254,10 +20256,16 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
           )>>("__Client_file_draft");
 
   late final _clientFileDraft = _clientFileDraftPtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -31331,38 +31339,6 @@ class MsgContentDraft {
   MsgContentDraft._(this._api, this._box);
 
   /// available for only image/audio/video/file
-  MsgContentDraft mimetype(
-    String value,
-  ) {
-    final tmp1 = value;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._msgContentDraftMimetype(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgContentDraft");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = MsgContentDraft._(_api, tmp7_1);
-    return tmp6;
-  }
-
-  /// available for only image/audio/video/file
   MsgContentDraft size(
     int value,
   ) {
@@ -42430,9 +42406,11 @@ class Client {
   MsgContentDraft imageDraft(
     String body,
     String source,
+    String mimetype,
   ) {
     final tmp1 = body;
     final tmp5 = source;
+    final tmp9 = mimetype;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -42440,6 +42418,9 @@ class Client {
     var tmp6 = 0;
     var tmp7 = 0;
     var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -42457,7 +42438,15 @@ class Client {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9 = _api._clientImageDraft(
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    final tmp13 = _api._clientImageDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -42465,22 +42454,27 @@ class Client {
       tmp6,
       tmp7,
       tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
     );
-    final tmp11 = tmp9;
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgContentDraft");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = MsgContentDraft._(_api, tmp11_1);
-    return tmp10;
+    final tmp15 = tmp13;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_MsgContentDraft");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp14 = MsgContentDraft._(_api, tmp15_1);
+    return tmp14;
   }
 
   /// make draft to send audio msg
   MsgContentDraft audioDraft(
     String body,
     String source,
+    String mimetype,
   ) {
     final tmp1 = body;
     final tmp5 = source;
+    final tmp9 = mimetype;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -42488,6 +42482,9 @@ class Client {
     var tmp6 = 0;
     var tmp7 = 0;
     var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -42505,7 +42502,15 @@ class Client {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9 = _api._clientAudioDraft(
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    final tmp13 = _api._clientAudioDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -42513,22 +42518,27 @@ class Client {
       tmp6,
       tmp7,
       tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
     );
-    final tmp11 = tmp9;
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgContentDraft");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = MsgContentDraft._(_api, tmp11_1);
-    return tmp10;
+    final tmp15 = tmp13;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_MsgContentDraft");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp14 = MsgContentDraft._(_api, tmp15_1);
+    return tmp14;
   }
 
   /// make draft to send video msg
   MsgContentDraft videoDraft(
     String body,
     String source,
+    String mimetype,
   ) {
     final tmp1 = body;
     final tmp5 = source;
+    final tmp9 = mimetype;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -42536,6 +42546,9 @@ class Client {
     var tmp6 = 0;
     var tmp7 = 0;
     var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -42553,7 +42566,15 @@ class Client {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9 = _api._clientVideoDraft(
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    final tmp13 = _api._clientVideoDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -42561,22 +42582,27 @@ class Client {
       tmp6,
       tmp7,
       tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
     );
-    final tmp11 = tmp9;
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgContentDraft");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = MsgContentDraft._(_api, tmp11_1);
-    return tmp10;
+    final tmp15 = tmp13;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_MsgContentDraft");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp14 = MsgContentDraft._(_api, tmp15_1);
+    return tmp14;
   }
 
   /// make draft to send file msg
   MsgContentDraft fileDraft(
     String body,
     String source,
+    String mimetype,
   ) {
     final tmp1 = body;
     final tmp5 = source;
+    final tmp9 = mimetype;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -42584,6 +42610,9 @@ class Client {
     var tmp6 = 0;
     var tmp7 = 0;
     var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -42601,7 +42630,15 @@ class Client {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9 = _api._clientFileDraft(
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    final tmp13 = _api._clientFileDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -42609,13 +42646,16 @@ class Client {
       tmp6,
       tmp7,
       tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
     );
-    final tmp11 = tmp9;
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgContentDraft");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = MsgContentDraft._(_api, tmp11_1);
-    return tmp10;
+    final tmp15 = tmp13;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_MsgContentDraft");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp14 = MsgContentDraft._(_api, tmp15_1);
+    return tmp14;
   }
 
   /// make draft to send location msg

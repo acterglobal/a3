@@ -1,5 +1,7 @@
-use acter::{ruma_events::room::MediaSource, ActerModel, MsgContent};
+use acter::{ActerModel, MsgContent};
 use anyhow::{bail, Result};
+use std::io::Write;
+use tempfile::NamedTempFile;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -156,18 +158,20 @@ async fn pin_attachments() -> Result<()> {
 
     // ---- let's make a attachment
 
+    let mut jpg_file = NamedTempFile::new()?;
+    jpg_file
+        .as_file_mut()
+        .write_all(include_bytes!("./fixtures/kingfisher.jpg"))?;
+
     let attachments_listener = attachments_manager.subscribe();
+    let base_draft = user.image_draft(
+        "sample jpeg".to_owned(),
+        jpg_file.path().as_os_str().to_str().unwrap().to_owned(),
+        "image/jpeg".to_string(),
+    );
     let attachment_1_id = attachments_manager
-        .image_draft(
-            "acter logo".to_owned(),
-            "https://raw.githubusercontent.com/acterglobal/a3/main/app/assets/icon/acter-logo.svg"
-                .to_owned(),
-            None,
-            None,
-            None,
-            None,
-            None,
-        )?
+        .content_draft(Box::new(base_draft))
+        .await?
         .send()
         .await?;
 
@@ -186,17 +190,8 @@ async fn pin_attachments() -> Result<()> {
     assert_eq!(attachment.event_id(), attachment_1_id);
     assert_eq!(attachment.type_str(), "image");
     match attachment.msg_content() {
-        MsgContent::Image { body, source, .. } => {
-            assert_eq!(body, "acter logo");
-            match source {
-                MediaSource::Plain(uri) => {
-                    assert_eq!(
-                        uri.to_string(),
-                        "https://raw.githubusercontent.com/acterglobal/a3/main/app/assets/icon/acter-logo.svg"
-                    );
-                }
-                _ => {}
-            }
+        MsgContent::Image { body, .. } => {
+            assert_eq!(body, "sample jpeg");
         }
         _ => {
             bail!("should be image content")
@@ -205,14 +200,20 @@ async fn pin_attachments() -> Result<()> {
 
     // go for the second
 
+    let mut png_file = NamedTempFile::new()?;
+    png_file.as_file_mut().write_all(include_bytes!(
+        "./fixtures/PNG_transparency_demonstration_1.png"
+    ))?;
+
     let attachments_listener = attachments_manager.subscribe();
+    let base_draft = user.file_draft(
+        "sample png".to_owned(),
+        png_file.path().as_os_str().to_str().unwrap().to_owned(),
+        "image/png".to_string(),
+    );
     let attachment_2_id = attachments_manager
-        .file_draft(
-            "effektio whitepaper".to_owned(),
-            "mxc://acter.global/tVLtaQaErMyoXmcCroPZdfNG".to_owned(),
-            None,
-            None,
-        )?
+        .content_draft(Box::new(base_draft))
+        .await?
         .send()
         .await?;
 

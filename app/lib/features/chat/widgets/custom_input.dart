@@ -551,8 +551,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
           final bytes = file.readAsBytesSync();
           final image = await decodeImageFromList(bytes);
           final draft = client
-              .imageDraft(fileName, file.path)
-              .mimetype(mimeType)
+              .imageDraft(fileName, file.path, mimeType)
               .size(file.lengthSync())
               .width(image.width)
               .height(image.height);
@@ -567,8 +566,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         } else if (mimeType.startsWith('/video')) {
         } else {
           final draft = client
-              .fileDraft(fileName, file.path)
-              .mimetype(mimeType)
+              .fileDraft(fileName, file.path, mimeType)
               .size(file.lengthSync());
           if (inputState.repliedToMessage != null) {
             await stream.replyMessage(inputState.repliedToMessage!.id, draft);

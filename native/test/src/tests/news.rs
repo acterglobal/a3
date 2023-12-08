@@ -216,19 +216,17 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
     .await?;
 
     let mut tmp_file = NamedTempFile::new()?;
-
     tmp_file
         .as_file_mut()
         .write_all(include_bytes!("./fixtures/kingfisher.jpg"))?;
 
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
-    let image_draft = user
-        .image_draft(
-            "This is a simple text".to_owned(),
-            tmp_file.path().as_os_str().to_str().unwrap().to_owned(),
-        )
-        .mimetype("image/jpg".to_string());
+    let image_draft = user.image_draft(
+        "This is a simple text".to_owned(),
+        tmp_file.path().as_os_str().to_str().unwrap().to_owned(),
+        "image/jpg".to_string(),
+    );
     draft.add_slide(Box::new(image_draft)).await?;
     draft.send().await?;
 
@@ -275,19 +273,17 @@ async fn news_png_image_with_text_test() -> Result<()> {
     .await?;
 
     let mut tmp_file = NamedTempFile::new()?;
-
     tmp_file.as_file_mut().write_all(include_bytes!(
         "./fixtures/PNG_transparency_demonstration_1.png"
     ))?;
 
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
-    let image_draft = user
-        .image_draft(
-            "This is a simple text".to_owned(),
-            tmp_file.path().as_os_str().to_str().unwrap().to_owned(),
-        )
-        .mimetype("image/png".to_string());
+    let image_draft = user.image_draft(
+        "This is a simple text".to_owned(),
+        tmp_file.path().as_os_str().to_str().unwrap().to_owned(),
+        "image/png".to_string(),
+    );
     draft.add_slide(Box::new(image_draft)).await?;
     draft.send().await?;
 

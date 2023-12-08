@@ -760,91 +760,13 @@ pub enum MsgContentDraft {
 }
 
 impl MsgContentDraft {
-    pub fn mimetype(&self, value: String) -> Self {
-        match self {
-            MsgContentDraft::Image { body, source, info } => {
-                let new_info = if let Some(mut new_info) = info.clone() {
-                    new_info.mimetype = Some(value);
-                    new_info
-                } else {
-                    assign!(ImageInfo::new(), {
-                        mimetype: Some(value),
-                    })
-                };
-                MsgContentDraft::Image {
-                    body: body.clone(),
-                    source: source.clone(),
-                    info: Some(new_info),
-                }
-            }
-            MsgContentDraft::Audio { body, source, info } => {
-                let new_info = if let Some(mut new_info) = info.clone() {
-                    new_info.mimetype = Some(value);
-                    new_info
-                } else {
-                    assign!(AudioInfo::new(), {
-                        mimetype: Some(value),
-                    })
-                };
-                MsgContentDraft::Audio {
-                    body: body.clone(),
-                    source: source.clone(),
-                    info: Some(new_info),
-                }
-            }
-            MsgContentDraft::Video { body, source, info } => {
-                let new_info = if let Some(mut new_info) = info.clone() {
-                    new_info.mimetype = Some(value);
-                    new_info
-                } else {
-                    assign!(VideoInfo::new(), {
-                        mimetype: Some(value),
-                    })
-                };
-                MsgContentDraft::Video {
-                    body: body.clone(),
-                    source: source.clone(),
-                    info: Some(new_info),
-                }
-            }
-            MsgContentDraft::File {
-                body,
-                source,
-                info,
-                filename,
-            } => {
-                let new_info = if let Some(mut new_info) = info.clone() {
-                    new_info.mimetype = Some(value);
-                    new_info
-                } else {
-                    assign!(FileInfo::new(), {
-                        mimetype: Some(value),
-                    })
-                };
-                MsgContentDraft::File {
-                    body: body.clone(),
-                    source: source.clone(),
-                    info: Some(new_info),
-                    filename: filename.clone(),
-                }
-            }
-            _ => {
-                unreachable!("mimetype is available for only image/audio/video/file");
-            }
-        }
-    }
-
     pub fn size(&self, value: u64) -> Self {
         match self {
             MsgContentDraft::Image { body, source, info } => {
-                let new_info = if let Some(mut new_info) = info.clone() {
-                    new_info.size = UInt::new(value);
-                    new_info
-                } else {
-                    assign!(ImageInfo::new(), {
-                        size: UInt::new(value),
-                    })
-                };
+                let mut new_info = info
+                    .clone()
+                    .expect("image info should be already allocated from construction");
+                new_info.size = UInt::new(value);
                 MsgContentDraft::Image {
                     body: body.clone(),
                     source: source.clone(),
@@ -852,14 +774,10 @@ impl MsgContentDraft {
                 }
             }
             MsgContentDraft::Audio { body, source, info } => {
-                let new_info = if let Some(mut new_info) = info.clone() {
-                    new_info.size = UInt::new(value);
-                    new_info
-                } else {
-                    assign!(AudioInfo::new(), {
-                        size: UInt::new(value),
-                    })
-                };
+                let mut new_info = info
+                    .clone()
+                    .expect("audio info should be already allocated from construction");
+                new_info.size = UInt::new(value);
                 MsgContentDraft::Audio {
                     body: body.clone(),
                     source: source.clone(),
@@ -867,14 +785,10 @@ impl MsgContentDraft {
                 }
             }
             MsgContentDraft::Video { body, source, info } => {
-                let new_info = if let Some(mut new_info) = info.clone() {
-                    new_info.size = UInt::new(value);
-                    new_info
-                } else {
-                    assign!(VideoInfo::new(), {
-                        size: UInt::new(value),
-                    })
-                };
+                let mut new_info = info
+                    .clone()
+                    .expect("video info should be already allocated from construction");
+                new_info.size = UInt::new(value);
                 MsgContentDraft::Video {
                     body: body.clone(),
                     source: source.clone(),
@@ -887,14 +801,10 @@ impl MsgContentDraft {
                 info,
                 filename,
             } => {
-                let new_info = if let Some(mut new_info) = info.clone() {
-                    new_info.size = UInt::new(value);
-                    new_info
-                } else {
-                    assign!(FileInfo::new(), {
-                        size: UInt::new(value),
-                    })
-                };
+                let mut new_info = info
+                    .clone()
+                    .expect("file info should be already allocated from construction");
+                new_info.size = UInt::new(value);
                 MsgContentDraft::File {
                     body: body.clone(),
                     source: source.clone(),
@@ -911,14 +821,10 @@ impl MsgContentDraft {
     pub fn width(&self, value: u64) -> Self {
         match self {
             MsgContentDraft::Image { body, source, info } => {
-                let new_info = if let Some(mut new_info) = info.clone() {
-                    new_info.width = UInt::new(value);
-                    new_info
-                } else {
-                    assign!(ImageInfo::new(), {
-                        width: UInt::new(value),
-                    })
-                };
+                let mut new_info = info
+                    .clone()
+                    .expect("image info should be already allocated from construction");
+                new_info.width = UInt::new(value);
                 MsgContentDraft::Image {
                     body: body.clone(),
                     source: source.clone(),
@@ -926,14 +832,10 @@ impl MsgContentDraft {
                 }
             }
             MsgContentDraft::Video { body, source, info } => {
-                let new_info = if let Some(mut new_info) = info.clone() {
-                    new_info.width = UInt::new(value);
-                    new_info
-                } else {
-                    assign!(VideoInfo::new(), {
-                        width: UInt::new(value),
-                    })
-                };
+                let mut new_info = info
+                    .clone()
+                    .expect("video info should be already allocated from construction");
+                new_info.width = UInt::new(value);
                 MsgContentDraft::Video {
                     body: body.clone(),
                     source: source.clone(),
@@ -949,14 +851,10 @@ impl MsgContentDraft {
     pub fn height(&self, value: u64) -> Self {
         match self {
             MsgContentDraft::Image { body, source, info } => {
-                let new_info = if let Some(mut new_info) = info.clone() {
-                    new_info.height = UInt::new(value);
-                    new_info
-                } else {
-                    assign!(ImageInfo::new(), {
-                        height: UInt::new(value),
-                    })
-                };
+                let mut new_info = info
+                    .clone()
+                    .expect("image info should be already allocated from construction");
+                new_info.height = UInt::new(value);
                 MsgContentDraft::Image {
                     body: body.clone(),
                     source: source.clone(),
@@ -964,14 +862,10 @@ impl MsgContentDraft {
                 }
             }
             MsgContentDraft::Video { body, source, info } => {
-                let new_info = if let Some(mut new_info) = info.clone() {
-                    new_info.height = UInt::new(value);
-                    new_info
-                } else {
-                    assign!(VideoInfo::new(), {
-                        height: UInt::new(value),
-                    })
-                };
+                let mut new_info = info
+                    .clone()
+                    .expect("video info should be already allocated from construction");
+                new_info.height = UInt::new(value);
                 MsgContentDraft::Video {
                     body: body.clone(),
                     source: source.clone(),
@@ -987,14 +881,10 @@ impl MsgContentDraft {
     pub fn duration(&self, value: u64) -> Self {
         match self {
             MsgContentDraft::Audio { body, source, info } => {
-                let new_info = if let Some(mut new_info) = info.clone() {
-                    new_info.duration = Some(Duration::from_secs(value));
-                    new_info
-                } else {
-                    assign!(AudioInfo::new(), {
-                        duration: Some(Duration::from_secs(value)),
-                    })
-                };
+                let mut new_info = info
+                    .clone()
+                    .expect("audio info should be already allocated from construction");
+                new_info.duration = Some(Duration::from_secs(value));
                 MsgContentDraft::Audio {
                     body: body.clone(),
                     source: source.clone(),
@@ -1002,14 +892,10 @@ impl MsgContentDraft {
                 }
             }
             MsgContentDraft::Video { body, source, info } => {
-                let new_info = if let Some(mut new_info) = info.clone() {
-                    new_info.duration = Some(Duration::from_secs(value));
-                    new_info
-                } else {
-                    assign!(VideoInfo::new(), {
-                        duration: Some(Duration::from_secs(value)),
-                    })
-                };
+                let mut new_info = info
+                    .clone()
+                    .expect("video info should be already allocated from construction");
+                new_info.duration = Some(Duration::from_secs(value));
                 MsgContentDraft::Video {
                     body: body.clone(),
                     source: source.clone(),
@@ -1025,14 +911,10 @@ impl MsgContentDraft {
     pub fn blurhash(&self, value: String) -> Self {
         match self {
             MsgContentDraft::Image { body, source, info } => {
-                let new_info = if let Some(mut new_info) = info.clone() {
-                    new_info.blurhash = Some(value);
-                    new_info
-                } else {
-                    assign!(ImageInfo::new(), {
-                        blurhash: Some(value),
-                    })
-                };
+                let mut new_info = info
+                    .clone()
+                    .expect("image info should be already allocated from construction");
+                new_info.blurhash = Some(value);
                 MsgContentDraft::Image {
                     body: body.clone(),
                     source: source.clone(),
@@ -1040,14 +922,10 @@ impl MsgContentDraft {
                 }
             }
             MsgContentDraft::Video { body, source, info } => {
-                let new_info = if let Some(mut new_info) = info.clone() {
-                    new_info.blurhash = Some(value);
-                    new_info
-                } else {
-                    assign!(VideoInfo::new(), {
-                        blurhash: Some(value),
-                    })
-                };
+                let mut new_info = info
+                    .clone()
+                    .expect("video info should be already allocated from construction");
+                new_info.blurhash = Some(value);
                 MsgContentDraft::Video {
                     body: body.clone(),
                     source: source.clone(),
@@ -1103,35 +981,47 @@ impl Client {
         MsgContentDraft::TextMarkdown { body }
     }
 
-    pub fn image_draft(&self, body: String, source: String) -> MsgContentDraft {
+    pub fn image_draft(&self, body: String, source: String, mimetype: String) -> MsgContentDraft {
+        let info = assign!(ImageInfo::new(), {
+            mimetype: Some(mimetype),
+        });
         MsgContentDraft::Image {
             body,
             source,
-            info: None,
+            info: Some(info),
         }
     }
 
-    pub fn audio_draft(&self, body: String, source: String) -> MsgContentDraft {
+    pub fn audio_draft(&self, body: String, source: String, mimetype: String) -> MsgContentDraft {
+        let info = assign!(AudioInfo::new(), {
+            mimetype: Some(mimetype),
+        });
         MsgContentDraft::Audio {
             body,
             source,
-            info: None,
+            info: Some(info),
         }
     }
 
-    pub fn video_draft(&self, body: String, source: String) -> MsgContentDraft {
+    pub fn video_draft(&self, body: String, source: String, mimetype: String) -> MsgContentDraft {
+        let info = assign!(VideoInfo::new(), {
+            mimetype: Some(mimetype),
+        });
         MsgContentDraft::Video {
             body,
             source,
-            info: None,
+            info: Some(info),
         }
     }
 
-    pub fn file_draft(&self, body: String, source: String) -> MsgContentDraft {
+    pub fn file_draft(&self, body: String, source: String, mimetype: String) -> MsgContentDraft {
+        let info = assign!(FileInfo::new(), {
+            mimetype: Some(mimetype),
+        });
         MsgContentDraft::File {
             body,
             source,
-            info: None,
+            info: Some(info),
             filename: None,
         }
     }

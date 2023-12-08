@@ -146,12 +146,11 @@ async fn edit_image_msg() -> Result<()> {
         .as_file_mut()
         .write_all(include_bytes!("./fixtures/kingfisher.jpg"))?;
 
-    let draft = user
-        .image_draft(
-            "jpg_file".to_string(),
-            tmp_jpg.path().to_string_lossy().to_string(),
-        )
-        .mimetype("image/jpeg".to_string());
+    let draft = user.image_draft(
+        "jpg_file".to_string(),
+        tmp_jpg.path().to_string_lossy().to_string(),
+        "image/jpeg".to_string(),
+    );
     timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via pushback action or reset action
@@ -198,12 +197,11 @@ async fn edit_image_msg() -> Result<()> {
         "./fixtures/PNG_transparency_demonstration_1.png"
     ))?;
 
-    let draft = user
-        .image_draft(
-            "png_file".to_string(),
-            tmp_png.path().to_string_lossy().to_string(),
-        )
-        .mimetype("image/png".to_string());
+    let draft = user.image_draft(
+        "png_file".to_string(),
+        tmp_png.path().to_string_lossy().to_string(),
+        "image/png".to_string(),
+    );
     timeline
         .edit_message(sent_event_id.to_string(), Box::new(draft))
         .await?;
