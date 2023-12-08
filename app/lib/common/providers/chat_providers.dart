@@ -133,20 +133,22 @@ final memberProvider =
 final imageFileFromMessageIdProvider =
     FutureProvider.family<File, String>((ref, messageId) async {
   final convo = await ref.read(currentConvoProvider.future);
-  //Check if video file is available
+  //Check if image file is available
   final tempDir = await getTemporaryDirectory();
   var imageFile = File('${tempDir.path}/image-$messageId.jpg');
   var isImageAvailable = await imageFile.exists();
 
   if (!isImageAvailable) {
     if (convo != null) {
-      //If video file is not available on local store then save it
+      //If image file is not available on local store then save it
       AsyncValue<Uint8List> videoData = AsyncValue.data(
         await convo.imageBinary(messageId).then((value) => value.asTypedList()),
       );
       if (videoData.asData != null) {
         imageFile.create();
         imageFile.writeAsBytesSync(videoData.asData!.value);
+      } else {
+        throw 'Unable to load image';
       }
     }
   }
@@ -170,6 +172,8 @@ final videoFileFromMessageIdProvider =
       if (videoData.asData != null) {
         videoFile.create();
         videoFile.writeAsBytesSync(videoData.asData!.value);
+      } else {
+        throw 'Unable to load video';
       }
     }
   }

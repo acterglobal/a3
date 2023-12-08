@@ -37,8 +37,8 @@ class _ActerVideoPlayerState extends State<ActerVideoPlayer> {
 
   @override
   void dispose() {
-    super.dispose();
     _controller.dispose();
+    super.dispose();
   }
 
   Future<void> initVideoPlayer() async {
