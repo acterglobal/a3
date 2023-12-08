@@ -13,6 +13,7 @@ import 'package:acter/features/chat/widgets/custom_message_builder.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
+import 'package:acter/features/chat/widgets/video_message_builder.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -244,6 +245,15 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                     required int messageWidth,
                   }) =>
                       ImageMessageBuilder(
+                    convo: convo,
+                    message: message,
+                    messageWidth: messageWidth,
+                  ),
+                  videoMessageBuilder: (
+                    types.VideoMessage message, {
+                    required int messageWidth,
+                  }) =>
+                      VideoMessageBuilder(
                     convo: convo,
                     message: message,
                     messageWidth: messageWidth,
