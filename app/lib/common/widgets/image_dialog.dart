@@ -1,16 +1,16 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:share_plus/share_plus.dart';
 
 class ImageDialog extends ConsumerWidget {
   final String title;
-  final Uint8List imageData;
+  final File imageFile;
 
   const ImageDialog({
     super.key,
     required this.title,
-    required this.imageData,
+    required this.imageFile,
   });
 
   @override
@@ -26,9 +26,17 @@ class ImageDialog extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleSmall,
+                Expanded(
+                  child: Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Share.shareXFiles([XFile(imageFile.path)]);
+                  },
+                  icon: const Icon(Icons.share),
                 ),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
@@ -38,8 +46,8 @@ class ImageDialog extends ConsumerWidget {
             ),
             const SizedBox(height: 15),
             Expanded(
-              child: Image.memory(
-                imageData,
+              child: Image.file(
+                imageFile,
                 frameBuilder: (
                     BuildContext context,
                     Widget child,

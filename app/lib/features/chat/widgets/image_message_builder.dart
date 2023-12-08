@@ -1,11 +1,11 @@
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/widgets/image_dialog.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
-class ImageMessageBuilder extends StatefulWidget {
+class ImageMessageBuilder extends ConsumerWidget {
   final types.ImageMessage message;
   final int messageWidth;
   final bool isReplyContent;
@@ -20,67 +20,35 @@ class ImageMessageBuilder extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ImageMessageBuilder> createState() => _ImageMessageBuilderState();
-}
-
-class _ImageMessageBuilderState extends State<ImageMessageBuilder> {
-  AsyncValue<Uint8List> imageData = const AsyncValue.loading();
-
-  @override
-  void initState() {
-    super.initState();
-    loadImage();
-  }
-
-  Future<void> loadImage() async {
-    try {
-      ///This can be improve by having provider management for this
-      imageData = AsyncValue.data(
-        await widget.convo
-            .mediaBinary(widget.message.id)
-            .then((value) => value.asTypedList()),
-      );
-
-      /// Need to render updated imageData object on UI (Build Method) as this is AsyncValue
-      setState(() {});
-    } catch (e, s) {
-      imageData = AsyncValue.error(e, s);
-    }
-  }
-
-  void showFullScreenImage(Uint8List data) {
-    showAdaptiveDialog(
-      context: context,
-      barrierDismissible: false,
-      useRootNavigator: false,
-      builder: (ctx) => ImageDialog(
-        title: widget.message.name,
-        imageData: data,
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
-    return imageData.when(
-      data: (data) {
+    final imageFile = ref.watch(imageFileFromMessageIdProvider(message.id));
+    return imageFile.when(
+      data: (imageFileData) {
         return InkWell(
-          onTap: () => showFullScreenImage(data),
+          onTap: () {
+            showAdaptiveDialog(
+              context: context,
+              barrierDismissible: false,
+              useRootNavigator: false,
+              builder: (ctx) => ImageDialog(
+                title: message.name,
+                imageFile: imageFileData,
+              ),
+            );
+          },
           child: ClipRRect(
-            borderRadius: widget.isReplyContent
+            borderRadius: isReplyContent
                 ? BorderRadius.circular(6)
                 : BorderRadius.circular(15),
             child: ConstrainedBox(
               constraints: BoxConstraints(
-                maxHeight: widget.isReplyContent
-                    ? size.height * 0.2
-                    : size.height * 0.3,
-                maxWidth:
-                    widget.isReplyContent ? size.width * 0.2 : size.width * 0.3,
+                maxHeight:
+                    isReplyContent ? size.height * 0.2 : size.height * 0.3,
+                maxWidth: isReplyContent ? size.width * 0.2 : size.width * 0.3,
               ),
-              child: Image.memory(
-                data,
+              child: Image.file(
+                imageFileData,
                 frameBuilder: (
                   BuildContext context,
                   Widget child,
@@ -110,8 +78,12 @@ class _ImageMessageBuilderState extends State<ImageMessageBuilder> {
           ),
         );
       },
-      error: (e, st) => Text('Error loading image $e'),
-      loading: () => const CircularProgressIndicator(),
+      error: (error, stack) => Center(child: Text('Loading failed: $error')),
+      loading: () => const SizedBox(
+        height: 150,
+        width: 150,
+        child: Icon(Icons.image),
+      ),
     );
   }
 }

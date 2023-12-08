@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/notifiers/chat_notifiers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 
 /// Provider the profile data of a the given space, keeps up to date with underlying client
 final convoProvider =
@@ -124,4 +128,56 @@ final memberProvider =
     throw 'No chat selected';
   }
   return await convo.getMember(userId);
+});
+
+final imageFileFromMessageIdProvider =
+    FutureProvider.family<File, String>((ref, messageId) async {
+  final convo = await ref.read(currentConvoProvider.future);
+  // Check if image file is available
+  final tempDir = await getTemporaryDirectory();
+  var imageFile = File('${tempDir.path}/image-$messageId.jpg');
+  var isImageAvailable = await imageFile.exists();
+
+  if (!isImageAvailable) {
+    if (convo != null) {
+      // If image file is not available on local store then save it
+      var buf = await convo
+          .mediaBinary(messageId)
+          .then((value) => value.asTypedList());
+      AsyncValue<Uint8List> imageData = AsyncValue.data(buf);
+      if (imageData.asData != null) {
+        imageFile.create();
+        imageFile.writeAsBytesSync(imageData.asData!.value);
+      } else {
+        throw 'Unable to load image';
+      }
+    }
+  }
+  return imageFile;
+});
+
+final videoFileFromMessageIdProvider =
+    FutureProvider.family<File, String>((ref, messageId) async {
+  final convo = await ref.read(currentConvoProvider.future);
+  // Check if video file is available
+  final tempDir = await getTemporaryDirectory();
+  var videoFile = File('${tempDir.path}/video-$messageId.mp4');
+  var isVideoAvailable = await videoFile.exists();
+
+  if (!isVideoAvailable) {
+    if (convo != null) {
+      // If video file is not available on local store then save it
+      var buf = await convo
+          .mediaBinary(messageId)
+          .then((value) => value.asTypedList());
+      AsyncValue<Uint8List> videoData = AsyncValue.data(buf);
+      if (videoData.asData != null) {
+        videoFile.create();
+        videoFile.writeAsBytesSync(videoData.asData!.value);
+      } else {
+        throw 'Unable to load video';
+      }
+    }
+  }
+  return videoFile;
 });

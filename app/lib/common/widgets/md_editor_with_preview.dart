@@ -80,6 +80,7 @@ class _MdEditorWithPreviewState extends ConsumerState<MdEditorWithPreview> {
                   hintText: widget.hintText,
                   maxLines: 10,
                   textInputType: TextInputType.multiline,
+                  textInputAction: TextInputAction.newline,
                   validator: widget.validator,
                   onInputChanged: (String? value) {
                     widget.onChanged ?? (value);
