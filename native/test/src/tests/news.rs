@@ -166,7 +166,7 @@ async fn news_markdown_text_test() -> Result<()> {
 
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
-    let text_draft = user.text_plain_draft("## This is a simple text".to_owned());
+    let text_draft = user.text_markdown_draft("## This is a simple text".to_owned());
     draft.add_slide(Box::new(text_draft)).await?;
     draft.send().await?;
 
@@ -282,10 +282,12 @@ async fn news_png_image_with_text_test() -> Result<()> {
 
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
-    let image_draft = user.image_draft(
-        "This is a simple text".to_owned(),
-        tmp_file.path().as_os_str().to_str().unwrap().to_owned(),
-    );
+    let image_draft = user
+        .image_draft(
+            "This is a simple text".to_owned(),
+            tmp_file.path().as_os_str().to_str().unwrap().to_owned(),
+        )
+        .mimetype("image/png".to_string());
     draft.add_slide(Box::new(image_draft)).await?;
     draft.send().await?;
 
