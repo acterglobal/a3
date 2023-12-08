@@ -46,7 +46,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
         invited.join().await?;
     }
 
-    let draft = sisko_timeline.text_plain_draft("Hi, everyone".to_string());
+    let draft = sisko.text_plain_draft("Hi, everyone".to_string());
     sisko_timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via reset action or set action
@@ -94,7 +94,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
         bail!("Even after 30 seconds, text msg not received")
     };
 
-    let draft = kyra_timeline.text_plain_draft("Sorry, it's my bad".to_string());
+    let draft = kyra.text_plain_draft("Sorry, it's my bad".to_string());
     kyra_timeline
         .reply_message(received.to_string(), Box::new(draft))
         .await?;

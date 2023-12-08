@@ -28,7 +28,7 @@ async fn message_redaction() -> Result<()> {
     let stream = timeline.diff_stream();
     pin_mut!(stream);
 
-    let draft = timeline.text_plain_draft("Hi, everyone".to_string());
+    let draft = user.text_plain_draft("Hi, everyone".to_string());
     timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via reset action or set action

@@ -31,7 +31,7 @@ use ruma_events::{
 use std::{path::PathBuf, sync::Arc};
 use tracing::info;
 
-use crate::{RoomMessage, RUNTIME};
+use crate::{Client, RoomMessage, RUNTIME};
 
 use super::utils::{remap_for_diff, ApiVectorDiff};
 
@@ -92,55 +92,6 @@ impl TimelineStream {
 
     fn is_joined(&self) -> bool {
         matches!(self.room.state(), RoomState::Joined)
-    }
-
-    pub fn text_plain_draft(&self, body: String) -> MsgContentDraft {
-        MsgContentDraft::TextPlain { body }
-    }
-
-    pub fn text_markdown_draft(&self, body: String) -> MsgContentDraft {
-        MsgContentDraft::TextMarkdown { body }
-    }
-
-    pub fn image_draft(&self, body: String, source: String) -> MsgContentDraft {
-        MsgContentDraft::Image {
-            body,
-            source,
-            info: None,
-        }
-    }
-
-    pub fn audio_draft(&self, body: String, source: String) -> MsgContentDraft {
-        MsgContentDraft::Audio {
-            body,
-            source,
-            info: None,
-        }
-    }
-
-    pub fn video_draft(&self, body: String, source: String) -> MsgContentDraft {
-        MsgContentDraft::Video {
-            body,
-            source,
-            info: None,
-        }
-    }
-
-    pub fn file_draft(&self, body: String, source: String) -> MsgContentDraft {
-        MsgContentDraft::File {
-            body,
-            source,
-            info: None,
-            filename: None,
-        }
-    }
-
-    pub fn location_draft(&self, body: String, geo_uri: String) -> MsgContentDraft {
-        MsgContentDraft::Location {
-            body,
-            geo_uri,
-            info: None,
-        }
     }
 
     pub async fn send_message(&self, draft: Box<MsgContentDraft>) -> Result<bool> {
@@ -1139,6 +1090,57 @@ impl MsgContentDraft {
             _ => {
                 unreachable!("geo_uri is available for only location");
             }
+        }
+    }
+}
+
+impl Client {
+    pub fn text_plain_draft(&self, body: String) -> MsgContentDraft {
+        MsgContentDraft::TextPlain { body }
+    }
+
+    pub fn text_markdown_draft(&self, body: String) -> MsgContentDraft {
+        MsgContentDraft::TextMarkdown { body }
+    }
+
+    pub fn image_draft(&self, body: String, source: String) -> MsgContentDraft {
+        MsgContentDraft::Image {
+            body,
+            source,
+            info: None,
+        }
+    }
+
+    pub fn audio_draft(&self, body: String, source: String) -> MsgContentDraft {
+        MsgContentDraft::Audio {
+            body,
+            source,
+            info: None,
+        }
+    }
+
+    pub fn video_draft(&self, body: String, source: String) -> MsgContentDraft {
+        MsgContentDraft::Video {
+            body,
+            source,
+            info: None,
+        }
+    }
+
+    pub fn file_draft(&self, body: String, source: String) -> MsgContentDraft {
+        MsgContentDraft::File {
+            body,
+            source,
+            info: None,
+            filename: None,
+        }
+    }
+
+    pub fn location_draft(&self, body: String, geo_uri: String) -> MsgContentDraft {
+        MsgContentDraft::Location {
+            body,
+            geo_uri,
+            info: None,
         }
     }
 }

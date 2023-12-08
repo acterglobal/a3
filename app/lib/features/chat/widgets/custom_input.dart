@@ -475,6 +475,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
 
   Future<void> handleFileUpload(List<File> files) async {
     final roomId = widget.convo.getRoomIdStr();
+    final client = ref.read(clientProvider)!;
     final inputState = ref.read(chatInputProvider(roomId));
     final stream = await widget.convo.timelineStream();
 
@@ -486,7 +487,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         if (mimeType!.startsWith('image/')) {
           final bytes = file.readAsBytesSync();
           final image = await decodeImageFromList(bytes);
-          final draft = stream
+          final draft = client
               .imageDraft(fileName, file.path)
               .mimetype(mimeType)
               .size(file.lengthSync())
@@ -502,7 +503,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
           } else {}
         } else if (mimeType.startsWith('/video')) {
         } else {
-          final draft = stream
+          final draft = client
               .fileDraft(fileName, file.path)
               .mimetype(mimeType)
               .size(file.lengthSync());
@@ -650,12 +651,13 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   // push messages in convo
   Future<void> handleSendPressed(String markdownMessage) async {
     final roomId = widget.convo.getRoomIdStr();
+    final client = ref.read(clientProvider)!;
     final inputState = ref.read(chatInputProvider(roomId));
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
     await widget.convo.typingNotice(false);
     final stream = await widget.convo.timelineStream();
-    final draft = stream.textMarkdownDraft(markdownMessage);
+    final draft = client.textMarkdownDraft(markdownMessage);
     if (inputState.repliedToMessage != null) {
       await stream.replyMessage(inputState.repliedToMessage!.id, draft);
     } else if (inputState.editMessage != null) {

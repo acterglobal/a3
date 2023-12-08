@@ -870,27 +870,6 @@ object TimelineStream {
     /// Get the next count messages backwards, and return whether it has more items
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
 
-    /// make draft to send text plain msg
-    fn text_plain_draft(body: string) -> MsgContentDraft;
-
-    /// make draft to send text markdown msg
-    fn text_markdown_draft(body: string) -> MsgContentDraft;
-
-    /// make draft to send image msg
-    fn image_draft(body: string, source: string) -> MsgContentDraft;
-
-    /// make draft to send audio msg
-    fn audio_draft(body: string, source: string) -> MsgContentDraft;
-
-    /// make draft to send video msg
-    fn video_draft(body: string, source: string) -> MsgContentDraft;
-
-    /// make draft to send file msg
-    fn file_draft(body: string, source: string) -> MsgContentDraft;
-
-    /// make draft to send location msg
-    fn location_draft(body: string, source: string) -> MsgContentDraft;
-
     /// send message using draft
     fn send_message(draft: MsgContentDraft) -> Future<Result<bool>>;
 
@@ -2245,6 +2224,27 @@ object Client {
 
     /// the list of devices
     fn device_records(verified: bool) -> Future<Result<Vec<DeviceRecord>>>;
+
+    /// make draft to send text plain msg
+    fn text_plain_draft(body: string) -> MsgContentDraft;
+
+    /// make draft to send text markdown msg
+    fn text_markdown_draft(body: string) -> MsgContentDraft;
+
+    /// make draft to send image msg
+    fn image_draft(body: string, source: string) -> MsgContentDraft;
+
+    /// make draft to send audio msg
+    fn audio_draft(body: string, source: string) -> MsgContentDraft;
+
+    /// make draft to send video msg
+    fn video_draft(body: string, source: string) -> MsgContentDraft;
+
+    /// make draft to send file msg
+    fn file_draft(body: string, source: string) -> MsgContentDraft;
+
+    /// make draft to send location msg
+    fn location_draft(body: string, source: string) -> MsgContentDraft;
 
 }
 

@@ -22,7 +22,7 @@ async fn edit_text_msg() -> Result<()> {
     let stream = timeline.diff_stream();
     pin_mut!(stream);
 
-    let draft = timeline.text_plain_draft("Hi, everyone".to_string());
+    let draft = user.text_plain_draft("Hi, everyone".to_string());
     timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via reset action or set action
@@ -71,7 +71,7 @@ async fn edit_text_msg() -> Result<()> {
         bail!("Even after 30 seconds, text msg not received")
     };
 
-    let draft = timeline.text_plain_draft("This is message edition".to_string());
+    let draft = user.text_plain_draft("This is message edition".to_string());
     timeline
         .edit_message(sent_event_id.to_string(), Box::new(draft))
         .await?;
