@@ -54,7 +54,7 @@ class SpaceEventsPage extends ConsumerWidget {
               final widthCount =
                   (MediaQuery.of(context).size.width ~/ 600).toInt();
               const int minCount = 2;
-              if (events.isNotEmpty) {
+              if (events.isEmpty) {
                 return SliverToBoxAdapter(
                   child: Center(
                     heightFactor: 1,
