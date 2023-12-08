@@ -128,40 +128,52 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                       Theme.of(context).colorScheme.onPrimary.withOpacity(0.5),
                 ),
               ),
-              title: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  convoProfile.when(
-                    data: (profile) {
-                      final roomId = convo.getRoomIdStr();
-                      return Text(
-                        profile.displayName ?? roomId,
-                        overflow: TextOverflow.clip,
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      );
-                    },
-                    skipLoadingOnReload: true,
-                    error: (error, stackTrace) => Text(
-                      'Error loading profile $error',
+              title: GestureDetector(
+                onTap: () {
+                  inSideBar
+                      ? ref
+                      .read(hasExpandedPanel.notifier)
+                      .update((state) => true)
+                      : context.pushNamed(
+                    Routes.chatProfile.name,
+                    pathParameters: {'roomId': convo.getRoomIdStr()},
+                  );
+                },
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    convoProfile.when(
+                      data: (profile) {
+                        final roomId = convo.getRoomIdStr();
+                        return Text(
+                          profile.displayName ?? roomId,
+                          overflow: TextOverflow.clip,
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        );
+                      },
+                      skipLoadingOnReload: true,
+                      error: (error, stackTrace) => Text(
+                        'Error loading profile $error',
+                      ),
+                      loading: () => const CircularProgressIndicator(),
                     ),
-                    loading: () => const CircularProgressIndicator(),
-                  ),
-                  const SizedBox(height: 5),
-                  activeMembers.when(
-                    data: (members) {
-                      int count = members.length;
-                      return Text(
-                        '$count ${AppLocalizations.of(context)!.members}',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      );
-                    },
-                    skipLoadingOnReload: false,
-                    error: (error, stackTrace) =>
-                        Text('Error loading members count $error'),
-                    loading: () => const CircularProgressIndicator(),
-                  ),
-                ],
+                    const SizedBox(height: 5),
+                    activeMembers.when(
+                      data: (members) {
+                        int count = members.length;
+                        return Text(
+                          '$count ${AppLocalizations.of(context)!.members}',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        );
+                      },
+                      skipLoadingOnReload: false,
+                      error: (error, stackTrace) =>
+                          Text('Error loading members count $error'),
+                      loading: () => const CircularProgressIndicator(),
+                    ),
+                  ],
+                ),
               ),
               actions: [
                 GestureDetector(
