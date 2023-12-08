@@ -91,7 +91,7 @@ async fn news_smoketest() -> Result<()> {
 
     let mut draft = main_space.news_draft()?;
     let text_draft = user.text_plain_draft("This is text slide".to_string());
-    draft.add_slide(Box::new(text_draft));
+    draft.add_slide(Box::new(text_draft)).await?;
     let event_id = draft.send().await?;
     print!("draft sent event id: {}", event_id);
 
@@ -119,7 +119,7 @@ async fn news_markdown_raw_text_test() -> Result<()> {
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
     let text_draft = user.text_plain_draft("This is a simple text".to_owned());
-    draft.add_slide(Box::new(text_draft));
+    draft.add_slide(Box::new(text_draft)).await?;
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -167,7 +167,7 @@ async fn news_markdown_text_test() -> Result<()> {
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
     let text_draft = user.text_plain_draft("## This is a simple text".to_owned());
-    draft.add_slide(Box::new(text_draft));
+    draft.add_slide(Box::new(text_draft)).await?;
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
