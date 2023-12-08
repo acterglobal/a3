@@ -93,7 +93,25 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
 
     void handleEmojiSelected(Category? category, Emoji emoji) {
       final mentionState = mentionKey.currentState!;
-      mentionState.controller!.text += emoji.emoji;
+      // Get cursor current position
+      var cursorPos = mentionState.controller!.selection.base.offset;
+
+      // Right text of cursor position
+      String suffixText = mentionState.controller!.text.substring(cursorPos);
+
+      // Get the left text of cursor
+      String prefixText = mentionState.controller!.text.substring(0, cursorPos);
+
+      int emojiLength = emoji.emoji.length;
+
+      // Add emoji at current current cursor position
+      mentionState.controller!.text = prefixText + emoji.emoji + suffixText;
+
+      // Cursor move to end of added emoji character
+      mentionState.controller!.selection = TextSelection(
+        baseOffset: cursorPos + emojiLength,
+        extentOffset: cursorPos + emojiLength,
+      );
       ref.read(chatInputProvider(roomId).notifier).showSendBtn(true);
     }
 
@@ -387,7 +405,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
           child: EmojiPickerWidget(
             size: Size(
               MediaQuery.of(context).size.width,
-              MediaQuery.of(context).size.height / 2,
+              MediaQuery.of(context).size.height / 3,
             ),
             onEmojiSelected: handleEmojiSelected,
             onBackspacePressed: handleBackspacePressed,
