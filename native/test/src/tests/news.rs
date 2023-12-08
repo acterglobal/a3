@@ -90,7 +90,8 @@ async fn news_smoketest() -> Result<()> {
     assert_eq!(main_space.latest_news_entries(10).await?.len(), 3);
 
     let mut draft = main_space.news_draft()?;
-    draft.add_text_slide("This is text slide".to_string());
+    let text_draft = user.text_plain_draft("This is text slide".to_string());
+    draft.add_slide(text_draft);
     let event_id = draft.send().await?;
     print!("draft sent event id: {}", event_id);
 
@@ -117,7 +118,8 @@ async fn news_markdown_raw_text_test() -> Result<()> {
 
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
-    draft.add_text_slide("This is a simple text".to_owned());
+    let text_draft = user.text_plain_draft("This is a simple text".to_owned());
+    draft.add_slide(text_draft);
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -164,7 +166,8 @@ async fn news_markdown_text_test() -> Result<()> {
 
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
-    draft.add_text_slide("## This is a simple text".to_owned());
+    let text_draft = user.text_plain_draft("## This is a simple text".to_owned());
+    draft.add_slide(text_draft);
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -220,17 +223,13 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
 
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
-    draft
-        .add_image_slide(
+    let image_draft = user
+        .image_draft(
             "This is a simple text".to_owned(),
             tmp_file.path().as_os_str().to_str().unwrap().to_owned(),
-            "image/jpg".to_string(),
-            None,
-            None,
-            None,
-            None,
         )
-        .await?;
+        .mimetype("image/jpg".to_string());
+    draft.add_slide(image_draft).await?;
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -283,17 +282,11 @@ async fn news_png_image_with_text_test() -> Result<()> {
 
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
-    draft
-        .add_image_slide(
-            "This is a simple text".to_owned(),
-            tmp_file.path().as_os_str().to_str().unwrap().to_owned(),
-            "image/png".to_string(),
-            None,
-            None,
-            None,
-            None,
-        )
-        .await?;
+    let image_draft = user.image_draft(
+        "This is a simple text".to_owned(),
+        tmp_file.path().as_os_str().to_str().unwrap().to_owned(),
+    );
+    draft.add_slide(image_draft).await?;
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);

@@ -302,20 +302,8 @@ object NewsEntry {
 }
 
 object NewsEntryDraft {
-    /// create news slide for text msg
-    fn add_text_slide(body: string);
-
-    /// create news slide for image msg
-    fn add_image_slide(body: string, url: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<bool>>;
-
-    /// create news slide for audio msg
-    fn add_audio_slide(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>);
-
-    /// create news slide for video msg
-    fn add_video_slide(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>);
-
-    /// create news slide for file msg
-    fn add_file_slide(body: string, url: string, mimetype: Option<string>, size: Option<u64>);
+    /// create news slide
+    fn add_slide(content_draft: MsgContentDraft) -> Future<Result<bool>>;
 
     /// clear slides
     fn unset_slides();
