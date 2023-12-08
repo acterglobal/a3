@@ -1,6 +1,7 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
+import 'package:acter/common/widgets/error_widget.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
 import 'package:acter/features/activities/widgets/invitation_card.dart';
@@ -9,7 +10,6 @@ import 'package:acter/features/settings/widgets/session_card.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 class ActivitiesPage extends ConsumerWidget {
@@ -111,19 +111,14 @@ class ActivitiesPage extends ConsumerWidget {
     }
     if (children.isEmpty) {
       children.add(
-        SliverToBoxAdapter(
+        const SliverToBoxAdapter(
           child: Center(
-            child: Column(
-              children: [
-                SizedBox(
-                  // nothing found, even in the section before. Show nice fallback
-                  height: 250,
-                  child: SvgPicture.asset(
-                    'assets/images/undraw_project_completed_re_jr7u.svg',
-                  ),
-                ),
-                const Text('All caught up!'),
-              ],
+            heightFactor: 1.5,
+            child: ErrorWidgetTemplate(
+              title: 'No Activity for you yet',
+              subtitle:
+                  'Notifies you about important things such as messages , invitations or requests.',
+              image: 'assets/images/empty_activities.png',
             ),
           ),
         ),

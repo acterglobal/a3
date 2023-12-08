@@ -4,6 +4,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
+import 'package:acter/common/widgets/error_widget.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
@@ -14,6 +15,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
+
+import '../../../common/widgets/default_button.dart';
 
 class SpaceChatsPage extends ConsumerWidget {
   static const createChatKey = Key('space-chat-create');
@@ -115,10 +118,26 @@ class SpaceChatsPage extends ConsumerWidget {
                   ),
                 );
               }
-              return const SliverToBoxAdapter(
+              return SliverToBoxAdapter(
                 child: Center(
-                  heightFactor: 5,
-                  child: Text('Chats are empty'),
+                  heightFactor: 1,
+                  child: ErrorWidgetTemplate(
+                    title: 'No chats in this space yet',
+                    subtitle:
+                        'Get the conversation going to start organizing collaborating',
+                    image: 'assets/images/empty_chat.png',
+                    button: DefaultButton(
+                      onPressed: () {},
+                      title: 'Create Space Chat',
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.success,
+                        disabledBackgroundColor: Theme.of(context)
+                            .colorScheme
+                            .success
+                            .withOpacity(0.5),
+                      ),
+                    ),
+                  ),
                 ),
               );
             },

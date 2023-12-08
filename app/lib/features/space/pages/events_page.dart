@@ -9,6 +9,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 
+import '../../../common/widgets/default_button.dart';
+import '../../../common/widgets/error_widget.dart';
+
 class SpaceEventsPage extends ConsumerWidget {
   final String spaceIdOrAlias;
 
@@ -51,11 +54,27 @@ class SpaceEventsPage extends ConsumerWidget {
               final widthCount =
                   (MediaQuery.of(context).size.width ~/ 600).toInt();
               const int minCount = 2;
-              if (events.isEmpty) {
-                return const SliverToBoxAdapter(
+              if (events.isNotEmpty) {
+                return SliverToBoxAdapter(
                   child: Center(
-                    child: Text(
-                      'Currently there are no events planned for this space',
+                    heightFactor: 1,
+                    child: ErrorWidgetTemplate(
+                      title: 'No events planned yet',
+                      subtitle:
+                          'Create new event and bring your community together',
+                      image: 'assets/images/empty_events.png',
+                      button: DefaultButton(
+                        onPressed: () {},
+                        title: 'Create Event',
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.success,
+                          disabledBackgroundColor: Theme.of(context)
+                              .colorScheme
+                              .success
+                              .withOpacity(0.5),
+                        ),
+                      ),
                     ),
                   ),
                 );
