@@ -663,15 +663,11 @@ async fn request_verification_handler(
                     txn_id.clone(),
                     sender.clone(),
                 );
-                let cancel_code = cancel_info.cancel_code();
-                info!("VerificationRequestState::Cancelled code: {:?}", cancel_code);
                 msg.set_content(
                     "cancel_code".to_string(),
-                    cancel_code.to_string(),
+                    cancel_info.cancel_code().to_string(),
                 );
-                let reason = cancel_info.reason();
-                info!("VerificationRequestState::Cancelled reason: {:?}", reason);
-                msg.set_content("reason".to_string(), reason.to_string());
+                msg.set_content("reason".to_string(), cancel_info.reason().to_string());
                 if let Err(e) = controller.event_tx.try_send(msg) {
                     if let Some(event_id) = event_id.clone() {
                         error!("Dropping event for {}: {}", event_id, e);
@@ -788,15 +784,11 @@ async fn sas_verification_handler(
                     txn_id.clone(),
                     sender.clone(),
                 );
-                let cancel_code = cancel_info.cancel_code();
-                info!("SasState::Cancelled code: {:?}", cancel_code);
                 msg.set_content(
                     "cancel_code".to_string(),
-                    cancel_code.to_string(),
+                    cancel_info.cancel_code().to_string(),
                 );
-                let reason = cancel_info.reason();
-                info!("SasState::Cancelled reason: {:?}", reason);
-                msg.set_content("reason".to_string(), reason.to_string());
+                msg.set_content("reason".to_string(), cancel_info.reason().to_string());
                 if let Err(e) = controller.event_tx.try_send(msg) {
                     if let Some(event_id) = event_id.clone() {
                         error!("Dropping event for {}: {}", event_id, e);
@@ -959,7 +951,11 @@ impl VerificationController {
                     );
                     msg.set_content("body".to_string(), content.body.clone());
                     msg.set_content("from_device".to_string(), content.from_device.to_string());
-                    let methods = content.methods.iter().map(|x| x.to_string()).collect::<Vec<String>>();
+                    let methods = content
+                        .methods
+                        .iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<String>>();
                     msg.set_content("methods".to_string(), methods.join(","));
                     msg.set_content("to".to_string(), content.to.to_string());
                     // this may be the past event occurred when device was off
