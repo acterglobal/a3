@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -16,7 +15,8 @@ Widget elevatedButton(
   String title,
   Color color,
   VoidCallback? callback,
-  TextStyle textstyle,
+  bool wrap,
+  TextStyle? textstyle,
 ) {
   return ElevatedButton(
     onPressed: callback,
@@ -26,7 +26,17 @@ Widget elevatedButton(
         borderRadius: BorderRadius.circular(10),
       ),
     ),
-    child: Text(title, style: textstyle),
+    child: wrap
+        ? Text(
+            title,
+            softWrap: false,
+            overflow: TextOverflow.ellipsis,
+            style: textstyle,
+          )
+        : Text(
+            title,
+            style: textstyle,
+          ),
   );
 }
 
@@ -247,7 +257,8 @@ class CrossSigning {
           _onKeyVerificationReady(event, true);
         });
       },
-      const TextStyle(),
+      true,
+      null,
     );
   }
 
@@ -573,7 +584,8 @@ class CrossSigning {
                 // finish verification
                 _processMap.remove(flowId);
               },
-              const TextStyle(),
+              true,
+              null,
             ),
           ),
         ),
@@ -798,13 +810,11 @@ class CrossSigning {
         ),
       );
     }
-    final ratio = isLargeScreen(context) ? 0.18 : 0.48; // for responsive
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Container(
+        Padding(
           padding: const EdgeInsets.only(left: 20),
-          width: MediaQuery.of(context).size.width * ratio,
           child: elevatedButton(
             AppLocalizations.of(context)!.verificationSasDoNotMatch,
             Theme.of(context).colorScheme.success,
@@ -813,13 +823,12 @@ class CrossSigning {
               // mismatch sas verification
               await event.mismatchSasVerification();
             },
-            const TextStyle(),
+            true,
+            null,
           ),
         ),
-        const Spacer(flex: 1),
-        Container(
+        Padding(
           padding: const EdgeInsets.only(right: 20),
-          width: MediaQuery.of(context).size.width * ratio,
           child: elevatedButton(
             AppLocalizations.of(context)!.verificationSasMatch,
             Theme.of(context).colorScheme.success,
@@ -835,7 +844,8 @@ class CrossSigning {
                 waitForMatch = false;
               }
             },
-            const TextStyle(),
+            true,
+            null,
           ),
         ),
       ],
@@ -943,7 +953,8 @@ class CrossSigning {
                   // finish verification
                   _processMap.remove(flowId);
                 },
-                const TextStyle(),
+                true,
+                null,
               ),
             ),
           ),
