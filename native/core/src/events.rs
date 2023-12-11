@@ -4,6 +4,7 @@ pub mod comments;
 mod common;
 pub mod news;
 pub mod pins;
+pub mod reactions;
 pub mod rsvp;
 pub mod settings;
 pub mod tasks;
@@ -40,6 +41,7 @@ pub enum AnyActerEvent {
     Attachment(attachments::AttachmentEvent),
     AttachmentUpdate(attachments::AttachmentUpdateEvent),
 
+    Reaction(reactions::ReactionEvent),
     Rsvp(rsvp::RsvpEvent),
 }
 
@@ -163,6 +165,15 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
                 Ok(Self::Rsvp(event))
             }
 
+            reactions::ReactionEventContent::TYPE => {
+                let event =
+                    ::ruma_common::exports::serde_json::from_str::<reactions::ReactionEvent>(
+                        json.get(),
+                    )
+                    .map_err(D::Error::custom)?;
+                Ok(Self::Reaction(event))
+            }
+
             _ => Err(SerdeDeError::unknown_variant(
                 &ev_type,
                 &[
@@ -181,6 +192,7 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
                     attachments::AttachmentEventContent::TYPE,
                     attachments::AttachmentUpdateEventContent::TYPE,
                     rsvp::RsvpEventContent::TYPE,
+                    reactions::ReactionEventContent::TYPE,
                 ],
             )),
         }

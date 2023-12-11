@@ -5,6 +5,7 @@ mod comments;
 mod common;
 mod news;
 mod pins;
+mod reactions;
 mod rsvp;
 mod tag;
 mod tasks;
@@ -21,6 +22,7 @@ pub use core::fmt::Debug;
 use enum_dispatch::enum_dispatch;
 pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
+pub use reactions::Reaction;
 pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
 use ruma_common::{
     serde::Raw, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId,
@@ -46,6 +48,7 @@ use crate::{
         comments::{CommentEventContent, CommentUpdateEventContent},
         news::{NewsEntryEventContent, NewsEntryUpdateEventContent},
         pins::{PinEventContent, PinUpdateEventContent},
+        reactions::ReactionEventContent,
         rsvp::RsvpEventContent,
         tasks::{
             TaskEventContent, TaskListEventContent, TaskListUpdateEventContent,
@@ -57,6 +60,8 @@ use crate::{
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum Capability {
+    // someone can react on this
+    Reactable,
     // someone can comment on this
     Commentable,
     // someone can add attchments on this
@@ -267,6 +272,7 @@ pub enum AnyActerModel {
 
     Rsvp(Rsvp),
 
+    Reaction(Reaction),
     #[cfg(test)]
     TestModel(TestModel),
 }
@@ -462,6 +468,19 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::Rsvp(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
                     model_type: RsvpEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+            AnyActerEvent::Reaction(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::Reaction(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: ReactionEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
                         event_id: r.event_id,
