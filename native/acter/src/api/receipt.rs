@@ -81,7 +81,9 @@ impl ReceiptRecord {
     }
 
     pub fn receipt_thread(&self) -> ReceiptThread {
-        ReceiptThread { inner: self.receipt_thread.clone() }
+        ReceiptThread {
+            inner: self.receipt_thread.clone(),
+        }
     }
 }
 
