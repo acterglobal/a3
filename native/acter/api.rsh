@@ -197,6 +197,9 @@ object ReceiptRecord {
 
     /// Get time that this user read message from peer in milliseconds
     fn timestamp() -> Option<u64>;
+
+    /// Get the receipt type, one of m.read or m.read.private
+    fn receipt_type() -> string;
 }
 
 /// Deliver typing event from rust to flutter

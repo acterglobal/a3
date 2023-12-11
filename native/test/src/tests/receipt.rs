@@ -102,7 +102,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
         .expect("kyra should get timeline stream");
     kyra_timeline
         .send_single_receipt(
-            "Read".to_string(),
+            "Read".to_string(), // will test only Read, because ReadPrivate not reached
             "Main".to_string(), // when not main, below event receiver will not receive this event
             received.to_string(),
         )
@@ -122,7 +122,9 @@ async fn sisko_detects_kyra_read() -> Result<()> {
             Ok(Some(event)) => {
                 info!("received: {:?}", event.clone());
                 for record in event.receipt_records() {
-                    if record.seen_by() == kyra.user_id()? {
+                    if record.seen_by() == kyra.user_id()?.to_string()
+                        && record.receipt_type() == "m.read"
+                    {
                         found = true;
                         break;
                     }

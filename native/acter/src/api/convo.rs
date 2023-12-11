@@ -246,7 +246,26 @@ impl Convo {
                         .user_receipt(ReceiptType::Read, ReceiptThread::Main, user_id)
                         .await?
                     {
-                        let record = ReceiptRecord::new(event_id, user_id.to_owned(), receipt.ts);
+                        let record = ReceiptRecord::new(
+                            event_id,
+                            user_id.to_owned(),
+                            receipt.ts,
+                            receipt.thread,
+                            ReceiptType::Read,
+                        );
+                        records.push(record);
+                    }
+                    if let Some((event_id, receipt)) = room
+                        .user_receipt(ReceiptType::ReadPrivate, ReceiptThread::Main, user_id)
+                        .await?
+                    {
+                        let record = ReceiptRecord::new(
+                            event_id,
+                            user_id.to_owned(),
+                            receipt.ts,
+                            receipt.thread,
+                            ReceiptType::ReadPrivate,
+                        );
                         records.push(record);
                     }
                 }

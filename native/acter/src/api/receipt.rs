@@ -8,7 +8,7 @@ use matrix_sdk::{
     Client as SdkClient,
 };
 use ruma_common::{MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::receipt::{ReceiptType, SyncReceiptEvent};
+use ruma_events::receipt::{ReceiptThread, ReceiptType, SyncReceiptEvent};
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tracing::{error, info};
@@ -20,6 +20,8 @@ pub struct ReceiptRecord {
     event_id: OwnedEventId,
     seen_by: OwnedUserId,
     ts: Option<MilliSecondsSinceUnixEpoch>,
+    receipt_thread: ReceiptThread,
+    receipt_type: ReceiptType,
 }
 
 impl ReceiptRecord {
@@ -27,11 +29,15 @@ impl ReceiptRecord {
         event_id: OwnedEventId,
         seen_by: OwnedUserId,
         ts: Option<MilliSecondsSinceUnixEpoch>,
+        receipt_thread: ReceiptThread,
+        receipt_type: ReceiptType,
     ) -> Self {
         ReceiptRecord {
             event_id,
             seen_by,
             ts,
+            receipt_thread,
+            receipt_type,
         }
     }
 
@@ -45,6 +51,10 @@ impl ReceiptRecord {
 
     pub fn timestamp(&self) -> Option<u64> {
         self.ts.map(|x| x.get().into())
+    }
+
+    pub fn receipt_type(&self) -> String {
+        self.receipt_type.to_string()
     }
 }
 
@@ -75,8 +85,16 @@ impl ReceiptEvent {
         event_id: &OwnedEventId,
         seen_by: &OwnedUserId,
         ts: Option<MilliSecondsSinceUnixEpoch>,
+        receipt_thread: &ReceiptThread,
+        receipt_type: ReceiptType,
     ) {
-        let record = ReceiptRecord::new(event_id.clone(), seen_by.clone(), ts);
+        let record = ReceiptRecord::new(
+            event_id.clone(),
+            seen_by.clone(),
+            ts,
+            receipt_thread.clone(),
+            receipt_type,
+        );
         self.receipt_records.push(record);
     }
 
@@ -128,8 +146,26 @@ impl ReceiptController {
             info!("receipt iter: {:?}", event_id);
             if event_info.contains_key(&ReceiptType::Read) {
                 for (seen_by, receipt) in event_info[&ReceiptType::Read].iter() {
-                    info!("user receipt: {:?}", receipt);
-                    msg.add_receipt_record(event_id, seen_by, receipt.ts);
+                    info!("user read receipt: {:?}", receipt);
+                    msg.add_receipt_record(
+                        event_id,
+                        seen_by,
+                        receipt.ts,
+                        &receipt.thread,
+                        ReceiptType::Read,
+                    );
+                }
+            }
+            if event_info.contains_key(&ReceiptType::ReadPrivate) {
+                for (seen_by, receipt) in event_info[&ReceiptType::ReadPrivate].iter() {
+                    info!("user read private receipt: {:?}", receipt);
+                    msg.add_receipt_record(
+                        event_id,
+                        seen_by,
+                        receipt.ts,
+                        &receipt.thread,
+                        ReceiptType::ReadPrivate,
+                    );
                 }
             }
         }
