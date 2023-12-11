@@ -8,7 +8,7 @@ use matrix_sdk::{
     Client as SdkClient,
 };
 use ruma_common::{MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::receipt::{ReceiptThread, ReceiptType, SyncReceiptEvent};
+use ruma_events::receipt::{ReceiptThread as SdkReceiptThread, ReceiptType, SyncReceiptEvent};
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tracing::{error, info};
@@ -16,11 +16,34 @@ use tracing::{error, info};
 use super::client::Client;
 
 #[derive(Clone, Debug)]
+pub struct ReceiptThread {
+    inner: SdkReceiptThread,
+}
+
+impl ReceiptThread {
+    pub fn is_main(&self) -> bool {
+        matches!(self.inner, SdkReceiptThread::Main)
+    }
+
+    pub fn is_unthreaded(&self) -> bool {
+        matches!(self.inner, SdkReceiptThread::Unthreaded)
+    }
+
+    pub fn thread_id(&self) -> Option<OwnedEventId> {
+        if let SdkReceiptThread::Thread(event_id) = &self.inner {
+            Some(event_id.clone())
+        } else {
+            None
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub struct ReceiptRecord {
     event_id: OwnedEventId,
     seen_by: OwnedUserId,
     ts: Option<MilliSecondsSinceUnixEpoch>,
-    receipt_thread: ReceiptThread,
+    receipt_thread: SdkReceiptThread,
     receipt_type: ReceiptType,
 }
 
@@ -29,7 +52,7 @@ impl ReceiptRecord {
         event_id: OwnedEventId,
         seen_by: OwnedUserId,
         ts: Option<MilliSecondsSinceUnixEpoch>,
-        receipt_thread: ReceiptThread,
+        receipt_thread: SdkReceiptThread,
         receipt_type: ReceiptType,
     ) -> Self {
         ReceiptRecord {
@@ -55,6 +78,10 @@ impl ReceiptRecord {
 
     pub fn receipt_type(&self) -> String {
         self.receipt_type.to_string()
+    }
+
+    pub fn receipt_thread(&self) -> ReceiptThread {
+        ReceiptThread { inner: self.receipt_thread.clone() }
     }
 }
 
@@ -85,7 +112,7 @@ impl ReceiptEvent {
         event_id: &OwnedEventId,
         seen_by: &OwnedUserId,
         ts: Option<MilliSecondsSinceUnixEpoch>,
-        receipt_thread: &ReceiptThread,
+        receipt_thread: &SdkReceiptThread,
         receipt_type: ReceiptType,
     ) {
         let record = ReceiptRecord::new(
