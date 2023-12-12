@@ -6,6 +6,7 @@ import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -95,13 +96,14 @@ class RedactContentWidget extends ConsumerWidget {
       if (isSpace) {
         final space = await ref.read(spaceProvider(roomId).future);
         final redactedId = await space.redactContent(eventId, reason);
+        ref.invalidate(spacePinsProvider(space));
         debugPrint(
           'Content from user:{$senderId redacted $redactedId reason:$reason}',
         );
       } else {
         final room = await ref.read(chatProvider(roomId).future);
         final redactedId = await room.redactContent(eventId, reason);
-        ref.invalidate(spaceEventsProvider);
+        ref.invalidate(spaceEventsProvider(roomId));
         debugPrint(
           'Content from user:{$senderId redacted $redactedId reason:$reason}',
         );
