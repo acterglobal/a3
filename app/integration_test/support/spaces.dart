@@ -86,6 +86,7 @@ extension ActerSpace on ConvenientTest {
   Future<String> createSpace(
     String title, {
     StepCallback? onCreateForm,
+    String? parentSpaceId,
   }) async {
     await find.byKey(Keys.mainNav).should(findsOneWidget);
     final homeKey = find.byKey(MainNavKeys.dashboardHome);
@@ -107,6 +108,10 @@ extension ActerSpace on ConvenientTest {
     final titleField = find.byKey(CreateSpaceKeys.titleField);
     await titleField.should(findsOneWidget);
     await titleField.enterTextWithoutReplace(title);
+
+    if (parentSpaceId != null) {
+      await selectSpace(parentSpaceId);
+    }
 
     if (onCreateForm != null) {
       await onCreateForm(this);

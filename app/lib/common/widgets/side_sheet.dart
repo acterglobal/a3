@@ -20,6 +20,8 @@ class SideSheet extends StatelessWidget {
   final void Function()? confirmActionOnPressed;
   final void Function()? cancelActionOnPressed;
 
+  static const closeKey = Key('sidesheet-close');
+
   const SideSheet({
     super.key,
     required this.header,
@@ -156,7 +158,7 @@ class _SheetHeader extends StatelessWidget {
                 Navigator.pop(context);
               },
               tooltip: closeButtonTooltip,
-              icon: const Icon(Icons.close),
+              icon: const Icon(Icons.close, key: SideSheet.closeKey),
             ),
           ),
         ],
