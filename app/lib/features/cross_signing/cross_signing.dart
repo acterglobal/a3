@@ -383,9 +383,7 @@ class CrossSigning {
                   AppLocalizations.of(context)!
                       .verificationScanSelfEmojiSubtitle,
                 ),
-                trailing: const Icon(
-                  Icons.keyboard_arrow_right_outlined,
-                ),
+                trailing: const Icon(Icons.keyboard_arrow_right_outlined),
                 onTap: () async {
                   // start sas verification from this device
                   await event.startSasVerification();
@@ -747,6 +745,8 @@ class CrossSigning {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Text(
               AppLocalizations.of(context)!.verificationEmojiNotice,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ),
