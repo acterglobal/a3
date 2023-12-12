@@ -1,8 +1,9 @@
+import 'dart:async';
+
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
-import 'dart:async';
 
 class Next {
   final bool isStart;
@@ -71,7 +72,6 @@ class NotificationsListNotifier extends StateNotifier<NotificationListState>
     _listener = client.notificationsStream();
     if (_listener != null) {
       _poller = _listener!.listen((ev) {
-
         state = state.addNotification(ev);
       });
       ref.onDispose(() => _poller != null ? _poller!.cancel() : null);
@@ -85,10 +85,7 @@ class NotificationsListNotifier extends StateNotifier<NotificationListState>
     }
 
     final pageReq = page.next ?? '';
-    final client = ref.read(clientProvider);
-    if (client == null) {
-      throw 'No client found';
-    }
+    final client = ref.read(alwaysClientProvider);
     try {
       final res = await client.listNotifications(pageReq, null);
       final entries = await res.notifications();

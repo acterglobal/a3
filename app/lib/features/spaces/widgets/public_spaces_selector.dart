@@ -103,11 +103,11 @@ final selectedServerProvider = StateProvider<String?>((ref) => null);
 
 class PublicSearchNotifier extends StateNotifier<PublicSearchState>
     with PagedNotifierMixin<Next?, PublicSearchResultItem, PublicSearchState> {
+  final Ref ref;
+
   PublicSearchNotifier(this.ref) : super(const PublicSearchState()) {
     setup();
   }
-
-  final Ref ref;
 
   void setup() {
     ref.read(searchValueProvider.notifier).addListener((state) {
@@ -147,7 +147,7 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchState>
     }
 
     final pageReq = page.next ?? '';
-    final client = ref.read(clientProvider)!;
+    final client = ref.read(alwaysClientProvider);
     final searchValue = state.searchValue;
     final server = state.server;
     try {

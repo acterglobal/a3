@@ -1,28 +1,28 @@
+import 'dart:math';
+
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/in_dashboard.dart';
-import 'package:acter/features/home/widgets/my_spaces_section.dart';
 import 'package:acter/features/home/widgets/my_events.dart';
+import 'package:acter/features/home/widgets/my_spaces_section.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-
-import 'dart:math';
+import 'package:go_router/go_router.dart';
 
 class Dashboard extends ConsumerWidget {
   const Dashboard({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(clientProvider)!;
+    final client = ref.watch(alwaysClientProvider);
     final provider = ref.watch(featuresProvider);
     bool isActive(f) => provider.isActive(f);
 
