@@ -428,6 +428,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       final room = await ref.watch(maybeRoomProvider(roomId).future);
       if (room != null) {
         room.addParentRoom(selectedParentSpaceId, true);
+        // ignore: use_build_context_synchronously
         await checkJoinRule(context, room, selectedParentSpaceId);
       }
       if (widget.childRoomType == ChildRoomType.recommendedSpace) {
