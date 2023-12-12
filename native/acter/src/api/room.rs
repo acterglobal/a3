@@ -31,13 +31,13 @@ use matrix_sdk::{
     RoomMemberships, RoomState,
 };
 use ruma_common::{
-    room::RoomType, serde::Raw, space::SpaceRoomJoinRule, EventId, OwnedEventId, OwnedMxcUri,
-    OwnedRoomAliasId, OwnedRoomId, OwnedUserId, UserId,
+    room::RoomType, serde::Raw, space::SpaceRoomJoinRule, EventId, IdParseError, OwnedEventId,
+    OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedUserId, UserId,
 };
 use ruma_events::{
     room::{
         avatar::ImageInfo as AvatarImageInfo,
-        join_rules::{AllowRule, JoinRule},
+        join_rules::{AllowRule, JoinRule, Restricted, RoomJoinRulesEventContent, RoomMembership},
         message::{MessageType, RoomMessageEvent},
         MediaSource,
     },
@@ -422,6 +422,51 @@ impl SpaceHierarchyListResult {
             })
             .await?
     }
+}
+
+pub struct JoinRuleBuilder {
+    rule: String,
+    restricted_rooms: Vec<String>,
+}
+
+impl JoinRuleBuilder {
+    fn new() -> Self {
+        JoinRuleBuilder {
+            rule: "private".to_owned(),
+            restricted_rooms: Vec::new(),
+        }
+    }
+    pub fn join_rule(&mut self, input: String) {
+        self.rule = input;
+    }
+
+    pub fn add_room(&mut self, new_room: String) {
+        self.restricted_rooms.push(new_room);
+    }
+
+    fn build(self) -> Result<RoomJoinRulesEventContent> {
+        let JoinRuleBuilder {
+            rule,
+            restricted_rooms,
+        } = self;
+        let allow_rules = restricted_rooms
+            .iter()
+            .map(|s| OwnedRoomId::try_from(s.as_str()).map(AllowRule::room_membership))
+            .collect::<Result<Vec<AllowRule>, IdParseError>>()?;
+        Ok(match rule.to_lowercase().as_str() {
+            "private" => RoomJoinRulesEventContent::new(JoinRule::Private),
+            "public" => RoomJoinRulesEventContent::new(JoinRule::Public),
+            "invite" => RoomJoinRulesEventContent::new(JoinRule::Invite),
+            "knock" => RoomJoinRulesEventContent::new(JoinRule::Knock),
+            "restricted" => RoomJoinRulesEventContent::restricted(allow_rules),
+            "knock_restricted" => RoomJoinRulesEventContent::knock_restricted(allow_rules),
+            _ => bail!("Unsupported join rule {rule}"),
+        })
+    }
+}
+
+pub fn new_join_rule_builder() -> JoinRuleBuilder {
+    JoinRuleBuilder::new()
 }
 
 pub struct SpaceRelations {
@@ -1335,6 +1380,20 @@ impl Room {
                 .collect(),
             _ => vec![],
         }
+    }
+
+    /// set the join_rul to `join_rule`. if that is `restricted` or `knock_restricted`
+    /// use the given `restricted_rooms` as subset of rooms to use.
+    pub async fn set_join_rule(&self, join_rule_builder: Box<JoinRuleBuilder>) -> Result<bool> {
+        let join_rule = join_rule_builder.build()?;
+
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let evt = room.send_state_event(join_rule).await?;
+                Ok(true)
+            })
+            .await?
     }
 
     pub async fn get_message(&self, event_id: String) -> Result<RoomMessage> {
