@@ -55,7 +55,7 @@ class BubbleBuilder extends ConsumerWidget {
             : SwipeTo(
                 onLeftSwipe: !isAuthor
                     ? null
-                    : (DragUpdateDetails details) {
+                    : () {
                         FocusScope.of(context)
                             .requestFocus(chatInputFocusState.state);
                         if (chatInputState.currentMessageId != null) {
@@ -71,7 +71,7 @@ class BubbleBuilder extends ConsumerWidget {
                       },
                 onRightSwipe: isAuthor
                     ? null
-                    : (DragUpdateDetails details) {
+                    : () {
                         FocusScope.of(context)
                             .requestFocus(chatInputFocusState.state);
                         if (chatInputState.emojiRowVisible) {
