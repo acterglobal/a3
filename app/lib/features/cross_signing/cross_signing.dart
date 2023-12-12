@@ -32,7 +32,6 @@ Widget elevatedButton(
 class VerificationProcess {
   bool verifiyingThisDevice;
   String stage;
-  String? finishedMsg;
 
   VerificationProcess({
     required this.verifiyingThisDevice,
@@ -107,7 +106,7 @@ class CrossSigning {
   void _installVerificationEvent() {
     _verificationPoller = client.verificationEventRx()?.listen((event) {
       String eventType = event.eventType();
-      debugPrint(eventType);
+      debugPrint('$eventType - flow_id: ${event.flowId()}');
       switch (eventType) {
         case 'm.key.verification.request':
           _onKeyVerificationRequest(event);
@@ -119,12 +118,13 @@ class CrossSigning {
           _onKeyVerificationStart(event);
           break;
         case 'm.key.verification.cancel':
-          _onKeyVerificationCancel(event, false);
+          _onKeyVerificationCancel(event);
           break;
         case 'm.key.verification.accept':
           _onKeyVerificationAccept(event);
           break;
         case 'm.key.verification.key':
+        case 'SasState::KeysExchanged':
           _onKeyVerificationKey(event);
           break;
         case 'm.key.verification.mac':
@@ -195,10 +195,6 @@ class CrossSigning {
                       rootNavKey.currentContext?.pop();
                       // cancel verification request from other device
                       await event.cancelVerificationRequest();
-                      // finish verification
-                      _processMap[flowId]?.finishedMsg =
-                          'You cancelled verification.';
-                      _onKeyVerificationCancel(event, true);
                     },
                     color: Colors.white,
                   ),
@@ -314,11 +310,7 @@ class CrossSigning {
                     icon: const Icon(Icons.close),
                     onPressed: () async {
                       rootNavKey.currentContext?.pop();
-                      // cancel the current verification
-                      _processMap[flowId]?.finishedMsg =
-                          'You cancelled verification.';
-                      await event
-                          .cancelVerificationRequest(); // occurs cancel event
+                      await event.cancelVerificationRequest();
                     },
                     color: Colors.white,
                   ),
@@ -457,9 +449,7 @@ class CrossSigning {
                 child: IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () async {
-                    _processMap[flowId]?.finishedMsg =
-                        'You declined verification.';
-                    await event.cancelSasVerification(); // occurs cancel event
+                    await event.cancelSasVerification();
                   },
                   color: Colors.white,
                 ),
@@ -488,7 +478,7 @@ class CrossSigning {
     );
   }
 
-  void _onKeyVerificationCancel(VerificationEvent event, bool manual) {
+  void _onKeyVerificationCancel(VerificationEvent event) {
     if (rootNavKey.currentContext?.canPop() == true) {
       rootNavKey.currentContext?.pop();
     }
@@ -503,18 +493,24 @@ class CrossSigning {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
         ),
-        child: _buildOnCancel(context, event, flowId, manual),
+        child: _buildOnCancel(context, event, flowId),
       ),
     );
   }
 
-  String _getCancelledMsg(BuildContext context, String flowId) {
+  String _getCancelledMsg(
+    BuildContext context,
+    VerificationEvent event,
+    String flowId,
+  ) {
     VerificationProcess? process = _processMap[flowId];
     if (process == null) {
       return 'No messages';
     }
-    if (process.finishedMsg != null) {
-      return process.finishedMsg!;
+    // [ref] https://spec.matrix.org/unstable/client-server-api/#mkeyverificationcancel
+    final reason = event.getContent('reason');
+    if (reason != null) {
+      return reason;
     }
     return AppLocalizations.of(context)!.verificationConclusionCompromised;
   }
@@ -523,134 +519,66 @@ class CrossSigning {
     BuildContext context,
     VerificationEvent event,
     String flowId,
-    bool manual,
   ) {
-    debugPrint('_buildOnCancel manual: $manual');
-    if (manual) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            flex: isDesktop ? 2 : 1,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    child: isDesktop
-                        ? const Icon(Atlas.laptop)
-                        : const Icon(Atlas.phone),
-                  ),
-                  const SizedBox(width: 5),
-                  Text(
-                    _processMap[flowId]?.verifiyingThisDevice == true
-                        ? AppLocalizations.of(context)!.verifyThisSession
-                        : AppLocalizations.of(context)!.verifySession,
-                  ),
-                  const Spacer(),
-                ],
-              ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          flex: isDesktop ? 2 : 1,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: isDesktop
+                      ? const Icon(Atlas.laptop)
+                      : const Icon(Atlas.phone),
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  _processMap[flowId]?.verifiyingThisDevice == true
+                      ? AppLocalizations.of(context)!.verifyThisSession
+                      : AppLocalizations.of(context)!.verifySession,
+                ),
+                const Spacer(),
+              ],
             ),
           ),
-          const Flexible(
-            flex: 3,
-            child: Center(
-              child: Icon(Atlas.lock_keyhole),
+        ),
+        const Spacer(flex: 1),
+        const Flexible(
+          flex: 3,
+          child: Icon(Atlas.lock_keyhole),
+        ),
+        Flexible(
+          flex: 2,
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Text(_getCancelledMsg(context, event, flowId)),
+          ),
+        ),
+        const Spacer(flex: 1),
+        Flexible(
+          flex: 1,
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.40,
+            child: elevatedButton(
+              AppLocalizations.of(context)!.sasGotIt,
+              Theme.of(context).colorScheme.success,
+              () {
+                rootNavKey.currentContext?.pop();
+                // finish verification
+                _processMap.remove(flowId);
+              },
+              const TextStyle(),
             ),
           ),
-          Flexible(
-            flex: isDesktop ? 4 : 3,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: Text(
-                _getCancelledMsg(context, flowId),
-                softWrap: false,
-              ),
-            ),
-          ),
-          const Spacer(flex: 1),
-          Flexible(
-            flex: 1,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.40,
-              child: elevatedButton(
-                AppLocalizations.of(context)!.sasGotIt,
-                Theme.of(context).colorScheme.success,
-                () {
-                  rootNavKey.currentContext?.pop();
-                  // finish verification
-                  _processMap.remove(flowId);
-                },
-                const TextStyle(),
-              ),
-            ),
-          ),
-          const Spacer(flex: 1),
-        ],
-      );
-    } else {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            flex: isDesktop ? 2 : 1,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    child: isDesktop
-                        ? const Icon(Atlas.laptop)
-                        : const Icon(Atlas.phone),
-                  ),
-                  const SizedBox(width: 5),
-                  Text(
-                    _processMap[flowId]?.verifiyingThisDevice == true
-                        ? AppLocalizations.of(context)!.verifyThisSession
-                        : AppLocalizations.of(context)!.verifySession,
-                  ),
-                  const Spacer(),
-                ],
-              ),
-            ),
-          ),
-          const Spacer(flex: 1),
-          const Flexible(
-            flex: 3,
-            child: Icon(Atlas.lock_keyhole),
-          ),
-          Flexible(
-            flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Text(_getCancelledMsg(context, flowId)),
-            ),
-          ),
-          const Spacer(flex: 1),
-          Flexible(
-            flex: 1,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.40,
-              child: elevatedButton(
-                AppLocalizations.of(context)!.sasGotIt,
-                Theme.of(context).colorScheme.success,
-                () {
-                  rootNavKey.currentContext?.pop();
-                  // finish verification
-                  _processMap.remove(flowId);
-                },
-                const TextStyle(),
-              ),
-            ),
-          ),
-          const Spacer(flex: 1),
-        ],
-      );
-    }
+        ),
+        const Spacer(flex: 1),
+      ],
+    );
   }
 
   void _onKeyVerificationAccept(VerificationEvent event) {
@@ -791,10 +719,7 @@ class CrossSigning {
                   child: IconButton(
                     icon: const Icon(Icons.close),
                     onPressed: () async {
-                      _processMap[flowId]?.finishedMsg =
-                          'You declined verification';
-                      await event
-                          .cancelVerificationRequest(); // occurs cancel event
+                      await event.cancelVerificationRequest();
                     },
                     color: Colors.white,
                   ),
@@ -885,8 +810,6 @@ class CrossSigning {
               rootNavKey.currentContext?.pop();
               // mismatch sas verification
               await event.mismatchSasVerification();
-              _processMap[event.flowId()]?.finishedMsg =
-                  'You mismatched verification.';
             },
             const TextStyle(),
           ),
@@ -904,10 +827,7 @@ class CrossSigning {
               }
               rootNavKey.currentContext?.pop();
               // confirm sas verification
-              bool isDone = await event.confirmSasVerification();
-              _processMap[event.flowId()]?.finishedMsg = isDone
-                  ? 'You confirmed verification.'
-                  : 'Verification was not done.';
+              await event.confirmSasVerification();
               // close dialog
               if (_mounted) {
                 waitForMatch = false;
@@ -956,9 +876,6 @@ class CrossSigning {
     VerificationProcess? process = _processMap[flowId];
     if (process == null) {
       return 'No messages';
-    }
-    if (process.finishedMsg != null) {
-      return process.finishedMsg!;
     }
     if (process.verifiyingThisDevice) {
       return AppLocalizations.of(context)!.verificationConclusionOkSelfNotice;

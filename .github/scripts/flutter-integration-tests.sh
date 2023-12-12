@@ -14,4 +14,4 @@ subscript_pid=$!
 dart run convenient_test_manager_dart --enable-report-saver
 exit_status=$?
 kill "$subscript_pid"
-exit exit_status
+exit $exit_status
