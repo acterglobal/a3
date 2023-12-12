@@ -88,9 +88,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
               } else {
                 String? mimeType = file.mimeType ?? lookupMimeType(file.path);
                 if (mimeType == null) {
-                  EasyLoading.showError(
-                    'Detecting mimetype failed. not supported.',
-                  );
+                  EasyLoading.showError('Invalid media format');
                   return;
                 }
                 if (!mimeType.startsWith('image/')) {
