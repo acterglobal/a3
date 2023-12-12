@@ -120,6 +120,14 @@ dependencies:
   flutter_local_notifications: ^16.0.0
   email_validator: ^2.1.17
   app_settings: ^5.1.1
+  video_player_media_kit: ^1.0.5
+  media_kit_libs_android_video: any
+  media_kit_libs_ios_video: any
+  media_kit_libs_macos_video: any
+  media_kit_libs_windows_video: any
+  media_kit_libs_linux: any
+  video_player: ^2.8.1
+  share_plus: ^7.2.1
 
 # FIXME keep until a new version has been published
 dependency_overrides:

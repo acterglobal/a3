@@ -18,10 +18,7 @@ use matrix_sdk::{
 use ruma_common::{device_id, OwnedDeviceId, OwnedEventId, OwnedTransactionId, OwnedUserId};
 use ruma_events::{
     key::verification::{accept::AcceptMethod, start::StartMethod, VerificationMethod},
-    room::{
-        encrypted::OriginalSyncRoomEncryptedEvent,
-        message::{MessageType, OriginalSyncRoomMessageEvent},
-    },
+    room::message::{MessageType, OriginalSyncRoomMessageEvent},
     AnyToDeviceEvent, EventContent,
 };
 use std::{
@@ -404,7 +401,7 @@ impl VerificationEvent {
                         .await
                     {
                         sas.confirm().await?;
-                        return Ok(sas.is_done());
+                        return Ok(true);
                     }
                 } else if let Some(txn_id) = txn_id {
                     if let Some(Verification::SasV1(sas)) = client
@@ -413,7 +410,7 @@ impl VerificationEvent {
                         .await
                     {
                         sas.confirm().await?;
-                        return Ok(sas.is_done());
+                        return Ok(true);
                     }
                 }
                 // request may be timed out
@@ -532,7 +529,7 @@ async fn request_verification_handler(
         match state {
             VerificationRequestState::Created { our_methods } => {
                 let device_id = client.device_id().expect("Device not found");
-                let event_type = "m.key.verification.create".to_string();
+                let event_type = "VerificationRequestState::Created".to_string();
                 info!("{} got {}", device_id, event_type);
                 let mut msg = VerificationEvent::new(
                     client.clone(),
@@ -562,7 +559,7 @@ async fn request_verification_handler(
                 other_device_id,
             } => {
                 let device_id = client.device_id().expect("Device not found");
-                let event_type = "m.key.verification.request".to_string();
+                let event_type = "VerificationRequestState::Requested".to_string();
                 info!("{} got {}", device_id, event_type);
                 let mut msg = VerificationEvent::new(
                     client.clone(),
@@ -594,7 +591,7 @@ async fn request_verification_handler(
                 other_device_id,
             } => {
                 let device_id = client.device_id().expect("Device not found");
-                let event_type = "m.key.verification.ready".to_string();
+                let event_type = "VerificationRequestState::Ready".to_string();
                 info!("{} got {}", device_id, event_type);
                 let mut msg = VerificationEvent::new(
                     client.clone(),
@@ -634,7 +631,7 @@ async fn request_verification_handler(
             },
             VerificationRequestState::Done => {
                 let device_id = client.device_id().expect("Device not found");
-                let event_type = "m.key.verification.done".to_string();
+                let event_type = "VerificationRequestState::Done".to_string();
                 info!("{} got {}", device_id, event_type);
                 let msg = VerificationEvent::new(
                     client.clone(),
@@ -656,7 +653,7 @@ async fn request_verification_handler(
             }
             VerificationRequestState::Cancelled(cancel_info) => {
                 let device_id = client.device_id().expect("Device not found");
-                let event_type = "m.key.verification.cancel".to_string();
+                let event_type = "VerificationRequestState::Cancelled".to_string();
                 info!("{} got {}", device_id, event_type);
                 let mut msg = VerificationEvent::new(
                     client.clone(),
@@ -706,7 +703,7 @@ async fn sas_verification_handler(
         match state {
             SasState::KeysExchanged { emojis, decimals } => {
                 let device_id = client.device_id().expect("Device not found");
-                let event_type = "m.key.verification.key".to_string();
+                let event_type = "SasState::KeysExchanged".to_string();
                 info!("{} got {}", device_id, event_type);
                 let mut msg = VerificationEvent::new(
                     client.clone(),
@@ -745,7 +742,7 @@ async fn sas_verification_handler(
                 verified_identities,
             } => {
                 let device_id = client.device_id().expect("Device not found");
-                let event_type = "m.key.verification.done".to_string();
+                let event_type = "SasState::Done".to_string();
                 info!("{} got {}", device_id, event_type);
                 let mut msg = VerificationEvent::new(
                     client.clone(),
@@ -777,7 +774,7 @@ async fn sas_verification_handler(
             }
             SasState::Cancelled(cancel_info) => {
                 let device_id = client.device_id().expect("Device not found");
-                let event_type = "m.key.verification.cancel".to_string();
+                let event_type = "SasState::Cancelled".to_string();
                 info!("{} got {}", device_id, event_type);
                 let mut msg = VerificationEvent::new(
                     client.clone(),
@@ -804,7 +801,7 @@ async fn sas_verification_handler(
             }
             SasState::Started { protocols } => {
                 let device_id = client.device_id().expect("Device not found");
-                let event_type = "m.key.verification.start".to_string();
+                let event_type = "SasState::Started".to_string();
                 info!("{} got {}", device_id, event_type);
                 let mut msg = VerificationEvent::new(
                     client.clone(),
@@ -858,7 +855,7 @@ async fn sas_verification_handler(
             }
             SasState::Accepted { accepted_protocols } => {
                 let device_id = client.device_id().expect("Device not found");
-                let event_type = "m.key.verification.accept".to_string();
+                let event_type = "SasState::Accepted".to_string();
                 info!("{} got {}", device_id, event_type);
                 let mut msg = VerificationEvent::new(
                     client.clone(),
@@ -890,7 +887,7 @@ async fn sas_verification_handler(
             }
             SasState::Confirmed => {
                 let device_id = client.device_id().expect("Device not found");
-                let event_type = "m.key.verification.mac".to_string();
+                let event_type = "SasState::Confirmed".to_string();
                 info!("{} got {}", device_id, event_type);
                 let msg = VerificationEvent::new(
                     client.clone(),
@@ -932,6 +929,7 @@ impl VerificationController {
         }
     }
 
+    // sync event is intended to verify other user
     pub fn add_sync_event_handler(&mut self, client: &SdkClient) {
         client.add_event_handler_context(self.clone());
         let handle = client.add_event_handler(
@@ -939,11 +937,11 @@ impl VerificationController {
              c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 if let MessageType::VerificationRequest(content) = &ev.content.msgtype {
+                    info!("MessageType::VerificationRequest");
                     let device_id = c.device_id().expect("guest user cannot get device id");
                     let event_type = ev.content.event_type();
                     info!("{} got {}", device_id, event_type);
-                    let methods = content.methods.clone();
-                    let msg = VerificationEvent::new(
+                    let mut msg = VerificationEvent::new(
                         c,
                         me.clone(),
                         event_type.to_string(),
@@ -951,6 +949,17 @@ impl VerificationController {
                         None,
                         ev.sender,
                     );
+                    msg.set_content("body".to_string(), content.body.clone());
+                    msg.set_content("from_device".to_string(), content.from_device.to_string());
+                    let methods = content
+                        .methods
+                        .iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<String>>();
+                    msg.set_content("methods".to_string(), methods.join(","));
+                    msg.set_content("to".to_string(), content.to.to_string());
+                    // this may be the past event occurred when device was off
+                    // so this event has no timestamp field unlike AnyToDeviceEvent::KeyVerificationRequest
                     if let Err(e) = me.event_tx.try_send(msg) {
                         error!("Dropping event for {}: {}", ev.event_id, e);
                     }
@@ -968,6 +977,7 @@ impl VerificationController {
         }
     }
 
+    // to_device event is intended to verify other device
     pub fn add_to_device_event_handler(&mut self, client: &SdkClient) {
         client.add_event_handler_context(self.clone());
         let handle = client.add_event_handler(
@@ -977,6 +987,7 @@ impl VerificationController {
                 let device_id = c.device_id().expect("guest user cannot get device id");
                 match ev {
                     AnyToDeviceEvent::KeyVerificationRequest(evt) => {
+                        info!("AnyToDeviceEvent::KeyVerificationRequest");
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
@@ -996,6 +1007,7 @@ impl VerificationController {
                         }
                     }
                     AnyToDeviceEvent::KeyVerificationReady(evt) => {
+                        info!("AnyToDeviceEvent::KeyVerificationReady");
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
@@ -1014,6 +1026,7 @@ impl VerificationController {
                         }
                     }
                     AnyToDeviceEvent::KeyVerificationStart(evt) => {
+                        info!("AnyToDeviceEvent::KeyVerificationStart");
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
@@ -1063,6 +1076,7 @@ impl VerificationController {
                         }
                     }
                     AnyToDeviceEvent::KeyVerificationKey(evt) => {
+                        info!("AnyToDeviceEvent::KeyVerificationKey");
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
@@ -1079,6 +1093,7 @@ impl VerificationController {
                         }
                     }
                     AnyToDeviceEvent::KeyVerificationAccept(evt) => {
+                        info!("AnyToDeviceEvent::KeyVerificationAccept");
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
@@ -1106,6 +1121,7 @@ impl VerificationController {
                         }
                     }
                     AnyToDeviceEvent::KeyVerificationCancel(evt) => {
+                        info!("AnyToDeviceEvent::KeyVerificationCancel");
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
@@ -1123,6 +1139,7 @@ impl VerificationController {
                         }
                     }
                     AnyToDeviceEvent::KeyVerificationMac(evt) => {
+                        info!("AnyToDeviceEvent::KeyVerificationMac");
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
@@ -1141,6 +1158,7 @@ impl VerificationController {
                         }
                     }
                     AnyToDeviceEvent::KeyVerificationDone(evt) => {
+                        info!("AnyToDeviceEvent::KeyVerificationDone");
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
                         let msg = VerificationEvent::new(

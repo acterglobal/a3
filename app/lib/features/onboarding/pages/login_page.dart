@@ -133,15 +133,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           style: Theme.of(context).textTheme.labelLarge,
                           validator: (val) {
                             if (val == null || val.trim().isEmpty) {
-                              return AppLocalizations.of(context)!.emptyUsername;
+                              return AppLocalizations.of(context)!
+                                  .emptyUsername;
                             }
                             return null;
-                          },
-                          onChanged: (value) {
-                            username.text = value;
-                            username.selection = TextSelection.fromPosition(
-                              TextPosition(offset: username.text.length),
-                            );
                           },
                         ),
                         const SizedBox(height: 20),
@@ -172,15 +167,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           style: Theme.of(context).textTheme.labelLarge,
                           validator: (val) {
                             if (val == null || val.trim().isEmpty) {
-                              return AppLocalizations.of(context)!.emptyPassword;
+                              return AppLocalizations.of(context)!
+                                  .emptyPassword;
                             }
                             return null;
-                          },
-                          onChanged: (value) {
-                            password.text = value;
-                            password.selection = TextSelection.fromPosition(
-                              TextPosition(offset: password.text.length),
-                            );
                           },
                         ),
                         const SizedBox(height: 40),

@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 use futures::{
-    channel::mpsc::{channel, Receiver, Sender},
+    channel::mpsc::{channel, Receiver},
     pin_mut,
     stream::StreamExt,
 };

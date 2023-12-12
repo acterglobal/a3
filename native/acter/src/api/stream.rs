@@ -12,7 +12,7 @@ use matrix_sdk::{
 use matrix_sdk_ui::timeline::{
     BackPaginationStatus, EventTimelineItem, PaginationOptions, Timeline,
 };
-use ruma_common::{EventId, OwnedEventId, OwnedTransactionId, TransactionId};
+use ruma_common::{EventId, OwnedEventId, OwnedTransactionId};
 use ruma_events::{
     reaction::ReactionEventContent,
     receipt::ReceiptThread,
