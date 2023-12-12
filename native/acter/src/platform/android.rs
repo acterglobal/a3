@@ -28,35 +28,6 @@ pub fn init_logging(log_dir: String, filter: String) -> Result<()> {
     let mut log_config = Config::default()
         .with_max_level(LevelFilter::Trace)
         .with_tag(APP_TAG);
-    let console_logger = LoggerWrapper::new(log_config).cloned_boxed_logger();
+    let console_logger = Box::new(AndroidLogger::new(log_config));
     native::init_logging(log_dir, filter, Some(console_logger))
-}
-
-/// Wrapper for our console which acts as the actual logger.
-#[derive(Clone)]
-struct LoggerWrapper(Arc<Mutex<AndroidLogger>>);
-
-impl LoggerWrapper {
-    fn new(config: Config) -> Self {
-        let logger = AndroidLogger::new(config);
-        LoggerWrapper(Arc::new(Mutex::new(logger)))
-    }
-
-    fn cloned_boxed_logger(&self) -> Box<dyn Log> {
-        Box::new(self.clone())
-    }
-}
-
-impl Log for LoggerWrapper {
-    fn enabled(&self, metadata: &Metadata) -> bool {
-        metadata.level() <= Level::Info
-    }
-
-    fn log(&self, record: &Record) {
-        if self.enabled(record.metadata()) {
-            self.0.lock().unwrap().log(record);
-        }
-    }
-
-    fn flush(&self) {}
 }

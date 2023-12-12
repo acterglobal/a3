@@ -158,7 +158,7 @@ async fn pin_attachments() -> Result<()> {
 
     let attachments_listener = attachments_manager.subscribe();
     let attachment_1_id = attachments_manager
-        .image_attachment_draft(
+        .image_draft(
             "acter logo".to_owned(),
             "https://raw.githubusercontent.com/acterglobal/a3/main/app/assets/icon/acter-logo.svg"
                 .to_owned(),
@@ -185,9 +185,10 @@ async fn pin_attachments() -> Result<()> {
     let attachment = attachments.first().unwrap();
     assert_eq!(attachment.event_id(), attachment_1_id);
     assert_eq!(attachment.type_str(), "image");
-    assert_eq!(attachment.image_desc().unwrap().name(), "acter logo");
+    let image_desc = attachment.image_desc().expect("image desc needed");
+    assert_eq!(image_desc.name(), "acter logo");
     assert_eq!(
-        attachment.image_desc().unwrap().source().url(),
+        image_desc.source().url(),
         "https://raw.githubusercontent.com/acterglobal/a3/main/app/assets/icon/acter-logo.svg"
     );
 
@@ -195,7 +196,7 @@ async fn pin_attachments() -> Result<()> {
 
     let attachments_listener = attachments_manager.subscribe();
     let attachment_2_id = attachments_manager
-        .file_attachment_draft(
+        .file_draft(
             "effektio whitepaper".to_owned(),
             "mxc://acter.global/tVLtaQaErMyoXmcCroPZdfNG".to_owned(),
             None,

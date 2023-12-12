@@ -1,4 +1,3 @@
-use acter_core::models::TextMessageContent;
 use core::time::Duration;
 use ruma_common::{MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedUserId};
 use ruma_events::room::{

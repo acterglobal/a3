@@ -1,6 +1,6 @@
 use acter_core::{
     events::comments::CommentBuilder,
-    models::{self, ActerModel, AnyActerModel, Color},
+    models::{self, ActerModel, AnyActerModel},
 };
 use anyhow::{bail, Context, Result};
 use core::time::Duration;

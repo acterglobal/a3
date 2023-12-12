@@ -2,29 +2,22 @@ pub use acter_core::events::settings::{
     ActerAppSettingsContent, EventsSettings, NewsSettings, PinsSettings, SimpleSettingWithTurnOff,
     SimpleSettingWithTurnOffBuilder, TasksSettings, TasksSettingsBuilder,
 };
-
 use acter_core::events::{
     calendar::CalendarEventEventContent,
-    news::{NewsEntryEventContent, NewsEntryUpdateEvent},
+    news::NewsEntryEventContent,
     pins::PinEventContent,
     settings::ActerAppSettingsContentBuilder,
     tasks::{TaskEventContent, TaskListEventContent},
 };
 use anyhow::{bail, Result};
-use matrix_sdk::{
-    deserialized_responses::SyncOrStrippedState,
-    room::{Messages, MessagesOptions},
-    ruma::Int,
-    RoomState,
-};
+use matrix_sdk::{deserialized_responses::SyncOrStrippedState, ruma::Int};
 use ruma_events::{
     room::power_levels::{RoomPowerLevels as RumaRoomPowerLevels, RoomPowerLevelsEventContent},
-    MessageLikeEvent, StaticEventContent, SyncStateEvent, TimelineEventType,
+    StaticEventContent, SyncStateEvent, TimelineEventType,
 };
 use std::{collections::btree_map, ops::Deref};
 
-use crate::Room;
-use crate::RUNTIME;
+use crate::{Room, RUNTIME};
 
 #[derive(Clone)]
 pub struct ActerAppSettingsBuilder {

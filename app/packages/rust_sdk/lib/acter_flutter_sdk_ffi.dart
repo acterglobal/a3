@@ -18153,18 +18153,7 @@ class Api {
           int Function(
             int,
           )>();
-  late final _attachmentsManagerAttachmentDraftPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__AttachmentsManager_attachment_draft");
-
-  late final _attachmentsManagerAttachmentDraft =
-      _attachmentsManagerAttachmentDraftPtr.asFunction<
-          int Function(
-            int,
-          )>();
-  late final _attachmentsManagerImageAttachmentDraftPtr = _lookup<
+  late final _attachmentsManagerImageDraftPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -18188,10 +18177,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__AttachmentsManager_image_attachment_draft");
+          )>>("__AttachmentsManager_image_draft");
 
-  late final _attachmentsManagerImageAttachmentDraft =
-      _attachmentsManagerImageAttachmentDraftPtr.asFunction<
+  late final _attachmentsManagerImageDraft =
+      _attachmentsManagerImageDraftPtr.asFunction<
           int Function(
             int,
             int,
@@ -18215,7 +18204,7 @@ class Api {
             int,
             int,
           )>();
-  late final _attachmentsManagerAudioAttachmentDraftPtr = _lookup<
+  late final _attachmentsManagerAudioDraftPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -18233,10 +18222,10 @@ class Api {
             ffi.Uint64,
             ffi.Uint8,
             ffi.Uint64,
-          )>>("__AttachmentsManager_audio_attachment_draft");
+          )>>("__AttachmentsManager_audio_draft");
 
-  late final _attachmentsManagerAudioAttachmentDraft =
-      _attachmentsManagerAudioAttachmentDraftPtr.asFunction<
+  late final _attachmentsManagerAudioDraft =
+      _attachmentsManagerAudioDraftPtr.asFunction<
           int Function(
             int,
             int,
@@ -18254,7 +18243,7 @@ class Api {
             int,
             int,
           )>();
-  late final _attachmentsManagerVideoAttachmentDraftPtr = _lookup<
+  late final _attachmentsManagerVideoDraftPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -18280,10 +18269,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__AttachmentsManager_video_attachment_draft");
+          )>>("__AttachmentsManager_video_draft");
 
-  late final _attachmentsManagerVideoAttachmentDraft =
-      _attachmentsManagerVideoAttachmentDraftPtr.asFunction<
+  late final _attachmentsManagerVideoDraft =
+      _attachmentsManagerVideoDraftPtr.asFunction<
           int Function(
             int,
             int,
@@ -18309,7 +18298,7 @@ class Api {
             int,
             int,
           )>();
-  late final _attachmentsManagerFileAttachmentDraftPtr = _lookup<
+  late final _attachmentsManagerFileDraftPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -18325,10 +18314,10 @@ class Api {
             ffi.Uint64,
             ffi.Uint8,
             ffi.Uint64,
-          )>>("__AttachmentsManager_file_attachment_draft");
+          )>>("__AttachmentsManager_file_draft");
 
-  late final _attachmentsManagerFileAttachmentDraft =
-      _attachmentsManagerFileAttachmentDraftPtr.asFunction<
+  late final _attachmentsManagerFileDraft =
+      _attachmentsManagerFileDraftPtr.asFunction<
           int Function(
             int,
             int,
@@ -18336,6 +18325,29 @@ class Api {
             int,
             int,
             int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _attachmentsManagerLocationDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__AttachmentsManager_location_draft");
+
+  late final _attachmentsManagerLocationDraft =
+      _attachmentsManagerLocationDraftPtr.asFunction<
+          int Function(
             int,
             int,
             int,
@@ -39727,23 +39739,8 @@ class AttachmentsManager {
     return tmp2;
   }
 
-  /// draft a new attachment for this item
-  AttachmentDraft attachmentDraft() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._attachmentsManagerAttachmentDraft(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_AttachmentDraft");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = AttachmentDraft._(_api, tmp3_1);
-    return tmp2;
-  }
-
   /// create news slide for image msg
-  AttachmentDraft imageAttachmentDraft(
+  AttachmentDraft imageDraft(
     String body,
     String url,
     String? mimetype,
@@ -39846,7 +39843,7 @@ class AttachmentsManager {
       tmp30 = tmp30_0.address;
       tmp32 = tmp31;
     }
-    final tmp33 = _api._attachmentsManagerImageAttachmentDraft(
+    final tmp33 = _api._attachmentsManagerImageDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -39878,7 +39875,7 @@ class AttachmentsManager {
   }
 
   /// create news slide for audio msg
-  AttachmentDraft audioAttachmentDraft(
+  AttachmentDraft audioDraft(
     String body,
     String url,
     String? mimetype,
@@ -39950,7 +39947,7 @@ class AttachmentsManager {
       final tmp21 = tmp19;
       tmp22 = tmp21;
     }
-    final tmp23 = _api._attachmentsManagerAudioAttachmentDraft(
+    final tmp23 = _api._attachmentsManagerAudioDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -39976,7 +39973,7 @@ class AttachmentsManager {
   }
 
   /// create news slide for video msg
-  AttachmentDraft videoAttachmentDraft(
+  AttachmentDraft videoDraft(
     String body,
     String url,
     String? mimetype,
@@ -40090,7 +40087,7 @@ class AttachmentsManager {
       tmp34 = tmp34_0.address;
       tmp36 = tmp35;
     }
-    final tmp37 = _api._attachmentsManagerVideoAttachmentDraft(
+    final tmp37 = _api._attachmentsManagerVideoDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -40124,7 +40121,7 @@ class AttachmentsManager {
   }
 
   /// create news slide for file msg
-  AttachmentDraft fileAttachmentDraft(
+  AttachmentDraft fileDraft(
     String body,
     String url,
     String? mimetype,
@@ -40185,7 +40182,7 @@ class AttachmentsManager {
       final tmp17 = tmp15;
       tmp18 = tmp17;
     }
-    final tmp19 = _api._attachmentsManagerFileAttachmentDraft(
+    final tmp19 = _api._attachmentsManagerFileDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -40206,6 +40203,54 @@ class AttachmentsManager {
     tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
     final tmp20 = AttachmentDraft._(_api, tmp21_1);
     return tmp20;
+  }
+
+  /// create news slide for location msg
+  AttachmentDraft locationDraft(
+    String body,
+    String geoUri,
+  ) {
+    final tmp1 = body;
+    final tmp5 = geoUri;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._attachmentsManagerLocationDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_AttachmentDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = AttachmentDraft._(_api, tmp11_1);
+    return tmp10;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.

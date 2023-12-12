@@ -50,7 +50,7 @@ jobs:
     steps:
       - name: Get branch name
         id: branch-name
-        uses: tj-actions/branch-names@v6
+        uses: tj-actions/branch-names@v7.0.7
       - id: tag
         name: Create Tag
         run: echo "tag=${{ steps.branch-name.outputs.current_branch }}-`date +%FT%H%M`" >> $GITHUB_OUTPUT

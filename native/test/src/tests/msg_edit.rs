@@ -1,5 +1,5 @@
 use acter::{api::RoomMessage, ruma_common::OwnedEventId};
-use anyhow::Result;
+use anyhow::{bail, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
 use std::io::Write;
@@ -68,14 +68,13 @@ async fn edit_text_msg() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     info!("loop finished");
-    assert!(
-        sent_event_id.is_some(),
-        "Even after 30 seconds, text msg not received"
-    );
+    let Some(sent_event_id) = sent_event_id else {
+        bail!("Even after 30 seconds, text msg not received")
+    };
 
     timeline
         .edit_plain_message(
-            sent_event_id.clone().unwrap().to_string(),
+            sent_event_id.to_string(),
             "This is message edition".to_string(),
         )
         .await?;
@@ -101,10 +100,9 @@ async fn edit_text_msg() -> Result<()> {
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    assert!(
-        edited_event_id.is_some(),
-        "Even after 3 seconds, msg edition not received"
-    );
+    let Some(edited_event_id) = edited_event_id else {
+        bail!("Even after 3 seconds, msg edition not received")
+    };
 
     assert_eq!(
         edited_event_id,
@@ -197,10 +195,9 @@ async fn edit_image_msg() -> Result<()> {
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    assert!(
-        sent_event_id.is_some(),
-        "Even after 3 seconds, text msg not received"
-    );
+    let Some(sent_event_id) = sent_event_id else {
+        bail!("Even after 3 seconds, text msg not received")
+    };
 
     let mut tmp_png = NamedTempFile::new()?;
     tmp_png.as_file_mut().write_all(include_bytes!(
@@ -209,7 +206,7 @@ async fn edit_image_msg() -> Result<()> {
 
     timeline
         .edit_image_message(
-            sent_event_id.clone().unwrap().to_string(),
+            sent_event_id.to_string(),
             tmp_png.path().to_string_lossy().to_string(),
             "png_file".to_string(),
             "image/png".to_string(),
@@ -240,10 +237,9 @@ async fn edit_image_msg() -> Result<()> {
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    assert!(
-        edited_event_id.is_some(),
-        "Even after 3 seconds, msg edition not received"
-    );
+    let Some(edited_event_id) = edited_event_id else {
+        bail!("Even after 3 seconds, msg edition not received")
+    };
 
     assert_eq!(
         edited_event_id,

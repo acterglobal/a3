@@ -5,7 +5,6 @@ use ruma_common::{
     room::RoomType,
     OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedServerName,
 };
-use tracing::{error, trace};
 
 use super::{client::Client, RUNTIME};
 
