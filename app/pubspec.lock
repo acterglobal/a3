@@ -386,14 +386,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
-  email_validator:
-    dependency: "direct main"
-    description:
-      name: email_validator
-      sha256: e9a90f27ab2b915a27d7f9c2a7ddda5dd752d6942616ee83529b686fc086221b
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.17"
   emoji_picker_flutter:
     dependency: "direct main"
     description:
@@ -683,14 +675,6 @@ packages:
       url: "https://github.com/gtalha07/flutter_mentions.git"
     source: git
     version: "2.0.2"
-  flutter_onboarding_slider:
-    dependency: "direct main"
-    description:
-      name: flutter_onboarding_slider
-      sha256: "70d6b7c8d469abb31f66fd80c61915d7ff9c05d2c9001ec7db659702e7bc4f9d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.11"
   flutter_parsed_text:
     dependency: transitive
     description:
@@ -888,14 +872,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.1"
-  great_list_view:
-    dependency: "direct main"
-    description:
-      name: great_list_view
-      sha256: "4e528745d65c95d731b7c90af620822895233943ff531ad7a5d2b5a43e187b12"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.3"
   grpc:
     dependency: transitive
     description:
@@ -1398,7 +1374,7 @@ packages:
     source: hosted
     version: "5.4.0"
   photo_view:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: photo_view
       sha256: "8036802a00bae2a78fc197af8a158e3e2f7b500561ed23b4c458107685e645bb"
@@ -1874,14 +1850,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
-  string_validator:
-    dependency: "direct main"
-    description:
-      name: string_validator
-      sha256: "54d4f42cd6878ae72793a58a529d9a18ebfdfbfebd9793bbe55c9b28935e8543"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.2"
   swipe_to:
     dependency: "direct main"
     description:
@@ -1930,14 +1898,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.1"
-  timelines:
-    dependency: "direct main"
-    description:
-      name: timelines
-      sha256: "40214f5ab772ff45459cb8c15e5f60505a6828af0c0eb1eec6f29ed911a4c1c5"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.0"
   timezone:
     dependency: transitive
     description:
@@ -2234,14 +2194,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.2"
-  worker_manager:
-    dependency: transitive
-    description:
-      name: worker_manager
-      sha256: "42501e49ee0acad9eeda562984e3dcfe6fe3d26f2d8dc410bd76308a86447eb5"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.0.3"
   xdg_directories:
     dependency: transitive
     description:
