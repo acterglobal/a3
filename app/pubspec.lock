@@ -1854,10 +1854,10 @@ packages:
     dependency: "direct main"
     description:
       name: swipe_to
-      sha256: "6274e148a02b32dfa8ae8634c9aa6196bf5bc2d88653650abd11d2eb52fc5e29"
+      sha256: "4f258fa175daa0da7d946ecd7393bb46483e11c2aecc218c2b061f70af7835f9"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.2"
+    version: "1.0.5"
   sync_http:
     dependency: transitive
     description:

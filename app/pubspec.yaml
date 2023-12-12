@@ -44,7 +44,7 @@ dependencies:
   flutter_svg: ">=1.0.0"
   flutter_link_previewer: ^3.0.1
   bubble: ^1.2.1
-  swipe_to: ^1.0.2
+  swipe_to: ^1.0.5
   image_picker: ^1.0.0
   cross_file_image: ^1.0.0
   overlay_support: ^2.1.0
