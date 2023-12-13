@@ -49,16 +49,13 @@ final chatProfileDataProviderById =
 /// Provider the profile data of a the given space, keeps up to date with underlying client
 final chatsProvider =
     StateNotifierProvider<ChatRoomsListNotifier, List<Convo>>((ref) {
-  final client = ref.watch(clientProvider);
-  if (client == null) {
-    throw 'No client found';
-  }
+  final client = ref.watch(alwaysClientProvider);
   return ChatRoomsListNotifier(ref: ref, client: client);
 });
 
 final chatProvider =
     FutureProvider.family<Convo, String>((ref, roomIdOrAlias) async {
-  final client = ref.watch(clientProvider)!;
+  final client = ref.watch(alwaysClientProvider);
   // FIXME: fallback to fetching a public data, if not found
   return await client.convo(roomIdOrAlias);
 });
