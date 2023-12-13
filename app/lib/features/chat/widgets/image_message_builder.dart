@@ -22,7 +22,7 @@ class ImageMessageBuilder extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
-    final imageFile = ref.watch(imageFileFromMessageIdProvider(message.id));
+    final imageFile = ref.watch(mediaDownloadProvider(message.id));
     return imageFile.when(
       data: (imageFileData) {
         return InkWell(

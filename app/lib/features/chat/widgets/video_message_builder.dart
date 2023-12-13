@@ -22,7 +22,7 @@ class VideoMessageBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final videoFile = ref.watch(videoFileFromMessageIdProvider(message.id));
+    final videoFile = ref.watch(mediaDownloadProvider(message.id));
     return videoFile.when(
       data: (videoFileData) {
         return ClipRRect(
