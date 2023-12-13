@@ -1,16 +1,12 @@
 use derive_getters::Getters;
 use ruma_common::{EventId, OwnedEventId, OwnedUserId};
-use ruma_events::OriginalMessageLikeEvent;
+use ruma_events::{reaction::ReactionEventContent, OriginalMessageLikeEvent};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Deref};
 use tracing::{error, trace};
 
 use super::{AnyActerModel, EventMeta};
-use crate::{
-    events::reactions::{ReactionBuilder, ReactionEventContent},
-    store::Store,
-    Result,
-};
+use crate::{store::Store, Result};
 
 static REACT_FIELD: &str = "reactions";
 static REACT_STATS_FIELD: &str = "reaction_stats";
@@ -76,7 +72,7 @@ impl ReactionManager {
         &self.stats
     }
 
-    pub fn draft_builder(&self) -> ReactionBuilder {
+    pub fn draft_builder(&self) -> ReactionManager {
         ReactionBuilder::default()
             .to(self.event_id.to_owned())
             .to_owned()

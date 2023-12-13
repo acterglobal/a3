@@ -5,7 +5,7 @@ mod comments;
 mod common;
 mod news;
 mod pins;
-mod reactions;
+pub mod reactions;
 mod rsvp;
 mod tag;
 mod tasks;
@@ -22,14 +22,14 @@ pub use core::fmt::Debug;
 use enum_dispatch::enum_dispatch;
 pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
-pub use reactions::Reaction;
 pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
 use ruma_common::{
     serde::Raw, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId,
 };
 use ruma_events::{
-    room::redaction::RoomRedactionEventContent, AnySyncTimelineEvent, AnyTimelineEvent,
-    MessageLikeEvent, StaticEventContent, UnsignedRoomRedactionEvent,
+    reaction::ReactionEventContent, room::redaction::RoomRedactionEventContent,
+    AnySyncTimelineEvent, AnyTimelineEvent, MessageLikeEvent, StaticEventContent,
+    UnsignedRoomRedactionEvent,
 };
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
@@ -48,7 +48,6 @@ use crate::{
         comments::{CommentEventContent, CommentUpdateEventContent},
         news::{NewsEntryEventContent, NewsEntryUpdateEventContent},
         pins::{PinEventContent, PinUpdateEventContent},
-        reactions::ReactionEventContent,
         rsvp::RsvpEventContent,
         tasks::{
             TaskEventContent, TaskListEventContent, TaskListUpdateEventContent,
@@ -271,8 +270,8 @@ pub enum AnyActerModel {
     AttachmentUpdate(AttachmentUpdate),
 
     Rsvp(Rsvp),
+    Reaction(ReactionEventContent),
 
-    Reaction(Reaction),
     #[cfg(test)]
     TestModel(TestModel),
 }
@@ -477,6 +476,7 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                     reason: r.unsigned.redacted_because,
                 }),
             },
+
             AnyActerEvent::Reaction(e) => match e {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::Reaction(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {

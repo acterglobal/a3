@@ -15,12 +15,17 @@ use matrix_sdk::{
     RoomState,
 };
 use ruma_common::{MxcUri, OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::room::{
-    message::{
-        AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
-        LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
+use ruma_events::{
+    reaction::ReactionEventContent,
+    relation::Annotation,
+    room::{
+        message::{
+            AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
+            LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
+        },
+        ImageInfo,
     },
-    ImageInfo,
+    MessageLikeEventType,
 };
 use std::{
     collections::{hash_map::Entry, HashMap},
@@ -313,6 +318,32 @@ impl NewsEntry {
                     room,
                     content,
                 })
+            })
+            .await?
+    }
+
+    pub async fn like(&self) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        let event_id = self.content.event_id().to_owned();
+
+        let client = room.client();
+        let my_id = client.user_id().context("User not found")?.to_owned();
+        let reaction = ReactionEventContent::new(Annotation::new(event_id, "\u{2665}".to_string()));
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+
+                trace!("before sending reaction");
+                let resp = room.send(reaction).await?;
+                trace!("after sending reaction");
+                Ok(resp.event_id)
             })
             .await?
     }
