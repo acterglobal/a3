@@ -568,6 +568,10 @@ class ActerSdk {
     return _api.newSpaceSettingsBuilder();
   }
 
+  ffi.JoinRuleBuilder newJoinRuleBuilder() {
+    return _api.newJoinRuleBuilder();
+  }
+
   String rotateLogFile() {
     return _api.rotateLogFile();
   }

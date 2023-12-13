@@ -64,7 +64,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final userId = ref.watch(clientProvider)!.userId().toString();
+    final userId = ref.watch(alwaysClientProvider).userId().toString();
     final roomId = widget.convo.getRoomIdStr();
     final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     final chatInputState = ref.watch(chatInputProvider(roomId));
@@ -459,7 +459,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     );
   }
 
-// delete message event
+  // delete message event
   Future<void> redactRoomMessage(String eventId) async {
     await widget.convo.redactMessage(eventId, '', null);
   }
@@ -476,10 +476,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     return null;
   }
 
-  void handleAttachment(
-    WidgetRef ref,
-    List<File>? selectedFiles,
-  ) async {
+  void handleAttachment(WidgetRef ref, List<File>? selectedFiles) async {
     if (context.mounted) {
       if (selectedFiles != null && selectedFiles.isNotEmpty) {
         String fileName = selectedFiles.first.path.split('/').last;
@@ -956,15 +953,15 @@ class _TextInputWidget extends ConsumerWidget {
 }
 
 class _ReplyContentWidget extends StatelessWidget {
+  final Convo convo;
+  final Message msg;
+  final Widget messageWidget;
+
   const _ReplyContentWidget({
     required this.convo,
     required this.msg,
     required this.messageWidget,
   });
-
-  final Convo convo;
-  final Message msg;
-  final Widget messageWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -1000,13 +997,13 @@ class _ReplyContentWidget extends StatelessWidget {
 }
 
 class _EditMessageContentWidget extends StatelessWidget {
+  final Convo convo;
+  final Message msg;
+
   const _EditMessageContentWidget({
     required this.convo,
     required this.msg,
   });
-
-  final Convo convo;
-  final Message msg;
 
   @override
   Widget build(BuildContext context) {

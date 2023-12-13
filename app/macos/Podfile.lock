@@ -18,6 +18,8 @@ PODS:
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
+  - media_kit_libs_macos_video (1.0.4):
+    - FlutterMacOS
   - media_kit_native_event_loop (1.0.0):
     - FlutterMacOS
   - media_kit_video (0.0.1):
@@ -57,6 +59,7 @@ DEPENDENCIES:
   - flutter_local_notifications (from `Flutter/ephemeral/.symlinks/plugins/flutter_local_notifications/macos`)
   - flutter_secure_storage_macos (from `Flutter/ephemeral/.symlinks/plugins/flutter_secure_storage_macos/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
+  - media_kit_libs_macos_video (from `Flutter/ephemeral/.symlinks/plugins/media_kit_libs_macos_video/macos`)
   - media_kit_native_event_loop (from `Flutter/ephemeral/.symlinks/plugins/media_kit_native_event_loop/macos`)
   - media_kit_video (from `Flutter/ephemeral/.symlinks/plugins/media_kit_video/macos`)
   - package_info (from `Flutter/ephemeral/.symlinks/plugins/package_info/macos`)
@@ -92,6 +95,8 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/flutter_secure_storage_macos/macos
   FlutterMacOS:
     :path: Flutter/ephemeral
+  media_kit_libs_macos_video:
+    :path: Flutter/ephemeral/.symlinks/plugins/media_kit_libs_macos_video/macos
   media_kit_native_event_loop:
     :path: Flutter/ephemeral/.symlinks/plugins/media_kit_native_event_loop/macos
   media_kit_video:
@@ -127,8 +132,9 @@ SPEC CHECKSUMS:
   flutter_secure_storage_macos: d56e2d218c1130b262bef8b4a7d64f88d7f9c9ea
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
-  media_kit_native_event_loop: d8a1b897de6173dc24623b58ef62a318f7344eae
-  media_kit_video: f5bdcbfaef003c02251e50d44bb741aa96fb8a1e
+  media_kit_libs_macos_video: b3e2bbec2eef97c285f2b1baa7963c67c753fb82
+  media_kit_native_event_loop: 81fd5b45192b72f8b5b69eaf5b540f45777eb8d5
+  media_kit_video: c75b07f14d59706c775778e4dd47dd027de8d1e5
   package_info: 6eba2fd8d3371dda2d85c8db6fe97488f24b74b2
   package_info_plus: 02d7a575e80f194102bef286361c6c326e4c29ce
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943

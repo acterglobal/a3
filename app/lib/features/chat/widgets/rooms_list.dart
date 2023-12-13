@@ -16,13 +16,14 @@ final _searchToggleProvider = StateProvider.autoDispose<bool>((ref) => false);
 
 class RoomsListWidget extends ConsumerWidget {
   static const roomListMenuKey = Key('room-list');
+
   const RoomsListWidget({
     super.key = roomListMenuKey,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(clientProvider)!;
+    final client = ref.watch(alwaysClientProvider);
     final showSearch = ref.watch(_searchToggleProvider);
     final searchNotifier = ref.watch(_searchToggleProvider.notifier);
     final inSideBar = ref.watch(inSideBarProvider);

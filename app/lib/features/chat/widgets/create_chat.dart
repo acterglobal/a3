@@ -33,6 +33,7 @@ class CreateChatPage extends ConsumerStatefulWidget {
   static const submiteKey = Key('create-chat-submit');
   final String? initialSelectedSpaceId;
   final int? initialPage;
+
   const CreateChatPage({
     super.key,
     this.initialSelectedSpaceId,
@@ -48,6 +49,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
   late PageController controller;
   late int currIdx;
   late final List<Widget> pages;
+
   @override
   void initState() {
     super.initState();
@@ -148,8 +150,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
       if (parentId != null) {
         config.setParent(parentId);
       }
-      final client = ref.read(clientProvider);
-      if (client == null) throw UnimplementedError('Client is not available');
+      final client = ref.read(alwaysClientProvider);
       final roomId = await client.createConvo(config.build());
       // add room to child of space (if given)
       if (parentId != null) {
@@ -177,6 +178,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
 class _CreateChatWidget extends ConsumerStatefulWidget {
   final PageController controller;
   final Future<ffi.Convo?> Function(String, String) onCreateConvo;
+
   const _CreateChatWidget({
     required this.controller,
     required this.onCreateConvo,
@@ -463,8 +465,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
 
 // checks whether user DM already exists or needs created
   String? checkUserDMExists(String userId, WidgetRef ref) {
-    final client = ref.watch(clientProvider);
-    if (client == null) throw 'Client not available';
+    final client = ref.watch(alwaysClientProvider);
     final id = client.dmWithUser(userId).text();
     if (id != null) return id;
     return null;
@@ -475,6 +476,7 @@ class _CreateRoomFormWidget extends ConsumerStatefulWidget {
   final String? initialSelectedSpaceId;
   final PageController controller;
   final Future<ffi.Convo?> Function(String, String) onCreateConvo;
+
   const _CreateRoomFormWidget({
     required this.controller,
     required this.onCreateConvo,
@@ -684,6 +686,7 @@ class _CreateRoomFormWidgetConsumerState
 class _UserWidget extends ConsumerWidget {
   final ffi.UserProfile profile;
   final void Function() onUp;
+
   const _UserWidget({required this.profile, required this.onUp});
 
   @override
