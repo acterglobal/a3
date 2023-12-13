@@ -133,6 +133,6 @@ modules:
     sources:
     - type: git
       url: https://git.ffmpeg.org/ffmpeg.git
-      tag: n6.1
-      commit: d4ff0020b40b524a490cf62eccbd3a318f4c0e58
+      tag: n6.0.1
+      commit: c41ff724ede7da657762d61097e26fac296c53bf
 # END ----------------------------------------------------------------------------------- MediaKit
