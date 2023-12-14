@@ -1247,42 +1247,81 @@ impl Room {
                 let original = event_content
                     .as_original()
                     .expect("Couldn't get original msg");
-                let (request, name) = match &original.content.msgtype {
+                // get file extension from msg info
+                let (request, mut filename) = match &original.content.msgtype {
                     MessageType::Image(content) => {
                         let request = MediaRequest {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        (request, content.body.clone())
+                        let filename = content
+                            .info
+                            .clone()
+                            .and_then(|info| info.mimetype)
+                            .and_then(|mimetype| {
+                                mime2ext::mime2ext(mimetype)
+                                    .map(|ext| format!("{}.{}", event_id.clone(), ext))
+                            });
+                        (request, filename)
                     }
                     MessageType::Audio(content) => {
                         let request = MediaRequest {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        (request, content.body.clone())
+                        let filename = content
+                            .info
+                            .clone()
+                            .and_then(|info| info.mimetype)
+                            .and_then(|mimetype| {
+                                mime2ext::mime2ext(mimetype)
+                                    .map(|ext| format!("{}.{}", event_id.clone(), ext))
+                            });
+                        (request, filename)
                     }
                     MessageType::Video(content) => {
                         let request = MediaRequest {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        (request, content.body.clone())
+                        let filename = content
+                            .info
+                            .clone()
+                            .and_then(|info| info.mimetype)
+                            .and_then(|mimetype| {
+                                mime2ext::mime2ext(mimetype)
+                                    .map(|ext| format!("{}.{}", event_id.clone(), ext))
+                            });
+                        (request, filename)
                     }
                     MessageType::File(content) => {
                         let request = MediaRequest {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        (request, content.body.clone())
+                        let filename = content
+                            .info
+                            .clone()
+                            .and_then(|info| info.mimetype)
+                            .and_then(|mimetype| {
+                                mime2ext::mime2ext(mimetype)
+                                    .map(|ext| format!("{}.{}", event_id.clone(), ext))
+                            });
+                        (request, filename)
                     }
                     _ => bail!("This message type is not downloadable"),
                 };
+                let data = client.media().get_media_content(&request, false).await?;
+                // infer file extension via parsing of file binary
+                if filename.is_none() {
+                    if let Some(kind) = infer::get(&data) {
+                        filename = Some(format!("{}.{}", event_id.clone(), kind.extension()));
+                    }
+                }
                 let mut path = PathBuf::from(dir_path.clone());
-                path.push(name);
+                path.push(filename.unwrap_or_else(|| event_id.clone()));
                 let mut file =
                     std::fs::File::create(path.clone()).context("File should be created")?;
-                let data = client.media().get_media_content(&request, false).await?;
                 file.write_all(&data)?;
                 let key = [
                     room.room_id().as_str().as_bytes(),
