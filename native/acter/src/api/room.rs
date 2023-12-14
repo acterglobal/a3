@@ -1409,12 +1409,10 @@ impl Room {
                         let request = content
                             .info
                             .as_ref()
-                            .and_then(|x| x.thumbnail_source.clone())
-                            .and_then(|x| {
-                                Some(MediaRequest {
-                                    source: x,
-                                    format: MediaFormat::File,
-                                })
+                            .and_then(|info| info.thumbnail_source.clone())
+                            .map(|source| MediaRequest {
+                                source,
+                                format: MediaFormat::File,
                             });
                         let filename = content
                             .info
@@ -1431,12 +1429,10 @@ impl Room {
                         let request = content
                             .info
                             .as_ref()
-                            .and_then(|x| x.thumbnail_source.clone())
-                            .and_then(|x| {
-                                Some(MediaRequest {
-                                    source: x,
-                                    format: MediaFormat::File,
-                                })
+                            .and_then(|info| info.thumbnail_source.clone())
+                            .map(|source| MediaRequest {
+                                source,
+                                format: MediaFormat::File,
                             });
                         let filename = content
                             .info
@@ -1453,12 +1449,10 @@ impl Room {
                         let request = content
                             .info
                             .as_ref()
-                            .and_then(|x| x.thumbnail_source.clone())
-                            .and_then(|x| {
-                                Some(MediaRequest {
-                                    source: x,
-                                    format: MediaFormat::File,
-                                })
+                            .and_then(|info| info.thumbnail_source.clone())
+                            .map(|source| MediaRequest {
+                                source,
+                                format: MediaFormat::File,
                             });
                         let filename = content
                             .info
@@ -1475,12 +1469,10 @@ impl Room {
                         let request = content
                             .info
                             .as_ref()
-                            .and_then(|x| x.thumbnail_source.clone())
-                            .and_then(|x| {
-                                Some(MediaRequest {
-                                    source: x,
-                                    format: MediaFormat::File,
-                                })
+                            .and_then(|info| info.thumbnail_source.clone())
+                            .map(|source| MediaRequest {
+                                source,
+                                format: MediaFormat::File,
                             });
                         let filename = content
                             .info
@@ -1496,6 +1488,7 @@ impl Room {
                     _ => bail!("This message type is not downloadable"),
                 };
                 let Some(request) = request else {
+                    // thumbnail source doesn't exist
                     return Ok(OptionString::new(None));
                 };
                 let data = client.media().get_media_content(&request, false).await?;
