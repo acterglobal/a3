@@ -1236,11 +1236,11 @@ impl Room {
         let room = self.room.clone();
         let client = self.room.client();
 
-        let eid = EventId::parse(event_id.clone())?;
+        let evt_id = EventId::parse(event_id.clone())?;
 
         RUNTIME
             .spawn(async move {
-                let evt = room.event(&eid).await?;
+                let evt = room.event(&evt_id).await?;
                 let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
                     bail!("It is not message")
                 };
@@ -1308,11 +1308,11 @@ impl Room {
         let room = self.room.clone();
         let client = self.room.client();
 
-        let eid = EventId::parse(event_id.clone())?;
+        let evt_id = EventId::parse(event_id.clone())?;
 
         RUNTIME
             .spawn(async move {
-                let evt = room.event(&eid).await?;
+                let evt = room.event(&evt_id).await?;
                 let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
                     bail!("It is not message")
                 };
