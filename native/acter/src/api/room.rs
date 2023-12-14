@@ -48,7 +48,7 @@ use ruma_events::{
 use std::{io::Write, ops::Deref, path::PathBuf};
 use tracing::{error, info, warn};
 
-use crate::{OptionBuffer, RoomMessage, RoomProfile, UserProfile, RUNTIME};
+use crate::{OptionBuffer, OptionString, RoomMessage, RoomProfile, UserProfile, RUNTIME};
 
 use super::api::FfiBuffer;
 
@@ -1301,7 +1301,7 @@ impl Room {
             .await?
     }
 
-    pub async fn media_path(&self, event_id: String) -> Result<String> {
+    pub async fn media_path(&self, event_id: String) -> Result<OptionString> {
         if !self.is_joined() {
             bail!("Can't read message from a room we are not in");
         }
@@ -1331,13 +1331,12 @@ impl Room {
                     event_id.as_str().as_bytes(),
                 ]
                 .concat();
-                let path = client
-                    .store()
-                    .get_custom_value(&key)
-                    .await?
-                    .context("Couldn't get the path of downloaded media")?;
-                let text = std::str::from_utf8(&path)?;
-                Ok(text.to_string())
+                let path = client.store().get_custom_value(&key).await?;
+                let text = match path {
+                    Some(path) => Some(std::str::from_utf8(&path)?.to_string()),
+                    None => None,
+                };
+                Ok(OptionString::new(text))
             })
             .await?
     }

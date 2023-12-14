@@ -5580,7 +5580,7 @@ class Api {
     return tmp7;
   }
 
-  String? __convoMediaPathFuturePoll(
+  OptionString? __convoMediaPathFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -5605,8 +5605,6 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -5622,23 +5620,10 @@ class Api {
       }
       throw tmp9_0;
     }
-    if (tmp14 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
-    List<int> tmp13_buf = [];
-    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp14; i++) {
-      int char = tmp13_precast.elementAt(i).value;
-      tmp13_buf.add(char);
-    }
-    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionString");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = OptionString._(this, tmp13_1);
     return tmp7;
   }
 
@@ -38832,7 +38817,8 @@ class Convo {
   }
 
   /// get the path that media (image/audio/video/file) was saved
-  Future<String> mediaPath(
+  /// return None when never downloaded
+  Future<OptionString> mediaPath(
     String eventId,
   ) {
     final tmp1 = eventId;
@@ -54798,10 +54784,6 @@ class _ConvoMediaPathFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
 }
 
 class _ConvoUserReceiptsFuturePollReturn extends ffi.Struct {

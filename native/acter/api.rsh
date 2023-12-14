@@ -1165,7 +1165,8 @@ object Convo {
     fn download_media(event_id: string, dir_path: string) -> Future<Result<string>>;
 
     /// get the path that media (image/audio/video/file) was saved
-    fn media_path(event_id: string) -> Future<Result<string>>;
+    /// return None when never downloaded
+    fn media_path(event_id: string) -> Future<Result<OptionString>>;
 
     /// initially called to get receipt status of room members
     fn user_receipts() -> Future<Result<Vec<ReceiptRecord>>>;
