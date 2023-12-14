@@ -5627,6 +5627,100 @@ class Api {
     return tmp7;
   }
 
+  OptionString? __convoDownloadMediaThumbnailFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoDownloadMediaThumbnailFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionString");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = OptionString._(this, tmp13_1);
+    return tmp7;
+  }
+
+  OptionString? __convoMediaThumbnailPathFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoMediaThumbnailPathFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionString");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = OptionString._(this, tmp13_1);
+    return tmp7;
+  }
+
   FfiListReceiptRecord? __convoUserReceiptsFuturePoll(
     int boxed,
     int postCobject,
@@ -17694,6 +17788,45 @@ class Api {
         int,
         int,
       )>();
+  late final _convoDownloadMediaThumbnailPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Convo_download_media_thumbnail");
+
+  late final _convoDownloadMediaThumbnail =
+      _convoDownloadMediaThumbnailPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _convoMediaThumbnailPathPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Convo_media_thumbnail_path");
+
+  late final _convoMediaThumbnailPath = _convoMediaThumbnailPathPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _convoUserReceiptsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -25173,6 +25306,36 @@ class Api {
   late final _convoMediaPathFuturePoll =
       _convoMediaPathFuturePollPtr.asFunction<
           _ConvoMediaPathFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _convoDownloadMediaThumbnailFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConvoDownloadMediaThumbnailFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Convo_download_media_thumbnail_future_poll");
+
+  late final _convoDownloadMediaThumbnailFuturePoll =
+      _convoDownloadMediaThumbnailFuturePollPtr.asFunction<
+          _ConvoDownloadMediaThumbnailFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _convoMediaThumbnailPathFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConvoMediaThumbnailPathFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Convo_media_thumbnail_path_future_poll");
+
+  late final _convoMediaThumbnailPathFuturePoll =
+      _convoMediaThumbnailPathFuturePollPtr.asFunction<
+          _ConvoMediaThumbnailPathFuturePollReturn Function(
             int,
             int,
             int,
@@ -38846,6 +39009,91 @@ class Convo {
     final tmp7_1 = _Box(_api, tmp7_0, "__Convo_media_path_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__convoMediaPathFuturePoll);
+    return tmp6;
+  }
+
+  /// download media (image/video/file/location) thumbnail to specified path
+  Future<OptionString> downloadMediaThumbnail(
+    String eventId,
+    String dirPath,
+  ) {
+    final tmp1 = eventId;
+    final tmp5 = dirPath;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._convoDownloadMediaThumbnail(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 =
+        _Box(_api, tmp11_0, "__Convo_download_media_thumbnail_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 =
+        _nativeFuture(tmp11_1, _api.__convoDownloadMediaThumbnailFuturePoll);
+    return tmp10;
+  }
+
+  /// get the path that media (image/video/file/location) thumbnail was saved
+  /// return None when never downloaded
+  Future<OptionString> mediaThumbnailPath(
+    String eventId,
+  ) {
+    final tmp1 = eventId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._convoMediaThumbnailPath(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__Convo_media_thumbnail_path_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__convoMediaThumbnailPathFuturePoll);
     return tmp6;
   }
 
@@ -54772,6 +55020,36 @@ class _ConvoDownloadMediaFuturePollReturn extends ffi.Struct {
 }
 
 class _ConvoMediaPathFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ConvoDownloadMediaThumbnailFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ConvoMediaThumbnailPathFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
