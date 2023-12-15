@@ -60,16 +60,14 @@ pub use acter_core::{
     models::{ActerModel, Color as EfkColor, Tag, TextMessageContent},
 };
 pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
-#[cfg(feature = "testing")]
-pub use auth::{
-    destroy_local_data, guest_client, login_new_client, login_new_client_under_config,
-    login_with_token, login_with_token_under_config, make_client_config, register_under_config,
-    register_with_token, register_with_token_under_config, sanitize_user, set_proxy,
-};
-#[cfg(not(feature = "testing"))]
 pub use auth::{
     destroy_local_data, guest_client, login_new_client, login_with_token, register_with_token,
     set_proxy,
+};
+#[cfg(feature = "testing")]
+pub use auth::{
+    login_new_client_under_config, login_with_token_under_config, make_client_config,
+    register_under_config, register_with_token_under_config, sanitize_user,
 };
 pub use calendar_events::{CalendarEvent, CalendarEventDraft, CalendarEventUpdateBuilder};
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
