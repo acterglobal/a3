@@ -1,4 +1,5 @@
-import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -23,30 +24,33 @@ class FileMessageBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mediaFile = ref.watch(mediaDownloadProvider(message.id));
-    return Container(
-      padding: const EdgeInsets.all(20.0),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          getFileIcon(context),
-          const SizedBox(width: 20),
-          fileInfoUI(context),
-          const SizedBox(width: 10),
-          mediaFile.when(
-            data: (mediaFileData) {
-              return IconButton(
-                onPressed: () {
-                  Share.shareXFiles([XFile(mediaFileData.path)]);
-                },
-                icon: const Icon(Icons.share),
-              );
-            },
-            error: (error, stack) =>
-                Center(child: Text('Loading failed: $error')),
-            loading: () => const CircularProgressIndicator(),
-          ),
-        ],
+    final mediaState = ref.watch(mediaChatStateProvider(message.id));
+    return InkWell(
+      onTap: () async {
+        if (mediaState.mediaFile != null) {
+          Share.shareXFiles([XFile(mediaState.mediaFile!.path)]);
+        } else {
+          await ref
+              .read(mediaChatStateProvider(message.id).notifier)
+              .downloadMedia();
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(20.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            getFileIcon(context),
+            const SizedBox(width: 20),
+            fileInfoUI(context),
+            const SizedBox(width: 10),
+            if (mediaState.mediaChatLoadingState.isLoading ||
+                mediaState.isDownloading)
+              const CircularProgressIndicator()
+            else if (mediaState.mediaFile == null)
+              const Icon(Icons.download),
+          ],
+        ),
       ),
     );
   }
