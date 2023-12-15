@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:riverpod/riverpod.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 // ignore_for_file: unused_field
 
@@ -17,7 +17,7 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, Convo> {
   Future<Convo> build(Convo arg) async {
     final convo = arg;
     final convoId = convo.getRoomId().toString();
-    final client = ref.watch(clientProvider)!;
+    final client = ref.watch(alwaysClientProvider);
     ref.onDispose(onDispose);
     _listener = client.subscribeStream(convoId);
     _sub = _listener.listen(
@@ -45,10 +45,11 @@ class LatestMsgNotifier extends StateNotifier<RoomMessage?> {
   final Convo convo;
   late Stream<bool> _listener;
   late StreamSubscription<bool> _sub;
+
   LatestMsgNotifier(this.ref, this.convo) : super(null) {
     final convoId = convo.getRoomId().toString();
     state = convo.latestMessage();
-    final client = ref.watch(clientProvider)!;
+    final client = ref.watch(alwaysClientProvider);
     _listener = client.subscribeStream('$convoId::latest_message');
     _sub = _listener.listen(
       (e) {

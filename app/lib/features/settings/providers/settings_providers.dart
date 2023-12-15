@@ -25,10 +25,7 @@ final ignoredUsersProvider = FutureProvider<List<UserId>>((ref) async {
 });
 
 final pushersProvider = FutureProvider<List<Pusher>>((ref) async {
-  final client = ref.watch(clientProvider);
-  if (client == null) {
-    throw 'No client';
-  }
+  final client = ref.watch(alwaysClientProvider);
   return (await client.pushers()).toList();
 });
 

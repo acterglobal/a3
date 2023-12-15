@@ -21,9 +21,6 @@ final superInvitesTokensProvider =
 });
 
 final superInvitesProvider = Provider<SuperInvites>((ref) {
-  final client = ref.watch(clientProvider);
-  if (client == null) {
-    throw 'No client';
-  }
+  final client = ref.watch(alwaysClientProvider);
   return client.superInvites();
 });
