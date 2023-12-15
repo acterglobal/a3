@@ -254,7 +254,7 @@ impl TimelineStream {
                 let edited_content = match *draft {
                     MsgContentDraft::TextPlain { body } => {
                         let replacement = Replacement::new(
-                            event_id.to_owned(),
+                            event_id,
                             MessageType::text_plain(body.clone()).into(),
                         );
                         let mut edited_content = RoomMessageEventContent::text_plain(body);
@@ -263,7 +263,7 @@ impl TimelineStream {
                     }
                     MsgContentDraft::TextMarkdown { body } => {
                         let replacement = Replacement::new(
-                            event_id.to_owned(),
+                            event_id,
                             MessageType::text_markdown(body.clone()).into(),
                         );
                         let mut edited_content = RoomMessageEventContent::text_markdown(body);
@@ -299,10 +299,8 @@ impl TimelineStream {
                         image_content.info = Some(Box::new(info));
                         let mut edited_content =
                             RoomMessageEventContent::new(MessageType::Image(image_content.clone()));
-                        let replacement = Replacement::new(
-                            event_id.to_owned(),
-                            MessageType::Image(image_content).into(),
-                        );
+                        let replacement =
+                            Replacement::new(event_id, MessageType::Image(image_content).into());
                         edited_content.relates_to = Some(Relation::Replacement(replacement));
                         edited_content
                     }
@@ -335,10 +333,8 @@ impl TimelineStream {
                         audio_content.info = Some(Box::new(info));
                         let mut edited_content =
                             RoomMessageEventContent::new(MessageType::Audio(audio_content.clone()));
-                        let replacement = Replacement::new(
-                            event_id.to_owned(),
-                            MessageType::Audio(audio_content).into(),
-                        );
+                        let replacement =
+                            Replacement::new(event_id, MessageType::Audio(audio_content).into());
                         edited_content.relates_to = Some(Relation::Replacement(replacement));
                         edited_content
                     }
@@ -371,10 +367,8 @@ impl TimelineStream {
                         video_content.info = Some(Box::new(info));
                         let mut edited_content =
                             RoomMessageEventContent::new(MessageType::Video(video_content.clone()));
-                        let replacement = Replacement::new(
-                            event_id.to_owned(),
-                            MessageType::Video(video_content).into(),
-                        );
+                        let replacement =
+                            Replacement::new(event_id, MessageType::Video(video_content).into());
                         edited_content.relates_to = Some(Relation::Replacement(replacement));
                         edited_content
                     }
@@ -412,10 +406,8 @@ impl TimelineStream {
                         file_content.filename = filename.clone();
                         let mut edited_content =
                             RoomMessageEventContent::new(MessageType::File(file_content.clone()));
-                        let replacement = Replacement::new(
-                            event_id.to_owned(),
-                            MessageType::File(file_content).into(),
-                        );
+                        let replacement =
+                            Replacement::new(event_id, MessageType::File(file_content).into());
                         edited_content.relates_to = Some(Relation::Replacement(replacement));
                         edited_content
                     }
@@ -432,7 +424,7 @@ impl TimelineStream {
                             MessageType::Location(location_content.clone()),
                         );
                         let replacement = Replacement::new(
-                            event_id.to_owned(),
+                            event_id,
                             MessageType::Location(location_content).into(),
                         );
                         edited_content.relates_to = Some(Relation::Replacement(replacement));
