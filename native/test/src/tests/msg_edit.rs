@@ -147,7 +147,6 @@ async fn edit_image_msg() -> Result<()> {
         .write_all(include_bytes!("./fixtures/kingfisher.jpg"))?;
 
     let draft = user.image_draft(
-        "jpg_file".to_string(),
         tmp_jpg.path().to_string_lossy().to_string(),
         "image/jpeg".to_string(),
     );
@@ -198,7 +197,6 @@ async fn edit_image_msg() -> Result<()> {
     ))?;
 
     let draft = user.image_draft(
-        "png_file".to_string(),
         tmp_png.path().to_string_lossy().to_string(),
         "image/png".to_string(),
     );

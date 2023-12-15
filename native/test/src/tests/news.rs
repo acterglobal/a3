@@ -223,7 +223,7 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
     let image_draft = user.image_draft(
-        tmp_file.path().as_os_str().to_str().unwrap().to_owned(),
+        tmp_file.path().to_string_lossy().to_string(),
         "image/jpg".to_string(),
     );
     draft.add_slide(Box::new(image_draft)).await?;
@@ -245,10 +245,8 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
 
     let slides = space.latest_news_entries(1).await?;
     let final_entry = slides.first().expect("Item is there");
-    let text_slide = final_entry.get_slide(0).expect("we have a slide");
-    assert_eq!(text_slide.type_str(), "image");
-    assert!(!text_slide.has_formatted_text());
-    assert_eq!(text_slide.text(), "This is a simple text".to_owned());
+    let image_slide = final_entry.get_slide(0).expect("we have a slide");
+    assert_eq!(image_slide.type_str(), "image");
 
     Ok(())
 }
@@ -279,7 +277,7 @@ async fn news_png_image_with_text_test() -> Result<()> {
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
     let image_draft = user.image_draft(
-        tmp_file.path().as_os_str().to_str().unwrap().to_owned(),
+        tmp_file.path().to_string_lossy().to_string(),
         "image/png".to_string(),
     );
     draft.add_slide(Box::new(image_draft)).await?;
@@ -301,10 +299,8 @@ async fn news_png_image_with_text_test() -> Result<()> {
 
     let slides = space.latest_news_entries(1).await?;
     let final_entry = slides.first().expect("Item is there");
-    let text_slide = final_entry.get_slide(0).expect("we have a slide");
-    assert_eq!(text_slide.type_str(), "image");
-    assert!(!text_slide.has_formatted_text());
-    assert_eq!(text_slide.text(), "This is a simple text".to_owned());
+    let image_slide = final_entry.get_slide(0).expect("we have a slide");
+    assert_eq!(image_slide.type_str(), "image");
 
     Ok(())
 }

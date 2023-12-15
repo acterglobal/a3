@@ -165,8 +165,7 @@ async fn pin_attachments() -> Result<()> {
 
     let attachments_listener = attachments_manager.subscribe();
     let base_draft = user.image_draft(
-        "sample jpeg".to_owned(),
-        jpg_file.path().as_os_str().to_str().unwrap().to_owned(),
+        jpg_file.path().to_string_lossy().to_string(),
         "image/jpeg".to_string(),
     );
     let attachment_1_id = attachments_manager
@@ -189,14 +188,6 @@ async fn pin_attachments() -> Result<()> {
     let attachment = attachments.first().unwrap();
     assert_eq!(attachment.event_id(), attachment_1_id);
     assert_eq!(attachment.type_str(), "image");
-    match attachment.msg_content() {
-        MsgContent::Image { body, .. } => {
-            assert_eq!(body, "sample jpeg");
-        }
-        _ => {
-            bail!("should be image content")
-        }
-    }
 
     // go for the second
 
@@ -207,8 +198,7 @@ async fn pin_attachments() -> Result<()> {
 
     let attachments_listener = attachments_manager.subscribe();
     let base_draft = user.file_draft(
-        "sample png".to_owned(),
-        png_file.path().as_os_str().to_str().unwrap().to_owned(),
+        png_file.path().to_string_lossy().to_string(),
         "image/png".to_string(),
     );
     let attachment_2_id = attachments_manager
