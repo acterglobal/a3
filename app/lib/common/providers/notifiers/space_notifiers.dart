@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:riverpod/riverpod.dart';
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/foundation.dart';
+import 'package:riverpod/riverpod.dart';
 
 // ignore_for_file: unused_field
 
@@ -12,6 +12,7 @@ class AsyncSpaceProfileDataNotifier
     extends FamilyAsyncNotifier<ProfileData, Space> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _sub;
+
   Future<ProfileData> _getSpaceProfileData() async {
     final space = arg;
     final profile = space.getProfile();
@@ -22,7 +23,7 @@ class AsyncSpaceProfileDataNotifier
 
   @override
   Future<ProfileData> build(Space arg) async {
-    final client = ref.watch(clientProvider)!;
+    final client = ref.watch(alwaysClientProvider);
     ref.onDispose(onDispose);
     _listener = client.subscribeStream(arg.getRoomId().toString());
     _sub = _listener.listen(
@@ -51,13 +52,13 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
   late StreamSubscription<bool> _sub;
 
   Future<Space?> _getSpace() async {
-    final client = ref.read(clientProvider)!;
+    final client = ref.read(alwaysClientProvider);
     return await client.space(arg);
   }
 
   @override
   Future<Space?> build(String arg) async {
-    final client = ref.watch(clientProvider)!;
+    final client = ref.watch(alwaysClientProvider);
     ref.onDispose(onDispose);
     _listener = client.subscribeStream(arg);
     _sub = _listener.listen(

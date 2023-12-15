@@ -1,8 +1,8 @@
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/providers/navigation.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
@@ -23,7 +23,7 @@ class SidebarWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final sidebarNavItems = ref.watch(sidebarItemsProvider(context));
-    final isGuest = ref.watch(clientProvider)!.isGuest();
+    final isGuest = ref.watch(alwaysClientProvider).isGuest();
 
     return AdaptiveScaffold.standardNavigationRail(
       // main logic

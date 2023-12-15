@@ -86,8 +86,8 @@ pub use profile::{RoomProfile, UserProfile};
 pub use push::{NotificationItem, Pusher};
 pub use receipt::{ReceiptEvent, ReceiptRecord, ReceiptThread};
 pub use room::{
-    Member, MemberPermission, MembershipStatus, Room, SpaceHierarchyListResult,
-    SpaceHierarchyRoomInfo, SpaceRelation, SpaceRelations,
+    new_join_rule_builder, JoinRuleBuilder, Member, MemberPermission, MembershipStatus, Room,
+    SpaceHierarchyListResult, SpaceHierarchyRoomInfo, SpaceRelation, SpaceRelations,
 };
 pub use rsvp::{Rsvp, RsvpDraft, RsvpManager};
 pub use search::{PublicSearchResult, PublicSearchResultItem};

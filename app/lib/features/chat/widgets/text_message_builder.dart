@@ -3,8 +3,8 @@ import 'package:acter/common/themes/chat_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
@@ -34,7 +34,7 @@ class _TextMessageBuilderConsumerState
     extends ConsumerState<TextMessageBuilder> {
   @override
   Widget build(BuildContext context) {
-    final client = ref.watch(clientProvider)!;
+    final client = ref.watch(alwaysClientProvider);
     final userId = client.userId().toString();
     String msgType = '';
     final metadata = widget.message.metadata;
@@ -135,7 +135,7 @@ class _TextWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(clientProvider)!;
+    final client = ref.watch(alwaysClientProvider);
     final emojiTextStyle = client.userId().toString() == message.author.id
         ? const ActerChatTheme().sentEmojiMessageTextStyle
         : const ActerChatTheme().receivedEmojiMessageTextStyle;

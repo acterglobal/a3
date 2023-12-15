@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserAvatarWidget extends ConsumerWidget {
   final double size;
+
   const UserAvatarWidget({
     required this.size,
     super.key,
@@ -13,7 +14,7 @@ class UserAvatarWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(clientProvider)!;
+    final client = ref.watch(alwaysClientProvider);
     final accountProfile = ref.watch(accountProfileProvider);
     return accountProfile.when(
       data: (data) {

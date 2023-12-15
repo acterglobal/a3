@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:riverpod/riverpod.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/foundation.dart';
+import 'package:riverpod/riverpod.dart';
 
 // ignore_for_file: unused_field
 
@@ -12,19 +12,18 @@ class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
   late StreamSubscription<bool> _sub;
 
   Future<Room?> _getRoom() async {
-    final client = ref.read(clientProvider)!;
+    final client = ref.read(alwaysClientProvider);
     return await client.room(arg);
   }
 
   @override
   Future<Room?> build(String arg) async {
-    final client = ref.watch(clientProvider)!;
+    final client = ref.watch(alwaysClientProvider);
     ref.onDispose(onDispose);
     _listener = client.subscribeStream(arg);
     _sub = _listener.listen(
       (e) async {
         debugPrint('seen update for room $arg');
-
         state = await AsyncValue.guard(() => _getRoom());
       },
       onError: (e, stack) {

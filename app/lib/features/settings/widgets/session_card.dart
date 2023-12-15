@@ -137,10 +137,7 @@ class SessionCard extends ConsumerWidget {
     if (result != true) {
       return;
     }
-    final client = ref.read(clientProvider);
-    if (client == null) {
-      throw 'Client is not logged in';
-    }
+    final client = ref.read(alwaysClientProvider);
     final manager = client.sessionManager();
     await manager.deleteDevices(
       [deviceRecord.deviceId().toString()] as FfiListFfiString,
@@ -150,10 +147,7 @@ class SessionCard extends ConsumerWidget {
   }
 
   Future<void> onVerify(BuildContext context, WidgetRef ref) async {
-    final client = ref.read(clientProvider);
-    if (client == null) {
-      throw 'Client is not logged in';
-    }
+    final client = ref.read(alwaysClientProvider);
     final manager = client.sessionManager();
     await manager.requestVerification(deviceRecord.deviceId().toString());
   }

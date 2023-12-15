@@ -33,19 +33,12 @@ Future<ProfileData> getProfileData(Account account) async {
 }
 
 final myUserIdStrProvider = StateProvider((ref) {
-  final client = ref.watch(clientProvider);
-
-  if (client == null) {
-    throw NoClientException();
-  }
+  final client = ref.watch(alwaysClientProvider);
   return client.userId().toString();
 });
 
 final accountProvider = FutureProvider((ref) async {
-  final client = ref.watch(clientProvider);
-  if (client == null) {
-    throw 'No Client found';
-  }
+  final client = ref.watch(alwaysClientProvider);
   return client.account();
 });
 

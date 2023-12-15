@@ -57,6 +57,7 @@ jobs:
     outputs:
       tag: ${{ inputs.custom_tag || steps.tag.outputs.tag }}
       build_num: ${{ steps.build_num.outputs.build_num }}
+      prev_tag: ${{ inputs.prev_tag || 'nightly-latest' }}
     steps:
       - id: tag
         run: echo "tag=`date +%F`" >> $GITHUB_OUTPUT
@@ -82,7 +83,7 @@ jobs:
           - name: Linux x64
             os: ubuntu-latest
             target: linux
-            apt_install: ninja-build libgtk-3-dev
+            apt_install: ninja-build libgtk-3-dev libmpv-dev mpv
             cargo_make_args: desktop
             flutter_config: "--enable-linux-desktop"
             flutter_build_args: "build linux"
@@ -101,16 +102,17 @@ jobs:
             rename_file: "acter.ipa"
             rename_suffix: "ipa"
             extra_artifacts: "ios-manifest.plist"
-          - name: Mac OSx 
+          - name: MacOS
             os: macos-12
-            with_apple_cert: true
             target: macos
+            with_apple_cert: true
             cargo_make_args: desktop
             flutter_config: "--enable-macos-desktop"
             flutter_build_args: "build macos"
             artifact_prefix: acter-nightly-macosx
             artifact_path: app/build/macos/Build/Products/Release/
-            # tar_files: "Acter.app"
+            rename_file: "Acter.pkg"
+            rename_suffix: "pkg"
           - name: Windows
             os: windows-latest
             cargo_make_args: desktop
@@ -301,30 +303,15 @@ jobs:
           ##    ##  ##  ##    ##  ##   ### 
            ######  ####  ######   ##    ## 
 
-      - name: Sign & notorize Acter.app
+      # Package app
+      - name: Package Acter.app to Acter.pkg
         if: matrix.target == 'macos'
-        env:
-          APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
-          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
-          APPLE_SIGN_CERTNAME: ${{ secrets.APPLE_MAC_APPSTORE_SIGN_CERTNAME }}
         working-directory: ${{ matrix.artifact_path }}
+        env:
+          APPLE_SIGN_CERTNAME: ${{ secrets.APPLE_MAC_APPSTORE_SIGN_CERTNAME }}
         run: |
-          mkdir private_keys
-          echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
-          ls -ltas private_keys
-          echo "Notorizing"
-          export NEW_NAME=${{ matrix.artifact_prefix }}-${{ needs.tags.outputs.tag }}.app
-          mv Acter.app "$NEW_NAME"
-          /usr/bin/ditto -c -k --keepParent $NEW_NAME Acter.zip
-          echo "Notarytool"
-          xcrun notarytool submit Acter.zip --wait \
-            --key "private_keys/AuthKey_$APPLE_API_KEY_ID.p8" \
-            --key-id "$APPLE_API_KEY_ID" \
-            --issuer "$APPLE_ISSUER_ID" \
-            --bundle-id global.acter.a3
-          echo "Staple"
-          xcrun stapler staple $NEW_NAME
+          echo "Productbuild"
+          productbuild --component Acter.app /Applications --sign "$APPLE_SIGN_CERTNAME" Acter.pkg
 
       # Important! Cleanup: remove the certificate and provisioning profile from the runner!
       - name: Clean up keychain and provisioning profile
@@ -429,7 +416,9 @@ jobs:
       - name: Generate Changelog
         run: |
           git fetch --prune --unshallow --tags
-          cargo run -p mr_minutes -- --since nightly-latest --output nightly-changes.md
+          cargo run -p mr_minutes -- --since nightly-latest --output nightly-changes-generated.md
+          echo "** Changes since ${{ needs.tags.outputs.prev_tag }} **" > nightly-changes.md
+          cat nightly-changes-generated.md >>  nightly-changes.md
 
       - name: "Generate docs"
         run: |
@@ -448,6 +437,7 @@ jobs:
           git config --global user.email 'acter-sari@users.noreply.github.com'
           git add "docs/content/nightly/${{ needs.tags.outputs.tag }}.md"
           echo "Tagging ${{ needs.tags.outputs.tag }}" > notes.md
+          echo "" >> notes.md
           cat nightly-changes.md >> notes.md
           git commit -F notes.md
           git tag nightly-${{ needs.tags.outputs.tag }}

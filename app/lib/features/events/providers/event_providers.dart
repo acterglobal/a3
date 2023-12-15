@@ -1,9 +1,8 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final spaceEventsProvider = AsyncNotifierProvider.autoDispose
     .family<AsyncSpaceEventsNotifier, List<ffi.CalendarEvent>, String>(
@@ -13,14 +12,14 @@ final spaceEventsProvider = AsyncNotifierProvider.autoDispose
 class AsyncSpaceEventsNotifier
     extends AutoDisposeFamilyAsyncNotifier<List<ffi.CalendarEvent>, String> {
   late Stream<void> _listener;
+
   Future<List<ffi.CalendarEvent>> _getEvents(ffi.Space arg) async {
     return (await arg.calendarEvents()).toList(); // this might throw internally
   }
 
   @override
   Future<List<ffi.CalendarEvent>> build(String arg) async {
-    final client = ref.watch(clientProvider);
-    if (client == null) throw UnimplementedError('Client is not available');
+    final client = ref.watch(alwaysClientProvider);
     final space = await client.space(arg);
     _listener = client.subscribeStream('$arg::calendar'); // stay up to date
     _listener.forEach((e) async {
@@ -38,9 +37,9 @@ final calendarEventProvider = AsyncNotifierProvider.autoDispose
 class AsyncCalendarEventNotifier
     extends AutoDisposeFamilyAsyncNotifier<ffi.CalendarEvent, String> {
   late Stream<void> _listener;
+
   Future<ffi.CalendarEvent> _getCalendarEvent() async {
-    final client = ref.watch(clientProvider);
-    if (client == null) throw UnimplementedError('Client is not available');
+    final client = ref.watch(alwaysClientProvider);
     try {
       return await client.calendarEvent(arg);
     } catch (e) {
@@ -51,8 +50,7 @@ class AsyncCalendarEventNotifier
 
   @override
   Future<ffi.CalendarEvent> build(String arg) async {
-    final client = ref.watch(clientProvider);
-    if (client == null) throw UnimplementedError('Client is not available');
+    final client = ref.watch(alwaysClientProvider);
     _listener = client.subscribeStream(arg); // stay up to date
     _listener.forEach((e) async {
       state = await AsyncValue.guard(() => _getCalendarEvent());
@@ -68,17 +66,16 @@ final allUpcomingEventsProvider = AsyncNotifierProvider.autoDispose<
 class AsyncUpcomingEventsNotifier
     extends AutoDisposeAsyncNotifier<List<ffi.CalendarEvent>> {
   late Stream<void> _listener;
+
   Future<List<ffi.CalendarEvent>> _getAllUpcoming() async {
-    final client = ref.watch(clientProvider);
-    if (client == null) throw UnimplementedError('Client is not available');
+    final client = ref.watch(alwaysClientProvider);
     return (await client.allUpcomingEvents(null)).toList();
     // this might throw internally
   }
 
   @override
   Future<List<ffi.CalendarEvent>> build() async {
-    final client = ref.watch(clientProvider);
-    if (client == null) throw UnimplementedError('Client is not available');
+    final client = ref.watch(alwaysClientProvider);
     _listener = client.subscribeStream('calendar'); // stay up to date
     _listener.forEach((e) async {
       state = await AsyncValue.guard(() => _getAllUpcoming());
@@ -94,17 +91,16 @@ final myUpcomingEventsProvider = AsyncNotifierProvider.autoDispose<
 class AsyncMyUpcomingEventsNotifier
     extends AutoDisposeAsyncNotifier<List<ffi.CalendarEvent>> {
   late Stream<void> _listener;
+
   Future<List<ffi.CalendarEvent>> _getMyUpcoming() async {
-    final client = ref.watch(clientProvider);
-    if (client == null) throw UnimplementedError('Client is not available');
+    final client = ref.watch(alwaysClientProvider);
     return (await client.myUpcomingEvents(null)).toList();
     // this might throw internally
   }
 
   @override
   Future<List<ffi.CalendarEvent>> build() async {
-    final client = ref.watch(clientProvider);
-    if (client == null) throw UnimplementedError('Client is not available');
+    final client = ref.watch(alwaysClientProvider);
     _listener = client.subscribeStream('calendar'); // stay up to date
     _listener.forEach((e) async {
       state = await AsyncValue.guard(() => _getMyUpcoming());
@@ -120,17 +116,16 @@ final myPastEventsProvider = AsyncNotifierProvider.autoDispose<
 class AsyncMyPastEventsNotifier
     extends AutoDisposeAsyncNotifier<List<ffi.CalendarEvent>> {
   late Stream<void> _listener;
+
   Future<List<ffi.CalendarEvent>> _getMyPast() async {
-    final client = ref.watch(clientProvider);
-    if (client == null) throw UnimplementedError('Client is not available');
+    final client = ref.watch(alwaysClientProvider);
     return (await client.myPastEvents(null)).toList();
     // this might throw internally
   }
 
   @override
   Future<List<ffi.CalendarEvent>> build() async {
-    final client = ref.watch(clientProvider);
-    if (client == null) throw UnimplementedError('Client is not available');
+    final client = ref.watch(alwaysClientProvider);
     _listener = client.subscribeStream('calendar'); // stay up to date
     _listener.forEach((e) async {
       state = await AsyncValue.guard(() => _getMyPast());
