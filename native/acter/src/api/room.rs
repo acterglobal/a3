@@ -1016,7 +1016,7 @@ impl Room {
                     MessageType::Video(content) => content.source.clone(),
                     MessageType::File(content) => content.source.clone(),
                     _ => {
-                        bail!("Invalid file format")
+                        bail!("Not an Image, Audio, Video or Regular file.")
                     }
                 };
                 let request = MediaRequest {
