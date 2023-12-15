@@ -100,7 +100,7 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
                 Uint8List bytes = await file.readAsBytes();
                 final decodedImage = await decodeImageFromList(bytes);
                 final imageDraft = client
-                    .imageDraft(caption.text, file.path, mimeType)
+                    .imageDraft(file.path, mimeType)
                     .size(bytes.length)
                     .width(decodedImage.width)
                     .height(decodedImage.height);

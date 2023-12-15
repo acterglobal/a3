@@ -2219,16 +2219,16 @@ object Client {
     fn text_markdown_draft(body: string) -> MsgContentDraft;
 
     /// make draft to send image msg
-    fn image_draft(body: string, source: string, mimetype: string) -> MsgContentDraft;
+    fn image_draft(source: string, mimetype: string) -> MsgContentDraft;
 
     /// make draft to send audio msg
-    fn audio_draft(body: string, source: string, mimetype: string) -> MsgContentDraft;
+    fn audio_draft(source: string, mimetype: string) -> MsgContentDraft;
 
     /// make draft to send video msg
-    fn video_draft(body: string, source: string, mimetype: string) -> MsgContentDraft;
+    fn video_draft(source: string, mimetype: string) -> MsgContentDraft;
 
     /// make draft to send file msg
-    fn file_draft(body: string, source: string, mimetype: string) -> MsgContentDraft;
+    fn file_draft(source: string, mimetype: string) -> MsgContentDraft;
 
     /// make draft to send location msg
     fn location_draft(body: string, source: string) -> MsgContentDraft;

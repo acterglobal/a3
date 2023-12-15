@@ -369,20 +369,30 @@ impl NewsEntryDraft {
                             references: Default::default(),
                         })
                     }
-                    MsgContentDraft::Image { body, source, info } => {
+                    MsgContentDraft::Image { source, info } => {
                         let info = info.expect("image info needed");
                         let mimetype = info.mimetype.clone().expect("mimetype needed");
                         let content_type = mimetype.parse::<mime::Mime>()?;
+                        let path = PathBuf::from(source);
                         let mut image_content = if room.is_encrypted().await? {
-                            let mut reader = std::fs::File::open(source)?;
+                            let mut reader = std::fs::File::open(path.clone())?;
                             let encrypted_file = client
                                 .prepare_encrypted_file(&content_type, &mut reader)
                                 .await?;
+                            let body = path
+                                .file_name()
+                                .expect("it is not file")
+                                .to_string_lossy()
+                                .to_string();
                             ImageMessageEventContent::encrypted(body, encrypted_file)
                         } else {
-                            let path = PathBuf::from(source);
-                            let mut image_buf = std::fs::read(path)?;
+                            let mut image_buf = std::fs::read(path.clone())?;
                             let response = client.media().upload(&content_type, image_buf).await?;
+                            let body = path
+                                .file_name()
+                                .expect("it is not file")
+                                .to_string_lossy()
+                                .to_string();
                             ImageMessageEventContent::plain(body, response.content_uri)
                         };
                         image_content.info = Some(Box::new(info));
@@ -391,20 +401,30 @@ impl NewsEntryDraft {
                             references: Default::default(),
                         })
                     }
-                    MsgContentDraft::Audio { body, source, info } => {
+                    MsgContentDraft::Audio { source, info } => {
                         let info = info.expect("audio info needed");
                         let mimetype = info.mimetype.clone().expect("mimetype needed");
                         let content_type = mimetype.parse::<mime::Mime>()?;
+                        let path = PathBuf::from(source);
                         let mut audio_content = if room.is_encrypted().await? {
-                            let mut reader = std::fs::File::open(source)?;
+                            let mut reader = std::fs::File::open(path.clone())?;
                             let encrypted_file = client
                                 .prepare_encrypted_file(&content_type, &mut reader)
                                 .await?;
+                            let body = path
+                                .file_name()
+                                .expect("it is not file")
+                                .to_string_lossy()
+                                .to_string();
                             AudioMessageEventContent::encrypted(body, encrypted_file)
                         } else {
-                            let path = PathBuf::from(source);
-                            let mut audio_buf = std::fs::read(path)?;
+                            let mut audio_buf = std::fs::read(path.clone())?;
                             let response = client.media().upload(&content_type, audio_buf).await?;
+                            let body = path
+                                .file_name()
+                                .expect("it is not file")
+                                .to_string_lossy()
+                                .to_string();
                             AudioMessageEventContent::plain(body, response.content_uri)
                         };
                         audio_content.info = Some(Box::new(info));
@@ -413,20 +433,30 @@ impl NewsEntryDraft {
                             references: Default::default(),
                         })
                     }
-                    MsgContentDraft::Video { body, source, info } => {
+                    MsgContentDraft::Video { source, info } => {
                         let info = info.expect("image info needed");
                         let mimetype = info.mimetype.clone().expect("mimetype needed");
                         let content_type = mimetype.parse::<mime::Mime>()?;
+                        let path = PathBuf::from(source);
                         let mut video_content = if room.is_encrypted().await? {
-                            let mut reader = std::fs::File::open(source)?;
+                            let mut reader = std::fs::File::open(path.clone())?;
                             let encrypted_file = client
                                 .prepare_encrypted_file(&content_type, &mut reader)
                                 .await?;
+                            let body = path
+                                .file_name()
+                                .expect("it is not file")
+                                .to_string_lossy()
+                                .to_string();
                             VideoMessageEventContent::encrypted(body, encrypted_file)
                         } else {
-                            let path = PathBuf::from(source);
-                            let mut video_buf = std::fs::read(path)?;
+                            let mut video_buf = std::fs::read(path.clone())?;
                             let response = client.media().upload(&content_type, video_buf).await?;
+                            let body = path
+                                .file_name()
+                                .expect("it is not file")
+                                .to_string_lossy()
+                                .to_string();
                             VideoMessageEventContent::plain(body, response.content_uri)
                         };
                         video_content.info = Some(Box::new(info));
@@ -436,7 +466,6 @@ impl NewsEntryDraft {
                         })
                     }
                     MsgContentDraft::File {
-                        body,
                         source,
                         info,
                         filename,
@@ -444,16 +473,26 @@ impl NewsEntryDraft {
                         let info = info.expect("file info needed");
                         let mimetype = info.mimetype.clone().expect("mimetype needed");
                         let content_type = mimetype.parse::<mime::Mime>()?;
+                        let path = PathBuf::from(source);
                         let mut file_content = if room.is_encrypted().await? {
-                            let mut reader = std::fs::File::open(source)?;
+                            let mut reader = std::fs::File::open(path.clone())?;
                             let encrypted_file = client
                                 .prepare_encrypted_file(&content_type, &mut reader)
                                 .await?;
+                            let body = path
+                                .file_name()
+                                .expect("it is not file")
+                                .to_string_lossy()
+                                .to_string();
                             FileMessageEventContent::encrypted(body, encrypted_file)
                         } else {
-                            let path = PathBuf::from(source);
-                            let mut file_buf = std::fs::read(path)?;
+                            let mut file_buf = std::fs::read(path.clone())?;
                             let response = client.media().upload(&content_type, file_buf).await?;
+                            let body = path
+                                .file_name()
+                                .expect("it is not file")
+                                .to_string_lossy()
+                                .to_string();
                             FileMessageEventContent::plain(body, response.content_uri)
                         };
                         file_content.info = Some(Box::new(info));
