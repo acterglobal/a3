@@ -242,15 +242,15 @@ impl AttachmentsManager {
 
 impl MsgContentDraft {
     async fn into_attachment_content(
-        &self,
+        self, // into_* fn takes self by value not reference
         client: SdkClient,
         room: Room,
     ) -> Result<Option<AttachmentContent>> {
-        match &self {
+        match self {
             MsgContentDraft::TextPlain { .. } => Ok(None),
             MsgContentDraft::TextMarkdown { .. } => Ok(None),
             MsgContentDraft::Image { source, info } => {
-                let info = info.as_ref().expect("image info needed");
+                let info = info.expect("image info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
@@ -275,11 +275,11 @@ impl MsgContentDraft {
                         .to_string();
                     ImageMessageEventContent::plain(body, response.content_uri)
                 };
-                image_content.info = Some(Box::new(info.clone()));
+                image_content.info = Some(Box::new(info));
                 Ok(Some(AttachmentContent::Image(image_content)))
             }
             MsgContentDraft::Audio { source, info } => {
-                let info = info.as_ref().expect("audio info needed");
+                let info = info.expect("audio info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
@@ -304,11 +304,11 @@ impl MsgContentDraft {
                         .to_string();
                     AudioMessageEventContent::plain(body, response.content_uri)
                 };
-                audio_content.info = Some(Box::new(info.clone()));
+                audio_content.info = Some(Box::new(info));
                 Ok(Some(AttachmentContent::Audio(audio_content)))
             }
             MsgContentDraft::Video { source, info } => {
-                let info = info.as_ref().expect("video info needed");
+                let info = info.expect("video info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
@@ -333,7 +333,7 @@ impl MsgContentDraft {
                         .to_string();
                     VideoMessageEventContent::plain(body, response.content_uri)
                 };
-                video_content.info = Some(Box::new(info.clone()));
+                video_content.info = Some(Box::new(info));
                 Ok(Some(AttachmentContent::Video(video_content)))
             }
             MsgContentDraft::File {
@@ -341,7 +341,7 @@ impl MsgContentDraft {
                 info,
                 filename,
             } => {
-                let info = info.as_ref().expect("file info needed");
+                let info = info.expect("file info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
@@ -366,7 +366,7 @@ impl MsgContentDraft {
                         .to_string();
                     FileMessageEventContent::plain(body, response.content_uri)
                 };
-                file_content.info = Some(Box::new(info.clone()));
+                file_content.info = Some(Box::new(info));
                 file_content.filename = filename.clone();
                 Ok(Some(AttachmentContent::File(file_content)))
             }
@@ -375,10 +375,9 @@ impl MsgContentDraft {
                 geo_uri,
                 info,
             } => {
-                let mut location_content =
-                    LocationMessageEventContent::new(body.clone(), geo_uri.clone());
+                let mut location_content = LocationMessageEventContent::new(body, geo_uri);
                 if let Some(info) = info {
-                    location_content.info = Some(Box::new(info.clone()));
+                    location_content.info = Some(Box::new(info));
                 }
                 Ok(Some(AttachmentContent::Location(location_content)))
             }

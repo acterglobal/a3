@@ -693,12 +693,12 @@ impl MsgContentDraft {
     }
 
     async fn into_edited_content(
-        &self,
+        self, // into_* fn takes self by value not reference
         client: SdkClient,
         room: Room,
         event_id: OwnedEventId,
     ) -> Result<RoomMessageEventContent> {
-        match &self {
+        match self {
             MsgContentDraft::TextPlain { body } => {
                 let replacement =
                     Replacement::new(event_id, MessageType::text_plain(body.clone()).into());
@@ -714,7 +714,7 @@ impl MsgContentDraft {
                 Ok(edited_content)
             }
             MsgContentDraft::Image { source, info } => {
-                let info = info.as_ref().expect("image info needed");
+                let info = info.expect("image info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
@@ -739,7 +739,7 @@ impl MsgContentDraft {
                         .to_string();
                     ImageMessageEventContent::plain(body, response.content_uri)
                 };
-                image_content.info = Some(Box::new(info.clone()));
+                image_content.info = Some(Box::new(info));
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::Image(image_content.clone()));
                 let replacement =
@@ -748,7 +748,7 @@ impl MsgContentDraft {
                 Ok(edited_content)
             }
             MsgContentDraft::Audio { source, info } => {
-                let info = info.as_ref().expect("audio info needed");
+                let info = info.expect("audio info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
@@ -773,7 +773,7 @@ impl MsgContentDraft {
                         .to_string();
                     AudioMessageEventContent::plain(body, response.content_uri)
                 };
-                audio_content.info = Some(Box::new(info.clone()));
+                audio_content.info = Some(Box::new(info));
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::Audio(audio_content.clone()));
                 let replacement =
@@ -782,7 +782,7 @@ impl MsgContentDraft {
                 Ok(edited_content)
             }
             MsgContentDraft::Video { source, info } => {
-                let info = info.as_ref().expect("video info needed");
+                let info = info.expect("video info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
@@ -807,7 +807,7 @@ impl MsgContentDraft {
                         .to_string();
                     VideoMessageEventContent::plain(body, response.content_uri)
                 };
-                video_content.info = Some(Box::new(info.clone()));
+                video_content.info = Some(Box::new(info));
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::Video(video_content.clone()));
                 let replacement =
@@ -820,7 +820,7 @@ impl MsgContentDraft {
                 info,
                 filename,
             } => {
-                let info = info.as_ref().expect("file info needed");
+                let info = info.expect("file info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
@@ -845,7 +845,7 @@ impl MsgContentDraft {
                         .to_string();
                     FileMessageEventContent::plain(body, response.content_uri)
                 };
-                file_content.info = Some(Box::new(info.clone()));
+                file_content.info = Some(Box::new(info));
                 file_content.filename = filename.clone();
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::File(file_content.clone()));
@@ -859,10 +859,9 @@ impl MsgContentDraft {
                 geo_uri,
                 info,
             } => {
-                let mut location_content =
-                    LocationMessageEventContent::new(body.clone(), geo_uri.clone());
+                let mut location_content = LocationMessageEventContent::new(body, geo_uri);
                 if let Some(info) = info {
-                    location_content.info = Some(Box::new(info.clone()));
+                    location_content.info = Some(Box::new(info));
                 }
                 let mut edited_content =
                     RoomMessageEventContent::new(MessageType::Location(location_content.clone()));
@@ -875,12 +874,12 @@ impl MsgContentDraft {
     }
 
     async fn into_replied_content(
-        &self,
+        self, // into_* fn takes self by value not reference
         client: SdkClient,
         room: Room,
         event_id: OwnedEventId,
     ) -> Result<RoomMessageEventContentWithoutRelation> {
-        match &self {
+        match self {
             MsgContentDraft::TextPlain { body } => {
                 let replied_content = RoomMessageEventContentWithoutRelation::text_plain(body);
                 Ok(replied_content)
@@ -890,7 +889,7 @@ impl MsgContentDraft {
                 Ok(replied_content)
             }
             MsgContentDraft::Image { source, info } => {
-                let info = info.as_ref().expect("image info needed");
+                let info = info.expect("image info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
@@ -915,13 +914,13 @@ impl MsgContentDraft {
                         .to_string();
                     ImageMessageEventContent::plain(body, response.content_uri)
                 };
-                image_content.info = Some(Box::new(info.clone()));
+                image_content.info = Some(Box::new(info));
                 let replied_content =
                     RoomMessageEventContentWithoutRelation::new(MessageType::Image(image_content));
                 Ok(replied_content)
             }
             MsgContentDraft::Audio { source, info } => {
-                let info = info.as_ref().expect("audio info needed");
+                let info = info.expect("audio info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
@@ -946,13 +945,13 @@ impl MsgContentDraft {
                         .to_string();
                     AudioMessageEventContent::plain(body, response.content_uri)
                 };
-                audio_content.info = Some(Box::new(info.clone()));
+                audio_content.info = Some(Box::new(info));
                 let replied_content =
                     RoomMessageEventContentWithoutRelation::new(MessageType::Audio(audio_content));
                 Ok(replied_content)
             }
             MsgContentDraft::Video { source, info } => {
-                let info = info.as_ref().expect("video info needed");
+                let info = info.expect("video info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
@@ -977,7 +976,7 @@ impl MsgContentDraft {
                         .to_string();
                     VideoMessageEventContent::plain(body, response.content_uri)
                 };
-                video_content.info = Some(Box::new(info.clone()));
+                video_content.info = Some(Box::new(info));
                 let replied_content =
                     RoomMessageEventContentWithoutRelation::new(MessageType::Video(video_content));
                 Ok(replied_content)
@@ -987,7 +986,7 @@ impl MsgContentDraft {
                 info,
                 filename,
             } => {
-                let info = info.as_ref().expect("file info needed");
+                let info = info.expect("file info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
@@ -1012,7 +1011,7 @@ impl MsgContentDraft {
                         .to_string();
                     FileMessageEventContent::plain(body, response.content_uri)
                 };
-                file_content.info = Some(Box::new(info.clone()));
+                file_content.info = Some(Box::new(info));
                 file_content.filename = filename.clone();
                 let replied_content =
                     RoomMessageEventContentWithoutRelation::new(MessageType::File(file_content));
@@ -1023,10 +1022,9 @@ impl MsgContentDraft {
                 geo_uri,
                 info,
             } => {
-                let mut location_content =
-                    LocationMessageEventContent::new(body.clone(), geo_uri.clone());
+                let mut location_content = LocationMessageEventContent::new(body, geo_uri);
                 if let Some(info) = info {
-                    location_content.info = Some(Box::new(info.clone()));
+                    location_content.info = Some(Box::new(info));
                 }
                 let replied_content = RoomMessageEventContentWithoutRelation::new(
                     MessageType::Location(location_content),

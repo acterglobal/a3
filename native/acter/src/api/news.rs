@@ -484,8 +484,12 @@ impl Space {
 }
 
 impl MsgContentDraft {
-    async fn into_news_slide(&self, client: SdkClient, room: Room) -> Result<news::NewsSlide> {
-        match &self {
+    async fn into_news_slide(
+        self, // into_* fn takes self by value not reference
+        client: SdkClient,
+        room: Room,
+    ) -> Result<news::NewsSlide> {
+        match self {
             MsgContentDraft::TextPlain { body } => {
                 let text_content = TextMessageEventContent::plain(body);
                 Ok(news::NewsSlide {
@@ -501,7 +505,7 @@ impl MsgContentDraft {
                 })
             }
             MsgContentDraft::Image { source, info } => {
-                let info = info.as_ref().expect("image info needed");
+                let info = info.expect("image info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
@@ -526,14 +530,14 @@ impl MsgContentDraft {
                         .to_string();
                     ImageMessageEventContent::plain(body, response.content_uri)
                 };
-                image_content.info = Some(Box::new(info.clone()));
+                image_content.info = Some(Box::new(info));
                 Ok(news::NewsSlide {
                     content: NewsContent::Image(image_content),
                     references: Default::default(),
                 })
             }
             MsgContentDraft::Audio { source, info } => {
-                let info = info.as_ref().expect("audio info needed");
+                let info = info.expect("audio info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
@@ -558,14 +562,14 @@ impl MsgContentDraft {
                         .to_string();
                     AudioMessageEventContent::plain(body, response.content_uri)
                 };
-                audio_content.info = Some(Box::new(info.clone()));
+                audio_content.info = Some(Box::new(info));
                 Ok(news::NewsSlide {
                     content: NewsContent::Audio(audio_content),
                     references: Default::default(),
                 })
             }
             MsgContentDraft::Video { source, info } => {
-                let info = info.as_ref().expect("image info needed");
+                let info = info.expect("image info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
@@ -590,7 +594,7 @@ impl MsgContentDraft {
                         .to_string();
                     VideoMessageEventContent::plain(body, response.content_uri)
                 };
-                video_content.info = Some(Box::new(info.clone()));
+                video_content.info = Some(Box::new(info));
                 Ok(news::NewsSlide {
                     content: NewsContent::Video(video_content),
                     references: Default::default(),
@@ -601,7 +605,7 @@ impl MsgContentDraft {
                 info,
                 filename,
             } => {
-                let info = info.as_ref().expect("file info needed");
+                let info = info.expect("file info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
@@ -626,7 +630,7 @@ impl MsgContentDraft {
                         .to_string();
                     FileMessageEventContent::plain(body, response.content_uri)
                 };
-                file_content.info = Some(Box::new(info.clone()));
+                file_content.info = Some(Box::new(info));
                 file_content.filename = filename.clone();
                 Ok(news::NewsSlide {
                     content: NewsContent::File(file_content),
@@ -638,10 +642,9 @@ impl MsgContentDraft {
                 geo_uri,
                 info,
             } => {
-                let mut location_content =
-                    LocationMessageEventContent::new(body.clone(), geo_uri.clone());
+                let mut location_content = LocationMessageEventContent::new(body, geo_uri);
                 if let Some(info) = info {
-                    location_content.info = Some(Box::new(info.clone()));
+                    location_content.info = Some(Box::new(info));
                 }
                 Ok(news::NewsSlide {
                     content: NewsContent::Location(location_content),
