@@ -1,4 +1,4 @@
-use acter::{ActerModel, MsgContent};
+use acter::ActerModel;
 use anyhow::{bail, Result};
 use std::io::Write;
 use tempfile::NamedTempFile;
