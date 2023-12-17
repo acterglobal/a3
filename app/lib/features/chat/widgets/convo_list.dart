@@ -1,10 +1,14 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../../../common/widgets/default_button.dart';
+import '../../../common/widgets/error_widget.dart';
 
 class ConvosList extends ConsumerStatefulWidget {
   final Function(String)? onSelected;
@@ -43,11 +47,23 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
           );
     }
 
-    if (chats.isEmpty) {
+     if (chats.isNotEmpty) {
       return Center(
-        heightFactor: 10,
-        child: Text(
-          '${AppLocalizations.of(context)!.loadingConvo}...',
+        heightFactor: 1.5,
+        child: ErrorWidgetTemplate(
+          title: 'You have no DMs at the moment',
+          subtitle:
+              'Get in touch with other change makers, organizers or activists and chat directly with them.',
+          image: 'assets/images/empty_chat.png',
+          button: DefaultButton(
+            onPressed: () {},
+            title: 'Send DM',
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.success,
+              disabledBackgroundColor:
+                  Theme.of(context).colorScheme.success.withOpacity(0.5),
+            ),
+          ),
         ),
       );
     }
@@ -55,6 +71,7 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
   }
 
   Widget renderList(BuildContext context, List<Convo> chats) {
+  
     return ListView.builder(
       itemCount: chats.length,
       physics: const NeverScrollableScrollPhysics(),

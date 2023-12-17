@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/error_widget.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/common/widgets/spaces/space_hierarchy_card.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
@@ -247,7 +249,30 @@ class RelatedSpacesPage extends ConsumerWidget {
               }
 
               if (items.isEmpty) {
-                // FIXME: show something neat here
+                
+                items.add(SliverToBoxAdapter(
+                  child: Center(
+                    heightFactor: 1,
+                    child: ErrorWidgetTemplate(
+                      title: 'No connected spaces',
+                      subtitle:
+                          'In connected spaces, you can focus on specific actions or campaigns of your working groups and start organizing.',
+                      image: 'assets/images/empty_space.png',
+                      button: DefaultButton(
+                        onPressed: () {},
+                        title: 'Create New Spaces',
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.success,
+                          disabledBackgroundColor: Theme.of(context)
+                              .colorScheme
+                              .success
+                              .withOpacity(0.5),
+                        ),
+                      ),
+                    ),
+                  ),
+                ));
               }
 
               return items;
