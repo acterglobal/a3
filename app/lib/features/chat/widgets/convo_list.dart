@@ -5,10 +5,9 @@ import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../../common/widgets/default_button.dart';
-import '../../../common/widgets/error_widget.dart';
+import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/error_widget.dart';
 
 class ConvosList extends ConsumerStatefulWidget {
   final Function(String)? onSelected;
