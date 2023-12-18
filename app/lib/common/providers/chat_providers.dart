@@ -130,20 +130,21 @@ final memberProvider =
 final imageFileFromMessageIdProvider =
     FutureProvider.family<File, String>((ref, messageId) async {
   final convo = await ref.read(currentConvoProvider.future);
-  //Check if image file is available
+  // Check if image file is available
   final tempDir = await getTemporaryDirectory();
   var imageFile = File('${tempDir.path}/image-$messageId.jpg');
   var isImageAvailable = await imageFile.exists();
 
   if (!isImageAvailable) {
     if (convo != null) {
-      //If image file is not available on local store then save it
-      AsyncValue<Uint8List> videoData = AsyncValue.data(
-        await convo.imageBinary(messageId).then((value) => value.asTypedList()),
-      );
-      if (videoData.asData != null) {
+      // If image file is not available on local store then save it
+      var buf = await convo
+          .mediaBinary(messageId)
+          .then((value) => value.asTypedList());
+      AsyncValue<Uint8List> imageData = AsyncValue.data(buf);
+      if (imageData.asData != null) {
         imageFile.create();
-        imageFile.writeAsBytesSync(videoData.asData!.value);
+        imageFile.writeAsBytesSync(imageData.asData!.value);
       } else {
         throw 'Unable to load image';
       }
@@ -155,17 +156,18 @@ final imageFileFromMessageIdProvider =
 final videoFileFromMessageIdProvider =
     FutureProvider.family<File, String>((ref, messageId) async {
   final convo = await ref.read(currentConvoProvider.future);
-  //Check if video file is available
+  // Check if video file is available
   final tempDir = await getTemporaryDirectory();
   var videoFile = File('${tempDir.path}/video-$messageId.mp4');
   var isVideoAvailable = await videoFile.exists();
 
   if (!isVideoAvailable) {
     if (convo != null) {
-      //If video file is not available on local store then save it
-      AsyncValue<Uint8List> videoData = AsyncValue.data(
-        await convo.videoBinary(messageId).then((value) => value.asTypedList()),
-      );
+      // If video file is not available on local store then save it
+      var buf = await convo
+          .mediaBinary(messageId)
+          .then((value) => value.asTypedList());
+      AsyncValue<Uint8List> videoData = AsyncValue.data(buf);
       if (videoData.asData != null) {
         videoFile.create();
         videoFile.writeAsBytesSync(videoData.asData!.value);

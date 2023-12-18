@@ -253,7 +253,8 @@ async fn task_smoketests() -> Result<()> {
     let task_list = task_list.refresh().await?;
 
     assert_eq!(task_list.name(), "Setup");
-    assert_eq!(task_list.description().unwrap(), "All done now".to_owned());
+    let description = task_list.description().expect("description needed");
+    assert_eq!(description.body(), "All done now".to_owned());
 
     Ok(())
 }

@@ -321,7 +321,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                             .firstWhere(
                               (element) => element.id == currentMessageId,
                             );
-                        chatInputNotifier.setEditMessage(message);
+                        inputNotifier.setEditMessage(message);
                         if (message is TextMessage) {
                           ref
                               .read(_textValuesProvider(roomId).notifier)
@@ -535,78 +535,53 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
 
   Future<void> handleFileUpload(List<File> files) async {
     final roomId = widget.convo.getRoomIdStr();
-    final chatInputState = ref.read(chatInputProvider(roomId));
-    final chatInputNotifier = ref.read(chatInputProvider(roomId).notifier);
+    final client = ref.read(clientProvider)!;
+    final inputState = ref.read(chatInputProvider(roomId));
     final stream = await widget.convo.timelineStream();
 
     try {
       for (File file in files) {
-        String fileName = file.path.split('/').last;
         String? mimeType = lookupMimeType(file.path);
 
         if (mimeType!.startsWith('image/')) {
-          var bytes = file.readAsBytesSync();
-          var image = await decodeImageFromList(bytes);
-          if (chatInputState.repliedToMessage != null) {
-            await stream.sendImageReply(
-              file.path,
-              fileName,
-              mimeType,
-              file.lengthSync(),
-              image.width,
-              image.height,
-              null,
-              chatInputState.repliedToMessage!.id,
-            );
-
-            chatInputNotifier.setRepliedToMessage(null);
-            chatInputNotifier.setEditMessage(null);
-            chatInputNotifier.showReplyView(false);
-            chatInputNotifier.showEditView(false);
-            chatInputNotifier.setReplyWidget(null);
-            chatInputNotifier.setEditWidget(null);
+          final bytes = file.readAsBytesSync();
+          final image = await decodeImageFromList(bytes);
+          final draft = client
+              .imageDraft(file.path, mimeType)
+              .size(file.lengthSync())
+              .width(image.width)
+              .height(image.height);
+          if (inputState.repliedToMessage != null) {
+            await stream.replyMessage(inputState.repliedToMessage!.id, draft);
           } else {
-            await stream.sendImageMessage(
-              file.path,
-              fileName,
-              mimeType,
-              file.lengthSync(),
-              image.width,
-              image.height,
-              null,
-            );
+            await stream.sendMessage(draft);
           }
         } else if (mimeType.startsWith('/audio')) {
-          if (chatInputState.repliedToMessage != null) {
+          if (inputState.repliedToMessage != null) {
           } else {}
         } else if (mimeType.startsWith('/video')) {
         } else {
-          if (chatInputState.repliedToMessage != null) {
-            await stream.sendFileReply(
-              file.path,
-              fileName,
-              mimeType,
-              file.lengthSync(),
-              chatInputState.repliedToMessage!.id,
-            );
-            chatInputNotifier.setRepliedToMessage(null);
-            chatInputNotifier.setEditMessage(null);
-            chatInputNotifier.showReplyView(false);
-            chatInputNotifier.showEditView(false);
-            chatInputNotifier.setReplyWidget(null);
-            chatInputNotifier.setEditWidget(null);
+          final draft =
+              client.fileDraft(file.path, mimeType).size(file.lengthSync());
+          if (inputState.repliedToMessage != null) {
+            await stream.replyMessage(inputState.repliedToMessage!.id, draft);
           } else {
-            await stream.sendFileMessage(
-              file.path,
-              fileName,
-              mimeType,
-              file.lengthSync(),
-            );
+            await stream.sendMessage(draft);
           }
         }
       }
     } catch (e) {
       debugPrint('error occurred: $e');
+    }
+
+    if (inputState.repliedToMessage != null) {
+      final notifier = ref.read(chatInputProvider(roomId).notifier);
+      notifier.setRepliedToMessage(null);
+      notifier.setEditMessage(null);
+      notifier.showReplyView(false);
+      notifier.showEditView(false);
+      notifier.setReplyWidget(null);
+      notifier.setEditWidget(null);
     }
   }
 
@@ -713,13 +688,12 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     final mentionState = mentionKey.currentState!;
     inputNotifier.prepareSending();
     String markdownText = mentionState.controller!.text;
-    int messageLength = markdownText.length;
     mentionReplacements.forEach((key, value) {
       markdownText = markdownText.replaceAll(key, value);
     });
 
     try {
-      await handleSendPressed(markdownText, messageLength);
+      await handleSendPressed(markdownText);
       inputNotifier.messageSent();
       mentionState.controller!.clear();
     } catch (e) {
@@ -731,43 +705,30 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   }
 
   // push messages in convo
-  Future<void> handleSendPressed(
-    String markdownMessage,
-    int messageLength,
-  ) async {
+  Future<void> handleSendPressed(String markdownMessage) async {
     final roomId = widget.convo.getRoomIdStr();
-    final chatInputState = ref.watch(chatInputProvider(roomId));
-    final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
+    final client = ref.read(clientProvider)!;
+    final inputState = ref.read(chatInputProvider(roomId));
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
     await widget.convo.typingNotice(false);
     final stream = await widget.convo.timelineStream();
-    if (chatInputState.repliedToMessage != null) {
-      await stream.sendPlainReply(
-        markdownMessage,
-        chatInputState.repliedToMessage!.id,
-      );
-      chatInputNotifier.setRepliedToMessage(null);
-      chatInputNotifier.setEditMessage(null);
-      final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
-      inputNotifier.showReplyView(false);
-      inputNotifier.showEditView(false);
-      inputNotifier.setReplyWidget(null);
-      inputNotifier.setEditWidget(null);
-    } else if (chatInputState.editMessage != null) {
-      await stream.editFormattedMessage(
-        chatInputState.editMessage!.id,
-        markdownMessage,
-      );
-      chatInputNotifier.setRepliedToMessage(null);
-      chatInputNotifier.setEditMessage(null);
-      final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
-      inputNotifier.showReplyView(false);
-      inputNotifier.showEditView(false);
-      inputNotifier.setReplyWidget(null);
-      inputNotifier.setEditWidget(null);
+    final draft = client.textMarkdownDraft(markdownMessage);
+    if (inputState.repliedToMessage != null) {
+      await stream.replyMessage(inputState.repliedToMessage!.id, draft);
+    } else if (inputState.editMessage != null) {
+      await stream.editMessage(inputState.editMessage!.id, draft);
     } else {
-      await stream.sendFormattedMessage(markdownMessage);
+      await stream.sendMessage(draft);
+    }
+    if (inputState.repliedToMessage != null || inputState.editMessage != null) {
+      final notifier = ref.read(chatInputProvider(roomId).notifier);
+      notifier.setRepliedToMessage(null);
+      notifier.setEditMessage(null);
+      notifier.showReplyView(false);
+      notifier.showEditView(false);
+      notifier.setReplyWidget(null);
+      notifier.setEditWidget(null);
     }
   }
 }

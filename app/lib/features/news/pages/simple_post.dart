@@ -1,10 +1,10 @@
-
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -63,78 +63,71 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
         ElevatedButton(
           key: NewsUpdateKeys.submitBtn,
           onPressed: () async {
-            if (_formKey.currentState!.validate()) {
-              final spaceId = ref.read(selectedSpaceIdProvider);
-              final file = ref.read(selectedImageProvider);
-              final caption = ref.read(textProvider);
-              late String displayMsg;
+            if (!_formKey.currentState!.validate()) {
+              return;
+            }
+            final client = ref.read(clientProvider)!;
+            final spaceId = ref.read(selectedSpaceIdProvider);
+            final file = ref.read(selectedImageProvider);
+            final caption = ref.read(textProvider);
+            late String displayMsg;
 
+            if (file == null) {
+              displayMsg = 'Posting image update';
+            } else {
+              displayMsg = 'Posting text update';
+            }
+
+            EasyLoading.show(status: displayMsg);
+            try {
+              final space = await ref.read(spaceProvider(spaceId!).future);
+              NewsEntryDraft draft = space.newsDraft();
               if (file == null) {
-                displayMsg = 'Posting image update';
+                final textDraft = client.textMarkdownDraft(caption.text);
+                await draft.addSlide(textDraft);
               } else {
-                displayMsg = 'Posting text update';
-              }
-
-              EasyLoading.show(status: displayMsg);
-              try {
-                final space = await ref.read(spaceProvider(spaceId!).future);
-                NewsEntryDraft draft = space.newsDraft();
-                if (file == null) {
-                  draft.addTextSlide(caption.text);
-                } else {
-                  String? mimeType = file.mimeType ?? lookupMimeType(file.path);
-
-                  if (mimeType != null) {
-                    if (mimeType.startsWith('image/')) {
-                      Uint8List bytes = await file.readAsBytes();
-                      final decodedImage = await decodeImageFromList(bytes);
-                      await draft.addImageSlide(
-                        caption.text,
-                        file.path,
-                        mimeType,
-                        bytes.length,
-                        decodedImage.width,
-                        decodedImage.height,
-                        null,
-                      );
-                    } else {
-                      EasyLoading.showError(
-                        'Posting of $mimeType not yet supported',
-                      );
-                      return;
-                    }
-                  } else {
-                    EasyLoading.showError(
-                      'Detecting mimetype failed. not supported.',
-                    );
-                    return;
-                  }
-                }
-
-                await draft.send();
-
-                // reset fields
-                ref.read(textProvider.notifier).state.text = '';
-                ref.read(selectedImageProvider.notifier).state = null;
-                // close both
-                EasyLoading.dismiss();
-
-                // We are doing as expected, but the lints triggers.
-                // ignore: use_build_context_synchronously
-                if (!context.mounted) {
+                String? mimeType = file.mimeType ?? lookupMimeType(file.path);
+                if (mimeType == null) {
+                  EasyLoading.showError('Invalid media format');
                   return;
                 }
-                // closing the sidebar.
-                Navigator.of(context, rootNavigator: true).pop();
-                // FIXME due to #718. well lets at least try forcing a refresh upon route.
-                ref.invalidate(newsListProvider);
-                // Move to home which shows the news.
-                context.goNamed(Routes.main.name);
-              } catch (err) {
-                EasyLoading.showError(
-                  '$displayMsg failed: \n $err"',
-                );
+                if (!mimeType.startsWith('image/')) {
+                  EasyLoading.showError(
+                    'Posting of $mimeType not yet supported',
+                  );
+                  return;
+                }
+                Uint8List bytes = await file.readAsBytes();
+                final decodedImage = await decodeImageFromList(bytes);
+                final imageDraft = client
+                    .imageDraft(file.path, mimeType)
+                    .size(bytes.length)
+                    .width(decodedImage.width)
+                    .height(decodedImage.height);
+                await draft.addSlide(imageDraft);
               }
+
+              await draft.send();
+
+              // reset fields
+              ref.read(textProvider.notifier).state.text = '';
+              ref.read(selectedImageProvider.notifier).state = null;
+              // close both
+              EasyLoading.dismiss();
+
+              // We are doing as expected, but the lints triggers.
+              // ignore: use_build_context_synchronously
+              if (!context.mounted) {
+                return;
+              }
+              // closing the sidebar.
+              Navigator.of(context, rootNavigator: true).pop();
+              // FIXME due to #718. well lets at least try forcing a refresh upon route.
+              ref.invalidate(newsListProvider);
+              // Move to home which shows the news.
+              context.goNamed(Routes.main.name);
+            } catch (err) {
+              EasyLoading.showError('$displayMsg failed: \n $err"');
             }
           },
           style: ElevatedButton.styleFrom(
@@ -167,50 +160,48 @@ class __ImageBuilderState extends ConsumerState<_ImageBuilder> {
     final selectedImage = ref.watch(selectedImageProvider);
     final halfHeight = MediaQuery.of(context).size.height * 0.5;
     if (selectedImage != null) {
-      return Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              constraints: BoxConstraints(
-                // make sure we always have enough space for the other items.
-                maxHeight: halfHeight,
-              ),
-              child: Center(
-                child: InkWell(
-                  onTap: () {
-                    final imageNotifier =
-                        ref.read(selectedImageProvider.notifier);
-                    imageNotifier.state = null;
-                  },
-                  child: Image(
-                    image: XFileImage(selectedImage),
-                  ),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            constraints: BoxConstraints(
+              // make sure we always have enough space for the other items.
+              maxHeight: halfHeight,
+            ),
+            child: Center(
+              child: InkWell(
+                onTap: () {
+                  final imageNotifier =
+                      ref.read(selectedImageProvider.notifier);
+                  imageNotifier.state = null;
+                },
+                child: Image(
+                  image: XFileImage(selectedImage),
                 ),
               ),
             ),
-            SizedBox(
-              height: 80,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: TextFormField(
-                  controller: ref.read(textProvider),
-                  key: NewsUpdateKeys.imageCaption,
-                  textAlignVertical: TextAlignVertical.top,
-                  decoration: const InputDecoration(
-                    hintText: 'caption',
-                    labelText: 'Image Caption',
-                  ),
-                  expands: false,
-                  minLines: null,
-                  maxLines: 2,
-                  keyboardType: TextInputType.multiline,
+          ),
+          SizedBox(
+            height: 80,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: TextFormField(
+                controller: ref.read(textProvider),
+                key: NewsUpdateKeys.imageCaption,
+                textAlignVertical: TextAlignVertical.top,
+                decoration: const InputDecoration(
+                  hintText: 'caption',
+                  labelText: 'Image Caption',
                 ),
+                expands: false,
+                minLines: null,
+                maxLines: 2,
+                keyboardType: TextInputType.multiline,
               ),
             ),
-            const SelectSpaceFormField(canCheck: 'CanPostNews'),
-          ],
-        ),
+          ),
+          const SelectSpaceFormField(canCheck: 'CanPostNews'),
+        ],
       );
     }
 

@@ -6,6 +6,7 @@ class NotificationBrief {
   final String title;
   final Routes? route;
   final bool hasFormatted;
+
   const NotificationBrief({
     required this.title,
     this.route,
@@ -16,12 +17,16 @@ class NotificationBrief {
     return const NotificationBrief(title: 'not yet supported');
   }
 
-  static NotificationBrief fromTextDesc(ffi.TextDesc? textDesc, Routes? route) {
-    if (textDesc == null) {
+  static NotificationBrief fromMsgContent(
+    ffi.MsgContent? msgContent,
+    Routes? route,
+  ) {
+    if (msgContent == null) {
       return NotificationBrief(title: 'chat message w/o content', route: route);
     }
-    if (textDesc.hasFormatted()) {
-      final body = simplifyBody(textDesc.formattedBody() ?? textDesc.body());
+    final formatted = msgContent.formattedBody();
+    if (formatted != null) {
+      final body = simplifyBody(formatted);
       return NotificationBrief(
         title: body,
         route: route,
@@ -29,7 +34,7 @@ class NotificationBrief {
       );
     } else {
       return NotificationBrief(
-        title: textDesc.body(),
+        title: msgContent.body(),
         route: route,
         hasFormatted: false,
       );
