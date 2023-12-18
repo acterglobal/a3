@@ -8,7 +8,7 @@ use futures::stream::StreamExt;
 use matrix_sdk::{
     room::Room,
     ruma::{assign, UInt},
-    RoomState,
+    Client as SdkClient, RoomState,
 };
 use ruma_common::{MxcUri, OwnedEventId, OwnedUserId};
 use ruma_events::{
@@ -22,12 +22,12 @@ use ruma_events::{
     },
     MessageLikeEventType,
 };
-use std::ops::Deref;
+use std::{ops::Deref, path::PathBuf};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::Stream;
 
-use super::{api::FfiBuffer, client::Client, RUNTIME};
-use crate::{AudioDesc, FileDesc, ImageDesc, LocationDesc, VideoDesc};
+use super::{api::FfiBuffer, client::Client, stream::MsgContentDraft, RUNTIME};
+use crate::MsgContent;
 
 impl Client {
     pub async fn wait_for_attachment(
@@ -83,68 +83,30 @@ impl Attachment {
         self.inner.meta.origin_server_ts.get().into()
     }
 
-    pub fn image_desc(&self) -> Option<ImageDesc> {
-        self.inner.content().image().and_then(|content| {
-            content
-                .info
-                .map(|info| ImageDesc::new(content.body, content.source, *info))
-        })
+    pub fn msg_content(&self) -> MsgContent {
+        MsgContent::from(&self.inner.content)
     }
 
-    pub async fn image_binary(&self) -> Result<FfiBuffer<u8>> {
+    pub async fn source_binary(&self) -> Result<FfiBuffer<u8>> {
         // any variable in self can't be called directly in spawn
-        let content = self.inner.content().image().context("Not an image")?;
-        self.client.source_binary(content.source).await
-    }
-
-    pub fn audio_desc(&self) -> Option<AudioDesc> {
-        self.inner.content().audio().and_then(|content| {
-            content
-                .info
-                .map(|info| AudioDesc::new(content.body, content.source, *info))
-        })
-    }
-
-    pub async fn audio_binary(&self) -> Result<FfiBuffer<u8>> {
-        // any variable in self can't be called directly in spawn
-        let content = self.inner.content().audio().context("Not an audio")?;
-        self.client.source_binary(content.source).await
-    }
-
-    pub fn video_desc(&self) -> Option<VideoDesc> {
-        self.inner.content().video().and_then(|content| {
-            content
-                .info
-                .map(|info| VideoDesc::new(content.body, content.source, *info))
-        })
-    }
-
-    pub async fn video_binary(&self) -> Result<FfiBuffer<u8>> {
-        // any variable in self can't be called directly in spawn
-        let content = self.inner.content().video().context("Not a video")?;
-        self.client.source_binary(content.source).await
-    }
-
-    pub fn file_desc(&self) -> Option<FileDesc> {
-        self.inner.content().file().and_then(|content| {
-            content
-                .info
-                .map(|info| FileDesc::new(content.body, content.source, *info))
-        })
-    }
-
-    pub async fn file_binary(&self) -> Result<FfiBuffer<u8>> {
-        // any variable in self can't be called directly in spawn
-        let content = self.inner.content().file().context("Not a file")?;
-        self.client.source_binary(content.source).await
-    }
-
-    pub fn location_desc(&self) -> Option<LocationDesc> {
-        self.inner.content().location().and_then(|content| {
-            content
-                .info
-                .map(|info| LocationDesc::new(content.body, content.geo_uri))
-        })
+        match &self.inner.content {
+            AttachmentContent::Image(content) => {
+                self.client.source_binary(content.source.clone()).await
+            }
+            AttachmentContent::Audio(content) => {
+                self.client.source_binary(content.source.clone()).await
+            }
+            AttachmentContent::Video(content) => {
+                self.client.source_binary(content.source.clone()).await
+            }
+            AttachmentContent::File(content) => {
+                self.client.source_binary(content.source.clone()).await
+            }
+            AttachmentContent::Location(content) => {
+                let buf = Vec::<u8>::new();
+                Ok(FfiBuffer::new(buf))
+            }
+        }
     }
 }
 
@@ -247,122 +209,21 @@ impl AttachmentsManager {
             .await?
     }
 
-    #[allow(clippy::too_many_arguments)]
-    pub fn image_draft(
-        &self,
-        body: String,
-        url: String,
-        mimetype: Option<String>,
-        size: Option<u64>,
-        width: Option<u64>,
-        height: Option<u64>,
-        blurhash: Option<String>,
-    ) -> Result<AttachmentDraft> {
-        let info = assign!(ImageInfo::new(), {
-            height: height.and_then(UInt::new),
-            width: width.and_then(UInt::new),
-            mimetype,
-            size: size.and_then(UInt::new),
-            blurhash,
-        });
-        let url = Box::<MxcUri>::from(url.as_str());
+    pub async fn content_draft(&self, base_draft: Box<MsgContentDraft>) -> Result<AttachmentDraft> {
+        let room = self.room.clone();
+        let client = self.room.client();
+
+        let content = RUNTIME
+            .spawn(async move {
+                match base_draft.into_attachment_content(client, room).await? {
+                    Some(content) => Ok(content),
+                    None => bail!("non-media content not allowed"),
+                }
+            })
+            .await??;
+
         let mut builder = self.inner.draft_builder();
-
-        let mut image_content = ImageMessageEventContent::plain(body, url.into());
-        image_content.info = Some(Box::new(info));
-        builder.content(AttachmentContent::Image(image_content));
-        Ok(AttachmentDraft {
-            client: self.client.clone(),
-            room: self.room.clone(),
-            inner: builder,
-        })
-    }
-
-    pub fn audio_draft(
-        &self,
-        body: String,
-        url: String,
-        mimetype: Option<String>,
-        size: Option<u64>,
-        secs: Option<u64>,
-    ) -> Result<AttachmentDraft> {
-        let info = assign!(AudioInfo::new(), {
-            duration: secs.map(|x| Duration::new(x, 0)),
-            mimetype,
-            size: size.and_then(UInt::new),
-        });
-        let url = Box::<MxcUri>::from(url.as_str());
-        let mut builder = self.inner.draft_builder();
-
-        let mut audio_content = AudioMessageEventContent::plain(body, url.into());
-        audio_content.info = Some(Box::new(info));
-        builder.content(AttachmentContent::Audio(audio_content));
-        Ok(AttachmentDraft {
-            client: self.client.clone(),
-            room: self.room.clone(),
-            inner: builder,
-        })
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    pub fn video_draft(
-        &self,
-        body: String,
-        url: String,
-        mimetype: Option<String>,
-        size: Option<u64>,
-        secs: Option<u64>,
-        width: Option<u64>,
-        height: Option<u64>,
-        blurhash: Option<String>,
-    ) -> Result<AttachmentDraft> {
-        let info = assign!(VideoInfo::new(), {
-            duration: secs.map(|x| Duration::new(x, 0)),
-            height: height.and_then(UInt::new),
-            width: width.and_then(UInt::new),
-            mimetype,
-            size: size.and_then(UInt::new),
-            blurhash,
-        });
-        let url = Box::<MxcUri>::from(url.as_str());
-        let mut builder = self.inner.draft_builder();
-
-        let mut video_content = VideoMessageEventContent::plain(body, url.into());
-        video_content.info = Some(Box::new(info));
-        builder.content(AttachmentContent::Video(video_content));
-        Ok(AttachmentDraft {
-            client: self.client.clone(),
-            room: self.room.clone(),
-            inner: builder,
-        })
-    }
-
-    pub fn file_draft(
-        &self,
-        body: String,
-        url: String,
-        mimetype: Option<String>,
-        size: Option<u64>,
-    ) -> Result<AttachmentDraft> {
-        let mut builder = self.inner.draft_builder();
-        let size = size.and_then(UInt::new);
-        let info = assign!(FileInfo::new(), { mimetype, size });
-        let mut file_content = FileMessageEventContent::plain(body, url.into());
-        file_content.info = Some(Box::new(info));
-        builder.content(AttachmentContent::File(file_content));
-        Ok(AttachmentDraft {
-            client: self.client.clone(),
-            room: self.room.clone(),
-            inner: builder,
-        })
-    }
-
-    pub fn location_draft(&self, body: String, geo_uri: String) -> Result<AttachmentDraft> {
-        let mut builder = self.inner.draft_builder();
-        let info = LocationInfo::new();
-        let mut location_content = LocationMessageEventContent::new(body, geo_uri);
-        location_content.info = Some(Box::new(info));
-        builder.content(AttachmentContent::Location(location_content));
+        builder.content(content);
         Ok(AttachmentDraft {
             client: self.client.clone(),
             room: self.room.clone(),
@@ -376,5 +237,150 @@ impl AttachmentsManager {
 
     pub fn subscribe(&self) -> Receiver<()> {
         self.client.subscribe(self.inner.update_key())
+    }
+}
+
+impl MsgContentDraft {
+    async fn into_attachment_content(
+        self, // into_* fn takes self by value not reference
+        client: SdkClient,
+        room: Room,
+    ) -> Result<Option<AttachmentContent>> {
+        match self {
+            MsgContentDraft::TextPlain { .. } => Ok(None),
+            MsgContentDraft::TextMarkdown { .. } => Ok(None),
+            MsgContentDraft::Image { source, info } => {
+                let info = info.expect("image info needed");
+                let mimetype = info.mimetype.clone().expect("mimetype needed");
+                let content_type = mimetype.parse::<mime::Mime>()?;
+                let path = PathBuf::from(source);
+                let mut image_content = if room.is_encrypted().await? {
+                    let mut reader = std::fs::File::open(path.clone())?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .await?;
+                    let body = path
+                        .file_name()
+                        .expect("it is not file")
+                        .to_string_lossy()
+                        .to_string();
+                    ImageMessageEventContent::encrypted(body, encrypted_file)
+                } else {
+                    let mut image_buf = std::fs::read(path.clone())?;
+                    let response = client.media().upload(&content_type, image_buf).await?;
+                    let body = path
+                        .file_name()
+                        .expect("it is not file")
+                        .to_string_lossy()
+                        .to_string();
+                    ImageMessageEventContent::plain(body, response.content_uri)
+                };
+                image_content.info = Some(Box::new(info));
+                Ok(Some(AttachmentContent::Image(image_content)))
+            }
+            MsgContentDraft::Audio { source, info } => {
+                let info = info.expect("audio info needed");
+                let mimetype = info.mimetype.clone().expect("mimetype needed");
+                let content_type = mimetype.parse::<mime::Mime>()?;
+                let path = PathBuf::from(source);
+                let mut audio_content = if room.is_encrypted().await? {
+                    let mut reader = std::fs::File::open(path.clone())?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .await?;
+                    let body = path
+                        .file_name()
+                        .expect("it is not file")
+                        .to_string_lossy()
+                        .to_string();
+                    AudioMessageEventContent::encrypted(body, encrypted_file)
+                } else {
+                    let mut audio_buf = std::fs::read(path.clone())?;
+                    let response = client.media().upload(&content_type, audio_buf).await?;
+                    let body = path
+                        .file_name()
+                        .expect("it is not file")
+                        .to_string_lossy()
+                        .to_string();
+                    AudioMessageEventContent::plain(body, response.content_uri)
+                };
+                audio_content.info = Some(Box::new(info));
+                Ok(Some(AttachmentContent::Audio(audio_content)))
+            }
+            MsgContentDraft::Video { source, info } => {
+                let info = info.expect("video info needed");
+                let mimetype = info.mimetype.clone().expect("mimetype needed");
+                let content_type = mimetype.parse::<mime::Mime>()?;
+                let path = PathBuf::from(source);
+                let mut video_content = if room.is_encrypted().await? {
+                    let mut reader = std::fs::File::open(path.clone())?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .await?;
+                    let body = path
+                        .file_name()
+                        .expect("it is not file")
+                        .to_string_lossy()
+                        .to_string();
+                    VideoMessageEventContent::encrypted(body, encrypted_file)
+                } else {
+                    let mut video_buf = std::fs::read(path.clone())?;
+                    let response = client.media().upload(&content_type, video_buf).await?;
+                    let body = path
+                        .file_name()
+                        .expect("it is not file")
+                        .to_string_lossy()
+                        .to_string();
+                    VideoMessageEventContent::plain(body, response.content_uri)
+                };
+                video_content.info = Some(Box::new(info));
+                Ok(Some(AttachmentContent::Video(video_content)))
+            }
+            MsgContentDraft::File {
+                source,
+                info,
+                filename,
+            } => {
+                let info = info.expect("file info needed");
+                let mimetype = info.mimetype.clone().expect("mimetype needed");
+                let content_type = mimetype.parse::<mime::Mime>()?;
+                let path = PathBuf::from(source);
+                let mut file_content = if room.is_encrypted().await? {
+                    let mut reader = std::fs::File::open(path.clone())?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .await?;
+                    let body = path
+                        .file_name()
+                        .expect("it is not file")
+                        .to_string_lossy()
+                        .to_string();
+                    FileMessageEventContent::encrypted(body, encrypted_file)
+                } else {
+                    let mut file_buf = std::fs::read(path.clone())?;
+                    let response = client.media().upload(&content_type, file_buf).await?;
+                    let body = path
+                        .file_name()
+                        .expect("it is not file")
+                        .to_string_lossy()
+                        .to_string();
+                    FileMessageEventContent::plain(body, response.content_uri)
+                };
+                file_content.info = Some(Box::new(info));
+                file_content.filename = filename.clone();
+                Ok(Some(AttachmentContent::File(file_content)))
+            }
+            MsgContentDraft::Location {
+                body,
+                geo_uri,
+                info,
+            } => {
+                let mut location_content = LocationMessageEventContent::new(body, geo_uri);
+                if let Some(info) = info {
+                    location_content.info = Some(Box::new(info));
+                }
+                Ok(Some(AttachmentContent::Location(location_content)))
+            }
+        }
     }
 }

@@ -12,7 +12,7 @@ use futures::stream::StreamExt;
 use matrix_sdk::{
     room::Room,
     ruma::{assign, UInt},
-    RoomState,
+    Client as SdkClient, RoomState,
 };
 use ruma_common::{MxcUri, OwnedEventId, OwnedRoomId, OwnedUserId};
 use ruma_events::{
@@ -37,10 +37,7 @@ use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::trace;
 
 use super::{
-    api::FfiBuffer,
-    client::Client,
-    common::{AudioDesc, FileDesc, ImageDesc, LocationDesc, VideoDesc},
-    spaces::Space,
+    api::FfiBuffer, client::Client, common::MsgContent, spaces::Space, stream::MsgContentDraft,
     RUNTIME,
 };
 
@@ -207,68 +204,33 @@ impl NewsSlide {
         }
     }
 
-    pub fn image_desc(&self) -> Option<ImageDesc> {
-        self.inner.content().image().and_then(|content| {
-            content
-                .info
-                .map(|info| ImageDesc::new(content.body, content.source, *info))
-        })
+    pub fn msg_content(&self) -> MsgContent {
+        match &self.inner.content {
+            NewsContent::Text(content) => MsgContent::from(content),
+            NewsContent::Image(content) => MsgContent::from(content),
+            NewsContent::Audio(content) => MsgContent::from(content),
+            NewsContent::Video(content) => MsgContent::from(content),
+            NewsContent::File(content) => MsgContent::from(content),
+            NewsContent::Location(content) => MsgContent::from(content),
+        }
     }
 
-    pub async fn image_binary(&self) -> Result<FfiBuffer<u8>> {
+    pub async fn source_binary(&self) -> Result<FfiBuffer<u8>> {
         // any variable in self can't be called directly in spawn
-        let content = self.inner.content().image().context("Not an image")?;
-        self.client.source_binary(content.source).await
-    }
-
-    pub fn audio_desc(&self) -> Option<AudioDesc> {
-        self.inner.content().audio().and_then(|content| {
-            content
-                .info
-                .map(|info| AudioDesc::new(content.body, content.source, *info))
-        })
-    }
-
-    pub async fn audio_binary(&self) -> Result<FfiBuffer<u8>> {
-        // any variable in self can't be called directly in spawn
-        let content = self.inner.content().audio().context("Not an audio")?;
-        self.client.source_binary(content.source).await
-    }
-
-    pub fn video_desc(&self) -> Option<VideoDesc> {
-        self.inner.content().video().and_then(|content| {
-            content
-                .info
-                .map(|info| VideoDesc::new(content.body, content.source, *info))
-        })
-    }
-
-    pub async fn video_binary(&self) -> Result<FfiBuffer<u8>> {
-        // any variable in self can't be called directly in spawn
-        let content = self.inner.content().video().context("Not a video")?;
-        self.client.source_binary(content.source).await
-    }
-
-    pub fn file_desc(&self) -> Option<FileDesc> {
-        self.inner.content().file().and_then(|content| {
-            content
-                .info
-                .map(|info| FileDesc::new(content.body, content.source, *info))
-        })
-    }
-
-    pub async fn file_binary(&self) -> Result<FfiBuffer<u8>> {
-        // any variable in self can't be called directly in spawn
-        let content = self.inner.content().file().context("Not a file")?;
-        self.client.source_binary(content.source).await
-    }
-
-    pub fn location_desc(&self) -> Option<LocationDesc> {
-        self.inner.content().location().and_then(|content| {
-            content
-                .info
-                .map(|info| LocationDesc::new(content.body, content.geo_uri))
-        })
+        match &self.inner.content {
+            NewsContent::Text(content) => {
+                let buf = Vec::<u8>::new();
+                Ok(FfiBuffer::new(buf))
+            }
+            NewsContent::Image(content) => self.client.source_binary(content.source.clone()).await,
+            NewsContent::Audio(content) => self.client.source_binary(content.source.clone()).await,
+            NewsContent::Video(content) => self.client.source_binary(content.source.clone()).await,
+            NewsContent::File(content) => self.client.source_binary(content.source.clone()).await,
+            NewsContent::Location(content) => {
+                let buf = Vec::<u8>::new();
+                Ok(FfiBuffer::new(buf))
+            }
+        }
     }
 }
 
@@ -417,125 +379,23 @@ pub struct NewsEntryDraft {
 }
 
 impl NewsEntryDraft {
-    pub fn add_text_slide(&mut self, body: String) -> &mut Self {
-        self.slides.push(NewsSlide {
-            client: self.client.clone(),
-            room: self.room.clone(),
-            inner: news::NewsSlide::new_text(body),
-        });
-        self
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    pub async fn add_image_slide(
-        &mut self,
-        body: String,
-        uri: String,
-        mimetype: String,
-        size: Option<u64>,
-        width: Option<u64>,
-        height: Option<u64>,
-        blurhash: Option<String>,
-    ) -> Result<bool> {
-        trace!("add image slide");
-        let client = self.client.clone();
+    pub async fn add_slide(&mut self, base_draft: Box<MsgContentDraft>) -> Result<bool> {
         let room = self.room.clone();
+        let client = self.room.client();
 
-        let path = PathBuf::from(uri);
-        let mime_type = mimetype.parse::<mime::Mime>()?;
-        let mut image_content = RUNTIME
+        let inner = RUNTIME
             .spawn(async move {
-                if room.is_encrypted().await? {
-                    let mut reader = std::fs::File::open(path)?;
-                    let encrypted_file = client
-                        .prepare_encrypted_file(&mime_type, &mut reader)
-                        .await?;
-                    anyhow::Ok(ImageMessageEventContent::encrypted(body, encrypted_file))
-                } else {
-                    let data = std::fs::read(path)?;
-                    let upload_resp = client.media().upload(&mime_type, data).await?;
-                    anyhow::Ok(ImageMessageEventContent::plain(
-                        body,
-                        upload_resp.content_uri,
-                    ))
-                }
+                let slide = base_draft.into_news_slide(client, room).await?;
+                anyhow::Ok(slide)
             })
             .await??;
-        let info = assign!(ImageInfo::new(), {
-            height: height.and_then(UInt::new),
-            width: width.and_then(UInt::new),
-            mimetype: Some(mimetype),
-            size: size.and_then(UInt::new),
-            blurhash,
-        });
-        image_content.info = Some(Box::new(info));
-
-        self.slides.push(NewsSlide {
+        let slide = NewsSlide {
             client: self.client.clone(),
             room: self.room.clone(),
-            inner: news::NewsSlide {
-                content: NewsContent::Image(image_content),
-                references: Default::default(),
-            },
-        });
+            inner,
+        };
+        self.slides.push(slide);
         Ok(true)
-    }
-
-    pub fn add_audio_slide(
-        &mut self,
-        body: String,
-        url: String,
-        mimetype: Option<String>,
-        size: Option<u64>,
-        secs: Option<u64>,
-    ) -> &mut Self {
-        let url = Box::<MxcUri>::from(url.as_str());
-
-        self.slides.push(NewsSlide {
-            client: self.client.clone(),
-            room: self.room.clone(),
-            inner: news::NewsSlide::new_audio(body, (*url).to_owned()),
-        });
-        self
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    pub fn add_video_slide(
-        &mut self,
-        body: String,
-        url: String,
-        mimetype: Option<String>,
-        size: Option<u64>,
-        secs: Option<u64>,
-        width: Option<u64>,
-        height: Option<u64>,
-        blurhash: Option<String>,
-    ) -> &mut Self {
-        let url = Box::<MxcUri>::from(url.as_str());
-
-        self.slides.push(NewsSlide {
-            client: self.client.clone(),
-            room: self.room.clone(),
-            inner: news::NewsSlide::new_video(body, (*url).to_owned()),
-        });
-        self
-    }
-
-    pub fn add_file_slide(
-        &mut self,
-        body: String,
-        url: String,
-        mimetype: Option<String>,
-        size: Option<u64>,
-    ) -> &mut Self {
-        let url = Box::<MxcUri>::from(url.as_str());
-
-        self.slides.push(NewsSlide {
-            client: self.client.clone(),
-            room: self.room.clone(),
-            inner: news::NewsSlide::new_file(body, (*url).to_owned()),
-        });
-        self
     }
 
     pub fn unset_slides(&mut self) -> &mut Self {
@@ -651,5 +511,177 @@ impl Space {
             content,
             slides: vec![],
         })
+    }
+}
+
+impl MsgContentDraft {
+    async fn into_news_slide(
+        self, // into_* fn takes self by value not reference
+        client: SdkClient,
+        room: Room,
+    ) -> Result<news::NewsSlide> {
+        match self {
+            MsgContentDraft::TextPlain { body } => {
+                let text_content = TextMessageEventContent::plain(body);
+                Ok(news::NewsSlide {
+                    content: NewsContent::Text(text_content),
+                    references: Default::default(),
+                })
+            }
+            MsgContentDraft::TextMarkdown { body } => {
+                let text_content = TextMessageEventContent::markdown(body);
+                Ok(news::NewsSlide {
+                    content: NewsContent::Text(text_content),
+                    references: Default::default(),
+                })
+            }
+            MsgContentDraft::Image { source, info } => {
+                let info = info.expect("image info needed");
+                let mimetype = info.mimetype.clone().expect("mimetype needed");
+                let content_type = mimetype.parse::<mime::Mime>()?;
+                let path = PathBuf::from(source);
+                let mut image_content = if room.is_encrypted().await? {
+                    let mut reader = std::fs::File::open(path.clone())?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .await?;
+                    let body = path
+                        .file_name()
+                        .expect("it is not file")
+                        .to_string_lossy()
+                        .to_string();
+                    ImageMessageEventContent::encrypted(body, encrypted_file)
+                } else {
+                    let mut image_buf = std::fs::read(path.clone())?;
+                    let response = client.media().upload(&content_type, image_buf).await?;
+                    let body = path
+                        .file_name()
+                        .expect("it is not file")
+                        .to_string_lossy()
+                        .to_string();
+                    ImageMessageEventContent::plain(body, response.content_uri)
+                };
+                image_content.info = Some(Box::new(info));
+                Ok(news::NewsSlide {
+                    content: NewsContent::Image(image_content),
+                    references: Default::default(),
+                })
+            }
+            MsgContentDraft::Audio { source, info } => {
+                let info = info.expect("audio info needed");
+                let mimetype = info.mimetype.clone().expect("mimetype needed");
+                let content_type = mimetype.parse::<mime::Mime>()?;
+                let path = PathBuf::from(source);
+                let mut audio_content = if room.is_encrypted().await? {
+                    let mut reader = std::fs::File::open(path.clone())?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .await?;
+                    let body = path
+                        .file_name()
+                        .expect("it is not file")
+                        .to_string_lossy()
+                        .to_string();
+                    AudioMessageEventContent::encrypted(body, encrypted_file)
+                } else {
+                    let mut audio_buf = std::fs::read(path.clone())?;
+                    let response = client.media().upload(&content_type, audio_buf).await?;
+                    let body = path
+                        .file_name()
+                        .expect("it is not file")
+                        .to_string_lossy()
+                        .to_string();
+                    AudioMessageEventContent::plain(body, response.content_uri)
+                };
+                audio_content.info = Some(Box::new(info));
+                Ok(news::NewsSlide {
+                    content: NewsContent::Audio(audio_content),
+                    references: Default::default(),
+                })
+            }
+            MsgContentDraft::Video { source, info } => {
+                let info = info.expect("image info needed");
+                let mimetype = info.mimetype.clone().expect("mimetype needed");
+                let content_type = mimetype.parse::<mime::Mime>()?;
+                let path = PathBuf::from(source);
+                let mut video_content = if room.is_encrypted().await? {
+                    let mut reader = std::fs::File::open(path.clone())?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .await?;
+                    let body = path
+                        .file_name()
+                        .expect("it is not file")
+                        .to_string_lossy()
+                        .to_string();
+                    VideoMessageEventContent::encrypted(body, encrypted_file)
+                } else {
+                    let mut video_buf = std::fs::read(path.clone())?;
+                    let response = client.media().upload(&content_type, video_buf).await?;
+                    let body = path
+                        .file_name()
+                        .expect("it is not file")
+                        .to_string_lossy()
+                        .to_string();
+                    VideoMessageEventContent::plain(body, response.content_uri)
+                };
+                video_content.info = Some(Box::new(info));
+                Ok(news::NewsSlide {
+                    content: NewsContent::Video(video_content),
+                    references: Default::default(),
+                })
+            }
+            MsgContentDraft::File {
+                source,
+                info,
+                filename,
+            } => {
+                let info = info.expect("file info needed");
+                let mimetype = info.mimetype.clone().expect("mimetype needed");
+                let content_type = mimetype.parse::<mime::Mime>()?;
+                let path = PathBuf::from(source);
+                let mut file_content = if room.is_encrypted().await? {
+                    let mut reader = std::fs::File::open(path.clone())?;
+                    let encrypted_file = client
+                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .await?;
+                    let body = path
+                        .file_name()
+                        .expect("it is not file")
+                        .to_string_lossy()
+                        .to_string();
+                    FileMessageEventContent::encrypted(body, encrypted_file)
+                } else {
+                    let mut file_buf = std::fs::read(path.clone())?;
+                    let response = client.media().upload(&content_type, file_buf).await?;
+                    let body = path
+                        .file_name()
+                        .expect("it is not file")
+                        .to_string_lossy()
+                        .to_string();
+                    FileMessageEventContent::plain(body, response.content_uri)
+                };
+                file_content.info = Some(Box::new(info));
+                file_content.filename = filename.clone();
+                Ok(news::NewsSlide {
+                    content: NewsContent::File(file_content),
+                    references: Default::default(),
+                })
+            }
+            MsgContentDraft::Location {
+                body,
+                geo_uri,
+                info,
+            } => {
+                let mut location_content = LocationMessageEventContent::new(body, geo_uri);
+                if let Some(info) = info {
+                    location_content.info = Some(Box::new(info));
+                }
+                Ok(news::NewsSlide {
+                    content: NewsContent::Location(location_content),
+                    references: Default::default(),
+                })
+            }
+        }
     }
 }

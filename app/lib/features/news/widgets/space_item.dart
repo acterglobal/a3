@@ -20,7 +20,7 @@ class SpaceItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(clientProvider)!;
+    final client = ref.watch(alwaysClientProvider);
     return InkWell(
       onTap: callback,
       child: Container(

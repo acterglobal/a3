@@ -17,11 +17,23 @@ You'll need a recent:
 - [Rustup](https://rustup.rs/) setup for Rust
 - Android NDK / XCode setup for the target - and device or simulator set up
 - [flutter](https://docs.flutter.dev/get-started/install)
-- on Linux you additionally need: `libsecret-1-0` ( & `libsecret-1-dev`) and `libjsoncpp-dev`
+- on Linux you additionally need: `libsecret-1-0` ( & `libsecret-1-dev`), `mpv` (& `libmpv-dev`) and `libjsoncpp-dev`
+  <details>
+    <summary>on Ubuntu with apt</summary>
+    <code>
+    sudo apt install ninja-build libgtk-3-dev libmpv-dev mpv libjsoncpp-dev libsecret-1-dev`
+    </code>
+  </details>
+  <details>
+    <summary>on Arch with pamac</summary>
+    <code>
+    pamac install mpv libsecret libjson
+    </code>
+  </details>
 
 ## Setup
 
-You need `cargo make` for managing and building the native core artefacts. Install via
+You need `cargo make` for managing and building the native core artifacts. Install via
 `cargo install cargo-make`
 
 Then you run the init once in the root of the repository:
@@ -44,7 +56,7 @@ Whenever the native SDK changed, you need to (re)build the artifacts. To do that
 
 ## Running the App
 
-Once the SDK is rebuilded, you can run the flutter as usual on your device or emulator per:
+Once the SDK is rebuilt, you can run the flutter as usual on your device or emulator per:
 
 F5 in VS Code or `flutter run` in `app` directory
 

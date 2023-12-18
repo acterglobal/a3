@@ -1,8 +1,8 @@
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future<void> joinRoom(
   BuildContext context,
@@ -23,7 +23,7 @@ Future<void> joinRoom(
       isLoader: true,
     ),
   );
-  final client = ref.read(clientProvider)!;
+  final client = ref.read(alwaysClientProvider);
   try {
     final newSpace = await client.joinSpace(
       roomIdOrAlias,

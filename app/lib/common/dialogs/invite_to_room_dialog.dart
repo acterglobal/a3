@@ -1,8 +1,8 @@
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/common/widgets/user_builder.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -34,6 +34,7 @@ final searchValueProvider = StateProvider<String?>((ref) => null);
 class FoundUser {
   final String userId;
   final ProfileData profile;
+
   const FoundUser({required this.userId, required this.profile});
 }
 
@@ -69,13 +70,13 @@ final searchResultProvider = FutureProvider<List<UserProfile>>((ref) async {
     // ignore we got cancelled
     return [];
   }
-  final client = ref.read(clientProvider)!;
+  final client = ref.read(alwaysClientProvider);
   return (await client.searchUsers(newSearchValue)).toList();
 });
 
 final suggestedUsersProvider =
     FutureProvider.family<List<FoundUser>, String>((ref, roomId) async {
-  final client = ref.watch(clientProvider)!;
+  final client = ref.watch(alwaysClientProvider);
   final suggested = (await client.suggestedUsersToInvite(roomId)).toList();
   final List<FoundUser> ret = [];
   for (final user in suggested) {
@@ -115,6 +116,7 @@ final filteredSuggestedUsersProvider =
 
 class UserEntry extends ConsumerWidget {
   final UserProfile user;
+
   const UserEntry({super.key, required this.user});
 
   @override
@@ -125,6 +127,7 @@ class UserEntry extends ConsumerWidget {
 
 class InviteToRoomDialog extends ConsumerStatefulWidget {
   final String roomId;
+
   const InviteToRoomDialog({
     super.key,
     required this.roomId,

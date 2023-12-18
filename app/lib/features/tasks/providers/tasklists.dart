@@ -1,7 +1,8 @@
-import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'dart:core';
+
+import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AsyncTaskListsNotifier extends AsyncNotifier<List<TaskList>> {
   late Stream<void> subscriber;
@@ -14,7 +15,7 @@ class AsyncTaskListsNotifier extends AsyncNotifier<List<TaskList>> {
   @override
   Future<List<TaskList>> build() async {
     // Load initial todo list from the remote repository
-    final client = ref.watch(clientProvider)!;
+    final client = ref.watch(alwaysClientProvider);
     final retState = _refresh(client);
     subscriber = client.subscribeStream('tasks');
     subscriber.forEach((element) async {

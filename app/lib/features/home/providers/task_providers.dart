@@ -1,13 +1,14 @@
+import 'dart:core';
+
+import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/tasks/models/tasks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/common/models/profile_data.dart';
-import 'package:acter/common/providers/space_providers.dart';
-import 'dart:core';
 
 final myOpenTasksProvider =
     FutureProvider.autoDispose<List<TaskBrief>>((ref) async {
-  final client = ref.watch(clientProvider)!;
+  final client = ref.watch(alwaysClientProvider);
   // FIXME: how to get informed about updates!?!
   final taskLists = await client.taskLists();
   final myTasks = List<TaskBrief>.empty(growable: true);
@@ -26,8 +27,8 @@ final myOpenTasksProvider =
             space: SpaceWithProfileData(space, profile),
           ),
         );
+        // }
       }
-      // }
     }
   }
   return myTasks;
