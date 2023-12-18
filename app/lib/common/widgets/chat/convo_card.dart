@@ -51,8 +51,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
     final userId = ref.watch(myUserIdStrProvider);
     String roomId = widget.room.getRoomIdStr();
     final convoProfile = ref.watch(chatProfileDataProvider(widget.room));
-    final mutedStatus =
-        ref.watch(roomIsMutedProvider(widget.room.getRoomIdStr()));
+    final mutedStatus = ref.watch(roomIsMutedProvider(roomId));
     final latestMsg = ref.watch(latestMessageProvider(widget.room));
     // ToDo: UnreadCounter
     return convoProfile.when(
@@ -150,12 +149,13 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
 }
 
 class _SubtitleWidget extends ConsumerWidget {
+  final Convo room;
+  final RoomMessage latestMessage;
+
   const _SubtitleWidget({
     required this.room,
     required this.latestMessage,
   });
-  final Convo room;
-  final RoomMessage latestMessage;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -201,12 +201,12 @@ class _SubtitleWidget extends ConsumerWidget {
           case 'm.notice':
           case 'm.server_notice':
           case 'm.text':
-            TextDesc? textDesc = eventItem.textDesc();
-            if (textDesc == null) {
+            MsgContent? msgContent = eventItem.msgContent();
+            if (msgContent == null) {
               return const SizedBox.shrink();
             }
-            String body = textDesc.body();
-            String? formattedBody = textDesc.formattedBody();
+            String body = msgContent.body();
+            String? formattedBody = msgContent.formattedBody();
             if (formattedBody != null) {
               body = simplifyBody(formattedBody);
             }
@@ -244,12 +244,12 @@ class _SubtitleWidget extends ConsumerWidget {
             );
         }
       case 'm.reaction':
-        TextDesc? textDesc = eventItem.textDesc();
-        if (textDesc == null) {
+        MsgContent? msgContent = eventItem.msgContent();
+        if (msgContent == null) {
           return const SizedBox();
         }
-        String body = textDesc.body();
-        String? formattedBody = textDesc.formattedBody();
+        String body = msgContent.body();
+        String? formattedBody = msgContent.formattedBody();
         if (formattedBody != null) {
           body = simplifyBody(formattedBody);
         }
@@ -303,7 +303,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Flexible(
               child: Text(
-                eventItem.textDesc()!.body(),
+                eventItem.msgContent()!.body(),
                 style: Theme.of(context).textTheme.bodySmall,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -370,12 +370,12 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.room.member':
-        TextDesc? textDesc = eventItem.textDesc();
-        if (textDesc == null) {
+        MsgContent? msgContent = eventItem.msgContent();
+        if (msgContent == null) {
           return const SizedBox();
         }
-        String body = textDesc.body();
-        String? formattedBody = textDesc.formattedBody();
+        String body = msgContent.body();
+        String? formattedBody = msgContent.formattedBody();
         if (formattedBody != null) {
           body = simplifyBody(formattedBody);
         }
@@ -429,7 +429,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Flexible(
               child: Text(
-                eventItem.textDesc()!.body(),
+                eventItem.msgContent()!.body(),
                 style: Theme.of(context).textTheme.bodySmall,
                 overflow: TextOverflow.ellipsis,
               ),

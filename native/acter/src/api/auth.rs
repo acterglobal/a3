@@ -30,7 +30,6 @@ pub fn set_proxy(new_proxy: Option<String>) {
     *PROXY_URL.write().expect("Proxy URL couldn't be unlocked") = new_proxy;
 }
 
-// public for only integration test, not api.rsh
 pub async fn sanitize_user(
     username: &str,
     default_homeserver_name: &str,
@@ -61,7 +60,6 @@ pub async fn destroy_local_data(
     platform::destroy_local_data(base_path, user_id.to_string()).await
 }
 
-// public for only integration test, not api.rsh
 pub async fn make_client_config(
     base_path: String,
     username: &str,
@@ -134,7 +132,6 @@ pub async fn guest_client(
         .await?
 }
 
-// public for only integration test, not api.rsh
 pub async fn login_with_token_under_config(
     restore_token: RestoreToken,
     config: ClientBuilder,
@@ -211,7 +208,6 @@ async fn login_client(
     Client::new(client.clone(), state).await
 }
 
-// public for only integration test, not api.rsh
 pub async fn login_new_client_under_config(
     config: ClientBuilder,
     user_id: OwnedUserId,

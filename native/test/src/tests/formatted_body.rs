@@ -45,9 +45,8 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     }
 
     // sisko sends the formatted text message to kyra
-    sisko_timeline
-        .send_formatted_message("**Hello**".to_string())
-        .await?;
+    let draft = sisko.text_markdown_draft("**Hello**".to_string());
+    sisko_timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via pushback action or reset action
     let mut i = 30;
@@ -99,8 +98,8 @@ fn match_room_msg(msg: &RoomMessage, body: &str) -> Option<OwnedEventId> {
     info!("match room msg - {:?}", msg.clone());
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(text_desc) = event_item.text_desc() {
-            if let Some(formatted) = text_desc.formatted_body() {
+        if let Some(msg_content) = event_item.msg_content() {
+            if let Some(formatted) = msg_content.formatted_body() {
                 if formatted == body {
                     // exclude the pending msg
                     if let Some(event_id) = event_item.evt_id() {
