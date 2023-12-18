@@ -9,6 +9,7 @@ import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat/widgets/chat_attachment_options.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/mention_profile_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -24,6 +25,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:mime/mime.dart';
 
@@ -62,7 +64,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final userId = ref.watch(clientProvider)!.userId().toString();
+    final userId = ref.watch(alwaysClientProvider).userId().toString();
     final roomId = widget.convo.getRoomIdStr();
     final chatInputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     final chatInputState = ref.watch(chatInputProvider(roomId));
@@ -93,7 +95,25 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
 
     void handleEmojiSelected(Category? category, Emoji emoji) {
       final mentionState = mentionKey.currentState!;
-      mentionState.controller!.text += emoji.emoji;
+      // Get cursor current position
+      var cursorPos = mentionState.controller!.selection.base.offset;
+
+      // Right text of cursor position
+      String suffixText = mentionState.controller!.text.substring(cursorPos);
+
+      // Get the left text of cursor
+      String prefixText = mentionState.controller!.text.substring(0, cursorPos);
+
+      int emojiLength = emoji.emoji.length;
+
+      // Add emoji at current current cursor position
+      mentionState.controller!.text = prefixText + emoji.emoji + suffixText;
+
+      // Cursor move to end of added emoji character
+      mentionState.controller!.selection = TextSelection(
+        baseOffset: cursorPos + emojiLength,
+        extentOffset: cursorPos + emojiLength,
+      );
       ref.read(chatInputProvider(roomId).notifier).showSendBtn(true);
     }
 
@@ -344,7 +364,49 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                     Padding(
                       padding: const EdgeInsets.only(right: 10),
                       child: InkWell(
-                        onTap: () => handleAttachment(ref, context),
+                        onTap: () => showModalBottomSheet(
+                          context: context,
+                          isDismissible: true,
+                          enableDrag: true,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(20),
+                              topLeft: Radius.circular(20),
+                            ),
+                          ),
+                          builder: (ctx) => ChatAttachmentOptions(
+                            onTapCamera: () async {
+                              XFile? imageFile = await ImagePicker()
+                                  .pickImage(source: ImageSource.camera);
+                              if (imageFile != null) {
+                                List<File> files = [File(imageFile.path)];
+                                handleAttachment(ref, files);
+                              }
+                            },
+                            onTapImage: () async {
+                              XFile? imageFile = await ImagePicker()
+                                  .pickImage(source: ImageSource.gallery);
+                              if (imageFile != null) {
+                                List<File> files = [File(imageFile.path)];
+                                handleAttachment(ref, files);
+                              }
+                            },
+                            onTapVideo: () async {
+                              XFile? imageFile = await ImagePicker()
+                                  .pickVideo(source: ImageSource.gallery);
+                              if (imageFile != null) {
+                                List<File> files = [File(imageFile.path)];
+                                handleAttachment(ref, files);
+                              }
+                            },
+                            onTapFile: () async {
+                              var selectedFiles = await handleFileSelection(
+                                ctx,
+                              );
+                              handleAttachment(ref, selectedFiles);
+                            },
+                          ),
+                        ),
                         child: const Icon(
                           Atlas.paperclip_attachment_thin,
                           size: 20,
@@ -387,7 +449,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
           child: EmojiPickerWidget(
             size: Size(
               MediaQuery.of(context).size.width,
-              MediaQuery.of(context).size.height / 2,
+              MediaQuery.of(context).size.height / 3,
             ),
             onEmojiSelected: handleEmojiSelected,
             onBackspacePressed: handleBackspacePressed,
@@ -397,7 +459,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     );
   }
 
-// delete message event
+  // delete message event
   Future<void> redactRoomMessage(String eventId) async {
     await widget.convo.redactMessage(eventId, '', null);
   }
@@ -414,15 +476,13 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     return null;
   }
 
-  void handleAttachment(WidgetRef ref, BuildContext ctx) async {
-    var selectedFiles = await handleFileSelection(ctx);
-
-    if (ctx.mounted) {
+  void handleAttachment(WidgetRef ref, List<File>? selectedFiles) async {
+    if (context.mounted) {
       if (selectedFiles != null && selectedFiles.isNotEmpty) {
         String fileName = selectedFiles.first.path.split('/').last;
         final mimeType = lookupMimeType(selectedFiles.first.path);
         showAdaptiveDialog(
-          context: ctx,
+          context: context,
           builder: (ctx) => DefaultDialog(
             title: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -713,10 +773,10 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
 }
 
 class _FileWidget extends ConsumerWidget {
-  const _FileWidget(this.mimeType, this.file);
-
   final String? mimeType;
   final File file;
+
+  const _FileWidget(this.mimeType, this.file);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -930,15 +990,15 @@ class _TextInputWidget extends ConsumerWidget {
 }
 
 class _ReplyContentWidget extends StatelessWidget {
+  final Convo convo;
+  final Message msg;
+  final Widget messageWidget;
+
   const _ReplyContentWidget({
     required this.convo,
     required this.msg,
     required this.messageWidget,
   });
-
-  final Convo convo;
-  final Message msg;
-  final Widget messageWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -974,13 +1034,13 @@ class _ReplyContentWidget extends StatelessWidget {
 }
 
 class _EditMessageContentWidget extends StatelessWidget {
+  final Convo convo;
+  final Message msg;
+
   const _EditMessageContentWidget({
     required this.convo,
     required this.msg,
   });
-
-  final Convo convo;
-  final Message msg;
 
   @override
   Widget build(BuildContext context) {

@@ -4,10 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final allSessionsProvider = FutureProvider<List<DeviceRecord>>(
   (ref) async {
-    final client = ref.watch(clientProvider);
-    if (client == null) {
-      throw 'Client is not logged in';
-    }
+    final client = ref.watch(alwaysClientProvider);
     final manager = client.sessionManager();
     return (await manager.allSessions()).toList();
   },
@@ -15,15 +12,9 @@ final allSessionsProvider = FutureProvider<List<DeviceRecord>>(
 
 final unknownSessionsProvider = FutureProvider<List<DeviceRecord>>(
   (ref) async {
-    final client = ref.watch(clientProvider);
-    if (client == null) {
-      throw 'Client is not logged in';
-    }
     final sessions = await ref.watch(allSessionsProvider.future);
     return sessions
-        .where(
-          (session) => !session.isMe(),
-        ) // exclude me
+        .where((session) => !session.isMe()) // exclude me
         .toList();
   },
 );

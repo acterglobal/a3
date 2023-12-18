@@ -1219,6 +1219,17 @@ class Api {
     return tmp5;
   }
 
+  /// Rotate the logging file
+  JoinRuleBuilder newJoinRuleBuilder() {
+    final tmp0 = _newJoinRuleBuilder();
+    final tmp2 = tmp0;
+    final ffi.Pointer<ffi.Void> tmp2_0 = ffi.Pointer.fromAddress(tmp2);
+    final tmp2_1 = _Box(this, tmp2_0, "drop_box_JoinRuleBuilder");
+    tmp2_1._finalizer = this._registerFinalizer(tmp2_1);
+    final tmp1 = JoinRuleBuilder._(this, tmp2_1);
+    return tmp1;
+  }
+
   /// make convo settings builder
   CreateConvoSettingsBuilder newConvoSettingsBuilder() {
     final tmp0 = _newConvoSettingsBuilder();
@@ -2848,6 +2859,50 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  bool? __roomSetJoinRuleFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _roomSetJoinRuleFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
     return tmp7;
   }
 
@@ -13291,6 +13346,12 @@ class Api {
         int,
         int,
       )>();
+  late final _newJoinRuleBuilderPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function()>>(
+          "__new_join_rule_builder");
+
+  late final _newJoinRuleBuilder =
+      _newJoinRuleBuilderPtr.asFunction<int Function()>();
   late final _newConvoSettingsBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.Int64 Function()>>(
           "__new_convo_settings_builder");
@@ -16043,6 +16104,38 @@ class Api {
       _TimelineDiffValueReturn Function(
         int,
       )>();
+  late final _joinRuleBuilderJoinRulePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__JoinRuleBuilder_join_rule");
+
+  late final _joinRuleBuilderJoinRule = _joinRuleBuilderJoinRulePtr.asFunction<
+      void Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _joinRuleBuilderAddRoomPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__JoinRuleBuilder_add_room");
+
+  late final _joinRuleBuilderAddRoom = _joinRuleBuilderAddRoomPtr.asFunction<
+      void Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _roomRoomIdStrPtr = _lookup<
       ffi.NativeFunction<
           _RoomRoomIdStrReturn Function(
@@ -16051,6 +16144,39 @@ class Api {
 
   late final _roomRoomIdStr = _roomRoomIdStrPtr.asFunction<
       _RoomRoomIdStrReturn Function(
+        int,
+      )>();
+  late final _roomJoinRuleStrPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomJoinRuleStrReturn Function(
+            ffi.Int64,
+          )>>("__Room_join_rule_str");
+
+  late final _roomJoinRuleStr = _roomJoinRuleStrPtr.asFunction<
+      _RoomJoinRuleStrReturn Function(
+        int,
+      )>();
+  late final _roomRestrictedRoomIdsStrPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Room_restricted_room_ids_str");
+
+  late final _roomRestrictedRoomIdsStr =
+      _roomRestrictedRoomIdsStrPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _roomSetJoinRulePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Room_set_join_rule");
+
+  late final _roomSetJoinRule = _roomSetJoinRulePtr.asFunction<
+      int Function(
+        int,
         int,
       )>();
   late final _roomIsJoinedPtr = _lookup<
@@ -18027,18 +18153,7 @@ class Api {
           int Function(
             int,
           )>();
-  late final _attachmentsManagerAttachmentDraftPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__AttachmentsManager_attachment_draft");
-
-  late final _attachmentsManagerAttachmentDraft =
-      _attachmentsManagerAttachmentDraftPtr.asFunction<
-          int Function(
-            int,
-          )>();
-  late final _attachmentsManagerImageAttachmentDraftPtr = _lookup<
+  late final _attachmentsManagerImageDraftPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -18062,10 +18177,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__AttachmentsManager_image_attachment_draft");
+          )>>("__AttachmentsManager_image_draft");
 
-  late final _attachmentsManagerImageAttachmentDraft =
-      _attachmentsManagerImageAttachmentDraftPtr.asFunction<
+  late final _attachmentsManagerImageDraft =
+      _attachmentsManagerImageDraftPtr.asFunction<
           int Function(
             int,
             int,
@@ -18089,7 +18204,7 @@ class Api {
             int,
             int,
           )>();
-  late final _attachmentsManagerAudioAttachmentDraftPtr = _lookup<
+  late final _attachmentsManagerAudioDraftPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -18107,10 +18222,10 @@ class Api {
             ffi.Uint64,
             ffi.Uint8,
             ffi.Uint64,
-          )>>("__AttachmentsManager_audio_attachment_draft");
+          )>>("__AttachmentsManager_audio_draft");
 
-  late final _attachmentsManagerAudioAttachmentDraft =
-      _attachmentsManagerAudioAttachmentDraftPtr.asFunction<
+  late final _attachmentsManagerAudioDraft =
+      _attachmentsManagerAudioDraftPtr.asFunction<
           int Function(
             int,
             int,
@@ -18128,7 +18243,7 @@ class Api {
             int,
             int,
           )>();
-  late final _attachmentsManagerVideoAttachmentDraftPtr = _lookup<
+  late final _attachmentsManagerVideoDraftPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -18154,10 +18269,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__AttachmentsManager_video_attachment_draft");
+          )>>("__AttachmentsManager_video_draft");
 
-  late final _attachmentsManagerVideoAttachmentDraft =
-      _attachmentsManagerVideoAttachmentDraftPtr.asFunction<
+  late final _attachmentsManagerVideoDraft =
+      _attachmentsManagerVideoDraftPtr.asFunction<
           int Function(
             int,
             int,
@@ -18183,7 +18298,7 @@ class Api {
             int,
             int,
           )>();
-  late final _attachmentsManagerFileAttachmentDraftPtr = _lookup<
+  late final _attachmentsManagerFileDraftPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -18199,10 +18314,10 @@ class Api {
             ffi.Uint64,
             ffi.Uint8,
             ffi.Uint64,
-          )>>("__AttachmentsManager_file_attachment_draft");
+          )>>("__AttachmentsManager_file_draft");
 
-  late final _attachmentsManagerFileAttachmentDraft =
-      _attachmentsManagerFileAttachmentDraftPtr.asFunction<
+  late final _attachmentsManagerFileDraft =
+      _attachmentsManagerFileDraftPtr.asFunction<
           int Function(
             int,
             int,
@@ -18210,6 +18325,29 @@ class Api {
             int,
             int,
             int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _attachmentsManagerLocationDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__AttachmentsManager_location_draft");
+
+  late final _attachmentsManagerLocationDraft =
+      _attachmentsManagerLocationDraftPtr.asFunction<
+          int Function(
             int,
             int,
             int,
@@ -24159,6 +24297,21 @@ class Api {
         int,
         int,
       )>();
+  late final _roomSetJoinRuleFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomSetJoinRuleFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Room_set_join_rule_future_poll");
+
+  late final _roomSetJoinRuleFuturePoll =
+      _roomSetJoinRuleFuturePollPtr.asFunction<
+          _RoomSetJoinRuleFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _roomSpaceRelationsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _RoomSpaceRelationsFuturePollReturn Function(
@@ -35114,6 +35267,70 @@ class TimelineDiff {
   }
 }
 
+class JoinRuleBuilder {
+  final Api _api;
+  final _Box _box;
+
+  JoinRuleBuilder._(this._api, this._box);
+
+  void joinRule(
+    String input,
+  ) {
+    final tmp1 = input;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._joinRuleBuilderJoinRule(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  void addRoom(
+    String room,
+  ) {
+    final tmp1 = room;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._joinRuleBuilderAddRoom(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 /// Generic Room Properties
 class Room {
   final Api _api;
@@ -35149,6 +35366,73 @@ class Room {
       _api.__deallocate(tmp3_0, tmp5 * 1, 1);
     }
     return tmp2;
+  }
+
+  /// the JoinRule as a String
+  String joinRuleStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomJoinRuleStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// if set to restricted or restricted_knock the rooms this is restricted to
+  FfiListFfiString restrictedRoomIdsStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomRestrictedRoomIdsStr(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// set the join rule.
+  Future<bool> setJoinRule(
+    JoinRuleBuilder joinRuleBuilder,
+  ) {
+    final tmp1 = joinRuleBuilder;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    final tmp3 = _api._roomSetJoinRule(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "__Room_set_join_rule_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(tmp5_1, _api.__roomSetJoinRuleFuturePoll);
+    return tmp4;
   }
 
   /// whether we are part of this room
@@ -39455,23 +39739,8 @@ class AttachmentsManager {
     return tmp2;
   }
 
-  /// draft a new attachment for this item
-  AttachmentDraft attachmentDraft() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._attachmentsManagerAttachmentDraft(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_AttachmentDraft");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = AttachmentDraft._(_api, tmp3_1);
-    return tmp2;
-  }
-
   /// create news slide for image msg
-  AttachmentDraft imageAttachmentDraft(
+  AttachmentDraft imageDraft(
     String body,
     String url,
     String? mimetype,
@@ -39574,7 +39843,7 @@ class AttachmentsManager {
       tmp30 = tmp30_0.address;
       tmp32 = tmp31;
     }
-    final tmp33 = _api._attachmentsManagerImageAttachmentDraft(
+    final tmp33 = _api._attachmentsManagerImageDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -39606,7 +39875,7 @@ class AttachmentsManager {
   }
 
   /// create news slide for audio msg
-  AttachmentDraft audioAttachmentDraft(
+  AttachmentDraft audioDraft(
     String body,
     String url,
     String? mimetype,
@@ -39678,7 +39947,7 @@ class AttachmentsManager {
       final tmp21 = tmp19;
       tmp22 = tmp21;
     }
-    final tmp23 = _api._attachmentsManagerAudioAttachmentDraft(
+    final tmp23 = _api._attachmentsManagerAudioDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -39704,7 +39973,7 @@ class AttachmentsManager {
   }
 
   /// create news slide for video msg
-  AttachmentDraft videoAttachmentDraft(
+  AttachmentDraft videoDraft(
     String body,
     String url,
     String? mimetype,
@@ -39818,7 +40087,7 @@ class AttachmentsManager {
       tmp34 = tmp34_0.address;
       tmp36 = tmp35;
     }
-    final tmp37 = _api._attachmentsManagerVideoAttachmentDraft(
+    final tmp37 = _api._attachmentsManagerVideoDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -39852,7 +40121,7 @@ class AttachmentsManager {
   }
 
   /// create news slide for file msg
-  AttachmentDraft fileAttachmentDraft(
+  AttachmentDraft fileDraft(
     String body,
     String url,
     String? mimetype,
@@ -39913,7 +40182,7 @@ class AttachmentsManager {
       final tmp17 = tmp15;
       tmp18 = tmp17;
     }
-    final tmp19 = _api._attachmentsManagerFileAttachmentDraft(
+    final tmp19 = _api._attachmentsManagerFileDraft(
       tmp0,
       tmp2,
       tmp3,
@@ -39934,6 +40203,54 @@ class AttachmentsManager {
     tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
     final tmp20 = AttachmentDraft._(_api, tmp21_1);
     return tmp20;
+  }
+
+  /// create news slide for location msg
+  AttachmentDraft locationDraft(
+    String body,
+    String geoUri,
+  ) {
+    final tmp1 = body;
+    final tmp5 = geoUri;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._attachmentsManagerLocationDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_AttachmentDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = AttachmentDraft._(_api, tmp11_1);
+    return tmp10;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -51848,6 +52165,15 @@ class _RoomRoomIdStrReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _RoomJoinRuleStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
 class _ConvoDiffActionReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -53563,6 +53889,21 @@ class _RsvpDraftSendFuturePollReturn extends ffi.Struct {
   @ffi.Uint64()
   external int arg4;
   @ffi.Int64()
+  external int arg5;
+}
+
+class _RoomSetJoinRuleFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
   external int arg5;
 }
 

@@ -12,12 +12,13 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class NewsSideBar extends ConsumerWidget {
   final ffi.NewsEntry news;
   final int index;
+
   const NewsSideBar({
     super.key,
     required this.news,
@@ -27,7 +28,7 @@ class NewsSideBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = news.roomId().toString();
-    final userId = ref.watch(clientProvider)!.userId().toString();
+    final userId = ref.watch(alwaysClientProvider).userId().toString();
     final space = ref.watch(briefSpaceItemWithMembershipProvider(roomId));
     final bgColor = convertColor(
       news.colors()?.background(),
@@ -144,6 +145,7 @@ class ActionBox extends ConsumerWidget {
   final ffi.NewsEntry news;
   final String roomId;
   final ffi.Member membership;
+
   const ActionBox({
     super.key,
     required this.news,

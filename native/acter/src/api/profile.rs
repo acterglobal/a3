@@ -12,7 +12,6 @@ use ruma_common::{OwnedRoomId, OwnedUserId};
 use ruma_events::room::MediaSource;
 
 use super::{
-    api::FfiBuffer,
     common::{OptionBuffer, OptionString},
     RUNTIME,
 };

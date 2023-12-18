@@ -2,12 +2,12 @@ import 'dart:core';
 
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:logging/logging.dart';
 
 final log = Logger('SpaceProviders');
@@ -21,10 +21,7 @@ final spaceProfileDataProvider = AsyncNotifierProvider.family<
 /// Provider the list of all spaces, keeps up to date with the order and the underlying client
 final spacesProvider =
     StateNotifierProvider<SpaceListNotifier, List<Space>>((ref) {
-  final client = ref.watch(clientProvider);
-  if (client == null) {
-    throw 'No client found';
-  }
+  final client = ref.watch(alwaysClientProvider);
   return SpaceListNotifier(ref: ref, client: client);
 });
 
@@ -183,9 +180,11 @@ final briefSpaceItemsProviderWithMembership =
   return items;
 });
 
-final spaceSearchValueProvider = StateProvider.autoDispose<String?>((ref) => null);
+final spaceSearchValueProvider =
+    StateProvider.autoDispose<String?>((ref) => null);
 
-final searchedSpacesProvider = FutureProvider.autoDispose<List<SpaceItem>>((ref) async {
+final searchedSpacesProvider =
+    FutureProvider.autoDispose<List<SpaceItem>>((ref) async {
   final allSpaces =
       await ref.read(briefSpaceItemsProviderWithMembership.future);
   final searchValue = ref.watch(spaceSearchValueProvider);
@@ -392,11 +391,6 @@ final spaceRelationsOverviewProvider = FutureProvider.autoDispose
 /// Fill the Profile data for the given space-hierarchy-info
 final spaceHierarchyProfileProvider = FutureProvider.autoDispose
     .family<ProfileData, SpaceHierarchyRoomInfo>((ref, space) async {
-  final client = ref.watch(clientProvider);
-  if (client == null) {
-    throw 'Client missing';
-  }
-
   final avatar = await space.getAvatar();
   return ProfileData(space.name(), avatar.data());
 });

@@ -14,7 +14,6 @@ use matrix_sdk::{
 };
 use serde::Deserialize;
 use std::{collections::BTreeMap, ops::Deref};
-use tracing::warn;
 
 use super::{client::Client, RUNTIME};
 

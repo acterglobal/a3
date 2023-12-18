@@ -101,7 +101,7 @@ class RoomAvatar extends ConsumerWidget {
   }
 
   Widget dmAvatar(WidgetRef ref) {
-    final client = ref.watch(clientProvider);
+    final client = ref.watch(alwaysClientProvider);
     final convoMembers = ref.watch(chatMembersProvider(roomId));
     return convoMembers.when(
       data: (members) {
@@ -112,7 +112,7 @@ class RoomAvatar extends ConsumerWidget {
           return memberAvatar(members[0], ref);
         } else if (count == 2) {
           //Show opponent member avatar
-          if (members[0].userId().toString() != client?.userId().toString()) {
+          if (members[0].userId().toString() != client.userId().toString()) {
             return memberAvatar(members[0], ref);
           } else {
             return memberAvatar(members[1], ref);

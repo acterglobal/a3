@@ -20,6 +20,9 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
 class RelatedSpacesPage extends ConsumerWidget {
+  static const moreOptionKey = Key('related-spaces-more-actions');
+  static const createSubspaceKey = Key('related-spaces-more-create-subspace');
+  static const linkSubspaceKey = Key('related-spaces-more-link-subspace');
   final String spaceIdOrAlias;
 
   const RelatedSpacesPage({super.key, required this.spaceIdOrAlias});
@@ -64,12 +67,14 @@ class RelatedSpacesPage extends ConsumerWidget {
                     PopupMenuButton(
                       icon: Icon(
                         Atlas.plus_circle,
+                        key: moreOptionKey,
                         color: Theme.of(context).colorScheme.neutral5,
                       ),
                       iconSize: 28,
                       color: Theme.of(context).colorScheme.surface,
                       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                         PopupMenuItem(
+                          key: createSubspaceKey,
                           onTap: () => context.pushNamed(
                             Routes.createSpace.name,
                             queryParameters: {'parentSpaceId': spaceIdOrAlias},
@@ -83,6 +88,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                           ),
                         ),
                         PopupMenuItem(
+                          key: linkSubspaceKey,
                           onTap: () => context.pushNamed(
                             Routes.linkSubspace.name,
                             pathParameters: {'spaceId': spaceIdOrAlias},
@@ -147,7 +153,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                       itemBuilder: (context, index) {
                         final space = spaces.parents[index];
                         return SpaceCard(
-                          key: Key(space.getRoomIdStr()),
+                          key: Key('parent-list-item-${space.getRoomIdStr()}'),
                           space: space,
                           showParent: false,
                         );
@@ -172,7 +178,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                     itemBuilder: (context, index) {
                       final space = spaces.knownSubspaces[index];
                       return SpaceCard(
-                        key: Key(space.getRoomIdStr()),
+                        key: Key('subspace-list-item-${space.getRoomIdStr()}'),
                         space: space,
                         showParent: false,
                       );
@@ -190,8 +196,10 @@ class RelatedSpacesPage extends ConsumerWidget {
                   RiverPagedBuilder<Next?, SpaceHierarchyRoomInfo>.autoDispose(
                     firstPageKey: const Next(isStart: true),
                     provider: remoteSpaceHierarchyProvider(spaces),
-                    itemBuilder: (context, item, index) =>
-                        SpaceHierarchyCard(space: item),
+                    itemBuilder: (context, item, index) => SpaceHierarchyCard(
+                      key: Key('subspace-list-item-${item.roomIdStr()}'),
+                      space: item,
+                    ),
                     pagedBuilder: (controller, builder) => PagedSliverList(
                       pagingController: controller,
                       builderDelegate: builder,
@@ -240,7 +248,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                     itemBuilder: (context, index) {
                       final space = spaces.otherRelations[index];
                       return SpaceCard(
-                        key: Key(space.getRoomIdStr()),
+                        key: Key('subspace-list-item-${space.getRoomIdStr()}'),
                         space: space,
                       );
                     },

@@ -856,7 +856,13 @@ object TimelineDiff {
 //    mute
 // }
 
+/// Rotate the logging file
+fn new_join_rule_builder() -> JoinRuleBuilder;
 
+object JoinRuleBuilder {
+    fn join_rule(input: string);
+    fn add_room(room: string);
+}
 
 //  ########   #######   #######  ##     ## 
 //  ##     ## ##     ## ##     ## ###   ### 
@@ -867,11 +873,19 @@ object TimelineDiff {
 //  ##     ##  #######   #######  ##     ## 
 
 
-
 /// Generic Room Properties
 object Room {
     /// the RoomId as a String
     fn room_id_str() -> string;
+
+    /// the JoinRule as a String
+    fn join_rule_str() -> string;
+
+    /// if set to restricted or restricted_knock the rooms this is restricted to
+    fn restricted_room_ids_str() -> Vec<string>;
+
+    /// set the join rule.
+    fn set_join_rule(join_rule_builder: JoinRuleBuilder) -> Future<Result<bool>>;
 
     /// whether we are part of this room
     fn is_joined() -> bool;
@@ -1286,20 +1300,20 @@ object AttachmentsManager {
     /// How many attachments does this item have
     fn attachments_count() -> u32;
 
-    /// draft a new attachment for this item
-    fn attachment_draft() -> AttachmentDraft;
-
     /// create news slide for image msg
-    fn image_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> AttachmentDraft;
+    fn image_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> AttachmentDraft;
 
     /// create news slide for audio msg
-    fn audio_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>) -> AttachmentDraft;
+    fn audio_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>) -> AttachmentDraft;
 
     /// create news slide for video msg
-    fn video_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> AttachmentDraft;
+    fn video_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> AttachmentDraft;
 
     /// create news slide for file msg
-    fn file_attachment_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>) -> AttachmentDraft;
+    fn file_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>) -> AttachmentDraft;
+
+    /// create news slide for location msg
+    fn location_draft(body: string, geo_uri: string) -> AttachmentDraft;
 }
 
 
