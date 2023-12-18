@@ -1,5 +1,7 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/error_widget.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/in_dashboard.dart';
@@ -54,6 +56,33 @@ class Dashboard extends ConsumerWidget {
         ),
       ];
     }
+      if (children.isEmpty) {
+      return Center(
+        heightFactor: 1.5,
+        child: ErrorWidgetTemplate(
+          title: 'You are not a member of any space yet',
+          subtitle:
+              'Create or join space, to start organizing and collaborating!',
+          image: 'assets/images/empty_home.png',
+          primaryButton: DefaultButton(
+            onPressed: () {},
+            title: 'Create New Space',
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.success,
+              disabledBackgroundColor:
+                  Theme.of(context).colorScheme.success.withOpacity(0.5),
+            ),
+          ),
+          secondaryButton: DefaultButton(
+            onPressed: () {},
+            title: 'Join Existing Space',
+            isOutlined: true,
+            
+          ),
+        ),
+      );
+    }
+
     return InDashboard(
       child: Scaffold(
         body: Container(

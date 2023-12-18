@@ -43,7 +43,7 @@ class _NewsWidgetState extends ConsumerState<NewsWidget>
               subtitle:
                   'Create actionable posts and engage everyone within your space.',
               image: 'assets/images/empty_updates.png',
-              button: DefaultButton(
+              primaryButton: DefaultButton(
                 onPressed: () {},
                 title: 'Create New update',
                 style: ElevatedButton.styleFrom(

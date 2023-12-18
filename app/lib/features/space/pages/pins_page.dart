@@ -72,7 +72,7 @@ class SpacePinsPage extends ConsumerWidget {
                       subtitle:
                           'Share important resources with your community such as documents or links so everyone is updated.',
                       image: 'assets/images/empty_pin.png',
-                      button: DefaultButton(
+                      primaryButton: DefaultButton(
                         onPressed: () {},
                         title: 'Share Pin',
                         style: ElevatedButton.styleFrom(

@@ -47,7 +47,7 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
           );
     }
 
-     if (chats.isNotEmpty) {
+     if (chats.isEmpty) {
       return Center(
         heightFactor: 1.5,
         child: ErrorWidgetTemplate(
@@ -55,7 +55,7 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
           subtitle:
               'Get in touch with other change makers, organizers or activists and chat directly with them.',
           image: 'assets/images/empty_chat.png',
-          button: DefaultButton(
+          primaryButton: DefaultButton(
             onPressed: () {},
             title: 'Send DM',
             style: ElevatedButton.styleFrom(

@@ -63,7 +63,7 @@ class SpaceEventsPage extends ConsumerWidget {
                       subtitle:
                           'Create new event and bring your community together',
                       image: 'assets/images/empty_events.png',
-                      button: DefaultButton(
+                      primaryButton: DefaultButton(
                         onPressed: () {},
                         title: 'Create Event',
                         style: ElevatedButton.styleFrom(

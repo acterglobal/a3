@@ -126,7 +126,7 @@ class SpaceChatsPage extends ConsumerWidget {
                     subtitle:
                         'Get the conversation going to start organizing collaborating',
                     image: 'assets/images/empty_chat.png',
-                    button: DefaultButton(
+                    primaryButton: DefaultButton(
                       onPressed: () {},
                       title: 'Create Space Chat',
                       style: ElevatedButton.styleFrom(

@@ -4,14 +4,16 @@ class ErrorWidgetTemplate extends StatelessWidget {
   final String title;
   final String subtitle;
   final String image;
-  final Widget? button;
+  final Widget? primaryButton;
+  final Widget? secondaryButton;
 
   const ErrorWidgetTemplate({
     super.key,
     required this.title,
     required this.subtitle,
     required this.image,
-    this.button,
+    this.primaryButton,
+    this.secondaryButton,
   });
 
   @override
@@ -42,7 +44,11 @@ class ErrorWidgetTemplate extends StatelessWidget {
           const SizedBox(
             height: 10,
           ),
-          if (button != null) button!,
+          if (primaryButton != null) primaryButton!,
+          const SizedBox(
+            height: 10,
+          ),
+          if (secondaryButton != null) secondaryButton!,
         ],
       ),
     );
