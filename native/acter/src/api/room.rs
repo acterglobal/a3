@@ -1273,12 +1273,14 @@ impl Room {
                 let original = event_content
                     .as_original()
                     .expect("Couldn't get original msg");
-                match &original.content.msgtype {
-                    MessageType::Image(content) => {}
-                    MessageType::Audio(content) => {}
-                    MessageType::Video(content) => {}
-                    MessageType::File(content) => {}
-                    _ => bail!("This message type is not downloadable"),
+                if !matches!(
+                    &original.content.msgtype,
+                    MessageType::Image(_)
+                        | MessageType::Audio(_)
+                        | MessageType::Video(_)
+                        | MessageType::File(_)
+                ) {
+                    bail!("This message type is not downloadable");
                 }
                 let key = [
                     room.room_id().as_str().as_bytes(),
@@ -1457,12 +1459,14 @@ impl Room {
                 let original = event_content
                     .as_original()
                     .expect("Couldn't get original msg");
-                match &original.content.msgtype {
-                    MessageType::Image(content) => {}
-                    MessageType::Audio(content) => {}
-                    MessageType::Video(content) => {}
-                    MessageType::File(content) => {}
-                    _ => bail!("This message type is not downloadable"),
+                if !matches!(
+                    &original.content.msgtype,
+                    MessageType::Image(_)
+                        | MessageType::Audio(_)
+                        | MessageType::Video(_)
+                        | MessageType::File(_)
+                ) {
+                    bail!("This message type is not downloadable");
                 }
                 let key = [
                     room.room_id().as_str().as_bytes(),
