@@ -72,12 +72,6 @@ impl ReactionManager {
         &self.stats
     }
 
-    pub fn draft_builder(&self) -> ReactionManager {
-        ReactionBuilder::default()
-            .to(self.event_id.to_owned())
-            .to_owned()
-    }
-
     fn update_key(&self) -> String {
         Self::stats_field_for(&self.event_id)
     }
@@ -163,7 +157,7 @@ impl super::ActerModel for Reaction {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![self.inner.to.event_id.to_string()])
+        Some(vec![self.inner.relates_to.event_id.to_string()])
     }
 }
 

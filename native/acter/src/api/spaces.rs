@@ -10,7 +10,6 @@ use acter_core::{
         comments::{SyncCommentEvent, SyncCommentUpdateEvent},
         news::{SyncNewsEntryEvent, SyncNewsEntryUpdateEvent},
         pins::{SyncPinEvent, SyncPinUpdateEvent},
-        reactions::SyncReactionEvent,
         rsvp::SyncRsvpEvent,
         tasks::{SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent, SyncTaskUpdateEvent},
     },
@@ -31,7 +30,8 @@ use ruma_common::{
     directory::RoomTypeFilter, serde::Raw, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
 };
 use ruma_events::{
-    space::child::SpaceChildEventContent, AnyStateEventContent, MessageLikeEvent, StateEventType,
+    reaction::SyncReactionEvent, space::child::SpaceChildEventContent, AnyStateEventContent,
+    MessageLikeEvent, StateEventType,
 };
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;

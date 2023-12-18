@@ -5,7 +5,7 @@ mod comments;
 mod common;
 mod news;
 mod pins;
-pub mod reactions;
+mod reactions;
 mod rsvp;
 mod tag;
 mod tasks;
@@ -22,6 +22,7 @@ pub use core::fmt::Debug;
 use enum_dispatch::enum_dispatch;
 pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
+pub use reactions::Reaction;
 pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
 use ruma_common::{
     serde::Raw, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId,
@@ -270,7 +271,7 @@ pub enum AnyActerModel {
     AttachmentUpdate(AttachmentUpdate),
 
     Rsvp(Rsvp),
-    Reaction(ReactionEventContent),
+    Reaction(Reaction),
 
     #[cfg(test)]
     TestModel(TestModel),

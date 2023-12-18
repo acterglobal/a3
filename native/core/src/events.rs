@@ -14,7 +14,10 @@ pub use common::{
     References, Update, UtcDateTime,
 };
 use ruma_common::exports::serde::de::Error as SerdeDeError;
-use ruma_events::{reaction::ReactionEventContent, StaticEventContent};
+use ruma_events::{
+    reaction::{ReactionEvent, ReactionEventContent},
+    StaticEventContent,
+};
 
 #[derive(Clone, Debug)]
 pub enum AnyActerEvent {
@@ -40,7 +43,7 @@ pub enum AnyActerEvent {
     Attachment(attachments::AttachmentEvent),
     AttachmentUpdate(attachments::AttachmentUpdateEvent),
 
-    Reaction(ReactionEventContent),
+    Reaction(ReactionEvent),
     Rsvp(rsvp::RsvpEvent),
 }
 
@@ -165,10 +168,9 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
             }
 
             ReactionEventContent::TYPE => {
-                let event = ::ruma_common::exports::serde_json::from_str::<ReactionEventContent>(
-                    json.get(),
-                )
-                .map_err(D::Error::custom)?;
+                let event =
+                    ::ruma_common::exports::serde_json::from_str::<ReactionEvent>(json.get())
+                        .map_err(D::Error::custom)?;
                 Ok(Self::Reaction(event))
             }
 
