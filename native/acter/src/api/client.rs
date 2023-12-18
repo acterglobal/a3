@@ -251,7 +251,8 @@ impl SyncState {
         self.history_loading.signal_cloned().to_stream()
     }
 
-    // for only cli and integration tests, not api.rsh
+    #[cfg(feature = "testing")]
+    #[doc(hidden)]
     pub async fn await_has_synced_history(&self) -> Result<u32> {
         trace!("Waiting for history to sync");
         let signal = self.history_loading.signal_cloned().to_stream();

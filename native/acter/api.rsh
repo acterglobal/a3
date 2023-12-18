@@ -12,7 +12,7 @@
 fn init_logging(log_dir: string, filter: string) -> Result<()>;
 
 /// Set the global proxy to the given string. Will only apply to client initialized after calling this.
-fn set_proxy(proxy: Option<string>) ;
+fn set_proxy(proxy: Option<string>);
 
 /// Rotate the logging file
 fn rotate_log_file() -> Result<string>;
@@ -272,28 +272,10 @@ object NewsSlide {
     /// the references linked in this slide
     fn references() -> Vec<ObjRef>;
 
-    /// if this is an image, hand over the description
-    fn image_desc() -> Option<ImageDesc>;
-    /// if this is an image, hand over the data
-    fn image_binary() -> Future<Result<buffer<u8>>>;
-
-    /// if this is an audio, hand over the description
-    fn audio_desc() -> Option<AudioDesc>;
-    /// if this is an audio, hand over the data
-    fn audio_binary() -> Future<Result<buffer<u8>>>;
-
-    /// if this is a video, hand over the description
-    fn video_desc() -> Option<VideoDesc>;
-    /// if this is a video, hand over the data
-    fn video_binary() -> Future<Result<buffer<u8>>>;
-
-    /// if this is a file, hand over the description
-    fn file_desc() -> Option<FileDesc>;
-    /// if this is a file, hand over the data
-    fn file_binary() -> Future<Result<buffer<u8>>>;
-
-    /// if this is a location, hand over the description
-    fn location_desc() -> Option<LocationDesc>;
+    /// if this is a media, hand over the description
+    fn msg_content() -> MsgContent;
+    /// if this is a media, hand over the data
+    fn source_binary() -> Future<Result<buffer<u8>>>;
 }
 
 /// A news entry
@@ -320,20 +302,8 @@ object NewsEntry {
 }
 
 object NewsEntryDraft {
-    /// create news slide for text msg
-    fn add_text_slide(body: string);
-
-    /// create news slide for image msg
-    fn add_image_slide(body: string, url: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<bool>>;
-
-    /// create news slide for audio msg
-    fn add_audio_slide(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>);
-
-    /// create news slide for video msg
-    fn add_video_slide(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>);
-
-    /// create news slide for file msg
-    fn add_file_slide(body: string, url: string, mimetype: Option<string>, size: Option<u64>);
+    /// create news slide
+    fn add_slide(base_draft: MsgContentDraft) -> Future<Result<bool>>;
 
     /// clear slides
     fn unset_slides();
@@ -619,8 +589,6 @@ object EventSendState {
     fn event_id() -> Option<EventId>;
 }
 
-
-
 /// A room Message metadata and content
 object RoomEventItem {
     /// Unique ID of this event
@@ -642,23 +610,8 @@ object RoomEventItem {
     /// the type of massage, like text, image, audio, video, file etc
     fn msg_type() -> Option<string>;
 
-    /// contains text fallback and formatted text
-    fn text_desc() -> Option<TextDesc>;
-
-    /// contains source data, name, mimetype, size, width and height
-    fn image_desc() -> Option<ImageDesc>;
-
-    /// contains source data, name, mimetype, duration and size
-    fn audio_desc() -> Option<AudioDesc>;
-
-    /// contains source data, name, mimetype, duration, size, width, height and blurhash
-    fn video_desc() -> Option<VideoDesc>;
-
-    /// contains source data, name, mimetype and size
-    fn file_desc() -> Option<FileDesc>;
-
-    /// contains body and geo uri
-    fn location_desc() -> Option<LocationDesc>;
+    /// covers text/image/audio/video/file/location/emote/sticker
+    fn msg_content() -> Option<MsgContent>;
 
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
@@ -705,124 +658,45 @@ object RoomMessage {
     fn virtual_item() -> Option<RoomVirtualItem>;
 }
 
-object TextDesc {
-    /// fallback text
+object MsgContent {
+    /// available always
     fn body() -> string;
 
-    /// formatted text
+    /// available for text msg
     fn formatted_body() -> Option<string>;
 
-    /// whether this has a formatted version
-    fn has_formatted() -> bool;
-}
+    /// available for image/audio/video/file msg
+    fn source() -> Option<MediaSource>;
 
-object ImageDesc {
-    /// file name
-    fn name() -> string;
-
-    /// image source
-    fn source() -> MediaSource;
-
-    /// MIME
+    /// available for image/audio/video/file msg
     fn mimetype() -> Option<string>;
 
-    /// file size in bytes
+    /// available for image/audio/video/file msg
     fn size() -> Option<u64>;
 
-    /// image width
+    /// available for image/video msg
     fn width() -> Option<u64>;
 
-    /// image height
+    /// available for image/video msg
     fn height() -> Option<u64>;
 
-    /// thumbnail info
+    /// available for image/video/file/location msg
+    fn thumbnail_source() -> Option<MediaSource>;
+
+    /// available for image/video/file/location msg
     fn thumbnail_info() -> Option<ThumbnailInfo>;
 
-    /// thumbnail source
-    fn thumbnail_source() -> Option<MediaSource>;
-}
-
-object AudioDesc {
-    /// file name
-    fn name() -> string;
-
-    /// audio source
-    fn source() -> MediaSource;
-
-    /// MIME
-    fn mimetype() -> Option<string>;
-
-    /// file size in bytes
-    fn size() -> Option<u64>;
-
-    /// duration in seconds
+    /// available for audio/video msg
     fn duration() -> Option<u64>;
-}
 
-object VideoDesc {
-    /// file name
-    fn name() -> string;
-
-    /// video source
-    fn source() -> MediaSource;
-
-    /// MIME
-    fn mimetype() -> Option<string>;
-
-    /// file size in bytes
-    fn size() -> Option<u64>;
-
-    /// image width
-    fn width() -> Option<u64>;
-
-    /// image height
-    fn height() -> Option<u64>;
-
-    /// blurhash
+    /// available for image/video msg
     fn blurhash() -> Option<string>;
 
-    /// duration in seconds
-    fn duration() -> Option<u64>;
+    /// available for file msg
+    fn filename() -> Option<string>;
 
-    /// thumbnail info
-    fn thumbnail_info() -> Option<ThumbnailInfo>;
-
-    /// thumbnail source
-    fn thumbnail_source() -> Option<MediaSource>;
-}
-
-object FileDesc {
-    /// file name
-    fn name() -> string;
-
-    /// file source
-    fn source() -> MediaSource;
-
-    /// MIME
-    fn mimetype() -> Option<string>;
-
-    /// file size in bytes
-    fn size() -> Option<u64>;
-
-    /// thumbnail info
-    fn thumbnail_info() -> Option<ThumbnailInfo>;
-
-    /// thumbnail source
-    fn thumbnail_source() -> Option<MediaSource>;
-}
-
-object LocationDesc {
-    /// body
-    fn body() -> string;
-
-    /// geo uri
-    fn geo_uri() -> string;
-
-    /// thumbnail info
-    fn thumbnail_info() -> Option<ThumbnailInfo>;
-
-    /// thumbnail source
-    fn thumbnail_source() -> Option<MediaSource>;
+    /// available for location msg
+    fn geo_uri() -> Option<string>;
 }
 
 object ReactionRecord {
@@ -964,6 +838,29 @@ object SpaceDiff {
     fn value() -> Option<Space>;
 }
 
+object MsgContentDraft {
+    /// available for only image/audio/video/file
+    fn size(value: u64) -> MsgContentDraft;
+
+    /// available for only image/video
+    fn width(value: u64) -> MsgContentDraft;
+
+    /// available for only image/video
+    fn height(value: u64) -> MsgContentDraft;
+
+    /// available for only audio/video
+    fn duration(value: u64) -> MsgContentDraft;
+
+    /// available for only image/video
+    fn blurhash(value: string) -> MsgContentDraft;
+
+    /// available for only file
+    fn filename(value: string) -> MsgContentDraft;
+
+    /// available for only location
+    fn geo_uri(value: string) -> MsgContentDraft;
+}
+
 /// Timeline with Room Events
 object TimelineStream {
     /// Fires whenever new diff found
@@ -972,68 +869,14 @@ object TimelineStream {
     /// Get the next count messages backwards, and return whether it has more items
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
 
-    /// send the plain text message
-    fn send_plain_message(message: string) -> Future<Result<bool>>;
+    /// send message using draft
+    fn send_message(draft: MsgContentDraft) -> Future<Result<bool>>;
 
-    /// modify the plain text message
-    fn edit_plain_message(event_id: string, new_msg: string) -> Future<Result<bool>>;
+    /// modify message using draft
+    fn edit_message(event_id: string, draft: MsgContentDraft) -> Future<Result<bool>>;
 
-    /// send reply as plain text to event
-    fn send_plain_reply(msg: string, event_id: string) -> Future<Result<bool>>;
-
-    /// send the formatted text message
-    fn send_formatted_message(markdown: string) -> Future<Result<bool>>;
-
-    /// modify the formatted text message
-    fn edit_formatted_message(event_id: string, new_msg: string) -> Future<Result<bool>>;
-
-    /// send reply as formatted text to event
-    fn send_formatted_reply(markdown: string, event_id: string) -> Future<Result<bool>>;
-
-    /// send the image message
-    fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<bool>>;
-
-    /// modify the image message
-    fn edit_image_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>) -> Future<Result<bool>>;
-
-    /// send reply as image to event
-    fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string) -> Future<Result<bool>>;
-
-    /// send the audio message
-    fn send_audio_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>) -> Future<Result<bool>>;
-
-    /// modify the audio message
-    fn edit_audio_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>) -> Future<Result<bool>>;
-
-    /// send reply as audio to event
-    fn send_audio_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, event_id: string) -> Future<Result<bool>>;
-
-    /// send the video message
-    fn send_video_message(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> Future<Result<bool>>;
-
-    /// modify the video message
-    fn edit_video_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>) -> Future<Result<bool>>;
-
-    /// send reply as video to event
-    fn send_video_reply(uri: string, name: string, mimetype: string, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>, event_id: string) -> Future<Result<bool>>;
-
-    /// send the file message
-    fn send_file_message(uri: string, name: string, mimetype: string, size: Option<u64>) -> Future<Result<bool>>;
-
-    /// modify the file message
-    fn edit_file_message(event_id: string, uri: string, name: string, mimetype: string, size: Option<u64>) -> Future<Result<bool>>;
-
-    /// send reply as file to event
-    fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u64>, event_id: string) -> Future<Result<bool>>;
-
-    /// send the location message
-    fn send_location_message(body: string, geo_uri: string) -> Future<Result<bool>>;
-
-    /// modify the location message
-    fn edit_location_message(event_id: string, body: string, geo_uri: string) -> Future<Result<bool>>;
-
-    /// send reply as location to event
-    fn send_location_reply(body: string, geo_uri: string, event_id: string) -> Future<Result<bool>>;
+    /// send reply to event
+    fn reply_message(event_id: string, draft: MsgContentDraft) -> Future<Result<bool>>;
 
     /// send single receipt
     /// receipt_type: FullyRead | Read | ReadPrivate
@@ -1120,25 +963,10 @@ object Convo {
     /// on every key stroke, since it will do nothing while typing is active.
     fn typing_notice(typing: bool) -> Future<Result<bool>>;
 
-    /// decrypted image file data
+    /// decrypted media file data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-    fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
-
-    /// decrypted audio buffer data
-    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-    fn audio_binary(event_id: string) -> Future<Result<buffer<u8>>>;
-
-    /// decrypted video buffer data
-    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-    fn video_binary(event_id: string) -> Future<Result<buffer<u8>>>;
-
-    /// decrypted file buffer data
-    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-    fn file_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+    fn media_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// get the user status on this room
     fn room_type() -> string;
@@ -1265,28 +1093,10 @@ object Attachment {
     /// When was this attachment acknowledged by the server
     fn origin_server_ts() -> u64;
 
-    /// if this is an image, hand over the description
-    fn image_desc() -> Option<ImageDesc>;
-    /// if this is an image, hand over the data
-    fn image_binary() -> Future<Result<buffer<u8>>>;
-
-    /// if this is an audio, hand over the description
-    fn audio_desc() -> Option<AudioDesc>;
-    /// if this is an audio, hand over the data
-    fn audio_binary() -> Future<Result<buffer<u8>>>;
-
-    /// if this is a video, hand over the description
-    fn video_desc() -> Option<VideoDesc>;
-    /// if this is a video, hand over the data
-    fn video_binary() -> Future<Result<buffer<u8>>>;
-
-    /// if this is a file, hand over the description
-    fn file_desc() -> Option<FileDesc>;
-    /// if this is a file, hand over the data
-    fn file_binary() -> Future<Result<buffer<u8>>>;
-
-    /// if this is a location, hand over the description
-    fn location_desc() -> Option<LocationDesc>;
+    /// if this is a media, hand over the description
+    fn msg_content() -> MsgContent;
+    /// if this is a media, hand over the data
+    fn source_binary() -> Future<Result<buffer<u8>>>;
 }
 
 /// Reference to the attachments section of a particular item
@@ -1301,19 +1111,7 @@ object AttachmentsManager {
     fn attachments_count() -> u32;
 
     /// create news slide for image msg
-    fn image_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> AttachmentDraft;
-
-    /// create news slide for audio msg
-    fn audio_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>) -> AttachmentDraft;
-
-    /// create news slide for video msg
-    fn video_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>, secs: Option<u64>, width: Option<u64>, height: Option<u64>, blurhash: Option<string>) -> AttachmentDraft;
-
-    /// create news slide for file msg
-    fn file_draft(body: string, url: string, mimetype: Option<string>, size: Option<u64>) -> AttachmentDraft;
-
-    /// create news slide for location msg
-    fn location_draft(body: string, geo_uri: string) -> AttachmentDraft;
+    fn content_draft(base_draft: MsgContentDraft) -> Future<Result<AttachmentDraft>>;
 }
 
 
@@ -1332,7 +1130,7 @@ object Task {
     fn title() -> string;
 
     /// the description of this task
-    fn description() -> Option<TextDesc>;
+    fn description() -> Option<MsgContent>;
 
     /// the users assigned
     fn assignees() -> Vec<UserId>;
@@ -1524,7 +1322,7 @@ object TaskList {
     fn name() -> string;
 
     /// the description of this task list
-    fn description() -> Option<TextDesc>;
+    fn description() -> Option<MsgContent>;
 
     /// who wants to be informed on updates about this?
     fn subscribers() -> Vec<UserId>;
@@ -1885,26 +1683,6 @@ object Space {
 
     /// pin draft builder
     fn pin_draft() -> Result<PinDraft>;
-
-    /// decrypted image buffer data
-    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-    fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
-
-    /// decrypted audio buffer data
-    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-    fn audio_binary(event_id: string) -> Future<Result<buffer<u8>>>;
-
-    /// decrypted video buffer data
-    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-    fn video_binary(event_id: string) -> Future<Result<buffer<u8>>>;
-
-    /// decrypted file buffer data
-    /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
-    /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-    fn file_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     /// join this room
     fn join() -> Future<Result<bool>>;
@@ -2433,6 +2211,27 @@ object Client {
 
     /// the list of devices
     fn device_records(verified: bool) -> Future<Result<Vec<DeviceRecord>>>;
+
+    /// make draft to send text plain msg
+    fn text_plain_draft(body: string) -> MsgContentDraft;
+
+    /// make draft to send text markdown msg
+    fn text_markdown_draft(body: string) -> MsgContentDraft;
+
+    /// make draft to send image msg
+    fn image_draft(source: string, mimetype: string) -> MsgContentDraft;
+
+    /// make draft to send audio msg
+    fn audio_draft(source: string, mimetype: string) -> MsgContentDraft;
+
+    /// make draft to send video msg
+    fn video_draft(source: string, mimetype: string) -> MsgContentDraft;
+
+    /// make draft to send file msg
+    fn file_draft(source: string, mimetype: string) -> MsgContentDraft;
+
+    /// make draft to send location msg
+    fn location_draft(body: string, source: string) -> MsgContentDraft;
 
 }
 

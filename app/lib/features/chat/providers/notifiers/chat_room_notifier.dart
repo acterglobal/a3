@@ -13,6 +13,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 class PostProcessItem {
   final types.Message message;
   final RoomMessage event;
+
   const PostProcessItem(this.event, this.message);
 }
 
@@ -209,7 +210,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
         RoomEventItem? eventItem = m.eventItem();
         if (eventItem != null) {
-          await _fetchEventBinary(eventItem.msgType(), message.id);
+          await _fetchMediaBinary(eventItem.msgType(), message.id);
         }
       }
     }
@@ -299,9 +300,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         String? orgMsgType = orgEventItem.msgType();
         switch (orgMsgType) {
           case 'm.text':
-            TextDesc? description = orgEventItem.textDesc();
-            if (description != null) {
-              String body = description.body();
+            MsgContent? msgContent = orgEventItem.msgContent();
+            if (msgContent != null) {
+              String body = msgContent.body();
               repliedToContent = {
                 'content': body,
                 'messageLength': body.length,
@@ -316,71 +317,71 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.image':
-            ImageDesc? description = orgEventItem.imageDesc();
-            if (description != null) {
-              convo.imageBinary(originalId).then((data) {
+            MsgContent? msgContent = orgEventItem.msgContent();
+            if (msgContent != null) {
+              convo.mediaBinary(originalId).then((data) {
                 repliedToContent['base64'] = base64Encode(data.asTypedList());
               });
               repliedTo = types.ImageMessage(
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
                 createdAt: orgEventItem.originServerTs(),
-                name: description.name(),
-                size: description.size() ?? 0,
-                uri: description.source().url(),
-                width: description.width()?.toDouble() ?? 0,
+                name: msgContent.body(),
+                size: msgContent.size() ?? 0,
+                uri: msgContent.source()!.url(),
+                width: msgContent.width()?.toDouble() ?? 0,
                 metadata: repliedToContent,
               );
             }
             break;
           case 'm.audio':
-            AudioDesc? description = orgEventItem.audioDesc();
-            if (description != null) {
-              convo.audioBinary(originalId).then((data) {
+            MsgContent? msgContent = orgEventItem.msgContent();
+            if (msgContent != null) {
+              convo.mediaBinary(originalId).then((data) {
                 repliedToContent['content'] = base64Encode(data.asTypedList());
               });
               repliedTo = types.AudioMessage(
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
                 createdAt: orgEventItem.originServerTs(),
-                name: description.name(),
-                duration: Duration(seconds: description.duration() ?? 0),
-                size: description.size() ?? 0,
-                uri: description.source().url(),
+                name: msgContent.body(),
+                duration: Duration(seconds: msgContent.duration() ?? 0),
+                size: msgContent.size() ?? 0,
+                uri: msgContent.source()!.url(),
                 metadata: repliedToContent,
               );
             }
             break;
           case 'm.video':
-            VideoDesc? description = orgEventItem.videoDesc();
-            if (description != null) {
-              convo.videoBinary(originalId).then((data) {
+            MsgContent? msgContent = orgEventItem.msgContent();
+            if (msgContent != null) {
+              convo.mediaBinary(originalId).then((data) {
                 repliedToContent['content'] = base64Encode(data.asTypedList());
               });
               repliedTo = types.VideoMessage(
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
                 createdAt: orgEventItem.originServerTs(),
-                name: description.name(),
-                size: description.size() ?? 0,
-                uri: description.source().url(),
+                name: msgContent.body(),
+                size: msgContent.size() ?? 0,
+                uri: msgContent.source()!.url(),
                 metadata: repliedToContent,
               );
             }
             break;
           case 'm.file':
-            FileDesc? description = orgEventItem.fileDesc();
-            if (description != null) {
+            MsgContent? msgContent = orgEventItem.msgContent();
+            if (msgContent != null) {
               repliedToContent = {
-                'content': description.name(),
+                'content': msgContent.body(),
               };
               repliedTo = types.FileMessage(
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
                 createdAt: orgEventItem.originServerTs(),
-                name: description.name(),
-                size: description.size() ?? 0,
-                uri: description.source().url(),
+                name: msgContent.body(),
+                size: msgContent.size() ?? 0,
+                uri: msgContent.source()!.url(),
                 metadata: repliedToContent,
               );
             }
@@ -474,7 +475,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           metadata: {
             'itemType': 'event',
             'eventType': eventType,
-            'body': eventItem.textDesc()?.body(),
+            'body': eventItem.msgContent()?.body(),
             'eventState': eventItem.sendState(),
             'receipts': receipts,
           },
@@ -522,10 +523,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           metadata: metadata,
         );
       case 'm.room.member':
-        TextDesc? description = eventItem.textDesc();
-        if (description != null) {
-          String? formattedBody = description.formattedBody();
-          String body = description.body(); // always exists
+        MsgContent? msgContent = eventItem.msgContent();
+        if (msgContent != null) {
+          String? formattedBody = msgContent.formattedBody();
+          String body = msgContent.body(); // always exists
           return types.CustomMessage(
             author: author,
             createdAt: createdAt,
@@ -553,8 +554,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         String? msgType = eventItem.msgType();
         switch (msgType) {
           case 'm.audio':
-            AudioDesc? description = eventItem.audioDesc();
-            if (description != null) {
+            MsgContent? msgContent = eventItem.msgContent();
+            if (msgContent != null) {
               Map<String, dynamic> metadata = {
                 'base64': '',
                 'eventState': eventState,
@@ -572,21 +573,21 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               return types.AudioMessage(
                 author: author,
                 createdAt: createdAt,
-                duration: Duration(seconds: description.duration() ?? 0),
+                duration: Duration(seconds: msgContent.duration() ?? 0),
                 id: eventId,
                 metadata: metadata,
-                mimeType: description.mimetype(),
-                name: description.name(),
-                size: description.size() ?? 0,
-                uri: description.source().url(),
+                mimeType: msgContent.mimetype(),
+                name: msgContent.body(),
+                size: msgContent.size() ?? 0,
+                uri: msgContent.source()!.url(),
               );
             }
             break;
           case 'm.emote':
-            TextDesc? description = eventItem.textDesc();
-            if (description != null) {
-              String? formattedBody = description.formattedBody();
-              String body = description.body(); // always exists
+            MsgContent? msgContent = eventItem.msgContent();
+            if (msgContent != null) {
+              String? formattedBody = msgContent.formattedBody();
+              String body = msgContent.body(); // always exists
               Map<String, dynamic> metadata = {
                 'eventState': eventState,
                 'receipts': receipts,
@@ -612,8 +613,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.file':
-            FileDesc? description = eventItem.fileDesc();
-            if (description != null) {
+            MsgContent? msgContent = eventItem.msgContent();
+            if (msgContent != null) {
               Map<String, dynamic> metadata = {
                 'eventState': eventState,
                 'receipts': receipts,
@@ -632,16 +633,16 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 createdAt: createdAt,
                 id: eventId,
                 metadata: metadata,
-                mimeType: description.mimetype(),
-                name: description.name(),
-                size: description.size() ?? 0,
-                uri: description.source().url(),
+                mimeType: msgContent.mimetype(),
+                name: msgContent.body(),
+                size: msgContent.size() ?? 0,
+                uri: msgContent.source()!.url(),
               );
             }
             break;
           case 'm.image':
-            ImageDesc? description = eventItem.imageDesc();
-            if (description != null) {
+            MsgContent? msgContent = eventItem.msgContent();
+            if (msgContent != null) {
               Map<String, dynamic> metadata = {
                 'eventState': eventState,
                 'receipts': receipts,
@@ -658,25 +659,25 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               return types.ImageMessage(
                 author: author,
                 createdAt: createdAt,
-                height: description.height()?.toDouble(),
+                height: msgContent.height()?.toDouble(),
                 id: eventId,
                 metadata: metadata,
-                name: description.name(),
-                size: description.size() ?? 0,
-                uri: description.source().url(),
-                width: description.width()?.toDouble(),
+                name: msgContent.body(),
+                size: msgContent.size() ?? 0,
+                uri: msgContent.source()!.url(),
+                width: msgContent.width()?.toDouble(),
               );
             }
             break;
           case 'm.location':
-            LocationDesc? description = eventItem.locationDesc();
-            if (description != null) {
+            MsgContent? msgContent = eventItem.msgContent();
+            if (msgContent != null) {
               Map<String, dynamic> metadata = {
                 'itemType': 'event',
                 'eventType': eventType,
                 'msgType': msgType,
-                'body': description.body(),
-                'geoUri': description.geoUri(),
+                'body': msgContent.body(),
+                'geoUri': msgContent.geoUri(),
                 'eventState': eventState,
                 'receipts': receipts,
               };
@@ -689,11 +690,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
-              final thumbnailSource = description.thumbnailSource();
+              final thumbnailSource = msgContent.thumbnailSource();
               if (thumbnailSource != null) {
-                metadata['thumbnailSource'] = thumbnailSource.toString();
+                metadata['thumbnailSource'] = thumbnailSource.url();
               }
-              final thumbnailInfo = description.thumbnailInfo();
+              final thumbnailInfo = msgContent.thumbnailInfo();
               final mimetype = thumbnailInfo?.mimetype();
               final size = thumbnailInfo?.size();
               final width = thumbnailInfo?.width();
@@ -719,10 +720,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.notice':
-            TextDesc? description = eventItem.textDesc();
-            if (description != null) {
-              String? formattedBody = description.formattedBody();
-              String body = description.body(); // always exists
+            MsgContent? msgContent = eventItem.msgContent();
+            if (msgContent != null) {
+              String? formattedBody = msgContent.formattedBody();
+              String body = msgContent.body(); // always exists
               return types.TextMessage(
                 author: author,
                 createdAt: createdAt,
@@ -741,10 +742,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.server_notice':
-            TextDesc? description = eventItem.textDesc();
-            if (description != null) {
-              String? formattedBody = description.formattedBody();
-              String body = description.body(); // always exists
+            MsgContent? msgContent = eventItem.msgContent();
+            if (msgContent != null) {
+              String? formattedBody = msgContent.formattedBody();
+              String body = msgContent.body(); // always exists
               return types.TextMessage(
                 author: author,
                 createdAt: createdAt,
@@ -763,10 +764,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.text':
-            TextDesc? description = eventItem.textDesc();
-            if (description != null) {
-              String? formattedBody = description.formattedBody();
-              String body = description.body(); // always exists
+            MsgContent? msgContent = eventItem.msgContent();
+            if (msgContent != null) {
+              String? formattedBody = msgContent.formattedBody();
+              String body = msgContent.body(); // always exists
               Map<String, dynamic> metadata = {
                 'eventState': eventState,
                 'receipts': receipts,
@@ -792,8 +793,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.video':
-            VideoDesc? description = eventItem.videoDesc();
-            if (description != null) {
+            MsgContent? msgContent = eventItem.msgContent();
+            if (msgContent != null) {
               Map<String, dynamic> metadata = {
                 'base64': '',
                 'eventState': eventState,
@@ -813,9 +814,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 createdAt: createdAt,
                 id: eventId,
                 metadata: metadata,
-                name: description.name(),
-                size: description.size() ?? 0,
-                uri: description.source().url(),
+                name: msgContent.body(),
+                size: msgContent.size() ?? 0,
+                uri: msgContent.source()!.url(),
               );
             }
             break;
@@ -840,15 +841,15 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             reactions[k] = records.toList();
           }
         }
-        ImageDesc? description = eventItem.imageDesc();
-        if (description != null) {
+        MsgContent? msgContent = eventItem.msgContent();
+        if (msgContent != null) {
           Map<String, dynamic> metadata = {
             'itemType': 'event',
             'eventType': eventType,
-            'name': description.name(),
-            'size': description.size() ?? 0,
-            'width': description.width()?.toDouble(),
-            'height': description.height()?.toDouble(),
+            'name': msgContent.body(),
+            'size': msgContent.size() ?? 0,
+            'width': msgContent.width()?.toDouble(),
+            'height': msgContent.height()?.toDouble(),
             'base64': '',
             'eventState': eventState,
             'receipts': receipts,
@@ -871,9 +872,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
         break;
       case 'm.poll.start':
-        TextDesc? description = eventItem.textDesc();
-        if (description != null) {
-          String body = description.body();
+        MsgContent? msgContent = eventItem.msgContent();
+        if (msgContent != null) {
+          String body = msgContent.body();
           return types.CustomMessage(
             author: author,
             createdAt: createdAt,
@@ -902,40 +903,20 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   // fetch event media binary for message.
-  Future<void> _fetchEventBinary(String? msgType, String eventId) async {
+  Future<void> _fetchMediaBinary(String? msgType, String eventId) async {
     switch (msgType) {
       case 'm.audio':
-        await _fetchAudioBinary(eventId);
-        break;
       case 'm.video':
-        await _fetchVideoBinary(eventId);
+        final messages = state.messages;
+        final data = await convo.mediaBinary(eventId);
+        int index = messages.indexWhere((x) => x.id == eventId);
+        if (index != -1) {
+          final metadata = {...messages[index].metadata ?? {}};
+          metadata['base64'] = base64Encode(data.asTypedList());
+          final message = messages[index].copyWith(metadata: metadata);
+          replaceMessage(message);
+        }
         break;
-    }
-  }
-
-  // fetch audio content for message.
-  Future<void> _fetchAudioBinary(String eventId) async {
-    final messages = state.messages;
-    final data = await convo.audioBinary(eventId);
-    int index = messages.indexWhere((x) => x.id == eventId);
-    if (index != -1) {
-      final metadata = {...messages[index].metadata ?? {}};
-      metadata['base64'] = base64Encode(data.asTypedList());
-      final message = messages[index].copyWith(metadata: metadata);
-      replaceMessage(message);
-    }
-  }
-
-  // fetch video content for message
-  Future<void> _fetchVideoBinary(String eventId) async {
-    final messages = state.messages;
-    final data = await convo.videoBinary(eventId);
-    int index = messages.indexWhere((x) => x.id == eventId);
-    if (index != -1) {
-      final metadata = {...messages[index].metadata ?? {}};
-      metadata['base64'] = base64Encode(data.asTypedList());
-      final message = messages[index].copyWith(metadata: metadata);
-      replaceMessage(message);
     }
   }
 

@@ -993,9 +993,9 @@ impl Room {
             .await?
     }
 
-    pub async fn image_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
+    pub async fn media_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
         if !self.is_joined() {
-            bail!("Can't read message as image from a room we are not in");
+            bail!("Can't read media message from a room we are not in");
         }
         let room = self.room.clone();
         let client = self.room.client();
@@ -1010,103 +1010,17 @@ impl Room {
                 let original = event_content
                     .as_original()
                     .expect("Couldn't get original msg");
-                let MessageType::Image(content) = &original.content.msgtype else {
-                    bail!("Invalid file format");
+                let source = match &original.content.msgtype {
+                    MessageType::Image(content) => content.source.clone(),
+                    MessageType::Audio(content) => content.source.clone(),
+                    MessageType::Video(content) => content.source.clone(),
+                    MessageType::File(content) => content.source.clone(),
+                    _ => {
+                        bail!("Not an Image, Audio, Video or Regular file.")
+                    }
                 };
                 let request = MediaRequest {
-                    source: content.source.clone(),
-                    format: MediaFormat::File,
-                };
-                let data = client.media().get_media_content(&request, false).await?;
-                Ok(FfiBuffer::new(data))
-            })
-            .await?
-    }
-
-    pub async fn audio_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
-        if !self.is_joined() {
-            bail!("Can't read message as audio from a room we are not in");
-        }
-        let room = self.room.clone();
-        let client = self.room.client();
-        let event_id = EventId::parse(event_id)?;
-
-        RUNTIME
-            .spawn(async move {
-                let evt = room.event(&event_id).await?;
-                let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
-                    bail!("It is not message")
-                };
-                let original = event_content
-                    .as_original()
-                    .expect("Couldn't get original msg");
-                let MessageType::Audio(content) = &original.content.msgtype else {
-                    bail!("Invalid file format");
-                };
-                let request = MediaRequest {
-                    source: content.source.clone(),
-                    format: MediaFormat::File,
-                };
-                let data = client.media().get_media_content(&request, false).await?;
-                Ok(FfiBuffer::new(data))
-            })
-            .await?
-    }
-
-    pub async fn video_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
-        if !self.is_joined() {
-            bail!("Can't read message as video from a room we are not in");
-        }
-        let room = self.room.clone();
-        let client = self.room.client();
-
-        let event_id = EventId::parse(event_id)?;
-
-        RUNTIME
-            .spawn(async move {
-                let evt = room.event(&event_id).await?;
-                let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
-                    bail!("It is not message")
-                };
-                let original = event_content
-                    .as_original()
-                    .expect("Couldn't get original msg");
-                let MessageType::Video(content) = &original.content.msgtype else {
-                    bail!("Invalid file format");
-                };
-                let request = MediaRequest {
-                    source: content.source.clone(),
-                    format: MediaFormat::File,
-                };
-                let data = client.media().get_media_content(&request, false).await?;
-                Ok(FfiBuffer::new(data))
-            })
-            .await?
-    }
-
-    pub async fn file_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
-        if !self.is_joined() {
-            bail!("Can't read message as file from a room we are not in");
-        }
-        let room = self.room.clone();
-        let client = self.room.client();
-
-        let event_id = EventId::parse(event_id)?;
-
-        RUNTIME
-            .spawn(async move {
-                let evt = room.event(&event_id).await?;
-                let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
-                    bail!("It is not message")
-                };
-                let original = event_content
-                    .as_original()
-                    .expect("Couldn't get original msg");
-                let MessageType::File(content) = &original.content.msgtype else {
-                    bail!("Invalid file format");
-                };
-                let request = MediaRequest {
-                    source: content.source.clone(),
+                    source,
                     format: MediaFormat::File,
                 };
                 let data = client.media().get_media_content(&request, false).await?;
