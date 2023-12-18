@@ -8,18 +8,18 @@ use tracing::{error, trace};
 use super::{AnyActerModel, EventMeta};
 use crate::{store::Store, Result};
 
-static REACT_FIELD: &str = "reactions";
-static REACT_STATS_FIELD: &str = "reaction_stats";
+static REACTION_FIELD: &str = "reactions";
+static REACTION_STATS_FIELD: &str = "reaction_stats";
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Getters)]
-pub struct ReactStats {
+pub struct ReactionStats {
     has_react_entries: bool,
     total_react_count: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct ReactionManager {
-    stats: ReactStats,
+    stats: ReactionStats,
     event_id: OwnedEventId,
     store: Store,
 }
@@ -27,7 +27,7 @@ pub struct ReactionManager {
 impl ReactionManager {
     fn stats_field_for<T: AsRef<str>>(parent: &T) -> String {
         let r = parent.as_ref();
-        format!("{r}::{REACT_STATS_FIELD}")
+        format!("{r}::{REACTION_STATS_FIELD}")
     }
 
     pub async fn from_store_and_event_id(store: &Store, event_id: &EventId) -> ReactionManager {
@@ -47,7 +47,7 @@ impl ReactionManager {
         self.event_id.clone()
     }
 
-    pub async fn react_entries(&self) -> Result<HashMap<OwnedUserId, Reaction>> {
+    pub async fn reaction_entries(&self) -> Result<HashMap<OwnedUserId, Reaction>> {
         let mut entries = HashMap::new();
         for mdl in self
             .store
@@ -62,13 +62,13 @@ impl ReactionManager {
         Ok(entries)
     }
 
-    pub(crate) fn add_react_entry(&mut self, _entry: &Reaction) -> Result<bool> {
+    pub(crate) fn add_reaction_entry(&mut self, _entry: &Reaction) -> Result<bool> {
         self.stats.has_react_entries = true;
         self.stats.total_react_count += 1;
         Ok(true)
     }
 
-    pub fn stats(&self) -> &ReactStats {
+    pub fn stats(&self) -> &ReactionStats {
         &self.stats
     }
 
@@ -84,7 +84,7 @@ impl ReactionManager {
 }
 
 impl Deref for ReactionManager {
-    type Target = ReactStats;
+    type Target = ReactionStats;
     fn deref(&self) -> &Self::Target {
         &self.stats
     }
@@ -106,7 +106,7 @@ impl Deref for Reaction {
 impl Reaction {
     pub fn index_for<T: AsRef<str>>(parent: &T) -> String {
         let r = parent.as_ref();
-        format!("{r}::{REACT_FIELD}")
+        format!("{r}::{REACTION_FIELD}")
     }
 }
 
@@ -143,7 +143,7 @@ impl super::ActerModel for Reaction {
             let mut manager =
                 ReactionManager::from_store_and_event_id(store, model.event_id()).await;
             trace!(event_id=?self.event_id(), "adding reaction entry");
-            if manager.add_react_entry(&self)? {
+            if manager.add_reaction_entry(&self)? {
                 trace!(event_id=?self.event_id(), "added reaction entry");
                 managers.push(manager);
             }
