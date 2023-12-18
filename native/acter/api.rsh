@@ -187,6 +187,18 @@ object ReceiptEvent {
     fn receipt_records() -> Vec<ReceiptRecord>;
 }
 
+/// ReceiptThread wrapper
+object ReceiptThread {
+    /// whether receipt thread is Main
+    fn is_main() -> bool;
+
+    /// whether receipt thread is Unthreaded
+    fn is_unthreaded() -> bool;
+
+    /// Get event id for receipt thread that is neither Main nor Unthreaded
+    fn thread_id() -> Option<EventId>;
+}
+
 /// Deliver receipt record from rust to flutter
 object ReceiptRecord {
     /// Get id of event that this user read message from peer
@@ -197,6 +209,12 @@ object ReceiptRecord {
 
     /// Get time that this user read message from peer in milliseconds
     fn timestamp() -> Option<u64>;
+
+    /// Get the receipt type, one of m.read or m.read.private
+    fn receipt_type() -> string;
+
+    /// Get the receipt thread wrapper
+    fn receipt_thread() -> ReceiptThread;
 }
 
 /// Deliver typing event from rust to flutter

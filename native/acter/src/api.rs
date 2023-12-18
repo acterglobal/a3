@@ -88,7 +88,7 @@ pub use notifications::{Notification, NotificationListResult};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use push::{NotificationItem, Pusher};
-pub use receipt::{ReceiptEvent, ReceiptRecord};
+pub use receipt::{ReceiptEvent, ReceiptRecord, ReceiptThread};
 pub use room::{
     new_join_rule_builder, JoinRuleBuilder, Member, MemberPermission, MembershipStatus, Room,
     SpaceHierarchyListResult, SpaceHierarchyRoomInfo, SpaceRelation, SpaceRelations,
