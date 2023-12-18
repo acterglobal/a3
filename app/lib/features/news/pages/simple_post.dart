@@ -167,50 +167,48 @@ class __ImageBuilderState extends ConsumerState<_ImageBuilder> {
     final selectedImage = ref.watch(selectedImageProvider);
     final halfHeight = MediaQuery.of(context).size.height * 0.5;
     if (selectedImage != null) {
-      return Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              constraints: BoxConstraints(
-                // make sure we always have enough space for the other items.
-                maxHeight: halfHeight,
-              ),
-              child: Center(
-                child: InkWell(
-                  onTap: () {
-                    final imageNotifier =
-                        ref.read(selectedImageProvider.notifier);
-                    imageNotifier.state = null;
-                  },
-                  child: Image(
-                    image: XFileImage(selectedImage),
-                  ),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            constraints: BoxConstraints(
+              // make sure we always have enough space for the other items.
+              maxHeight: halfHeight,
+            ),
+            child: Center(
+              child: InkWell(
+                onTap: () {
+                  final imageNotifier =
+                      ref.read(selectedImageProvider.notifier);
+                  imageNotifier.state = null;
+                },
+                child: Image(
+                  image: XFileImage(selectedImage),
                 ),
               ),
             ),
-            SizedBox(
-              height: 80,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: TextFormField(
-                  controller: ref.read(textProvider),
-                  key: NewsUpdateKeys.imageCaption,
-                  textAlignVertical: TextAlignVertical.top,
-                  decoration: const InputDecoration(
-                    hintText: 'caption',
-                    labelText: 'Image Caption',
-                  ),
-                  expands: false,
-                  minLines: null,
-                  maxLines: 2,
-                  keyboardType: TextInputType.multiline,
+          ),
+          SizedBox(
+            height: 80,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: TextFormField(
+                controller: ref.read(textProvider),
+                key: NewsUpdateKeys.imageCaption,
+                textAlignVertical: TextAlignVertical.top,
+                decoration: const InputDecoration(
+                  hintText: 'caption',
+                  labelText: 'Image Caption',
                 ),
+                expands: false,
+                minLines: null,
+                maxLines: 2,
+                keyboardType: TextInputType.multiline,
               ),
             ),
-            const SelectSpaceFormField(canCheck: 'CanPostNews'),
-          ],
-        ),
+          ),
+          const SelectSpaceFormField(canCheck: 'CanPostNews'),
+        ],
       );
     }
 
