@@ -22,7 +22,7 @@ pub use core::fmt::Debug;
 use enum_dispatch::enum_dispatch;
 pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
-pub use reactions::Reaction;
+pub use reactions::{Reaction, ReactionManager, ReactionStats};
 pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
 use ruma_common::{
     serde::Raw, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId,

@@ -13,8 +13,8 @@ static REACTION_STATS_FIELD: &str = "reaction_stats";
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Getters)]
 pub struct ReactionStats {
-    has_react_entries: bool,
-    total_react_count: u32,
+    has_reaction_entries: bool,
+    total_reaction_count: u32,
 }
 
 #[derive(Clone, Debug)]
@@ -63,8 +63,8 @@ impl ReactionManager {
     }
 
     pub(crate) fn add_reaction_entry(&mut self, _entry: &Reaction) -> Result<bool> {
-        self.stats.has_react_entries = true;
-        self.stats.total_react_count += 1;
+        self.stats.has_reaction_entries = true;
+        self.stats.total_reaction_count += 1;
         Ok(true)
     }
 

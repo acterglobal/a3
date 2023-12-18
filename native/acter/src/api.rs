@@ -34,6 +34,7 @@ mod notifications;
 mod pins;
 mod profile;
 mod push;
+mod reactions;
 mod receipt;
 mod room;
 mod rsvp;
@@ -88,6 +89,7 @@ pub use notifications::{Notification, NotificationListResult};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use push::{NotificationItem, Pusher};
+pub use reactions::{Reaction, ReactionManager};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{
     new_join_rule_builder, JoinRuleBuilder, Member, MemberPermission, MembershipStatus, Room,
