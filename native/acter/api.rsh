@@ -2203,6 +2203,9 @@ object Client {
     /// Fetch the calendar event or use its event_id to wait for it to come down the wire
     fn wait_for_calendar_event(key: string, timeout: Option<EfkDuration>) -> Future<Result<CalendarEvent>>;
 
+    /// Fetch the RSVP or use its event_id to wait for it to come down the wire
+    fn wait_for_rsvp(key: string, timeout: Option<EfkDuration>) -> Future<Result<Rsvp>>;
+
     /// list the currently queued notifications
     fn list_notifications(since: Option<string>, only: Option<string>) -> Future<Result<NotificationListResult>>;
 
