@@ -61,4 +61,3 @@ class RelatedSpacesCard extends ConsumerWidget {
     );
   }
 }
-

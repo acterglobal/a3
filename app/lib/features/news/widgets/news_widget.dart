@@ -5,9 +5,11 @@ import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../../common/widgets/default_button.dart';
-import '../../../common/widgets/error_widget.dart';
+import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/empty_state_widget.dart';
 
 class NewsWidget extends ConsumerStatefulWidget {
   const NewsWidget({super.key});
@@ -38,13 +40,13 @@ class _NewsWidgetState extends ConsumerState<NewsWidget>
       data: (data) {
         if (data.isEmpty) {
           return Center(
-            child: ErrorWidgetTemplate(
+            child: EmptyState(
               title: 'You have no updates',
               subtitle:
                   'Create actionable posts and engage everyone within your space.',
               image: 'assets/images/empty_updates.png',
               primaryButton: DefaultButton(
-                onPressed: () {},
+                onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
                 title: 'Create New update',
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.success,

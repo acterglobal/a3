@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../common/widgets/error_widget.dart';
+import 'package:acter/common/widgets/empty_state_widget.dart';
 
 class SpacePinsPage extends ConsumerWidget {
   final String spaceIdOrAlias;
@@ -64,16 +64,19 @@ class SpacePinsPage extends ConsumerWidget {
                   (MediaQuery.of(context).size.width ~/ 600).toInt();
               const int minCount = 2;
               if (pins.isEmpty) {
-                return  SliverToBoxAdapter(
+                return SliverToBoxAdapter(
                   child: Center(
                     heightFactor: 1,
-                    child: ErrorWidgetTemplate(
+                    child: EmptyState(
                       title: 'No pins available yet',
                       subtitle:
                           'Share important resources with your community such as documents or links so everyone is updated.',
                       image: 'assets/images/empty_pin.png',
                       primaryButton: DefaultButton(
-                        onPressed: () {},
+                        onPressed: () => context.pushNamed(
+                          Routes.actionAddPin.name,
+                          queryParameters: {'spaceId': spaceIdOrAlias},
+                        ),
                         title: 'Share Pin',
                         style: ElevatedButton.styleFrom(
                           backgroundColor:

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class ErrorWidgetTemplate extends StatelessWidget {
+class EmptyState extends StatelessWidget {
   final String title;
   final String subtitle;
   final String image;
   final Widget? primaryButton;
   final Widget? secondaryButton;
 
-  const ErrorWidgetTemplate({
+  const EmptyState({
     super.key,
     required this.title,
     required this.subtitle,

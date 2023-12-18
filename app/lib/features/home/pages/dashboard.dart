@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/default_button.dart';
-import 'package:acter/common/widgets/error_widget.dart';
+import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
@@ -56,16 +56,16 @@ class Dashboard extends ConsumerWidget {
         ),
       ];
     }
-      if (children.isEmpty) {
+    if (children.isEmpty) {
       return Center(
         heightFactor: 1.5,
-        child: ErrorWidgetTemplate(
+        child: EmptyState(
           title: 'You are not a member of any space yet',
           subtitle:
               'Create or join space, to start organizing and collaborating!',
           image: 'assets/images/empty_home.png',
           primaryButton: DefaultButton(
-            onPressed: () {},
+            onPressed: () => context.pushNamed(Routes.createSpace.name),
             title: 'Create New Space',
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.success,
@@ -74,10 +74,9 @@ class Dashboard extends ConsumerWidget {
             ),
           ),
           secondaryButton: DefaultButton(
-            onPressed: () {},
+            onPressed: () => context.pushNamed(Routes.joinSpace.name),
             title: 'Join Existing Space',
             isOutlined: true,
-            
           ),
         ),
       );

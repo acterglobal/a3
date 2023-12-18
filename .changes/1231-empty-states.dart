@@ -1,1 +1,1 @@
-- screens now have empty states when there is no data to be displayed.
+- screens without data to show now display helpful information . 

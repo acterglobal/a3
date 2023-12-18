@@ -1,7 +1,7 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
-import 'package:acter/common/widgets/error_widget.dart';
+import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
 import 'package:acter/features/activities/widgets/invitation_card.dart';
@@ -114,7 +114,7 @@ class ActivitiesPage extends ConsumerWidget {
         const SliverToBoxAdapter(
           child: Center(
             heightFactor: 1.5,
-            child: ErrorWidgetTemplate(
+            child: EmptyState(
               title: 'No Activity for you yet',
               subtitle:
                   'Notifies you about important things such as messages , invitations or requests.',

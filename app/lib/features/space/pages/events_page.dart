@@ -9,8 +9,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 
-import '../../../common/widgets/default_button.dart';
-import '../../../common/widgets/error_widget.dart';
+import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/empty_state_widget.dart';
 
 class SpaceEventsPage extends ConsumerWidget {
   final String spaceIdOrAlias;
@@ -58,13 +58,14 @@ class SpaceEventsPage extends ConsumerWidget {
                 return SliverToBoxAdapter(
                   child: Center(
                     heightFactor: 1,
-                    child: ErrorWidgetTemplate(
+                    child: EmptyState(
                       title: 'No events planned yet',
                       subtitle:
                           'Create new event and bring your community together',
                       image: 'assets/images/empty_events.png',
                       primaryButton: DefaultButton(
-                        onPressed: () {},
+                        onPressed: () =>
+                            context.pushNamed(Routes.createEvent.name),
                         title: 'Create Event',
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
