@@ -25,10 +25,10 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
       );
       try {
         //Get media path if already downloaded
-        String mediaPath = await _convo!.mediaPath(messageId);
-        if (mediaPath.isNotEmpty) {
+        final mediaPath = await _convo!.mediaPath(messageId);
+        if (mediaPath.text() != null) {
           state = state.copyWith(
-            mediaFile: File(mediaPath),
+            mediaFile: File(mediaPath.text()!),
             mediaChatLoadingState: const MediaChatLoadingState.loaded(),
           );
         } else {
