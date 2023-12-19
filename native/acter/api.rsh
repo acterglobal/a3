@@ -299,6 +299,9 @@ object NewsEntry {
 
     /// get event id
     fn event_id() -> EventId;
+
+    /// get the reaction manager
+    fn reaction_manager() -> Future<Result<ReactionManager>>;
 }
 
 object NewsEntryDraft {
@@ -458,6 +461,8 @@ object CalendarEvent {
     fn update_builder() -> Result<CalendarEventUpdateBuilder>;
     /// get RSVP manager
     fn rsvp_manager() -> Future<Result<RsvpManager>>;
+    /// get the reaction manager
+    fn reaction_manager() -> Future<Result<ReactionManager>>;
     /// get my RSVP status, one of Yes/Maybe/No/Pending
     fn my_rsvp_status() -> Future<Result<string>>;
 }
@@ -568,6 +573,38 @@ object Rsvp {
     /// get status of this rsvp
     fn status() -> string;
 }
+
+//  ### ##   ### ###    ##      ## ##   #### ##    ####    ## ##   ###  ##   ## ##   
+//  ##  ##   ##  ##     ##    ##   ##  # ## ##     ##    ##   ##    ## ##  ##   ##  
+//  ##  ##   ##       ## ##   ##         ##        ##    ##   ##   # ## #  ####     
+//  ## ##    ## ##    ##  ##  ##         ##        ##    ##   ##   ## ##    #####   
+//  ## ##    ##       ## ###  ##         ##        ##    ##   ##   ##  ##      ###  
+//  ##  ##   ##  ##   ##  ##  ##   ##    ##        ##    ##   ##   ##  ##  ##   ##  
+// #### ##  ### ###  ###  ##   ## ##    ####      ####    ## ##   ###  ##   ## ## 
+
+
+object ReactionManager {
+    /// whether manager has reaction entries
+    fn has_reaction_entries() -> bool;
+
+    /// get total count of reactions
+    fn total_reaction_count() -> u32;
+
+    /// get reaction entries
+    fn reaction_entries() -> Future<Result<Vec<Reaction>>>;
+}
+
+object Reaction {
+    /// get sender of this reaction
+    fn sender() -> UserId;
+
+    /// get timestamp of this reaction
+    fn origin_server_ts() -> u64;
+
+    /// the event id to which it is reacted
+    fn relates_to() -> string;
+}
+
 
 //  ########   #######   #######  ##     ##    ######## ##     ## ######## ##    ## ########  ######  
 //  ##     ## ##     ## ##     ## ###   ###    ##       ##     ## ##       ###   ##    ##    ##    ## 
@@ -2184,6 +2221,9 @@ object Client {
 
     /// Fetch the calendar event or use its event_id to wait for it to come down the wire
     fn wait_for_calendar_event(key: string, timeout: Option<EfkDuration>) -> Future<Result<CalendarEvent>>;
+
+    // fetch the reaction event or use its event_id to wait for it to come down the wire
+    fn wait_for_reaction(key: string, timeout: Option<EfkDuration>) -> Future<Result<Reaction>>;
 
     /// list the currently queued notifications
     fn list_notifications(since: Option<string>, only: Option<string>) -> Future<Result<NotificationListResult>>;

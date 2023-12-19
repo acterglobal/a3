@@ -231,6 +231,21 @@ impl CalendarEvent {
             .await?
     }
 
+    pub async fn reaction_manager(&self) -> Result<crate::ReactionManager> {
+        let client = self.client.clone();
+        let room = self.room.clone();
+        let event_id = self.inner.event_id().to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let inner =
+                    models::ReactionManager::from_store_and_event_id(client.store(), &event_id)
+                        .await;
+                Ok(crate::ReactionManager::new(client, room, inner))
+            })
+            .await?
+    }
+
     pub async fn my_rsvp_status(&self) -> Result<String> {
         let me = self.clone();
         let client = self.client.clone();
