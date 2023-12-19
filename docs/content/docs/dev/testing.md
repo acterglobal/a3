@@ -40,14 +40,18 @@ flutter test
 
 ### Infrastructure
 
-You need a fresh [`synapse` matrix backend](https://matrix-org.github.io/synapse/latest/) with a specific configuration. We recommend to just use our docker-compose setup for that to run them locally - for an installation guide see below. As a team member with access to bitwarden, you can also run them against the stageing / testing instances (see below).
+You need a fresh [`synapse` matrix backend](https://matrix-org.github.io/synapse/latest/) with a specific configuration. We recommend to use the `test-server` setup we provide in `util/test_server`, that uses `docker-compose` on Linux (so you need `docker` and `docker-compose` on your linux) or puts that into a Vagrant virtual machine on all other platforms.
 
-#### Docker Container
+#### Vagrant Virtual Machine (on Windows & Mac)
 
-We have a `docker` container image available with that setup already for you at `lightyear/acter-synapse-ci:latest`. Easiest is to use `docker-compose up -d` to run it locally from the root directory. This will also create the necessary `admin` account.
+If you are not on a Linux machine, please [install vagrant](https://developer.hashicorp.com/vagrant/install) and a corresponding provider (probably [VirtualBox](https://www.virtualbox.org/wiki/Downloads)). Then simply run `cargo make test-server` from the repository root and it will provision the virtual machine and start the synapse matrix backend.
 
 **Alternatives**
 
+<details>
+<summary><strong>Local docker-compose</strong></summary>
+Alternatively to using the vagrant you can also run the synapse matrix backend with the proper configuration on any Linux base system with docker and docker-compose available. Just `cd utils/test_server` and start the docker-compose in there via `docker-compose up`. Ensure the server is up and available at `http://localhost:8118`.
+</details>
 <details>
 <summary><strong>Using the shared testing servers</strong></summary>
 
@@ -342,9 +346,13 @@ If you are running synapse on a virtual or remote machine and API call is not wo
 
 </details>
 
+#### Testing the server
+
+Your server should now show the default "welcome" screen when you open the browser at `http://localhost:8118` (or any external address if you changed that).
+
 #### Mock data
 
-The integration tests expect a certain set of `mock` data. You can easily get this set up by running
+The rust integration tests expect a certain set of `mock` data. You can easily get this set up by running
 
 `cargo run -p acter-cli -- mock --homeserver-url $HOMESERVER --homeserver-name localhost`
 
@@ -413,12 +421,19 @@ We are using `convenient_tests` framework to build and run flutter integration t
 
 #### Running with the Manager
 
+You can easily run the test manager by preparing everything for the target you want to test on (e.g. start the android-emulator, build `cargo make android-dev`) and then start the test-server and test-manager app by running `cargo make ui-tester`. While leaving this open, in a second terminal start the app in ui test mode via `cargo make ui-test-app` (or `cargo make ui-test-app-android-emulator` for the android-emulator version). You can now reconnect from the manager UI and run the specific tests
+
+**Alternatives**
+
+<details>
+<summary><strong>Running them manually without cargo-make</string></summary>
+
 **Requirements**:
 
 - To run the rust integration tests, you need a fresh integration testing infrastructure (see above) available at `$DEFAULT_HOMESERVER_URL` with the `$DEFAULT_HOMESERVER_NAME` set.
 - Have your test target ready: build the latest rust-sdk for it (e.g. `cargo make android-dev`), and have the emulator up and running
 
-To the run the tests from the interactive manager UI, start the manager in one terminal: `cd util/conv_test_man && flutter run` (`-d linux` / `-d macos` / `-d windows` for whichever is your desktop host), then from the `app` folder run the integration test version of the app by running:
+To the run the tests from the interactive manager UI, you can start both the test-server and the manager by running `cargo make ui-tester` from the repo root (or manually run the `cd util/conv_test_man && flutter run` (`-d linux` / `-d macos` / `-d windows` for whichever is your desktop host), then from the `app` folder run the integration test version of the app by running:
 
 ```
     flutter run integration_test/main_test.dart --host-vmservice-port 9753 --disable-service-auth-codes --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib --dart-define DEFAULT_HOMESERVER_URL=$DEFAULT_HOMESERVER_URL --dart-define DEFAULT_HOMESERVER_NAME=$DEFAULT_HOMESERVER_NAME
@@ -433,7 +448,10 @@ IP as follows:
 
 Once the app is up and ready click "reconnect" in the manager and then you can select the tests you want to run.
 
-#### Running from the cli
+</details>
+
+<details>
+<summary><strong>Running from the entire suite from cli</strong></summary>
 
 **Requirements**:
 
@@ -446,8 +464,7 @@ From the `app` folder run the integration test version of the app by running:
     flutter run integration_test/main_test.dart --host-vmservice-port 9753 --disable-service-auth-codes --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib --dart-define DEFAULT_HOMESERVER_URL=$DEFAULT_HOMESERVER_URL --dart-define DEFAULT_HOMESERVER_NAME=$DEFAULT_HOMESERVER_NAME
 ```
 
-if you are running it with the Android emulator and have the server exposed on 8118 on your localhost, you need point the urls to `10.0.2.2` and also expose the `CONVENIENT_TEST_MANAGER_HOST`
-IP as follows:
+if you are running it with the Android emulator and have the server exposed on 8118 on your localhost, you need point the urls to `10.0.2.2` and also expose the `CONVENIENT_TEST_MANAGER_HOST` IP as follows:
 
 ```
     flutter run integration_test/main_test.dart --host-vmservice-port 9753 --disable-service-auth-codes --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib --dart-define CONVENIENT_TEST_MANAGER_HOST=10.0.2.2 --dart-define DEFAULT_HOMESERVER_URL=http:/10.0.2.2:8118/ --dart-define DEFAULT_HOMESERVER_NAME=localhost
@@ -460,6 +477,8 @@ dart run convenient_test_manager_dart --enable-report-saver
 ```
 
 That will create a folder with the entire report in your `$TMPFOLDER/ConvenientTest/`
+
+</details>
 
 **From Visual Studio Code**
 
