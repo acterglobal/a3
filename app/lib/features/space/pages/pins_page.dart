@@ -1,6 +1,7 @@
 import 'dart:core';
 import 'dart:math';
 
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -64,6 +65,9 @@ class SpacePinsPage extends ConsumerWidget {
                   (MediaQuery.of(context).size.width ~/ 600).toInt();
               const int minCount = 2;
               if (pins.isEmpty) {
+                final membership =
+                    ref.watch(roomMembershipProvider(spaceIdOrAlias));
+                bool canAdd = membership.requireValue!.canString('CanPostPin');
                 return SliverToBoxAdapter(
                   child: Center(
                     heightFactor: 1,
@@ -72,21 +76,23 @@ class SpacePinsPage extends ConsumerWidget {
                       subtitle:
                           'Share important resources with your community such as documents or links so everyone is updated.',
                       image: 'assets/images/empty_pin.png',
-                      primaryButton: DefaultButton(
-                        onPressed: () => context.pushNamed(
-                          Routes.actionAddPin.name,
-                          queryParameters: {'spaceId': spaceIdOrAlias},
-                        ),
-                        title: 'Share Pin',
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.success,
-                          disabledBackgroundColor: Theme.of(context)
-                              .colorScheme
-                              .success
-                              .withOpacity(0.5),
-                        ),
-                      ),
+                      primaryButton: canAdd
+                          ? DefaultButton(
+                              onPressed: () => context.pushNamed(
+                                Routes.actionAddPin.name,
+                                queryParameters: {'spaceId': spaceIdOrAlias},
+                              ),
+                              title: 'Share Pin',
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.success,
+                                disabledBackgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .success
+                                    .withOpacity(0.5),
+                              ),
+                            )
+                          : null,
                     ),
                   ),
                 );
