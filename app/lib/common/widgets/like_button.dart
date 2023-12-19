@@ -3,10 +3,12 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
 class LikeButton extends StatefulWidget {
+  final bool isLiked;
   final String likeCount;
   final TextStyle style;
   final Color color;
   final int index;
+  final void Function()? onTap;
 
   const LikeButton({
     Key? key,
@@ -14,6 +16,8 @@ class LikeButton extends StatefulWidget {
     required this.style,
     required this.color,
     required this.index,
+    this.isLiked = false,
+    this.onTap,
   }) : super(key: key);
 
   @override
@@ -108,35 +112,32 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.bottomCenter,
+    return Column(
       children: <Widget>[
-        Text(widget.likeCount, style: widget.style),
         AnimatedBuilder(
           animation: controller,
           builder: (context, w) {
             return SizedBox(
-              height: 65 * sizedBoxsize.value,
-              width: 65 * sizedBoxsize.value,
+              height: 55 * sizedBoxsize.value,
+              width: 55 * sizedBoxsize.value,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
                   InkWell(
                     onTap: () {
-                      bool liked =
-                          LikeAnimation.likedIndex.contains(widget.index);
-                      if (!liked) {
-                        LikeAnimation.likedIndex.add(widget.index);
+                      if (widget.onTap != null) {
+                        widget.onTap!();
+                      }
+                      if (!widget.isLiked) {
                         controller.reset();
                         controller.forward();
                       } else {
-                        LikeAnimation.likedIndex.remove(widget.index);
                         if (mounted) {
                           setState(() {});
                         }
                       }
                     },
-                    child: LikeAnimation.likedIndex.contains(widget.index)
+                    child: widget.isLiked
                         ? _LikeWidget(
                             size: Size(
                               heartSize.value * 30,
@@ -188,6 +189,7 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
             );
           },
         ),
+        Text(widget.likeCount, style: widget.style),
       ],
     );
   }

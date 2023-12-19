@@ -6,7 +6,7 @@ use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
-use ruma_common::{EventId, OwnedEventId, OwnedUserId};
+use ruma_common::{EventId, OwnedEventId, OwnedTransactionId, OwnedUserId, TransactionId};
 use ruma_events::{
     reaction::{self, ReactionEventContent},
     relation::Annotation,
@@ -61,6 +61,10 @@ impl Deref for Reaction {
 }
 
 impl Reaction {
+    pub fn event_id_str(&self) -> String {
+        self.inner.event_id().to_string()
+    }
+
     pub fn sender(&self) -> OwnedUserId {
         self.inner.meta.sender.clone()
     }
@@ -123,7 +127,42 @@ impl ReactionManager {
                 trace!("before sending reaction");
                 let content = ReactionEventContent::new(Annotation::new(event_id, key));
                 let response = room.send(content).await?;
+
                 trace!("after sending reaction");
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn redact_reaction(
+        &self,
+        event_id: String,
+        reason: String,
+        txn_id: String,
+    ) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        let client = room.client();
+
+        let my_id = client.user_id().context("User not found")?.to_owned();
+
+        let evt_id = EventId::parse(event_id).context("couldn't parse event id")?;
+        let transaction_id =
+            OwnedTransactionId::try_from(txn_id).context("Couldn't parse txn_id")?;
+
+        RUNTIME
+            .spawn(async move {
+                let member = room
+                    .get_member(&my_id)
+                    .await?
+                    .context("Couldn't find me among room members")?;
+                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                    bail!("No permission to send message in this room");
+                }
+                trace!("before redacting reaction");
+                let response = room
+                    .redact(&evt_id, Some(&reason.to_owned()), Some(transaction_id))
+                    .await?;
+                trace!("after redacting reaction");
                 Ok(response.event_id)
             })
             .await?
@@ -131,6 +170,20 @@ impl ReactionManager {
 
     pub fn stats(&self) -> models::ReactionStats {
         self.inner.stats().clone()
+    }
+
+    pub async fn my_status(&self) -> Result<bool> {
+        let manager = self.inner.clone();
+        let my_id = self.client.user_id().context("User not found")?;
+        RUNTIME
+            .spawn(async move {
+                let entries = manager.reaction_entries().await?;
+                if let Some(entry) = entries.get(&my_id) {
+                    return Ok(true);
+                }
+                Ok(false)
+            })
+            .await?
     }
 
     pub fn has_reaction_entries(&self) -> bool {

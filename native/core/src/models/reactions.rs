@@ -135,7 +135,7 @@ impl super::ActerModel for Reaction {
         for m in belongs_to {
             let model = store.get(&m).await?;
             if !model.capabilities().contains(&super::Capability::Reactable) {
-                error!(?model, rsvp = ?self, "doesn't support entries. can't apply");
+                error!(?model, reaction = ?self, "doesn't support entries. can't apply");
                 continue;
             }
 

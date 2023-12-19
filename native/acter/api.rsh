@@ -584,6 +584,10 @@ object Rsvp {
 
 
 object ReactionManager {
+
+    /// get my reaction status
+    fn my_status() -> Future<Result<bool>>;
+
     /// whether manager has reaction entries
     fn has_reaction_entries() -> bool;
 
@@ -592,9 +596,19 @@ object ReactionManager {
 
     /// get reaction entries
     fn reaction_entries() -> Future<Result<Vec<Reaction>>>;
+
+    /// send the reaction
+    fn send_reaction(event_id: string, key: string) -> Future<Result<EventId>>;
+
+    /// redact the reaction
+    fn redact_reaction(event_id: string, reason: string, txn_id: string) -> Future<Result<EventId>>;
 }
 
 object Reaction {
+
+    /// event id of reaction event
+    fn event_id_str() -> string;
+
     /// get sender of this reaction
     fn sender() -> UserId;
 
