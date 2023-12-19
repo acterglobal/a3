@@ -29,6 +29,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:mime/mime.dart';
 
+enum ChatAttachmentType { camera, image, audio, video, file }
+
 // keep track of text controller values across rooms.
 final _textValuesProvider =
     StateProvider.family<String, String>((ref, roomId) => '');
@@ -380,7 +382,11 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                   .pickImage(source: ImageSource.camera);
                               if (imageFile != null) {
                                 List<File> files = [File(imageFile.path)];
-                                handleAttachment(ref, files);
+                                handleAttachment(
+                                  ref,
+                                  files,
+                                  ChatAttachmentType.camera,
+                                );
                               }
                             },
                             onTapImage: () async {
@@ -388,7 +394,11 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                   .pickImage(source: ImageSource.gallery);
                               if (imageFile != null) {
                                 List<File> files = [File(imageFile.path)];
-                                handleAttachment(ref, files);
+                                handleAttachment(
+                                  ref,
+                                  files,
+                                  ChatAttachmentType.image,
+                                );
                               }
                             },
                             onTapVideo: () async {
@@ -396,14 +406,22 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                   .pickVideo(source: ImageSource.gallery);
                               if (imageFile != null) {
                                 List<File> files = [File(imageFile.path)];
-                                handleAttachment(ref, files);
+                                handleAttachment(
+                                  ref,
+                                  files,
+                                  ChatAttachmentType.video,
+                                );
                               }
                             },
                             onTapFile: () async {
                               var selectedFiles = await handleFileSelection(
                                 ctx,
                               );
-                              handleAttachment(ref, selectedFiles);
+                              handleAttachment(
+                                ref,
+                                selectedFiles,
+                                ChatAttachmentType.file,
+                              );
                             },
                           ),
                         ),
@@ -476,7 +494,11 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     return null;
   }
 
-  void handleAttachment(WidgetRef ref, List<File>? selectedFiles) async {
+  void handleAttachment(
+    WidgetRef ref,
+    List<File>? selectedFiles,
+    ChatAttachmentType chatAttachmentType,
+  ) async {
     if (context.mounted) {
       if (selectedFiles != null && selectedFiles.isNotEmpty) {
         String fileName = selectedFiles.first.path.split('/').last;
@@ -519,7 +541,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
               DefaultButton(
                 onPressed: () async {
                   Navigator.of(context, rootNavigator: true).pop();
-                  await handleFileUpload(selectedFiles);
+                  await handleFileUpload(selectedFiles, chatAttachmentType);
                 },
                 title: 'Upload',
                 style: ElevatedButton.styleFrom(
@@ -533,7 +555,10 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     }
   }
 
-  Future<void> handleFileUpload(List<File> files) async {
+  Future<void> handleFileUpload(
+    List<File> files,
+    ChatAttachmentType chatAttachmentType,
+  ) async {
     final roomId = widget.convo.getRoomIdStr();
     final client = ref.read(clientProvider)!;
     final inputState = ref.read(chatInputProvider(roomId));
@@ -543,23 +568,47 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
       for (File file in files) {
         String? mimeType = lookupMimeType(file.path);
 
-        if (mimeType!.startsWith('image/')) {
+        if (mimeType!.startsWith('image/') &&
+            chatAttachmentType == ChatAttachmentType.image) {
           final bytes = file.readAsBytesSync();
           final image = await decodeImageFromList(bytes);
-          final draft = client
+          final imageDraft = client
               .imageDraft(file.path, mimeType)
               .size(file.lengthSync())
               .width(image.width)
               .height(image.height);
           if (inputState.repliedToMessage != null) {
-            await stream.replyMessage(inputState.repliedToMessage!.id, draft);
+            await stream.replyMessage(
+              inputState.repliedToMessage!.id,
+              imageDraft,
+            );
           } else {
-            await stream.sendMessage(draft);
+            await stream.sendMessage(imageDraft);
           }
-        } else if (mimeType.startsWith('/audio')) {
+        } else if (mimeType.startsWith('/audio') &&
+            chatAttachmentType == ChatAttachmentType.audio) {
+          final audioDraft =
+              client.audioDraft(file.path, mimeType).size(file.lengthSync());
           if (inputState.repliedToMessage != null) {
-          } else {}
-        } else if (mimeType.startsWith('/video')) {
+            await stream.replyMessage(
+              inputState.repliedToMessage!.id,
+              audioDraft,
+            );
+          } else {
+            await stream.sendMessage(audioDraft);
+          }
+        } else if (mimeType.startsWith('/video') &&
+            chatAttachmentType == ChatAttachmentType.video) {
+          final videoDraft =
+              client.videoDraft(file.path, mimeType).size(file.lengthSync());
+          if (inputState.repliedToMessage != null) {
+            await stream.replyMessage(
+              inputState.repliedToMessage!.id,
+              videoDraft,
+            );
+          } else {
+            await stream.sendMessage(videoDraft);
+          }
         } else {
           final draft =
               client.fileDraft(file.path, mimeType).size(file.lengthSync());
