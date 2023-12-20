@@ -585,7 +585,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
           } else {
             await stream.sendMessage(imageDraft);
           }
-        } else if (mimeType.startsWith('/audio') &&
+        } else if (mimeType.startsWith('audio/') &&
             chatAttachmentType == ChatAttachmentType.audio) {
           final audioDraft =
               client.audioDraft(file.path, mimeType).size(file.lengthSync());
@@ -597,7 +597,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
           } else {
             await stream.sendMessage(audioDraft);
           }
-        } else if (mimeType.startsWith('/video') &&
+        } else if (mimeType.startsWith('video/') &&
             chatAttachmentType == ChatAttachmentType.video) {
           final videoDraft =
               client.videoDraft(file.path, mimeType).size(file.lengthSync());
