@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 class EmptyState extends StatelessWidget {
   final String title;
@@ -23,16 +24,19 @@ class EmptyState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(
+          SvgPicture.asset(
+            image,
+            semanticsLabel: 'state',
             height: 150,
-            child: Image.asset(
-              image,
-            ),
+            width: 150,
           ),
           const SizedBox(
             height: 10,
           ),
-          Text(title,style: Theme.of(context).textTheme.titleSmall,),
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
           const SizedBox(
             height: 10,
           ),

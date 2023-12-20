@@ -63,7 +63,7 @@ class Dashboard extends ConsumerWidget {
           title: 'You are not a member of any space yet',
           subtitle:
               'Create or join space, to start organizing and collaborating!',
-          image: 'assets/images/empty_home.png',
+          image: 'assets/images/empty_home.svg',
           primaryButton: DefaultButton(
             onPressed: () => context.pushNamed(Routes.createSpace.name),
             title: 'Create New Space',

@@ -55,7 +55,7 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
           title: 'You have no DMs at the moment',
           subtitle:
               'Get in touch with other change makers, organizers or activists and chat directly with them.',
-          image: 'assets/images/empty_chat.png',
+          image: 'assets/images/empty_chat.svg',
           primaryButton: DefaultButton(
             onPressed: () async => context.pushNamed(
               Routes.createChat.name,

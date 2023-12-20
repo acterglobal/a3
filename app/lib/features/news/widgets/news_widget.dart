@@ -44,7 +44,7 @@ class _NewsWidgetState extends ConsumerState<NewsWidget>
               title: 'You have no updates',
               subtitle:
                   'Create actionable posts and engage everyone within your space.',
-              image: 'assets/images/empty_updates.png',
+              image: 'assets/images/empty_updates.svg',
               primaryButton: DefaultButton(
                 onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
                 title: 'Create New update',

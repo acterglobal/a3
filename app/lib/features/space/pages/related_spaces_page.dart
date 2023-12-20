@@ -266,7 +266,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                         title: 'No connected spaces',
                         subtitle:
                             'In connected spaces, you can focus on specific actions or campaigns of your working groups and start organizing.',
-                        image: 'assets/images/empty_space.png',
+                        image: 'assets/images/empty_space.svg',
                         primaryButton: canLinkSpace
                             ? DefaultButton(
                                 onPressed: () => context.pushNamed(

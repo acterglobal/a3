@@ -68,7 +68,7 @@ class SpaceEventsPage extends ConsumerWidget {
                       title: 'No events planned yet',
                       subtitle:
                           'Create new event and bring your community together',
-                      image: 'assets/images/empty_events.png',
+                      image: 'assets/images/empty_event.svg',
                       primaryButton: canCreateEvent
                           ? DefaultButton(
                               onPressed: () =>

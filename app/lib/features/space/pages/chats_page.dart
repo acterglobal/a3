@@ -132,7 +132,7 @@ class SpaceChatsPage extends ConsumerWidget {
                     title: 'No chats in this space yet',
                     subtitle:
                         'Get the conversation going to start organizing collaborating',
-                    image: 'assets/images/empty_chat.png',
+                    image: 'assets/images/empty_chat.svg',
                     primaryButton: canCreateSpace
                         ? DefaultButton(
                             onPressed: () => context.pushNamed(

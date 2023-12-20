@@ -75,7 +75,7 @@ class SpacePinsPage extends ConsumerWidget {
                       title: 'No pins available yet',
                       subtitle:
                           'Share important resources with your community such as documents or links so everyone is updated.',
-                      image: 'assets/images/empty_pin.png',
+                      image: 'assets/images/empty_pin.svg',
                       primaryButton: canAdd
                           ? DefaultButton(
                               onPressed: () => context.pushNamed(

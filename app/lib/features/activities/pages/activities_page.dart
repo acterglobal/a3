@@ -118,7 +118,7 @@ class ActivitiesPage extends ConsumerWidget {
               title: 'No Activity for you yet',
               subtitle:
                   'Notifies you about important things such as messages , invitations or requests.',
-              image: 'assets/images/empty_activities.png',
+              image: 'assets/images/empty_activity.svg',
             ),
           ),
         ),
