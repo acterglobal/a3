@@ -12,6 +12,8 @@ import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 
+import 'package:acter/common/providers/room_providers.dart';
+
 class SpaceEventsPage extends ConsumerWidget {
   final String spaceIdOrAlias;
 
@@ -55,6 +57,10 @@ class SpaceEventsPage extends ConsumerWidget {
                   (MediaQuery.of(context).size.width ~/ 600).toInt();
               const int minCount = 2;
               if (events.isEmpty) {
+                final membership =
+                    ref.watch(roomMembershipProvider(spaceIdOrAlias));
+                bool canCreateEvent =
+                    membership.requireValue!.canString('CanPostEvent');
                 return SliverToBoxAdapter(
                   child: Center(
                     heightFactor: 1,
@@ -63,19 +69,21 @@ class SpaceEventsPage extends ConsumerWidget {
                       subtitle:
                           'Create new event and bring your community together',
                       image: 'assets/images/empty_events.png',
-                      primaryButton: DefaultButton(
-                        onPressed: () =>
-                            context.pushNamed(Routes.createEvent.name),
-                        title: 'Create Event',
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.success,
-                          disabledBackgroundColor: Theme.of(context)
-                              .colorScheme
-                              .success
-                              .withOpacity(0.5),
-                        ),
-                      ),
+                      primaryButton: canCreateEvent
+                          ? DefaultButton(
+                              onPressed: () =>
+                                  context.pushNamed(Routes.createEvent.name),
+                              title: 'Create Event',
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.success,
+                                disabledBackgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .success
+                                    .withOpacity(0.5),
+                              ),
+                            )
+                          : null,
                     ),
                   ),
                 );

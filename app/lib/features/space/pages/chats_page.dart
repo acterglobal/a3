@@ -17,6 +17,8 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 import 'package:acter/common/widgets/default_button.dart';
 
+import 'package:acter/common/providers/room_providers.dart';
+
 class SpaceChatsPage extends ConsumerWidget {
   static const createChatKey = Key('space-chat-create');
   static const actionsMenuKey = Key('space-chat-actions-menu');
@@ -101,6 +103,10 @@ class SpaceChatsPage extends ConsumerWidget {
           ),
           chats.when(
             data: (rooms) {
+              final membership =
+                  ref.watch(roomMembershipProvider(spaceIdOrAlias));
+              bool canCreateSpace =
+                  membership.requireValue!.canString('CanLinkSpaces');
               if (rooms.isNotEmpty) {
                 return SliverAnimatedList(
                   initialItemCount: rooms.length,
@@ -127,21 +133,24 @@ class SpaceChatsPage extends ConsumerWidget {
                     subtitle:
                         'Get the conversation going to start organizing collaborating',
                     image: 'assets/images/empty_chat.png',
-                    primaryButton: DefaultButton(
-                      onPressed: () => context.pushNamed(
-                        Routes.createChat.name,
-                        queryParameters: {'spaceId': spaceIdOrAlias},
-                        extra: 1,
-                      ),
-                      title: 'Create Space Chat',
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.success,
-                        disabledBackgroundColor: Theme.of(context)
-                            .colorScheme
-                            .success
-                            .withOpacity(0.5),
-                      ),
-                    ),
+                    primaryButton: canCreateSpace
+                        ? DefaultButton(
+                            onPressed: () => context.pushNamed(
+                              Routes.createChat.name,
+                              queryParameters: {'spaceId': spaceIdOrAlias},
+                              extra: 1,
+                            ),
+                            title: 'Create Space Chat',
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.success,
+                              disabledBackgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .success
+                                  .withOpacity(0.5),
+                            ),
+                          )
+                        : null,
                   ),
                 ),
               );
