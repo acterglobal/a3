@@ -322,11 +322,9 @@ impl Client {
     pub async fn suggested_users_to_invite(&self, room_name: String) -> Result<Vec<UserProfile>> {
         let client = self.clone();
         let room_id = RoomId::parse(room_name)?;
-        let result = self.core.client().get_room(&room_id);
-        if result.is_none() {
-            return Ok(vec![]);
-        }
-        let room = result.unwrap();
+        let Some(room) = self.core.client().get_room(&room_id) else {
+            return Ok(vec![])
+        };
         RUNTIME
             .spawn(async move {
                 // get member list of target room
