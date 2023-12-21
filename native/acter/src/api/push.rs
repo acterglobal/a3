@@ -149,11 +149,12 @@ impl Client {
                 )
                 .await?
                 .build();
-                if let Some(notif) = notif_client.get_notification(&room_id, &event_id).await? {
-                    Ok(NotificationItem::new(notif, room_id))
-                } else {
-                    bail!("(hidden notification)")
-                }
+
+                let notif = notif_client
+                    .get_notification(&room_id, &event_id)
+                    .await?
+                    .context("(hidden notification)")?;
+                Ok(NotificationItem::new(notif, room_id))
             })
             .await?
     }

@@ -116,9 +116,7 @@ impl VerificationEvent {
                         .get_verification(&sender, event_id.as_str())
                         .await
                     {
-                        let Some(items) = sas.emoji() else {
-                            bail!("No emojis found. Aborted.");
-                        };
+                        let items = sas.emoji().context("No emojis found. Aborted.")?;
                         let sequence = items
                             .iter()
                             .map(|e| {
@@ -137,9 +135,7 @@ impl VerificationEvent {
                         .get_verification(&sender, txn_id.as_str())
                         .await
                     {
-                        let Some(items) = sas.emoji() else {
-                            bail!("No emojis found. Aborted.");
-                        };
+                        let items = sas.emoji().context("No emojis found. Aborted.")?;
                         let sequence = items
                             .iter()
                             .map(|e| {

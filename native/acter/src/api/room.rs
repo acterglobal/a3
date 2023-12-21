@@ -612,10 +612,7 @@ impl Room {
                     warn!("Room {} is not a parent", room_id);
                     return Ok(true);
                 };
-                let Ok(state) = raw_state.deserialize() else {
-                    bail!("Invalid room parent event")
-                };
-                let event_id = match state {
+                let event_id = match raw_state.deserialize()? {
                     SyncOrStrippedState::Stripped(ev) => {
                         bail!("Couldn't get event id about stripped event")
                     }
@@ -1005,12 +1002,10 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let evt = room.event(&event_id).await?;
-                let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
-                    bail!("It is not message")
-                };
+                let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
-                    .expect("Couldn't get original msg");
+                    .context("Couldn't get original msg")?;
                 let source = match &original.content.msgtype {
                     MessageType::Image(content) => content.source.clone(),
                     MessageType::Audio(content) => content.source.clone(),
@@ -1156,12 +1151,10 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let evt = room.event(&evt_id).await?;
-                let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
-                    bail!("It is not message")
-                };
+                let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
-                    .expect("Couldn't get original msg");
+                    .context("Couldn't get original msg")?;
                 // get file extension from msg info
                 let (request, mut filename) = match &original.content.msgtype {
                     MessageType::Image(content) => {
@@ -1267,12 +1260,10 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let evt = room.event(&evt_id).await?;
-                let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
-                    bail!("It is not message")
-                };
+                let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
-                    .expect("Couldn't get original msg");
+                    .context("Couldn't get original msg")?;
                 if !matches!(
                     &original.content.msgtype,
                     MessageType::Image(_)
@@ -1313,12 +1304,10 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let evt = room.event(&evt_id).await?;
-                let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
-                    bail!("It is not message")
-                };
+                let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
-                    .expect("Couldn't get original msg");
+                    .context("Couldn't get original msg")?;
                 // get file extension from msg info
                 let (request, mut filename) = match &original.content.msgtype {
                     MessageType::Image(content) => {
@@ -1453,12 +1442,10 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let evt = room.event(&evt_id).await?;
-                let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
-                    bail!("It is not message")
-                };
+                let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
-                    .expect("Couldn't get original msg");
+                    .context("Couldn't get original msg")?;
                 if !matches!(
                     &original.content.msgtype,
                     MessageType::Image(_)

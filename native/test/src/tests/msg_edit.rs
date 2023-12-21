@@ -1,5 +1,5 @@
 use acter::{api::RoomMessage, ruma_common::OwnedEventId};
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
 use std::io::Write;
@@ -67,9 +67,7 @@ async fn edit_text_msg() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     info!("loop finished");
-    let Some(sent_event_id) = sent_event_id else {
-        bail!("Even after 30 seconds, text msg not received")
-    };
+    let sent_event_id = sent_event_id.context("Even after 30 seconds, text msg not received")?;
 
     let draft = user.text_plain_draft("This is message edition".to_string());
     timeline
@@ -97,9 +95,8 @@ async fn edit_text_msg() -> Result<()> {
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    let Some(edited_event_id) = edited_event_id else {
-        bail!("Even after 3 seconds, msg edition not received")
-    };
+    let edited_event_id =
+        edited_event_id.context("Even after 3 seconds, msg edition not received")?;
 
     assert_eq!(
         edited_event_id,
@@ -196,9 +193,7 @@ async fn edit_image_msg() -> Result<()> {
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    let Some(sent_event_id) = sent_event_id else {
-        bail!("Even after 3 seconds, text msg not received")
-    };
+    let sent_event_id = sent_event_id.context("Even after 3 seconds, text msg not received")?;
 
     let mut tmp_png = NamedTempFile::new()?;
     tmp_png.as_file_mut().write_all(include_bytes!(
@@ -241,9 +236,8 @@ async fn edit_image_msg() -> Result<()> {
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    let Some(edited_event_id) = edited_event_id else {
-        bail!("Even after 3 seconds, msg edition not received")
-    };
+    let edited_event_id =
+        edited_event_id.context("Even after 3 seconds, msg edition not received")?;
 
     assert_eq!(
         edited_event_id,

@@ -286,9 +286,10 @@ impl TimelineStream {
                     bail!("No permission to send message in this room");
                 }
 
-                let Some(reply_item) = timeline.item_by_event_id(&event_id).await else {
-                    bail!("Not found which item would be replied to")
-                };
+                let reply_item = timeline
+                    .item_by_event_id(&event_id)
+                    .await
+                    .context("Not found which item would be replied to")?;
                 let content = draft.into_replied_content(client, room, event_id).await?;
                 timeline
                     .send_reply(content, &reply_item, ForwardThread::Yes)
@@ -430,7 +431,7 @@ impl TimelineStream {
                     bail!("No permission to send message in this room");
                 }
 
-                timeline.retry_send(&transaction_id).await;
+                timeline.retry_send(&transaction_id).await?;
                 Ok(true)
             })
             .await?

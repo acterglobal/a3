@@ -565,10 +565,7 @@ impl Space {
                     warn!("Room {} is not a child", room_id);
                     return Ok(true);
                 };
-                let Ok(state) = raw_state.deserialize() else {
-                    bail!("Invalid space child event")
-                };
-                let event_id = match state {
+                let event_id = match raw_state.deserialize()? {
                     SyncOrStrippedState::Stripped(ev) => {
                         bail!("Couldn't get event id about stripped event")
                     }
