@@ -1200,7 +1200,7 @@ impl RoomMessage {
                 event_item.set_msg_content(msg_content);
             }
             MessageType::Emote(content) => {
-                let msg_content: MsgContent = MsgContent::from(&content);
+                let msg_content = MsgContent::from(&content);
                 event_item.set_msg_content(msg_content);
             }
             MessageType::File(content) => {

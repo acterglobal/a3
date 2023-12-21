@@ -227,8 +227,7 @@ impl InvitationController {
         }
 
         info!("stripped room member event: {:?}", ev);
-        let start = SystemTime::now();
-        let since_the_epoch = start.duration_since(UNIX_EPOCH)?;
+        let since_the_epoch = SystemTime::now().duration_since(UNIX_EPOCH)?;
 
         info!("event type: StrippedRoomMemberEvent");
         info!("membership: {:?}", ev.content.membership);
