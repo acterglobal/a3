@@ -4,6 +4,7 @@ import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/device.dart';
 import 'package:acter/features/activities/providers/notifications_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/providers/navigation.dart';
@@ -38,11 +39,15 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   @override
   void initState() {
     super.initState();
-    // shake is possible in only mobile
-    if (Platform.isAndroid || Platform.isIOS) {
+    initShake();
+  }
+
+  Future<void> initShake() async {
+    // shake is possible in only actual mobile devices
+    if (await isRealPhone()) {
       detector = ShakeDetector.waitForStart(
         onPhoneShake: () {
-          detector.stopListening();
+          handleBugReport();
         },
       );
       detector.startListening();
