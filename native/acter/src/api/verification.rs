@@ -729,8 +729,13 @@ async fn sas_verification_handler(
                         .collect::<Vec<VerificationEmoji>>();
                     msg.set_emojis(sequence);
                 }
-                let value =
-                    serde_json::to_string(&decimals).expect("couldn't convert decimals to string");
+                let value = match serde_json::to_string(&decimals) {
+                    Ok(e) => e,
+                    Err(e) => {
+                        error!("KeysExchanged: couldn't convert decimals to string");
+                        return;
+                    }
+                };
                 msg.set_content("decimals".to_string(), value);
                 if let Err(e) = controller.event_tx.try_send(msg) {
                     if let Some(event_id) = event_id.clone() {
@@ -1070,7 +1075,13 @@ impl VerificationController {
                                 msg.set_content("short_authentication_string".to_string(), short_authentication_string.join(","));
                             }
                             StartMethod::ReciprocateV1(content) => {
-                                let secret = serde_json::to_string(&content.secret).expect("couldn't convert secret to string");
+                                let secret = match serde_json::to_string(&content.secret) {
+                                    Ok(e) => e,
+                                    Err(e) => {
+                                        error!("ReciprocateV1: couldn't convert secret to string");
+                                        return;
+                                    }
+                                };
                                 msg.set_content("secret".to_string(), secret);
                             }
                             _ => {}
@@ -1155,7 +1166,13 @@ impl VerificationController {
                             evt.sender,
                         );
                         msg.set_content("keys".to_string(), evt.content.keys.to_string());
-                        let mac = serde_json::to_string(&evt.content.mac).expect("couldn't convert mac to string");
+                        let mac = match serde_json::to_string(&evt.content.mac) {
+                            Ok(e) => e,
+                            Err(e) => {
+                                error!("KeyVerificationMac: couldn't convert mac to string");
+                                return;
+                            }
+                        };
                         msg.set_content("mac".to_string(), mac);
                         if let Err(e) = me.event_tx.try_send(msg) {
                             error!("Dropping transaction for {}: {}", evt.content.transaction_id, e);
