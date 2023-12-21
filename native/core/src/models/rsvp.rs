@@ -123,7 +123,7 @@ impl Rsvp {
 impl super::ActerModel for Rsvp {
     fn indizes(&self) -> Vec<String> {
         self.belongs_to()
-            .unwrap() // we always have some as entries
+            .expect("we always have some as entries")
             .into_iter()
             .map(|v| Rsvp::index_for(&v))
             .collect()
@@ -138,7 +138,7 @@ impl super::ActerModel for Rsvp {
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {
-        let belongs_to = self.belongs_to().unwrap();
+        let belongs_to = self.belongs_to().expect("we always have some as entries");
         trace!(event_id=?self.event_id(), ?belongs_to, "applying rsvp");
 
         let mut managers = vec![];
