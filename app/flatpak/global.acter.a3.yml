@@ -18,26 +18,33 @@ finish-args:
   - --talk-name=org.kde.StatusNotifierWatcher
   - --talk-name=org.freedesktop.secrets
   - --filesystem=xdg-documents
-  - --filesystem=xdg-run/gvfs    #This might be needed for MediaKit
-  - --filesystem=xdg-run/pipewire-0:ro #This might be needed for MediaKit
+  - --filesystem=xdg-run/gvfs    # This might be needed for MediaKit
+  - --filesystem=xdg-run/pipewire-0:ro # This might be needed for MediaKit
+  - --env=LD_LIBRARY_PATH=/app/lib # or libmpv isn't found
   - --own-name=global.acter.a3
   - --system-talk-name=org.freedesktop.NetworkManager
 modules:
-- shared-modules/libsecret/libsecret.json
-- name: Acter
-  buildsystem: simple
-  only-arches:
-    - x86_64
-  build-commands:
-    - "./build-flatpak.sh"
-  sources:
-  
-    - type: dir
-      path: .
-    - type: file
-      path: ../assets/icon/acter-logo.svg
 
+#  ##       #### ########      ######  ########  ######  ########  ######## ######## 
+#  ##        ##  ##     ##    ##    ## ##       ##    ## ##     ## ##          ##    
+#  ##        ##  ##     ##    ##       ##       ##       ##     ## ##          ##    
+#  ##        ##  ########      ######  ######   ##       ########  ######      ##    
+#  ##        ##  ##     ##          ## ##       ##       ##   ##   ##          ##    
+#  ##        ##  ##     ##    ##    ## ##       ##    ## ##    ##  ##          ##    
+#  ######## #### ########      ######  ########  ######  ##     ## ########    ##    
+
+
+- shared-modules/libsecret/libsecret.json
 # Media-kit required build dependencies
+
+#  ##     ## ######## ########  ####    ###    ##    ## #### ######## 
+#  ###   ### ##       ##     ##  ##    ## ##   ##   ##   ##     ##    
+#  #### #### ##       ##     ##  ##   ##   ##  ##  ##    ##     ##    
+#  ## ### ## ######   ##     ##  ##  ##     ## #####     ##     ##    
+#  ##     ## ##       ##     ##  ##  ######### ##  ##    ##     ##    
+#  ##     ## ##       ##     ##  ##  ##     ## ##   ##   ##     ##    
+#  ##     ## ######## ########  #### ##     ## ##    ## ####    ##    
+
 - name: libmpv
   cleanup:
   - /include
@@ -136,3 +143,24 @@ modules:
       tag: n6.0.1
       commit: c41ff724ede7da657762d61097e26fac296c53bf
 # END ----------------------------------------------------------------------------------- MediaKit
+
+
+#     ###     ######  ######## ######## ########  
+#    ## ##   ##    ##    ##    ##       ##     ## 
+#   ##   ##  ##          ##    ##       ##     ## 
+#  ##     ## ##          ##    ######   ########  
+#  ######### ##          ##    ##       ##   ##   
+#  ##     ## ##    ##    ##    ##       ##    ##  
+#  ##     ##  ######     ##    ######## ##     ## 
+
+- name: Acter
+  buildsystem: simple
+  only-arches:
+    - x86_64
+  build-commands:
+    - "./build-flatpak.sh"
+  sources:
+    - type: dir
+      path: .
+    - type: file
+      path: ../assets/icon/acter-logo.svg
