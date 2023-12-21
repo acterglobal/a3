@@ -412,7 +412,7 @@ impl TimelineStream {
 
     pub async fn retry_send(&self, txn_id: String) -> Result<bool> {
         let timeline = self.timeline.clone();
-        let transaction_id = OwnedTransactionId::from(txn_id);
+        let txn_id = OwnedTransactionId::try_from(txn_id)?;
 
         let room = self.room.clone();
         let my_id = room
@@ -431,7 +431,7 @@ impl TimelineStream {
                     bail!("No permission to send message in this room");
                 }
 
-                timeline.retry_send(&transaction_id).await?;
+                timeline.retry_send(&txn_id).await?;
                 Ok(true)
             })
             .await?
@@ -439,7 +439,7 @@ impl TimelineStream {
 
     pub async fn cancel_send(&self, txn_id: String) -> Result<bool> {
         let timeline = self.timeline.clone();
-        let transaction_id = OwnedTransactionId::from(txn_id);
+        let txn_id = OwnedTransactionId::try_from(txn_id)?;
 
         let room = self.room.clone();
         let my_id = room
@@ -458,7 +458,7 @@ impl TimelineStream {
                     bail!("No permission to send message in this room");
                 }
 
-                timeline.cancel_send(&transaction_id).await;
+                timeline.cancel_send(&txn_id).await;
                 Ok(true)
             })
             .await?

@@ -27,7 +27,8 @@ use matrix_sdk::{
     ruma::api::client::state::send_state_event,
 };
 use ruma_common::{
-    directory::RoomTypeFilter, serde::Raw, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
+    directory::RoomTypeFilter, serde::Raw, OwnedRoomAliasId, OwnedRoomId, RoomAliasId, RoomId,
+    RoomOrAliasId, ServerName,
 };
 use ruma_events::{
     space::child::SpaceChildEventContent, AnyStateEventContent, MessageLikeEvent, StateEventType,
@@ -515,7 +516,7 @@ impl Space {
         if !self.inner.is_joined() {
             bail!("You can't update a space you aren't part of");
         }
-        let room_id = OwnedRoomId::try_from(room_id)?;
+        let room_id = RoomId::parse(room_id)?;
         if !self
             .get_my_membership()
             .await?
@@ -528,7 +529,7 @@ impl Space {
 
         RUNTIME
             .spawn(async move {
-                let Some(Ok(homeserver)) = client.homeserver().host_str().map(|h| h.try_into()) else {
+                let Some(Ok(homeserver)) = client.homeserver().host_str().map(ServerName::parse) else {
                     return Err(Error::HomeserverMissesHostname)?;
                 };
                 let response = room
@@ -546,7 +547,7 @@ impl Space {
         if !self.inner.is_joined() {
             bail!("You can't update a space you aren't part of");
         }
-        let room_id = OwnedRoomId::try_from(room_id)?;
+        let room_id = RoomId::parse(room_id)?;
         if !self
             .get_my_membership()
             .await?
@@ -578,7 +579,7 @@ impl Space {
     }
 
     pub async fn is_child_space_of(&self, room_id: String) -> bool {
-        let Ok(room_id) = OwnedRoomId::try_from(room_id) else {
+        let Ok(room_id) = RoomId::parse(room_id) else {
             warn!("Asked for a not proper room id");
             return false
         };
@@ -716,14 +717,14 @@ impl Client {
     }
 
     pub async fn space(&self, room_id_or_alias: String) -> Result<Space> {
-        let either = OwnedRoomOrAliasId::try_from(room_id_or_alias.as_str())?;
+        let either = RoomOrAliasId::parse(room_id_or_alias.as_str())?;
         if either.is_room_id() {
-            let room_id = OwnedRoomId::try_from(either.as_str())?;
+            let room_id = RoomId::parse(either.as_str())?;
             self.space_typed(&room_id)
                 .await
                 .context(format!("Space {room_id} not found"))
         } else if either.is_room_alias_id() {
-            let room_alias = OwnedRoomAliasId::try_from(either.as_str())?;
+            let room_alias = RoomAliasId::parse(either.as_str())?;
             self.space_by_alias_typed(room_alias).await
         } else {
             bail!("{room_id_or_alias} isn't a valid room id or alias...");

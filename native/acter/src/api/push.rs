@@ -11,7 +11,7 @@ use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
     NotificationProcessSetup,
 };
-use ruma_common::{OwnedEventId, OwnedRoomId};
+use ruma_common::{EventId, OwnedRoomId, RoomId};
 
 use super::{message::any_sync_event_to_message, Client};
 
@@ -139,8 +139,8 @@ impl Client {
         event_id: String,
     ) -> Result<NotificationItem> {
         let client = self.core.client().clone();
-        let room_id: OwnedRoomId = room_id.try_into()?;
-        let event_id: OwnedEventId = event_id.try_into()?;
+        let room_id = RoomId::parse(room_id)?;
+        let event_id = EventId::parse(event_id)?;
         RUNTIME
             .spawn(async move {
                 let notif_client = NotificationClient::builder(
