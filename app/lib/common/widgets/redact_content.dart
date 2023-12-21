@@ -6,6 +6,7 @@ import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,7 +20,9 @@ class RedactContentWidget extends ConsumerWidget {
   final bool isSpace;
   final void Function()? onRemove;
   final Function()? onSuccess;
-  const RedactContentWidget({
+  final TextEditingController reasonController = TextEditingController();
+
+  RedactContentWidget({
     super.key,
     this.title,
     this.description,
@@ -33,7 +36,6 @@ class RedactContentWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final TextEditingController textController = TextEditingController();
     return DefaultDialog(
       title: Align(
         alignment: Alignment.topLeft,
@@ -58,7 +60,7 @@ class RedactContentWidget extends ConsumerWidget {
       description: Padding(
         padding: const EdgeInsets.all(8.0),
         child: InputTextField(
-          controller: textController,
+          controller: reasonController,
           hintText: 'Reason',
           textInputType: TextInputType.multiline,
           maxLines: 5,
@@ -72,7 +74,7 @@ class RedactContentWidget extends ConsumerWidget {
         ),
         DefaultButton(
           onPressed: onRemove ??
-              () => redactContent(context, ref, textController.text),
+              () => redactContent(context, ref, reasonController.text),
           title: 'Remove',
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.errorContainer,
@@ -83,7 +85,6 @@ class RedactContentWidget extends ConsumerWidget {
   }
 
   void redactContent(BuildContext ctx, WidgetRef ref, String reason) async {
-    bool res = false;
     showAdaptiveDialog(
       context: (ctx),
       builder: (ctx) => const DefaultDialog(
@@ -94,44 +95,26 @@ class RedactContentWidget extends ConsumerWidget {
     try {
       if (isSpace) {
         final space = await ref.read(spaceProvider(roomId).future);
-        res = await space.redactContent(eventId, reason);
+        final redactedId = await space.redactContent(eventId, reason);
+        ref.invalidate(spacePinsProvider(space));
         debugPrint(
-          'Content from user:{$senderId redacted $res reason:$reason}',
+          'Content from user:{$senderId redacted $redactedId reason:$reason}',
         );
       } else {
         final room = await ref.read(chatProvider(roomId).future);
-        res = await room.redactContent(eventId, reason);
-        ref.invalidate(spaceEventsProvider);
+        final redactedId = await room.redactContent(eventId, reason);
+        ref.invalidate(spaceEventsProvider(roomId));
         debugPrint(
-          'Content from user:{$senderId redacted $res reason:$reason}',
+          'Content from user:{$senderId redacted $redactedId reason:$reason}',
         );
       }
 
-      if (res) {
-        if (ctx.mounted) {
-          Navigator.of(ctx, rootNavigator: true).pop();
-          Navigator.of(ctx, rootNavigator: true).pop(true);
-          customMsgSnackbar(ctx, 'Content successfully removed');
-          if (onSuccess != null) {
-            onSuccess!();
-          }
-        }
-      } else {
-        if (ctx.mounted) {
-          Navigator.of(ctx, rootNavigator: true).pop();
-          showAdaptiveDialog(
-            context: ctx,
-            builder: (ctx) => DefaultDialog(
-              title: const Text('Removing content failed'),
-              actions: <Widget>[
-                DefaultButton(
-                  onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
-                  title: 'Close',
-                  isOutlined: true,
-                ),
-              ],
-            ),
-          );
+      if (ctx.mounted) {
+        Navigator.of(ctx, rootNavigator: true).pop();
+        Navigator.of(ctx, rootNavigator: true).pop(true);
+        customMsgSnackbar(ctx, 'Content successfully removed');
+        if (onSuccess != null) {
+          onSuccess!();
         }
       }
     } catch (e) {

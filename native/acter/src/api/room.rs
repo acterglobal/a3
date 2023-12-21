@@ -1821,10 +1821,10 @@ impl Room {
                 if !member.can_send_state(StateEventType::RoomPowerLevels) {
                     bail!("No permission to change power levels in this room");
                 }
-                let resp = room
+                let response = room
                     .update_power_levels(vec![(&user_id, Int::from(level))])
                     .await?;
-                Ok(resp.event_id)
+                Ok(response.event_id)
             })
             .await?
     }
@@ -1856,7 +1856,11 @@ impl Room {
             .await?
     }
 
-    pub async fn redact_content(&self, event_id: String, reason: Option<String>) -> Result<bool> {
+    pub async fn redact_content(
+        &self,
+        event_id: String,
+        reason: Option<String>,
+    ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't redact content in a room we are not in");
         }
@@ -1865,8 +1869,8 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                room.redact(&event_id, reason.as_deref(), None).await?;
-                Ok(true)
+                let response = room.redact(&event_id, reason.as_deref(), None).await?;
+                Ok(response.event_id)
             })
             .await?
     }
