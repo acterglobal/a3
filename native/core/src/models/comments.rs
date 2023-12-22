@@ -132,7 +132,7 @@ impl Comment {
 impl super::ActerModel for Comment {
     fn indizes(&self) -> Vec<String> {
         self.belongs_to()
-            .unwrap() // we always have some as comments
+            .expect("we always have some as comments")
             .into_iter()
             .map(|v| Comment::index_for(&v))
             .collect()
@@ -147,7 +147,7 @@ impl super::ActerModel for Comment {
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {
-        let belongs_to = self.belongs_to().unwrap();
+        let belongs_to = self.belongs_to().expect("we always have some as comments");
         trace!(event_id=?self.event_id(), ?belongs_to, "applying comment");
 
         let mut managers = vec![];

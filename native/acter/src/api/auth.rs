@@ -11,7 +11,7 @@ use matrix_sdk::{
     },
     Client as SdkClient, ClientBuilder, SessionMeta,
 };
-use ruma_common::OwnedUserId;
+use ruma_common::{OwnedUserId, UserId};
 use std::sync::RwLock;
 use tracing::{error, info};
 
@@ -41,12 +41,12 @@ pub async fn sanitize_user(
     };
 
     // fully qualified username, good to go
-    if let Ok(user_id) = OwnedUserId::try_from(formatted_username.as_str()) {
+    if let Ok(user_id) = UserId::parse(formatted_username.as_str()) {
         return Ok((user_id, false));
     }
 
     // we need to fallback to the testing/default scenario
-    let user_id = OwnedUserId::try_from(format!("{formatted_username}:{default_homeserver_name}"))?;
+    let user_id = UserId::parse(format!("{formatted_username}:{default_homeserver_name}"))?;
 
     Ok((user_id, true))
 }

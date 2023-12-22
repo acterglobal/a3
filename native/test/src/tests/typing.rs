@@ -1,4 +1,4 @@
-use anyhow::{bail, Result};
+use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::stream::StreamExt;
 use tokio::time::sleep;
@@ -31,9 +31,9 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
     let sent = sisko_convo.typing_notice(true).await?;
     println!("sent: {sent:?}");
 
-    let Some(mut event_rx) = kyra.typing_event_rx() else {
-        bail!("kyra needs typing event receiver")
-    };
+    let mut event_rx = kyra
+        .typing_event_rx()
+        .context("kyra needs typing event receiver")?;
 
     let mut i = 3;
     let mut found = false;

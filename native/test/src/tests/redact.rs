@@ -1,7 +1,7 @@
 use acter::{
     api::RoomMessage, ruma_common::OwnedEventId, ruma_events::room::redaction::RoomRedactionEvent,
 };
-use anyhow::{bail, Result};
+use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
 use tokio::time::sleep;
@@ -67,9 +67,7 @@ async fn message_redaction() -> Result<()> {
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    let Some(received) = received else {
-        bail!("Even after 30 seconds, text msg not received")
-    };
+    let received = received.context("Even after 30 seconds, text msg not received")?;
 
     let redact_id = convo
         .redact_message(
@@ -80,12 +78,10 @@ async fn message_redaction() -> Result<()> {
         .await?;
 
     let ev = convo.event(&redact_id).await?;
-    let Ok(event_content) = ev.event.deserialize_as::<RoomRedactionEvent>() else {
-        bail!("This should be m.room.redaction event")
-    };
+    let event_content = ev.event.deserialize_as::<RoomRedactionEvent>()?;
     let original = event_content
         .as_original()
-        .expect("Redaction event should get original event");
+        .context("Redaction event should get original event")?;
     assert_eq!(original.redacts, Some(received));
     assert_eq!(original.content.reason, Some("redact-test".to_string()));
 
