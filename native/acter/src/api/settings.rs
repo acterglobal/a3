@@ -9,7 +9,7 @@ use acter_core::events::{
     settings::ActerAppSettingsContentBuilder,
     tasks::{TaskEventContent, TaskListEventContent},
 };
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use matrix_sdk::{deserialized_responses::SyncOrStrippedState, ruma::Int};
 use ruma_events::{
     room::power_levels::{RoomPowerLevels as RumaRoomPowerLevels, RoomPowerLevelsEventContent},
@@ -130,13 +130,11 @@ impl Room {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                anyhow::Ok(
-                    room.get_state_event_static::<RoomPowerLevelsEventContent>()
-                        .await?
-                        .expect("No Power levels set")
-                        .deserialize()?
-                        .power_levels(),
-                )
+                let content = room.get_state_event_static::<RoomPowerLevelsEventContent>()
+                    .await?
+                    .context("No Power levels set")?
+                    .deserialize()?;
+                Ok(content.power_levels())
             })
             .await?
     }
