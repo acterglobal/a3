@@ -7,7 +7,8 @@ use matrix_sdk::{
     },
 };
 use ruma_common::{
-    room::RoomType, serde::Raw, MxcUri, OwnedRoomId, OwnedServerName, OwnedUserId, RoomId, UserId,
+    room::RoomType, serde::Raw, MxcUri, OwnedRoomId, OwnedServerName, OwnedUserId, RoomId,
+    ServerName, UserId,
 };
 use ruma_events::{
     room::{
@@ -226,7 +227,7 @@ impl CoreClient {
         };
 
         if let Some(parent) = parent {
-            let Some(Ok(homeserver)) = client.homeserver().host_str().map(|h| h.try_into()) else {
+            let Some(Ok(homeserver)) = client.homeserver().host_str().map(ServerName::parse) else {
                 return Err(Error::HomeserverMissesHostname);
             };
             let parent_event = InitialStateEvent::<SpaceParentEventContent> {

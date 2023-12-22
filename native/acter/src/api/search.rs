@@ -3,7 +3,7 @@ use matrix_sdk::ruma::{api::client::directory::get_public_rooms_filtered, assign
 use ruma_common::{
     directory::{Filter, PublicRoomJoinRule, PublicRoomsChunk, RoomNetwork, RoomTypeFilter},
     room::RoomType,
-    OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedServerName,
+    OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, ServerName,
 };
 
 use super::{client::Client, RUNTIME};
@@ -130,7 +130,7 @@ impl Client {
 
                 let room_network = RoomNetwork::Matrix;
                 let server = if let Some(name) = server {
-                    Some(OwnedServerName::try_from(name.as_str())?)
+                    Some(ServerName::parse(name.as_str())?)
                 } else {
                     None
                 };

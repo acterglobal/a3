@@ -124,9 +124,7 @@ impl Account {
                 let maybe_content = account
                     .account_data::<IgnoredUserListEventContent>()
                     .await?;
-                let Some(raw_content) = maybe_content  else {
-                    bail!("No ignored Users found");
-                };
+                let raw_content = maybe_content.context("No ignored Users found")?;
                 let content = raw_content.deserialize()?;
                 Ok(content.ignored_users.keys().map(Clone::clone).collect())
             })
