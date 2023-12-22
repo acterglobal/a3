@@ -130,7 +130,8 @@ impl Room {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let content = room.get_state_event_static::<RoomPowerLevelsEventContent>()
+                let content = room
+                    .get_state_event_static::<RoomPowerLevelsEventContent>()
                     .await?
                     .context("No Power levels set")?
                     .deserialize()?;
