@@ -18,21 +18,22 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use matrix_sdk::{
     deserialized_responses::SyncOrStrippedState,
-    media::{MediaFormat, MediaRequest},
+    media::{MediaFormat, MediaRequest, MediaThumbnailSize},
     notification_settings::{IsEncrypted, IsOneToOne, RoomNotificationMode},
     room::{Room as SdkRoom, RoomMember},
     ruma::{
         api::client::{
+            media::get_content_thumbnail::v3::Method,
             room::report_content,
             space::{get_hierarchy, SpaceHierarchyRoomsChunk},
         },
-        assign, Int,
+        assign, Int, UInt,
     },
     RoomMemberships, RoomState,
 };
 use ruma_common::{
     room::RoomType, serde::Raw, space::SpaceRoomJoinRule, EventId, IdParseError, OwnedEventId,
-    OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedUserId, UserId,
+    OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedUserId, RoomId, ServerName, UserId,
 };
 use ruma_events::{
     room::{
@@ -48,7 +49,7 @@ use ruma_events::{
 use std::{io::Write, ops::Deref, path::PathBuf};
 use tracing::{error, info, warn};
 
-use crate::{OptionBuffer, RoomMessage, RoomProfile, UserProfile, RUNTIME};
+use crate::{OptionBuffer, OptionString, RoomMessage, RoomProfile, UserProfile, RUNTIME};
 
 use super::api::FfiBuffer;
 
@@ -451,7 +452,7 @@ impl JoinRuleBuilder {
         } = self;
         let allow_rules = restricted_rooms
             .iter()
-            .map(|s| OwnedRoomId::try_from(s.as_str()).map(AllowRule::room_membership))
+            .map(|s| RoomId::parse(s.as_str()).map(AllowRule::room_membership))
             .collect::<Result<Vec<AllowRule>, IdParseError>>()?;
         Ok(match rule.to_lowercase().as_str() {
             "private" => RoomJoinRulesEventContent::new(JoinRule::Private),
@@ -554,7 +555,7 @@ impl Room {
         if !self.is_joined() {
             bail!("You can't update a room you aren't part of");
         }
-        let room_id = OwnedRoomId::try_from(room_id)?;
+        let room_id = RoomId::parse(room_id)?;
         if !self
             .get_my_membership()
             .await?
@@ -567,7 +568,7 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let Some(Ok(homeserver)) = client.homeserver().host_str().map(|h| h.try_into()) else {
+                let Some(Ok(homeserver)) = client.homeserver().host_str().map(ServerName::parse) else {
                     return Err(Error::HomeserverMissesHostname)?;
                 };
                 let content = assign!(SpaceParentEventContent::new(vec![homeserver]), { canonical });
@@ -590,7 +591,7 @@ impl Room {
         if !self.is_joined() {
             bail!("You can't update a room you aren't part of");
         }
-        let room_id = OwnedRoomId::try_from(room_id)?;
+        let room_id = RoomId::parse(room_id)?;
         if !self
             .get_my_membership()
             .await?
@@ -611,10 +612,7 @@ impl Room {
                     warn!("Room {} is not a parent", room_id);
                     return Ok(true);
                 };
-                let Ok(state) = raw_state.deserialize() else {
-                    bail!("Invalid room parent event")
-                };
-                let event_id = match state {
+                let event_id = match raw_state.deserialize()? {
                     SyncOrStrippedState::Stripped(ev) => {
                         bail!("Couldn't get event id about stripped event")
                     }
@@ -993,9 +991,9 @@ impl Room {
             .await?
     }
 
-    pub async fn image_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
+    pub async fn media_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
         if !self.is_joined() {
-            bail!("Can't read message as image from a room we are not in");
+            bail!("Can't read media message from a room we are not in");
         }
         let room = self.room.clone();
         let client = self.room.client();
@@ -1004,109 +1002,21 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let evt = room.event(&event_id).await?;
-                let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
-                    bail!("It is not message")
-                };
+                let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
-                    .expect("Couldn't get original msg");
-                let MessageType::Image(content) = &original.content.msgtype else {
-                    bail!("Invalid file format");
+                    .context("Couldn't get original msg")?;
+                let source = match &original.content.msgtype {
+                    MessageType::Image(content) => content.source.clone(),
+                    MessageType::Audio(content) => content.source.clone(),
+                    MessageType::Video(content) => content.source.clone(),
+                    MessageType::File(content) => content.source.clone(),
+                    _ => {
+                        bail!("Not an Image, Audio, Video or Regular file.")
+                    }
                 };
                 let request = MediaRequest {
-                    source: content.source.clone(),
-                    format: MediaFormat::File,
-                };
-                let data = client.media().get_media_content(&request, false).await?;
-                Ok(FfiBuffer::new(data))
-            })
-            .await?
-    }
-
-    pub async fn audio_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
-        if !self.is_joined() {
-            bail!("Can't read message as audio from a room we are not in");
-        }
-        let room = self.room.clone();
-        let client = self.room.client();
-        let event_id = EventId::parse(event_id)?;
-
-        RUNTIME
-            .spawn(async move {
-                let evt = room.event(&event_id).await?;
-                let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
-                    bail!("It is not message")
-                };
-                let original = event_content
-                    .as_original()
-                    .expect("Couldn't get original msg");
-                let MessageType::Audio(content) = &original.content.msgtype else {
-                    bail!("Invalid file format");
-                };
-                let request = MediaRequest {
-                    source: content.source.clone(),
-                    format: MediaFormat::File,
-                };
-                let data = client.media().get_media_content(&request, false).await?;
-                Ok(FfiBuffer::new(data))
-            })
-            .await?
-    }
-
-    pub async fn video_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
-        if !self.is_joined() {
-            bail!("Can't read message as video from a room we are not in");
-        }
-        let room = self.room.clone();
-        let client = self.room.client();
-
-        let event_id = EventId::parse(event_id)?;
-
-        RUNTIME
-            .spawn(async move {
-                let evt = room.event(&event_id).await?;
-                let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
-                    bail!("It is not message")
-                };
-                let original = event_content
-                    .as_original()
-                    .expect("Couldn't get original msg");
-                let MessageType::Video(content) = &original.content.msgtype else {
-                    bail!("Invalid file format");
-                };
-                let request = MediaRequest {
-                    source: content.source.clone(),
-                    format: MediaFormat::File,
-                };
-                let data = client.media().get_media_content(&request, false).await?;
-                Ok(FfiBuffer::new(data))
-            })
-            .await?
-    }
-
-    pub async fn file_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
-        if !self.is_joined() {
-            bail!("Can't read message as file from a room we are not in");
-        }
-        let room = self.room.clone();
-        let client = self.room.client();
-
-        let event_id = EventId::parse(event_id)?;
-
-        RUNTIME
-            .spawn(async move {
-                let evt = room.event(&event_id).await?;
-                let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
-                    bail!("It is not message")
-                };
-                let original = event_content
-                    .as_original()
-                    .expect("Couldn't get original msg");
-                let MessageType::File(content) = &original.content.msgtype else {
-                    bail!("Invalid file format");
-                };
-                let request = MediaRequest {
-                    source: content.source.clone(),
+                    source,
                     format: MediaFormat::File,
                 };
                 let data = client.media().get_media_content(&request, false).await?;
@@ -1236,53 +1146,90 @@ impl Room {
         let room = self.room.clone();
         let client = self.room.client();
 
-        let eid = EventId::parse(event_id.clone())?;
+        let evt_id = EventId::parse(event_id.clone())?;
 
         RUNTIME
             .spawn(async move {
-                let evt = room.event(&eid).await?;
-                let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
-                    bail!("It is not message")
-                };
+                let evt = room.event(&evt_id).await?;
+                let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
-                    .expect("Couldn't get original msg");
-                let (request, name) = match &original.content.msgtype {
+                    .context("Couldn't get original msg")?;
+                // get file extension from msg info
+                let (request, mut filename) = match &original.content.msgtype {
                     MessageType::Image(content) => {
                         let request = MediaRequest {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        (request, content.body.clone())
+                        let filename = content
+                            .info
+                            .clone()
+                            .and_then(|info| info.mimetype)
+                            .and_then(|mimetype| {
+                                mime2ext::mime2ext(mimetype)
+                                    .map(|ext| format!("{}.{}", event_id.clone(), ext))
+                            });
+                        (request, filename)
                     }
                     MessageType::Audio(content) => {
                         let request = MediaRequest {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        (request, content.body.clone())
+                        let filename = content
+                            .info
+                            .clone()
+                            .and_then(|info| info.mimetype)
+                            .and_then(|mimetype| {
+                                mime2ext::mime2ext(mimetype)
+                                    .map(|ext| format!("{}.{}", event_id.clone(), ext))
+                            });
+                        (request, filename)
                     }
                     MessageType::Video(content) => {
                         let request = MediaRequest {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        (request, content.body.clone())
+                        let filename = content
+                            .info
+                            .clone()
+                            .and_then(|info| info.mimetype)
+                            .and_then(|mimetype| {
+                                mime2ext::mime2ext(mimetype)
+                                    .map(|ext| format!("{}.{}", event_id.clone(), ext))
+                            });
+                        (request, filename)
                     }
                     MessageType::File(content) => {
                         let request = MediaRequest {
                             source: content.source.clone(),
                             format: MediaFormat::File,
                         };
-                        (request, content.body.clone())
+                        let filename = content
+                            .info
+                            .clone()
+                            .and_then(|info| info.mimetype)
+                            .and_then(|mimetype| {
+                                mime2ext::mime2ext(mimetype)
+                                    .map(|ext| format!("{}.{}", event_id.clone(), ext))
+                            });
+                        (request, filename)
                     }
                     _ => bail!("This message type is not downloadable"),
                 };
+                let data = client.media().get_media_content(&request, false).await?;
+                // infer file extension via parsing of file binary
+                if filename.is_none() {
+                    if let Some(kind) = infer::get(&data) {
+                        filename = Some(format!("{}.{}", event_id.clone(), kind.extension()));
+                    }
+                }
                 let mut path = PathBuf::from(dir_path.clone());
-                path.push(name);
+                path.push(filename.unwrap_or_else(|| event_id.clone()));
                 let mut file =
                     std::fs::File::create(path.clone()).context("File should be created")?;
-                let data = client.media().get_media_content(&request, false).await?;
                 file.write_all(&data)?;
                 let key = [
                     room.room_id().as_str().as_bytes(),
@@ -1301,43 +1248,225 @@ impl Room {
             .await?
     }
 
-    pub async fn media_path(&self, event_id: String) -> Result<String> {
+    pub async fn media_path(&self, event_id: String) -> Result<OptionString> {
         if !self.is_joined() {
             bail!("Can't read message from a room we are not in");
         }
         let room = self.room.clone();
         let client = self.room.client();
 
-        let eid = EventId::parse(event_id.clone())?;
+        let evt_id = EventId::parse(event_id.clone())?;
 
         RUNTIME
             .spawn(async move {
-                let evt = room.event(&eid).await?;
-                let Ok(event_content) = evt.event.deserialize_as::<RoomMessageEvent>() else {
-                    bail!("It is not message")
-                };
+                let evt = room.event(&evt_id).await?;
+                let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
-                    .expect("Couldn't get original msg");
-                match &original.content.msgtype {
-                    MessageType::Image(content) => {}
-                    MessageType::Audio(content) => {}
-                    MessageType::Video(content) => {}
-                    MessageType::File(content) => {}
-                    _ => bail!("This message type is not downloadable"),
+                    .context("Couldn't get original msg")?;
+                if !matches!(
+                    &original.content.msgtype,
+                    MessageType::Image(_)
+                        | MessageType::Audio(_)
+                        | MessageType::Video(_)
+                        | MessageType::File(_)
+                ) {
+                    bail!("This message type is not downloadable");
                 }
                 let key = [
                     room.room_id().as_str().as_bytes(),
                     event_id.as_str().as_bytes(),
                 ]
                 .concat();
-                let path = client
+                let path = client.store().get_custom_value(&key).await?;
+                let text = match path {
+                    Some(path) => Some(std::str::from_utf8(&path)?.to_string()),
+                    None => None,
+                };
+                Ok(OptionString::new(text))
+            })
+            .await?
+    }
+
+    pub async fn download_media_thumbnail(
+        &self,
+        event_id: String,
+        dir_path: String,
+    ) -> Result<OptionString> {
+        if !self.is_joined() {
+            bail!("Can't read message from a room we are not in");
+        }
+        let room = self.room.clone();
+        let client = self.room.client();
+
+        let evt_id = EventId::parse(event_id.clone())?;
+
+        RUNTIME
+            .spawn(async move {
+                let evt = room.event(&evt_id).await?;
+                let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
+                let original = event_content
+                    .as_original()
+                    .context("Couldn't get original msg")?;
+                // get file extension from msg info
+                let (request, mut filename) = match &original.content.msgtype {
+                    MessageType::Image(content) => {
+                        let request = content
+                            .info
+                            .as_ref()
+                            .and_then(|info| info.thumbnail_source.clone())
+                            .map(|source| MediaRequest {
+                                source,
+                                format: MediaFormat::File,
+                            });
+                        let filename = content
+                            .info
+                            .clone()
+                            .and_then(|info| info.thumbnail_info)
+                            .and_then(|info| info.mimetype)
+                            .and_then(|mimetype| {
+                                mime2ext::mime2ext(mimetype)
+                                    .map(|ext| format!("{}-thumbnail.{}", event_id.clone(), ext))
+                            });
+                        (request, filename)
+                    }
+                    MessageType::Video(content) => {
+                        let request = content
+                            .info
+                            .as_ref()
+                            .and_then(|info| info.thumbnail_source.clone())
+                            .map(|source| MediaRequest {
+                                source,
+                                format: MediaFormat::File,
+                            });
+                        let filename = content
+                            .info
+                            .clone()
+                            .and_then(|info| info.thumbnail_info)
+                            .and_then(|info| info.mimetype)
+                            .and_then(|mimetype| {
+                                mime2ext::mime2ext(mimetype)
+                                    .map(|ext| format!("{}-thumbnail.{}", event_id.clone(), ext))
+                            });
+                        (request, filename)
+                    }
+                    MessageType::File(content) => {
+                        let request = content
+                            .info
+                            .as_ref()
+                            .and_then(|info| info.thumbnail_source.clone())
+                            .map(|source| MediaRequest {
+                                source,
+                                format: MediaFormat::File,
+                            });
+                        let filename = content
+                            .info
+                            .clone()
+                            .and_then(|info| info.thumbnail_info)
+                            .and_then(|info| info.mimetype)
+                            .and_then(|mimetype| {
+                                mime2ext::mime2ext(mimetype)
+                                    .map(|ext| format!("{}-thumbnail.{}", event_id.clone(), ext))
+                            });
+                        (request, filename)
+                    }
+                    MessageType::Location(content) => {
+                        let request = content
+                            .info
+                            .as_ref()
+                            .and_then(|info| info.thumbnail_source.clone())
+                            .map(|source| MediaRequest {
+                                source,
+                                format: MediaFormat::File,
+                            });
+                        let filename = content
+                            .info
+                            .clone()
+                            .and_then(|info| info.thumbnail_info)
+                            .and_then(|info| info.mimetype)
+                            .and_then(|mimetype| {
+                                mime2ext::mime2ext(mimetype)
+                                    .map(|ext| format!("{}-thumbnail.{}", event_id.clone(), ext))
+                            });
+                        (request, filename)
+                    }
+                    _ => bail!("This message type is not downloadable"),
+                };
+                let Some(request) = request else {
+                    // thumbnail source doesn't exist
+                    return Ok(OptionString::new(None));
+                };
+                let data = client.media().get_media_content(&request, false).await?;
+                // infer file extension via parsing of file binary
+                if filename.is_none() {
+                    if let Some(kind) = infer::get(&data) {
+                        filename = Some(format!(
+                            "{}-thumbnail.{}",
+                            event_id.clone(),
+                            kind.extension()
+                        ));
+                    }
+                }
+                let mut path = PathBuf::from(dir_path.clone());
+                path.push(filename.unwrap_or_else(|| event_id.clone()));
+                let mut file =
+                    std::fs::File::create(path.clone()).context("File should be created")?;
+                file.write_all(&data)?;
+                let key = [
+                    room.room_id().as_str().as_bytes(),
+                    event_id.as_str().as_bytes(),
+                    "thumbnail".as_bytes(),
+                ]
+                .concat();
+                let path_text = path
+                    .to_str()
+                    .context("Path was generated from strings. Must be string")?;
+                client
                     .store()
-                    .get_custom_value(&key)
-                    .await?
-                    .context("Couldn't get the path of downloaded media")?;
-                let text = std::str::from_utf8(&path)?;
-                Ok(text.to_string())
+                    .set_custom_value(&key, path_text.as_bytes().to_vec())
+                    .await?;
+                Ok(OptionString::new(Some(path_text.to_string())))
+            })
+            .await?
+    }
+
+    pub async fn media_thumbnail_path(&self, event_id: String) -> Result<OptionString> {
+        if !self.is_joined() {
+            bail!("Can't read message from a room we are not in");
+        }
+        let room = self.room.clone();
+        let client = self.room.client();
+
+        let evt_id = EventId::parse(event_id.clone())?;
+
+        RUNTIME
+            .spawn(async move {
+                let evt = room.event(&evt_id).await?;
+                let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
+                let original = event_content
+                    .as_original()
+                    .context("Couldn't get original msg")?;
+                if !matches!(
+                    &original.content.msgtype,
+                    MessageType::Image(_)
+                        | MessageType::Audio(_)
+                        | MessageType::Video(_)
+                        | MessageType::File(_)
+                ) {
+                    bail!("This message type is not downloadable");
+                }
+                let key = [
+                    room.room_id().as_str().as_bytes(),
+                    event_id.as_str().as_bytes(),
+                    "thumbnail".as_bytes(),
+                ]
+                .concat();
+                let path = client.store().get_custom_value(&key).await?;
+                let text = match path {
+                    Some(path) => Some(std::str::from_utf8(&path)?.to_string()),
+                    None => None,
+                };
+                Ok(OptionString::new(text))
             })
             .await?
     }
@@ -1679,10 +1808,10 @@ impl Room {
                 if !member.can_send_state(StateEventType::RoomPowerLevels) {
                     bail!("No permission to change power levels in this room");
                 }
-                let resp = room
+                let response = room
                     .update_power_levels(vec![(&user_id, Int::from(level))])
                     .await?;
-                Ok(resp.event_id)
+                Ok(response.event_id)
             })
             .await?
     }
@@ -1714,7 +1843,11 @@ impl Room {
             .await?
     }
 
-    pub async fn redact_content(&self, event_id: String, reason: Option<String>) -> Result<bool> {
+    pub async fn redact_content(
+        &self,
+        event_id: String,
+        reason: Option<String>,
+    ) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Can't redact content in a room we are not in");
         }
@@ -1723,8 +1856,8 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                room.redact(&event_id, reason.as_deref(), None).await?;
-                Ok(true)
+                let response = room.redact(&event_id, reason.as_deref(), None).await?;
+                Ok(response.event_id)
             })
             .await?
     }

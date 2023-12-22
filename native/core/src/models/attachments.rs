@@ -126,7 +126,7 @@ impl Attachment {
 impl super::ActerModel for Attachment {
     fn indizes(&self) -> Vec<String> {
         self.belongs_to()
-            .unwrap() // we always have some as attachments
+            .expect("we always have some as attachments")
             .into_iter()
             .map(|v| Attachment::index_for(&v))
             .collect()
@@ -141,7 +141,9 @@ impl super::ActerModel for Attachment {
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {
-        let belongs_to = self.belongs_to().unwrap();
+        let belongs_to = self
+            .belongs_to()
+            .expect("we always have some as attachments");
         trace!(event_id=?self.event_id(), ?belongs_to, "applying attachment");
 
         let mut managers = vec![];

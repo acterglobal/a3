@@ -26,7 +26,7 @@ use matrix_sdk::{
 };
 use ruma_common::{
     device_id, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
-    OwnedServerName, OwnedUserId, RoomOrAliasId, UserId,
+    OwnedServerName, OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
 };
 use ruma_events::room::MediaSource;
 use std::{
@@ -251,7 +251,8 @@ impl SyncState {
         self.history_loading.signal_cloned().to_stream()
     }
 
-    // for only cli and integration tests, not api.rsh
+    #[cfg(feature = "testing")]
+    #[doc(hidden)]
     pub async fn await_has_synced_history(&self) -> Result<u32> {
         trace!("Waiting for history to sync");
         let signal = self.history_loading.signal_cloned().to_stream();
@@ -395,7 +396,7 @@ impl Client {
         room_id_or_alias: String,
         server_names: Vec<String>,
     ) -> Result<Room> {
-        let alias = OwnedRoomOrAliasId::try_from(room_id_or_alias)?;
+        let alias = RoomOrAliasId::parse(room_id_or_alias)?;
         let server_names = server_names
             .into_iter()
             .map(OwnedServerName::try_from)
@@ -822,18 +823,17 @@ impl Client {
     }
 
     pub async fn room(&self, room_id_or_alias: String) -> Result<Room> {
-        let id_or_alias = OwnedRoomOrAliasId::try_from(room_id_or_alias).expect("just checked");
+        let id_or_alias = RoomOrAliasId::parse(room_id_or_alias)?;
         self.room_typed(&id_or_alias).await
     }
 
     pub async fn room_typed(&self, room_id_or_alias: &RoomOrAliasId) -> Result<Room> {
         if room_id_or_alias.is_room_id() {
-            let room_id = OwnedRoomId::try_from(room_id_or_alias.as_str()).expect("just checked");
+            let room_id = RoomId::parse(room_id_or_alias.as_str())?;
             return self.room_by_id_typed(&room_id).context("Room not found");
         }
 
-        let room_alias =
-            OwnedRoomAliasId::try_from(room_id_or_alias.as_str()).expect("just checked");
+        let room_alias = RoomAliasId::parse(room_id_or_alias.as_str())?;
         self.room_by_alias_typed(&room_alias).await
     }
 

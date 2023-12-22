@@ -61,16 +61,20 @@ pub use acter_core::{
 };
 pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use auth::{
-    destroy_local_data, guest_client, login_new_client, login_new_client_under_config,
-    login_with_token, login_with_token_under_config, make_client_config, register_under_config,
-    register_with_token, register_with_token_under_config, sanitize_user, set_proxy,
+    destroy_local_data, guest_client, login_new_client, login_with_token, register_with_token,
+    set_proxy,
+};
+#[cfg(feature = "testing")]
+pub use auth::{
+    login_new_client_under_config, login_with_token_under_config, make_client_config,
+    register_under_config, register_with_token_under_config, sanitize_user,
 };
 pub use calendar_events::{CalendarEvent, CalendarEventDraft, CalendarEventUpdateBuilder};
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
-    duration_from_secs, AudioDesc, DeviceRecord, FileDesc, ImageDesc, LocationDesc, MediaSource,
-    OptionBuffer, OptionString, ReactionRecord, TextDesc, ThumbnailInfo, VideoDesc,
+    duration_from_secs, DeviceRecord, MediaSource, MsgContent, OptionBuffer, OptionString,
+    ReactionRecord, ThumbnailInfo,
 };
 pub use convo::{
     new_convo_settings_builder, Convo, ConvoDiff, CreateConvoSettings, CreateConvoSettingsBuilder,
@@ -84,7 +88,7 @@ pub use notifications::{Notification, NotificationListResult};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use push::{NotificationItem, Pusher};
-pub use receipt::{ReceiptEvent, ReceiptRecord};
+pub use receipt::{ReceiptEvent, ReceiptRecord, ReceiptThread};
 pub use room::{
     new_join_rule_builder, JoinRuleBuilder, Member, MemberPermission, MembershipStatus, Room,
     SpaceHierarchyListResult, SpaceHierarchyRoomInfo, SpaceRelation, SpaceRelations,
@@ -100,7 +104,7 @@ pub use spaces::{
     new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
     RelationTargetType, Space, SpaceDiff,
 };
-pub use stream::{TimelineDiff, TimelineStream};
+pub use stream::{MsgContentDraft, TimelineDiff, TimelineStream};
 pub use super_invites::{SuperInviteToken, SuperInvites, SuperInvitesTokenUpdateBuilder};
 pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,

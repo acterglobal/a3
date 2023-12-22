@@ -11,7 +11,7 @@ use matrix_sdk::{
     },
     Client as SdkClient, ClientBuilder, SessionMeta,
 };
-use ruma_common::OwnedUserId;
+use ruma_common::{OwnedUserId, UserId};
 use std::sync::RwLock;
 use tracing::{error, info};
 
@@ -30,7 +30,6 @@ pub fn set_proxy(new_proxy: Option<String>) {
     *PROXY_URL.write().expect("Proxy URL couldn't be unlocked") = new_proxy;
 }
 
-// public for only integration test, not api.rsh
 pub async fn sanitize_user(
     username: &str,
     default_homeserver_name: &str,
@@ -42,12 +41,12 @@ pub async fn sanitize_user(
     };
 
     // fully qualified username, good to go
-    if let Ok(user_id) = OwnedUserId::try_from(formatted_username.as_str()) {
+    if let Ok(user_id) = UserId::parse(formatted_username.as_str()) {
         return Ok((user_id, false));
     }
 
     // we need to fallback to the testing/default scenario
-    let user_id = OwnedUserId::try_from(format!("{formatted_username}:{default_homeserver_name}"))?;
+    let user_id = UserId::parse(format!("{formatted_username}:{default_homeserver_name}"))?;
 
     Ok((user_id, true))
 }
@@ -61,7 +60,6 @@ pub async fn destroy_local_data(
     platform::destroy_local_data(base_path, user_id.to_string()).await
 }
 
-// public for only integration test, not api.rsh
 pub async fn make_client_config(
     base_path: String,
     username: &str,
@@ -134,7 +132,6 @@ pub async fn guest_client(
         .await?
 }
 
-// public for only integration test, not api.rsh
 pub async fn login_with_token_under_config(
     restore_token: RestoreToken,
     config: ClientBuilder,
@@ -211,7 +208,6 @@ async fn login_client(
     Client::new(client.clone(), state).await
 }
 
-// public for only integration test, not api.rsh
 pub async fn login_new_client_under_config(
     config: ClientBuilder,
     user_id: OwnedUserId,

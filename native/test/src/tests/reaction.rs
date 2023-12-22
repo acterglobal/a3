@@ -1,5 +1,5 @@
 use acter::{api::RoomMessage, ruma_common::OwnedEventId};
-use anyhow::{bail, Result};
+use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
 use tokio::time::sleep;
@@ -75,9 +75,8 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
 
     info!("6");
 
-    sisko_timeline
-        .send_plain_message("Hi, everyone".to_string())
-        .await?;
+    let draft = sisko.text_plain_draft("Hi, everyone".to_string());
+    sisko_timeline.send_message(Box::new(draft)).await?;
 
     info!("7");
 
@@ -122,9 +121,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     info!("loop finished");
-    let Some(received) = received else {
-        bail!("Even after 30 seconds, text msg not received")
-    };
+    let received = received.context("Even after 30 seconds, text msg not received")?;
 
     info!("8");
 
@@ -174,8 +171,8 @@ fn match_text_msg(msg: &RoomMessage, body: &str) -> Option<OwnedEventId> {
     info!("match room msg - {:?}", msg.clone());
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(text_desc) = event_item.text_desc() {
-            if text_desc.body() == body {
+        if let Some(msg_content) = event_item.msg_content() {
+            if msg_content.body() == body {
                 // exclude the pending msg
                 if let Some(event_id) = event_item.evt_id() {
                     return Some(event_id);
@@ -190,8 +187,8 @@ fn match_msg_reaction(msg: &RoomMessage, body: &str, key: String) -> bool {
     info!("match room msg - {:?}", msg.clone());
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(text_desc) = event_item.text_desc() {
-            if text_desc.body() == body && event_item.reaction_keys().contains(&key) {
+        if let Some(msg_content) = event_item.msg_content() {
+            if msg_content.body() == body && event_item.reaction_keys().contains(&key) {
                 return true;
             }
         }

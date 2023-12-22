@@ -1,5 +1,5 @@
 use acter::{api::RoomMessage, ruma_common::OwnedEventId};
-use anyhow::{bail, Result};
+use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
 use tokio::time::sleep;
@@ -39,9 +39,8 @@ async fn sisko_detects_kyra_read() -> Result<()> {
 
     info!("2");
 
-    sisko_timeline
-        .send_plain_message("Hi, everyone".to_string())
-        .await?;
+    let draft = sisko.text_plain_draft("Hi, everyone".to_string());
+    sisko_timeline.send_message(Box::new(draft)).await?;
 
     info!("3");
 
@@ -86,9 +85,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     info!("loop finished");
-    let Some(received) = received else {
-        bail!("Even after 30 seconds, text msg not received")
-    };
+    let received = received.context("Even after 30 seconds, text msg not received")?;
 
     info!("4 - {:?}", received);
 
@@ -102,7 +99,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
         .expect("kyra should get timeline stream");
     kyra_timeline
         .send_single_receipt(
-            "Read".to_string(),
+            "Read".to_string(), // will test only Read, because ReadPrivate not reached
             "Main".to_string(), // when not main, below event receiver will not receive this event
             received.to_string(),
         )
@@ -110,9 +107,9 @@ async fn sisko_detects_kyra_read() -> Result<()> {
 
     info!("5");
 
-    let Some(mut event_rx) = sisko.receipt_event_rx() else {
-        bail!("sisko needs receipt event receiver")
-    };
+    let mut event_rx = sisko
+        .receipt_event_rx()
+        .context("sisko needs receipt event receiver")?;
 
     i = 30; // sometimes read receipt not reached
     let mut found = false;
@@ -122,7 +119,10 @@ async fn sisko_detects_kyra_read() -> Result<()> {
             Ok(Some(event)) => {
                 info!("received: {:?}", event.clone());
                 for record in event.receipt_records() {
-                    if record.seen_by() == kyra.user_id()? {
+                    if record.seen_by() == kyra.user_id()?.to_string() {
+                        assert_eq!(record.receipt_type(), "m.read", "Incorrect receipt type");
+                        let receipt_thread = record.receipt_thread();
+                        assert!(receipt_thread.is_main(), "Incorrect receipt thread");
                         found = true;
                         break;
                     }
@@ -153,8 +153,8 @@ fn match_room_msg(msg: &RoomMessage, body: &str) -> Option<OwnedEventId> {
     info!("match room msg - {:?}", msg.clone());
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(text_desc) = event_item.text_desc() {
-            if text_desc.body() == body {
+        if let Some(msg_content) = event_item.msg_content() {
+            if msg_content.body() == body {
                 // exclude the pending msg
                 if let Some(event_id) = event_item.evt_id() {
                     return Some(event_id);

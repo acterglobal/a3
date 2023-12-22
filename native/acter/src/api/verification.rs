@@ -116,14 +116,15 @@ impl VerificationEvent {
                         .get_verification(&sender, event_id.as_str())
                         .await
                     {
-                        let Some(items) = sas.emoji() else {
-                            bail!("No emojis found. Aborted.");
-                        };
+                        let items = sas.emoji().context("No emojis found. Aborted.")?;
                         let sequence = items
                             .iter()
-                            .map(|e| VerificationEmoji {
-                                symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
-                                description: e.description.to_string(),
+                            .map(|e| {
+                                let chr = e.symbol.chars().next().expect("first char not found");
+                                VerificationEmoji {
+                                    symbol: chr as u32,
+                                    description: e.description.to_string(),
+                                }
                             })
                             .collect::<Vec<VerificationEmoji>>();
                         return Ok(sequence);
@@ -134,14 +135,15 @@ impl VerificationEvent {
                         .get_verification(&sender, txn_id.as_str())
                         .await
                     {
-                        let Some(items) = sas.emoji() else {
-                            bail!("No emojis found. Aborted.");
-                        };
+                        let items = sas.emoji().context("No emojis found. Aborted.")?;
                         let sequence = items
                             .iter()
-                            .map(|e| VerificationEmoji {
-                                symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
-                                description: e.description.to_string(),
+                            .map(|e| {
+                                let chr = e.symbol.chars().next().expect("first char not found");
+                                VerificationEmoji {
+                                    symbol: chr as u32,
+                                    description: e.description.to_string(),
+                                }
                             })
                             .collect::<Vec<VerificationEmoji>>();
                         return Ok(sequence);
@@ -717,17 +719,24 @@ async fn sas_verification_handler(
                     let sequence = auth_string
                         .emojis
                         .iter()
-                        .map(|e| VerificationEmoji {
-                            symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
-                            description: e.description.to_string(),
+                        .map(|e| {
+                            let chr = e.symbol.chars().next().expect("first char not found");
+                            VerificationEmoji {
+                                symbol: chr as u32,
+                                description: e.description.to_string(),
+                            }
                         })
                         .collect::<Vec<VerificationEmoji>>();
                     msg.set_emojis(sequence);
                 }
-                msg.set_content(
-                    "decimals".to_string(),
-                    serde_json::to_string(&decimals).unwrap(),
-                );
+                let value = match serde_json::to_string(&decimals) {
+                    Ok(e) => e,
+                    Err(e) => {
+                        error!("KeysExchanged: couldn't convert decimals to string");
+                        return;
+                    }
+                };
+                msg.set_content("decimals".to_string(), value);
                 if let Err(e) = controller.event_tx.try_send(msg) {
                     if let Some(event_id) = event_id.clone() {
                         error!("Dropping event for {}: {}", event_id, e);
@@ -1066,7 +1075,13 @@ impl VerificationController {
                                 msg.set_content("short_authentication_string".to_string(), short_authentication_string.join(","));
                             }
                             StartMethod::ReciprocateV1(content) => {
-                                let secret = serde_json::to_string(&content.secret).unwrap();
+                                let secret = match serde_json::to_string(&content.secret) {
+                                    Ok(e) => e,
+                                    Err(e) => {
+                                        error!("ReciprocateV1: couldn't convert secret to string");
+                                        return;
+                                    }
+                                };
                                 msg.set_content("secret".to_string(), secret);
                             }
                             _ => {}
@@ -1151,7 +1166,13 @@ impl VerificationController {
                             evt.sender,
                         );
                         msg.set_content("keys".to_string(), evt.content.keys.to_string());
-                        let mac = serde_json::to_string(&evt.content.mac).unwrap();
+                        let mac = match serde_json::to_string(&evt.content.mac) {
+                            Ok(e) => e,
+                            Err(e) => {
+                                error!("KeyVerificationMac: couldn't convert mac to string");
+                                return;
+                            }
+                        };
                         msg.set_content("mac".to_string(), mac);
                         if let Err(e) = me.event_tx.try_send(msg) {
                             error!("Dropping transaction for {}: {}", evt.content.transaction_id, e);

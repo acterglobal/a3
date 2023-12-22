@@ -1,7 +1,7 @@
 use acter::{
     api::RoomMessage, ruma_common::OwnedEventId, ruma_events::room::redaction::RoomRedactionEvent,
 };
-use anyhow::{bail, Result};
+use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
 use tokio::time::sleep;
@@ -28,9 +28,8 @@ async fn message_redaction() -> Result<()> {
     let stream = timeline.diff_stream();
     pin_mut!(stream);
 
-    timeline
-        .send_plain_message("Hi, everyone".to_string())
-        .await?;
+    let draft = user.text_plain_draft("Hi, everyone".to_string());
+    timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via reset action or set action
     let mut i = 30;
@@ -68,9 +67,7 @@ async fn message_redaction() -> Result<()> {
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    let Some(received) = received else {
-        bail!("Even after 30 seconds, text msg not received")
-    };
+    let received = received.context("Even after 30 seconds, text msg not received")?;
 
     let redact_id = convo
         .redact_message(
@@ -81,12 +78,10 @@ async fn message_redaction() -> Result<()> {
         .await?;
 
     let ev = convo.event(&redact_id).await?;
-    let Ok(event_content) = ev.event.deserialize_as::<RoomRedactionEvent>() else {
-        bail!("This should be m.room.redaction event")
-    };
+    let event_content = ev.event.deserialize_as::<RoomRedactionEvent>()?;
     let original = event_content
         .as_original()
-        .expect("Redaction event should get original event");
+        .context("Redaction event should get original event")?;
     assert_eq!(original.redacts, Some(received));
     assert_eq!(original.content.reason, Some("redact-test".to_string()));
 
@@ -96,8 +91,8 @@ async fn message_redaction() -> Result<()> {
 fn match_room_msg(msg: &RoomMessage, body: &str) -> Option<OwnedEventId> {
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(text_desc) = event_item.text_desc() {
-            if text_desc.body() == body {
+        if let Some(msg_content) = event_item.msg_content() {
+            if msg_content.body() == body {
                 // exclude the pending msg
                 if let Some(event_id) = event_item.evt_id() {
                     return Some(event_id);

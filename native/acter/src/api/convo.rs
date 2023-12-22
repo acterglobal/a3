@@ -15,8 +15,8 @@ use matrix_sdk_ui::{
     Timeline,
 };
 use ruma_common::{
-    serde::Raw, MxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId, OwnedUserId, RoomId,
-    UserId,
+    serde::Raw, MxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedUserId, RoomAliasId, RoomId,
+    RoomOrAliasId, ServerName, UserId,
 };
 use ruma_events::{
     receipt::{ReceiptThread, ReceiptType},
@@ -246,7 +246,26 @@ impl Convo {
                         .user_receipt(ReceiptType::Read, ReceiptThread::Main, user_id)
                         .await?
                     {
-                        let record = ReceiptRecord::new(event_id, user_id.to_owned(), receipt.ts);
+                        let record = ReceiptRecord::new(
+                            event_id,
+                            user_id.to_owned(),
+                            receipt.ts,
+                            receipt.thread,
+                            ReceiptType::Read,
+                        );
+                        records.push(record);
+                    }
+                    if let Some((event_id, receipt)) = room
+                        .user_receipt(ReceiptType::ReadPrivate, ReceiptThread::Main, user_id)
+                        .await?
+                    {
+                        let record = ReceiptRecord::new(
+                            event_id,
+                            user_id.to_owned(),
+                            receipt.ts,
+                            receipt.thread,
+                            ReceiptType::ReadPrivate,
+                        );
                         records.push(record);
                     }
                 }
@@ -363,7 +382,7 @@ impl Client {
                 }
 
                 if let Some(parent) = settings.parent {
-                    let Some(Ok(homeserver)) = client.homeserver().host_str().map(|h| h.try_into()) else {
+                    let Some(Ok(homeserver)) = client.homeserver().host_str().map(ServerName::parse) else {
                         return Err(Error::HomeserverMissesHostname)?;
                     };
                     let parent_event = InitialStateEvent::<SpaceParentEventContent> {
@@ -446,14 +465,14 @@ impl Client {
     }
 
     pub async fn convo_str(&self, room_id_or_alias: &str) -> Result<Convo> {
-        let either = OwnedRoomOrAliasId::try_from(room_id_or_alias)?;
+        let either = RoomOrAliasId::parse(room_id_or_alias)?;
         if either.is_room_id() {
-            let room_id = OwnedRoomId::try_from(either.as_str())?;
+            let room_id = RoomId::parse(either.as_str())?;
             self.convo_typed(&room_id)
                 .await
                 .context(format!("Convo {room_id} not found"))
         } else if either.is_room_alias_id() {
-            let room_alias = OwnedRoomAliasId::try_from(either.as_str())?;
+            let room_alias = RoomAliasId::parse(either.as_str())?;
             self.convo_by_alias_typed(room_alias).await
         } else {
             bail!("{room_id_or_alias} isn't a valid room id or alias...");
