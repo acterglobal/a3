@@ -1221,11 +1221,7 @@ impl SessionManager {
                 let user_id = client.user_id().context("User not found")?;
                 let device_id = client.device_id().context("Client had no device. Wat?!?")?;
                 let response = client.devices().await?;
-                let crypto_devices = client
-                    .encryption()
-                    .get_user_devices(user_id)
-                    .await
-                    .context("Couldn't get crypto devices")?;
+                let crypto_devices = client.encryption().get_user_devices(user_id).await?;
                 let mut sessions = vec![];
                 for device in response.devices {
                     let is_verified = crypto_devices.get(&device.device_id).is_some_and(|d| {
@@ -1236,8 +1232,7 @@ impl SessionManager {
                         let limit = SystemTime::now()
                             .checked_sub(Duration::from_secs(90 * 24 * 60 * 60))
                             .context("Couldn't get time of 90 days ago")?
-                            .duration_since(UNIX_EPOCH)
-                            .context("Couldn't calculate duration from Unix epoch")?;
+                            .duration_since(UNIX_EPOCH)?;
                         let secs: u64 = last_seen_ts.as_secs().into();
                         if secs < limit.as_secs() {
                             is_active = true;
@@ -1299,16 +1294,13 @@ impl SessionManager {
                 if let Some(device) = client
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
-                    .await
-                    .context("Couldn't get crypto device")?
+                    .await?
                 {
                     let is_verified = device.is_cross_signed_by_owner()
                         || device.is_verified_with_cross_signing();
                     if !is_verified {
-                        let request = device
-                            .request_verification()
-                            .await
-                            .context("Failed to request verification")?;
+                        let request = device.request_verification().await?;
+                        info!("requested verification - flow_id: {}", request.flow_id());
                     }
                 }
                 Ok(true)

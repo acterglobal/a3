@@ -235,14 +235,11 @@ impl CalendarEvent {
         let me = self.clone();
         let client = self.client.clone();
         let event_id = self.inner.event_id().to_owned();
-        let my_id = self.client.user_id().context("User not found")?;
+        let my_id = self.client.user_id()?;
 
         RUNTIME
             .spawn(async move {
-                let manager = me
-                    .rsvp_manager()
-                    .await
-                    .context("We should get rsvp manager")?;
+                let manager = me.rsvp_manager().await?;
                 manager.my_status().await
             })
             .await?

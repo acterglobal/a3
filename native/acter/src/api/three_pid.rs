@@ -89,10 +89,7 @@ impl ThreePidManager {
                         via_phone,
                     }
                 };
-                account
-                    .set_account_data(content)
-                    .await
-                    .context("Setting account data failed")?;
+                account.set_account_data(content).await?;
 
                 Ok(true)
             })
@@ -192,10 +189,7 @@ impl ThreePidManager {
                 if submit_response.status() != StatusCode::OK {
                     return Ok(false);
                 }
-                let text = submit_response
-                    .text()
-                    .await
-                    .context("Validating email failed")?;
+                let text = submit_response.text().await?;
                 let ValidateResponse { success } = serde_json::from_str(text.as_str())?;
                 if !success {
                     return Ok(false);
@@ -257,10 +251,7 @@ impl ThreePidManager {
                 let mut content = raw_content.deserialize()?;
                 if content.via_email.contains_key(email_address.as_str()) {
                     content.via_email.remove(email_address.as_str());
-                    account
-                        .set_account_data(content)
-                        .await
-                        .context("Setting account data failed")?;
+                    account.set_account_data(content).await?;
                     return Ok(true);
                 }
 
@@ -272,9 +263,7 @@ impl ThreePidManager {
 
 impl Client {
     pub fn three_pid_manager(&self) -> Result<ThreePidManager> {
-        let account = self
-            .account()
-            .context("Third party identifier needs account")?;
+        let account = self.account()?;
         Ok(ThreePidManager {
             account: account.deref().clone(),
             client: self.core.client().clone(),
