@@ -1462,23 +1462,25 @@ impl Room {
                     .as_original()
                     .expect("Couldn't get original msg");
                 if is_thumb {
-                    if !matches!(
+                    let available = matches!(
                         &original.content.msgtype,
                         MessageType::Image(_)
                             | MessageType::Video(_)
                             | MessageType::File(_)
                             | MessageType::Location(_)
-                    ) {
+                    );
+                    if !available {
                         bail!("This message type is not downloadable");
                     }
                 } else {
-                    if !matches!(
+                    let available = matches!(
                         &original.content.msgtype,
                         MessageType::Image(_)
                             | MessageType::Audio(_)
                             | MessageType::Video(_)
                             | MessageType::File(_)
-                    ) {
+                    );
+                    if !available {
                         bail!("This message type is not downloadable");
                     }
                 }
