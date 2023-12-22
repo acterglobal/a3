@@ -15,10 +15,11 @@ use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStr
 use matrix_sdk::{
     config::SyncSettings,
     event_handler::EventHandlerHandle,
-    media::{MediaFormat, MediaRequest},
+    media::{MediaFormat, MediaRequest, MediaThumbnailSize},
     room::Room as SdkRoom,
     ruma::api::client::{
         error::{ErrorBody, ErrorKind},
+        media::get_content_thumbnail,
         push::get_notifications,
         Error,
     },
@@ -49,7 +50,9 @@ use tokio::{
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
 
-use crate::{Account, Convo, Notification, OptionString, Room, Space, UserProfile, RUNTIME};
+use crate::{
+    Account, Convo, Notification, OptionString, Room, Space, ThumbnailSize, UserProfile, RUNTIME,
+};
 
 use super::{
     api::FfiBuffer, device::DeviceController, invitation::InvitationController,
@@ -375,13 +378,22 @@ impl Client {
         Ok(())
     }
 
-    pub(crate) async fn source_binary(&self, source: MediaSource) -> Result<FfiBuffer<u8>> {
+    pub(crate) async fn source_binary(
+        &self,
+        source: MediaSource,
+        thumb_size: Option<Box<ThumbnailSize>>,
+    ) -> Result<FfiBuffer<u8>> {
         // any variable in self can't be called directly in spawn
         let client = self.clone();
-        let request = MediaRequest {
-            source,
-            format: MediaFormat::File,
+        let format = match thumb_size {
+            Some(thumb_size) => MediaFormat::Thumbnail(MediaThumbnailSize {
+                method: get_content_thumbnail::v3::Method::Scale,
+                width: thumb_size.width(),
+                height: thumb_size.height(),
+            }),
+            None => MediaFormat::File,
         };
+        let request = MediaRequest { source, format };
         trace!(?request, "tasked to get source binary");
         RUNTIME
             .spawn(async move {
@@ -808,6 +820,10 @@ impl Client {
                 Ok(response.content_uri)
             })
             .await?
+    }
+
+    pub fn new_thumb_size(&self, width: u64, height: u64) -> Result<ThumbnailSize> {
+        ThumbnailSize::new(width, height)
     }
 
     pub fn user_id(&self) -> Result<OwnedUserId> {

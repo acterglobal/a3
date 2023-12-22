@@ -1610,53 +1610,6 @@ class Api {
     return tmp7;
   }
 
-  OptionBuffer? __userProfileGetThumbnailFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _userProfileGetThumbnailFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionBuffer");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = OptionBuffer._(this, tmp13_1);
-    return tmp7;
-  }
-
   OptionString? __userProfileGetDisplayNameFuturePoll(
     int boxed,
     int postCobject,
@@ -1719,53 +1672,6 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 = _roomProfileGetAvatarFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionBuffer");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = OptionBuffer._(this, tmp13_1);
-    return tmp7;
-  }
-
-  OptionBuffer? __roomProfileGetThumbnailFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _roomProfileGetThumbnailFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -4438,7 +4344,7 @@ class Api {
     return tmp7;
   }
 
-  String? __convoDownloadMediaFuturePoll(
+  OptionString? __convoDownloadMediaFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -4463,8 +4369,6 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -4480,23 +4384,10 @@ class Api {
       }
       throw tmp9_0;
     }
-    if (tmp14 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
-    List<int> tmp13_buf = [];
-    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp14; i++) {
-      int char = tmp13_precast.elementAt(i).value;
-      tmp13_buf.add(char);
-    }
-    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionString");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = OptionString._(this, tmp13_1);
     return tmp7;
   }
 
@@ -4515,100 +4406,6 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 = _convoMediaPathFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionString");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = OptionString._(this, tmp13_1);
-    return tmp7;
-  }
-
-  OptionString? __convoDownloadMediaThumbnailFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _convoDownloadMediaThumbnailFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionString");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = OptionString._(this, tmp13_1);
-    return tmp7;
-  }
-
-  OptionString? __convoMediaThumbnailPathFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _convoMediaThumbnailPathFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -12363,21 +12160,11 @@ class Api {
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
+            ffi.Uint8,
+            ffi.Int64,
           )>>("__UserProfile_get_avatar");
 
   late final _userProfileGetAvatar = _userProfileGetAvatarPtr.asFunction<
-      int Function(
-        int,
-      )>();
-  late final _userProfileGetThumbnailPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__UserProfile_get_thumbnail");
-
-  late final _userProfileGetThumbnail = _userProfileGetThumbnailPtr.asFunction<
       int Function(
         int,
         int,
@@ -12408,21 +12195,11 @@ class Api {
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
+            ffi.Uint8,
+            ffi.Int64,
           )>>("__RoomProfile_get_avatar");
 
   late final _roomProfileGetAvatar = _roomProfileGetAvatarPtr.asFunction<
-      int Function(
-        int,
-      )>();
-  late final _roomProfileGetThumbnailPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__RoomProfile_get_thumbnail");
-
-  late final _roomProfileGetThumbnail = _roomProfileGetThumbnailPtr.asFunction<
       int Function(
         int,
         int,
@@ -12739,10 +12516,14 @@ class Api {
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
+            ffi.Uint8,
+            ffi.Int64,
           )>>("__NewsSlide_source_binary");
 
   late final _newsSlideSourceBinary = _newsSlideSourceBinaryPtr.asFunction<
       int Function(
+        int,
+        int,
         int,
       )>();
   late final _newsEntrySlidesCountPtr = _lookup<
@@ -15209,10 +14990,14 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
           )>>("__Convo_media_binary");
 
   late final _convoMediaBinary = _convoMediaBinaryPtr.asFunction<
       int Function(
+        int,
+        int,
         int,
         int,
         int,
@@ -15301,6 +15086,8 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -15308,6 +15095,8 @@ class Api {
 
   late final _convoDownloadMedia = _convoDownloadMediaPtr.asFunction<
       int Function(
+        int,
+        int,
         int,
         int,
         int,
@@ -15323,49 +15112,12 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Uint8,
           )>>("__Convo_media_path");
 
   late final _convoMediaPath = _convoMediaPathPtr.asFunction<
       int Function(
         int,
-        int,
-        int,
-        int,
-      )>();
-  late final _convoDownloadMediaThumbnailPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__Convo_download_media_thumbnail");
-
-  late final _convoDownloadMediaThumbnail =
-      _convoDownloadMediaThumbnailPtr.asFunction<
-          int Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _convoMediaThumbnailPathPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__Convo_media_thumbnail_path");
-
-  late final _convoMediaThumbnailPath = _convoMediaThumbnailPathPtr.asFunction<
-      int Function(
         int,
         int,
         int,
@@ -15706,10 +15458,14 @@ class Api {
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
+            ffi.Uint8,
+            ffi.Int64,
           )>>("__Attachment_source_binary");
 
   late final _attachmentSourceBinary = _attachmentSourceBinaryPtr.asFunction<
       int Function(
+        int,
+        int,
         int,
       )>();
   late final _attachmentsManagerAttachmentsPtr = _lookup<
@@ -17422,11 +17178,15 @@ class Api {
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
+            ffi.Uint8,
+            ffi.Int64,
           )>>("__SpaceHierarchyRoomInfo_get_avatar");
 
   late final _spaceHierarchyRoomInfoGetAvatar =
       _spaceHierarchyRoomInfoGetAvatarPtr.asFunction<
           int Function(
+            int,
+            int,
             int,
           )>();
   late final _spaceHierarchyRoomInfoViaServerNamePtr = _lookup<
@@ -18614,10 +18374,14 @@ class Api {
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
+            ffi.Uint8,
+            ffi.Int64,
           )>>("__Account_avatar");
 
   late final _accountAvatar = _accountAvatarPtr.asFunction<
       int Function(
+        int,
+        int,
         int,
       )>();
   late final _accountUploadAvatarPtr = _lookup<
@@ -19726,6 +19490,20 @@ class Api {
   late final _clientUploadMedia = _clientUploadMediaPtr.asFunction<
       int Function(
         int,
+        int,
+        int,
+        int,
+      )>();
+  late final _clientNewThumbSizePtr = _lookup<
+      ffi.NativeFunction<
+          _ClientNewThumbSizeReturn Function(
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Client_new_thumb_size");
+
+  late final _clientNewThumbSize = _clientNewThumbSizePtr.asFunction<
+      _ClientNewThumbSizeReturn Function(
         int,
         int,
         int,
@@ -21409,21 +21187,6 @@ class Api {
             int,
             int,
           )>();
-  late final _userProfileGetThumbnailFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _UserProfileGetThumbnailFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__UserProfile_get_thumbnail_future_poll");
-
-  late final _userProfileGetThumbnailFuturePoll =
-      _userProfileGetThumbnailFuturePollPtr.asFunction<
-          _UserProfileGetThumbnailFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
   late final _userProfileGetDisplayNameFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _UserProfileGetDisplayNameFuturePollReturn Function(
@@ -21450,21 +21213,6 @@ class Api {
   late final _roomProfileGetAvatarFuturePoll =
       _roomProfileGetAvatarFuturePollPtr.asFunction<
           _RoomProfileGetAvatarFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _roomProfileGetThumbnailFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomProfileGetThumbnailFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__RoomProfile_get_thumbnail_future_poll");
-
-  late final _roomProfileGetThumbnailFuturePoll =
-      _roomProfileGetThumbnailFuturePollPtr.asFunction<
-          _RoomProfileGetThumbnailFuturePollReturn Function(
             int,
             int,
             int,
@@ -22328,36 +22076,6 @@ class Api {
   late final _convoMediaPathFuturePoll =
       _convoMediaPathFuturePollPtr.asFunction<
           _ConvoMediaPathFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _convoDownloadMediaThumbnailFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoDownloadMediaThumbnailFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Convo_download_media_thumbnail_future_poll");
-
-  late final _convoDownloadMediaThumbnailFuturePoll =
-      _convoDownloadMediaThumbnailFuturePollPtr.asFunction<
-          _ConvoDownloadMediaThumbnailFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _convoMediaThumbnailPathFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoMediaThumbnailPathFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Convo_media_thumbnail_path_future_poll");
-
-  late final _convoMediaThumbnailPathFuturePoll =
-      _convoMediaThumbnailPathFuturePollPtr.asFunction<
-          _ConvoMediaThumbnailPathFuturePollReturn Function(
             int,
             int,
             int,
@@ -26879,45 +26597,31 @@ class UserProfile {
   }
 
   /// get the binary data of avatar
-  Future<OptionBuffer> getAvatar() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._userProfileGetAvatar(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__UserProfile_get_avatar_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__userProfileGetAvatarFuturePoll);
-    return tmp2;
-  }
-
-  /// get the binary data of thumbnail
-  Future<OptionBuffer> getThumbnail(
-    int width,
-    int height,
+  Future<OptionBuffer> getAvatar(
+    ThumbnailSize? thumbSize,
   ) {
-    final tmp1 = width;
-    final tmp3 = height;
+    final tmp1 = thumbSize;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp4 = 0;
     tmp0 = _box.borrow();
-    tmp2 = tmp1;
-    tmp4 = tmp3;
-    final tmp5 = _api._userProfileGetThumbnail(
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      tmp4 = tmp3._box.move();
+    }
+    final tmp5 = _api._userProfileGetAvatar(
       tmp0,
       tmp2,
       tmp4,
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 =
-        _Box(_api, tmp7_0, "__UserProfile_get_thumbnail_future_drop");
+    final tmp7_1 = _Box(_api, tmp7_0, "__UserProfile_get_avatar_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 =
-        _nativeFuture(tmp7_1, _api.__userProfileGetThumbnailFuturePoll);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__userProfileGetAvatarFuturePoll);
     return tmp6;
   }
 
@@ -26979,45 +26683,31 @@ class RoomProfile {
   }
 
   /// get the binary data of avatar
-  Future<OptionBuffer> getAvatar() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._roomProfileGetAvatar(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__RoomProfile_get_avatar_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__roomProfileGetAvatarFuturePoll);
-    return tmp2;
-  }
-
-  /// get the binary data of thumbnail
-  Future<OptionBuffer> getThumbnail(
-    int width,
-    int height,
+  Future<OptionBuffer> getAvatar(
+    ThumbnailSize? thumbSize,
   ) {
-    final tmp1 = width;
-    final tmp3 = height;
+    final tmp1 = thumbSize;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp4 = 0;
     tmp0 = _box.borrow();
-    tmp2 = tmp1;
-    tmp4 = tmp3;
-    final tmp5 = _api._roomProfileGetThumbnail(
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      tmp4 = tmp3._box.move();
+    }
+    final tmp5 = _api._roomProfileGetAvatar(
       tmp0,
       tmp2,
       tmp4,
     );
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 =
-        _Box(_api, tmp7_0, "__RoomProfile_get_thumbnail_future_drop");
+    final tmp7_1 = _Box(_api, tmp7_0, "__RoomProfile_get_avatar_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 =
-        _nativeFuture(tmp7_1, _api.__roomProfileGetThumbnailFuturePoll);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__roomProfileGetAvatarFuturePoll);
     return tmp6;
   }
 
@@ -27531,6 +27221,18 @@ class ThumbnailInfo {
   }
 }
 
+class ThumbnailSize {
+  final Api _api;
+  final _Box _box;
+
+  ThumbnailSize._(this._api, this._box);
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class DeviceId {
   final Api _api;
   final _Box _box;
@@ -27847,18 +27549,32 @@ class NewsSlide {
   }
 
   /// if this is a media, hand over the data
-  Future<FfiBufferUint8> sourceBinary() {
+  Future<FfiBufferUint8> sourceBinary(
+    ThumbnailSize? thumbSize,
+  ) {
+    final tmp1 = thumbSize;
     var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._newsSlideSourceBinary(
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      tmp4 = tmp3._box.move();
+    }
+    final tmp5 = _api._newsSlideSourceBinary(
       tmp0,
+      tmp2,
+      tmp4,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__NewsSlide_source_binary_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__newsSlideSourceBinaryFuturePoll);
-    return tmp2;
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__NewsSlide_source_binary_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__newsSlideSourceBinaryFuturePoll);
+    return tmp6;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -32942,12 +32658,16 @@ class Convo {
   /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
   Future<FfiBufferUint8> mediaBinary(
     String eventId,
+    ThumbnailSize? thumbSize,
   ) {
     final tmp1 = eventId;
+    final tmp5 = thumbSize;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -32957,18 +32677,27 @@ class Convo {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._convoMediaBinary(
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      tmp8 = tmp7._box.move();
+    }
+    final tmp9 = _api._convoMediaBinary(
       tmp0,
       tmp2,
       tmp3,
       tmp4,
+      tmp6,
+      tmp8,
     );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_media_binary_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__convoMediaBinaryFuturePoll);
-    return tmp6;
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "__Convo_media_binary_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(tmp11_1, _api.__convoMediaBinaryFuturePoll);
+    return tmp10;
   }
 
   /// get the user status on this room
@@ -33106,20 +32835,24 @@ class Convo {
     return tmp2;
   }
 
-  /// download media (image/audio/video/file) to specified path
-  Future<String> downloadMedia(
+  /// download media (image/audio/video/file/location) to specified path
+  Future<OptionString> downloadMedia(
     String eventId,
+    ThumbnailSize? thumbSize,
     String dirPath,
   ) {
     final tmp1 = eventId;
-    final tmp5 = dirPath;
+    final tmp5 = thumbSize;
+    final tmp9 = dirPath;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp4 = 0;
     var tmp6 = 0;
-    var tmp7 = 0;
     var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -33129,78 +32862,53 @@ class Convo {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      tmp8 = tmp7._box.move();
+    }
+    final tmp9_0 = utf8.encode(tmp9);
+    tmp11 = tmp9_0.length;
 
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    final tmp9 = _api._convoDownloadMedia(
+    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+    tmp10_1.setAll(0, tmp9_0);
+    tmp10 = tmp10_0.address;
+    tmp12 = tmp11;
+    final tmp13 = _api._convoDownloadMedia(
       tmp0,
       tmp2,
       tmp3,
       tmp4,
       tmp6,
-      tmp7,
       tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
     );
-    final tmp11 = tmp9;
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "__Convo_download_media_future_drop");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = _nativeFuture(tmp11_1, _api.__convoDownloadMediaFuturePoll);
-    return tmp10;
+    final tmp15 = tmp13;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(_api, tmp15_0, "__Convo_download_media_future_drop");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp14 = _nativeFuture(tmp15_1, _api.__convoDownloadMediaFuturePoll);
+    return tmp14;
   }
 
   /// get the path that media (image/audio/video/file) was saved
   /// return None when never downloaded
   Future<OptionString> mediaPath(
     String eventId,
+    bool isThumb,
   ) {
     final tmp1 = eventId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._convoMediaPath(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_media_path_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__convoMediaPathFuturePoll);
-    return tmp6;
-  }
-
-  /// download media (image/video/file/location) thumbnail to specified path
-  Future<OptionString> downloadMediaThumbnail(
-    String eventId,
-    String dirPath,
-  ) {
-    final tmp1 = eventId;
-    final tmp5 = dirPath;
+    final tmp5 = isThumb;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp4 = 0;
     var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -33210,66 +32918,20 @@ class Convo {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    final tmp9 = _api._convoDownloadMediaThumbnail(
+    tmp6 = tmp5 ? 1 : 0;
+    final tmp7 = _api._convoMediaPath(
       tmp0,
       tmp2,
       tmp3,
       tmp4,
       tmp6,
-      tmp7,
-      tmp8,
     );
-    final tmp11 = tmp9;
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 =
-        _Box(_api, tmp11_0, "__Convo_download_media_thumbnail_future_drop");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 =
-        _nativeFuture(tmp11_1, _api.__convoDownloadMediaThumbnailFuturePoll);
-    return tmp10;
-  }
-
-  /// get the path that media (image/video/file/location) thumbnail was saved
-  /// return None when never downloaded
-  Future<OptionString> mediaThumbnailPath(
-    String eventId,
-  ) {
-    final tmp1 = eventId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._convoMediaThumbnailPath(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 =
-        _Box(_api, tmp7_0, "__Convo_media_thumbnail_path_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 =
-        _nativeFuture(tmp7_1, _api.__convoMediaThumbnailPathFuturePoll);
-    return tmp6;
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0, "__Convo_media_path_future_drop");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = _nativeFuture(tmp9_1, _api.__convoMediaPathFuturePoll);
+    return tmp8;
   }
 
   /// initially called to get receipt status of room members
@@ -33955,18 +33617,32 @@ class Attachment {
   }
 
   /// if this is a media, hand over the data
-  Future<FfiBufferUint8> sourceBinary() {
+  Future<FfiBufferUint8> sourceBinary(
+    ThumbnailSize? thumbSize,
+  ) {
+    final tmp1 = thumbSize;
     var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._attachmentSourceBinary(
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      tmp4 = tmp3._box.move();
+    }
+    final tmp5 = _api._attachmentSourceBinary(
       tmp0,
+      tmp2,
+      tmp4,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Attachment_source_binary_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__attachmentSourceBinaryFuturePoll);
-    return tmp2;
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Attachment_source_binary_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__attachmentSourceBinaryFuturePoll);
+    return tmp6;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -36723,20 +36399,34 @@ class SpaceHierarchyRoomInfo {
   }
 
   /// get the binary data of avatar
-  Future<OptionBuffer> getAvatar() {
+  Future<OptionBuffer> getAvatar(
+    ThumbnailSize? thumbSize,
+  ) {
+    final tmp1 = thumbSize;
     var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._spaceHierarchyRoomInfoGetAvatar(
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      tmp4 = tmp3._box.move();
+    }
+    final tmp5 = _api._spaceHierarchyRoomInfoGetAvatar(
       tmp0,
+      tmp2,
+      tmp4,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__SpaceHierarchyRoomInfo_get_avatar_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__spaceHierarchyRoomInfoGetAvatarFuturePoll);
-    return tmp2;
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__SpaceHierarchyRoomInfo_get_avatar_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__spaceHierarchyRoomInfoGetAvatarFuturePoll);
+    return tmp6;
   }
 
   String? viaServerName() {
@@ -39121,18 +38811,32 @@ class Account {
   }
 
   /// The avatar of the client
-  Future<OptionBuffer> avatar() {
+  Future<OptionBuffer> avatar(
+    ThumbnailSize? thumbSize,
+  ) {
+    final tmp1 = thumbSize;
     var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._accountAvatar(
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      tmp4 = tmp3._box.move();
+    }
+    final tmp5 = _api._accountAvatar(
       tmp0,
+      tmp2,
+      tmp4,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Account_avatar_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__accountAvatarFuturePoll);
-    return tmp2;
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Account_avatar_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__accountAvatarFuturePoll);
+    return tmp6;
   }
 
   /// Change the avatar of the account with the provided
@@ -41489,6 +41193,48 @@ class Client {
     final tmp7_1 = _Box(_api, tmp7_0, "__Client_upload_media_future_drop");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__clientUploadMediaFuturePoll);
+    return tmp6;
+  }
+
+  /// create size object to be used for thumbnail download
+  ThumbnailSize newThumbSize(
+    int width,
+    int height,
+  ) {
+    final tmp1 = width;
+    final tmp3 = height;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    tmp4 = tmp3;
+    final tmp5 = _api._clientNewThumbSize(
+      tmp0,
+      tmp2,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 =
+          utf8.decode(tmp8_0.asTypedList(tmp9), allowMalformed: true);
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_ThumbnailSize");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = ThumbnailSize._(_api, tmp11_1);
     return tmp6;
   }
 
@@ -47022,6 +46768,19 @@ class _ClientGetUserProfileReturn extends ffi.Struct {
   external int arg4;
 }
 
+class _ClientNewThumbSizeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
 class _ClientVerificationEventRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -47269,21 +47028,6 @@ class _UserProfileGetAvatarFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _UserProfileGetThumbnailFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
 class _UserProfileGetDisplayNameFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -47300,21 +47044,6 @@ class _UserProfileGetDisplayNameFuturePollReturn extends ffi.Struct {
 }
 
 class _RoomProfileGetAvatarFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _RoomProfileGetThumbnailFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -48194,43 +47923,9 @@ class _ConvoDownloadMediaFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
 }
 
 class _ConvoMediaPathFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _ConvoDownloadMediaThumbnailFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _ConvoMediaThumbnailPathFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

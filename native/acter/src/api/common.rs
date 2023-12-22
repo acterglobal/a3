@@ -1,5 +1,7 @@
 use acter_core::events::attachments::AttachmentContent;
+use anyhow::{Context, Result};
 use core::time::Duration;
+use matrix_sdk::ruma::UInt;
 use ruma_common::{MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri, OwnedUserId};
 use ruma_events::{
     location::{AssetContent, LocationContent},
@@ -518,5 +520,27 @@ impl DeviceRecord {
 
     pub fn is_active(&self) -> bool {
         self.is_active
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct ThumbnailSize {
+    width: UInt,
+    height: UInt,
+}
+
+impl ThumbnailSize {
+    pub(crate) fn new(width: u64, height: u64) -> Result<Self> {
+        let width = UInt::new(width).context("invalid thumbnail width")?;
+        let height = UInt::new(height).context("invalid thumbnail height")?;
+        Ok(ThumbnailSize { width, height })
+    }
+
+    pub(crate) fn width(&self) -> UInt {
+        self.width
+    }
+
+    pub(crate) fn height(&self) -> UInt {
+        self.height
     }
 }

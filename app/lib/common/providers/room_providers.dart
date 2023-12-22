@@ -42,7 +42,7 @@ final roomProfileDataProvider =
 
   final profile = room.getProfile();
   OptionString displayName = await profile.getDisplayName();
-  final avatar = await profile.getAvatar();
+  final avatar = await profile.getAvatar(null);
   return ProfileData(displayName.text(), avatar.data());
 });
 

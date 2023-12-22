@@ -1,11 +1,15 @@
 use anyhow::{bail, Context, Result};
-use matrix_sdk::{media::MediaFormat, Account as SdkAccount};
+use matrix_sdk::{
+    media::{MediaFormat, MediaThumbnailSize},
+    ruma::api::client::media::get_content_thumbnail,
+    Account as SdkAccount,
+};
 use ruma_common::{OwnedMxcUri, OwnedUserId};
 use ruma_events::ignored_user_list::IgnoredUserListEventContent;
 use std::{ops::Deref, path::PathBuf, str::FromStr};
 
 use super::{
-    common::{OptionBuffer, OptionString},
+    common::{OptionBuffer, OptionString, ThumbnailSize},
     RUNTIME,
 };
 
@@ -56,11 +60,19 @@ impl Account {
             .await?
     }
 
-    pub async fn avatar(&self) -> Result<OptionBuffer> {
+    pub async fn avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
         let account = self.account.clone();
         RUNTIME
             .spawn(async move {
-                let buf = account.get_avatar(MediaFormat::File).await?;
+                let format = match thumb_size {
+                    Some(thumb_size) => MediaFormat::Thumbnail(MediaThumbnailSize {
+                        method: get_content_thumbnail::v3::Method::Scale,
+                        width: thumb_size.width(),
+                        height: thumb_size.height(),
+                    }),
+                    None => MediaFormat::File,
+                };
+                let buf = account.get_avatar(format).await?;
                 Ok(OptionBuffer::new(buf))
             })
             .await?

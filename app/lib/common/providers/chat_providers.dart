@@ -30,7 +30,9 @@ final chatProfileDataProvider =
   if (!profile.hasAvatar()) {
     return ProfileData(displayName.text(), null, isDm: isDm);
   }
-  final avatar = await profile.getThumbnail(48, 48);
+  final client = ref.watch(alwaysClientProvider);
+  final size = client.newThumbSize(48, 48);
+  final avatar = await profile.getAvatar(size);
   return ProfileData(displayName.text(), avatar.data(), isDm: isDm);
 });
 
@@ -114,7 +116,9 @@ final memberProfileProvider =
     FutureProvider.family<ProfileData, Member>((ref, member) async {
   UserProfile profile = member.getProfile();
   OptionString displayName = await profile.getDisplayName();
-  final avatar = await profile.getThumbnail(62, 60);
+  final client = ref.watch(alwaysClientProvider);
+  final size = client.newThumbSize(62, 60);
+  final avatar = await profile.getAvatar(size);
   return ProfileData(displayName.text(), avatar.data());
 });
 
@@ -139,7 +143,7 @@ final imageFileFromMessageIdProvider =
     if (convo != null) {
       // If image file is not available on local store then save it
       var buf = await convo
-          .mediaBinary(messageId)
+          .mediaBinary(messageId, null)
           .then((value) => value.asTypedList());
       AsyncValue<Uint8List> imageData = AsyncValue.data(buf);
       if (imageData.asData != null) {
@@ -165,7 +169,7 @@ final videoFileFromMessageIdProvider =
     if (convo != null) {
       // If video file is not available on local store then save it
       var buf = await convo
-          .mediaBinary(messageId)
+          .mediaBinary(messageId, null)
           .then((value) => value.asTypedList());
       AsyncValue<Uint8List> videoData = AsyncValue.data(buf);
       if (videoData.asData != null) {

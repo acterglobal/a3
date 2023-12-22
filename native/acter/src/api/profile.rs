@@ -2,17 +2,14 @@ use anyhow::{bail, Context, Result};
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest, MediaThumbnailSize},
     room::RoomMember,
-    ruma::{
-        api::client::{media::get_content_thumbnail, user_directory::search_users},
-        UInt,
-    },
+    ruma::api::client::{media::get_content_thumbnail, user_directory::search_users},
     Account, Client, DisplayName,
 };
 use ruma_common::{OwnedRoomId, OwnedUserId};
 use ruma_events::room::MediaSource;
 
 use super::{
-    common::{OptionBuffer, OptionString},
+    common::{OptionBuffer, OptionString, ThumbnailSize},
     RUNTIME,
 };
 
@@ -101,11 +98,19 @@ impl UserProfile {
         Ok(false)
     }
 
-    pub async fn get_avatar(&self) -> Result<OptionBuffer> {
+    pub async fn get_avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
+        let format = match thumb_size {
+            Some(thumb_size) => MediaFormat::Thumbnail(MediaThumbnailSize {
+                method: get_content_thumbnail::v3::Method::Scale,
+                width: thumb_size.width(),
+                height: thumb_size.height(),
+            }),
+            None => MediaFormat::File,
+        };
         if let Some(account) = self.account.clone() {
             return RUNTIME
                 .spawn(async move {
-                    let buf = account.get_avatar(MediaFormat::File).await?;
+                    let buf = account.get_avatar(format).await?;
                     Ok(OptionBuffer::new(buf))
                 })
                 .await?;
@@ -113,7 +118,7 @@ impl UserProfile {
         if let Some(member) = self.member.clone() {
             return RUNTIME
                 .spawn(async move {
-                    let buf = member.avatar(MediaFormat::File).await?;
+                    let buf = member.avatar(format).await?;
                     Ok(OptionBuffer::new(buf))
                 })
                 .await?;
@@ -122,43 +127,7 @@ impl UserProfile {
         if let Some(public_profile) = self.public_profile.clone() {
             return RUNTIME
                 .spawn(async move {
-                    let buf = public_profile.avatar(MediaFormat::File).await?;
-                    Ok(OptionBuffer::new(buf))
-                })
-                .await?;
-        }
-        Ok(OptionBuffer::new(None))
-    }
-
-    pub async fn get_thumbnail(&self, width: u64, height: u64) -> Result<OptionBuffer> {
-        let Some(width) = UInt::new(width) else {
-            bail!("Invalid width when getting user thumbnail")
-        };
-        let Some(height) = UInt::new(height) else {
-            bail!("Invalid height when getting user thumbnail")
-        };
-        if let Some(account) = self.account.clone() {
-            return RUNTIME
-                .spawn(async move {
-                    let size = MediaThumbnailSize {
-                        method: get_content_thumbnail::v3::Method::Scale,
-                        width,
-                        height,
-                    };
-                    let buf = account.get_avatar(MediaFormat::Thumbnail(size)).await?;
-                    Ok(OptionBuffer::new(buf))
-                })
-                .await?;
-        }
-        if let Some(member) = self.member.clone() {
-            return RUNTIME
-                .spawn(async move {
-                    let size = MediaThumbnailSize {
-                        method: get_content_thumbnail::v3::Method::Scale,
-                        width,
-                        height,
-                    };
-                    let buf = member.avatar(MediaFormat::Thumbnail(size)).await?;
+                    let buf = public_profile.avatar(format).await?;
                     Ok(OptionBuffer::new(buf))
                 })
                 .await?;
@@ -206,38 +175,22 @@ impl RoomProfile {
         Ok(room.avatar_url().is_some())
     }
 
-    pub async fn get_avatar(&self) -> Result<OptionBuffer> {
+    pub async fn get_avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
         let room = self
             .client
             .get_room(&self.room_id)
             .context("Room not found")?;
+        let format = match thumb_size {
+            Some(thumb_size) => MediaFormat::Thumbnail(MediaThumbnailSize {
+                method: get_content_thumbnail::v3::Method::Scale,
+                width: thumb_size.width(),
+                height: thumb_size.height(),
+            }),
+            None => MediaFormat::File,
+        };
         RUNTIME
             .spawn(async move {
-                let buf = room.avatar(MediaFormat::File).await?;
-                Ok(OptionBuffer::new(buf))
-            })
-            .await?
-    }
-
-    pub async fn get_thumbnail(&self, width: u64, height: u64) -> Result<OptionBuffer> {
-        let Some(width) = UInt::new(width) else {
-            bail!("Invalid width when getting room thumbnail")
-        };
-        let Some(height) = UInt::new(height) else {
-            bail!("Invalid height when getting room thumbnail")
-        };
-        let room = self
-            .client
-            .get_room(&self.room_id)
-            .context("Room not found")?;
-        RUNTIME
-            .spawn(async move {
-                let size = MediaThumbnailSize {
-                    method: get_content_thumbnail::v3::Method::Scale,
-                    width,
-                    height,
-                };
-                let buf = room.avatar(MediaFormat::Thumbnail(size)).await?;
+                let buf = room.avatar(format).await?;
                 Ok(OptionBuffer::new(buf))
             })
             .await?
