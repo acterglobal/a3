@@ -18,6 +18,7 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
   }
 
   void _init() async {
+    // FIXME: Remove currentConvoProvider - https://github.com/acterglobal/a3/issues/1244
     _convo = await ref.read(currentConvoProvider.future);
     if (_convo != null) {
       state = state.copyWith(
