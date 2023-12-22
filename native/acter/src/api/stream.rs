@@ -290,7 +290,7 @@ impl TimelineStream {
                     .item_by_event_id(&event_id)
                     .await
                     .context("Not found which item would be replied to")?;
-                let content = draft.into_replied_content(client, room, event_id).await?;
+                let content = draft.into_replied_content(client, room).await?;
                 timeline
                     .send_reply(content, &reply_item, ForwardThread::Yes)
                     .await?;
@@ -878,7 +878,6 @@ impl MsgContentDraft {
         self, // into_* fn takes self by value not reference
         client: SdkClient,
         room: Room,
-        event_id: OwnedEventId,
     ) -> Result<RoomMessageEventContentWithoutRelation> {
         match self {
             MsgContentDraft::TextPlain { body } => {

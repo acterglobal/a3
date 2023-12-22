@@ -1043,7 +1043,7 @@ object Convo {
 
     /// redact an event from this room
     /// reason - The reason for the event being reported (optional).
-    fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<bool>>;
+    fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
 
     fn is_joined() -> bool;
 }
@@ -1738,7 +1738,7 @@ object Space {
 
     /// redact an event from this room
     /// reason - The reason for the event being reported (optional).
-    fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<bool>>;
+    fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
 }
 
 enum MembershipStatus {
@@ -2202,6 +2202,9 @@ object Client {
 
     /// Fetch the calendar event or use its event_id to wait for it to come down the wire
     fn wait_for_calendar_event(key: string, timeout: Option<EfkDuration>) -> Future<Result<CalendarEvent>>;
+
+    /// Fetch the RSVP or use its event_id to wait for it to come down the wire
+    fn wait_for_rsvp(key: string, timeout: Option<EfkDuration>) -> Future<Result<Rsvp>>;
 
     /// list the currently queued notifications
     fn list_notifications(since: Option<string>, only: Option<string>) -> Future<Result<NotificationListResult>>;
