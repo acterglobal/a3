@@ -305,6 +305,10 @@ impl TaskList {
         self.content.sort_order
     }
 
+    pub fn event_id_str(&self) -> String {
+        self.content.event_id().to_string()
+    }
+
     pub fn time_zone(&self) -> Option<String> {
         self.content.time_zone.as_ref().map(ToString::to_string)
     }

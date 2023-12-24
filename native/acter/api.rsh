@@ -1347,6 +1347,9 @@ object TaskList {
     /// the name of this task list
     fn name() -> string;
 
+    /// the event_id of this task list
+    fn event_id_str() -> string;
+
     /// the description of this task list
     fn description() -> Option<MsgContent>;
 

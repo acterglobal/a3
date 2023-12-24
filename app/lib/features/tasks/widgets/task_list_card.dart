@@ -1,3 +1,5 @@
+import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/tasks/providers/tasks.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -7,12 +9,20 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class TaskListCard extends ConsumerStatefulWidget {
   final TaskList taskList;
   final bool showSpace;
-  const TaskListCard({Key? key, required this.taskList, this.showSpace = true})
-      : super(key: key);
+  final bool showTitle;
+  final bool showDescription;
+  const TaskListCard({
+    Key? key,
+    required this.taskList,
+    this.showSpace = true,
+    this.showTitle = true,
+    this.showDescription = false,
+  }) : super(key: key);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _TaskListCardState();
@@ -23,33 +33,68 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
   @override
   Widget build(BuildContext context) {
     final taskList = widget.taskList;
+    final tlId = taskList.eventIdStr();
 
     final tasks = ref.watch(tasksProvider(taskList));
     final spaceId = taskList.spaceIdStr();
 
+    final List<Widget> body = [];
+    if (widget.showTitle) {
+      body.add(
+        ListTile(
+          title: InkWell(
+            onTap: () => context.pushNamed(
+              Routes.taskList.name,
+              pathParameters: {'taskListId': tlId},
+            ),
+            child: Text(
+              key: Key('task-list-title-$tlId'),
+              taskList.name(),
+            ),
+          ),
+          subtitle: widget.showSpace
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    children: [
+                      SpaceChip(spaceId: spaceId),
+                    ],
+                  ),
+                )
+              : null,
+        ),
+      );
+    } else if (widget.showSpace) {
+      body.add(
+        ListTile(title: SpaceChip(spaceId: spaceId)),
+      );
+    }
+
+    if (widget.showDescription) {
+      final desc = taskList.description();
+      if (desc != null) {
+        final formattedBody = desc.formattedBody();
+        if (formattedBody != null && formattedBody.isNotEmpty) {
+          body.add(RenderHtml(text: formattedBody));
+        } else {
+          final str = desc.body();
+          if (str.isNotEmpty) {
+            body.add(Text(str));
+          }
+        }
+      }
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       child: Card(
+        key: Key('task-list-card-$tlId'),
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Column(
             children: [
-              ListTile(
-                title: Text(
-                  taskList.name(),
-                ),
-                subtitle: widget.showSpace
-                    ? Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Wrap(
-                          alignment: WrapAlignment.start,
-                          children: [
-                            SpaceChip(spaceId: spaceId),
-                          ],
-                        ),
-                      )
-                    : null,
-              ),
+              ...body,
               tasks.when(
                 data: (overview) {
                   List<Widget> children = [];
