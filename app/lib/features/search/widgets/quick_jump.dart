@@ -112,6 +112,7 @@ class QuickJump extends ConsumerWidget {
                 : null,
             isActive(LabsFeature.tasks)
                 ? IconButton(
+                    key: QuickJumpKeys.tasks,
                     style: IconButton.styleFrom(
                       side: BorderSide(
                         color: Theme.of(context)

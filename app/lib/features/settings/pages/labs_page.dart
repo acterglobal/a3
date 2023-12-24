@@ -1,4 +1,3 @@
-
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
@@ -10,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 
 class SettingsLabsPage extends ConsumerWidget {
+  static Key tasksLabSwitch = const Key('settings-labs-tasks-toggle');
+
   const SettingsLabsPage({super.key});
 
   @override
@@ -49,10 +50,11 @@ class SettingsLabsPage extends ConsumerWidget {
                       updateFeatureState(ref, LabsFeature.events, newVal),
                 ),
                 SettingsTile.switchTile(
+                  key: tasksLabSwitch,
                   title: const Text('Tasks'),
                   description:
                       const Text('Manage Tasks lists and ToDos together'),
-                  initialValue: false,
+                  initialValue: ref.watch(isActiveProvider(LabsFeature.tasks)),
                   onToggle: (newVal) =>
                       updateFeatureState(ref, LabsFeature.tasks, newVal),
                 ),

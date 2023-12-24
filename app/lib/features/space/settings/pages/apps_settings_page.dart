@@ -53,6 +53,7 @@ final spaceAppSettingsProvider = FutureProvider.autoDispose
 });
 
 class SpaceAppsSettingsPage extends ConsumerWidget {
+  static const tasksSwitch = Key('space-settings-tasks');
   final String spaceId;
   const SpaceAppsSettingsPage({Key? key, required this.spaceId})
       : super(key: key);
@@ -265,6 +266,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
             labActions.add(
               SettingsTile.switchTile(
                 title: const Text('Tasks'),
+                key: tasksSwitch,
                 enabled: canEdit,
                 description: const Text(
                   'ToDo-Lists & Tasks',

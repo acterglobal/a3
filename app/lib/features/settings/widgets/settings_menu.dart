@@ -16,6 +16,7 @@ class SettingsMenu extends ConsumerWidget {
   static Key deactivateAccount = const Key('settings-auth-deactivate-account');
   static Key logoutAccount = const Key('settings-auth-logout-account');
   static Key superInvitations = const Key('settings-super-invitations');
+  static Key labs = const Key('settings-labs');
 
   const SettingsMenu({super.key = defaultSettingsMenuKey});
 
@@ -156,6 +157,7 @@ class SettingsMenu extends ConsumerWidget {
             title: const Text('Acter App'),
             tiles: <SettingsTile>[
               SettingsTile.navigation(
+                key: labs,
                 title: Text(
                   'Labs',
                   style: titleStylesSelected(Routes.settingsLabs),
