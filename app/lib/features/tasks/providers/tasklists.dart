@@ -19,7 +19,6 @@ class AsyncTaskListsNotifier extends AsyncNotifier<List<TaskList>> {
     final retState = _refresh(client);
     subscriber = client.subscribeStream('tasks');
     subscriber.forEach((element) async {
-      state = const AsyncValue.loading();
       state = await AsyncValue.guard(() async {
         return await _refresh(client);
       });

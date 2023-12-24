@@ -137,6 +137,7 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                           vertical: 8,
                         ),
                         child: OutlinedButton(
+                          key: Key('task-list-$tlId-add-task-inline'),
                           onPressed: () =>
                               {setState(() => showInlineAddTask = true)},
                           child: const Text('Add Task'),
@@ -180,16 +181,32 @@ class _InlineTaskAdd extends StatefulWidget {
 class _InlineTaskAddState extends State<_InlineTaskAdd> {
   final _formKey = GlobalKey<FormState>();
   final _textCtrl = TextEditingController();
+  late FocusNode focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    focusNode = FocusNode();
+    focusNode.requestFocus();
+  }
+
+  @override
+  void dispose() {
+    focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final tlId = widget.taskList.eventIdStr();
     return Form(
       key: _formKey,
       child: Row(
         children: [
           Expanded(
             child: TextFormField(
-              autofocus: true,
+              key: Key('task-list-$tlId-add-task-inline-txt'),
+              focusNode: focusNode,
               controller: _textCtrl,
               decoration: const InputDecoration(
                 icon: Icon(Atlas.plus_circle_thin),
@@ -211,6 +228,7 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
             ),
           ),
           IconButton(
+            key: Key('task-list-$tlId-add-task-inline-cancel'),
             onPressed: widget.cancel,
             icon: const Icon(
               Atlas.xmark_circle_thin,
@@ -233,5 +251,6 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
       return;
     }
     _textCtrl.text = '';
+    focusNode.requestFocus();
   }
 }

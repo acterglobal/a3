@@ -5,7 +5,9 @@ import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
 import 'package:acter/features/tasks/dialogs/create_task_list_sheet.dart';
+import 'package:acter/features/tasks/pages/task_list_page.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../support/setup.dart';
 import '../support/spaces.dart';
@@ -32,6 +34,51 @@ extension ActerTasks on ConvenientTest {
       }
     }
   }
+
+  Future<String?> createTaskList(
+    String title, {
+    String? description,
+    List<String>? tasks,
+  }) async {
+    final params = {
+      CreateTaskListSheet.titleKey: title,
+    };
+    if (description != null) {
+      params[CreateTaskListSheet.descKey] = description;
+    }
+    await fillForm(
+      params,
+      // we are coming from space, we don't need to select it.
+      submitBtnKey: CreateTaskListSheet.submitKey,
+    );
+
+    final taskListPage = find.byKey(TaskListPage.pageKey);
+    await taskListPage.should(findsOneWidget);
+    // // read the actual spaceId
+    final page = taskListPage.evaluate().first.widget as TaskListPage;
+    final taskListId = page.taskListId;
+    final inlineAddBtn =
+        find.byKey(Key('task-list-$taskListId-add-task-inline'));
+    await inlineAddBtn.should(findsOneWidget);
+    if (tasks != null) {
+      await inlineAddBtn.tap(); // activate inline add
+      final inlineAddTxt =
+          find.byKey(Key('task-list-$taskListId-add-task-inline-txt'));
+      for (final taskTitle in tasks) {
+        await inlineAddTxt.should(findsOneWidget);
+        await inlineAddTxt.enterTextWithoutReplace(taskTitle);
+        await tester.testTextInput
+            .receiveAction(TextInputAction.done); // submit
+        await find.text(taskTitle).should(findsOneWidget);
+      }
+      // close inline add
+      final cancelInlineAdd =
+          find.byKey(Key('task-list-$taskListId-add-task-inline-cancel'));
+      await cancelInlineAdd.should(findsOneWidget);
+      await cancelInlineAdd.tap();
+    }
+    return taskListId;
+  }
 }
 
 void tasksTests() {
@@ -42,7 +89,7 @@ void tasksTests() {
     await t.navigateTo([TabEntry.tasks]); // this worked now
   });
 
-  acterTestWidget('New TaskList via Space', (t) async {
+  acterTestWidget('New TaskList & tasks via Space', (t) async {
     final spaceId = await t.freshAccountWithSpace(
       spaceDisplayName: 'Task list via Space Test',
     );
@@ -52,19 +99,20 @@ void tasksTests() {
       SpaceTasksPage.createTaskKey,
     ]);
 
-    await t.fillForm(
-      {
-        CreateTaskListSheet.titleKey: 'My first task list',
-        CreateTaskListSheet.descKey:
-            'These are the most important things to do',
-      },
-      // we are coming from space, we don't need to select it.
-      submitBtnKey: CreateTaskListSheet.submitKey,
+    await t.createTaskList(
+      'Errands',
+      description: 'These are the most important things to do',
+      tasks: [
+        'Buy milk',
+        'Pickup dogs med',
+      ],
     );
 
     //
     await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
     // we see our entry now
-    await find.text('My first task list').should(findsOneWidget);
+    await find.text('Errands').should(findsOneWidget);
+    await find.text('Buy milk').should(findsOneWidget);
+    await find.text('Pickup dogs med').should(findsOneWidget);
   });
 }
