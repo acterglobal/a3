@@ -11,6 +11,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:go_router/go_router.dart';
 
 class SpaceTasksPage extends ConsumerWidget {
+  static const createTaskKey = Key('space-create-task');
   final String spaceIdOrAlias;
   const SpaceTasksPage({super.key, required this.spaceIdOrAlias});
 
@@ -34,6 +35,7 @@ class SpaceTasksPage extends ConsumerWidget {
                     ),
                   ),
                   IconButton(
+                    key: createTaskKey,
                     icon: Icon(
                       Atlas.plus_circle_thin,
                       color: Theme.of(context).colorScheme.neutral5,
@@ -41,7 +43,7 @@ class SpaceTasksPage extends ConsumerWidget {
                     iconSize: 28,
                     color: Theme.of(context).colorScheme.surface,
                     onPressed: () => context.pushNamed(
-                      Routes.actionAddPin.name,
+                      Routes.actionAddTaskList.name,
                       queryParameters: {'spaceId': spaceIdOrAlias},
                     ),
                   ),

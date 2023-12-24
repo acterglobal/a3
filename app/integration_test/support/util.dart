@@ -11,4 +11,19 @@ extension ActerUtil on ConvenientTest {
       await nextKey.tap();
     }
   }
+
+  Future<void> fillForm(Map<Key, String> fields, {Key? submitBtnKey}) async {
+    for (final entry in fields.entries) {
+      final textField = find.byKey(entry.key);
+      await tester.ensureVisible(textField);
+      await textField.should(findsOneWidget);
+      await textField.enterTextWithoutReplace(entry.value);
+    }
+    if (submitBtnKey != null) {
+      final submit = find.byKey(submitBtnKey);
+      await tester.ensureVisible(submit);
+      await submit.should(findsOneWidget);
+      await submit.tap();
+    }
+  }
 }

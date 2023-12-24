@@ -11,10 +11,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 // interface data providers
-final titleProvider = StateProvider<String>((ref) => '');
 final textProvider = StateProvider<String>((ref) => '');
 
 class CreateTaskListSheet extends ConsumerStatefulWidget {
+  static const titleKey = Key('task-list-title');
+  static const descKey = Key('task-list-desc');
+  static const submitKey = Key('task-list-submit');
   final String? initialSelectedSpace;
   const CreateTaskListSheet({super.key, this.initialSelectedSpace});
 
@@ -51,14 +53,14 @@ class _CreateTaskListSheetConsumerState
         final space = await ref.read(spaceProvider(spaceId!).future);
         final taskListDraft = space.taskListDraft();
         final text = ref.read(textProvider);
-        taskListDraft.name(ref.read(titleProvider));
+        taskListDraft.name(_titleController.text);
         if (text.isNotEmpty) {
           taskListDraft.descriptionMarkdown(text);
         }
         final taskListId = await taskListDraft.send();
         // reset providers
 
-        ref.read(titleProvider.notifier).state = '';
+        _titleController.text = '';
         ref.read(textProvider.notifier).state = '';
 
         // We are doing as expected, but the lints triggers.
@@ -84,8 +86,6 @@ class _CreateTaskListSheetConsumerState
 
   @override
   Widget build(BuildContext context) {
-    final titleInput = ref.watch(titleProvider);
-    final titleNotifier = ref.watch(titleProvider.notifier);
     final textNotifier = ref.watch(textProvider.notifier);
 
     return SideSheet(
@@ -106,6 +106,7 @@ class _CreateTaskListSheetConsumerState
                       child: SizedBox(
                         height: 52,
                         child: TextFormField(
+                          key: CreateTaskListSheet.titleKey,
                           decoration: InputDecoration(
                             hintText: 'Task list name',
                             labelText: 'Name',
@@ -114,9 +115,6 @@ class _CreateTaskListSheetConsumerState
                             ),
                           ),
                           controller: _titleController,
-                          onChanged: (String? value) {
-                            titleNotifier.state = value ?? '';
-                          },
                           validator: (value) =>
                               (value != null && value.isNotEmpty)
                                   ? null
@@ -128,6 +126,7 @@ class _CreateTaskListSheetConsumerState
                 ),
               ),
               MdEditorWithPreview(
+                key: CreateTaskListSheet.descKey,
                 onChanged: (String? value) {
                   textNotifier.state = value ?? '';
                 },
@@ -153,11 +152,12 @@ class _CreateTaskListSheetConsumerState
         ),
         const SizedBox(width: 10),
         ElevatedButton(
+          key: CreateTaskListSheet.submitKey,
           onPressed: () async {
             await submitForm(context);
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: titleInput.isNotEmpty
+            backgroundColor: _titleController.text.isNotEmpty
                 ? Theme.of(context).colorScheme.success
                 : Theme.of(context).colorScheme.success.withOpacity(0.6),
             shape: RoundedRectangleBorder(

@@ -3,11 +3,13 @@ import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/settings/pages/labs_page.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
+import 'package:acter/features/space/pages/tasks_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
-import 'package:app_settings/app_settings.dart';
+import 'package:acter/features/tasks/dialogs/create_task_list_sheet.dart';
+import 'package:acter/features/tasks/pages/tasks_page.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../support/setup.dart';
@@ -58,5 +60,31 @@ void tasksTests() {
     await t.ensureTasksAreEnabled(spaceId);
     await t.gotoSpace(spaceId);
     await t.navigateTo([TabEntry.tasks]); // this worked now
+  });
+
+  acterTestWidget('New TaskList via Space', (t) async {
+    final spaceId = await t.freshAccountWithSpace(
+      spaceDisplayName: 'Task list via Space Test',
+    );
+    await t.ensureTasksAreEnabled(spaceId);
+    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    await t.navigateTo([
+      SpaceTasksPage.createTaskKey,
+    ]);
+
+    await t.fillForm(
+      {
+        CreateTaskListSheet.titleKey: 'My first task list',
+        CreateTaskListSheet.descKey:
+            'These are the most important things to do',
+      },
+      // we are coming from space, we don't need to select it.
+      submitBtnKey: CreateTaskListSheet.submitKey,
+    );
+
+    //
+    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    // we see our entry now
+    await find.text('My first task list').should(findsOneWidget);
   });
 }

@@ -34,7 +34,7 @@ extension ActerSpace on ConvenientTest {
     }
   }
 
-  Future<void> gotoSpace(String spaceId) async {
+  Future<void> gotoSpace(String spaceId, {Key? appTab}) async {
     await find.byKey(Keys.mainNav).should(findsOneWidget);
     await navigateTo([
       MainNavKeys.dashboardHome,
@@ -45,6 +45,13 @@ extension ActerSpace on ConvenientTest {
     await tester.ensureVisible(select);
     await select.should(findsOneWidget);
     await select.tap();
+
+    if (appTab != null) {
+      final selectedApp = find.byKey(appTab);
+      await tester.ensureVisible(selectedApp);
+      await selectedApp.should(findsOneWidget);
+      await selectedApp.tap();
+    }
   }
 
   Future<List<String>> createSpaceChats(
