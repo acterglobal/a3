@@ -9,6 +9,7 @@ import 'package:acter/features/space/widgets/space_toolbar.dart';
 import 'package:acter/features/tasks/dialogs/create_task_list_sheet.dart';
 import 'package:acter/features/tasks/pages/task_list_page.dart';
 import 'package:acter/features/tasks/pages/tasks_page.dart';
+import 'package:acter/features/tasks/widgets/task_info.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -194,5 +195,42 @@ void tasksTests() {
     await find.text('Get drinks').should(findsOneWidget);
     await find.text('Order chips').should(findsOneWidget);
     await find.text('Remind everyone of the potluck').should(findsOneWidget);
+  });
+
+  acterTestWidget('Check and uncheck', (t) async {
+    final spaceId = await t.freshAccountWithSpace(
+      spaceDisplayName: 'Protest Camp',
+    );
+    await t.ensureTasksAreEnabled(spaceId);
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      QuickJumpKeys.createTaskListAction,
+    ]);
+
+    await t.createTaskList(
+      'Kitchen',
+      tasks: [
+        'Refill sanitizer',
+        'Buy soap',
+      ],
+      selectSpaceId: spaceId,
+    );
+    await t.navigateTo([MainNavKeys.quickJump, QuickJumpKeys.tasks]);
+    // we see our entry now
+    await find.text('Kitchen').should(findsOneWidget);
+    await find.text('Buy soap').should(findsOneWidget);
+    await find
+        .text('Buy soap')
+        .tap(); // this should navigate us tp the item page
+
+    final btnNotDoneFinder = find.byKey(TaskInfo.statusBtnNotDone);
+    await btnNotDoneFinder.should(findsOneWidget);
+    await btnNotDoneFinder.tap(); // toggle done
+
+    final btnDoneFinder = find.byKey(TaskInfo.statusBtnDone);
+    await btnDoneFinder.should(findsOneWidget);
+    await btnDoneFinder.tap(); // toggle undone
+
+    await btnNotDoneFinder.should(findsOneWidget); // is undone again
   });
 }

@@ -1,22 +1,21 @@
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/tasks/providers/tasks.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:jiffy/jiffy.dart';
 
-class TaskEntry extends ConsumerWidget {
+class TaskInfo extends ConsumerWidget {
+  static const statusBtnNotDone = Key('task-info-status-not-done');
+  static const statusBtnDone = Key('task-info-status-done');
   final Task task;
-  final String taskListId;
-  const TaskEntry({Key? key, required this.task, required this.taskListId})
-      : super(key: key);
+  const TaskInfo({Key? key, required this.task}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<Widget> extraInfo = [];
+    final List<Widget> body = [];
     final dueDate = task.utcDueRfc3339();
     final isDone = task.isDone();
     if (!isDone) {
@@ -24,7 +23,7 @@ class TaskEntry extends ConsumerWidget {
         final due = Jiffy.parse(dueDate);
         final now = Jiffy.now();
         if (due.isBefore(now)) {
-          extraInfo.add(
+          body.add(
             Padding(
               padding: const EdgeInsets.only(left: 3),
               child: Tooltip(
@@ -42,7 +41,7 @@ class TaskEntry extends ConsumerWidget {
           );
         } else {
           // FIXME: HL today, tomorrow
-          extraInfo.add(
+          body.add(
             Padding(
               padding: const EdgeInsets.only(left: 3),
               child: Text(
@@ -56,14 +55,17 @@ class TaskEntry extends ConsumerWidget {
     }
     final description = task.description();
     if (description != null) {
-      extraInfo.add(
-        Tooltip(
-          message: description.body(),
-          child: const Icon(Atlas.document_thin),
-        ),
-      );
+      final formattedBody = description.formattedBody();
+      if (formattedBody != null && formattedBody.isNotEmpty) {
+        body.add(RenderHtml(text: formattedBody));
+      } else {
+        final str = description.body();
+        if (str.isNotEmpty) {
+          body.add(Text(str));
+        }
+      }
     }
-    extraInfo.add(
+    body.add(
       Consumer(
         builder: (context, ref, child) =>
             ref.watch(taskCommentsProvider(task)).when(
@@ -90,59 +92,46 @@ class TaskEntry extends ConsumerWidget {
       ),
     );
 
-    return ListTile(
-      horizontalTitleGap: 0,
-      minVerticalPadding: 0,
-      contentPadding: const EdgeInsets.all(0),
-      visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
-      style: ListTileTheme.of(context)
-          .copyWith(
-            contentPadding: const EdgeInsets.all(0),
-            visualDensity: const VisualDensity(horizontal: 0, vertical: 0),
-            minVerticalPadding: 0,
-          )
-          .style,
-      leading: InkWell(
-        child: Padding(
-          padding: const EdgeInsets.only(right: 5),
-          child: Icon(
-            isDone ? Atlas.check_circle_thin : Icons.radio_button_off_outlined,
-          ),
-        ),
-        onTap: () async {
-          final updater = task.updateBuilder();
-          if (!isDone) {
-            updater.markDone();
-          } else {
-            updater.markUndone();
-          }
-          await updater.send();
-        },
-      ),
-      title: InkWell(
-        child: Wrap(
-          children: [
-            Text(
-              task.title(),
-              style: isDone
-                  ? Theme.of(context).textTheme.bodySmall!.copyWith(
-                        fontWeight: FontWeight.w100,
-                        color: AppTheme.brandColorScheme.neutral5,
-                      )
-                  : Theme.of(context).textTheme.bodyMedium!,
+    return Card(
+      child: Column(
+        children: [
+          ListTile(
+            leading: InkWell(
+              key: isDone ? statusBtnDone : statusBtnNotDone,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 5),
+                child: Icon(
+                  isDone
+                      ? Atlas.check_circle_thin
+                      : Icons.radio_button_off_outlined,
+                ),
+              ),
+              onTap: () async {
+                final updater = task.updateBuilder();
+                if (!isDone) {
+                  updater.markDone();
+                } else {
+                  updater.markUndone();
+                }
+                await updater.send();
+              },
             ),
-            ...extraInfo,
-          ],
-        ),
-        onTap: () {
-          context.pushNamed(
-            Routes.task.name,
-            pathParameters: {
-              'taskId': task.eventIdStr(),
-              'taskListId': taskListId,
-            },
-          );
-        },
+            title: Wrap(
+              children: [
+                Text(
+                  task.title(),
+                  style: isDone
+                      ? Theme.of(context).textTheme.bodySmall!.copyWith(
+                            fontWeight: FontWeight.w100,
+                            color: AppTheme.brandColorScheme.neutral5,
+                          )
+                      : Theme.of(context).textTheme.bodyMedium!,
+                ),
+              ],
+            ),
+          ),
+          ...body,
+        ],
       ),
     );
   }

@@ -1155,6 +1155,9 @@ object Task {
     /// the name of this task
     fn title() -> string;
 
+    /// unique event id associated with this task
+    fn event_id_str() -> string;
+
     /// the description of this task
     fn description() -> Option<MsgContent>;
 
@@ -1376,6 +1379,9 @@ object TaskList {
 
     /// The tasks belonging to this tasklist
     fn tasks() -> Future<Result<Vec<Task>>>;
+
+    /// The specific task belonging to this task list
+    fn task(task_id: string) -> Future<Result<Task>>;
 
     /// make a builder for creating the task draft
     fn task_builder() -> Result<TaskDraft>;

@@ -414,9 +414,23 @@ impl TaskList {
     }
 
     pub async fn tasks(&self) -> Result<Vec<Task>> {
-        if !self.content.stats().has_tasks() {
-            return Ok(vec![]);
-        };
+        return self.tasks_with_filter(|_| true).await;
+    }
+
+    pub async fn task(&self, task_id: String) -> Result<Task> {
+        let event_id = ruma::EventId::parse(task_id)?;
+        return self
+            .tasks_with_filter(move |t| t.event_id() == event_id)
+            .await?
+            .into_iter()
+            .next()
+            .context("Task not found");
+    }
+
+    async fn tasks_with_filter<F>(&self, filter: F) -> Result<Vec<Task>>
+    where
+        F: Fn(&acter_core::models::Task) -> bool + Send + Sync + 'static,
+    {
         let tasks_key = self.content.tasks_key();
         let client = self.client.clone();
         let room = self.room.clone();
@@ -430,14 +444,15 @@ impl TaskList {
                     .flatten()
                     .filter_map(|e| {
                         if let AnyActerModel::Task(content) = e {
-                            Some(Task {
-                                client: client.clone(),
-                                room: room.clone(),
-                                content,
-                            })
-                        } else {
-                            None
+                            if filter(&content) {
+                                return Some(Task {
+                                    client: client.clone(),
+                                    room: room.clone(),
+                                    content,
+                                });
+                            }
                         }
+                        None
                     })
                     .collect();
                 Ok(res)
@@ -479,6 +494,10 @@ impl Deref for Task {
 impl Task {
     pub fn title(&self) -> String {
         self.content.title().to_owned()
+    }
+
+    pub fn event_id_str(&self) -> String {
+        self.content.event_id().to_string()
     }
 
     pub fn description(&self) -> Option<MsgContent> {

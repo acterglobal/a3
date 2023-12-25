@@ -27,6 +27,7 @@ import 'package:acter/features/space/settings/pages/index_page.dart';
 import 'package:acter/features/spaces/pages/join_space.dart';
 import 'package:acter/features/spaces/pages/spaces_page.dart';
 import 'package:acter/features/tasks/pages/task_list_page.dart';
+import 'package:acter/features/tasks/pages/task_page.dart';
 import 'package:acter/features/tasks/pages/tasks_page.dart';
 import 'package:acter/router/router.dart';
 import 'package:flutter/cupertino.dart';
@@ -327,6 +328,20 @@ List<RouteBase> makeHomeShellRoutes(ref) {
           key: state.pageKey,
           child: TaskListPage(
             taskListId: state.pathParameters['taskListId']!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.task.name,
+      path: Routes.task.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: TaskPage(
+            taskListId: state.pathParameters['taskListId']!,
+            taskId: state.pathParameters['taskId']!,
           ),
         );
       },

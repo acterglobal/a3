@@ -113,7 +113,12 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                   }
 
                   for (final task in overview.openTasks) {
-                    children.add(TaskEntry(task: task));
+                    children.add(
+                      TaskEntry(
+                        task: task,
+                        taskListId: tlId,
+                      ),
+                    );
                   }
                   if (showInlineAddTask) {
                     children.add(
@@ -147,7 +152,7 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                   }
 
                   for (final task in overview.doneTasks) {
-                    children.add(TaskEntry(task: task));
+                    children.add(TaskEntry(task: task, taskListId: tlId));
                   }
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -209,7 +214,7 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
               focusNode: focusNode,
               controller: _textCtrl,
               decoration: const InputDecoration(
-                icon: Icon(Atlas.plus_circle_thin),
+                prefixIcon: Icon(Atlas.plus_circle_thin),
                 border: UnderlineInputBorder(),
                 labelText: 'Title the new task..',
               ),

@@ -5483,6 +5483,53 @@ class Api {
     return tmp7;
   }
 
+  Task? __taskListTaskFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskListTaskFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Task");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = Task._(this, tmp13_1);
+    return tmp7;
+  }
+
   TaskList? __taskListRefreshFuturePoll(
     int boxed,
     int postCobject,
@@ -15715,6 +15762,16 @@ class Api {
       _TaskTitleReturn Function(
         int,
       )>();
+  late final _taskEventIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskEventIdStrReturn Function(
+            ffi.Int64,
+          )>>("__Task_event_id_str");
+
+  late final _taskEventIdStr = _taskEventIdStrPtr.asFunction<
+      _TaskEventIdStrReturn Function(
+        int,
+      )>();
   late final _taskDescriptionPtr = _lookup<
       ffi.NativeFunction<
           _TaskDescriptionReturn Function(
@@ -16808,6 +16865,22 @@ class Api {
 
   late final _taskListTasks = _taskListTasksPtr.asFunction<
       int Function(
+        int,
+      )>();
+  late final _taskListTaskPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__TaskList_task");
+
+  late final _taskListTask = _taskListTaskPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
         int,
       )>();
   late final _taskListTaskBuilderPtr = _lookup<
@@ -22561,6 +22634,20 @@ class Api {
 
   late final _taskListTasksFuturePoll = _taskListTasksFuturePollPtr.asFunction<
       _TaskListTasksFuturePollReturn Function(
+        int,
+        int,
+        int,
+      )>();
+  late final _taskListTaskFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListTaskFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__TaskList_task_future_poll");
+
+  late final _taskListTaskFuturePoll = _taskListTaskFuturePollPtr.asFunction<
+      _TaskListTaskFuturePollReturn Function(
         int,
         int,
         int,
@@ -34010,6 +34097,36 @@ class Task {
     return tmp2;
   }
 
+  /// unique event id associated with this task
+  String eventIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskEventIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
   /// the description of this task
   MsgContent? description() {
     var tmp0 = 0;
@@ -35822,6 +35939,38 @@ class TaskList {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__taskListTasksFuturePoll);
     return tmp2;
+  }
+
+  /// The specific task belonging to this task list
+  Future<Task> task(
+    String taskId,
+  ) {
+    final tmp1 = taskId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._taskListTask(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__TaskList_task_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__taskListTaskFuturePoll);
+    return tmp6;
   }
 
   /// make a builder for creating the task draft
@@ -46016,6 +46165,15 @@ class _TaskTitleReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _TaskEventIdStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
 class _TaskDescriptionReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -48417,6 +48575,21 @@ class _TaskDraftSendFuturePollReturn extends ffi.Struct {
 }
 
 class _TaskListTasksFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _TaskListTaskFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
