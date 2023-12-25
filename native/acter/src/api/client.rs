@@ -957,7 +957,7 @@ impl Client {
                     .encryption()
                     .get_device(&user_id, device_id!(dev_id.as_str()))
                     .await?
-                    .context("client should get device")
+                    .context("Unable to find device")
                     .map(|x| x.is_verified())
             })
             .await?
