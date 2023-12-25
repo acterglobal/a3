@@ -26597,6 +26597,8 @@ class UserProfile {
   }
 
   /// get the binary data of avatar
+  /// if thumb size is given, avatar thumbnail is returned
+  /// if thumb size is not given, avatar file is returned
   Future<OptionBuffer> getAvatar(
     ThumbnailSize? thumbSize,
   ) {
@@ -26683,6 +26685,8 @@ class RoomProfile {
   }
 
   /// get the binary data of avatar
+  /// if thumb size is given, avatar thumbnail is returned
+  /// if thumb size is not given, avatar file is returned
   Future<OptionBuffer> getAvatar(
     ThumbnailSize? thumbSize,
   ) {
@@ -27549,6 +27553,8 @@ class NewsSlide {
   }
 
   /// if this is a media, hand over the data
+  /// if thumb size is given, media thumbnail is returned
+  /// if thumb size is not given, media file is returned
   Future<FfiBufferUint8> sourceBinary(
     ThumbnailSize? thumbSize,
   ) {
@@ -32654,6 +32660,8 @@ class Convo {
   }
 
   /// decrypted media file data
+  /// if thumb size is given, media thumbnail is returned
+  /// if thumb size is not given, media file is returned
   /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
   /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
   Future<FfiBufferUint8> mediaBinary(
@@ -32836,6 +32844,8 @@ class Convo {
   }
 
   /// download media (image/audio/video/file/location) to specified path
+  /// if thumb size is given, media thumbnail is returned
+  /// if thumb size is not given, media file is returned
   Future<OptionString> downloadMedia(
     String eventId,
     ThumbnailSize? thumbSize,
@@ -33617,6 +33627,8 @@ class Attachment {
   }
 
   /// if this is a media, hand over the data
+  /// if thumb size is given, media thumbnail is returned
+  /// if thumb size is not given, media file is returned
   Future<FfiBufferUint8> sourceBinary(
     ThumbnailSize? thumbSize,
   ) {
@@ -36399,6 +36411,8 @@ class SpaceHierarchyRoomInfo {
   }
 
   /// get the binary data of avatar
+  /// if thumb size is given, avatar thumbnail is returned
+  /// if thumb size is not given, avatar file is returned
   Future<OptionBuffer> getAvatar(
     ThumbnailSize? thumbSize,
   ) {
@@ -38811,6 +38825,8 @@ class Account {
   }
 
   /// The avatar of the client
+  /// if thumb size is given, avatar thumbnail is returned
+  /// if thumb size is not given, avatar file is returned
   Future<OptionBuffer> avatar(
     ThumbnailSize? thumbSize,
   ) {
