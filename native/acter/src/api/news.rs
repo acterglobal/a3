@@ -29,7 +29,7 @@ use std::{
 };
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::trace;
+use tracing::{trace, warn};
 
 use super::{
     api::FfiBuffer,
@@ -239,16 +239,14 @@ impl NewsSlide {
                         .await
                 }
             },
-            NewsContent::Audio(content) => match thumb_size {
-                Some(thumb_size) => {
-                    bail!("audio has not thumbnail")
+            NewsContent::Audio(content) => {
+                if thumb_size.is_some() {
+                    warn!("DeveloperError: audio has not thumbnail");
                 }
-                None => {
-                    self.client
-                        .source_binary(content.source.clone(), None)
-                        .await
-                }
-            },
+                self.client
+                    .source_binary(content.source.clone(), None)
+                    .await
+            }
             NewsContent::Video(content) => match thumb_size {
                 Some(thumb_size) => {
                     let source = content
@@ -279,19 +277,17 @@ impl NewsSlide {
                         .await
                 }
             },
-            NewsContent::Location(content) => match thumb_size {
-                Some(thumb_size) => {
-                    let source = content
-                        .info
-                        .as_ref()
-                        .and_then(|info| info.thumbnail_source.clone())
-                        .context("thumbnail source doesn't exist")?;
-                    self.client.source_binary(source, Some(thumb_size)).await
+            NewsContent::Location(content) => {
+                if thumb_size.is_none() {
+                    warn!("DeveloperError: location has not file");
                 }
-                None => {
-                    bail!("location has not file")
-                }
-            },
+                let source = content
+                    .info
+                    .as_ref()
+                    .and_then(|info| info.thumbnail_source.clone())
+                    .context("thumbnail source doesn't exist")?;
+                self.client.source_binary(source, thumb_size).await
+            }
         }
     }
 }
