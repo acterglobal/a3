@@ -822,10 +822,6 @@ impl Client {
             .await?
     }
 
-    pub fn new_thumb_size(&self, width: u64, height: u64) -> Result<ThumbnailSize> {
-        ThumbnailSize::new(width, height)
-    }
-
     pub fn user_id(&self) -> Result<OwnedUserId> {
         self.core
             .client()

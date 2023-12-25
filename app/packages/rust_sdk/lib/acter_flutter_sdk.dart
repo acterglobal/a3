@@ -583,4 +583,8 @@ class ActerSdk {
   void writeLog(String text, String level) {
     _api.writeLog(text, level);
   }
+
+  ffi.ThumbnailSize newThumbSize(int width, int height) {
+    return _api.newThumbSize(width, height);
+  }
 }

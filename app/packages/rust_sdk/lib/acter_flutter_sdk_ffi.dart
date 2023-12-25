@@ -1219,6 +1219,45 @@ class Api {
     return tmp5;
   }
 
+  /// create size object to be used for thumbnail download
+  ThumbnailSize newThumbSize(
+    int width,
+    int height,
+  ) {
+    final tmp0 = width;
+    final tmp2 = height;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    final tmp4 = _newThumbSize(
+      tmp1,
+      tmp3,
+    );
+    final tmp6 = tmp4.arg0;
+    final tmp7 = tmp4.arg1;
+    final tmp8 = tmp4.arg2;
+    final tmp9 = tmp4.arg3;
+    final tmp10 = tmp4.arg4;
+    if (tmp6 == 0) {
+      debugAllocation("handle error", tmp7, tmp8);
+      final ffi.Pointer<ffi.Uint8> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+      final tmp6_0 =
+          utf8.decode(tmp7_0.asTypedList(tmp8), allowMalformed: true);
+      if (tmp8 > 0) {
+        final ffi.Pointer<ffi.Void> tmp7_0;
+        tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+        this.__deallocate(tmp7_0, tmp9, 1);
+      }
+      throw tmp6_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+    final tmp10_1 = _Box(this, tmp10_0, "drop_box_ThumbnailSize");
+    tmp10_1._finalizer = this._registerFinalizer(tmp10_1);
+    final tmp5 = ThumbnailSize._(this, tmp10_1);
+    return tmp5;
+  }
+
   /// Rotate the logging file
   JoinRuleBuilder newJoinRuleBuilder() {
     final tmp0 = _newJoinRuleBuilder();
@@ -11906,6 +11945,18 @@ class Api {
         int,
         int,
       )>();
+  late final _newThumbSizePtr = _lookup<
+      ffi.NativeFunction<
+          _NewThumbSizeReturn Function(
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__new_thumb_size");
+
+  late final _newThumbSize = _newThumbSizePtr.asFunction<
+      _NewThumbSizeReturn Function(
+        int,
+        int,
+      )>();
   late final _newJoinRuleBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.Int64 Function()>>(
           "__new_join_rule_builder");
@@ -19490,20 +19541,6 @@ class Api {
   late final _clientUploadMedia = _clientUploadMediaPtr.asFunction<
       int Function(
         int,
-        int,
-        int,
-        int,
-      )>();
-  late final _clientNewThumbSizePtr = _lookup<
-      ffi.NativeFunction<
-          _ClientNewThumbSizeReturn Function(
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__Client_new_thumb_size");
-
-  late final _clientNewThumbSize = _clientNewThumbSizePtr.asFunction<
-      _ClientNewThumbSizeReturn Function(
         int,
         int,
         int,
@@ -41212,48 +41249,6 @@ class Client {
     return tmp6;
   }
 
-  /// create size object to be used for thumbnail download
-  ThumbnailSize newThumbSize(
-    int width,
-    int height,
-  ) {
-    final tmp1 = width;
-    final tmp3 = height;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    tmp2 = tmp1;
-    tmp4 = tmp3;
-    final tmp5 = _api._clientNewThumbSize(
-      tmp0,
-      tmp2,
-      tmp4,
-    );
-    final tmp7 = tmp5.arg0;
-    final tmp8 = tmp5.arg1;
-    final tmp9 = tmp5.arg2;
-    final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
-    if (tmp7 == 0) {
-      debugAllocation("handle error", tmp8, tmp9);
-      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
-      final tmp7_0 =
-          utf8.decode(tmp8_0.asTypedList(tmp9), allowMalformed: true);
-      if (tmp9 > 0) {
-        final ffi.Pointer<ffi.Void> tmp8_0;
-        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
-        _api.__deallocate(tmp8_0, tmp10, 1);
-      }
-      throw tmp7_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_ThumbnailSize");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp6 = ThumbnailSize._(_api, tmp11_1);
-    return tmp6;
-  }
-
   /// Fires whenever the convo list changes (in order or number)
   /// fires immediately with the current state of convos
   Stream<ConvoDiff> convosStream() {
@@ -44804,6 +44799,19 @@ class _ParseMarkdownReturn extends ffi.Struct {
   external int arg3;
 }
 
+class _NewThumbSizeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
 class _EfkColorRgbaU8Return extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -46772,19 +46780,6 @@ class _ClientDmWithUserReturn extends ffi.Struct {
 }
 
 class _ClientGetUserProfileReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Int64()
-  external int arg4;
-}
-
-class _ClientNewThumbSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

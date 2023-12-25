@@ -39,6 +39,9 @@ fn duration_from_secs(secs: u64) -> EfkDuration;
 
 fn parse_markdown(text: string) -> Option<string>;
 
+/// create size object to be used for thumbnail download
+fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize>;
+
 
 //  ########  ########  #### ##     ## #### ######## #### ##     ## ########  ######  
 //  ##     ## ##     ##  ##  ###   ###  ##     ##     ##  ##     ## ##       ##    ## 
@@ -2100,9 +2103,6 @@ object Client {
 
     /// upload file and return remote url
     fn upload_media(uri: string) -> Future<Result<MxcUri>>;
-
-    /// create size object to be used for thumbnail download
-    fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize>;
 
     /// Fires whenever the convo list changes (in order or number)
     /// fires immediately with the current state of convos
