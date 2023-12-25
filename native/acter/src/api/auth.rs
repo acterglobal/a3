@@ -386,9 +386,9 @@ pub async fn register_with_token_under_config(
             });
 
             if let Err(err) = client.matrix_auth().register(request).await {
-                let Some(response) = err.as_uiaa_response() else {
-                        bail!("Server did not indicate how to allow registration.");
-                    };
+                let response = err
+                    .as_uiaa_response()
+                    .context("Server did not indicate how to allow registration.")?;
 
                 info!("Acceptable auth flows: {response:?}");
 

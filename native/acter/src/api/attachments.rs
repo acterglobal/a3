@@ -100,10 +100,8 @@ impl Attachment {
                     let source = content
                         .info
                         .as_ref()
-                        .and_then(|info| info.thumbnail_source.clone());
-                    let Some(source) = source else {
-                        bail!("thumbnail source doesn't exist")
-                    };
+                        .and_then(|info| info.thumbnail_source.clone())
+                        .context("thumbnail source doesn't exist")?;
                     self.client.source_binary(source, Some(thumb_size)).await
                 }
                 None => {
@@ -127,10 +125,8 @@ impl Attachment {
                     let source = content
                         .info
                         .as_ref()
-                        .and_then(|info| info.thumbnail_source.clone());
-                    let Some(source) = source else {
-                        bail!("thumbnail source doesn't exist")
-                    };
+                        .and_then(|info| info.thumbnail_source.clone())
+                        .context("thumbnail source doesn't exist")?;
                     self.client.source_binary(source, Some(thumb_size)).await
                 }
                 None => {
@@ -144,10 +140,8 @@ impl Attachment {
                     let source = content
                         .info
                         .as_ref()
-                        .and_then(|info| info.thumbnail_source.clone());
-                    let Some(source) = source else {
-                        bail!("thumbnail source doesn't exist")
-                    };
+                        .and_then(|info| info.thumbnail_source.clone())
+                        .context("thumbnail source doesn't exist")?;
                     self.client.source_binary(source, Some(thumb_size)).await
                 }
                 None => {
@@ -161,10 +155,8 @@ impl Attachment {
                     let source = content
                         .info
                         .as_ref()
-                        .and_then(|info| info.thumbnail_source.clone());
-                    let Some(source) = source else {
-                        bail!("thumbnail source doesn't exist")
-                    };
+                        .and_then(|info| info.thumbnail_source.clone())
+                        .context("thumbnail source doesn't exist")?;
                     self.client.source_binary(source, Some(thumb_size)).await
                 }
                 None => {
