@@ -1,15 +1,11 @@
 use anyhow::{bail, Context, Result};
-use matrix_sdk::{
-    media::{MediaFormat, MediaThumbnailSize},
-    ruma::api::client::media::get_content_thumbnail,
-    Account as SdkAccount,
-};
+use matrix_sdk::Account as SdkAccount;
 use ruma_common::{OwnedMxcUri, OwnedUserId};
 use ruma_events::ignored_user_list::IgnoredUserListEventContent;
 use std::{ops::Deref, path::PathBuf, str::FromStr};
 
 use super::{
-    common::{OptionBuffer, OptionString, ThumbnailSize},
+    common::{into_media_format, OptionBuffer, OptionString, ThumbnailSize},
     RUNTIME,
 };
 
@@ -64,14 +60,7 @@ impl Account {
         let account = self.account.clone();
         RUNTIME
             .spawn(async move {
-                let format = match thumb_size {
-                    Some(thumb_size) => MediaFormat::Thumbnail(MediaThumbnailSize {
-                        method: get_content_thumbnail::v3::Method::Scale,
-                        width: thumb_size.width(),
-                        height: thumb_size.height(),
-                    }),
-                    None => MediaFormat::File,
-                };
+                let format = into_media_format(thumb_size);
                 let buf = account.get_avatar(format).await?;
                 Ok(OptionBuffer::new(buf))
             })

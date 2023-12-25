@@ -15,11 +15,10 @@ use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStr
 use matrix_sdk::{
     config::SyncSettings,
     event_handler::EventHandlerHandle,
-    media::{MediaFormat, MediaRequest, MediaThumbnailSize},
+    media::MediaRequest,
     room::Room as SdkRoom,
     ruma::api::client::{
         error::{ErrorBody, ErrorKind},
-        media::get_content_thumbnail,
         push::get_notifications,
         Error,
     },
@@ -55,8 +54,9 @@ use crate::{
 };
 
 use super::{
-    api::FfiBuffer, device::DeviceController, invitation::InvitationController,
-    receipt::ReceiptController, typing::TypingController, verification::VerificationController,
+    api::FfiBuffer, common::into_media_format, device::DeviceController,
+    invitation::InvitationController, receipt::ReceiptController, typing::TypingController,
+    verification::VerificationController,
 };
 
 #[derive(Default, Builder, Debug)]
@@ -385,14 +385,7 @@ impl Client {
     ) -> Result<FfiBuffer<u8>> {
         // any variable in self can't be called directly in spawn
         let client = self.clone();
-        let format = match thumb_size {
-            Some(thumb_size) => MediaFormat::Thumbnail(MediaThumbnailSize {
-                method: get_content_thumbnail::v3::Method::Scale,
-                width: thumb_size.width(),
-                height: thumb_size.height(),
-            }),
-            None => MediaFormat::File,
-        };
+        let format = into_media_format(thumb_size);
         let request = MediaRequest { source, format };
         trace!(?request, "tasked to get source binary");
         RUNTIME

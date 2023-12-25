@@ -1,7 +1,10 @@
 use acter_core::events::attachments::AttachmentContent;
 use anyhow::{Context, Result};
 use core::time::Duration;
-use matrix_sdk::ruma::UInt;
+use matrix_sdk::{
+    media::{MediaFormat, MediaThumbnailSize},
+    ruma::{api::client::media::get_content_thumbnail, UInt},
+};
 use ruma_common::{MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri, OwnedUserId};
 use ruma_events::{
     location::{AssetContent, LocationContent},
@@ -547,4 +550,15 @@ impl ThumbnailSize {
 
 pub fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize> {
     ThumbnailSize::new(width, height)
+}
+
+pub(crate) fn into_media_format(thumb_size: Option<Box<ThumbnailSize>>) -> MediaFormat {
+    match thumb_size {
+        Some(thumb_size) => MediaFormat::Thumbnail(MediaThumbnailSize {
+            method: get_content_thumbnail::v3::Method::Scale,
+            width: thumb_size.width(),
+            height: thumb_size.height(),
+        }),
+        None => MediaFormat::File,
+    }
 }

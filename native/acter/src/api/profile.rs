@@ -1,15 +1,15 @@
 use anyhow::{bail, Context, Result};
 use matrix_sdk::{
-    media::{MediaFormat, MediaRequest, MediaThumbnailSize},
+    media::{MediaFormat, MediaRequest},
     room::RoomMember,
-    ruma::api::client::{media::get_content_thumbnail, user_directory::search_users},
+    ruma::api::client::user_directory::search_users,
     Account, Client, DisplayName,
 };
 use ruma_common::{OwnedRoomId, OwnedUserId};
 use ruma_events::room::MediaSource;
 
 use super::{
-    common::{OptionBuffer, OptionString, ThumbnailSize},
+    common::{into_media_format, OptionBuffer, OptionString, ThumbnailSize},
     RUNTIME,
 };
 
@@ -24,7 +24,7 @@ impl PublicProfile {
         PublicProfile { inner, client }
     }
 
-    pub async fn avatar(&self, format: MediaFormat) -> Result<Option<Vec<u8>>> {
+    pub(crate) async fn avatar(&self, format: MediaFormat) -> Result<Option<Vec<u8>>> {
         let Some(url) = self.inner.avatar_url.as_ref() else { return Ok(None) };
         let request = MediaRequest {
             source: MediaSource::Plain(url.to_owned()),
@@ -99,14 +99,7 @@ impl UserProfile {
     }
 
     pub async fn get_avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
-        let format = match thumb_size {
-            Some(thumb_size) => MediaFormat::Thumbnail(MediaThumbnailSize {
-                method: get_content_thumbnail::v3::Method::Scale,
-                width: thumb_size.width(),
-                height: thumb_size.height(),
-            }),
-            None => MediaFormat::File,
-        };
+        let format = into_media_format(thumb_size);
         if let Some(account) = self.account.clone() {
             return RUNTIME
                 .spawn(async move {
@@ -180,14 +173,7 @@ impl RoomProfile {
             .client
             .get_room(&self.room_id)
             .context("Room not found")?;
-        let format = match thumb_size {
-            Some(thumb_size) => MediaFormat::Thumbnail(MediaThumbnailSize {
-                method: get_content_thumbnail::v3::Method::Scale,
-                width: thumb_size.width(),
-                height: thumb_size.height(),
-            }),
-            None => MediaFormat::File,
-        };
+        let format = into_media_format(thumb_size);
         RUNTIME
             .spawn(async move {
                 let buf = room.avatar(format).await?;
