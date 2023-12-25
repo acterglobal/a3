@@ -8,6 +8,7 @@ import 'package:acter/router/router.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'spaces.dart';
 
 extension ActerUtil on ConvenientTest {
   Future<void> navigateTo(List<Key> keys) async {
@@ -19,12 +20,16 @@ extension ActerUtil on ConvenientTest {
     }
   }
 
-  Future<void> fillForm(Map<Key, String> fields, {Key? submitBtnKey}) async {
+  Future<void> fillForm(Map<Key, String> fields,
+      {Key? submitBtnKey, String? selectSpaceId}) async {
     for (final entry in fields.entries) {
       final textField = find.byKey(entry.key);
       await tester.ensureVisible(textField);
       await textField.should(findsOneWidget);
       await textField.enterTextWithoutReplace(entry.value);
+    }
+    if (selectSpaceId != null) {
+      await selectSpace(selectSpaceId);
     }
     if (submitBtnKey != null) {
       final submit = find.byKey(submitBtnKey);

@@ -1,4 +1,6 @@
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/home/data/keys.dart';
+import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/space/pages/tasks_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
@@ -6,6 +8,7 @@ import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
 import 'package:acter/features/tasks/dialogs/create_task_list_sheet.dart';
 import 'package:acter/features/tasks/pages/task_list_page.dart';
+import 'package:acter/features/tasks/pages/tasks_page.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -39,6 +42,7 @@ extension ActerTasks on ConvenientTest {
     String title, {
     String? description,
     List<String>? tasks,
+    String? selectSpaceId,
   }) async {
     final params = {
       CreateTaskListSheet.titleKey: title,
@@ -50,6 +54,7 @@ extension ActerTasks on ConvenientTest {
       params,
       // we are coming from space, we don't need to select it.
       submitBtnKey: CreateTaskListSheet.submitKey,
+      selectSpaceId: selectSpaceId,
     );
 
     final taskListPage = find.byKey(TaskListPage.pageKey);
@@ -108,11 +113,86 @@ void tasksTests() {
       ],
     );
 
-    //
     await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
     // we see our entry now
     await find.text('Errands').should(findsOneWidget);
     await find.text('Buy milk').should(findsOneWidget);
     await find.text('Pickup dogs med').should(findsOneWidget);
+
+    await t.navigateTo([MainNavKeys.quickJump, QuickJumpKeys.tasks]);
+    // we see our entry now
+    await find.text('Errands').should(findsOneWidget);
+    await find.text('Buy milk').should(findsOneWidget);
+    await find.text('Pickup dogs med').should(findsOneWidget);
+  });
+
+  acterTestWidget('New TaskList & tasks via all tasks', (t) async {
+    final spaceId = await t.freshAccountWithSpace(
+      spaceDisplayName: 'Task list via all tasks',
+    );
+    await t.ensureTasksAreEnabled(spaceId);
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      QuickJumpKeys.tasks,
+      TasksPage.createNewTaskListKey,
+    ]);
+
+    await t.createTaskList(
+      'Protest Preparations',
+      description: 'Things we have to do for the protest',
+      tasks: [
+        'Buy markers',
+        'Pick up banner',
+      ],
+      selectSpaceId: spaceId,
+    );
+
+    //
+    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    // we see our entry now
+    await find.text('Protest Preparations').should(findsOneWidget);
+    await find.text('Buy markers').should(findsOneWidget);
+    await find.text('Pick up banner').should(findsOneWidget);
+    await t.navigateTo([MainNavKeys.quickJump, QuickJumpKeys.tasks]);
+    // we see our entry now
+    await find.text('Protest Preparations').should(findsOneWidget);
+    await find.text('Buy markers').should(findsOneWidget);
+    await find.text('Pick up banner').should(findsOneWidget);
+  });
+
+  acterTestWidget('New TaskList & tasks via quickjump', (t) async {
+    final spaceId = await t.freshAccountWithSpace(
+      spaceDisplayName: 'Task list via quickjump',
+    );
+    await t.ensureTasksAreEnabled(spaceId);
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      QuickJumpKeys.createTaskListAction,
+    ]);
+
+    await t.createTaskList(
+      'Club Party',
+      description: 'Things we have to do for the party on the 11th',
+      tasks: [
+        'Get drinks',
+        'Order chips',
+        'Remind everyone of the potluck',
+      ],
+      selectSpaceId: spaceId,
+    );
+
+    //
+    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    // we see our entry now
+    await find.text('Club Party').should(findsOneWidget);
+    await find.text('Get drinks').should(findsOneWidget);
+    await find.text('Order chips').should(findsOneWidget);
+    await find.text('Remind everyone of the potluck').should(findsOneWidget);
+    await t.navigateTo([MainNavKeys.quickJump, QuickJumpKeys.tasks]);
+    // we see our entry now
+    await find.text('Club Party').should(findsOneWidget);
+    await find.text('Get drinks').should(findsOneWidget);
+    await find.text('Order chips').should(findsOneWidget);
+    await find.text('Remind everyone of the potluck').should(findsOneWidget);
   });
 }

@@ -12,6 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class TasksPage extends ConsumerWidget {
+  static const createNewTaskListKey = Key('tasks-create-list');
   const TasksPage({Key? key}) : super(key: key);
 
   @override
@@ -27,6 +28,7 @@ class TasksPage extends ConsumerWidget {
             ),
             actions: [
               IconButton(
+                key: createNewTaskListKey,
                 icon: const Icon(Atlas.plus_circle),
                 onPressed: () {
                   context.pushNamed(Routes.actionAddTaskList.name);

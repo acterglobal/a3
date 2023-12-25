@@ -11,7 +11,6 @@ import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class QuickJump extends ConsumerWidget {
   final Future<void> Function({Routes? route, bool push, String? target})
