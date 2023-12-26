@@ -9,7 +9,7 @@ use ruma_common::{OwnedRoomId, OwnedUserId};
 use ruma_events::room::MediaSource;
 
 use super::{
-    common::{into_media_format, OptionBuffer, OptionString, ThumbnailSize},
+    common::{OptionBuffer, OptionString, ThumbnailSize},
     RUNTIME,
 };
 
@@ -99,7 +99,7 @@ impl UserProfile {
     }
 
     pub async fn get_avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
-        let format = into_media_format(thumb_size);
+        let format = ThumbnailSize::parse_into_media_format(thumb_size);
         if let Some(account) = self.account.clone() {
             return RUNTIME
                 .spawn(async move {
@@ -172,7 +172,7 @@ impl RoomProfile {
             .client
             .get_room(&self.room_id)
             .context("Room not found")?;
-        let format = into_media_format(thumb_size);
+        let format = ThumbnailSize::parse_into_media_format(thumb_size);
         RUNTIME
             .spawn(async move {
                 let buf = room.avatar(format).await?;

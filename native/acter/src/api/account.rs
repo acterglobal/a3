@@ -5,7 +5,7 @@ use ruma_events::ignored_user_list::IgnoredUserListEventContent;
 use std::{ops::Deref, path::PathBuf, str::FromStr};
 
 use super::{
-    common::{into_media_format, OptionBuffer, OptionString, ThumbnailSize},
+    common::{OptionBuffer, OptionString, ThumbnailSize},
     RUNTIME,
 };
 
@@ -60,7 +60,7 @@ impl Account {
         let account = self.account.clone();
         RUNTIME
             .spawn(async move {
-                let format = into_media_format(thumb_size);
+                let format = ThumbnailSize::parse_into_media_format(thumb_size);
                 let buf = account.get_avatar(format).await?;
                 Ok(OptionBuffer::new(buf))
             })

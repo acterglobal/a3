@@ -546,19 +546,25 @@ impl ThumbnailSize {
     pub(crate) fn height(&self) -> UInt {
         self.height
     }
+
+    pub fn parse_into_media_format(thumb_size: Option<Box<ThumbnailSize>>) -> MediaFormat {
+        match thumb_size {
+            Some(thumb_size) => thumb_size.into(),
+            None => MediaFormat::File,
+        }
+    }
+}
+
+impl Into<MediaFormat> for Box<ThumbnailSize> {
+    fn into(self) -> MediaFormat {
+        MediaFormat::Thumbnail(MediaThumbnailSize {
+            method: get_content_thumbnail::v3::Method::Scale,
+            width: self.width,
+            height: self.height,
+        })
+    }
 }
 
 pub fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize> {
     ThumbnailSize::new(width, height)
-}
-
-pub(crate) fn into_media_format(thumb_size: Option<Box<ThumbnailSize>>) -> MediaFormat {
-    match thumb_size {
-        Some(thumb_size) => MediaFormat::Thumbnail(MediaThumbnailSize {
-            method: get_content_thumbnail::v3::Method::Scale,
-            width: thumb_size.width(),
-            height: thumb_size.height(),
-        }),
-        None => MediaFormat::File,
-    }
 }

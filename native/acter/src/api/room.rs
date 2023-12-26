@@ -52,7 +52,7 @@ use crate::{
     OptionBuffer, OptionString, RoomMessage, RoomProfile, ThumbnailSize, UserProfile, RUNTIME,
 };
 
-use super::{api::FfiBuffer, common::into_media_format};
+use super::api::FfiBuffer;
 
 #[derive(Eq, PartialEq, Clone, strum::Display, strum::EnumString, Debug)]
 #[strum(serialize_all = "PascalCase")]
@@ -381,7 +381,7 @@ impl SpaceHierarchyRoomInfo {
     pub async fn get_avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
         let client = self.client.client().clone();
         if let Some(url) = self.chunk.avatar_url.clone() {
-            let format = into_media_format(thumb_size);
+            let format = ThumbnailSize::parse_into_media_format(thumb_size);
             return RUNTIME
                 .spawn(async move {
                     let request = MediaRequest {
@@ -1046,8 +1046,7 @@ impl Room {
                                 bail!("Not an Image, Location, Video or Regular file.")
                             }
                         };
-                        let format = into_media_format(Some(thumb_size));
-                        (source, format)
+                        (source, thumb_size.into())
                     }
                     None => {
                         let source = match &original.content.msgtype {
@@ -1207,12 +1206,14 @@ impl Room {
                 let (request, mut filename) = match thumb_size.clone() {
                     Some(thumb_size) => match &original.content.msgtype {
                         MessageType::Image(content) => {
-                            let format = into_media_format(Some(thumb_size));
                             let request = content
                                 .info
                                 .as_ref()
                                 .and_then(|info| info.thumbnail_source.clone())
-                                .map(|source| MediaRequest { source, format });
+                                .map(|source| MediaRequest {
+                                    source,
+                                    format: thumb_size.into(),
+                                });
                             let filename = content
                                 .info
                                 .clone()
@@ -1225,12 +1226,14 @@ impl Room {
                             (request, filename)
                         }
                         MessageType::Video(content) => {
-                            let format = into_media_format(Some(thumb_size));
                             let request = content
                                 .info
                                 .as_ref()
                                 .and_then(|info| info.thumbnail_source.clone())
-                                .map(|source| MediaRequest { source, format });
+                                .map(|source| MediaRequest {
+                                    source,
+                                    format: thumb_size.into(),
+                                });
                             let filename = content
                                 .info
                                 .clone()
@@ -1243,12 +1246,14 @@ impl Room {
                             (request, filename)
                         }
                         MessageType::File(content) => {
-                            let format = into_media_format(Some(thumb_size));
                             let request = content
                                 .info
                                 .as_ref()
                                 .and_then(|info| info.thumbnail_source.clone())
-                                .map(|source| MediaRequest { source, format });
+                                .map(|source| MediaRequest {
+                                    source,
+                                    format: thumb_size.into(),
+                                });
                             let filename = content
                                 .info
                                 .clone()
@@ -1261,12 +1266,14 @@ impl Room {
                             (request, filename)
                         }
                         MessageType::Location(content) => {
-                            let format = into_media_format(Some(thumb_size));
                             let request = content
                                 .info
                                 .as_ref()
                                 .and_then(|info| info.thumbnail_source.clone())
-                                .map(|source| MediaRequest { source, format });
+                                .map(|source| MediaRequest {
+                                    source,
+                                    format: thumb_size.into(),
+                                });
                             let filename = content
                                 .info
                                 .clone()

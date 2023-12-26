@@ -54,9 +54,8 @@ use crate::{
 };
 
 use super::{
-    api::FfiBuffer, common::into_media_format, device::DeviceController,
-    invitation::InvitationController, receipt::ReceiptController, typing::TypingController,
-    verification::VerificationController,
+    api::FfiBuffer, device::DeviceController, invitation::InvitationController,
+    receipt::ReceiptController, typing::TypingController, verification::VerificationController,
 };
 
 #[derive(Default, Builder, Debug)]
@@ -385,7 +384,7 @@ impl Client {
     ) -> Result<FfiBuffer<u8>> {
         // any variable in self can't be called directly in spawn
         let client = self.clone();
-        let format = into_media_format(thumb_size);
+        let format = ThumbnailSize::parse_into_media_format(thumb_size);
         let request = MediaRequest { source, format };
         trace!(?request, "tasked to get source binary");
         RUNTIME
