@@ -319,7 +319,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.image':
             MsgContent? msgContent = orgEventItem.msgContent();
             if (msgContent != null) {
-              convo.mediaBinary(originalId).then((data) {
+              convo.mediaBinary(originalId, null).then((data) {
                 repliedToContent['base64'] = base64Encode(data.asTypedList());
               });
               repliedTo = types.ImageMessage(
@@ -337,7 +337,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.audio':
             MsgContent? msgContent = orgEventItem.msgContent();
             if (msgContent != null) {
-              convo.mediaBinary(originalId).then((data) {
+              convo.mediaBinary(originalId, null).then((data) {
                 repliedToContent['content'] = base64Encode(data.asTypedList());
               });
               repliedTo = types.AudioMessage(
@@ -355,7 +355,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.video':
             MsgContent? msgContent = orgEventItem.msgContent();
             if (msgContent != null) {
-              convo.mediaBinary(originalId).then((data) {
+              convo.mediaBinary(originalId, null).then((data) {
                 repliedToContent['content'] = base64Encode(data.asTypedList());
               });
               repliedTo = types.VideoMessage(
@@ -908,7 +908,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'm.audio':
       case 'm.video':
         final messages = state.messages;
-        final data = await convo.mediaBinary(eventId);
+        final data = await convo.mediaBinary(eventId, null);
         int index = messages.indexWhere((x) => x.id == eventId);
         if (index != -1) {
           final metadata = {...messages[index].metadata ?? {}};

@@ -39,6 +39,9 @@ fn duration_from_secs(secs: u64) -> EfkDuration;
 
 fn parse_markdown(text: string) -> Option<string>;
 
+/// create size object to be used for thumbnail download
+fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize>;
+
 
 //  ########  ########  #### ##     ## #### ######## #### ##     ## ########  ######  
 //  ##     ## ##     ##  ##  ###   ###  ##     ##     ##  ##     ## ##       ##    ## 
@@ -154,10 +157,9 @@ object UserProfile {
     fn has_avatar() -> Future<Result<bool>>;
 
     /// get the binary data of avatar
-    fn get_avatar() -> Future<Result<OptionBuffer>>;
-
-    /// get the binary data of thumbnail
-    fn get_thumbnail(width: u64, height: u64) -> Future<Result<OptionBuffer>>;
+    /// if thumb size is given, avatar thumbnail is returned
+    /// if thumb size is not given, avatar file is returned
+    fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
     fn get_display_name() -> Future<Result<OptionString>>;
@@ -168,10 +170,9 @@ object RoomProfile {
     fn has_avatar() -> Result<bool>;
 
     /// get the binary data of avatar
-    fn get_avatar() -> Future<Result<OptionBuffer>>;
-
-    /// get the binary data of thumbnail
-    fn get_thumbnail(width: u64, height: u64) -> Future<Result<OptionBuffer>>;
+    /// if thumb size is given, avatar thumbnail is returned
+    /// if thumb size is not given, avatar file is returned
+    fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
     fn get_display_name() -> Future<Result<OptionString>>;
@@ -246,6 +247,8 @@ object ThumbnailInfo {
     fn height() -> Option<u64>;
 }
 
+object ThumbnailSize {}
+
 object DeviceId {
     fn to_string() -> string;
 }
@@ -293,7 +296,9 @@ object NewsSlide {
     /// if this is a media, hand over the description
     fn msg_content() -> MsgContent;
     /// if this is a media, hand over the data
-    fn source_binary() -> Future<Result<buffer<u8>>>;
+    /// if thumb size is given, media thumbnail is returned
+    /// if thumb size is not given, media file is returned
+    fn source_binary(thumb_size: Option<ThumbnailSize>) -> Future<Result<buffer<u8>>>;
 }
 
 /// A news entry
@@ -982,9 +987,11 @@ object Convo {
     fn typing_notice(typing: bool) -> Future<Result<bool>>;
 
     /// decrypted media file data
+    /// if thumb size is given, media thumbnail is returned
+    /// if thumb size is not given, media file is returned
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
-    fn media_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+    fn media_binary(event_id: string, thumb_size: Option<ThumbnailSize>) -> Future<Result<buffer<u8>>>;
 
     /// get the user status on this room
     fn room_type() -> string;
@@ -1007,19 +1014,14 @@ object Convo {
     /// get the users that were invited to this room
     fn get_invitees() -> Future<Result<Vec<Member>>>;
 
-    /// download media (image/audio/video/file) to specified path
-    fn download_media(event_id: string, dir_path: string) -> Future<Result<string>>;
+    /// download media (image/audio/video/file/location) to specified path
+    /// if thumb size is given, media thumbnail is returned
+    /// if thumb size is not given, media file is returned
+    fn download_media(event_id: string, thumb_size: Option<ThumbnailSize>, dir_path: string) -> Future<Result<OptionString>>;
 
     /// get the path that media (image/audio/video/file) was saved
     /// return None when never downloaded
-    fn media_path(event_id: string) -> Future<Result<OptionString>>;
-
-    /// download media (image/video/file/location) thumbnail to specified path
-    fn download_media_thumbnail(event_id: string, dir_path: string) -> Future<Result<OptionString>>;
-
-    /// get the path that media (image/video/file/location) thumbnail was saved
-    /// return None when never downloaded
-    fn media_thumbnail_path(event_id: string) -> Future<Result<OptionString>>;
+    fn media_path(event_id: string, is_thumb: bool) -> Future<Result<OptionString>>;
 
     /// initially called to get receipt status of room members
     fn user_receipts() -> Future<Result<Vec<ReceiptRecord>>>;
@@ -1122,7 +1124,9 @@ object Attachment {
     /// if this is a media, hand over the description
     fn msg_content() -> MsgContent;
     /// if this is a media, hand over the data
-    fn source_binary() -> Future<Result<buffer<u8>>>;
+    /// if thumb size is given, media thumbnail is returned
+    /// if thumb size is not given, media file is returned
+    fn source_binary(thumb_size: Option<ThumbnailSize>) -> Future<Result<buffer<u8>>>;
 }
 
 /// Reference to the attachments section of a particular item
@@ -1496,7 +1500,9 @@ object SpaceHierarchyRoomInfo {
     fn has_avatar() -> bool;
 
     /// get the binary data of avatar
-    fn get_avatar() -> Future<Result<OptionBuffer>>;
+    /// if thumb size is given, avatar thumbnail is returned
+    /// if thumb size is not given, avatar file is returned
+    fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
     // recommended server to try to join via
     fn via_server_name() -> Option<string>;
 }
@@ -1810,7 +1816,9 @@ object Account {
     fn set_display_name(name: string) -> Future<Result<bool>>;
 
     /// The avatar of the client
-    fn avatar() -> Future<Result<OptionBuffer>>;
+    /// if thumb size is given, avatar thumbnail is returned
+    /// if thumb size is not given, avatar file is returned
+    fn avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
 
     /// Change the avatar of the account with the provided
     /// local file path

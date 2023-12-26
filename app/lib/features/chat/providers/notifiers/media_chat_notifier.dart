@@ -26,7 +26,7 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
       );
       try {
         //Get media path if already downloaded
-        final mediaPath = await _convo!.mediaPath(messageId);
+        final mediaPath = await _convo!.mediaPath(messageId, false);
         if (mediaPath.text() != null) {
           state = state.copyWith(
             mediaFile: File(mediaPath.text()!),
@@ -60,14 +60,18 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
 
       //Download media if media path is not available
       final tempDir = await getTemporaryDirectory();
-      String mediaPath = await _convo!.downloadMedia(
+      final result = await _convo!.downloadMedia(
         messageId,
+        null,
         tempDir.path,
       );
-      state = state.copyWith(
-        mediaFile: File(mediaPath),
-        isDownloading: false,
-      );
+      String? mediaPath = result.text();
+      if (mediaPath != null) {
+        state = state.copyWith(
+          mediaFile: File(mediaPath),
+          isDownloading: false,
+        );
+      }
     }
   }
 }

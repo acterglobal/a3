@@ -15,7 +15,7 @@ use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStr
 use matrix_sdk::{
     config::SyncSettings,
     event_handler::EventHandlerHandle,
-    media::{MediaFormat, MediaRequest},
+    media::MediaRequest,
     room::Room as SdkRoom,
     ruma::api::client::{
         error::{ErrorBody, ErrorKind},
@@ -49,7 +49,9 @@ use tokio::{
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
 
-use crate::{Account, Convo, Notification, OptionString, Room, Space, UserProfile, RUNTIME};
+use crate::{
+    Account, Convo, Notification, OptionString, Room, Space, ThumbnailSize, UserProfile, RUNTIME,
+};
 
 use super::{
     api::FfiBuffer, device::DeviceController, invitation::InvitationController,
@@ -375,13 +377,15 @@ impl Client {
         Ok(())
     }
 
-    pub(crate) async fn source_binary(&self, source: MediaSource) -> Result<FfiBuffer<u8>> {
+    pub(crate) async fn source_binary(
+        &self,
+        source: MediaSource,
+        thumb_size: Option<Box<ThumbnailSize>>,
+    ) -> Result<FfiBuffer<u8>> {
         // any variable in self can't be called directly in spawn
         let client = self.clone();
-        let request = MediaRequest {
-            source,
-            format: MediaFormat::File,
-        };
+        let format = ThumbnailSize::parse_into_media_format(thumb_size);
+        let request = MediaRequest { source, format };
         trace!(?request, "tasked to get source binary");
         RUNTIME
             .spawn(async move {

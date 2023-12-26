@@ -73,8 +73,8 @@ pub use calendar_events::{CalendarEvent, CalendarEventDraft, CalendarEventUpdate
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
-    duration_from_secs, DeviceRecord, MediaSource, MsgContent, OptionBuffer, OptionString,
-    ReactionRecord, ThumbnailInfo,
+    duration_from_secs, new_thumb_size, DeviceRecord, MediaSource, MsgContent, OptionBuffer,
+    OptionString, ReactionRecord, ThumbnailInfo, ThumbnailSize,
 };
 pub use convo::{
     new_convo_settings_builder, Convo, ConvoDiff, CreateConvoSettings, CreateConvoSettingsBuilder,

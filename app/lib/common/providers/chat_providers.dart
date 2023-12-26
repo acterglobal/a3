@@ -1,5 +1,6 @@
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/notifiers/chat_notifiers.dart';
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -26,7 +27,9 @@ final chatProfileDataProvider =
   if (!profile.hasAvatar()) {
     return ProfileData(displayName.text(), null, isDm: isDm);
   }
-  final avatar = await profile.getThumbnail(48, 48);
+  final sdk = await ref.watch(sdkProvider.future);
+  final size = sdk.newThumbSize(48, 48);
+  final avatar = await profile.getAvatar(size);
   return ProfileData(displayName.text(), avatar.data(), isDm: isDm);
 });
 
@@ -110,7 +113,9 @@ final memberProfileProvider =
     FutureProvider.family<ProfileData, Member>((ref, member) async {
   UserProfile profile = member.getProfile();
   OptionString displayName = await profile.getDisplayName();
-  final avatar = await profile.getThumbnail(62, 60);
+  final sdk = await ref.watch(sdkProvider.future);
+  final size = sdk.newThumbSize(62, 60);
+  final avatar = await profile.getAvatar(size);
   return ProfileData(displayName.text(), avatar.data());
 });
 
