@@ -11,16 +11,19 @@ class TaskPage extends ConsumerWidget {
   static const taskListTitleKey = Key('task-list-title');
   final String taskListId;
   final String taskId;
-  const TaskPage({
+  late TaskQuery query;
+  TaskPage({
     required this.taskListId,
     required this.taskId,
     super.key,
-  });
+  }) {
+    query = TaskQuery(taskListId, taskId);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final taskList = ref.watch(taskListProvider(taskListId));
-    final task = ref.watch(taskProvider(TaskQuery(taskListId, taskId)));
+    final task = ref.watch(taskProvider(query));
     return Scaffold(
       appBar: AppBar(
         title: Wrap(
@@ -38,9 +41,9 @@ class TaskPage extends ConsumerWidget {
         child: Column(
           children: [
             task.when(
-              data: (task) => TaskInfo(task: task),
-              error: (e, s) => Text('failed to load: $e'),
-              loading: () => const Text('loading task'),
+              data: (t) => TaskInfo(task: t),
+              error: (e, s) => Text('failed to load task: $e'),
+              loading: () => const TaskInfoSkeleton(),
             ),
             // following: comments
           ],

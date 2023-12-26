@@ -9,16 +9,25 @@ final tasksProvider =
   return TasksNotifier();
 });
 
+class TaskNotFound extends Error {}
+
 class TaskQuery {
   final String taskListId;
   final String taskId;
   const TaskQuery(this.taskListId, this.taskId);
 }
 
+final notifierTaskProvider =
+    AsyncNotifierProvider.family<TaskNotifier, Task, Task>(() {
+  return TaskNotifier();
+});
+
 final taskProvider =
     FutureProvider.autoDispose.family<Task, TaskQuery>((ref, query) async {
   final taskList = await ref.watch(taskListProvider(query.taskListId).future);
-  return await taskList.task(query.taskId);
+  final task = await taskList.task(query.taskId);
+  return await ref
+      .watch(notifierTaskProvider(task).future); // ensure we stay updated
 });
 
 final taskCommentsProvider =

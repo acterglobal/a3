@@ -320,19 +320,6 @@ List<RouteBase> makeHomeShellRoutes(ref) {
       },
     ),
     GoRoute(
-      name: Routes.taskList.name,
-      path: Routes.taskList.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: TaskListPage(
-            taskListId: state.pathParameters['taskListId']!,
-          ),
-        );
-      },
-    ),
-    GoRoute(
       name: Routes.task.name,
       path: Routes.task.route,
       redirect: authGuardRedirect,
@@ -342,6 +329,19 @@ List<RouteBase> makeHomeShellRoutes(ref) {
           child: TaskPage(
             taskListId: state.pathParameters['taskListId']!,
             taskId: state.pathParameters['taskId']!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.taskList.name,
+      path: Routes.taskList.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: TaskListPage(
+            taskListId: state.pathParameters['taskListId']!,
           ),
         );
       },

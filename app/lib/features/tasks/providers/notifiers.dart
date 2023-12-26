@@ -43,3 +43,23 @@ class TasksNotifier extends FamilyAsyncNotifier<TasksOverview, TaskList> {
     return retState;
   }
 }
+
+class TaskNotifier extends FamilyAsyncNotifier<Task, Task> {
+  late Stream<void> _subscriber;
+  // ignore: unused_field
+  late StreamSubscription<void> _listener;
+
+  @override
+  Future<Task> build(Task arg) async {
+    // Load initial todo list from the remote repository
+    final task = arg;
+    _subscriber = task.subscribeStream();
+    _listener = _subscriber.listen((element) async {
+      debugPrint('got tasks list update');
+      state = await AsyncValue.guard(() async {
+        return await task.refresh();
+      });
+    });
+    return task;
+  }
+}

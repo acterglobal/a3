@@ -41,7 +41,7 @@ extension ActerTasks on ConvenientTest {
     }
   }
 
-  Future<String?> createTaskList(
+  Future<List<String>> createTaskList(
     String title, {
     String? description,
     List<String>? tasks,
@@ -65,6 +65,9 @@ extension ActerTasks on ConvenientTest {
     // // read the actual spaceId
     final page = taskListPage.evaluate().first.widget as TaskListPage;
     final taskListId = page.taskListId;
+
+    final taskIds = [taskListId];
+
     final inlineAddBtn =
         find.byKey(Key('task-list-$taskListId-add-task-inline'));
     await inlineAddBtn.should(findsOneWidget);
@@ -78,6 +81,16 @@ extension ActerTasks on ConvenientTest {
         await tester.testTextInput
             .receiveAction(TextInputAction.done); // submit
         await find.text(taskTitle).should(findsOneWidget);
+        // final taskEntry = find
+        //     .ancestor(
+        //       of: find.text(taskTitle),
+        //       matching: find
+        //           .byWidgetPredicate((Widget widget) => widget is TaskEntry),
+        //     )
+        //     .evaluate()
+        //     .first
+        //     .widget as TaskEntry;
+        // taskIds.add(taskEntry.task.eventIdStr());
       }
       // close inline add
       final cancelInlineAdd =
@@ -85,7 +98,27 @@ extension ActerTasks on ConvenientTest {
       await cancelInlineAdd.should(findsOneWidget);
       await cancelInlineAdd.tap();
     }
-    return taskListId;
+    return taskIds;
+  }
+
+  Future<List<String>> freshWithTasks(
+    List<String> tasks, {
+    String? listTitle,
+    String? spaceDisplayName,
+  }) async {
+    final spaceId = await freshAccountWithSpace(
+      spaceDisplayName: spaceDisplayName ?? 'Tasks',
+    );
+    await ensureTasksAreEnabled(spaceId);
+    await gotoSpace(spaceId, appTab: TabEntry.tasks);
+    await navigateTo([
+      SpaceTasksPage.createTaskKey,
+    ]);
+
+    return createTaskList(
+      listTitle ?? 'Errands',
+      tasks: tasks,
+    );
   }
 }
 
@@ -237,23 +270,15 @@ void tasksTests() {
   });
 
   acterTestWidget('Check and uncheck in overview', (t) async {
-    final spaceId = await t.freshAccountWithSpace(
-      spaceDisplayName: 'Protest Camp',
-    );
-    await t.ensureTasksAreEnabled(spaceId);
-    await t.navigateTo([
-      MainNavKeys.quickJump,
-      QuickJumpKeys.createTaskListAction,
-    ]);
-
-    await t.createTaskList(
-      'Operations',
-      tasks: [
+    await t.freshWithTasks(
+      [
         'Refill sanitizer',
         'Buy duct tape',
       ],
-      selectSpaceId: spaceId,
+      listTitle: 'Operations',
+      spaceDisplayName: 'Protest Camp',
     );
+
     await t.navigateTo([MainNavKeys.quickJump, QuickJumpKeys.tasks]);
     // we see our entry now
     await find.text('Operations').should(findsOneWidget);
