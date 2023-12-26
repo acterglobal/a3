@@ -1256,10 +1256,11 @@ packages:
   omni_datetime_picker:
     dependency: "direct main"
     description:
-      name: omni_datetime_picker
-      sha256: d13f237b7fe8a849203563e4e95ca2a43fe3b357364ad9b224899e0710fd72fb
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: cfad8e8ce0ab7753cbe4c10e773281c8127a66d8
+      url: "https://github.com/acterglobal/OmniDateTimePicker"
+    source: git
     version: "1.0.9"
   overlay_support:
     dependency: "direct main"

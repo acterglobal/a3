@@ -16135,6 +16135,19 @@ class Api {
           void Function(
             int,
           )>();
+  late final _taskUpdateBuilderShowWithoutTimePtr = _lookup<
+      ffi.NativeFunction<
+          _TaskUpdateBuilderShowWithoutTimeReturn Function(
+            ffi.Int64,
+            ffi.Uint8,
+          )>>("__TaskUpdateBuilder_show_without_time");
+
+  late final _taskUpdateBuilderShowWithoutTime =
+      _taskUpdateBuilderShowWithoutTimePtr.asFunction<
+          _TaskUpdateBuilderShowWithoutTimeReturn Function(
+            int,
+            int,
+          )>();
   late final _taskUpdateBuilderUtcStartFromRfc3339Ptr = _lookup<
       ffi.NativeFunction<
           _TaskUpdateBuilderUtcStartFromRfc3339Return Function(
@@ -16566,6 +16579,19 @@ class Api {
       void Function(
         int,
       )>();
+  late final _taskDraftShowWithoutTimePtr = _lookup<
+      ffi.NativeFunction<
+          _TaskDraftShowWithoutTimeReturn Function(
+            ffi.Int64,
+            ffi.Uint8,
+          )>>("__TaskDraft_show_without_time");
+
+  late final _taskDraftShowWithoutTime =
+      _taskDraftShowWithoutTimePtr.asFunction<
+          _TaskDraftShowWithoutTimeReturn Function(
+            int,
+            int,
+          )>();
   late final _taskDraftUtcStartFromRfc3339Ptr = _lookup<
       ffi.NativeFunction<
           _TaskDraftUtcStartFromRfc3339Return Function(
@@ -34755,6 +34781,38 @@ class TaskUpdateBuilder {
     return;
   }
 
+  /// set whether the due date contains the time
+  void showWithoutTime(
+    bool show_,
+  ) {
+    final tmp1 = show_;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    final tmp3 = _api._taskUpdateBuilderShowWithoutTime(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3.arg0;
+    final tmp6 = tmp3.arg1;
+    final tmp7 = tmp3.arg2;
+    final tmp8 = tmp3.arg3;
+    if (tmp5 == 0) {
+      debugAllocation("handle error", tmp6, tmp7);
+      final ffi.Pointer<ffi.Uint8> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+      final tmp5_0 =
+          utf8.decode(tmp6_0.asTypedList(tmp7), allowMalformed: true);
+      if (tmp7 > 0) {
+        final ffi.Pointer<ffi.Void> tmp6_0;
+        tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+        _api.__deallocate(tmp6_0, tmp8, 1);
+      }
+      throw tmp5_0;
+    }
+    return;
+  }
+
   /// set the utc_start for this task list in rfc3339 format
   void utcStartFromRfc3339(
     String utcStart,
@@ -35391,6 +35449,38 @@ class TaskDraft {
     _api._taskDraftUnsetUtcDue(
       tmp0,
     );
+    return;
+  }
+
+  /// set whether the due date contains the time
+  void showWithoutTime(
+    bool show_,
+  ) {
+    final tmp1 = show_;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    final tmp3 = _api._taskDraftShowWithoutTime(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3.arg0;
+    final tmp6 = tmp3.arg1;
+    final tmp7 = tmp3.arg2;
+    final tmp8 = tmp3.arg3;
+    if (tmp5 == 0) {
+      debugAllocation("handle error", tmp6, tmp7);
+      final ffi.Pointer<ffi.Uint8> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+      final tmp5_0 =
+          utf8.decode(tmp6_0.asTypedList(tmp7), allowMalformed: true);
+      if (tmp7 > 0) {
+        final ffi.Pointer<ffi.Void> tmp6_0;
+        tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+        _api.__deallocate(tmp6_0, tmp8, 1);
+      }
+      throw tmp5_0;
+    }
     return;
   }
 
@@ -46270,6 +46360,17 @@ class _TaskUpdateBuilderUtcDueFromFormatReturn extends ffi.Struct {
   external int arg3;
 }
 
+class _TaskUpdateBuilderShowWithoutTimeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
 class _TaskUpdateBuilderUtcStartFromRfc3339Return extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -46326,6 +46427,17 @@ class _TaskDraftUtcDueFromRfc2822Return extends ffi.Struct {
 }
 
 class _TaskDraftUtcDueFromFormatReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _TaskDraftShowWithoutTimeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

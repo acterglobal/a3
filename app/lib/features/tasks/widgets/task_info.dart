@@ -1,5 +1,5 @@
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/features/tasks/providers/tasks.dart';
+import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -7,12 +7,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:jiffy/jiffy.dart';
+import 'dart:core';
 
 class TaskInfo extends ConsumerWidget {
   static const statusBtnNotDone = Key('task-info-status-not-done');
   static const statusBtnDone = Key('task-info-status-done');
+  static const dueDateField = Key('task-due-field');
   final Task task;
   const TaskInfo({Key? key, required this.task}) : super(key: key);
+
+  Future<void> duePicker(BuildContext context, DateTime? currentDue) async {
+    final newDue = await DuePicker.showPicker(
+        context: context,
+        initialDate: currentDue); // FIXME: add unsetting support
+    if (newDue == null) {
+      return;
+    }
+    final updater = task.updateBuilder();
+    updater.utcDueFromRfc3339(newDue.due.toIso8601String());
+    updater.showWithoutTime(!newDue.includeTime);
+    await updater.send();
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,7 +37,11 @@ class TaskInfo extends ConsumerWidget {
     if (dueDate == null) {
       body.add(
         ListTile(
+          key: dueDateField,
           dense: true,
+          onTap: () async {
+            await duePicker(context, null);
+          },
           subtitle: const Text('Due'),
           title: Text(
             '(None)',
@@ -40,7 +59,11 @@ class TaskInfo extends ConsumerWidget {
       if (due.isBefore(now)) {
         body.add(
           ListTile(
+            key: dueDateField,
             dense: true,
+            onTap: () async {
+              await duePicker(context, due.dateTime);
+            },
             title: Tooltip(
               message: due.format(),
               child: Text(
@@ -59,7 +82,11 @@ class TaskInfo extends ConsumerWidget {
         // FIXME: HL today, tomorrow
         body.add(
           ListTile(
+            key: dueDateField,
             dense: true,
+            onTap: () async {
+              await duePicker(context, due.dateTime);
+            },
             subtitle: const Text('Due'),
             title: Text(
               due.fromNow(),

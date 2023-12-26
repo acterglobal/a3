@@ -1246,6 +1246,9 @@ object TaskUpdateBuilder {
     fn unset_utc_due();
     fn unset_utc_due_update();
 
+    /// set whether the due date contains the time
+    fn show_without_time(show: bool) -> Result<()>;
+
     /// set the utc_start for this task list in rfc3339 format
     fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
     /// set the utc_start for this task list in rfc2822 format
@@ -1313,6 +1316,9 @@ object TaskDraft {
     /// set the utc_due for this task in custom format
     fn utc_due_from_format(utc_due: string, format: string) -> Result<()>;
     fn unset_utc_due();
+
+    /// set whether the due date contains the time
+    fn show_without_time(show: bool) -> Result<()>;
 
     /// set the utc_start for this task in rfc3339 format
     fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;

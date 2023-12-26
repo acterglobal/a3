@@ -122,16 +122,9 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                   }
                   if (showInlineAddTask) {
                     children.add(
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 8,
-                        ),
-                        child: _InlineTaskAdd(
-                          taskList: taskList,
-                          cancel: () =>
-                              setState(() => showInlineAddTask = false),
-                        ),
+                      _InlineTaskAdd(
+                        taskList: taskList,
+                        cancel: () => setState(() => showInlineAddTask = false),
                       ),
                     );
                   } else {
@@ -145,7 +138,10 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                           key: Key('task-list-$tlId-add-task-inline'),
                           onPressed: () =>
                               {setState(() => showInlineAddTask = true)},
-                          child: const Text('Add Task'),
+                          child: Text(
+                            'Add Task',
+                            style: Theme.of(context).textTheme.bodySmall!,
+                          ),
                         ),
                       ),
                     );
@@ -213,10 +209,20 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
               key: Key('task-list-$tlId-add-task-inline-txt'),
               focusNode: focusNode,
               controller: _textCtrl,
-              decoration: const InputDecoration(
-                prefixIcon: Icon(Atlas.plus_circle_thin),
-                border: UnderlineInputBorder(),
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Atlas.plus_circle_thin),
+                focusedBorder: const UnderlineInputBorder(),
+                errorBorder: const UnderlineInputBorder(),
+                enabledBorder: const UnderlineInputBorder(),
                 labelText: 'Title the new task..',
+                suffix: IconButton(
+                  key: Key('task-list-$tlId-add-task-inline-cancel'),
+                  onPressed: widget.cancel,
+                  icon: const Icon(
+                    Atlas.xmark_circle_thin,
+                    size: 24,
+                  ),
+                ),
               ),
               onFieldSubmitted: (value) {
                 if (_formKey.currentState!.validate()) {
@@ -230,13 +236,6 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
                 }
                 return null;
               },
-            ),
-          ),
-          IconButton(
-            key: Key('task-list-$tlId-add-task-inline-cancel'),
-            onPressed: widget.cancel,
-            icon: const Icon(
-              Atlas.xmark_circle_thin,
             ),
           ),
         ],

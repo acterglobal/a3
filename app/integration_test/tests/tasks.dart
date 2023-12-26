@@ -9,6 +9,7 @@ import 'package:acter/features/space/widgets/space_toolbar.dart';
 import 'package:acter/features/tasks/dialogs/create_task_list_sheet.dart';
 import 'package:acter/features/tasks/pages/task_list_page.dart';
 import 'package:acter/features/tasks/pages/tasks_page.dart';
+import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter/features/tasks/widgets/task_entry.dart';
 import 'package:acter/features/tasks/widgets/task_info.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
@@ -302,5 +303,45 @@ void tasksTests() {
     await btnDoneFinder.tap(); // toggle undone
 
     await btnNotDoneFinder.should(findsOneWidget); // is undone again
+  });
+
+  acterTestWidget('Change due date', (t) async {
+    await t.freshWithTasks(
+      [
+        'Refill sanitizer',
+        'Buy duct tape',
+      ],
+      listTitle: 'Operations',
+      spaceDisplayName: 'Protest Camp',
+    );
+
+    // we see our entry now
+    await find.text('Operations').should(findsOneWidget);
+    await find.text('Buy duct tape').should(findsOneWidget);
+    await find
+        .text('Buy duct tape')
+        .tap(); // this should navigate us tp the item page
+
+    final btnNotDoneFinder = find.byKey(TaskInfo.dueDateField);
+    await btnNotDoneFinder.should(findsOneWidget);
+    await btnNotDoneFinder.tap(); // open due dialog
+
+    // select tomorrow
+    final tomorrow = find.byKey(DuePicker.quickSelectTomorrow);
+    await tomorrow.should(findsOneWidget);
+    await tomorrow.tap(); // set to tomorrow
+
+    await btnNotDoneFinder.should(findsOneWidget);
+    find.descendant(of: btnNotDoneFinder, matching: find.text('tomorrow'));
+
+    await btnNotDoneFinder.tap(); // open due dialog
+
+    // select today
+    final today = find.byKey(DuePicker.quickSelectToday);
+    await today.should(findsOneWidget);
+    await today.tap(); // set to today
+
+    await btnNotDoneFinder.should(findsOneWidget);
+    find.descendant(of: btnNotDoneFinder, matching: find.text('today'));
   });
 }
