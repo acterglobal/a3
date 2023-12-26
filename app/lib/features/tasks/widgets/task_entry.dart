@@ -103,6 +103,7 @@ class TaskEntry extends ConsumerWidget {
           )
           .style,
       leading: InkWell(
+        key: isDone ? doneKey() : notDoneKey(),
         child: Padding(
           padding: const EdgeInsets.only(right: 5),
           child: Icon(
@@ -145,5 +146,15 @@ class TaskEntry extends ConsumerWidget {
         },
       ),
     );
+  }
+
+  Key doneKey() {
+    final taskId = task.eventIdStr();
+    return Key('task-entry-$taskId-status-btn-done');
+  }
+
+  Key notDoneKey() {
+    final taskId = task.eventIdStr();
+    return Key('task-entry-$taskId-status-btn-not-done');
   }
 }
