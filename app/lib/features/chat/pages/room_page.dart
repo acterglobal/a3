@@ -10,6 +10,7 @@ import 'package:acter/features/chat/widgets/avatar_builder.dart';
 import 'package:acter/features/chat/widgets/bubble_builder.dart';
 import 'package:acter/features/chat/widgets/custom_input.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
+import 'package:acter/features/chat/widgets/file_message_builder.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
@@ -270,6 +271,16 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                     message: message,
                     messageWidth: messageWidth,
                   ),
+                  fileMessageBuilder: (
+                    types.FileMessage message, {
+                    required messageWidth,
+                  }) {
+                    return FileMessageBuilder(
+                      convo: convo,
+                      message: message,
+                      messageWidth: messageWidth,
+                    );
+                  },
                   customMessageBuilder: (
                     types.CustomMessage message, {
                     required int messageWidth,

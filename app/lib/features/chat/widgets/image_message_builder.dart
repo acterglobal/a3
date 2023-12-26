@@ -1,7 +1,9 @@
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/widgets/image_dialog.dart';
+import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
@@ -21,68 +23,137 @@ class ImageMessageBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final size = MediaQuery.of(context).size;
-    final imageFile = ref.watch(imageFileFromMessageIdProvider(message.id));
-    return imageFile.when(
-      data: (imageFileData) {
-        return InkWell(
-          onTap: () {
-            showAdaptiveDialog(
-              context: context,
-              barrierDismissible: false,
-              useRootNavigator: false,
-              builder: (ctx) => ImageDialog(
-                title: message.name,
-                imageFile: imageFileData,
+    final mediaState = ref.watch(mediaChatStateProvider(message.id));
+    if (mediaState.mediaChatLoadingState.isLoading ||
+        mediaState.isDownloading) {
+      return loadingIndication(context);
+    } else if (mediaState.mediaFile == null) {
+      return imagePlaceholder(context, mediaState, ref);
+    } else {
+      return imageUI(context, mediaState);
+    }
+  }
+
+  Widget loadingIndication(BuildContext context) {
+    return const SizedBox(
+      width: 150,
+      height: 150,
+      child: Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  Widget imagePlaceholder(
+    BuildContext context,
+    MediaChatState mediaState,
+    WidgetRef ref,
+  ) {
+    return InkWell(
+      onTap: () async {
+        if (mediaState.mediaFile != null) {
+          showAdaptiveDialog(
+            context: context,
+            barrierDismissible: false,
+            useRootNavigator: false,
+            builder: (ctx) => ImageDialog(
+              title: message.name,
+              imageFile: mediaState.mediaFile!,
+            ),
+          );
+        } else {
+          await ref
+              .read(mediaChatStateProvider(message.id).notifier)
+              .downloadMedia();
+        }
+      },
+      child: SizedBox(
+        width: 200,
+        height: 150,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.download,
+              size: 28,
+            ),
+            const SizedBox(height: 8),
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.onSecondary,
+                borderRadius: BorderRadius.circular(8),
               ),
-            );
-          },
-          child: ClipRRect(
-            borderRadius: isReplyContent
-                ? BorderRadius.circular(6)
-                : BorderRadius.circular(15),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight:
-                    isReplyContent ? size.height * 0.2 : size.height * 0.3,
-                maxWidth: isReplyContent ? size.width * 0.2 : size.width * 0.3,
-              ),
-              child: Image.file(
-                imageFileData,
-                frameBuilder: (
-                  BuildContext context,
-                  Widget child,
-                  int? frame,
-                  bool wasSynchronouslyLoaded,
-                ) {
-                  if (wasSynchronouslyLoaded) {
-                    return child;
-                  }
-                  return AnimatedOpacity(
-                    opacity: frame == null ? 0 : 1,
-                    duration: const Duration(seconds: 1),
-                    curve: Curves.easeOut,
-                    child: child,
-                  );
-                },
-                errorBuilder: (
-                  BuildContext context,
-                  Object url,
-                  StackTrace? error,
-                ) {
-                  return Text('Could not load image due to $error');
-                },
-                fit: BoxFit.cover,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.image,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    formatBytes(message.size.truncate()),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget imageUI(BuildContext context, MediaChatState mediaState) {
+    final size = MediaQuery.of(context).size;
+    return InkWell(
+      onTap: () {
+        showAdaptiveDialog(
+          context: context,
+          barrierDismissible: false,
+          useRootNavigator: false,
+          builder: (ctx) => ImageDialog(
+            title: message.name,
+            imageFile: mediaState.mediaFile!,
           ),
         );
       },
-      error: (error, stack) => Center(child: Text('Loading failed: $error')),
-      loading: () => const SizedBox(
-        height: 150,
-        width: 150,
-        child: Icon(Icons.image),
+      child: ClipRRect(
+        borderRadius: isReplyContent
+            ? BorderRadius.circular(6)
+            : BorderRadius.circular(15),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: isReplyContent ? size.height * 0.2 : size.height * 0.3,
+            maxWidth: isReplyContent ? size.width * 0.2 : size.width * 0.3,
+          ),
+          child: Image.file(
+            mediaState.mediaFile!,
+            frameBuilder: (
+              BuildContext context,
+              Widget child,
+              int? frame,
+              bool wasSynchronouslyLoaded,
+            ) {
+              if (wasSynchronouslyLoaded) {
+                return child;
+              }
+              return AnimatedOpacity(
+                opacity: frame == null ? 0 : 1,
+                duration: const Duration(seconds: 1),
+                curve: Curves.easeOut,
+                child: child,
+              );
+            },
+            errorBuilder: (
+              BuildContext context,
+              Object url,
+              StackTrace? error,
+            ) {
+              return Text('Could not load image due to $error');
+            },
+            fit: BoxFit.cover,
+          ),
+        ),
       ),
     );
   }
