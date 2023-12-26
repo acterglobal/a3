@@ -681,7 +681,7 @@ impl Room {
 
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().context("MIME type should be given")?;
-                let buf = std::fs::read(path).context("File should be read")?;
+                let buf = std::fs::read(path)?;
                 let response = client.media().upload(&content_type, buf).await?;
 
                 let content_uri = response.content_uri;
@@ -716,11 +716,8 @@ impl Room {
                 if !member.can_send_state(StateEventType::RoomAvatar) {
                     bail!("No permission to change avatar of this room");
                 }
-                let resp = room
-                    .remove_avatar()
-                    .await
-                    .context("Couldn't remove avatar from room")?;
-                Ok(resp.event_id)
+                let response = room.remove_avatar().await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -746,11 +743,8 @@ impl Room {
                 if !member.can_send_state(StateEventType::RoomTopic) {
                     bail!("No permission to change topic of this room");
                 }
-                let resp = room
-                    .set_room_topic(topic.as_str())
-                    .await
-                    .context("Couldn't set topic to the room")?;
-                Ok(resp.event_id)
+                let response = room.set_room_topic(topic.as_str()).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -776,11 +770,8 @@ impl Room {
                 if !member.can_send_state(StateEventType::RoomName) {
                     bail!("No permission to change name of this room");
                 }
-                let resp = room
-                    .set_name(name)
-                    .await
-                    .context("Couldn't set name to the room")?;
-                Ok(resp.event_id)
+                let response = room.set_name(name).await?;
+                Ok(response.event_id)
             })
             .await?
     }
@@ -1228,8 +1219,7 @@ impl Room {
                 }
                 let mut path = PathBuf::from(dir_path.clone());
                 path.push(filename.unwrap_or_else(|| event_id.clone()));
-                let mut file =
-                    std::fs::File::create(path.clone()).context("File should be created")?;
+                let mut file = std::fs::File::create(path.clone())?;
                 file.write_all(&data)?;
                 let key = [
                     room.room_id().as_str().as_bytes(),
@@ -1409,8 +1399,7 @@ impl Room {
                 }
                 let mut path = PathBuf::from(dir_path.clone());
                 path.push(filename.unwrap_or_else(|| event_id.clone()));
-                let mut file =
-                    std::fs::File::create(path.clone()).context("File should be created")?;
+                let mut file = std::fs::File::create(path.clone())?;
                 file.write_all(&data)?;
                 let key = [
                     room.room_id().as_str().as_bytes(),

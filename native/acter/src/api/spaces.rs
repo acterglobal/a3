@@ -484,11 +484,13 @@ impl Space {
 
                 for state in default_acter_space_states() {
                     println!("{:?}", state);
-                    let event_type: StateEventType = state.get_field("type")?.context("given")?;
+                    let event_type = state
+                        .get_field::<StateEventType>("type")?
+                        .context("couldn't get state event type")?;
                     let state_key = state.get_field("state_key")?.unwrap_or_default();
                     let body = state
                         .get_field::<Raw<AnyStateEventContent>>("content")?
-                        .context("body is given")?;
+                        .context("couldn't get state content")?;
                     if !member.can_send_state(event_type.clone()) {
                         bail!(
                             "No permission to set {event_type} states of this room. Can't convert"

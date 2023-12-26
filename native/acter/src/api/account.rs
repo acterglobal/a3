@@ -73,7 +73,7 @@ impl Account {
             .spawn(async move {
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().context("MIME type should be given")?;
-                let data = std::fs::read(path).context("File should be read")?;
+                let data = std::fs::read(path)?;
                 let new_url = account.upload_avatar(&content_type, data).await?;
                 Ok(new_url)
             })
