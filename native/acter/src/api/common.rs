@@ -549,18 +549,18 @@ impl ThumbnailSize {
 
     pub fn parse_into_media_format(thumb_size: Option<Box<ThumbnailSize>>) -> MediaFormat {
         match thumb_size {
-            Some(thumb_size) => thumb_size.into(),
+            Some(thumb_size) => MediaFormat::from(thumb_size),
             None => MediaFormat::File,
         }
     }
 }
 
-impl Into<MediaFormat> for Box<ThumbnailSize> {
-    fn into(self) -> MediaFormat {
+impl From<Box<ThumbnailSize>> for MediaFormat {
+    fn from(val: Box<ThumbnailSize>) -> Self {
         MediaFormat::Thumbnail(MediaThumbnailSize {
             method: get_content_thumbnail::v3::Method::Scale,
-            width: self.width,
-            height: self.height,
+            width: val.width,
+            height: val.height,
         })
     }
 }

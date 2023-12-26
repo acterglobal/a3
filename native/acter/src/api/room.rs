@@ -1212,7 +1212,7 @@ impl Room {
                                 .and_then(|info| info.thumbnail_source.clone())
                                 .map(|source| MediaRequest {
                                     source,
-                                    format: thumb_size.into(),
+                                    format: MediaFormat::from(thumb_size),
                                 });
                             let filename = content
                                 .info
@@ -1232,7 +1232,7 @@ impl Room {
                                 .and_then(|info| info.thumbnail_source.clone())
                                 .map(|source| MediaRequest {
                                     source,
-                                    format: thumb_size.into(),
+                                    format: MediaFormat::from(thumb_size),
                                 });
                             let filename = content
                                 .info
@@ -1252,7 +1252,7 @@ impl Room {
                                 .and_then(|info| info.thumbnail_source.clone())
                                 .map(|source| MediaRequest {
                                     source,
-                                    format: thumb_size.into(),
+                                    format: MediaFormat::from(thumb_size),
                                 });
                             let filename = content
                                 .info
@@ -1272,7 +1272,7 @@ impl Room {
                                 .and_then(|info| info.thumbnail_source.clone())
                                 .map(|source| MediaRequest {
                                     source,
-                                    format: thumb_size.into(),
+                                    format: MediaFormat::from(thumb_size),
                                 });
                             let filename = content
                                 .info
