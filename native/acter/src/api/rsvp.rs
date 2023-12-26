@@ -299,7 +299,7 @@ impl RsvpManager {
 
     pub async fn my_status(&self) -> Result<String> {
         let manager = self.inner.clone();
-        let my_id = self.client.user_id().context("User not found")?;
+        let my_id = self.client.user_id()?;
         RUNTIME
             .spawn(async move {
                 let entries = manager.rsvp_entries().await?;

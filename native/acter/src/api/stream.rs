@@ -235,11 +235,11 @@ impl TimelineStream {
                     bail!("No permission to send message in this room");
                 }
 
-                let timeline_event = room.event(&event_id).await?;
-                let event_content = timeline_event
+                let event_content = room
+                    .event(&event_id)
+                    .await?
                     .event
-                    .deserialize_as::<RoomMessageEvent>()
-                    .context("Couldn't deserialise event")?;
+                    .deserialize_as::<RoomMessageEvent>()?;
 
                 let mut sent_by_me = false;
                 if let Some(user_id) = client.user_id() {

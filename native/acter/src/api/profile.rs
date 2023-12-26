@@ -161,11 +161,10 @@ impl RoomProfile {
     }
 
     pub fn has_avatar(&self) -> Result<bool> {
-        let room = self
-            .client
+        self.client
             .get_room(&self.room_id)
-            .context("Room not found")?;
-        Ok(room.avatar_url().is_some())
+            .context("Room not found")
+            .map(|x| x.avatar_url().is_some())
     }
 
     pub async fn get_avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {

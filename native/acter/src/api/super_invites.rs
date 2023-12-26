@@ -1,7 +1,7 @@
 // internal API
 
 use acter_core::super_invites::{api, CreateToken, Token, UpdateToken};
-use anyhow::Result;
+use anyhow::{Context, Result};
 
 use crate::{Client, RUNTIME};
 
@@ -133,7 +133,7 @@ impl SuperInvites {
                     // we just checked for it
                     let token = builder
                         .into_update_token()
-                        .expect("We just checked for the name");
+                        .context("couldn't convert to get update token from builder")?;
                     let req = api::update::Request::new(token);
                     let resp = c.send(req, None).await?;
                     resp.token
