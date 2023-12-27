@@ -243,7 +243,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   Future<void> handleBugReport() async {
     final appDocDir = await getApplicationDocumentsDirectory();
     // rage shake disallows dot in filename
-    String timestamp = Jiffy.now().toUtc().format();
+    String timestamp = DateTime.now().toIso8601String();
     final imagePath = await screenshotController.captureAndSave(
       appDocDir.path,
       fileName: 'screenshot_$timestamp.png',
