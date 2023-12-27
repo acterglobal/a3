@@ -1157,12 +1157,17 @@ object Task {
 
     /// unique event id associated with this task
     fn event_id_str() -> string;
+    /// the room this task lives in
+    fn room_id_str() -> string;
 
     /// the description of this task
     fn description() -> Option<MsgContent>;
 
+    /// initial author
+    fn author_str() -> string;
+
     /// the users assigned
-    fn assignees() -> Vec<UserId>;
+    fn assignees_str() -> Vec<string>;
 
     /// other users to inform about updates
     fn subscribers() -> Vec<UserId>;
@@ -1274,11 +1279,6 @@ object TaskUpdateBuilder {
     fn unset_categories();
     fn unset_categories_update();
 
-    /// set the assignees for this task list
-    fn assignees(assignees: Vec<UserId>);
-    fn unset_assignees();
-    fn unset_assignees_update();
-
     /// set the subscribers for this task list
     fn subscribers(subscribers: Vec<UserId>);
     fn unset_subscribers();
@@ -1336,10 +1336,6 @@ object TaskDraft {
     /// set the categories for this task
     fn categories(categories: Vec<string>);
     fn unset_categories();
-
-    /// set the assignees for this task
-    fn assignees(assignees: Vec<UserId>);
-    fn unset_assignees();
 
     /// set the subscribers for this task
     fn subscribers(subscribers: Vec<UserId>);

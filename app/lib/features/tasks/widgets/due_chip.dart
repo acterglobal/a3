@@ -49,10 +49,7 @@ class DueChip extends StatelessWidget {
     final textStyle = baseTextStyle ?? Theme.of(context).textTheme.bodySmall!;
     if (dueDate == null) {
       if (noneChild != null) {
-        return Chip(
-          visualDensity: visualDensity,
-          label: noneChild!,
-        );
+        return noneChild!;
       } else {
         return const SizedBox.shrink();
       }

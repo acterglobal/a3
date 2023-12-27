@@ -44,6 +44,7 @@ class TaskPage extends ConsumerWidget {
               data: (t) => TaskInfo(task: t),
               error: (e, s) => Text('failed to load task: $e'),
               loading: () => const TaskInfoSkeleton(),
+              skipLoadingOnReload: true,
             ),
             // following: comments
           ],

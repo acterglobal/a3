@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jiffy/jiffy.dart';
+import 'package:dart_date/dart_date.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 
 class PickedDue {
@@ -141,7 +141,7 @@ class _DuePickerState extends State<DuePicker> {
                     label: const Text('today'),
                     onPressed: () {
                       widget.onSelect(
-                        PickedDue(Jiffy.now().dateTime, false),
+                        PickedDue(DateTime.now(), false),
                       );
                     },
                   ),
@@ -150,7 +150,7 @@ class _DuePickerState extends State<DuePicker> {
                     label: const Text('tomorrow'),
                     onPressed: () {
                       widget.onSelect(
-                        PickedDue(Jiffy.now().add(days: 1).dateTime, false),
+                        PickedDue(DateTime.now().nextDay, false),
                       );
                     },
                   ),

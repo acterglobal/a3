@@ -1,16 +1,12 @@
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/widgets/user_chip.dart';
 import 'package:acter/features/tasks/widgets/due_chip.dart';
-import 'package:acter/features/tasks/widgets/due_picker.dart';
-import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:jiffy/jiffy.dart';
 import 'dart:core';
 
 class TaskInfo extends ConsumerWidget {
@@ -22,31 +18,8 @@ class TaskInfo extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<Widget> body = [];
-    final List<Widget> meta = [];
     final isDone = task.isDone();
-    final description = task.description();
-    if (description != null) {
-      final formattedBody = description.formattedBody();
-      if (formattedBody != null && formattedBody.isNotEmpty) {
-        body.add(
-          Padding(
-            padding: const EdgeInsets.only(right: 5),
-            child: RenderHtml(text: formattedBody),
-          ),
-        );
-      } else {
-        final str = description.body();
-        if (str.isNotEmpty) {
-          body.add(
-            Padding(
-              padding: const EdgeInsets.only(right: 5),
-              child: Text(str),
-            ),
-          );
-        }
-      }
-    }
+    final roomId = task.roomIdStr();
 
     return Column(
       children: [
@@ -84,14 +57,32 @@ class TaskInfo extends ConsumerWidget {
                           )
                       : Theme.of(context).textTheme.headlineSmall!,
                 ),
-                subtitle: Wrap(
+              ),
+              ListTile(
+                dense: true,
+                leading: const Icon(Atlas.user_plus_thin),
+                title: Wrap(
+                  children: [
+                    UserChip(
+                      visualDensity: VisualDensity.compact,
+                      memberId: task.authorStr(),
+                      roomId: roomId,
+                    ),
+                  ],
+                ),
+              ),
+              ListTile(
+                dense: true,
+                leading: const Icon(Atlas.calendar_date_thin),
+                title: Wrap(
                   children: [
                     DueChip(
+                      visualDensity: VisualDensity.compact,
                       key: dueDateField,
                       canChange: true,
                       task: task,
                       noneChild: Text(
-                        '(None)',
+                        'No due date',
                         style: Theme.of(context).textTheme.bodySmall!.copyWith(
                               fontWeight: FontWeight.w100,
                               fontStyle: FontStyle.italic,
@@ -99,15 +90,75 @@ class TaskInfo extends ConsumerWidget {
                             ),
                       ),
                     ),
-                    ...meta,
                   ],
                 ),
               ),
-              ...body,
+              buildAssignees(context, ref),
+              ListTile(
+                dense: true,
+                leading: const Icon(Atlas.notebook_thin),
+                titleAlignment: ListTileTitleAlignment.bottom,
+                title: buildBody(context, ref),
+              ),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget buildBody(BuildContext context, WidgetRef ref) {
+    final description = task.description();
+    if (description != null) {
+      final formattedBody = description.formattedBody();
+      if (formattedBody != null && formattedBody.isNotEmpty) {
+        return Padding(
+          padding: const EdgeInsets.only(right: 5),
+          child: RenderHtml(text: formattedBody),
+        );
+      } else {
+        final str = description.body();
+        if (str.isNotEmpty) {
+          return Padding(
+            padding: const EdgeInsets.only(right: 5),
+            child: Text(str),
+          );
+        }
+      }
+    }
+
+    return const Padding(
+      padding: EdgeInsets.only(right: 5),
+      child: Text(''),
+    );
+  }
+
+  ListTile buildAssignees(BuildContext context, WidgetRef ref) {
+    final assignees = task.assigneesStr().toList();
+    final roomId = task.roomIdStr();
+
+    if (assignees.isEmpty) {
+      return const ListTile(
+        dense: true,
+        leading: Icon(Atlas.business_man_thin),
+        title: Text('no one is responsible yet'),
+      );
+    }
+
+    return ListTile(
+      dense: true,
+      leading: const Icon(Atlas.business_man_thin),
+      title: Wrap(
+        children: assignees
+            .map(
+              (userId) => UserChip(
+                visualDensity: VisualDensity.compact,
+                roomId: roomId,
+                memberId: userId,
+              ),
+            )
+            .toList(),
+      ),
     );
   }
 }

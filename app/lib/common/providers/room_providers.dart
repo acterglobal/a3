@@ -210,3 +210,36 @@ final roomIsMutedProvider =
   return (await ref.watch(roomNotificationStatusProvider(roomId).future)) ==
       'muted';
 });
+
+class MemberNotFound extends Error {}
+
+class RoomNotFound extends Error {}
+
+class RoomMemberQuery {
+  final String roomId;
+  final String userId;
+  const RoomMemberQuery(this.roomId, this.userId);
+}
+
+final roomMemberProvider = FutureProvider.autoDispose
+    .family<ProfileData, RoomMemberQuery>((ref, query) async {
+  final room = await ref.watch(maybeRoomProvider(query.roomId).future);
+  if (room == null) {
+    throw RoomNotFound;
+  }
+  final member = await room.getMember(query.userId);
+  return ref.watch(userProfileDataProvider(member).future);
+});
+
+// Chat Providers
+final userProfileDataProvider =
+    FutureProvider.family<ProfileData, Member>((ref, member) async {
+  // this ensure we are staying up to dates on updates to convo
+  final profile = member.getProfile();
+  final displayName = await profile.getDisplayName();
+  if (!await profile.hasAvatar()) {
+    return ProfileData(displayName.text(), null);
+  }
+  final avatar = await profile.getThumbnail(48, 48);
+  return ProfileData(displayName.text(), avatar.data());
+});

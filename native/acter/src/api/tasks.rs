@@ -512,6 +512,22 @@ impl Task {
         self.content.room_id().to_string()
     }
 
+    pub fn author(&self) -> OwnedUserId {
+        self.content.meta.sender.clone()
+    }
+
+    pub fn author_str(&self) -> String {
+        self.content.meta.sender.to_string()
+    }
+
+    pub fn assignees_str(&self) -> Vec<String> {
+        self.content
+            .assignees()
+            .into_iter()
+            .map(|a| a.to_string())
+            .collect()
+    }
+
     pub fn priority(&self) -> Option<u8> {
         Some(match self.content.priority {
             Priority::Undefined => return None,
@@ -748,17 +764,6 @@ impl TaskDraft {
         self
     }
 
-    #[allow(clippy::ptr_arg)]
-    pub fn assignees(&mut self, assignees: &mut Vec<OwnedUserId>) -> &mut Self {
-        self.content.assignees(assignees.to_vec());
-        self
-    }
-
-    pub fn unset_assignees(&mut self) -> &mut Self {
-        self.content.assignees(vec![]);
-        self
-    }
-
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
         let content = self.content.build()?;
@@ -876,22 +881,6 @@ impl TaskUpdateBuilder {
 
     pub fn unset_subscribers_update(&mut self) -> &mut Self {
         self.content.subscribers(None);
-        self
-    }
-
-    #[allow(clippy::ptr_arg)]
-    pub fn assignees(&mut self, assignees: &mut Vec<OwnedUserId>) -> &mut Self {
-        self.content.assignees(Some(assignees.to_vec()));
-        self
-    }
-
-    pub fn unset_assignees(&mut self) -> &mut Self {
-        self.content.assignees(Some(vec![]));
-        self
-    }
-
-    pub fn unset_assignees_update(&mut self) -> &mut Self {
-        self.content.assignees(None);
         self
     }
 

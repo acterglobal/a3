@@ -15,7 +15,10 @@ use crate::{
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Task {
     inner: TaskEventContent,
-    meta: EventMeta,
+    pub meta: EventMeta,
+
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    assignees: Vec<OwnedUserId>,
 }
 
 impl Deref for Task {
@@ -32,6 +35,10 @@ impl Task {
 
     pub fn subscribers(&self) -> Vec<OwnedUserId> {
         self.inner.subscribers.clone()
+    }
+
+    pub fn assignees(&self) -> Vec<OwnedUserId> {
+        self.assignees.clone()
     }
 
     pub fn room_id(&self) -> &RoomId {
@@ -121,6 +128,7 @@ impl From<OriginalMessageLikeEvent<TaskEventContent>> for Task {
         } = outer;
         Task {
             inner: content,
+            assignees: Vec::with_capacity(0),
             meta: EventMeta {
                 room_id,
                 event_id,

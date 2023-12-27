@@ -249,11 +249,6 @@ pub struct TaskEventContent {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<TextMessageEventContent>,
 
-    /// The users this task is assigned to
-    #[builder(default)]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub assignees: Vec<OwnedUserId>,
-
     /// Other users subscribed to updates of this item
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -347,15 +342,6 @@ pub struct TaskUpdateEventContent {
         deserialize_with = "deserialize_some"
     )]
     pub description: Option<Option<TextMessageEventContent>>,
-
-    /// The users this task is assigned to
-    #[builder(default)]
-    #[serde(
-        default,
-        skip_serializing_if = "Option::is_none",
-        deserialize_with = "deserialize_some"
-    )]
-    pub assignees: Option<Vec<OwnedUserId>>,
 
     /// Other users subscribed to updates of this item
     #[builder(default)]
@@ -456,10 +442,6 @@ impl TaskUpdateEventContent {
         }
         if let Some(description) = &self.description {
             task.description = description.clone();
-            updated = true;
-        }
-        if let Some(assignees) = &self.assignees {
-            task.assignees = assignees.clone();
             updated = true;
         }
         if let Some(subscribers) = &self.subscribers {
