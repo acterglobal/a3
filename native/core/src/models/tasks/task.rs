@@ -49,11 +49,14 @@ impl Task {
         self.inner.progress_percent
     }
 
-    pub fn utc_due_rfc3339(&self) -> Option<String> {
+    pub fn due_date(&self) -> Option<String> {
         self.inner
-            .utc_due
-            .as_ref()
-            .map(|d| d.to_rfc3339_opts(chrono::SecondsFormat::Secs, true))
+            .due_date
+            .map(|d| d.format("%Y-%m-%d").to_string())
+    }
+
+    pub fn utc_due_time_of_day(&self) -> Option<i32> {
+        self.inner.utc_due_time_of_day.clone()
     }
 
     pub fn utc_start_rfc3339(&self) -> Option<String> {

@@ -15822,14 +15822,24 @@ class Api {
       _TaskPriorityReturn Function(
         int,
       )>();
-  late final _taskUtcDueRfc3339Ptr = _lookup<
+  late final _taskDueDatePtr = _lookup<
       ffi.NativeFunction<
-          _TaskUtcDueRfc3339Return Function(
+          _TaskDueDateReturn Function(
             ffi.Int64,
-          )>>("__Task_utc_due_rfc3339");
+          )>>("__Task_due_date");
 
-  late final _taskUtcDueRfc3339 = _taskUtcDueRfc3339Ptr.asFunction<
-      _TaskUtcDueRfc3339Return Function(
+  late final _taskDueDate = _taskDueDatePtr.asFunction<
+      _TaskDueDateReturn Function(
+        int,
+      )>();
+  late final _taskUtcDueTimeOfDayPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskUtcDueTimeOfDayReturn Function(
+            ffi.Int64,
+          )>>("__Task_utc_due_time_of_day");
+
+  late final _taskUtcDueTimeOfDay = _taskUtcDueTimeOfDayPtr.asFunction<
+      _TaskUtcDueTimeOfDayReturn Function(
         int,
       )>();
   late final _taskUtcStartRfc3339Ptr = _lookup<
@@ -16056,96 +16066,78 @@ class Api {
           void Function(
             int,
           )>();
-  late final _taskUpdateBuilderUtcDueFromRfc3339Ptr = _lookup<
-      ffi.NativeFunction<
-          _TaskUpdateBuilderUtcDueFromRfc3339Return Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__TaskUpdateBuilder_utc_due_from_rfc3339");
-
-  late final _taskUpdateBuilderUtcDueFromRfc3339 =
-      _taskUpdateBuilderUtcDueFromRfc3339Ptr.asFunction<
-          _TaskUpdateBuilderUtcDueFromRfc3339Return Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _taskUpdateBuilderUtcDueFromRfc2822Ptr = _lookup<
-      ffi.NativeFunction<
-          _TaskUpdateBuilderUtcDueFromRfc2822Return Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__TaskUpdateBuilder_utc_due_from_rfc2822");
-
-  late final _taskUpdateBuilderUtcDueFromRfc2822 =
-      _taskUpdateBuilderUtcDueFromRfc2822Ptr.asFunction<
-          _TaskUpdateBuilderUtcDueFromRfc2822Return Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _taskUpdateBuilderUtcDueFromFormatPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskUpdateBuilderUtcDueFromFormatReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__TaskUpdateBuilder_utc_due_from_format");
-
-  late final _taskUpdateBuilderUtcDueFromFormat =
-      _taskUpdateBuilderUtcDueFromFormatPtr.asFunction<
-          _TaskUpdateBuilderUtcDueFromFormatReturn Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _taskUpdateBuilderUnsetUtcDuePtr = _lookup<
+  late final _taskUpdateBuilderDueDatePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
             ffi.Int64,
-          )>>("__TaskUpdateBuilder_unset_utc_due");
+            ffi.Int32,
+            ffi.Uint32,
+            ffi.Uint32,
+          )>>("__TaskUpdateBuilder_due_date");
 
-  late final _taskUpdateBuilderUnsetUtcDue =
-      _taskUpdateBuilderUnsetUtcDuePtr.asFunction<
+  late final _taskUpdateBuilderDueDate =
+      _taskUpdateBuilderDueDatePtr.asFunction<
           void Function(
             int,
+            int,
+            int,
+            int,
           )>();
-  late final _taskUpdateBuilderUnsetUtcDueUpdatePtr = _lookup<
+  late final _taskUpdateBuilderUnsetDueDatePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
             ffi.Int64,
-          )>>("__TaskUpdateBuilder_unset_utc_due_update");
+          )>>("__TaskUpdateBuilder_unset_due_date");
 
-  late final _taskUpdateBuilderUnsetUtcDueUpdate =
-      _taskUpdateBuilderUnsetUtcDueUpdatePtr.asFunction<
+  late final _taskUpdateBuilderUnsetDueDate =
+      _taskUpdateBuilderUnsetDueDatePtr.asFunction<
           void Function(
             int,
           )>();
-  late final _taskUpdateBuilderShowWithoutTimePtr = _lookup<
+  late final _taskUpdateBuilderUnsetDueDateUpdatePtr = _lookup<
       ffi.NativeFunction<
-          _TaskUpdateBuilderShowWithoutTimeReturn Function(
+          ffi.Void Function(
             ffi.Int64,
-            ffi.Uint8,
-          )>>("__TaskUpdateBuilder_show_without_time");
+          )>>("__TaskUpdateBuilder_unset_due_date_update");
 
-  late final _taskUpdateBuilderShowWithoutTime =
-      _taskUpdateBuilderShowWithoutTimePtr.asFunction<
-          _TaskUpdateBuilderShowWithoutTimeReturn Function(
+  late final _taskUpdateBuilderUnsetDueDateUpdate =
+      _taskUpdateBuilderUnsetDueDateUpdatePtr.asFunction<
+          void Function(
             int,
+          )>();
+  late final _taskUpdateBuilderUtcDueTimeOfDayPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int32,
+          )>>("__TaskUpdateBuilder_utc_due_time_of_day");
+
+  late final _taskUpdateBuilderUtcDueTimeOfDay =
+      _taskUpdateBuilderUtcDueTimeOfDayPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _taskUpdateBuilderUnsetUtcDueTimeOfDayPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+          )>>("__TaskUpdateBuilder_unset_utc_due_time_of_day");
+
+  late final _taskUpdateBuilderUnsetUtcDueTimeOfDay =
+      _taskUpdateBuilderUnsetUtcDueTimeOfDayPtr.asFunction<
+          void Function(
+            int,
+          )>();
+  late final _taskUpdateBuilderUnsetUtcDueTimeOfDayUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+          )>>("__TaskUpdateBuilder_unset_utc_due_time_of_day_update");
+
+  late final _taskUpdateBuilderUnsetUtcDueTimeOfDayUpdate =
+      _taskUpdateBuilderUnsetUtcDueTimeOfDayUpdatePtr.asFunction<
+          void Function(
             int,
           )>();
   late final _taskUpdateBuilderUtcStartFromRfc3339Ptr = _lookup<
@@ -16512,84 +16504,54 @@ class Api {
       void Function(
         int,
       )>();
-  late final _taskDraftUtcDueFromRfc3339Ptr = _lookup<
-      ffi.NativeFunction<
-          _TaskDraftUtcDueFromRfc3339Return Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__TaskDraft_utc_due_from_rfc3339");
-
-  late final _taskDraftUtcDueFromRfc3339 =
-      _taskDraftUtcDueFromRfc3339Ptr.asFunction<
-          _TaskDraftUtcDueFromRfc3339Return Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _taskDraftUtcDueFromRfc2822Ptr = _lookup<
-      ffi.NativeFunction<
-          _TaskDraftUtcDueFromRfc2822Return Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__TaskDraft_utc_due_from_rfc2822");
-
-  late final _taskDraftUtcDueFromRfc2822 =
-      _taskDraftUtcDueFromRfc2822Ptr.asFunction<
-          _TaskDraftUtcDueFromRfc2822Return Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _taskDraftUtcDueFromFormatPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskDraftUtcDueFromFormatReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__TaskDraft_utc_due_from_format");
-
-  late final _taskDraftUtcDueFromFormat =
-      _taskDraftUtcDueFromFormatPtr.asFunction<
-          _TaskDraftUtcDueFromFormatReturn Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _taskDraftUnsetUtcDuePtr = _lookup<
+  late final _taskDraftDueDatePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
             ffi.Int64,
-          )>>("__TaskDraft_unset_utc_due");
+            ffi.Int32,
+            ffi.Uint32,
+            ffi.Uint32,
+          )>>("__TaskDraft_due_date");
 
-  late final _taskDraftUnsetUtcDue = _taskDraftUnsetUtcDuePtr.asFunction<
+  late final _taskDraftDueDate = _taskDraftDueDatePtr.asFunction<
+      void Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _taskDraftUnsetDueDatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+          )>>("__TaskDraft_unset_due_date");
+
+  late final _taskDraftUnsetDueDate = _taskDraftUnsetDueDatePtr.asFunction<
       void Function(
         int,
       )>();
-  late final _taskDraftShowWithoutTimePtr = _lookup<
+  late final _taskDraftUtcDueTimeOfDayPtr = _lookup<
       ffi.NativeFunction<
-          _TaskDraftShowWithoutTimeReturn Function(
+          ffi.Void Function(
             ffi.Int64,
-            ffi.Uint8,
-          )>>("__TaskDraft_show_without_time");
+            ffi.Int32,
+          )>>("__TaskDraft_utc_due_time_of_day");
 
-  late final _taskDraftShowWithoutTime =
-      _taskDraftShowWithoutTimePtr.asFunction<
-          _TaskDraftShowWithoutTimeReturn Function(
+  late final _taskDraftUtcDueTimeOfDay =
+      _taskDraftUtcDueTimeOfDayPtr.asFunction<
+          void Function(
             int,
+            int,
+          )>();
+  late final _taskDraftUnsetUtcDueTimeOfDayPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+          )>>("__TaskDraft_unset_utc_due_time_of_day");
+
+  late final _taskDraftUnsetUtcDueTimeOfDay =
+      _taskDraftUnsetUtcDueTimeOfDayPtr.asFunction<
+          void Function(
             int,
           )>();
   late final _taskDraftUtcStartFromRfc3339Ptr = _lookup<
@@ -34242,11 +34204,11 @@ class Task {
     return tmp2;
   }
 
-  /// When this is due
-  String? utcDueRfc3339() {
+  /// Day When this is due
+  String? dueDate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._taskUtcDueRfc3339(
+    final tmp1 = _api._taskDueDate(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -34273,6 +34235,22 @@ class Task {
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       _api.__deallocate(tmp4_0, tmp6 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// Time of day when this is due compared to UTC00:00
+  int? utcDueTimeOfDay() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskUtcDueTimeOfDay(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -34618,198 +34596,81 @@ class TaskUpdateBuilder {
     return;
   }
 
-  /// set the utc_due for this task list in rfc3339 format
-  void utcDueFromRfc3339(
-    String utcDue,
+  /// set the due day for this task
+  void dueDate(
+    int year,
+    int month,
+    int day,
   ) {
-    final tmp1 = utcDue;
+    final tmp1 = year;
+    final tmp3 = month;
+    final tmp5 = day;
     var tmp0 = 0;
     var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._taskUpdateBuilderUtcDueFromRfc3339(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5.arg0;
-    final tmp8 = tmp5.arg1;
-    final tmp9 = tmp5.arg2;
-    final tmp10 = tmp5.arg3;
-    if (tmp7 == 0) {
-      debugAllocation("handle error", tmp8, tmp9);
-      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
-      final tmp7_0 =
-          utf8.decode(tmp8_0.asTypedList(tmp9), allowMalformed: true);
-      if (tmp9 > 0) {
-        final ffi.Pointer<ffi.Void> tmp8_0;
-        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
-        _api.__deallocate(tmp8_0, tmp10, 1);
-      }
-      throw tmp7_0;
-    }
-    return;
-  }
-
-  /// set the utc_due for this task list in rfc2822 format
-  void utcDueFromRfc2822(
-    String utcDue,
-  ) {
-    final tmp1 = utcDue;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._taskUpdateBuilderUtcDueFromRfc2822(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5.arg0;
-    final tmp8 = tmp5.arg1;
-    final tmp9 = tmp5.arg2;
-    final tmp10 = tmp5.arg3;
-    if (tmp7 == 0) {
-      debugAllocation("handle error", tmp8, tmp9);
-      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
-      final tmp7_0 =
-          utf8.decode(tmp8_0.asTypedList(tmp9), allowMalformed: true);
-      if (tmp9 > 0) {
-        final ffi.Pointer<ffi.Void> tmp8_0;
-        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
-        _api.__deallocate(tmp8_0, tmp10, 1);
-      }
-      throw tmp7_0;
-    }
-    return;
-  }
-
-  /// set the utc_due for this task list in custom format
-  void utcDueFromFormat(
-    String utcDue,
-    String format,
-  ) {
-    final tmp1 = utcDue;
-    final tmp5 = format;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
     var tmp4 = 0;
     var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
     tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
+    tmp2 = tmp1;
     tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    final tmp9 = _api._taskUpdateBuilderUtcDueFromFormat(
+    tmp6 = tmp5;
+    _api._taskUpdateBuilderDueDate(
       tmp0,
       tmp2,
-      tmp3,
       tmp4,
       tmp6,
-      tmp7,
-      tmp8,
     );
-    final tmp11 = tmp9.arg0;
-    final tmp12 = tmp9.arg1;
-    final tmp13 = tmp9.arg2;
-    final tmp14 = tmp9.arg3;
-    if (tmp11 == 0) {
-      debugAllocation("handle error", tmp12, tmp13);
-      final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
-      final tmp11_0 =
-          utf8.decode(tmp12_0.asTypedList(tmp13), allowMalformed: true);
-      if (tmp13 > 0) {
-        final ffi.Pointer<ffi.Void> tmp12_0;
-        tmp12_0 = ffi.Pointer.fromAddress(tmp12);
-        _api.__deallocate(tmp12_0, tmp14, 1);
-      }
-      throw tmp11_0;
-    }
     return;
   }
 
-  void unsetUtcDue() {
+  void unsetDueDate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetUtcDue(
+    _api._taskUpdateBuilderUnsetDueDate(
       tmp0,
     );
     return;
   }
 
-  void unsetUtcDueUpdate() {
+  void unsetDueDateUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetUtcDueUpdate(
+    _api._taskUpdateBuilderUnsetDueDateUpdate(
       tmp0,
     );
     return;
   }
 
-  /// set whether the due date contains the time
-  void showWithoutTime(
-    bool show_,
+  /// set the due time of day in seconds since midnight UTC
+  void utcDueTimeOfDay(
+    int seconds,
   ) {
-    final tmp1 = show_;
+    final tmp1 = seconds;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
-    tmp2 = tmp1 ? 1 : 0;
-    final tmp3 = _api._taskUpdateBuilderShowWithoutTime(
+    tmp2 = tmp1;
+    _api._taskUpdateBuilderUtcDueTimeOfDay(
       tmp0,
       tmp2,
     );
-    final tmp5 = tmp3.arg0;
-    final tmp6 = tmp3.arg1;
-    final tmp7 = tmp3.arg2;
-    final tmp8 = tmp3.arg3;
-    if (tmp5 == 0) {
-      debugAllocation("handle error", tmp6, tmp7);
-      final ffi.Pointer<ffi.Uint8> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
-      final tmp5_0 =
-          utf8.decode(tmp6_0.asTypedList(tmp7), allowMalformed: true);
-      if (tmp7 > 0) {
-        final ffi.Pointer<ffi.Void> tmp6_0;
-        tmp6_0 = ffi.Pointer.fromAddress(tmp6);
-        _api.__deallocate(tmp6_0, tmp8, 1);
-      }
-      throw tmp5_0;
-    }
+    return;
+  }
+
+  void unsetUtcDueTimeOfDay() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetUtcDueTimeOfDay(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetUtcDueTimeOfDayUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetUtcDueTimeOfDayUpdate(
+      tmp0,
+    );
     return;
   }
 
@@ -35298,189 +35159,63 @@ class TaskDraft {
     return;
   }
 
-  /// set the utc_due for this task in rfc3339 format
-  void utcDueFromRfc3339(
-    String utcDue,
+  /// set the due day for this task
+  void dueDate(
+    int year,
+    int month,
+    int day,
   ) {
-    final tmp1 = utcDue;
+    final tmp1 = year;
+    final tmp3 = month;
+    final tmp5 = day;
     var tmp0 = 0;
     var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._taskDraftUtcDueFromRfc3339(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5.arg0;
-    final tmp8 = tmp5.arg1;
-    final tmp9 = tmp5.arg2;
-    final tmp10 = tmp5.arg3;
-    if (tmp7 == 0) {
-      debugAllocation("handle error", tmp8, tmp9);
-      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
-      final tmp7_0 =
-          utf8.decode(tmp8_0.asTypedList(tmp9), allowMalformed: true);
-      if (tmp9 > 0) {
-        final ffi.Pointer<ffi.Void> tmp8_0;
-        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
-        _api.__deallocate(tmp8_0, tmp10, 1);
-      }
-      throw tmp7_0;
-    }
-    return;
-  }
-
-  /// set the utc_due for this task in rfc2822 format
-  void utcDueFromRfc2822(
-    String utcDue,
-  ) {
-    final tmp1 = utcDue;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._taskDraftUtcDueFromRfc2822(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5.arg0;
-    final tmp8 = tmp5.arg1;
-    final tmp9 = tmp5.arg2;
-    final tmp10 = tmp5.arg3;
-    if (tmp7 == 0) {
-      debugAllocation("handle error", tmp8, tmp9);
-      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
-      final tmp7_0 =
-          utf8.decode(tmp8_0.asTypedList(tmp9), allowMalformed: true);
-      if (tmp9 > 0) {
-        final ffi.Pointer<ffi.Void> tmp8_0;
-        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
-        _api.__deallocate(tmp8_0, tmp10, 1);
-      }
-      throw tmp7_0;
-    }
-    return;
-  }
-
-  /// set the utc_due for this task in custom format
-  void utcDueFromFormat(
-    String utcDue,
-    String format,
-  ) {
-    final tmp1 = utcDue;
-    final tmp5 = format;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
     var tmp4 = 0;
     var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
     tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
+    tmp2 = tmp1;
     tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    final tmp9 = _api._taskDraftUtcDueFromFormat(
+    tmp6 = tmp5;
+    _api._taskDraftDueDate(
       tmp0,
       tmp2,
-      tmp3,
       tmp4,
       tmp6,
-      tmp7,
-      tmp8,
     );
-    final tmp11 = tmp9.arg0;
-    final tmp12 = tmp9.arg1;
-    final tmp13 = tmp9.arg2;
-    final tmp14 = tmp9.arg3;
-    if (tmp11 == 0) {
-      debugAllocation("handle error", tmp12, tmp13);
-      final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
-      final tmp11_0 =
-          utf8.decode(tmp12_0.asTypedList(tmp13), allowMalformed: true);
-      if (tmp13 > 0) {
-        final ffi.Pointer<ffi.Void> tmp12_0;
-        tmp12_0 = ffi.Pointer.fromAddress(tmp12);
-        _api.__deallocate(tmp12_0, tmp14, 1);
-      }
-      throw tmp11_0;
-    }
     return;
   }
 
-  void unsetUtcDue() {
+  void unsetDueDate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskDraftUnsetUtcDue(
+    _api._taskDraftUnsetDueDate(
       tmp0,
     );
     return;
   }
 
-  /// set whether the due date contains the time
-  void showWithoutTime(
-    bool show_,
+  /// set the due time of day in seconds since midnight UTC
+  void utcDueTimeOfDay(
+    int seconds,
   ) {
-    final tmp1 = show_;
+    final tmp1 = seconds;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
-    tmp2 = tmp1 ? 1 : 0;
-    final tmp3 = _api._taskDraftShowWithoutTime(
+    tmp2 = tmp1;
+    _api._taskDraftUtcDueTimeOfDay(
       tmp0,
       tmp2,
     );
-    final tmp5 = tmp3.arg0;
-    final tmp6 = tmp3.arg1;
-    final tmp7 = tmp3.arg2;
-    final tmp8 = tmp3.arg3;
-    if (tmp5 == 0) {
-      debugAllocation("handle error", tmp6, tmp7);
-      final ffi.Pointer<ffi.Uint8> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
-      final tmp5_0 =
-          utf8.decode(tmp6_0.asTypedList(tmp7), allowMalformed: true);
-      if (tmp7 > 0) {
-        final ffi.Pointer<ffi.Void> tmp6_0;
-        tmp6_0 = ffi.Pointer.fromAddress(tmp6);
-        _api.__deallocate(tmp6_0, tmp8, 1);
-      }
-      throw tmp5_0;
-    }
+    return;
+  }
+
+  void unsetUtcDueTimeOfDay() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskDraftUnsetUtcDueTimeOfDay(
+      tmp0,
+    );
     return;
   }
 
@@ -46278,7 +46013,7 @@ class _TaskPriorityReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _TaskUtcDueRfc3339Return extends ffi.Struct {
+class _TaskDueDateReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -46287,6 +46022,13 @@ class _TaskUtcDueRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
+}
+
+class _TaskUtcDueTimeOfDayReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int32()
+  external int arg1;
 }
 
 class _TaskUtcStartRfc3339Return extends ffi.Struct {
@@ -46327,50 +46069,6 @@ class _TaskUpdateBuilderReturn extends ffi.Struct {
   external int arg4;
 }
 
-class _TaskUpdateBuilderUtcDueFromRfc3339Return extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-}
-
-class _TaskUpdateBuilderUtcDueFromRfc2822Return extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-}
-
-class _TaskUpdateBuilderUtcDueFromFormatReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-}
-
-class _TaskUpdateBuilderShowWithoutTimeReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-}
-
 class _TaskUpdateBuilderUtcStartFromRfc3339Return extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -46394,50 +46092,6 @@ class _TaskUpdateBuilderUtcStartFromRfc2822Return extends ffi.Struct {
 }
 
 class _TaskUpdateBuilderUtcStartFromFormatReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-}
-
-class _TaskDraftUtcDueFromRfc3339Return extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-}
-
-class _TaskDraftUtcDueFromRfc2822Return extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-}
-
-class _TaskDraftUtcDueFromFormatReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-}
-
-class _TaskDraftShowWithoutTimeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

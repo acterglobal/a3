@@ -322,26 +322,31 @@ void tasksTests() {
         .text('Buy duct tape')
         .tap(); // this should navigate us tp the item page
 
-    final btnNotDoneFinder = find.byKey(TaskInfo.dueDateField);
-    await btnNotDoneFinder.should(findsOneWidget);
-    await btnNotDoneFinder.tap(); // open due dialog
+    final dueDateFinder = find.byKey(TaskInfo.dueDateField);
+    await dueDateFinder.should(findsOneWidget);
+    await dueDateFinder.tap(); // open due dialog
 
     // select tomorrow
     final tomorrow = find.byKey(DuePicker.quickSelectTomorrow);
     await tomorrow.should(findsOneWidget);
     await tomorrow.tap(); // set to tomorrow
 
-    await btnNotDoneFinder.should(findsOneWidget);
-    find.descendant(of: btnNotDoneFinder, matching: find.text('tomorrow'));
+    await dueDateFinder.should(findsOneWidget);
+    // FIXME: translation problem
+    await find
+        .descendant(of: dueDateFinder, matching: find.text('due tomorrow'))
+        .should(findsOneWidget);
 
-    await btnNotDoneFinder.tap(); // open due dialog
+    await dueDateFinder.tap(); // open due dialog
 
     // select today
     final today = find.byKey(DuePicker.quickSelectToday);
     await today.should(findsOneWidget);
     await today.tap(); // set to today
 
-    await btnNotDoneFinder.should(findsOneWidget);
-    find.descendant(of: btnNotDoneFinder, matching: find.text('today'));
+    await dueDateFinder.should(findsOneWidget);
+    await find
+        .descendant(of: dueDateFinder, matching: find.text('due today'))
+        .should(findsOneWidget);
   });
 }

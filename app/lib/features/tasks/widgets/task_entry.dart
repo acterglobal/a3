@@ -1,5 +1,6 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/tasks/providers/tasks.dart';
+import 'package:acter/features/tasks/widgets/due_chip.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -16,44 +17,8 @@ class TaskEntry extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<Widget> extraInfo = [];
-    final dueDate = task.utcDueRfc3339();
+    final List<Widget> extraInfo = [DueChip(task: task)];
     final isDone = task.isDone();
-    if (!isDone) {
-      if (dueDate != null) {
-        final due = Jiffy.parse(dueDate);
-        final now = Jiffy.now();
-        if (due.isBefore(now)) {
-          extraInfo.add(
-            Padding(
-              padding: const EdgeInsets.only(left: 3),
-              child: Tooltip(
-                message: due.format(),
-                child: Text(
-                  due.fromNow(),
-                  style: isDone
-                      ? null
-                      : Theme.of(context).textTheme.bodySmall!.copyWith(
-                            color: Theme.of(context).colorScheme.taskOverdueFG,
-                          ),
-                ),
-              ),
-            ),
-          );
-        } else {
-          // FIXME: HL today, tomorrow
-          extraInfo.add(
-            Padding(
-              padding: const EdgeInsets.only(left: 3),
-              child: Text(
-                due.fromNow(),
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ),
-          );
-        }
-      }
-    }
     final description = task.description();
     if (description != null) {
       extraInfo.add(

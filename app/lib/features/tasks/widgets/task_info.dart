@@ -1,9 +1,13 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/features/tasks/widgets/due_chip.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
+import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:jiffy/jiffy.dart';
@@ -16,86 +20,11 @@ class TaskInfo extends ConsumerWidget {
   final Task task;
   const TaskInfo({Key? key, required this.task}) : super(key: key);
 
-  Future<void> duePicker(BuildContext context, DateTime? currentDue) async {
-    final newDue = await DuePicker.showPicker(
-        context: context,
-        initialDate: currentDue); // FIXME: add unsetting support
-    if (newDue == null) {
-      return;
-    }
-    final updater = task.updateBuilder();
-    updater.utcDueFromRfc3339(newDue.due.toIso8601String());
-    updater.showWithoutTime(!newDue.includeTime);
-    await updater.send();
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final List<Widget> body = [];
-    final dueDate = task.utcDueRfc3339();
+    final List<Widget> meta = [];
     final isDone = task.isDone();
-    if (dueDate == null) {
-      body.add(
-        ListTile(
-          key: dueDateField,
-          dense: true,
-          onTap: () async {
-            await duePicker(context, null);
-          },
-          subtitle: const Text('Due'),
-          title: Text(
-            '(None)',
-            style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                  fontWeight: FontWeight.w100,
-                  fontStyle: FontStyle.italic,
-                  color: AppTheme.brandColorScheme.neutral5,
-                ),
-          ),
-        ),
-      );
-    } else {
-      final due = Jiffy.parse(dueDate);
-      final now = Jiffy.now();
-      if (due.isBefore(now)) {
-        body.add(
-          ListTile(
-            key: dueDateField,
-            dense: true,
-            onTap: () async {
-              await duePicker(context, due.dateTime);
-            },
-            title: Tooltip(
-              message: due.format(),
-              child: Text(
-                due.fromNow(),
-                style: isDone
-                    ? null
-                    : Theme.of(context).textTheme.bodySmall!.copyWith(
-                          color: Theme.of(context).colorScheme.taskOverdueFG,
-                        ),
-              ),
-            ),
-            subtitle: const Text('Overdue'),
-          ),
-        );
-      } else {
-        // FIXME: HL today, tomorrow
-        body.add(
-          ListTile(
-            key: dueDateField,
-            dense: true,
-            onTap: () async {
-              await duePicker(context, due.dateTime);
-            },
-            subtitle: const Text('Due'),
-            title: Text(
-              due.fromNow(),
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ),
-        );
-      }
-    }
     final description = task.description();
     if (description != null) {
       final formattedBody = description.formattedBody();
@@ -146,20 +75,31 @@ class TaskInfo extends ConsumerWidget {
                     await updater.send();
                   },
                 ),
-                title: Wrap(
+                title: Text(
+                  task.title(),
+                  style: isDone
+                      ? Theme.of(context).textTheme.headlineMedium!.copyWith(
+                            fontWeight: FontWeight.w100,
+                            color: AppTheme.brandColorScheme.neutral5,
+                          )
+                      : Theme.of(context).textTheme.headlineSmall!,
+                ),
+                subtitle: Wrap(
                   children: [
-                    Text(
-                      task.title(),
-                      style: isDone
-                          ? Theme.of(context)
-                              .textTheme
-                              .headlineMedium!
-                              .copyWith(
-                                fontWeight: FontWeight.w100,
-                                color: AppTheme.brandColorScheme.neutral5,
-                              )
-                          : Theme.of(context).textTheme.headlineSmall!,
+                    DueChip(
+                      key: dueDateField,
+                      canChange: true,
+                      task: task,
+                      noneChild: Text(
+                        '(None)',
+                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                              fontWeight: FontWeight.w100,
+                              fontStyle: FontStyle.italic,
+                              color: AppTheme.brandColorScheme.neutral5,
+                            ),
+                      ),
                     ),
+                    ...meta,
                   ],
                 ),
               ),

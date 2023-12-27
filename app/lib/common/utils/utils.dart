@@ -157,11 +157,6 @@ bool isOnlyEmojis(String text) {
 }
 
 extension DateHelpers on DateTime {
-  bool isToday() {
-    final now = DateTime.now();
-    return now.day == day && now.month == month && now.year == year;
-  }
-
   bool isYesterday() {
     final yesterday = DateTime.now().subtract(const Duration(days: 1));
     return yesterday.day == day &&
@@ -179,6 +174,10 @@ extension DateHelpers on DateTime {
 
   bool isBetween({required DateTime from, required DateTime to}) {
     return isAfterOrEqual(from) && isBeforeOrEqual(to);
+  }
+
+  String toRfc3339() {
+    return toUtc().toIso8601String();
   }
 }
 

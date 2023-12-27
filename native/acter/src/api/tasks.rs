@@ -658,32 +658,24 @@ impl TaskDraft {
         self
     }
 
-    pub fn utc_due_from_rfc3339(&mut self, utc_due: String) -> Result<()> {
-        let dt = DateTime::parse_from_rfc3339(&utc_due)?.into();
-        self.content.utc_due(Some(dt));
-        Ok(())
-    }
-
-    pub fn utc_due_from_rfc2822(&mut self, utc_due: String) -> Result<()> {
-        let dt = DateTime::parse_from_rfc2822(&utc_due)?.into();
-        self.content.utc_due(Some(dt));
-        Ok(())
-    }
-
-    pub fn utc_due_from_format(&mut self, utc_due: String, format: String) -> Result<()> {
-        let dt = DateTime::parse_from_str(&utc_due, &format)?.into();
-        self.content.utc_due(Some(dt));
-        Ok(())
-    }
-
-    pub fn unset_utc_due(&mut self) -> &mut Self {
-        self.content.utc_due(None);
+    pub fn due_date(&mut self, year: i32, month: u32, day: u32) -> &mut Self {
+        self.content
+            .due_date(chrono::NaiveDate::from_ymd_opt(year, month, day));
         self
     }
 
-    pub fn show_without_time(&mut self, show: bool) -> Result<()> {
-        self.content.show_without_time(show);
-        Ok(())
+    pub fn unset_due_date(&mut self) -> &mut Self {
+        self.content.due_date(None);
+        self
+    }
+
+    pub fn utc_due_time_of_day(&mut self, seconds: i32) -> &mut Self {
+        self.content.utc_due_time_of_day(Some(seconds));
+        self
+    }
+    pub fn unset_utc_due_time_of_day(&mut self) -> &mut Self {
+        self.content.utc_due_time_of_day(None);
+        self
     }
 
     pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<()> {
@@ -912,36 +904,33 @@ impl TaskUpdateBuilder {
         self.content.progress_percent(Some(None));
         self
     }
-    pub fn utc_due_from_rfc3339(&mut self, utc_due: String) -> Result<()> {
-        let dt = DateTime::parse_from_rfc3339(&utc_due)?.into();
-        self.content.utc_due(Some(Some(dt)));
-        Ok(())
-    }
 
-    pub fn utc_due_from_rfc2822(&mut self, utc_due: String) -> Result<()> {
-        let dt = DateTime::parse_from_rfc2822(&utc_due)?.into();
-        self.content.utc_due(Some(Some(dt)));
-        Ok(())
+    pub fn due_date(&mut self, year: i32, month: u32, day: u32) -> &mut Self {
+        self.content
+            .due_date(Some(chrono::NaiveDate::from_ymd_opt(year, month, day)));
+        self
     }
-
-    pub fn utc_due_from_format(&mut self, utc_due: String, format: String) -> Result<()> {
-        let dt = DateTime::parse_from_str(&utc_due, &format)?.into();
-        self.content.utc_due(Some(Some(dt)));
-        Ok(())
-    }
-
-    pub fn show_without_time(&mut self, show: bool) -> Result<()> {
-        self.content.show_without_time(Some(show));
-        Ok(())
-    }
-
-    pub fn unset_utc_due(&mut self) -> &mut Self {
-        self.content.utc_due(Some(None));
+    pub fn unset_due_date(&mut self) -> &mut Self {
+        self.content.due_date(Some(None));
         self
     }
 
-    pub fn unset_utc_due_update(&mut self) -> &mut Self {
-        self.content.utc_due(None);
+    pub fn unset_due_date_update(&mut self) -> &mut Self {
+        self.content.due_date(None);
+        self
+    }
+
+    pub fn utc_due_time_of_day(&mut self, seconds: i32) -> &mut Self {
+        self.content.utc_due_time_of_day(Some(Some(seconds)));
+        self
+    }
+    pub fn unset_utc_due_time_of_day(&mut self) -> &mut Self {
+        self.content.utc_due_time_of_day(Some(None));
+        self
+    }
+
+    pub fn unset_utc_due_time_of_day_update(&mut self) -> &mut Self {
+        self.content.utc_due_time_of_day(None);
         self
     }
 

@@ -1183,8 +1183,11 @@ object Task {
     /// Lowest = 9,
     fn priority() -> Option<u8>;
 
-    /// When this is due
-    fn utc_due_rfc3339() -> Option<string>;
+    /// Day When this is due
+    fn due_date() -> Option<string>;
+
+    /// Time of day when this is due compared to UTC00:00
+    fn utc_due_time_of_day() -> Option<i32>;
 
     /// When this was started
     fn utc_start_rfc3339() -> Option<string>;
@@ -1237,17 +1240,15 @@ object TaskUpdateBuilder {
     fn unset_color();
     fn unset_color_update();
 
-    /// set the utc_due for this task list in rfc3339 format
-    fn utc_due_from_rfc3339(utc_due: string) -> Result<()>;
-    /// set the utc_due for this task list in rfc2822 format
-    fn utc_due_from_rfc2822(utc_due: string) -> Result<()>;
-    /// set the utc_due for this task list in custom format
-    fn utc_due_from_format(utc_due: string, format: string) -> Result<()>;
-    fn unset_utc_due();
-    fn unset_utc_due_update();
+    /// set the due day for this task
+    fn due_date(year: i32, month: u32, day: u32);
+    fn unset_due_date();
+    fn unset_due_date_update();
 
-    /// set whether the due date contains the time
-    fn show_without_time(show: bool) -> Result<()>;
+    /// set the due time of day in seconds since midnight UTC
+    fn utc_due_time_of_day(seconds: i32);
+    fn unset_utc_due_time_of_day();
+    fn unset_utc_due_time_of_day_update();
 
     /// set the utc_start for this task list in rfc3339 format
     fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
@@ -1309,16 +1310,12 @@ object TaskDraft {
     fn color(color: EfkColor);
     fn unset_color();
 
-    /// set the utc_due for this task in rfc3339 format
-    fn utc_due_from_rfc3339(utc_due: string) -> Result<()>;
-    /// set the utc_due for this task in rfc2822 format
-    fn utc_due_from_rfc2822(utc_due: string) -> Result<()>;
-    /// set the utc_due for this task in custom format
-    fn utc_due_from_format(utc_due: string, format: string) -> Result<()>;
-    fn unset_utc_due();
-
-    /// set whether the due date contains the time
-    fn show_without_time(show: bool) -> Result<()>;
+    /// set the due day for this task
+    fn due_date(year: i32, month: u32, day: u32);
+    fn unset_due_date();
+    /// set the due time of day in seconds since midnight UTC
+    fn utc_due_time_of_day(seconds: i32);
+    fn unset_utc_due_time_of_day();
 
     /// set the utc_start for this task in rfc3339 format
     fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
