@@ -219,21 +219,19 @@ class _TaskBodyState extends State<TaskBody> {
     if (description != null) {
       final formattedBody = description.formattedBody();
       if (formattedBody != null && formattedBody.isNotEmpty) {
-        return Padding(
-          padding: const EdgeInsets.all(15),
-          child: RenderHtml(text: formattedBody),
-        );
+        return _contentWrap(context, RenderHtml(text: formattedBody));
       } else {
         final str = description.body();
         if (str.isNotEmpty) {
-          return Padding(
-            padding: const EdgeInsets.all(15),
-            child: Text(str),
+          return _contentWrap(
+            context,
+            Text(str),
           );
         }
       }
     }
 
+    // fallback: none or empty string.
     return Padding(
       padding: const EdgeInsets.all(15),
       child: Center(
@@ -244,6 +242,30 @@ class _TaskBodyState extends State<TaskBody> {
           onPressed: () => setState(() => editMode = true),
         ),
       ),
+    );
+  }
+
+  Widget _contentWrap(BuildContext context, Widget child) {
+    return Stack(
+      children: [
+        Padding(
+          padding:
+              const EdgeInsets.only(left: 5, right: 5, bottom: 30, top: 10),
+          child: child,
+        ),
+        Positioned(
+          right: 0,
+          bottom: 0,
+          child: IconButton(
+            key: TaskBody.editKey,
+            icon: const Icon(
+              Atlas.pencil_edit_thin,
+              size: 24,
+            ),
+            onPressed: () => setState(() => editMode = true),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -380,7 +380,7 @@ void tasksTests() {
 
     final taskBodyEdit = find.byKey(TaskBody.editKey);
     await taskBodyEdit.should(findsOneWidget);
-    await taskBodyEdit.tap(); // switch into edit more
+    await taskBodyEdit.tap(); // switch into edit
 
     final taskBodyEditor = find.byKey(TaskBody.editorKey);
 
@@ -397,6 +397,21 @@ void tasksTests() {
 
     await find
         .text('At least 6 packages of 500ml or more')
+        .should(findsOneWidget);
+
+    await taskBodyEdit.should(findsOneWidget);
+    await taskBodyEdit.tap(); // switch into edit ince more
+
+    await taskBodyEditor.should(findsOneWidget);
+    await taskBodyEditor.replaceText('At least 10 packages of 500ml or more');
+
+    await t.tester.ensureVisible(saveBtn);
+    await saveBtn.tap(); // switch off edit more
+    // dialog closed
+    await saveBtn.should(findsNothing);
+
+    await find
+        .text('At least 10 packages of 500ml or more')
         .should(findsOneWidget);
   });
 }
