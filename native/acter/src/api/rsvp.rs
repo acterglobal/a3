@@ -222,7 +222,7 @@ impl RsvpDraft {
                     .await?
                     .context("Unable to find me in room")?;
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
+                    bail!("No permissions to send message in this room");
                 }
 
                 trace!("before sending rsvp");

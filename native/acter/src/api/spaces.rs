@@ -493,7 +493,7 @@ impl Space {
                         .context("Unable to get state content")?;
                     if !member.can_send_state(event_type.clone()) {
                         bail!(
-                            "No permission to set {event_type} states of this room. Unable to convert"
+                            "No permissions to set {event_type} states of this room. Unable to convert"
                         );
                     }
 

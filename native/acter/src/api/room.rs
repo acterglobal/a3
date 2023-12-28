@@ -678,7 +678,7 @@ impl Room {
                     .await?
                     .context("Unable to find me in room")?;
                 if !member.can_send_state(StateEventType::RoomAvatar) {
-                    bail!("No permission to change avatar of this room");
+                    bail!("No permissions to change avatar of this room");
                 }
 
                 let guess = mime_guess::from_path(path.clone());
@@ -716,7 +716,7 @@ impl Room {
                     .await?
                     .context("Unable to find me in room")?;
                 if !member.can_send_state(StateEventType::RoomAvatar) {
-                    bail!("No permission to change avatar of this room");
+                    bail!("No permissions to change avatar of this room");
                 }
                 let response = room.remove_avatar().await?;
                 Ok(response.event_id)
@@ -743,7 +743,7 @@ impl Room {
                     .await?
                     .context("Unable to find me in room")?;
                 if !member.can_send_state(StateEventType::RoomTopic) {
-                    bail!("No permission to change topic of this room");
+                    bail!("No permissions to change topic of this room");
                 }
                 let response = room.set_room_topic(topic.as_str()).await?;
                 Ok(response.event_id)
@@ -770,7 +770,7 @@ impl Room {
                     .await?
                     .context("Unable to find me in room")?;
                 if !member.can_send_state(StateEventType::RoomName) {
-                    bail!("No permission to change name of this room");
+                    bail!("No permissions to change name of this room");
                 }
                 let response = room.set_name(name).await?;
                 Ok(response.event_id)
@@ -976,7 +976,7 @@ impl Room {
                     .await?
                     .context("Unable to find me in room")?;
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
+                    bail!("No permissions to send message in this room");
                 }
                 room.typing_notice(typing).await?;
                 Ok(true)
@@ -1113,7 +1113,7 @@ impl Room {
                     .await?
                     .context("Unable to find me in room")?;
                 if !member.can_invite() {
-                    bail!("No permission to invite someone in this room");
+                    bail!("No permissions to invite someone in this room");
                 }
                 room.invite_user_by_id(&user_id).await?;
                 Ok(true)
@@ -1764,7 +1764,7 @@ impl Room {
                     .await?
                     .context("Unable to find me in room")?;
                 if !member.can_redact() {
-                    bail!("No permission to redact message in this room");
+                    bail!("No permissions to redact message in this room");
                 }
                 let response = room
                     .redact(&event_id, reason.as_deref(), txn_id.map(Into::into))
@@ -1795,7 +1795,7 @@ impl Room {
                     .await?
                     .context("Unable to find me in room")?;
                 if !member.can_send_state(StateEventType::RoomPowerLevels) {
-                    bail!("No permission to change power levels in this room");
+                    bail!("No permissions to change power levels in this room");
                 }
                 let response = room
                     .update_power_levels(vec![(&user_id, Int::from(level))])
