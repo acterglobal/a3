@@ -21,8 +21,8 @@ use ruma_events::{
         message::{
             AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent, ForwardThread,
             ImageMessageEventContent, LocationInfo, LocationMessageEventContent, MessageType,
-            RoomMessageEvent, RoomMessageEventContent,
-            RoomMessageEventContentWithoutRelation, VideoInfo, VideoMessageEventContent,
+            RoomMessageEvent, RoomMessageEventContent, RoomMessageEventContentWithoutRelation,
+            VideoInfo, VideoMessageEventContent,
         },
         ImageInfo,
     },
