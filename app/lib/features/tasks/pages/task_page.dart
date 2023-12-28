@@ -38,13 +38,15 @@ class TaskPage extends ConsumerWidget {
         ),
       ),
       body: CenteredPage(
-        child: Column(
-          children: [
-            task.when(
-              data: (t) => TaskInfo(task: t),
-              error: (e, s) => Text('failed to load task: $e'),
-              loading: () => const TaskInfoSkeleton(),
-              skipLoadingOnReload: true,
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: task.when(
+                data: (t) => TaskInfo(task: t),
+                error: (e, s) => Text('failed to load task: $e'),
+                loading: () => const TaskInfoSkeleton(),
+                skipLoadingOnReload: true,
+              ),
             ),
             // following: comments
           ],

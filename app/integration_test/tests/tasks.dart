@@ -348,5 +348,55 @@ void tasksTests() {
     await find
         .descendant(of: dueDateFinder, matching: find.text('due today'))
         .should(findsOneWidget);
+
+    await t.navigateTo([MainNavKeys.quickJump, QuickJumpKeys.tasks]);
+    await find.text('Buy duct tape').should(findsOneWidget);
+
+    final taskEntry = find.ancestor(
+      of: find.text('Buy duct tape'),
+      matching: find.byWidgetPredicate((Widget widget) => widget is TaskEntry),
+    );
+
+    await find
+        .descendant(of: taskEntry, matching: find.text('due today'))
+        .should(findsOneWidget);
+  });
+
+  acterTestWidget('Change body', (t) async {
+    await t.freshWithTasks(
+      [
+        'Refill sanitizer',
+      ],
+      listTitle: 'Operations',
+      spaceDisplayName: 'Protest Camp',
+    );
+
+    // we see our entry now
+    await find.text('Operations').should(findsOneWidget);
+    await find.text('Refill sanitizer').should(findsOneWidget);
+    await find
+        .text('Refill sanitizer')
+        .tap(); // this should navigate us tp the item page
+
+    final taskBodyEdit = find.byKey(TaskBody.editKey);
+    await taskBodyEdit.should(findsOneWidget);
+    await taskBodyEdit.tap(); // switch into edit more
+
+    final taskBodyEditor = find.byKey(TaskBody.editorKey);
+
+    await taskBodyEditor.should(findsOneWidget);
+    await taskBodyEditor
+        .enterTextWithoutReplace('At least 6 packages of 500ml or more');
+
+    final saveBtn = find.byKey(TaskBody.saveEditKey);
+    await t.tester.ensureVisible(saveBtn);
+    await saveBtn.tap(); // switch off edit more
+
+    // dialog closed
+    await saveBtn.should(findsNothing);
+
+    await find
+        .text('At least 6 packages of 500ml or more')
+        .should(findsOneWidget);
   });
 }

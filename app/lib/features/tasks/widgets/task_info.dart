@@ -1,3 +1,4 @@
+import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/user_chip.dart';
 import 'package:acter/features/tasks/widgets/due_chip.dart';
@@ -5,6 +6,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'dart:core';
@@ -94,42 +96,11 @@ class TaskInfo extends ConsumerWidget {
                 ),
               ),
               buildAssignees(context, ref),
-              ListTile(
-                dense: true,
-                leading: const Icon(Atlas.notebook_thin),
-                titleAlignment: ListTileTitleAlignment.bottom,
-                title: buildBody(context, ref),
-              ),
+              TaskBody(task: task),
             ],
           ),
         ),
       ],
-    );
-  }
-
-  Widget buildBody(BuildContext context, WidgetRef ref) {
-    final description = task.description();
-    if (description != null) {
-      final formattedBody = description.formattedBody();
-      if (formattedBody != null && formattedBody.isNotEmpty) {
-        return Padding(
-          padding: const EdgeInsets.only(right: 5),
-          child: RenderHtml(text: formattedBody),
-        );
-      } else {
-        final str = description.body();
-        if (str.isNotEmpty) {
-          return Padding(
-            padding: const EdgeInsets.only(right: 5),
-            child: Text(str),
-          );
-        }
-      }
-    }
-
-    return const Padding(
-      padding: EdgeInsets.only(right: 5),
-      child: Text(''),
     );
   }
 
@@ -163,6 +134,120 @@ class TaskInfo extends ConsumerWidget {
   }
 }
 
+class TaskBody extends StatefulWidget {
+  static const editKey = Key('task-body-edit');
+  static const editorKey = Key('task-body-editor');
+  static const saveEditKey = Key('task-body-save');
+  static const cancelEditKey = Key('task-body-cancel');
+  final Task task;
+  const TaskBody({Key? key, required this.task}) : super(key: key);
+
+  @override
+  _TaskBodyState createState() => _TaskBodyState();
+}
+
+class _TaskBodyState extends State<TaskBody> {
+  bool editMode = false;
+  TextEditingController _textEditingController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    final description = widget.task.description();
+    if (description != null) {
+      _textEditingController.text = description.body();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (editMode) {
+      return Padding(
+        padding: const EdgeInsets.all(15),
+        child: Column(
+          children: [
+            MdEditorWithPreview(
+              key: TaskBody.editorKey,
+              labelText: 'Notes',
+              controller: _textEditingController,
+            ),
+            Wrap(
+              alignment: WrapAlignment.end,
+              children: [
+                OutlinedButton(
+                  key: TaskBody.cancelEditKey,
+                  onPressed: () => setState(() => editMode = false),
+                  child: const Text('cancel'),
+                ),
+                OutlinedButton(
+                  key: TaskBody.saveEditKey,
+                  onPressed: () async {
+                    final newBody = _textEditingController.text;
+                    final description = widget.task.description();
+                    if ((description == null &&
+                            newBody.isEmpty) || // was nothing & stays nothing
+                        (description != null &&
+                            // was something and is the same;
+                            description.body() == newBody)) {
+                      // close and ignore, nothing actually changed
+                      setState(() => editMode = false);
+                    }
+
+                    try {
+                      EasyLoading.show(status: 'Updating task note');
+                      final updater = widget.task.updateBuilder();
+                      updater.descriptionText(newBody);
+                      await updater.send();
+                      EasyLoading.showToast(
+                        'Notes updates',
+                        toastPosition: EasyLoadingToastPosition.bottom,
+                      );
+                      setState(() => editMode = false);
+                    } catch (e) {
+                      EasyLoading.showError('Failed to update notes: $e');
+                    }
+                  },
+                  child: const Text('save'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
+    final description = widget.task.description();
+    if (description != null) {
+      final formattedBody = description.formattedBody();
+      if (formattedBody != null && formattedBody.isNotEmpty) {
+        return Padding(
+          padding: const EdgeInsets.all(15),
+          child: RenderHtml(text: formattedBody),
+        );
+      } else {
+        final str = description.body();
+        if (str.isNotEmpty) {
+          return Padding(
+            padding: const EdgeInsets.all(15),
+            child: Text(str),
+          );
+        }
+      }
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(15),
+      child: Center(
+        child: ActionChip(
+          key: TaskBody.editKey,
+          avatar: const Icon(Atlas.notebook_thin),
+          label: const Text('add notes'),
+          onPressed: () => setState(() => editMode = true),
+        ),
+      ),
+    );
+  }
+}
+
 class TaskInfoSkeleton extends StatelessWidget {
   const TaskInfoSkeleton({Key? key}) : super(key: key);
 
@@ -189,13 +274,17 @@ class TaskInfoSkeleton extends StatelessWidget {
                 ],
               ),
             ),
-            ListTile(
+            const ListTile(
               dense: true,
-              subtitle: const Text('Due'),
-              title: Text(
-                'today',
-                style: Theme.of(context).textTheme.bodySmall,
+              leading: Icon(Atlas.calendar_date_thin),
+              title: Chip(
+                label: Text('due date'),
               ),
+            ),
+            const ListTile(
+              dense: true,
+              leading: Icon(Atlas.business_man_thin),
+              title: Text('no one is responsible yet'),
             ),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
