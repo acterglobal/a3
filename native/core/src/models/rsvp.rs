@@ -121,7 +121,7 @@ impl Rsvp {
 }
 
 impl super::ActerModel for Rsvp {
-    fn indizes(&self) -> Vec<String> {
+    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
         self.belongs_to()
             .unwrap() // we always have some as entries
             .into_iter()

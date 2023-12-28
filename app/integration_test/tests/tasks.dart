@@ -468,5 +468,33 @@ void tasksTests() {
         .descendant(of: assignmentsField, matching: find.text('Ruben'))
         .should(findsOneWidget);
     await selfAssign.should(findsNothing); // and the button is gone
+
+    // okay, this should show up on our dashboard now!
+    await t.navigateTo([
+      MainNavKeys.dashboardHome,
+      MainNavKeys.dashboardHome,
+    ]);
+
+    await find
+        .text('Take out the trash')
+        .should(findsOneWidget); // this should navigate us tp the item page
+
+    final taskEntry = find
+        .ancestor(
+          of: find.text('Take out the trash'),
+          matching:
+              find.byWidgetPredicate((Widget widget) => widget is TaskEntry),
+        )
+        .evaluate()
+        .first
+        .widget as TaskEntry;
+
+    // mark as done.
+    final btnNotDoneFinder = find.byKey(taskEntry.notDoneKey());
+    await btnNotDoneFinder.should(findsOneWidget);
+    await btnNotDoneFinder.tap(); // toggle done
+
+    // makes it disappear!
+    await find.text('Take out the trash').should(findsNothing);
   });
 }

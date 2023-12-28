@@ -9,6 +9,7 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/in_dashboard.dart';
 import 'package:acter/features/home/widgets/my_events.dart';
 import 'package:acter/features/home/widgets/my_spaces_section.dart';
+import 'package:acter/features/home/widgets/my_tasks.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -27,6 +28,11 @@ class Dashboard extends ConsumerWidget {
     bool isActive(f) => provider.isActive(f);
 
     List<Widget> children = [];
+
+    if (isActive(LabsFeature.tasks)) {
+      children.add(const MyTasksSection(limit: 5));
+    }
+
     if (isActive(LabsFeature.events)) {
       children.add(const MyEventsSection(limit: 5));
     }

@@ -8,7 +8,11 @@ pub static PURPOSE_TEAM_VALUE: &str = "global.acter.team";
 
 #[allow(non_snake_case)]
 pub mod KEYS {
-    pub static TASKS: &str = "tasks";
+    pub mod TASKS {
+        pub static TASKS: &str = "tasks";
+        pub static MY_OPEN_TASKS: &str = "tasks_my_open";
+        pub static MY_DONE_TASKS: &str = "tasks_my_done";
+    }
     pub static CALENDAR: &str = "calendar";
     pub static NEWS: &str = "news";
     pub static PINS: &str = "pins";

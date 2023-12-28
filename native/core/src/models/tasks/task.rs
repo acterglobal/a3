@@ -1,11 +1,11 @@
-use ruma_common::{EventId, OwnedUserId, RoomId};
+use ruma_common::{EventId, OwnedUserId, RoomId, UserId};
 use ruma_events::OriginalMessageLikeEvent;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
 use super::{
     super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store},
-    TaskList, TASKS_KEY,
+    TaskList, KEYS,
 };
 use crate::{
     events::tasks::{
@@ -49,6 +49,10 @@ impl Task {
             .progress_percent
             .map(|u| u >= 100)
             .unwrap_or_default()
+    }
+
+    pub fn is_assigned(&self, user_id: &UserId) -> bool {
+        self.assignees.iter().any(|o| o == user_id)
     }
 
     pub fn percent(&self) -> Option<u8> {
@@ -96,8 +100,18 @@ impl Task {
 }
 
 impl ActerModel for Task {
-    fn indizes(&self) -> Vec<String> {
-        vec![format!("{}::{TASKS_KEY}", self.inner.task_list_id.event_id)]
+    fn indizes(&self, user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
+        let tasks_key = KEYS::TASKS;
+        let task_list_id_idx = format!("{}::{tasks_key}", self.inner.task_list_id.event_id);
+        if self.is_assigned(user_id) {
+            if self.is_done() {
+                return vec![KEYS::MY_DONE_TASKS.to_owned(), task_list_id_idx];
+            } else {
+                return vec![KEYS::MY_OPEN_TASKS.to_owned(), task_list_id_idx];
+            }
+        }
+        // not mine
+        return vec![task_list_id_idx];
     }
 
     fn event_id(&self) -> &EventId {
@@ -158,7 +172,7 @@ pub struct TaskUpdate {
 }
 
 impl ActerModel for TaskUpdate {
-    fn indizes(&self) -> Vec<String> {
+    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
         vec![format!("{:}::history", self.inner.task.event_id)]
     }
 
@@ -222,7 +236,7 @@ impl TaskSelfAssign {
 }
 
 impl ActerModel for TaskSelfAssign {
-    fn indizes(&self) -> Vec<String> {
+    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
         vec![format!("{:}::history", self.inner.task.event_id)]
     }
 
@@ -277,7 +291,7 @@ impl TaskSelfUnassign {
 }
 
 impl ActerModel for TaskSelfUnassign {
-    fn indizes(&self) -> Vec<String> {
+    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
         vec![format!("{:}::history", self.inner.task.event_id)]
     }
 

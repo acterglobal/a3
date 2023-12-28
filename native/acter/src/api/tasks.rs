@@ -75,7 +75,7 @@ impl Client {
         let client = self.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client.store().get_list(KEYS::TASKS).await? {
+                for mdl in client.store().get_list(KEYS::TASKS::TASKS).await? {
                     #[allow(irrefutable_let_patterns)]
                     if let AnyActerModel::TaskList(content) = mdl {
                         let room_id = content.room_id().to_owned();
@@ -103,6 +103,54 @@ impl Client {
                 Ok(task_lists)
             })
             .await?
+    }
+
+    pub async fn my_open_tasks(&self) -> Result<Vec<Task>> {
+        let mut tasks = Vec::new();
+        let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
+        let client = self.clone();
+        RUNTIME
+            .spawn(async move {
+                for mdl in client.store().get_list(KEYS::TASKS::MY_OPEN_TASKS).await? {
+                    #[allow(irrefutable_let_patterns)]
+                    if let AnyActerModel::Task(content) = mdl {
+                        let room_id = content.room_id().to_owned();
+                        let room = match rooms_map.entry(room_id) {
+                            Entry::Occupied(t) => t.get().clone(),
+                            Entry::Vacant(e) => {
+                                if let Some(room) = client.get_room(e.key()) {
+                                    e.insert(room.clone());
+                                    room
+                                } else {
+                                    /// User not part of the room anymore, ignore
+                                    continue;
+                                }
+                            }
+                        };
+                        tasks.push(Task {
+                            client: client.clone(),
+                            room,
+                            content,
+                        })
+                    } else {
+                        warn!(
+                            "Non task list model found in `my open tasks` index: {:?}",
+                            mdl
+                        );
+                    }
+                }
+                Ok(tasks)
+            })
+            .await?
+    }
+
+    pub fn subscribe_my_open_tasks_stream(&self) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.subscribe_my_open_tasks()).map(|_| true)
+    }
+
+    pub fn subscribe_my_open_tasks(&self) -> Receiver<()> {
+        self.executor()
+            .subscribe(KEYS::TASKS::MY_OPEN_TASKS.to_owned())
     }
 
     pub async fn task_list(&self, key: String) -> Result<TaskList> {
@@ -136,7 +184,7 @@ impl Space {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let k = format!("{room_id}::{}", KEYS::TASKS);
+                let k = format!("{room_id}::{}", KEYS::TASKS::TASKS);
                 for mdl in client.store().get_list(&k).await? {
                     #[allow(irrefutable_let_patterns)]
                     if let AnyActerModel::TaskList(content) = mdl {
@@ -487,6 +535,10 @@ impl Task {
 
     pub fn event_id_str(&self) -> String {
         self.content.event_id().to_string()
+    }
+
+    pub fn task_list_id_str(&self) -> String {
+        self.content.task_list_id.event_id.to_string()
     }
 
     pub fn description(&self) -> Option<MsgContent> {

@@ -9577,6 +9577,54 @@ class Api {
     return tmp7;
   }
 
+  FfiListTask? __clientMyOpenTasksFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientMyOpenTasksFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListTask");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListTask._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   FfiListCalendarEvent? __clientCalendarEventsFuturePoll(
     int boxed,
     int postCobject,
@@ -11885,6 +11933,39 @@ class Api {
     tmp5 = tmp4;
     tmp7 = tmp6;
     final tmp8 = _clientSubscribeStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
+  bool? __clientSubscribeMyOpenTasksStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _clientSubscribeMyOpenTasksStreamStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -15874,6 +15955,16 @@ class Api {
 
   late final _taskRoomIdStr = _taskRoomIdStrPtr.asFunction<
       _TaskRoomIdStrReturn Function(
+        int,
+      )>();
+  late final _taskTaskListIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskTaskListIdStrReturn Function(
+            ffi.Int64,
+          )>>("__Task_task_list_id_str");
+
+  late final _taskTaskListIdStr = _taskTaskListIdStrPtr.asFunction<
+      _TaskTaskListIdStrReturn Function(
         int,
       )>();
   late final _taskDescriptionPtr = _lookup<
@@ -20171,6 +20262,27 @@ class Api {
         int,
         int,
       )>();
+  late final _clientMyOpenTasksPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Client_my_open_tasks");
+
+  late final _clientMyOpenTasks = _clientMyOpenTasksPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _clientSubscribeMyOpenTasksStreamPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Client_subscribe_my_open_tasks_stream");
+
+  late final _clientSubscribeMyOpenTasksStream =
+      _clientSubscribeMyOpenTasksStreamPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _clientCalendarEventsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -23879,6 +23991,21 @@ class Api {
             int,
             int,
           )>();
+  late final _clientMyOpenTasksFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientMyOpenTasksFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_my_open_tasks_future_poll");
+
+  late final _clientMyOpenTasksFuturePoll =
+      _clientMyOpenTasksFuturePollPtr.asFunction<
+          _ClientMyOpenTasksFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _clientCalendarEventsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientCalendarEventsFuturePollReturn Function(
@@ -24730,6 +24857,23 @@ class Api {
   late final _clientSubscribeStreamStreamPoll =
       _clientSubscribeStreamStreamPollPtr.asFunction<
           _ClientSubscribeStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _clientSubscribeMyOpenTasksStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSubscribeMyOpenTasksStreamStreamPollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_subscribe_my_open_tasks_stream_stream_poll");
+
+  late final _clientSubscribeMyOpenTasksStreamStreamPoll =
+      _clientSubscribeMyOpenTasksStreamStreamPollPtr.asFunction<
+          _ClientSubscribeMyOpenTasksStreamStreamPollReturn Function(
             int,
             int,
             int,
@@ -34125,6 +34269,36 @@ class Task {
     return tmp2;
   }
 
+  /// unique task list id associated with this task
+  String taskListIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskTaskListIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
   /// the description of this task
   MsgContent? description() {
     var tmp0 = 0;
@@ -42248,6 +42422,38 @@ class Client {
     return tmp6;
   }
 
+  /// the Tasks lists of this Space
+  Future<FfiListTask> myOpenTasks() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientMyOpenTasks(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_my_open_tasks_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__clientMyOpenTasksFuturePoll);
+    return tmp2;
+  }
+
+  /// listen to updates of the my_open_tasks list
+  Stream<bool> subscribeMyOpenTasksStream() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientSubscribeMyOpenTasksStream(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(
+        _api, tmp3_0, "__Client_subscribe_my_open_tasks_stream_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(
+        tmp3_1, _api.__clientSubscribeMyOpenTasksStreamStreamPoll);
+    return tmp2;
+  }
+
   /// get all calendar events
   Future<FfiListCalendarEvent> calendarEvents() {
     var tmp0 = 0;
@@ -45873,6 +46079,15 @@ class _TaskEventIdStrReturn extends ffi.Struct {
 }
 
 class _TaskRoomIdStrReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _TaskTaskListIdStrReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -49564,6 +49779,21 @@ class _ClientTaskListFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ClientMyOpenTasksFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _ClientCalendarEventsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -50254,6 +50484,13 @@ class _ClientReceiptEventRxStreamPollReturn extends ffi.Struct {
 }
 
 class _ClientSubscribeStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _ClientSubscribeMyOpenTasksStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

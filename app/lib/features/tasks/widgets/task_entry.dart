@@ -10,9 +10,14 @@ import 'package:go_router/go_router.dart';
 
 class TaskEntry extends ConsumerWidget {
   final Task task;
-  final String taskListId;
-  const TaskEntry({Key? key, required this.task, required this.taskListId})
-      : super(key: key);
+  final bool showBreadCrumb;
+  final Function()? onDone;
+  const TaskEntry({
+    Key? key,
+    required this.task,
+    this.showBreadCrumb = false,
+    this.onDone,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -82,6 +87,9 @@ class TaskEntry extends ConsumerWidget {
             updater.markUndone();
           }
           await updater.send();
+          if (onDone != null) {
+            onDone!();
+          }
         },
       ),
       title: InkWell(
@@ -104,7 +112,7 @@ class TaskEntry extends ConsumerWidget {
             Routes.task.name,
             pathParameters: {
               'taskId': task.eventIdStr(),
-              'taskListId': taskListId,
+              'taskListId': task.taskListIdStr(),
             },
           );
         },

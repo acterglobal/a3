@@ -1160,6 +1160,9 @@ object Task {
     /// the room this task lives in
     fn room_id_str() -> string;
 
+    /// unique task list id associated with this task
+    fn task_list_id_str() -> string;
+
     /// the description of this task
     fn description() -> Option<MsgContent>;
 
@@ -2186,6 +2189,12 @@ object Client {
 
     /// the Tasks list for the client
     fn task_list(key: string) -> Future<Result<TaskList>>;
+
+    /// the Tasks lists of this Space
+    fn my_open_tasks() -> Future<Result<Vec<Task>>>;
+
+    /// listen to updates of the my_open_tasks list
+    fn subscribe_my_open_tasks_stream() -> Stream<bool>;
 
     /// get all calendar events
     fn calendar_events() -> Future<Result<Vec<CalendarEvent>>>;

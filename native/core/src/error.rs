@@ -29,6 +29,9 @@ pub enum Error {
     #[error("Your Homeserver doesn't have a hostname, that is required for this action.")]
     HomeserverMissesHostname,
 
+    #[error("The client must be logged in for this interaction.")]
+    ClientNotLoggedIn,
+
     #[error("Model {0:?} unknown")]
     UnknownModel(Option<String>),
 

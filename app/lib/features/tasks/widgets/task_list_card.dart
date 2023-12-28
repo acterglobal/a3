@@ -116,7 +116,6 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                     children.add(
                       TaskEntry(
                         task: task,
-                        taskListId: tlId,
                       ),
                     );
                   }
@@ -148,7 +147,7 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
                   }
 
                   for (final task in overview.doneTasks) {
-                    children.add(TaskEntry(task: task, taskListId: tlId));
+                    children.add(TaskEntry(task: task));
                   }
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),

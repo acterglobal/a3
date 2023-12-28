@@ -104,11 +104,16 @@ impl Executor {
         event_meta: EventMeta,
         reason: UnsignedRoomRedactionEvent,
     ) -> Result<()> {
+        let user_id = self
+            .store
+            .client
+            .user_id()
+            .ok_or(Error::ClientNotLoggedIn)?;
         match self.store.get(event_meta.event_id.as_str()).await {
             Ok(model) => {
                 let redacted = RedactedActerModel::new(
                     model_type.to_owned(),
-                    model.indizes(),
+                    model.indizes(user_id),
                     event_meta,
                     reason,
                 );

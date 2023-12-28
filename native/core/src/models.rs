@@ -108,7 +108,7 @@ pub async fn default_model_execute(
 
 #[enum_dispatch(AnyActerModel)]
 pub trait ActerModel: Debug {
-    fn indizes(&self) -> Vec<String>;
+    fn indizes(&self, user_id: &matrix_sdk::ruma::UserId) -> Vec<String>;
     /// The key to store this model under
     fn event_id(&self) -> &EventId;
     /// The models to inform about this model as it belongs to that
@@ -209,7 +209,7 @@ impl RedactedActerModel {
 }
 
 impl ActerModel for RedactedActerModel {
-    fn indizes(&self) -> Vec<String> {
+    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
         self.indizes.clone()
     }
 

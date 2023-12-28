@@ -10,7 +10,7 @@ use crate::{
 
 #[derive(Clone, Debug)]
 pub struct Store {
-    client: Client,
+    pub(crate) client: Client,
     fresh: bool,
     models: Arc<DashMap<String, AnyActerModel>>,
     indizes: Arc<DashMap<String, Vec<String>>>,
@@ -117,6 +117,8 @@ impl Store {
             vec![]
         };
 
+        let user_id = client.user_id().ok_or(Error::ClientNotLoggedIn)?;
+
         let indizes = DashMap::new();
         let mut models_sources = Vec::new();
         for m in models_vec {
@@ -125,7 +127,7 @@ impl Store {
                 continue
             };
             let key = m.event_id().to_string();
-            for idx in m.indizes() {
+            for idx in m.indizes(user_id) {
                 let mut r: RefMut<String, Vec<String>> = indizes.entry(idx).or_default();
                 r.value_mut().push(key.clone())
             }
@@ -176,13 +178,14 @@ impl Store {
     #[instrument(skip(self))]
     pub async fn save_model_inner(&self, mdl: AnyActerModel) -> Result<Vec<String>> {
         let key = mdl.event_id().to_string();
+        let user_id = self.client.user_id().ok_or(Error::ClientNotLoggedIn)?;
         let mut keys_changed = vec![key.clone()];
-        trace!(user=?self.client.user_id(), key, "saving");
-        let mut indizes = mdl.indizes();
+        trace!(user = ?user_id, key, "saving");
+        let mut indizes = mdl.indizes(user_id);
         if let Some(prev) = self.models.insert(key.clone(), mdl) {
             trace!(user=?self.client.user_id(), key, "previous model found");
             let mut remove_idzs = Vec::new();
-            for idz in prev.indizes() {
+            for idz in prev.indizes(user_id) {
                 if let Some(idx) = indizes.iter().position(|i| i == &idz) {
                     indizes.remove(idx);
                 } else {
