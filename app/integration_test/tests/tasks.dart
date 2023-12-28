@@ -102,13 +102,13 @@ extension ActerTasks on ConvenientTest {
     return taskIds;
   }
 
-  Future<List<String>> freshWithTasks(
-    List<String> tasks, {
-    String? listTitle,
-    String? spaceDisplayName,
-  }) async {
+  Future<List<String>> freshWithTasks(List<String> tasks,
+      {String? listTitle,
+      String? spaceDisplayName,
+      String? userDisplayName}) async {
     final spaceId = await freshAccountWithSpace(
       spaceDisplayName: spaceDisplayName ?? 'Tasks',
+      userDisplayName: userDisplayName,
     );
     await ensureTasksAreEnabled(spaceId);
     await gotoSpace(spaceId, appTab: TabEntry.tasks);
@@ -413,5 +413,60 @@ void tasksTests() {
     await find
         .text('At least 10 packages of 500ml or more')
         .should(findsOneWidget);
+  });
+
+  acterTestWidget('Self Assignment body', (t) async {
+    await t.freshWithTasks(
+      [
+        'Take out the trash',
+      ],
+      listTitle: 'Cleaning',
+      spaceDisplayName: 'Club House',
+      userDisplayName: 'Ruben',
+    );
+
+    // we see our entry now
+    await find.text('Cleaning').should(findsOneWidget);
+    await find.text('Take out the trash').should(findsOneWidget);
+    await find
+        .text('Take out the trash')
+        .tap(); // this should navigate us tp the item page
+
+    // ensure we are not assigned
+    final assignmentsField = find.byKey(TaskInfo.assignmentsFields);
+    await assignmentsField.should(findsOneWidget);
+    await find
+        .descendant(of: assignmentsField, matching: find.text('Ruben'))
+        .should(findsNothing);
+
+    final selfAssign = find.byKey(TaskInfo.selfAssignKey);
+    await selfAssign.should(findsOneWidget);
+    await selfAssign.tap(); // assign myself
+
+    // FOUND!
+    await find
+        .descendant(of: assignmentsField, matching: find.text('Ruben'))
+        .should(findsOneWidget);
+    await selfAssign.should(findsNothing); // and the button is gone
+
+    // but the unassign button is there.
+    final selfUnassign = find.byKey(TaskInfo.selfUnassignKey);
+    await selfUnassign.should(findsOneWidget);
+    await selfUnassign.tap(); // unassign myself
+
+    // and we are not assigned anymore \o/
+    await find
+        .descendant(of: assignmentsField, matching: find.text('Ruben'))
+        .should(findsNothing);
+
+    // let's assign ourselves again.
+    await selfAssign.should(findsOneWidget);
+    await selfAssign.tap(); // assign myself
+
+    // FOUND!
+    await find
+        .descendant(of: assignmentsField, matching: find.text('Ruben'))
+        .should(findsOneWidget);
+    await selfAssign.should(findsNothing); // and the button is gone
   });
 }

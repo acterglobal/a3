@@ -31,7 +31,9 @@ use ruma_events::{
 };
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
-pub use tasks::{Task, TaskList, TaskListUpdate, TaskStats, TaskUpdate};
+pub use tasks::{
+    Task, TaskList, TaskListUpdate, TaskSelfAssign, TaskSelfUnassign, TaskStats, TaskUpdate,
+};
 use tracing::{error, trace};
 
 #[cfg(test)]
@@ -49,7 +51,7 @@ use crate::{
         rsvp::RsvpEventContent,
         tasks::{
             TaskEventContent, TaskListEventContent, TaskListUpdateEventContent,
-            TaskUpdateEventContent,
+            TaskSelfAssignEventContent, TaskSelfUnassignEventContent, TaskUpdateEventContent,
         },
         AnyActerEvent,
     },
@@ -249,6 +251,8 @@ pub enum AnyActerModel {
     TaskListUpdate(TaskListUpdate),
     Task(Task),
     TaskUpdate(TaskUpdate),
+    TaskSelfAssign(TaskSelfAssign),
+    TaskSelfUnassign(TaskSelfUnassign),
 
     // -- Pins
     Pin(Pin),
@@ -397,6 +401,32 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::TaskUpdate(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
                     model_type: TaskUpdateEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+            AnyActerEvent::TaskSelfAssign(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::TaskSelfAssign(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: TaskSelfAssignEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+            AnyActerEvent::TaskSelfUnassign(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::TaskSelfUnassign(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: TaskSelfUnassignEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
                         event_id: r.event_id,

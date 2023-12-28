@@ -2,7 +2,6 @@ use chrono_tz::Tz;
 use core::result::Result as CoreResult;
 use derive_builder::Builder;
 use derive_getters::Getters;
-use ruma_common::OwnedUserId;
 use ruma_events::{macros::EventContent, room::message::TextMessageEventContent};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
@@ -87,10 +86,6 @@ pub struct TaskListEventContent {
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub categories: Vec<String>,
-
-    #[builder(setter(into), default)]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub subscribers: Vec<OwnedUserId>,
 }
 
 /// The TaskList Event
@@ -167,14 +162,6 @@ pub struct TaskListUpdateEventContent {
         deserialize_with = "deserialize_some"
     )]
     pub categories: Option<Vec<String>>,
-
-    #[builder(setter(into), default)]
-    #[serde(
-        default,
-        skip_serializing_if = "Option::is_none",
-        deserialize_with = "deserialize_some"
-    )]
-    pub subscribers: Option<Vec<OwnedUserId>>,
 }
 
 impl TaskListUpdateEventContent {
@@ -198,10 +185,6 @@ impl TaskListUpdateEventContent {
         }
         if let Some(sort_order) = &self.sort_order {
             task_list.sort_order = *sort_order;
-            updated = true;
-        }
-        if let Some(subscribers) = &self.subscribers {
-            task_list.subscribers = subscribers.clone();
             updated = true;
         }
         if let Some(time_zone) = &self.time_zone {
@@ -248,11 +231,6 @@ pub struct TaskEventContent {
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<TextMessageEventContent>,
-
-    /// Other users subscribed to updates of this item
-    #[builder(setter(into), default)]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub subscribers: Vec<OwnedUserId>,
 
     /// Which day is this task due
     #[builder(setter(into), default)]
@@ -342,15 +320,6 @@ pub struct TaskUpdateEventContent {
         deserialize_with = "deserialize_some"
     )]
     pub description: Option<Option<TextMessageEventContent>>,
-
-    /// Other users subscribed to updates of this item
-    #[builder(default)]
-    #[serde(
-        default,
-        skip_serializing_if = "Option::is_none",
-        deserialize_with = "deserialize_some"
-    )]
-    pub subscribers: Option<Vec<OwnedUserId>>,
 
     /// Day when is this task due
     #[builder(default)]
@@ -444,10 +413,6 @@ impl TaskUpdateEventContent {
             task.description = description.clone();
             updated = true;
         }
-        if let Some(subscribers) = &self.subscribers {
-            task.subscribers = subscribers.clone();
-            updated = true;
-        }
         if let Some(due_date) = &self.due_date {
             task.due_date = *due_date;
             updated = true;
@@ -489,4 +454,24 @@ impl TaskUpdateEventContent {
 
         Ok(updated)
     }
+}
+
+/// TaskSelfAssign Event
+#[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Getters)]
+#[ruma_event(type = "global.acter.dev.task.self_assign", kind = MessageLike)]
+#[builder(name = "TaskSelfAssignBuilder", derive(Debug))]
+pub struct TaskSelfAssignEventContent {
+    #[builder(setter(into))]
+    #[serde(rename = "m.relates_to")]
+    pub task: BelongsTo,
+}
+
+/// TaskSelfUnassign Event
+#[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Getters)]
+#[ruma_event(type = "global.acter.dev.task.self_unassign", kind = MessageLike)]
+#[builder(name = "TaskSelfUnassignBuilder", derive(Debug))]
+pub struct TaskSelfUnassignEventContent {
+    #[builder(setter(into))]
+    #[serde(rename = "m.relates_to")]
+    pub task: BelongsTo,
 }

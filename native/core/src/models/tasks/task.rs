@@ -8,7 +8,10 @@ use super::{
     TaskList, TASKS_KEY,
 };
 use crate::{
-    events::tasks::{TaskEventContent, TaskUpdateBuilder, TaskUpdateEventContent},
+    events::tasks::{
+        TaskEventContent, TaskSelfAssignEventContent, TaskSelfUnassignEventContent,
+        TaskUpdateBuilder, TaskUpdateEventContent,
+    },
     Result,
 };
 
@@ -31,10 +34,6 @@ impl Deref for Task {
 impl Task {
     pub fn title(&self) -> &String {
         &self.inner.title
-    }
-
-    pub fn subscribers(&self) -> Vec<OwnedUserId> {
-        self.inner.subscribers.clone()
     }
 
     pub fn assignees(&self) -> Vec<OwnedUserId> {
@@ -79,6 +78,18 @@ impl Task {
             .to_owned()
     }
 
+    pub fn self_assign_event_content(&self) -> TaskSelfAssignEventContent {
+        TaskSelfAssignEventContent {
+            task: self.meta.event_id.clone().into(),
+        }
+    }
+
+    pub fn self_unassign_event_content(&self) -> TaskSelfUnassignEventContent {
+        TaskSelfUnassignEventContent {
+            task: self.meta.event_id.clone().into(),
+        }
+    }
+
     pub fn key_from_event(event_id: &EventId) -> String {
         event_id.to_string()
     }
@@ -108,11 +119,12 @@ impl ActerModel for Task {
     }
 
     fn transition(&mut self, model: &AnyActerModel) -> Result<bool> {
-        let AnyActerModel::TaskUpdate(update) = model else {
-            return Ok(false)
-        };
-
-        update.apply(&mut self.inner)
+        match model {
+            AnyActerModel::TaskUpdate(update) => update.apply(&mut self.inner),
+            AnyActerModel::TaskSelfAssign(update) => update.apply(self),
+            AnyActerModel::TaskSelfUnassign(update) => update.apply(self),
+            _ => Ok(false),
+        }
     }
 }
 
@@ -181,6 +193,118 @@ impl From<OriginalMessageLikeEvent<TaskUpdateEventContent>> for TaskUpdate {
             ..
         } = outer;
         TaskUpdate {
+            inner: content,
+            meta: EventMeta {
+                room_id,
+                event_id,
+                sender,
+                origin_server_ts,
+            },
+        }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct TaskSelfAssign {
+    inner: TaskSelfAssignEventContent,
+    meta: EventMeta,
+}
+
+impl TaskSelfAssign {
+    fn apply(&self, task: &mut Task) -> Result<bool> {
+        let new_user_id = self.meta.sender.clone();
+        // remove any existing instance of the user in the list.
+        task.assignees.retain(|u| u != &new_user_id);
+        // add it at the new first entry;
+        task.assignees.insert(0, new_user_id);
+        Ok(true)
+    }
+}
+
+impl ActerModel for TaskSelfAssign {
+    fn indizes(&self) -> Vec<String> {
+        vec![format!("{:}::history", self.inner.task.event_id)]
+    }
+
+    fn event_id(&self) -> &EventId {
+        &self.meta.event_id
+    }
+
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+        default_model_execute(store, self.into()).await
+    }
+
+    fn belongs_to(&self) -> Option<Vec<String>> {
+        Some(vec![Task::key_from_event(&self.inner.task.event_id)])
+    }
+}
+
+impl From<OriginalMessageLikeEvent<TaskSelfAssignEventContent>> for TaskSelfAssign {
+    fn from(outer: OriginalMessageLikeEvent<TaskSelfAssignEventContent>) -> Self {
+        let OriginalMessageLikeEvent {
+            content,
+            room_id,
+            event_id,
+            sender,
+            origin_server_ts,
+            ..
+        } = outer;
+        TaskSelfAssign {
+            inner: content,
+            meta: EventMeta {
+                room_id,
+                event_id,
+                sender,
+                origin_server_ts,
+            },
+        }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct TaskSelfUnassign {
+    inner: TaskSelfUnassignEventContent,
+    meta: EventMeta,
+}
+
+impl TaskSelfUnassign {
+    fn apply(&self, task: &mut Task) -> Result<bool> {
+        let new_user_id = self.meta.sender.clone();
+        // remove the user from the list.
+        task.assignees.retain(|u| u != &new_user_id);
+        Ok(true)
+    }
+}
+
+impl ActerModel for TaskSelfUnassign {
+    fn indizes(&self) -> Vec<String> {
+        vec![format!("{:}::history", self.inner.task.event_id)]
+    }
+
+    fn event_id(&self) -> &EventId {
+        &self.meta.event_id
+    }
+
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+        default_model_execute(store, self.into()).await
+    }
+
+    fn belongs_to(&self) -> Option<Vec<String>> {
+        Some(vec![Task::key_from_event(&self.inner.task.event_id)])
+    }
+}
+
+impl From<OriginalMessageLikeEvent<TaskSelfUnassignEventContent>> for TaskSelfUnassign {
+    fn from(outer: OriginalMessageLikeEvent<TaskSelfUnassignEventContent>) -> Self {
+        let OriginalMessageLikeEvent {
+            content,
+            room_id,
+            event_id,
+            sender,
+            origin_server_ts,
+            ..
+        } = outer;
+        TaskSelfUnassign {
             inner: content,
             meta: EventMeta {
                 room_id,

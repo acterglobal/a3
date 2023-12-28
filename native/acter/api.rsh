@@ -1169,9 +1169,6 @@ object Task {
     /// the users assigned
     fn assignees_str() -> Vec<string>;
 
-    /// other users to inform about updates
-    fn subscribers() -> Vec<UserId>;
-
     /// order in the list
     fn sort_order() -> u32;
 
@@ -1215,6 +1212,15 @@ object Task {
 
     /// make a builder for updating the task
     fn update_builder() -> Result<TaskUpdateBuilder>;
+
+    /// Is this assigned to the current user?
+    fn is_assigned_to_me() -> bool;
+
+    /// Assign this task to myself
+    fn assign_self() -> Future<Result<EventId>>;
+
+    /// UnAssign this task to myself
+    fn unassign_self() -> Future<Result<EventId>>;
 
     /// get informed about changes to this task
     fn subscribe_stream() -> Stream<bool>;
@@ -1279,11 +1285,6 @@ object TaskUpdateBuilder {
     fn unset_categories();
     fn unset_categories_update();
 
-    /// set the subscribers for this task list
-    fn subscribers(subscribers: Vec<UserId>);
-    fn unset_subscribers();
-    fn unset_subscribers_update();
-
     /// send this task list draft
     /// mark it done
     fn mark_done();
@@ -1337,10 +1338,6 @@ object TaskDraft {
     fn categories(categories: Vec<string>);
     fn unset_categories();
 
-    /// set the subscribers for this task
-    fn subscribers(subscribers: Vec<UserId>);
-    fn unset_subscribers();
-
     /// create this task
     fn send() -> Future<Result<EventId>>;
 }
@@ -1354,9 +1351,6 @@ object TaskList {
 
     /// the description of this task list
     fn description() -> Option<MsgContent>;
-
-    /// who wants to be informed on updates about this?
-    fn subscribers() -> Vec<UserId>;
 
     /// does this list have a special role?
     fn role() -> Option<string>;
@@ -1425,10 +1419,6 @@ object TaskListDraft {
     fn categories(categories: Vec<string>);
     fn unset_categories();
 
-    /// set the subscribers for this task list
-    fn subscribers(subscribers: Vec<UserId>);
-    fn unset_subscribers();
-
     /// create this task list
     fn send() -> Future<Result<EventId>>;
 }
@@ -1459,11 +1449,6 @@ object TaskListUpdateBuilder {
     fn categories(categories: Vec<string>);
     fn unset_categories();
     fn unset_categories_update();
-
-    /// set the subscribers for this task list
-    fn subscribers(subscribers: Vec<UserId>);
-    fn unset_subscribers();
-    fn unset_subscribers_update();
 
     /// update this task
     fn send() -> Future<Result<EventId>>;

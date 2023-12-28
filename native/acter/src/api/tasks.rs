@@ -1,6 +1,6 @@
 use acter_core::{
     events::tasks::{self, Priority, TaskBuilder, TaskListBuilder},
-    models::{self, ActerModel, AnyActerModel, Color, TaskStats},
+    models::{self, ActerModel, AnyActerModel, Color, TaskSelfAssign, TaskStats},
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
@@ -244,17 +244,6 @@ impl TaskListDraft {
 
     pub fn unset_categories(&mut self) -> &mut Self {
         self.content.categories(vec![]);
-        self
-    }
-
-    #[allow(clippy::ptr_arg)]
-    pub fn subscribers(&mut self, subscribers: &mut Vec<OwnedUserId>) -> &mut Self {
-        self.content.subscribers(subscribers.to_vec());
-        self
-    }
-
-    pub fn unset_subscribers(&mut self) -> &mut Self {
-        self.content.subscribers(vec![]);
         self
     }
 
@@ -599,6 +588,45 @@ impl Task {
         matches!(self.room.state(), RoomState::Joined)
     }
 
+    pub fn is_assigned_to_me(&self) -> bool {
+        let assignees = self.content.assignees();
+        if assignees.is_empty() {
+            return false;
+        }
+        let Ok(user_id) = self.client.account().map(|a| a.user_id()) else {
+            return false
+        };
+        assignees.contains(&user_id)
+    }
+
+    pub async fn assign_self(&self) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Can only update tasks in joined rooms");
+        }
+        let room = self.room.clone();
+        let content = self.content.self_assign_event_content();
+        RUNTIME
+            .spawn(async move {
+                let resp = room.send(content).await?;
+                Ok(resp.event_id)
+            })
+            .await?
+    }
+
+    pub async fn unassign_self(&self) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Can only update tasks in joined rooms");
+        }
+        let room = self.room.clone();
+        let content = self.content.self_unassign_event_content();
+        RUNTIME
+            .spawn(async move {
+                let resp = room.send(content).await?;
+                Ok(resp.event_id)
+            })
+            .await?
+    }
+
     pub fn update_builder(&self) -> Result<TaskUpdateBuilder> {
         if !self.is_joined() {
             bail!("Can only update tasks in joined rooms");
@@ -753,17 +781,6 @@ impl TaskDraft {
         self
     }
 
-    #[allow(clippy::ptr_arg)]
-    pub fn subscribers(&mut self, subscribers: &mut Vec<OwnedUserId>) -> &mut Self {
-        self.content.subscribers(subscribers.to_vec());
-        self
-    }
-
-    pub fn unset_subscribers(&mut self) -> &mut Self {
-        self.content.subscribers(vec![]);
-        self
-    }
-
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
         let content = self.content.build()?;
@@ -867,23 +884,6 @@ impl TaskUpdateBuilder {
         self.content.categories(None);
         self
     }
-
-    #[allow(clippy::ptr_arg)]
-    pub fn subscribers(&mut self, subscribers: &mut Vec<OwnedUserId>) -> &mut Self {
-        self.content.subscribers(Some(subscribers.to_vec()));
-        self
-    }
-
-    pub fn unset_subscribers(&mut self) -> &mut Self {
-        self.content.subscribers(Some(vec![]));
-        self
-    }
-
-    pub fn unset_subscribers_update(&mut self) -> &mut Self {
-        self.content.subscribers(None);
-        self
-    }
-
     pub fn mark_done(&mut self) -> &mut Self {
         self.content.progress_percent(Some(Some(100)));
         self
@@ -1066,22 +1066,6 @@ impl TaskListUpdateBuilder {
 
     pub fn unset_categories_update(&mut self) -> &mut Self {
         self.content.categories(None);
-        self
-    }
-
-    #[allow(clippy::ptr_arg)]
-    pub fn subscribers(&mut self, subscribers: &mut Vec<OwnedUserId>) -> &mut Self {
-        self.content.subscribers(Some(subscribers.to_vec()));
-        self
-    }
-
-    pub fn unset_subscribers(&mut self) -> &mut Self {
-        self.content.subscribers(Some(vec![]));
-        self
-    }
-
-    pub fn unset_subscribers_update(&mut self) -> &mut Self {
-        self.content.subscribers(None);
         self
     }
 

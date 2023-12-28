@@ -5247,6 +5247,100 @@ class Api {
     return tmp7;
   }
 
+  EventId? __taskAssignSelfFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskAssignSelfFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __taskUnassignSelfFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskUnassignSelfFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
   Task? __taskRefreshFuturePoll(
     int boxed,
     int postCobject,
@@ -15812,16 +15906,6 @@ class Api {
       int Function(
         int,
       )>();
-  late final _taskSubscribersPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__Task_subscribers");
-
-  late final _taskSubscribers = _taskSubscribersPtr.asFunction<
-      int Function(
-        int,
-      )>();
   late final _taskSortOrderPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint32 Function(
@@ -15930,6 +16014,36 @@ class Api {
 
   late final _taskUpdateBuilder = _taskUpdateBuilderPtr.asFunction<
       _TaskUpdateBuilderReturn Function(
+        int,
+      )>();
+  late final _taskIsAssignedToMePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__Task_is_assigned_to_me");
+
+  late final _taskIsAssignedToMe = _taskIsAssignedToMePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _taskAssignSelfPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Task_assign_self");
+
+  late final _taskAssignSelf = _taskAssignSelfPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _taskUnassignSelfPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Task_unassign_self");
+
+  late final _taskUnassignSelf = _taskUnassignSelfPtr.asFunction<
+      int Function(
         int,
       )>();
   late final _taskSubscribeStreamPtr = _lookup<
@@ -16344,41 +16458,6 @@ class Api {
           void Function(
             int,
           )>();
-  late final _taskUpdateBuilderSubscribersPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__TaskUpdateBuilder_subscribers");
-
-  late final _taskUpdateBuilderSubscribers =
-      _taskUpdateBuilderSubscribersPtr.asFunction<
-          void Function(
-            int,
-            int,
-          )>();
-  late final _taskUpdateBuilderUnsetSubscribersPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.Int64,
-          )>>("__TaskUpdateBuilder_unset_subscribers");
-
-  late final _taskUpdateBuilderUnsetSubscribers =
-      _taskUpdateBuilderUnsetSubscribersPtr.asFunction<
-          void Function(
-            int,
-          )>();
-  late final _taskUpdateBuilderUnsetSubscribersUpdatePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.Int64,
-          )>>("__TaskUpdateBuilder_unset_subscribers_update");
-
-  late final _taskUpdateBuilderUnsetSubscribersUpdate =
-      _taskUpdateBuilderUnsetSubscribersUpdatePtr.asFunction<
-          void Function(
-            int,
-          )>();
   late final _taskUpdateBuilderMarkDonePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -16675,29 +16754,6 @@ class Api {
           void Function(
             int,
           )>();
-  late final _taskDraftSubscribersPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__TaskDraft_subscribers");
-
-  late final _taskDraftSubscribers = _taskDraftSubscribersPtr.asFunction<
-      void Function(
-        int,
-        int,
-      )>();
-  late final _taskDraftUnsetSubscribersPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.Int64,
-          )>>("__TaskDraft_unset_subscribers");
-
-  late final _taskDraftUnsetSubscribers =
-      _taskDraftUnsetSubscribersPtr.asFunction<
-          void Function(
-            int,
-          )>();
   late final _taskDraftSendPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -16736,16 +16792,6 @@ class Api {
 
   late final _taskListDescription = _taskListDescriptionPtr.asFunction<
       _TaskListDescriptionReturn Function(
-        int,
-      )>();
-  late final _taskListSubscribersPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__TaskList_subscribers");
-
-  late final _taskListSubscribers = _taskListSubscribersPtr.asFunction<
-      int Function(
         int,
       )>();
   late final _taskListRolePtr = _lookup<
@@ -17035,30 +17081,6 @@ class Api {
           void Function(
             int,
           )>();
-  late final _taskListDraftSubscribersPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__TaskListDraft_subscribers");
-
-  late final _taskListDraftSubscribers =
-      _taskListDraftSubscribersPtr.asFunction<
-          void Function(
-            int,
-            int,
-          )>();
-  late final _taskListDraftUnsetSubscribersPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.Int64,
-          )>>("__TaskListDraft_unset_subscribers");
-
-  late final _taskListDraftUnsetSubscribers =
-      _taskListDraftUnsetSubscribersPtr.asFunction<
-          void Function(
-            int,
-          )>();
   late final _taskListDraftSendPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -17240,41 +17262,6 @@ class Api {
 
   late final _taskListUpdateBuilderUnsetCategoriesUpdate =
       _taskListUpdateBuilderUnsetCategoriesUpdatePtr.asFunction<
-          void Function(
-            int,
-          )>();
-  late final _taskListUpdateBuilderSubscribersPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__TaskListUpdateBuilder_subscribers");
-
-  late final _taskListUpdateBuilderSubscribers =
-      _taskListUpdateBuilderSubscribersPtr.asFunction<
-          void Function(
-            int,
-            int,
-          )>();
-  late final _taskListUpdateBuilderUnsetSubscribersPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.Int64,
-          )>>("__TaskListUpdateBuilder_unset_subscribers");
-
-  late final _taskListUpdateBuilderUnsetSubscribers =
-      _taskListUpdateBuilderUnsetSubscribersPtr.asFunction<
-          void Function(
-            int,
-          )>();
-  late final _taskListUpdateBuilderUnsetSubscribersUpdatePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.Int64,
-          )>>("__TaskListUpdateBuilder_unset_subscribers_update");
-
-  late final _taskListUpdateBuilderUnsetSubscribersUpdate =
-      _taskListUpdateBuilderUnsetSubscribersUpdatePtr.asFunction<
           void Function(
             int,
           )>();
@@ -22514,6 +22501,36 @@ class Api {
   late final _attachmentsManagerContentDraftFuturePoll =
       _attachmentsManagerContentDraftFuturePollPtr.asFunction<
           _AttachmentsManagerContentDraftFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _taskAssignSelfFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskAssignSelfFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Task_assign_self_future_poll");
+
+  late final _taskAssignSelfFuturePoll =
+      _taskAssignSelfFuturePollPtr.asFunction<
+          _TaskAssignSelfFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _taskUnassignSelfFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskUnassignSelfFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Task_unassign_self_future_poll");
+
+  late final _taskUnassignSelfFuturePoll =
+      _taskUnassignSelfFuturePollPtr.asFunction<
+          _TaskUnassignSelfFuturePollReturn Function(
             int,
             int,
             int,
@@ -34173,22 +34190,6 @@ class Task {
     return tmp2;
   }
 
-  /// other users to inform about updates
-  FfiListUserId subscribers() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._taskSubscribers(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListUserId");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp4 = FfiListUserId._(_api, tmp3_1);
-    final tmp2 = tmp4;
-    return tmp2;
-  }
-
   /// order in the list
   int sortOrder() {
     var tmp0 = 0;
@@ -34419,6 +34420,48 @@ class Task {
     final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TaskUpdateBuilder");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp2 = TaskUpdateBuilder._(_api, tmp7_1);
+    return tmp2;
+  }
+
+  /// Is this assigned to the current user?
+  bool isAssignedToMe() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskIsAssignedToMe(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// Assign this task to myself
+  Future<EventId> assignSelf() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskAssignSelf(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Task_assign_self_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__taskAssignSelfFuturePoll);
+    return tmp2;
+  }
+
+  /// UnAssign this task to myself
+  Future<EventId> unassignSelf() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskUnassignSelf(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Task_unassign_self_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__taskUnassignSelfFuturePoll);
     return tmp2;
   }
 
@@ -34962,40 +35005,6 @@ class TaskUpdateBuilder {
     return;
   }
 
-  /// set the subscribers for this task list
-  void subscribers(
-    FfiListUserId subscribers,
-  ) {
-    final tmp1 = subscribers;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    tmp0 = _box.borrow();
-    tmp2 = tmp1._box.move();
-    _api._taskUpdateBuilderSubscribers(
-      tmp0,
-      tmp2,
-    );
-    return;
-  }
-
-  void unsetSubscribers() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetSubscribers(
-      tmp0,
-    );
-    return;
-  }
-
-  void unsetSubscribersUpdate() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetSubscribersUpdate(
-      tmp0,
-    );
-    return;
-  }
-
   /// send this task list draft
   /// mark it done
   void markDone() {
@@ -35437,31 +35446,6 @@ class TaskDraft {
     return;
   }
 
-  /// set the subscribers for this task
-  void subscribers(
-    FfiListUserId subscribers,
-  ) {
-    final tmp1 = subscribers;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    tmp0 = _box.borrow();
-    tmp2 = tmp1._box.move();
-    _api._taskDraftSubscribers(
-      tmp0,
-      tmp2,
-    );
-    return;
-  }
-
-  void unsetSubscribers() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    _api._taskDraftUnsetSubscribers(
-      tmp0,
-    );
-    return;
-  }
-
   /// create this task
   Future<EventId> send() {
     var tmp0 = 0;
@@ -35565,22 +35549,6 @@ class TaskList {
     final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MsgContent");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = MsgContent._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// who wants to be informed on updates about this?
-  FfiListUserId subscribers() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._taskListSubscribers(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListUserId");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp4 = FfiListUserId._(_api, tmp3_1);
-    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -36093,31 +36061,6 @@ class TaskListDraft {
     return;
   }
 
-  /// set the subscribers for this task list
-  void subscribers(
-    FfiListUserId subscribers,
-  ) {
-    final tmp1 = subscribers;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    tmp0 = _box.borrow();
-    tmp2 = tmp1._box.move();
-    _api._taskListDraftSubscribers(
-      tmp0,
-      tmp2,
-    );
-    return;
-  }
-
-  void unsetSubscribers() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    _api._taskListDraftUnsetSubscribers(
-      tmp0,
-    );
-    return;
-  }
-
   /// create this task list
   Future<EventId> send() {
     var tmp0 = 0;
@@ -36330,40 +36273,6 @@ class TaskListUpdateBuilder {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     _api._taskListUpdateBuilderUnsetCategoriesUpdate(
-      tmp0,
-    );
-    return;
-  }
-
-  /// set the subscribers for this task list
-  void subscribers(
-    FfiListUserId subscribers,
-  ) {
-    final tmp1 = subscribers;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    tmp0 = _box.borrow();
-    tmp2 = tmp1._box.move();
-    _api._taskListUpdateBuilderSubscribers(
-      tmp0,
-      tmp2,
-    );
-    return;
-  }
-
-  void unsetSubscribers() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    _api._taskListUpdateBuilderUnsetSubscribers(
-      tmp0,
-    );
-    return;
-  }
-
-  void unsetSubscribersUpdate() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    _api._taskListUpdateBuilderUnsetSubscribersUpdate(
       tmp0,
     );
     return;
@@ -48248,6 +48157,36 @@ class _AttachmentsManagerAttachmentsFuturePollReturn extends ffi.Struct {
 }
 
 class _AttachmentsManagerContentDraftFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _TaskAssignSelfFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _TaskUnassignSelfFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

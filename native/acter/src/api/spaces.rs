@@ -11,7 +11,10 @@ use acter_core::{
         news::{SyncNewsEntryEvent, SyncNewsEntryUpdateEvent},
         pins::{SyncPinEvent, SyncPinUpdateEvent},
         rsvp::SyncRsvpEvent,
-        tasks::{SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent, SyncTaskUpdateEvent},
+        tasks::{
+            SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent, SyncTaskSelfAssignEvent,
+            SyncTaskSelfUnassignEvent, SyncTaskUpdateEvent,
+        },
     },
     executor::Executor,
     models::AnyActerModel,
@@ -128,6 +131,32 @@ impl Space {
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         if let Err(error) = executor.handle(AnyActerModel::Task(t.into())).await {
+                            error!(?error, "execution failed");
+                        }
+                    }
+                },
+            ),
+            self.room.add_event_handler(
+                |ev: SyncTaskSelfAssignEvent,
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                        if let Err(error) = executor.handle(AnyActerModel::TaskSelfAssign(t.into())).await {
+                            error!(?error, "execution failed");
+                        }
+                    }
+                },
+            ),
+            self.room.add_event_handler(
+                |ev: SyncTaskSelfUnassignEvent,
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                        if let Err(error) = executor.handle(AnyActerModel::TaskSelfUnassign(t.into())).await {
                             error!(?error, "execution failed");
                         }
                     }

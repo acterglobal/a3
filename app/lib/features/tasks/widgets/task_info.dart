@@ -15,6 +15,9 @@ class TaskInfo extends ConsumerWidget {
   static const statusBtnNotDone = Key('task-info-status-not-done');
   static const statusBtnDone = Key('task-info-status-done');
   static const dueDateField = Key('task-due-field');
+  static const assignmentsFields = Key('task-assignments');
+  static const selfAssignKey = Key('task-self-assign');
+  static const selfUnassignKey = Key('task-self-unassign');
   final Task task;
   const TaskInfo({Key? key, required this.task}) : super(key: key);
 
@@ -105,30 +108,48 @@ class TaskInfo extends ConsumerWidget {
   }
 
   ListTile buildAssignees(BuildContext context, WidgetRef ref) {
-    final assignees = task.assigneesStr().toList();
+    final assignees = task.assigneesStr().map((s) => s.toDartString()).toList();
     final roomId = task.roomIdStr();
 
-    if (assignees.isEmpty) {
-      return const ListTile(
-        dense: true,
-        leading: Icon(Atlas.business_man_thin),
-        title: Text('no one is responsible yet'),
-      );
-    }
-
     return ListTile(
+      key: assignmentsFields,
       dense: true,
       leading: const Icon(Atlas.business_man_thin),
       title: Wrap(
-        children: assignees
-            .map(
-              (userId) => UserChip(
-                visualDensity: VisualDensity.compact,
-                roomId: roomId,
-                memberId: userId,
-              ),
-            )
-            .toList(),
+        children: [
+          ...assignees
+              .map(
+                (userId) => UserChip(
+                  visualDensity: VisualDensity.compact,
+                  roomId: roomId,
+                  memberId: userId,
+                ),
+              )
+              .toList(),
+          task.isAssignedToMe()
+              ? ActionChip(
+                  key: selfUnassignKey,
+                  label: const Text('withdraw'),
+                  onPressed: () async {
+                    await task.unassignSelf();
+                    EasyLoading.showToast(
+                      'assignment withdrawn',
+                      toastPosition: EasyLoadingToastPosition.bottom,
+                    );
+                  },
+                )
+              : ActionChip(
+                  key: selfAssignKey,
+                  label: const Text('volunteer'),
+                  onPressed: () async {
+                    await task.assignSelf();
+                    EasyLoading.showToast(
+                      'assigned yourself',
+                      toastPosition: EasyLoadingToastPosition.bottom,
+                    );
+                  },
+                ),
+        ],
       ),
     );
   }
