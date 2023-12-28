@@ -19,8 +19,16 @@ void main(List<String> args) async {
   if (args.isNotEmpty) {
     await cliMain(args);
   } else {
-    await startApp();
+    await startAppInner(makeApp());
   }
+}
+
+Widget makeApp() {
+  return const ProviderScope(child: Acter());
+}
+
+Future<void> startAppInner(Widget app) async {
+  WidgetsFlutterBinding.ensureInitialized();
   VideoPlayerMediaKit.ensureInitialized(
     android: true,
     iOS: true,
@@ -28,18 +36,6 @@ void main(List<String> args) async {
     windows: true,
     linux: true,
   );
-}
-
-Widget makeApp() {
-  return const ProviderScope(child: Acter());
-}
-
-Future<void> startApp() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await startAppInner(makeApp());
-}
-
-Future<void> startAppInner(Widget app) async {
   await initializeNotifications();
   await initLogging();
   runApp(app);
