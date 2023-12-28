@@ -1,3 +1,0 @@
-- Sidesheets .i.e. Spaces,Events,Chats and Pins: fix overflow of sidesheet title over system bars for mobile versions.
-- Space Overview: fix overflow of space shell actions over system bars for mobile versions.
-- Click/Tap on spaces member list in spaces overview will navigate to space member page.

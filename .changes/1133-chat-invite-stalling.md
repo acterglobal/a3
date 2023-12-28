@@ -1,2 +1,0 @@
-- Chat Feature
-  - [fix]: Bug where on accepting chat invite, shows `Joining` indefinitely and doesn't redirect to chat.

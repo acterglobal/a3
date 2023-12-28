@@ -1,4 +1,0 @@
-- [enhancement] : Chat attachments now have separate options for camera, image,video and file selection
-- [fix] : Chat - video message support
-- [enhancement] : User can now see chat image/video in full-screen view
-- [new-feature] : Share chat image/video

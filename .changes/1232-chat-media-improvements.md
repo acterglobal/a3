@@ -1,4 +1,0 @@
-- [Improvement] : Now have better control on chat media download. Chat media like images, videos, files etc will not download automatically. User can download media based on his/her choice.
-- [Enhancement] : User can see media size before downloading it.
-- [Enhancement] : File chat message have separate icon based on its type like pdf, doc, image, video, audio etc.
-- [New-feature] : Share file chat media
