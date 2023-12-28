@@ -102,7 +102,7 @@ impl Attachment {
                         .info
                         .as_ref()
                         .and_then(|info| info.thumbnail_source.clone())
-                        .context("thumbnail source doesn't exist")?;
+                        .context("thumbnail source not found")?;
                     self.client.source_binary(source, Some(thumb_size)).await
                 }
                 None => {
@@ -125,7 +125,7 @@ impl Attachment {
                         .info
                         .as_ref()
                         .and_then(|info| info.thumbnail_source.clone())
-                        .context("thumbnail source doesn't exist")?;
+                        .context("thumbnail source not found")?;
                     self.client.source_binary(source, Some(thumb_size)).await
                 }
                 None => {
@@ -140,7 +140,7 @@ impl Attachment {
                         .info
                         .as_ref()
                         .and_then(|info| info.thumbnail_source.clone())
-                        .context("thumbnail source doesn't exist")?;
+                        .context("thumbnail source not found")?;
                     self.client.source_binary(source, Some(thumb_size)).await
                 }
                 None => {
@@ -157,7 +157,7 @@ impl Attachment {
                     .info
                     .as_ref()
                     .and_then(|info| info.thumbnail_source.clone())
-                    .context("thumbnail source doesn't exist")?;
+                    .context("thumbnail source not found")?;
                 self.client.source_binary(source, thumb_size).await
             }
         }
@@ -197,7 +197,7 @@ impl AttachmentDraft {
         let my_id = room
             .client()
             .user_id()
-            .context("User not found")?
+            .context("UserId not found")?
             .to_owned();
         let inner = self.inner.build()?;
         RUNTIME
@@ -205,7 +205,7 @@ impl AttachmentDraft {
                 let member = room
                     .get_member(&my_id)
                     .await?
-                    .context("Couldn't find me among room members")?;
+                    .context("Unable to find me in room")?;
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }

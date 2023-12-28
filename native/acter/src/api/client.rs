@@ -794,7 +794,7 @@ impl Client {
     // pub async fn get_mxcuri_media(&self, uri: String) -> Result<Vec<u8>> {
     //     let client = self.core.clone();
     //     RUNTIME.spawn(async move {
-    //         let user_id = client.user_id().await.context("No User ID found")?;
+    //         let user_id = client.user_id().await.context("UserId not found")?;
     //         Ok(user_id.to_string())
     //     }).await?
     // }
@@ -806,7 +806,7 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let guess = mime_guess::from_path(path.clone());
-                let content_type = guess.first().context("MIME type should be given")?;
+                let content_type = guess.first().context("don't know mime type")?;
                 let buf = std::fs::read(path)?;
                 let response = client.media().upload(&content_type, buf).await?;
                 Ok(response.content_uri)
@@ -939,16 +939,13 @@ impl Client {
         self.core
             .client()
             .device_id()
-            .context("No Device ID found")
+            .context("DeviceId not found")
             .map(|x| x.to_owned())
     }
 
     pub fn get_user_profile(&self) -> Result<UserProfile> {
         let client = self.core.client();
-        let user_id = client
-            .user_id()
-            .context("Couldn't get user id from client")?
-            .to_owned();
+        let user_id = client.user_id().context("UserId not found")?.to_owned();
         Ok(UserProfile::from_account(client.account(), user_id))
     }
 

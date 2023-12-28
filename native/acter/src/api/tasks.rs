@@ -1090,7 +1090,7 @@ impl TaskListUpdateBuilder {
 impl Space {
     pub fn task_list_draft(&self) -> Result<TaskListDraft> {
         if !self.inner.is_joined() {
-            bail!("You can't create tasks for spaces we are not part on");
+            bail!("Unable to create tasks for spaces we are not part on");
         }
         Ok(TaskListDraft {
             client: self.client.clone(),
@@ -1101,7 +1101,7 @@ impl Space {
 
     pub fn task_list_draft_with_builder(&self, content: TaskListBuilder) -> Result<TaskListDraft> {
         if !self.inner.is_joined() {
-            bail!("You can't create tasks for spaces we are not part on");
+            bail!("Unable to create tasks for spaces we are not part on");
         }
         Ok(TaskListDraft {
             client: self.client.clone(),

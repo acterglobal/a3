@@ -22,7 +22,7 @@ async fn guest_can_login() -> Result<()> {
 
         let tmp_dir = TempDir::new()?;
         let _client = guest_client(
-            tmp_dir.path().to_str().expect("always works").to_string(),
+            tmp_dir.path().to_string_lossy().to_string(),
             homeserver_name,
             homeserver_url,
             Some("GUEST_DEV".to_string()),
@@ -46,7 +46,7 @@ async fn sisko_can_login() -> Result<()> {
 
     let tmp_dir = TempDir::new()?;
     let _client = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
+        tmp_dir.path().to_string_lossy().to_string(),
         "@sisko".to_string(),
         default_user_password("sisko"),
         homeserver_name,
@@ -69,7 +69,7 @@ async fn kyra_can_login() -> Result<()> {
         .to_string();
 
     let _client = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
+        tmp_dir.path().to_string_lossy().to_string(),
         "@kyra".to_string(),
         default_user_password("kyra"),
         homeserver_name,
@@ -90,7 +90,7 @@ async fn kyra_can_restore() -> Result<()> {
         .unwrap_or("http://localhost:8118")
         .to_string();
     let tmp_dir = TempDir::new()?;
-    let base_path = tmp_dir.path().to_str().expect("always works").to_string();
+    let base_path = tmp_dir.path().to_string_lossy().to_string();
     let (config, user_id) =
         make_client_config(base_path, "@kyra", None, &homeserver_name, &homeserver_url).await?;
 
@@ -128,7 +128,7 @@ async fn kyra_can_restore_with_db_passphrase() -> Result<()> {
         .unwrap_or("http://localhost:8118")
         .to_string();
     let tmp_dir = TempDir::new()?;
-    let base_path = tmp_dir.path().to_str().expect("always works").to_string();
+    let base_path = tmp_dir.path().to_string_lossy().to_string();
     let db_passphrase = uuid::Uuid::new_v4().to_string();
     let (config, user_id) = make_client_config(
         base_path,
@@ -162,6 +162,7 @@ async fn kyra_can_restore_with_db_passphrase() -> Result<()> {
     assert_eq!(uid, user_id);
     Ok(())
 }
+
 #[tokio::test]
 async fn can_deactivate_user() -> Result<()> {
     let _ = env_logger::try_init();

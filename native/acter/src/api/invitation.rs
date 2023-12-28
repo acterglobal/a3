@@ -38,9 +38,9 @@ impl Invitation {
     pub async fn room_name(&self) -> Result<String> {
         let client = self.client.clone();
         let room_id = self.room.room_id().to_owned();
-        let room = client.get_room(&room_id).context("Not found a room")?;
+        let room = client.get_room(&room_id).context("Room not found")?;
         if !matches!(room.state(), RoomState::Invited) {
-            bail!("Can't get a room we are not invited");
+            bail!("Unable to get a room we are not invited");
         }
         RUNTIME
             .spawn(async move {
@@ -62,7 +62,7 @@ impl Invitation {
                 let member = room
                     .get_member(&sender)
                     .await?
-                    .context("Couldn't get room member")?;
+                    .context("Unable to find sender in room")?;
                 Ok(UserProfile::from_member(member))
             })
             .await?
@@ -71,9 +71,9 @@ impl Invitation {
     pub async fn accept(&self) -> Result<bool> {
         let client = self.client.clone();
         let room_id = self.room.room_id().to_owned();
-        let room = client.get_room(&room_id).context("Not found a room")?;
+        let room = client.get_room(&room_id).context("Room not found")?;
         if !matches!(room.state(), RoomState::Invited) {
-            bail!("Can't get a room we are not invited");
+            bail!("Unable to get a room we are not invited");
         }
         // any variable in self can't be called directly in spawn
         RUNTIME
@@ -94,7 +94,7 @@ impl Invitation {
                     delay *= 2;
 
                     if delay > 3600 {
-                        error!("Can't accept room {} ({:?})", room.room_id(), err);
+                        error!("Unable to accept room {} ({:?})", room.room_id(), err);
                         break;
                     }
                 }
@@ -107,9 +107,9 @@ impl Invitation {
     pub async fn reject(&self) -> Result<bool> {
         let client = self.client.clone();
         let room_id = self.room.room_id().to_owned();
-        let room = client.get_room(&room_id).context("Not found a room")?;
+        let room = client.get_room(&room_id).context("Room not found")?;
         if !matches!(room.state(), RoomState::Invited) {
-            bail!("Can't get a room we are not invited");
+            bail!("Unable to get a room we are not invited");
         }
         // any variable in self can't be called directly in spawn
         RUNTIME
@@ -130,7 +130,7 @@ impl Invitation {
                     delay *= 2;
 
                     if delay > 3600 {
-                        error!("Can't reject room {} ({:?})", room.room_id(), err);
+                        error!("Unable to reject room {} ({:?})", room.room_id(), err);
                         break;
                     }
                 }
@@ -221,7 +221,7 @@ impl InvitationController {
         client: &SdkClient,
     ) -> Result<()> {
         // filter only event for me
-        let user_id = client.user_id().context("You seem to be not logged in")?;
+        let user_id = client.user_id().context("UserId not found")?;
         if ev.state_key != *user_id {
             return Ok(());
         }
@@ -255,7 +255,7 @@ impl InvitationController {
     fn process_sync_event(&mut self, ev: SyncRoomMemberEvent, room: Room, client: &SdkClient) {
         if let Some(evt) = ev.as_original() {
             // filter only event for me
-            let user_id = client.user_id().expect("You seem to be not logged in");
+            let user_id = client.user_id().expect("UserId needed");
             if evt.clone().state_key != *user_id {
                 return;
             }

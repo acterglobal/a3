@@ -215,7 +215,7 @@ impl Client {
         lang: Option<String>,
     ) -> Result<bool> {
         let client = self.core.client().clone();
-        let device_id = client.device_id().context("No Device ID given.")?;
+        let device_id = client.device_id().context("DeviceId not found")?;
         let push_data = if with_ios_defaults {
             assign!(HttpPusherData::new(server_url), {
                 default_payload: serde_json::json!({

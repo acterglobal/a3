@@ -96,13 +96,13 @@ impl TimelineStream {
 
     pub async fn send_message(&self, draft: Box<MsgContentDraft>) -> Result<bool> {
         if !self.is_joined() {
-            bail!("Can't send message to a room we are not in");
+            bail!("Unable to send message to a room we are not in");
         }
         let room = self.room.clone();
         let my_id = room
             .client()
             .user_id()
-            .context("User not found")?
+            .context("UserId not found")?
             .to_owned();
         let timeline = self.timeline.clone();
 
@@ -111,7 +111,7 @@ impl TimelineStream {
                 let member = room
                     .get_member(&my_id)
                     .await?
-                    .context("Couldn't find me among room members")?;
+                    .context("Unable to find me in room")?;
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
@@ -213,13 +213,13 @@ impl TimelineStream {
         draft: Box<MsgContentDraft>,
     ) -> Result<bool> {
         if !self.is_joined() {
-            bail!("Can't edit message as plain text to a room we are not in");
+            bail!("Unable to edit message as plain text to a room we are not in");
         }
         let room = self.room.clone();
         let my_id = room
             .client()
             .user_id()
-            .context("User not found")?
+            .context("UserId not found")?
             .to_owned();
         let timeline = self.timeline.clone();
         let event_id = EventId::parse(event_id)?;
@@ -230,7 +230,7 @@ impl TimelineStream {
                 let member = room
                     .get_member(&my_id)
                     .await?
-                    .context("Couldn't find me among room members")?;
+                    .context("Unable to find me in room")?;
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
@@ -248,7 +248,7 @@ impl TimelineStream {
                     }
                 }
                 if !sent_by_me {
-                    bail!("Can't edit an event not sent by own user");
+                    bail!("Unable to edit an event not sent by own user");
                 }
 
                 let edited_content = draft.into_edited_content(client, room, event_id).await?;
@@ -264,13 +264,13 @@ impl TimelineStream {
         draft: Box<MsgContentDraft>,
     ) -> Result<bool> {
         if !self.is_joined() {
-            bail!("Can't send reply as plain text to a room we are not in");
+            bail!("Unable to send reply as plain text to a room we are not in");
         }
         let room = self.room.clone();
         let my_id = room
             .client()
             .user_id()
-            .context("User not found")?
+            .context("UserId not found")?
             .to_owned();
         let timeline = self.timeline.clone();
         let event_id = EventId::parse(event_id)?;
@@ -281,7 +281,7 @@ impl TimelineStream {
                 let member = room
                     .get_member(&my_id)
                     .await?
-                    .context("Couldn't find me among room members")?;
+                    .context("Unable to find me in room")?;
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
@@ -382,13 +382,13 @@ impl TimelineStream {
 
     pub async fn send_reaction(&self, event_id: String, key: String) -> Result<bool> {
         if !self.is_joined() {
-            bail!("Can't send message to a room we are not in");
+            bail!("Unable to send message to a room we are not in");
         }
         let room = self.room.clone();
         let my_id = room
             .client()
             .user_id()
-            .context("User not found")?
+            .context("UserId not found")?
             .to_owned();
         let timeline = self.timeline.clone();
         let event_id = EventId::parse(event_id)?;
@@ -398,7 +398,7 @@ impl TimelineStream {
                 let member = room
                     .get_member(&my_id)
                     .await?
-                    .context("Couldn't find me among room members")?;
+                    .context("Unable to find me in room")?;
                 if !member.can_send_message(MessageLikeEventType::Reaction) {
                     bail!("No permission to send reaction in this room");
                 }
@@ -418,7 +418,7 @@ impl TimelineStream {
         let my_id = room
             .client()
             .user_id()
-            .context("User not found")?
+            .context("UserId not found")?
             .to_owned();
 
         RUNTIME
@@ -426,7 +426,7 @@ impl TimelineStream {
                 let member = room
                     .get_member(&my_id)
                     .await?
-                    .context("Couldn't find me among room members")?;
+                    .context("Unable to find me in room")?;
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }
@@ -445,7 +445,7 @@ impl TimelineStream {
         let my_id = room
             .client()
             .user_id()
-            .context("User not found")?
+            .context("UserId not found")?
             .to_owned();
 
         RUNTIME
@@ -453,7 +453,7 @@ impl TimelineStream {
                 let member = room
                     .get_member(&my_id)
                     .await?
-                    .context("Couldn't find me among room members")?;
+                    .context("Unable to find me in room")?;
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
                     bail!("No permission to send message in this room");
                 }

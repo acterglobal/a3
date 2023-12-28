@@ -26,7 +26,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
 
     let alice_dir = TempDir::new()?;
     let mut alice = login_new_client(
-        alice_dir.path().to_str().expect("always works").to_string(),
+        alice_dir.path().to_string_lossy().to_string(),
         "@sisko".to_string(),
         default_user_password("sisko"),
         option_env!("DEFAULT_HOMESERVER_NAME")
@@ -44,7 +44,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
 
     let bob_dir = TempDir::new()?;
     let mut bob = login_new_client(
-        bob_dir.path().to_str().expect("always works").to_string(),
+        bob_dir.path().to_string_lossy().to_string(),
         "@sisko".to_string(),
         default_user_password("sisko"),
         option_env!("DEFAULT_HOMESERVER_NAME")
