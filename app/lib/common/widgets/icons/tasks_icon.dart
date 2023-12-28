@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class TasksIcon extends StatelessWidget {
-  const TasksIcon({Key? key}) : super(key: key);
+  final double size;
+  const TasksIcon({Key? key, this.size = 28}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -11,8 +12,8 @@ class TasksIcon extends StatelessWidget {
       child: SvgPicture.asset(
         'assets/images/tasks.svg',
         semanticsLabel: 'tasks',
-        height: 28,
-        width: 28,
+        height: size,
+        width: size,
         colorFilter: ColorFilter.mode(
           Theme.of(context).colorScheme.onSurface,
           BlendMode.srcIn,

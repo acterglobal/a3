@@ -1,19 +1,22 @@
-import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AvatarBuilder extends ConsumerWidget {
-  final String userId;
+  late RoomMemberQuery query;
 
-  const AvatarBuilder({
+  AvatarBuilder({
     Key? key,
-    required this.userId,
-  }) : super(key: key);
+    userId,
+    roomId,
+  }) : super(key: key) {
+    query = RoomMemberQuery(roomId, userId);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final memberProfile = ref.watch(memberProfileByIdProvider(userId));
+    final memberProfile = ref.watch(roomMemberProvider(query));
     return memberProfile.when(
       data: (profile) {
         return Padding(
@@ -21,8 +24,8 @@ class AvatarBuilder extends ConsumerWidget {
           child: ActerAvatar(
             mode: DisplayMode.DM,
             avatarInfo: AvatarInfo(
-              uniqueId: userId,
-              displayName: profile.displayName ?? userId,
+              uniqueId: query.userId,
+              displayName: profile.displayName ?? query.userId,
               avatar: profile.getAvatarImage(),
             ),
             size: 14,
@@ -35,12 +38,21 @@ class AvatarBuilder extends ConsumerWidget {
           padding: const EdgeInsets.only(right: 10),
           child: ActerAvatar(
             mode: DisplayMode.DM,
-            avatarInfo: AvatarInfo(uniqueId: userId, displayName: userId),
+            avatarInfo:
+                AvatarInfo(uniqueId: query.userId, displayName: query.userId),
             size: 14,
           ),
         );
       },
-      loading: () => const CircularProgressIndicator(),
+      loading: () => Padding(
+        padding: const EdgeInsets.only(right: 10),
+        child: ActerAvatar(
+          mode: DisplayMode.DM,
+          avatarInfo:
+              AvatarInfo(uniqueId: query.userId, displayName: query.userId),
+          size: 14,
+        ),
+      ),
     );
   }
 }

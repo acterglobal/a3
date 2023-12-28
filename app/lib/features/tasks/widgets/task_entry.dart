@@ -1,4 +1,7 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/icons/tasks_icon.dart';
+import 'package:acter/common/widgets/room/room_avatar_builder.dart';
+import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:acter/features/tasks/providers/tasks.dart';
 import 'package:acter/features/tasks/widgets/due_chip.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -7,6 +10,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class TaskEntry extends ConsumerWidget {
   final Task task;
@@ -117,6 +121,24 @@ class TaskEntry extends ConsumerWidget {
           );
         },
       ),
+      subtitle: showBreadCrumb
+          ? Wrap(
+              children: [
+                RoomAvatarBuilder(
+                  roomId: task.roomIdStr(),
+                  avatarSize: 18,
+                ),
+                const TasksIcon(size: 18),
+                ref.watch(taskListProvider(task.taskListIdStr())).when(
+                      data: (tl) => Text(tl.name()),
+                      error: (e, s) => Text('Loading failed: $e'),
+                      loading: () => const Skeletonizer(
+                        child: Text('some default text'),
+                      ),
+                    ),
+              ],
+            )
+          : null,
     );
   }
 

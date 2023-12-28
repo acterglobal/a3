@@ -132,12 +132,12 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                 onTap: () {
                   inSideBar
                       ? ref
-                      .read(hasExpandedPanel.notifier)
-                      .update((state) => true)
+                          .read(hasExpandedPanel.notifier)
+                          .update((state) => true)
                       : context.pushNamed(
-                    Routes.chatProfile.name,
-                    pathParameters: {'roomId': convo.getRoomIdStr()},
-                  );
+                          Routes.chatProfile.name,
+                          pathParameters: {'roomId': convo.getRoomIdStr()},
+                        );
                 },
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
@@ -233,7 +233,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                   disableImageGallery: true,
                   // custom avatar builder
                   avatarBuilder: (types.User user) =>
-                      AvatarBuilder(userId: user.id),
+                      AvatarBuilder(userId: user.id, roomId: roomId),
                   isLastPage: !chatState.hasMore,
                   bubbleBuilder: (
                     Widget child, {
