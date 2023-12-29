@@ -9,12 +9,9 @@ use matrix_sdk::{
     ruma::{api::client::receipt::create_receipt, assign, UInt},
     Client as SdkClient, RoomState,
 };
-use matrix_sdk_ui::timeline::{
-    BackPaginationStatus, EventTimelineItem, PaginationOptions, Timeline,
-};
+use matrix_sdk_ui::timeline::{BackPaginationStatus, PaginationOptions, Timeline};
 use ruma_common::{EventId, OwnedEventId, OwnedTransactionId};
 use ruma_events::{
-    reaction::ReactionEventContent,
     receipt::ReceiptThread,
     relation::Annotation,
     room::{
@@ -384,7 +381,7 @@ impl TimelineStream {
             .await?
     }
 
-    pub async fn send_reaction(&self, event_id: String, key: String) -> Result<bool> {
+    pub async fn toggle_reaction(&self, event_id: String, key: String) -> Result<bool> {
         if !self.is_joined() {
             bail!("Can't send message to a room we are not in");
         }
@@ -406,9 +403,8 @@ impl TimelineStream {
                 if !member.can_send_message(MessageLikeEventType::Reaction) {
                     bail!("No permission to send reaction in this room");
                 }
-                let relates_to = Annotation::new(event_id, key);
-                let content = ReactionEventContent::new(relates_to);
-                timeline.send(content.into()).await;
+                let annotation = Annotation::new(event_id, key);
+                timeline.toggle_reaction(&annotation).await?;
                 Ok(true)
             })
             .await?
