@@ -131,7 +131,7 @@ class _ChatBubble extends ConsumerWidget {
             final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
             inputNotifier.setCurrentMessageId(null);
             inputNotifier.emojiRowVisible(false);
-            sendEmojiReaction(eventId, emoji);
+            toggleReaction(eventId, emoji);
           },
           message: message,
         ),
@@ -200,7 +200,7 @@ class _ChatBubble extends ConsumerWidget {
         Align(
           alignment: !isAuthor ? Alignment.bottomLeft : Alignment.bottomRight,
           child: _EmojiContainer(
-            onSendEmoji: sendEmojiReaction,
+            onToggle: toggleReaction,
             isAuthor: isAuthor,
             message: message,
             nextMessageInGroup: nextMessageInGroup,
@@ -267,10 +267,10 @@ class _ChatBubble extends ConsumerWidget {
   }
 
   // send emoji reaction to message event
-  Future<void> sendEmojiReaction(String eventId, String emoji) async {
+  Future<void> toggleReaction(String eventId, String emoji) async {
     try {
       final stream = await convo.timelineStream();
-      await stream.sendReaction(eventId, emoji);
+      await stream.toggleReaction(eventId, emoji);
     } catch (e) {
       debugPrint('$e');
     }
@@ -278,13 +278,13 @@ class _ChatBubble extends ConsumerWidget {
 }
 
 class _EmojiContainer extends ConsumerStatefulWidget {
-  final Function(String messageId, String emoji) onSendEmoji;
+  final Function(String messageId, String emoji) onToggle;
   final bool isAuthor;
   final types.Message message;
   final bool nextMessageInGroup;
 
   const _EmojiContainer({
-    required this.onSendEmoji,
+    required this.onToggle,
     required this.isAuthor,
     required this.message,
     required this.nextMessageInGroup,
@@ -344,7 +344,7 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
                       'Revoking emoji reactions not yet supported',
                     );
                   } else {
-                    widget.onSendEmoji(widget.message.id, key);
+                    widget.onToggle(widget.message.id, key);
                   }
                 },
                 child: Chip(

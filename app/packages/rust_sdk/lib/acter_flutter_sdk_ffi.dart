@@ -3554,7 +3554,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __timelineStreamSendReactionFuturePoll(
+  bool? __timelineStreamToggleReactionFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3568,7 +3568,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _timelineStreamSendReactionFuturePoll(
+    final tmp6 = _timelineStreamToggleReactionFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -14798,7 +14798,7 @@ class Api {
             int,
             int,
           )>();
-  late final _timelineStreamSendReactionPtr = _lookup<
+  late final _timelineStreamToggleReactionPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
@@ -14808,10 +14808,10 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
-          )>>("__TimelineStream_send_reaction");
+          )>>("__TimelineStream_toggle_reaction");
 
-  late final _timelineStreamSendReaction =
-      _timelineStreamSendReactionPtr.asFunction<
+  late final _timelineStreamToggleReaction =
+      _timelineStreamToggleReactionPtr.asFunction<
           int Function(
             int,
             int,
@@ -21820,17 +21820,17 @@ class Api {
             int,
             int,
           )>();
-  late final _timelineStreamSendReactionFuturePollPtr = _lookup<
+  late final _timelineStreamToggleReactionFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _TimelineStreamSendReactionFuturePollReturn Function(
+          _TimelineStreamToggleReactionFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__TimelineStream_send_reaction_future_poll");
+          )>>("__TimelineStream_toggle_reaction_future_poll");
 
-  late final _timelineStreamSendReactionFuturePoll =
-      _timelineStreamSendReactionFuturePollPtr.asFunction<
-          _TimelineStreamSendReactionFuturePollReturn Function(
+  late final _timelineStreamToggleReactionFuturePoll =
+      _timelineStreamToggleReactionFuturePollPtr.asFunction<
+          _TimelineStreamToggleReactionFuturePollReturn Function(
             int,
             int,
             int,
@@ -32231,7 +32231,8 @@ class TimelineStream {
   }
 
   /// send reaction to event
-  Future<bool> sendReaction(
+  /// if sent twice, reaction is redacted
+  Future<bool> toggleReaction(
     String eventId,
     String key,
   ) {
@@ -32261,7 +32262,7 @@ class TimelineStream {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9 = _api._timelineStreamSendReaction(
+    final tmp9 = _api._timelineStreamToggleReaction(
       tmp0,
       tmp2,
       tmp3,
@@ -32273,10 +32274,10 @@ class TimelineStream {
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
     final tmp11_1 =
-        _Box(_api, tmp11_0, "__TimelineStream_send_reaction_future_drop");
+        _Box(_api, tmp11_0, "__TimelineStream_toggle_reaction_future_drop");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
     final tmp10 =
-        _nativeFuture(tmp11_1, _api.__timelineStreamSendReactionFuturePoll);
+        _nativeFuture(tmp11_1, _api.__timelineStreamToggleReactionFuturePoll);
     return tmp10;
   }
 
@@ -44607,7 +44608,7 @@ class MembershipStatus {
 
 enum MemberPermissionTag {
   CanSendChatMessages,
-  CanSendReaction,
+  CanToggleReaction,
   CanSendSticker,
   CanPostNews,
   CanPostPin,
@@ -44644,7 +44645,7 @@ class MemberPermission {
 
         break;
       case 1:
-        this._tag = MemberPermissionTag.CanSendReaction;
+        this._tag = MemberPermissionTag.CanToggleReaction;
 
         break;
       case 2:
@@ -47651,7 +47652,7 @@ class _TimelineStreamSendMultipleReceiptsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _TimelineStreamSendReactionFuturePollReturn extends ffi.Struct {
+class _TimelineStreamToggleReactionFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

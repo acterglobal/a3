@@ -68,7 +68,7 @@ pub enum MembershipStatus {
 pub enum MemberPermission {
     // regular interaction
     CanSendChatMessages,
-    CanSendReaction,
+    CanToggleReaction,
     CanSendSticker,
     // Acter Specific actions
     CanPostNews,
@@ -162,7 +162,7 @@ impl Member {
                 return self.member.can_trigger_room_notification()
             }
             MemberPermission::CanSendChatMessages => MessageLikeEventType::RoomMessage.into(), // or should this check for encrypted?
-            MemberPermission::CanSendReaction => MessageLikeEventType::Reaction.into(),
+            MemberPermission::CanToggleReaction => MessageLikeEventType::Reaction.into(),
             MemberPermission::CanSendSticker => MessageLikeEventType::Sticker.into(),
             MemberPermission::CanSetName => StateEventType::RoomName.into(),
             MemberPermission::CanUpdateAvatar => StateEventType::RoomAvatar.into(),
