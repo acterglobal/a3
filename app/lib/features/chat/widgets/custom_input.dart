@@ -304,97 +304,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                   ),
                   if (showEditButton)
                     InkWell(
-                      onTap: () async {
-                        final emojiRowVisible = ref.read(
-                          chatInputProvider(roomId).select((ci) {
-                            return ci.emojiRowVisible;
-                          }),
-                        );
-                        final inputNotifier =
-                            ref.read(chatInputProvider(roomId).notifier);
-                        if (emojiRowVisible) {
-                          inputNotifier.setCurrentMessageId(null);
-                          inputNotifier.emojiRowVisible(false);
-                        }
-
-                        inputNotifier.showEditView(true);
-                        final message = ref
-                            .read(chatStateProvider(widget.convo))
-                            .messages
-                            .firstWhere(
-                              (element) => element.id == currentMessageId,
-                            );
-                        inputNotifier.setEditMessage(message);
-                        if (message is TextMessage) {
-                          // Parse String Data to HTML document
-                          final document = parse(message.text);
-
-                          if (document.body != null) {
-                            // Get message data
-                            String msg = message.text.trim();
-
-                            // Get list of 'A Tags' values
-                            final aTagElementList =
-                                document.getElementsByTagName('a');
-
-                            for (final aTagElement in aTagElementList) {
-                              // Get 'A Tag' href link
-                              final hrefLink =
-                                  aTagElement.attributes['href'] ?? '';
-
-                              //Check for mentioned user link
-                              final mentionedUserLinkRegex = RegExp(
-                                r'https://matrix.to/#/(?<alias>.+):(?<server>.+)',
-                              );
-                              final mentionedUserLink =
-                                  mentionedUserLinkRegex.firstMatch(hrefLink);
-
-                              if (mentionedUserLink != null) {
-                                //Get Username from mentioned user link
-                                final alias =
-                                    mentionedUserLink.namedGroup('alias') ??
-                                        '';
-                                final server =
-                                    mentionedUserLink.namedGroup('server') ??
-                                        '';
-                                final userName = '$alias:$server';
-
-                                //Get Display name from mentioned user link
-                                final displayName = aTagElement.text;
-
-                                // Replace displayName with @displayName
-                                msg = msg.replaceAll(
-                                  aTagElement.outerHtml,
-                                  '@$displayName',
-                                );
-
-                                // Adding mentions data
-                                ref
-                                    .read(chatInputProvider(roomId).notifier)
-                                    .addMention(displayName, userName);
-                              }
-                            }
-
-                            // Parse data
-                            final messageDocument = parse(msg);
-                            final messageBodyText =
-                                messageDocument.body?.text ?? '';
-
-                            // Update text value with msg value
-                            ref
-                                .read(_textValuesProvider(roomId).notifier)
-                                .update((state) => messageBodyText);
-                          }
-                        }
-
-                        final chatInputFocusState =
-                            ref.read(chatInputFocusProvider.notifier);
-                        WidgetsBinding.instance
-                            .addPostFrameCallback((timeStamp) {
-                          FocusScope.of(context)
-                              .requestFocus(chatInputFocusState.state);
-                        });
-                      },
+                      onTap: () => onPressEditMessage(roomId, currentMessageId),
                       child: const Text('Edit'),
                     ),
                   InkWell(
@@ -532,6 +442,84 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         ),
       ],
     );
+  }
+
+  void onPressEditMessage(String roomId, String? currentMessageId) {
+    final emojiRowVisible = ref.read(
+      chatInputProvider(roomId).select((ci) {
+        return ci.emojiRowVisible;
+      }),
+    );
+    final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
+    if (emojiRowVisible) {
+      inputNotifier.setCurrentMessageId(null);
+      inputNotifier.emojiRowVisible(false);
+    }
+
+    inputNotifier.showEditView(true);
+    final message =
+        ref.read(chatStateProvider(widget.convo)).messages.firstWhere(
+              (element) => element.id == currentMessageId,
+            );
+    inputNotifier.setEditMessage(message);
+    if (message is TextMessage) {
+      // Parse String Data to HTML document
+      final document = parse(message.text);
+
+      if (document.body != null) {
+        // Get message data
+        String msg = message.text.trim();
+
+        // Get list of 'A Tags' values
+        final aTagElementList = document.getElementsByTagName('a');
+
+        for (final aTagElement in aTagElementList) {
+          // Get 'A Tag' href link
+          final hrefLink = aTagElement.attributes['href'] ?? '';
+
+          //Check for mentioned user link
+          final mentionedUserLinkRegex = RegExp(
+            r'https://matrix.to/#/(?<alias>.+):(?<server>.+)',
+          );
+          final mentionedUserLink = mentionedUserLinkRegex.firstMatch(hrefLink);
+
+          if (mentionedUserLink != null) {
+            //Get Username from mentioned user link
+            final alias = mentionedUserLink.namedGroup('alias') ?? '';
+            final server = mentionedUserLink.namedGroup('server') ?? '';
+            final userName = '$alias:$server';
+
+            //Get Display name from mentioned user link
+            final displayName = aTagElement.text;
+
+            // Replace displayName with @displayName
+            msg = msg.replaceAll(
+              aTagElement.outerHtml,
+              '@$displayName',
+            );
+
+            // Adding mentions data
+            ref
+                .read(chatInputProvider(roomId).notifier)
+                .addMention(displayName, userName);
+          }
+        }
+
+        // Parse data
+        final messageDocument = parse(msg);
+        final messageBodyText = messageDocument.body?.text ?? '';
+
+        // Update text value with msg value
+        ref
+            .read(_textValuesProvider(roomId).notifier)
+            .update((state) => messageBodyText);
+      }
+    }
+
+    final chatInputFocusState = ref.read(chatInputFocusProvider.notifier);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      FocusScope.of(context).requestFocus(chatInputFocusState.state);
+    });
   }
 
   // delete message event
