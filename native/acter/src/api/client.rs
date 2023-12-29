@@ -794,7 +794,7 @@ impl Client {
     // pub async fn get_mxcuri_media(&self, uri: String) -> Result<Vec<u8>> {
     //     let client = self.core.clone();
     //     RUNTIME.spawn(async move {
-    //         let user_id = client.user_id().await.context("UserId not found")?;
+    //         let user_id = client.user_id().await.context("You must be logged in to do that")?;
     //         Ok(user_id.to_string())
     //     }).await?
     // }
@@ -818,7 +818,7 @@ impl Client {
         self.core
             .client()
             .user_id()
-            .context("UserId not found. Not logged in?")
+            .context("You must be logged in to do that")
             .map(|x| x.to_owned())
     }
 
@@ -945,7 +945,10 @@ impl Client {
 
     pub fn get_user_profile(&self) -> Result<UserProfile> {
         let client = self.core.client();
-        let user_id = client.user_id().context("UserId not found")?.to_owned();
+        let user_id = client
+            .user_id()
+            .context("You must be logged in to do that")?
+            .to_owned();
         Ok(UserProfile::from_account(client.account(), user_id))
     }
 

@@ -633,7 +633,10 @@ impl Room {
         let room = self.room.clone();
 
         let client = room.client();
-        let my_id = client.user_id().context("UserId not found")?.to_owned();
+        let my_id = client
+            .user_id()
+            .context("You must be logged in to do that")?
+            .to_owned();
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
             Some(self.app_settings_content().await?)
@@ -668,7 +671,10 @@ impl Room {
         let room = self.room.clone();
 
         let client = room.client();
-        let my_id = client.user_id().context("UserId not found")?.to_owned();
+        let my_id = client
+            .user_id()
+            .context("You must be logged in to do that")?
+            .to_owned();
         let path = PathBuf::from(uri);
 
         RUNTIME
@@ -706,7 +712,7 @@ impl Room {
         let my_id = room
             .client()
             .user_id()
-            .context("UserId not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
 
         RUNTIME
@@ -733,7 +739,7 @@ impl Room {
         let my_id = room
             .client()
             .user_id()
-            .context("UserId not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
 
         RUNTIME
@@ -760,7 +766,7 @@ impl Room {
         let my_id = room
             .client()
             .user_id()
-            .context("UserId not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
 
         RUNTIME
@@ -966,7 +972,7 @@ impl Room {
         let my_id = room
             .client()
             .user_id()
-            .context("UserId not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
 
         RUNTIME
@@ -1101,7 +1107,7 @@ impl Room {
         let my_id = room
             .client()
             .user_id()
-            .context("UserId not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
 
         let user_id = UserId::parse(user_id.as_str())?;
@@ -1752,7 +1758,7 @@ impl Room {
         let my_id = room
             .client()
             .user_id()
-            .context("UserId not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
 
         let event_id = EventId::parse(event_id)?;
@@ -1783,7 +1789,7 @@ impl Room {
         let my_id = room
             .client()
             .user_id()
-            .context("UserId not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
 
         let user_id = UserId::parse(user_id)?;

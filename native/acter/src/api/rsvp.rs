@@ -213,7 +213,10 @@ impl RsvpDraft {
         trace!("rsvp draft spawn");
 
         let client = room.client();
-        let my_id = client.user_id().context("UserId not found")?.to_owned();
+        let my_id = client
+            .user_id()
+            .context("You must be logged in to do that")?
+            .to_owned();
 
         RUNTIME
             .spawn(async move {

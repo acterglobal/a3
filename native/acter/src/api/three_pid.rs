@@ -114,7 +114,10 @@ impl ThreePidManager {
                     .via_email
                     .get(email_address.as_str())
                     .context("That email address was not registered")?;
-                let user_id = client.user_id().context("UserId not found")?.to_string();
+                let user_id = client
+                    .user_id()
+                    .context("You must be logged in to do that")?
+                    .to_string();
                 let session_id = record.session_id();
                 let passphrase = record.passphrase();
                 let sid = SessionId::parse(session_id.clone())?;
@@ -191,7 +194,10 @@ impl ThreePidManager {
                 if !success {
                     return Ok(false);
                 }
-                let user_id = client.user_id().context("UserId not found")?.to_string();
+                let user_id = client
+                    .user_id()
+                    .context("You must be logged in to do that")?
+                    .to_string();
                 // try again with password
                 // FIXME: this shouldn't be hardcoded but use an Actual IUAA-flow
                 let auth_data = AuthData::Password(Password::new(

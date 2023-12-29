@@ -1230,7 +1230,9 @@ impl SessionManager {
         let client = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let user_id = client.user_id().context("UserId not found")?;
+                let user_id = client
+                    .user_id()
+                    .context("You must be logged in to do that")?;
                 let device_id = client.device_id().context("DeviceId not found")?;
                 let response = client.devices().await?;
                 let crypto_devices = client.encryption().get_user_devices(user_id).await?;
@@ -1302,7 +1304,9 @@ impl SessionManager {
         let client = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let user_id = client.user_id().context("UserId not found")?;
+                let user_id = client
+                    .user_id()
+                    .context("You must be logged in to do that")?;
                 if let Some(device) = client
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
@@ -1340,7 +1344,9 @@ impl DeviceNewEvent {
         let client = self.client();
         RUNTIME
             .spawn(async move {
-                let user_id = client.user_id().context("UserId not found")?;
+                let user_id = client
+                    .user_id()
+                    .context("You must be logged in to do that")?;
                 let user = client
                     .encryption()
                     .get_user_identity(user_id)
@@ -1356,7 +1362,9 @@ impl DeviceNewEvent {
         let client = self.client();
         RUNTIME
             .spawn(async move {
-                let user_id = client.user_id().context("UserId not found")?;
+                let user_id = client
+                    .user_id()
+                    .context("You must be logged in to do that")?;
                 let dev = client
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
@@ -1377,7 +1385,9 @@ impl DeviceNewEvent {
         let values = (*methods).iter().map(|e| e.as_str().into()).collect();
         RUNTIME
             .spawn(async move {
-                let user_id = client.user_id().context("UserId not found")?;
+                let user_id = client
+                    .user_id()
+                    .context("You must be logged in to do that")?;
                 let user = client
                     .encryption()
                     .get_user_identity(user_id)
@@ -1398,7 +1408,9 @@ impl DeviceNewEvent {
         let values = (*methods).iter().map(|e| e.as_str().into()).collect();
         RUNTIME
             .spawn(async move {
-                let user_id = client.user_id().context("UserId not found")?;
+                let user_id = client
+                    .user_id()
+                    .context("You must be logged in to do that")?;
                 let dev = client
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))

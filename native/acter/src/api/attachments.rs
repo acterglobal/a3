@@ -197,7 +197,7 @@ impl AttachmentDraft {
         let my_id = room
             .client()
             .user_id()
-            .context("UserId not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
         let inner = self.inner.build()?;
         RUNTIME

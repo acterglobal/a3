@@ -473,7 +473,7 @@ impl Space {
         RUNTIME
             .spawn(async move {
                 let client = room.client();
-                let my_id = client.user_id().context("UserId not found")?.to_owned();
+                let my_id = client.user_id().context("You must be logged in to do that")?.to_owned();
                 let room_id = room.room_id().to_owned();
                 let member = room
                     .get_member(&my_id)

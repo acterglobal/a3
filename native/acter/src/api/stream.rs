@@ -102,7 +102,7 @@ impl TimelineStream {
         let my_id = room
             .client()
             .user_id()
-            .context("UserId not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
         let timeline = self.timeline.clone();
 
@@ -219,7 +219,7 @@ impl TimelineStream {
         let my_id = room
             .client()
             .user_id()
-            .context("UserId not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
         let timeline = self.timeline.clone();
         let event_id = EventId::parse(event_id)?;
@@ -274,7 +274,7 @@ impl TimelineStream {
         let my_id = room
             .client()
             .user_id()
-            .context("UserId not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
         let timeline = self.timeline.clone();
         let event_id = EventId::parse(event_id)?;
@@ -392,7 +392,7 @@ impl TimelineStream {
         let my_id = room
             .client()
             .user_id()
-            .context("UserId not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
         let timeline = self.timeline.clone();
         let event_id = EventId::parse(event_id)?;
@@ -422,7 +422,7 @@ impl TimelineStream {
         let my_id = room
             .client()
             .user_id()
-            .context("UserId not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
 
         RUNTIME
@@ -449,7 +449,7 @@ impl TimelineStream {
         let my_id = room
             .client()
             .user_id()
-            .context("UserId not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
 
         RUNTIME
