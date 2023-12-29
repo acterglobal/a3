@@ -3,6 +3,7 @@ import 'dart:core';
 
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/notifiers/room_notifiers.dart';
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -234,12 +235,14 @@ final roomMemberProvider = FutureProvider.autoDispose
 // Chat Providers
 final userProfileDataProvider =
     FutureProvider.family<ProfileData, Member>((ref, member) async {
+  final sdk = await ref.watch(sdkProvider.future);
   // this ensure we are staying up to dates on updates to convo
   final profile = member.getProfile();
   final displayName = await profile.getDisplayName();
   if (!await profile.hasAvatar()) {
     return ProfileData(displayName.text(), null);
   }
-  final avatar = await profile.getThumbnail(48, 48);
+  final size = sdk.newThumbSize(48, 48);
+  final avatar = await profile.getAvatar(size);
   return ProfileData(displayName.text(), avatar.data());
 });
