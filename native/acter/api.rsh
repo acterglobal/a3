@@ -913,7 +913,8 @@ object TimelineStream {
     fn send_multiple_receipts(full_read: Option<string>, public_read_receipt: Option<string>, private_read_receipt: Option<string>) -> Future<Result<bool>>;
 
     /// send reaction to event
-    fn send_reaction(event_id: string, key: string) -> Future<Result<bool>>;
+    /// if sent twice, reaction is redacted
+    fn toggle_reaction(event_id: string, key: string) -> Future<Result<bool>>;
 
     /// retry local echo message send
     fn retry_send(txn_id: string) -> Future<Result<bool>>;
@@ -1756,7 +1757,7 @@ enum MembershipStatus {
 
 enum MemberPermission {
     CanSendChatMessages,
-    CanSendReaction,
+    CanToggleReaction,
     CanSendSticker,
     CanPostNews,
     CanPostPin,
