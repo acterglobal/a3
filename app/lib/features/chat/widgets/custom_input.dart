@@ -25,6 +25,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:html/parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:mime/mime.dart';
@@ -325,9 +326,65 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                             );
                         inputNotifier.setEditMessage(message);
                         if (message is TextMessage) {
-                          ref
-                              .read(_textValuesProvider(roomId).notifier)
-                              .update((state) => message.text);
+                          // Parse String Data to HTML document
+                          final document = parse(message.text);
+
+                          if (document.body != null) {
+                            // Get message data
+                            String msg = message.text.trim();
+
+                            // Get list of 'A Tags' values
+                            final aTagElementList =
+                                document.getElementsByTagName('a');
+
+                            for (final aTagElement in aTagElementList) {
+                              // Get 'A Tag' href link
+                              final hrefLink =
+                                  aTagElement.attributes['href'] ?? '';
+
+                              //Check for mentioned user link
+                              final mentionedUserLinkRegex = RegExp(
+                                r'https://matrix.to/#/(?<alias>.+):(?<server>.+)',
+                              );
+                              final mentionedUserLink =
+                                  mentionedUserLinkRegex.firstMatch(hrefLink);
+
+                              if (mentionedUserLink != null) {
+                                //Get Username from mentioned user link
+                                final alias =
+                                    mentionedUserLink.namedGroup('userid') ??
+                                        '';
+                                final server =
+                                    mentionedUserLink.namedGroup('server') ??
+                                        '';
+                                final userName = '$alias:$server';
+
+                                //Get Display name from mentioned user link
+                                final displayName = aTagElement.text;
+
+                                // Replace displayName with @displayName
+                                msg = msg.replaceAll(
+                                  aTagElement.outerHtml,
+                                  '@$displayName',
+                                );
+
+                                // Adding mentions data
+                                ref
+                                    .read(chatInputProvider(roomId).notifier)
+                                    .addMention(displayName, userName);
+                              }
+                            }
+
+                            // Parse data
+                            final messageDocument = parse(msg);
+                            final messageBodyText =
+                                messageDocument.body?.text ?? '';
+
+                            // Update text value with msg value
+                            ref
+                                .read(_textValuesProvider(roomId).notifier)
+                                .update((state) => messageBodyText);
+                          }
                         }
 
                         final chatInputFocusState =
