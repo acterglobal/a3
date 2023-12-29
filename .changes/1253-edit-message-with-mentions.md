@@ -1,0 +1,1 @@
+- [fix] Html content related issues are now fixed while an editing message (With user mentioned data).

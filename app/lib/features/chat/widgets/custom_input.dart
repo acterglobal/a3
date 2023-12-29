@@ -352,7 +352,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                               if (mentionedUserLink != null) {
                                 //Get Username from mentioned user link
                                 final alias =
-                                    mentionedUserLink.namedGroup('userid') ??
+                                    mentionedUserLink.namedGroup('alias') ??
                                         '';
                                 final server =
                                     mentionedUserLink.namedGroup('server') ??
