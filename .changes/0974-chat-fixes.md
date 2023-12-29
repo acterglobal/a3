@@ -1,1 +1,0 @@
-- fix: chat input sends message as a part of reply even if its not meant to be reply (after closing reply UI). This is fixed now.

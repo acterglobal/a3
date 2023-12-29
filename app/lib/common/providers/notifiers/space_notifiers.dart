@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/foundation.dart';
@@ -17,7 +18,9 @@ class AsyncSpaceProfileDataNotifier
     final space = arg;
     final profile = space.getProfile();
     OptionString displayName = await profile.getDisplayName();
-    final avatar = await profile.getThumbnail(48, 48);
+    final sdk = await ref.watch(sdkProvider.future);
+    final size = sdk.newThumbSize(48, 48);
+    final avatar = await profile.getAvatar(size);
     return ProfileData(displayName.text(), avatar.data());
   }
 

@@ -46,7 +46,7 @@ where
         if let Some(t) = fun().await? {
             return Ok(Some(t));
         }
-        let Some(new) = remaining.checked_sub(1)  else {
+        let Some(new) = remaining.checked_sub(1) else {
             break
         };
         remaining = new;

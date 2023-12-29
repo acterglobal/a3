@@ -1,5 +1,5 @@
 use acter::{api::RoomMessage, ruma_common::OwnedEventId};
-use anyhow::{bail, Result};
+use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
 use tokio::time::sleep;
@@ -90,9 +90,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     info!("loop finished - {:?}", received);
-    let Some(received) = received else {
-        bail!("Even after 30 seconds, text msg not received")
-    };
+    let received = received.context("Even after 30 seconds, text msg not received")?;
 
     let draft = kyra.text_plain_draft("Sorry, it's my bad".to_string());
     kyra_timeline

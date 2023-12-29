@@ -21,7 +21,7 @@ pub struct TestModel {
 
 impl TestModelBuilder {
     pub fn simple(&mut self) -> &mut Self {
-        self.event_id(OwnedEventId::try_from("$asdefttg").unwrap())
+        self.event_id(EventId::parse("$asdefttg").unwrap())
     }
 
     pub fn fake_meta() -> EventMeta {

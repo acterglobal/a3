@@ -116,14 +116,15 @@ impl VerificationEvent {
                         .get_verification(&sender, event_id.as_str())
                         .await
                     {
-                        let Some(items) = sas.emoji() else {
-                            bail!("No emojis found. Aborted.");
-                        };
+                        let items = sas.emoji().context("No emojis found. Aborted.")?;
                         let sequence = items
                             .iter()
-                            .map(|e| VerificationEmoji {
-                                symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
-                                description: e.description.to_string(),
+                            .map(|e| {
+                                let chr = e.symbol.chars().next().expect("first char not found");
+                                VerificationEmoji {
+                                    symbol: chr as u32,
+                                    description: e.description.to_string(),
+                                }
                             })
                             .collect::<Vec<VerificationEmoji>>();
                         return Ok(sequence);
@@ -134,14 +135,15 @@ impl VerificationEvent {
                         .get_verification(&sender, txn_id.as_str())
                         .await
                     {
-                        let Some(items) = sas.emoji() else {
-                            bail!("No emojis found. Aborted.");
-                        };
+                        let items = sas.emoji().context("No emojis found. Aborted.")?;
                         let sequence = items
                             .iter()
-                            .map(|e| VerificationEmoji {
-                                symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
-                                description: e.description.to_string(),
+                            .map(|e| {
+                                let chr = e.symbol.chars().next().expect("first char not found");
+                                VerificationEmoji {
+                                    symbol: chr as u32,
+                                    description: e.description.to_string(),
+                                }
                             })
                             .collect::<Vec<VerificationEmoji>>();
                         return Ok(sequence);
@@ -717,17 +719,24 @@ async fn sas_verification_handler(
                     let sequence = auth_string
                         .emojis
                         .iter()
-                        .map(|e| VerificationEmoji {
-                            symbol: e.symbol.chars().next().unwrap() as u32, // first char in string
-                            description: e.description.to_string(),
+                        .map(|e| {
+                            let chr = e.symbol.chars().next().expect("first char not found");
+                            VerificationEmoji {
+                                symbol: chr as u32,
+                                description: e.description.to_string(),
+                            }
                         })
                         .collect::<Vec<VerificationEmoji>>();
                     msg.set_emojis(sequence);
                 }
-                msg.set_content(
-                    "decimals".to_string(),
-                    serde_json::to_string(&decimals).unwrap(),
-                );
+                let value = match serde_json::to_string(&decimals) {
+                    Ok(e) => e,
+                    Err(e) => {
+                        error!("KeysExchanged: couldn't convert decimals to string");
+                        return;
+                    }
+                };
+                msg.set_content("decimals".to_string(), value);
                 if let Err(e) = controller.event_tx.try_send(msg) {
                     if let Some(event_id) = event_id.clone() {
                         error!("Dropping event for {}: {}", event_id, e);
@@ -1066,7 +1075,13 @@ impl VerificationController {
                                 msg.set_content("short_authentication_string".to_string(), short_authentication_string.join(","));
                             }
                             StartMethod::ReciprocateV1(content) => {
-                                let secret = serde_json::to_string(&content.secret).unwrap();
+                                let secret = match serde_json::to_string(&content.secret) {
+                                    Ok(e) => e,
+                                    Err(e) => {
+                                        error!("ReciprocateV1: couldn't convert secret to string");
+                                        return;
+                                    }
+                                };
                                 msg.set_content("secret".to_string(), secret);
                             }
                             _ => {}
@@ -1151,7 +1166,13 @@ impl VerificationController {
                             evt.sender,
                         );
                         msg.set_content("keys".to_string(), evt.content.keys.to_string());
-                        let mac = serde_json::to_string(&evt.content.mac).unwrap();
+                        let mac = match serde_json::to_string(&evt.content.mac) {
+                            Ok(e) => e,
+                            Err(e) => {
+                                error!("KeyVerificationMac: couldn't convert mac to string");
+                                return;
+                            }
+                        };
                         msg.set_content("mac".to_string(), mac);
                         if let Err(e) = me.event_tx.try_send(msg) {
                             error!("Dropping transaction for {}: {}", evt.content.transaction_id, e);
@@ -1200,11 +1221,7 @@ impl SessionManager {
                 let user_id = client.user_id().context("User not found")?;
                 let device_id = client.device_id().context("Client had no device. Wat?!?")?;
                 let response = client.devices().await?;
-                let crypto_devices = client
-                    .encryption()
-                    .get_user_devices(user_id)
-                    .await
-                    .context("Couldn't get crypto devices")?;
+                let crypto_devices = client.encryption().get_user_devices(user_id).await?;
                 let mut sessions = vec![];
                 for device in response.devices {
                     let is_verified = crypto_devices.get(&device.device_id).is_some_and(|d| {
@@ -1215,8 +1232,7 @@ impl SessionManager {
                         let limit = SystemTime::now()
                             .checked_sub(Duration::from_secs(90 * 24 * 60 * 60))
                             .context("Couldn't get time of 90 days ago")?
-                            .duration_since(UNIX_EPOCH)
-                            .context("Couldn't calculate duration from Unix epoch")?;
+                            .duration_since(UNIX_EPOCH)?;
                         let secs: u64 = last_seen_ts.as_secs().into();
                         if secs < limit.as_secs() {
                             is_active = true;
@@ -1278,16 +1294,13 @@ impl SessionManager {
                 if let Some(device) = client
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
-                    .await
-                    .context("Couldn't get crypto device")?
+                    .await?
                 {
                     let is_verified = device.is_cross_signed_by_owner()
                         || device.is_verified_with_cross_signing();
                     if !is_verified {
-                        let request = device
-                            .request_verification()
-                            .await
-                            .context("Failed to request verification")?;
+                        let request = device.request_verification().await?;
+                        info!("requested verification - flow_id: {}", request.flow_id());
                     }
                 }
                 Ok(true)

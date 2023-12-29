@@ -162,9 +162,9 @@ impl Client {
                 let AnyActerModel::TaskList(content) = mdl else  {
                     bail!("Not a Tasklist model: {key}")
                 };
-                let Some(room) = client.get_room(content.room_id()) else {
-                    bail!("Room not found for task_list item");
-                };
+                let room = client
+                    .get_room(content.room_id())
+                    .context("Room not found for task_list item")?;
 
                 Ok(TaskList {
                     client: client.clone(),

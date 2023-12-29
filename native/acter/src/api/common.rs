@@ -1,5 +1,10 @@
 use acter_core::events::attachments::AttachmentContent;
+use anyhow::{Context, Result};
 use core::time::Duration;
+use matrix_sdk::{
+    media::{MediaFormat, MediaThumbnailSize},
+    ruma::{api::client::media::get_content_thumbnail, UInt},
+};
 use ruma_common::{MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri, OwnedUserId};
 use ruma_events::{
     location::{AssetContent, LocationContent},
@@ -519,4 +524,47 @@ impl DeviceRecord {
     pub fn is_active(&self) -> bool {
         self.is_active
     }
+}
+
+#[derive(Clone, Debug)]
+pub struct ThumbnailSize {
+    width: UInt,
+    height: UInt,
+}
+
+impl ThumbnailSize {
+    pub(crate) fn new(width: u64, height: u64) -> Result<Self> {
+        let width = UInt::new(width).context("invalid thumbnail width")?;
+        let height = UInt::new(height).context("invalid thumbnail height")?;
+        Ok(ThumbnailSize { width, height })
+    }
+
+    pub(crate) fn width(&self) -> UInt {
+        self.width
+    }
+
+    pub(crate) fn height(&self) -> UInt {
+        self.height
+    }
+
+    pub fn parse_into_media_format(thumb_size: Option<Box<ThumbnailSize>>) -> MediaFormat {
+        match thumb_size {
+            Some(thumb_size) => MediaFormat::from(thumb_size),
+            None => MediaFormat::File,
+        }
+    }
+}
+
+impl From<Box<ThumbnailSize>> for MediaFormat {
+    fn from(val: Box<ThumbnailSize>) -> Self {
+        MediaFormat::Thumbnail(MediaThumbnailSize {
+            method: get_content_thumbnail::v3::Method::Scale,
+            width: val.width,
+            height: val.height,
+        })
+    }
+}
+
+pub fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize> {
+    ThumbnailSize::new(width, height)
 }

@@ -1,2 +1,0 @@
-- fixes the overflows in the onbording screens.
-- fixes the issue that causes the cursor to jump to end  when editing fields in authentication screens .
