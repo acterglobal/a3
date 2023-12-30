@@ -14,6 +14,7 @@ import 'dart:core';
 class TaskInfo extends ConsumerWidget {
   static const statusBtnNotDone = Key('task-info-status-not-done');
   static const statusBtnDone = Key('task-info-status-done');
+  static const titleField = Key('task-title');
   static const dueDateField = Key('task-due-field');
   static const assignmentsFields = Key('task-assignments');
   static const selfAssignKey = Key('task-self-assign');
@@ -53,27 +54,9 @@ class TaskInfo extends ConsumerWidget {
                     await updater.send();
                   },
                 ),
-                title: Text(
-                  task.title(),
-                  style: isDone
-                      ? Theme.of(context).textTheme.headlineMedium!.copyWith(
-                            fontWeight: FontWeight.w100,
-                            color: AppTheme.brandColorScheme.neutral5,
-                          )
-                      : Theme.of(context).textTheme.headlineSmall!,
-                ),
-              ),
-              ListTile(
-                dense: true,
-                leading: const Icon(Atlas.user_plus_thin),
-                title: Wrap(
-                  children: [
-                    UserChip(
-                      visualDensity: VisualDensity.compact,
-                      memberId: task.authorStr(),
-                      roomId: roomId,
-                    ),
-                  ],
+                title: TaskTitle(
+                  key: titleField,
+                  task: task,
                 ),
               ),
               ListTile(
@@ -152,6 +135,89 @@ class TaskInfo extends ConsumerWidget {
         ],
       ),
     );
+  }
+}
+
+class TaskTitle extends StatefulWidget {
+  final Task task;
+  const TaskTitle({Key? key, required this.task}) : super(key: key);
+
+  @override
+  _TaskTitleState createState() => _TaskTitleState();
+}
+
+class _TaskTitleState extends State<TaskTitle> {
+  bool editMode = false;
+  final _formKey = GlobalKey<FormState>();
+  final _textController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _textController.text = widget.task.title();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final task = widget.task;
+    return editMode
+        ? Form(
+            key: _formKey,
+            child: TextFormField(
+              controller: _textController,
+              autofocus: true,
+              decoration: InputDecoration(
+                suffixIcon: InkWell(
+                  onTap: () => setState(() => editMode = false),
+                  child: const Icon(Atlas.xmark_circle_thin),
+                ),
+              ),
+              onFieldSubmitted: (value) async {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  await _handleSubmit();
+                }
+              },
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'A task must have a title';
+                }
+                return null;
+              },
+            ),
+          )
+        : InkWell(
+            onTap: () => setState(() => editMode = true),
+            child: Text(
+              task.title(),
+              style: task.isDone()
+                  ? Theme.of(context).textTheme.headlineMedium!.copyWith(
+                        fontWeight: FontWeight.w100,
+                        color: AppTheme.brandColorScheme.neutral5,
+                      )
+                  : Theme.of(context).textTheme.headlineSmall!,
+            ),
+          );
+  }
+
+  Future<void> _handleSubmit() async {
+    final newString = _textController.text;
+    if (newString != widget.task.title()) {
+      try {
+        EasyLoading.show(status: 'Updating task title');
+        final updater = widget.task.updateBuilder();
+        updater.title(newString);
+        await updater.send();
+        EasyLoading.showToast(
+          'Title updated',
+          toastPosition: EasyLoadingToastPosition.bottom,
+        );
+        setState(() => editMode = false);
+      } catch (e) {
+        EasyLoading.showError('Failed to update title: $e');
+      }
+    }
+    setState(() => editMode = false);
   }
 }
 

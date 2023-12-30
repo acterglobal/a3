@@ -1,4 +1,5 @@
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/space/pages/tasks_page.dart';
@@ -16,8 +17,10 @@ import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../support/login.dart';
 import '../support/setup.dart';
 import '../support/spaces.dart';
+import '../support/super_invites.dart';
 import '../support/util.dart';
 
 extension ActerTasks on ConvenientTest {
@@ -42,7 +45,7 @@ extension ActerTasks on ConvenientTest {
     }
   }
 
-  Future<List<String>> createTaskList(
+  Future<String> createTaskList(
     String title, {
     String? description,
     List<String>? tasks,
@@ -67,8 +70,6 @@ extension ActerTasks on ConvenientTest {
     final page = taskListPage.evaluate().first.widget as TaskListPage;
     final taskListId = page.taskListId;
 
-    final taskIds = [taskListId];
-
     final inlineAddBtn =
         find.byKey(Key('task-list-$taskListId-add-task-inline'));
     await inlineAddBtn.should(findsOneWidget);
@@ -82,16 +83,6 @@ extension ActerTasks on ConvenientTest {
         await tester.testTextInput
             .receiveAction(TextInputAction.done); // submit
         await find.text(taskTitle).should(findsOneWidget);
-        // final taskEntry = find
-        //     .ancestor(
-        //       of: find.text(taskTitle),
-        //       matching: find
-        //           .byWidgetPredicate((Widget widget) => widget is TaskEntry),
-        //     )
-        //     .evaluate()
-        //     .first
-        //     .widget as TaskEntry;
-        // taskIds.add(taskEntry.task.eventIdStr());
       }
       // close inline add
       final cancelInlineAdd =
@@ -99,13 +90,15 @@ extension ActerTasks on ConvenientTest {
       await cancelInlineAdd.should(findsOneWidget);
       await cancelInlineAdd.tap();
     }
-    return taskIds;
+    return taskListId;
   }
 
-  Future<List<String>> freshWithTasks(List<String> tasks,
-      {String? listTitle,
-      String? spaceDisplayName,
-      String? userDisplayName}) async {
+  Future<String> freshWithTasks(
+    List<String> tasks, {
+    String? listTitle,
+    String? spaceDisplayName,
+    String? userDisplayName,
+  }) async {
     final spaceId = await freshAccountWithSpace(
       spaceDisplayName: spaceDisplayName ?? 'Tasks',
       userDisplayName: userDisplayName,
@@ -116,10 +109,47 @@ extension ActerTasks on ConvenientTest {
       SpaceTasksPage.createTaskKey,
     ]);
 
-    return createTaskList(
+    await createTaskList(
       listTitle ?? 'Errands',
       tasks: tasks,
     );
+    return spaceId;
+  }
+
+  Future<void> renameTask(String newTitle) async {
+    final titleField = find.byKey(TaskInfo.titleField);
+    await titleField.should(findsOneWidget);
+    await titleField.tap(); // switches into edit mode
+
+    final textField = find.descendant(
+      of: titleField,
+      matching:
+          find.byWidgetPredicate((Widget widget) => widget is TextFormField),
+    );
+    await textField.should(findsOneWidget);
+    await textField.replaceText(newTitle);
+
+    await tester.testTextInput.receiveAction(TextInputAction.done); // submit
+    // textfield is gone
+    await textField.should(findsNothing);
+  }
+
+  Future<void> replaceTaskBody(String newBody) async {
+    final taskBodyEdit = find.byKey(TaskBody.editKey);
+    await taskBodyEdit.should(findsOneWidget);
+    await taskBodyEdit.tap(); // switch into edit
+
+    final taskBodyEditor = find.byKey(TaskBody.editorKey);
+
+    await taskBodyEditor.should(findsOneWidget);
+    await taskBodyEditor.enterTextWithoutReplace(newBody);
+
+    final saveBtn = find.byKey(TaskBody.saveEditKey);
+    await tester.ensureVisible(saveBtn);
+    await saveBtn.tap(); // switch off edit more
+
+    // dialog closed
+    await saveBtn.should(findsNothing);
   }
 }
 
@@ -257,7 +287,7 @@ void tasksTests() {
     await find.text('Buy soap').should(findsOneWidget);
     await find
         .text('Buy soap')
-        .tap(); // this should navigate us tp the item page
+        .tap(); // this should navigate us to the item page
 
     final btnNotDoneFinder = find.byKey(TaskInfo.statusBtnNotDone);
     await btnNotDoneFinder.should(findsOneWidget);
@@ -320,7 +350,7 @@ void tasksTests() {
     await find.text('Buy duct tape').should(findsOneWidget);
     await find
         .text('Buy duct tape')
-        .tap(); // this should navigate us tp the item page
+        .tap(); // this should navigate us to the item page
 
     final dueDateFinder = find.byKey(TaskInfo.dueDateField);
     await dueDateFinder.should(findsOneWidget);
@@ -362,6 +392,25 @@ void tasksTests() {
         .should(findsOneWidget);
   });
 
+  acterTestWidget('Change title', (t) async {
+    await t.freshWithTasks(
+      [
+        'Buy duct tape',
+      ],
+      listTitle: 'Operations',
+      spaceDisplayName: 'Protest Camp',
+    );
+
+    // we see our entry now
+    await find.text('Operations').should(findsOneWidget);
+    await find.text('Buy duct tape').should(findsOneWidget);
+    await find
+        .text('Buy duct tape')
+        .tap(); // this should navigate us to the item page
+    await t.renameTask('Buy black gaffer tape');
+    await find.text('Buy black gaffer tape').should(findsOneWidget);
+  });
+
   acterTestWidget('Change body', (t) async {
     await t.freshWithTasks(
       [
@@ -376,46 +425,21 @@ void tasksTests() {
     await find.text('Refill sanitizer').should(findsOneWidget);
     await find
         .text('Refill sanitizer')
-        .tap(); // this should navigate us tp the item page
+        .tap(); // this should navigate us to the item page
 
-    final taskBodyEdit = find.byKey(TaskBody.editKey);
-    await taskBodyEdit.should(findsOneWidget);
-    await taskBodyEdit.tap(); // switch into edit
-
-    final taskBodyEditor = find.byKey(TaskBody.editorKey);
-
-    await taskBodyEditor.should(findsOneWidget);
-    await taskBodyEditor
-        .enterTextWithoutReplace('At least 6 packages of 500ml or more');
-
-    final saveBtn = find.byKey(TaskBody.saveEditKey);
-    await t.tester.ensureVisible(saveBtn);
-    await saveBtn.tap(); // switch off edit more
-
-    // dialog closed
-    await saveBtn.should(findsNothing);
-
+    await t.replaceTaskBody('At least 6 packages of 500ml or more');
     await find
         .text('At least 6 packages of 500ml or more')
         .should(findsOneWidget);
 
-    await taskBodyEdit.should(findsOneWidget);
-    await taskBodyEdit.tap(); // switch into edit ince more
-
-    await taskBodyEditor.should(findsOneWidget);
-    await taskBodyEditor.replaceText('At least 10 packages of 500ml or more');
-
-    await t.tester.ensureVisible(saveBtn);
-    await saveBtn.tap(); // switch off edit more
-    // dialog closed
-    await saveBtn.should(findsNothing);
+    await t.replaceTaskBody('At least 10 packages of 500ml or more');
 
     await find
         .text('At least 10 packages of 500ml or more')
         .should(findsOneWidget);
   });
 
-  acterTestWidget('Self Assignment body', (t) async {
+  acterTestWidget('Self Assignment ', (t) async {
     await t.freshWithTasks(
       [
         'Take out the trash',
@@ -430,7 +454,7 @@ void tasksTests() {
     await find.text('Take out the trash').should(findsOneWidget);
     await find
         .text('Take out the trash')
-        .tap(); // this should navigate us tp the item page
+        .tap(); // this should navigate us to the item page
 
     // ensure we are not assigned
     final assignmentsField = find.byKey(TaskInfo.assignmentsFields);
@@ -477,7 +501,154 @@ void tasksTests() {
 
     await find
         .text('Take out the trash')
-        .should(findsOneWidget); // this should navigate us tp the item page
+        .should(findsOneWidget); // this should navigate us to the item page
+
+    final taskEntry = find
+        .ancestor(
+          of: find.text('Take out the trash'),
+          matching:
+              find.byWidgetPredicate((Widget widget) => widget is TaskEntry),
+        )
+        .evaluate()
+        .first
+        .widget as TaskEntry;
+
+    // mark as done.
+    final btnNotDoneFinder = find.byKey(taskEntry.notDoneKey());
+    await btnNotDoneFinder.should(findsOneWidget);
+    await btnNotDoneFinder.tap(); // toggle done
+
+    // makes it disappear!
+    await find.text('Take out the trash').should(findsNothing);
+  });
+
+  acterTestWidget('Full multi user run', (t) async {
+    final spaceId = await t.freshWithTasks(
+      [
+        'Trash',
+      ],
+      listTitle: 'Cleaning',
+      spaceDisplayName: 'Club House',
+      userDisplayName: 'Alice',
+    );
+
+    // we see our entry now
+    await find.text('Cleaning').should(findsOneWidget);
+    await find.text('Trash').should(findsOneWidget);
+    await find.text('Trash').tap(); // this should navigate us to the item page
+
+    // assignment
+
+    // ensure we are not assigned
+    final assignmentsField = find.byKey(TaskInfo.assignmentsFields);
+    await assignmentsField.should(findsOneWidget);
+    await find
+        .descendant(of: assignmentsField, matching: find.text('Alice'))
+        .should(findsNothing);
+
+    final selfAssign = find.byKey(TaskInfo.selfAssignKey);
+    await selfAssign.should(findsOneWidget);
+    await selfAssign.tap(); // assign myself
+
+    // FOUND!
+    await find
+        .descendant(of: assignmentsField, matching: find.text('Alice'))
+        .should(findsOneWidget);
+    await selfAssign.should(findsNothing); // and the button is gone
+
+    // but the unassign button is there.
+    final selfUnassign = find.byKey(TaskInfo.selfUnassignKey);
+    await selfUnassign.should(findsOneWidget);
+    await selfUnassign.tap(); // unassign myself
+
+    // and we are not assigned anymore \o/
+    await find
+        .descendant(of: assignmentsField, matching: find.text('Alice'))
+        .should(findsNothing);
+
+    // -- change body
+
+    await t.replaceTaskBody(
+      'Both the one in the kitchen and the one in the bathroom',
+    );
+    await find
+        .text('Both the one in the kitchen and the one in the bathroom')
+        .should(findsOneWidget);
+
+    // -- change title
+    await t.renameTask('Take out the trash');
+    await find.text('Take out the trash').should(findsOneWidget);
+
+    // -- change due
+
+    final dueDateFinder = find.byKey(TaskInfo.dueDateField);
+    await dueDateFinder.should(findsOneWidget);
+    await dueDateFinder.tap(); // open due dialog
+
+    // select today
+    final today = find.byKey(DuePicker.quickSelectToday);
+    await today.should(findsOneWidget);
+    await today.tap(); // set to today
+
+    await dueDateFinder.should(findsOneWidget);
+    await find
+        .descendant(of: dueDateFinder, matching: find.text('due today'))
+        .should(findsOneWidget);
+
+    // okay, let's get that other person in.
+    final tokenCode = await t.createSuperInvite([spaceId]);
+
+    await t.logout();
+    await t.freshAccount(registrationToken: tokenCode, displayName: 'Bahira');
+    await t.ensureTasksAreEnabled(null);
+
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      QuickJumpKeys.tasks,
+    ]);
+
+    await find.text('Cleaning').should(findsOneWidget);
+    await find.text('Take out the trash').should(findsOneWidget);
+    await find
+        .text('Take out the trash')
+        .tap(); // this should navigate us to the item page
+
+    // -- check values and content:
+    await dueDateFinder.should(findsOneWidget);
+    await find
+        .descendant(of: dueDateFinder, matching: find.text('due today'))
+        .should(findsOneWidget);
+    await find
+        .text('Both the one in the kitchen and the one in the bathroom')
+        .should(findsOneWidget);
+
+    // ensure Alice isn't assigned
+    await assignmentsField.should(findsOneWidget);
+    await find
+        .descendant(of: assignmentsField, matching: find.text('Alice'))
+        .should(findsNothing);
+
+    await selfAssign.should(findsOneWidget);
+    await selfAssign.tap(); // assign myself
+
+    // we are now assigned
+    await find
+        .descendant(of: assignmentsField, matching: find.text('Bahira'))
+        .should(findsOneWidget);
+    await selfAssign.should(findsNothing); // and the button is gone
+
+    // and the unassign button is there.
+    await selfUnassign.should(findsOneWidget);
+
+    // okay, this should show up on our dashboard now!
+    await t.navigateTo([
+      MainNavKeys.dashboardHome,
+      MainNavKeys.dashboardHome,
+    ]);
+
+    await find
+        .text('Take out the trash')
+        .should(findsOneWidget); // this should navigate us to the item page
 
     final taskEntry = find
         .ancestor(

@@ -201,43 +201,37 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
     final tlId = widget.taskList.eventIdStr();
     return Form(
       key: _formKey,
-      child: Row(
-        children: [
-          Expanded(
-            child: TextFormField(
-              key: Key('task-list-$tlId-add-task-inline-txt'),
-              focusNode: focusNode,
-              controller: _textCtrl,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Atlas.plus_circle_thin),
-                focusedBorder: const UnderlineInputBorder(),
-                errorBorder: const UnderlineInputBorder(),
-                enabledBorder: const UnderlineInputBorder(),
-                labelText: 'Title the new task..',
-                suffix: IconButton(
-                  key: Key('task-list-$tlId-add-task-inline-cancel'),
-                  onPressed: widget.cancel,
-                  icon: const Icon(
-                    Atlas.xmark_circle_thin,
-                    size: 24,
-                  ),
-                ),
-              ),
-              onFieldSubmitted: (value) {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  _handleSubmit(context);
-                }
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'A task must have a title';
-                }
-                return null;
-              },
+      child: TextFormField(
+        key: Key('task-list-$tlId-add-task-inline-txt'),
+        focusNode: focusNode,
+        controller: _textCtrl,
+        decoration: InputDecoration(
+          prefixIcon: const Icon(Atlas.plus_circle_thin),
+          focusedBorder: const UnderlineInputBorder(),
+          errorBorder: const UnderlineInputBorder(),
+          enabledBorder: const UnderlineInputBorder(),
+          labelText: 'Title the new task..',
+          suffix: IconButton(
+            key: Key('task-list-$tlId-add-task-inline-cancel'),
+            onPressed: widget.cancel,
+            icon: const Icon(
+              Atlas.xmark_circle_thin,
+              size: 24,
             ),
           ),
-        ],
+        ),
+        onFieldSubmitted: (value) {
+          if (_formKey.currentState!.validate()) {
+            _formKey.currentState!.save();
+            _handleSubmit(context);
+          }
+        },
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'A task must have a title';
+          }
+          return null;
+        },
       ),
     );
   }
