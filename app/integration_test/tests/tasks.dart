@@ -1,4 +1,5 @@
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/space/pages/tasks_page.dart';
@@ -18,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../support/setup.dart';
 import '../support/spaces.dart';
+import '../support/ime.dart';
 import '../support/util.dart';
 
 extension ActerTasks on ConvenientTest {
@@ -385,10 +387,9 @@ void tasksTests() {
     final taskBodyEditor = find.byKey(TaskBody.editorKey);
 
     await taskBodyEditor.should(findsOneWidget);
-    await taskBodyEditor
-        .enterTextWithoutReplace('At least 6 packages of 500ml or more');
+    await t.tester.ime.insertText('At least 6 packages of 500ml or more');
 
-    final saveBtn = find.byKey(TaskBody.saveEditKey);
+    final saveBtn = find.byKey(HtmlEditor.saveEditKey);
     await t.tester.ensureVisible(saveBtn);
     await saveBtn.tap(); // switch off edit more
 
@@ -400,7 +401,7 @@ void tasksTests() {
         .should(findsOneWidget);
 
     await taskBodyEdit.should(findsOneWidget);
-    await taskBodyEdit.tap(); // switch into edit ince more
+    await taskBodyEdit.tap(); // switch into edit once more
 
     await taskBodyEditor.should(findsOneWidget);
     await taskBodyEditor.replaceText('At least 10 packages of 500ml or more');

@@ -253,6 +253,12 @@ impl TaskListDraft {
         self
     }
 
+    pub fn description_html(&mut self, html: String, plain: String) -> &mut Self {
+        let desc = TextMessageEventContent::html(plain, html);
+        self.content.description(Some(desc));
+        self
+    }
+
     pub fn unset_description(&mut self) -> &mut Self {
         self.content.description(None);
         self
@@ -734,6 +740,12 @@ impl TaskDraft {
         self
     }
 
+    pub fn description_html(&mut self, html: String, plain: String) -> &mut Self {
+        let desc = TextMessageEventContent::html(plain, html);
+        self.content.description(Some(desc));
+        self
+    }
+
     pub fn unset_description(&mut self) -> &mut Self {
         self.content.description(None);
         self
@@ -865,6 +877,12 @@ impl TaskUpdateBuilder {
 
     pub fn description_text(&mut self, body: String) -> &mut Self {
         let desc = TextMessageEventContent::plain(body);
+        self.content.description(Some(Some(desc)));
+        self
+    }
+
+    pub fn description_html(&mut self, html: String, plain: String) -> &mut Self {
+        let desc = TextMessageEventContent::html(plain, html);
         self.content.description(Some(Some(desc)));
         self
     }
@@ -1054,6 +1072,12 @@ impl TaskListUpdateBuilder {
 
     pub fn description_text(&mut self, body: String) -> &mut Self {
         let desc = TextMessageEventContent::plain(body);
+        self.content.description(Some(desc));
+        self
+    }
+
+    pub fn description_html(&mut self, html: String, plain: String) -> &mut Self {
+        let desc = TextMessageEventContent::html(plain, html);
         self.content.description(Some(desc));
         self
     }

@@ -1247,6 +1247,8 @@ object TaskUpdateBuilder {
 
     /// set the description for this task list
     fn description_text(text: string);
+    /// set the description for this task list as html
+    fn description_html(html: string, plain: string);
     fn unset_description();
     fn unset_description_update();
 
@@ -1310,6 +1312,8 @@ object TaskDraft {
 
     /// set the description for this task
     fn description_text(text: string);
+    /// set the description for this task as html
+    fn description_html(html: string, plain: string);
     fn unset_description();
 
     /// set the sort order for this task
@@ -1410,6 +1414,8 @@ object TaskListDraft {
     /// set the description for this task list
     fn description_text(text: string);
     fn description_markdown(text: string);
+    /// set the description for this task as html
+    fn description_html(html: string, plain: string);
     fn unset_description();
 
     /// set the sort order for this task list
@@ -1437,6 +1443,8 @@ object TaskListUpdateBuilder {
 
     /// set the description for this task list
     fn description_text(text: string);
+    /// set the description for this task list as html
+    fn description_html(html: string, plain: string);
     fn unset_description();
     fn unset_description_update();
 

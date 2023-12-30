@@ -14,6 +14,7 @@ import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
+import 'package:appflowy_editor/appflowy_editor.dart';
 
 void main(List<String> args) async {
   if (args.isNotEmpty) {
@@ -69,6 +70,7 @@ class _ActerState extends ConsumerState<Acter> {
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
+            AppFlowyEditorLocalizations.delegate,
           ],
           supportedLocales: ApplicationLocalizations.supportedLocales,
           // MaterialApp contains our top-level Navigator

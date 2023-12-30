@@ -16071,6 +16071,29 @@ class Api {
             int,
             int,
           )>();
+  late final _taskUpdateBuilderDescriptionHtmlPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__TaskUpdateBuilder_description_html");
+
+  late final _taskUpdateBuilderDescriptionHtml =
+      _taskUpdateBuilderDescriptionHtmlPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _taskUpdateBuilderUnsetDescriptionPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -16469,6 +16492,29 @@ class Api {
   late final _taskDraftDescriptionText =
       _taskDraftDescriptionTextPtr.asFunction<
           void Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _taskDraftDescriptionHtmlPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__TaskDraft_description_html");
+
+  late final _taskDraftDescriptionHtml =
+      _taskDraftDescriptionHtmlPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
             int,
             int,
             int,
@@ -16941,6 +16987,29 @@ class Api {
             int,
             int,
           )>();
+  late final _taskListDraftDescriptionHtmlPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__TaskListDraft_description_html");
+
+  late final _taskListDraftDescriptionHtml =
+      _taskListDraftDescriptionHtmlPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _taskListDraftUnsetDescriptionPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -17071,6 +17140,29 @@ class Api {
   late final _taskListUpdateBuilderDescriptionText =
       _taskListUpdateBuilderDescriptionTextPtr.asFunction<
           void Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _taskListUpdateBuilderDescriptionHtmlPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__TaskListUpdateBuilder_description_html");
+
+  late final _taskListUpdateBuilderDescriptionHtml =
+      _taskListUpdateBuilderDescriptionHtmlPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
             int,
             int,
             int,
@@ -34573,6 +34665,49 @@ class TaskUpdateBuilder {
     return;
   }
 
+  /// set the description for this task list as html
+  void descriptionHtml(
+    String html,
+    String plain,
+  ) {
+    final tmp1 = html;
+    final tmp5 = plain;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    _api._taskUpdateBuilderDescriptionHtml(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    return;
+  }
+
   void unsetDescription() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -35091,6 +35226,49 @@ class TaskDraft {
       tmp2,
       tmp3,
       tmp4,
+    );
+    return;
+  }
+
+  /// set the description for this task as html
+  void descriptionHtml(
+    String html,
+    String plain,
+  ) {
+    final tmp1 = html;
+    final tmp5 = plain;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    _api._taskDraftDescriptionHtml(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
     );
     return;
   }
@@ -35949,6 +36127,49 @@ class TaskListDraft {
     return;
   }
 
+  /// set the description for this task as html
+  void descriptionHtml(
+    String html,
+    String plain,
+  ) {
+    final tmp1 = html;
+    final tmp5 = plain;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    _api._taskListDraftDescriptionHtml(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    return;
+  }
+
   void unsetDescription() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -36126,6 +36347,49 @@ class TaskListUpdateBuilder {
       tmp2,
       tmp3,
       tmp4,
+    );
+    return;
+  }
+
+  /// set the description for this task list as html
+  void descriptionHtml(
+    String html,
+    String plain,
+  ) {
+    final tmp1 = html;
+    final tmp5 = plain;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    _api._taskListUpdateBuilderDescriptionHtml(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
     );
     return;
   }

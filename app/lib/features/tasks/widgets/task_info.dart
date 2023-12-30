@@ -1,4 +1,4 @@
-import 'package:acter/common/widgets/md_editor_with_preview.dart';
+import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/user_chip.dart';
 import 'package:acter/features/tasks/widgets/due_chip.dart';
@@ -158,8 +158,6 @@ class TaskInfo extends ConsumerWidget {
 class TaskBody extends StatefulWidget {
   static const editKey = Key('task-body-edit');
   static const editorKey = Key('task-body-editor');
-  static const saveEditKey = Key('task-body-save');
-  static const cancelEditKey = Key('task-body-cancel');
   final Task task;
   const TaskBody({Key? key, required this.task}) : super(key: key);
 
@@ -169,70 +167,47 @@ class TaskBody extends StatefulWidget {
 
 class _TaskBodyState extends State<TaskBody> {
   bool editMode = false;
-  TextEditingController _textEditingController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    final description = widget.task.description();
-    if (description != null) {
-      _textEditingController.text = description.body();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     if (editMode) {
       return Padding(
         padding: const EdgeInsets.all(15),
-        child: Column(
-          children: [
-            MdEditorWithPreview(
-              key: TaskBody.editorKey,
-              labelText: 'Notes',
-              controller: _textEditingController,
-            ),
-            Wrap(
-              alignment: WrapAlignment.end,
-              children: [
-                OutlinedButton(
-                  key: TaskBody.cancelEditKey,
-                  onPressed: () => setState(() => editMode = false),
-                  child: const Text('cancel'),
-                ),
-                OutlinedButton(
-                  key: TaskBody.saveEditKey,
-                  onPressed: () async {
-                    final newBody = _textEditingController.text;
-                    final description = widget.task.description();
-                    if ((description == null &&
-                            newBody.isEmpty) || // was nothing & stays nothing
-                        (description != null &&
-                            // was something and is the same;
-                            description.body() == newBody)) {
-                      // close and ignore, nothing actually changed
-                      setState(() => editMode = false);
-                    }
-
-                    try {
-                      EasyLoading.show(status: 'Updating task note');
-                      final updater = widget.task.updateBuilder();
-                      updater.descriptionText(newBody);
-                      await updater.send();
-                      EasyLoading.showToast(
-                        'Notes updates',
-                        toastPosition: EasyLoadingToastPosition.bottom,
-                      );
-                      setState(() => editMode = false);
-                    } catch (e) {
-                      EasyLoading.showError('Failed to update notes: $e');
-                    }
-                  },
-                  child: const Text('save'),
-                ),
-              ],
-            ),
-          ],
+        child: SizedBox(
+          height: 500,
+          child: HtmlEditor(
+            autoFocus: true,
+            content: widget.task.description(),
+            key: TaskBody.editorKey,
+            header: const Text('Notes'),
+            onCancel: () => setState(() => editMode = false),
+            onSave: (plain, htmlBody) async {
+              try {
+                EasyLoading.show(status: 'Updating task note');
+                final updater = widget.task.updateBuilder();
+                if (plain.isEmpty) {
+                  print("Unsetting description");
+                  // removed, let's send an empty description
+                  updater.unsetDescription();
+                } else if (htmlBody != null) {
+                  print("Desciription set to: $htmlBody");
+                  updater.descriptionHtml(plain, htmlBody);
+                } else {
+                  // only text version
+                  print("Desciription set to: $plain");
+                  updater.descriptionText(plain);
+                }
+                await updater.send();
+                EasyLoading.showToast(
+                  'Notes updates',
+                  toastPosition: EasyLoadingToastPosition.bottom,
+                );
+                setState(() => editMode = false);
+              } catch (e) {
+                EasyLoading.showError('Failed to update notes: $e');
+              }
+            },
+          ),
         ),
       );
     }
