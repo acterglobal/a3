@@ -235,7 +235,7 @@ class TaskBody extends StatefulWidget {
 
 class _TaskBodyState extends State<TaskBody> {
   bool editMode = false;
-  TextEditingController _textEditingController = TextEditingController();
+  final TextEditingController _textEditingController = TextEditingController();
 
   @override
   void initState() {

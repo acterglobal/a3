@@ -451,17 +451,17 @@ impl TaskList {
     }
 
     pub async fn tasks(&self) -> Result<Vec<Task>> {
-        return self.tasks_with_filter(|_| true).await;
+        self.tasks_with_filter(|_| true).await
     }
 
     pub async fn task(&self, task_id: String) -> Result<Task> {
         let event_id = ruma::EventId::parse(task_id)?;
-        return self
+        self
             .tasks_with_filter(move |t| t.event_id() == event_id)
             .await?
             .into_iter()
             .next()
-            .context("Task not found");
+            .context("Task not found")
     }
 
     async fn tasks_with_filter<F>(&self, filter: F) -> Result<Vec<Task>>

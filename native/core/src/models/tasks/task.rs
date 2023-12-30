@@ -66,7 +66,7 @@ impl Task {
     }
 
     pub fn utc_due_time_of_day(&self) -> Option<i32> {
-        self.inner.utc_due_time_of_day.clone()
+        self.inner.utc_due_time_of_day
     }
 
     pub fn utc_start_rfc3339(&self) -> Option<String> {
@@ -111,7 +111,7 @@ impl ActerModel for Task {
             }
         }
         // not mine
-        return vec![task_list_id_idx];
+        vec![task_list_id_idx]
     }
 
     fn event_id(&self) -> &EventId {

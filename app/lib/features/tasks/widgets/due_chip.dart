@@ -1,5 +1,4 @@
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -74,8 +73,7 @@ class DueChip extends StatelessWidget {
       label: Text(
         // FIXME: tooltip to show the full date?
         label ??
-            'due: ' +
-                DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(dueDate!),
+            'due: ${DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(dueDate!)}',
         style: task.isDone() ? null : dueTheme,
       ),
     );

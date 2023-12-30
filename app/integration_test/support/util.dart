@@ -21,7 +21,7 @@ extension ActerUtil on ConvenientTest {
   }
 
   Future<void> fillForm(Map<Key, String> fields,
-      {Key? submitBtnKey, String? selectSpaceId}) async {
+      {Key? submitBtnKey, String? selectSpaceId,}) async {
     for (final entry in fields.entries) {
       final textField = find.byKey(entry.key);
       await tester.ensureVisible(textField);

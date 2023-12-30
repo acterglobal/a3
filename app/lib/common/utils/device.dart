@@ -1,4 +1,3 @@
-import 'package:acter/common/notifications/notifications.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:io';
 
