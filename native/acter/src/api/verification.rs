@@ -120,7 +120,7 @@ impl VerificationEvent {
                         let items = sas.emoji().context("No emojis found. Aborted.")?;
                         let sequence = items
                             .iter()
-                            .filter_map(|e| VerificationEmoji::new(e))
+                            .filter_map(VerificationEmoji::new)
                             .collect::<Vec<VerificationEmoji>>();
                         return Ok(sequence);
                     }
@@ -133,7 +133,7 @@ impl VerificationEvent {
                         let items = sas.emoji().context("No emojis found. Aborted.")?;
                         let sequence = items
                             .iter()
-                            .filter_map(|e| VerificationEmoji::new(e))
+                            .filter_map(VerificationEmoji::new)
                             .collect::<Vec<VerificationEmoji>>();
                         return Ok(sequence);
                     }
@@ -720,7 +720,7 @@ async fn sas_verification_handler(
                     let sequence = auth_string
                         .emojis
                         .iter()
-                        .filter_map(|e| VerificationEmoji::new(e))
+                        .filter_map(VerificationEmoji::new)
                         .collect::<Vec<VerificationEmoji>>();
                     msg.set_emojis(sequence);
                 }
