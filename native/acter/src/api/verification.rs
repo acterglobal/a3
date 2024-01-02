@@ -481,15 +481,11 @@ pub struct VerificationEmoji {
 
 impl VerificationEmoji {
     fn new(val: &Emoji) -> Option<Self> {
-        // first char
-        if let Some(chr) = val.symbol.chars().next() {
-            Some(VerificationEmoji {
-                symbol: chr as u32,
-                description: val.description.to_owned(),
-            })
-        } else {
-            None
-        }
+        // first char would be symbol
+        val.symbol.chars().next().map(|chr| VerificationEmoji {
+            symbol: chr as u32,
+            description: val.description.to_owned(),
+        })
     }
 
     pub fn symbol(&self) -> u32 {
