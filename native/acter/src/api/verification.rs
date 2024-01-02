@@ -119,16 +119,17 @@ impl VerificationEvent {
                         let items = sas.emoji().context("No emojis found. Aborted.")?;
                         let sequence = items
                             .iter()
-                            .map(|e| {
-                                let chr = e
-                                    .symbol
-                                    .chars()
-                                    .next()
-                                    .expect("At least one character should be present");
-                                VerificationEmoji {
-                                    symbol: chr as u32,
-                                    description: e.description.to_string(),
+                            .filter_map(|e| {
+                                // first char
+                                if let Some(chr) = e.symbol.chars().next() {
+                                    Some((chr, e.description.to_owned()))
+                                } else {
+                                    None
                                 }
+                            })
+                            .map(|(chr, description)| VerificationEmoji {
+                                symbol: chr as u32,
+                                description,
                             })
                             .collect::<Vec<VerificationEmoji>>();
                         return Ok(sequence);
@@ -142,16 +143,17 @@ impl VerificationEvent {
                         let items = sas.emoji().context("No emojis found. Aborted.")?;
                         let sequence = items
                             .iter()
-                            .map(|e| {
-                                let chr = e
-                                    .symbol
-                                    .chars()
-                                    .next()
-                                    .expect("At least one character should be present");
-                                VerificationEmoji {
-                                    symbol: chr as u32,
-                                    description: e.description.to_string(),
+                            .filter_map(|e| {
+                                // first char
+                                if let Some(chr) = e.symbol.chars().next() {
+                                    Some((chr, e.description.to_owned()))
+                                } else {
+                                    None
                                 }
+                            })
+                            .map(|(chr, description)| VerificationEmoji {
+                                symbol: chr as u32,
+                                description,
                             })
                             .collect::<Vec<VerificationEmoji>>();
                         return Ok(sequence);
@@ -727,16 +729,17 @@ async fn sas_verification_handler(
                     let sequence = auth_string
                         .emojis
                         .iter()
-                        .map(|e| {
-                            let chr = e
-                                .symbol
-                                .chars()
-                                .next()
-                                .expect("At least one character should be present");
-                            VerificationEmoji {
-                                symbol: chr as u32,
-                                description: e.description.to_string(),
+                        .filter_map(|e| {
+                            // first char
+                            if let Some(chr) = e.symbol.chars().next() {
+                                Some((chr, e.description.to_owned()))
+                            } else {
+                                None
                             }
+                        })
+                        .map(|(chr, description)| VerificationEmoji {
+                            symbol: chr as u32,
+                            description,
                         })
                         .collect::<Vec<VerificationEmoji>>();
                     msg.set_emojis(sequence);
