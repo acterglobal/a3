@@ -1,2 +1,0 @@
-- [fix] Cases in which My profile showed up blank.
-- [fix] Messed up title when clicking on Events now displaying correctly.

@@ -29,10 +29,14 @@ use std::{
 };
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::trace;
+use tracing::{trace, warn};
 
 use super::{
-    api::FfiBuffer, client::Client, common::MsgContent, spaces::Space, stream::MsgContentDraft,
+    api::FfiBuffer,
+    client::Client,
+    common::{MsgContent, ThumbnailSize},
+    spaces::Space,
+    stream::MsgContentDraft,
     RUNTIME,
 };
 
@@ -210,20 +214,79 @@ impl NewsSlide {
         }
     }
 
-    pub async fn source_binary(&self) -> Result<FfiBuffer<u8>> {
+    pub async fn source_binary(
+        &self,
+        thumb_size: Option<Box<ThumbnailSize>>,
+    ) -> Result<FfiBuffer<u8>> {
         // any variable in self can't be called directly in spawn
         match &self.inner.content {
             NewsContent::Text(content) => {
                 let buf = Vec::<u8>::new();
                 Ok(FfiBuffer::new(buf))
             }
-            NewsContent::Image(content) => self.client.source_binary(content.source.clone()).await,
-            NewsContent::Audio(content) => self.client.source_binary(content.source.clone()).await,
-            NewsContent::Video(content) => self.client.source_binary(content.source.clone()).await,
-            NewsContent::File(content) => self.client.source_binary(content.source.clone()).await,
+            NewsContent::Image(content) => match thumb_size {
+                Some(thumb_size) => {
+                    let source = content
+                        .info
+                        .as_ref()
+                        .and_then(|info| info.thumbnail_source.clone())
+                        .context("thumbnail source doesn't exist")?;
+                    self.client.source_binary(source, Some(thumb_size)).await
+                }
+                None => {
+                    self.client
+                        .source_binary(content.source.clone(), None)
+                        .await
+                }
+            },
+            NewsContent::Audio(content) => {
+                if thumb_size.is_some() {
+                    warn!("DeveloperError: audio has not thumbnail");
+                }
+                self.client
+                    .source_binary(content.source.clone(), None)
+                    .await
+            }
+            NewsContent::Video(content) => match thumb_size {
+                Some(thumb_size) => {
+                    let source = content
+                        .info
+                        .as_ref()
+                        .and_then(|info| info.thumbnail_source.clone())
+                        .context("thumbnail source doesn't exist")?;
+                    self.client.source_binary(source, Some(thumb_size)).await
+                }
+                None => {
+                    self.client
+                        .source_binary(content.source.clone(), None)
+                        .await
+                }
+            },
+            NewsContent::File(content) => match thumb_size {
+                Some(thumb_size) => {
+                    let source = content
+                        .info
+                        .as_ref()
+                        .and_then(|info| info.thumbnail_source.clone())
+                        .context("thumbnail source doesn't exist")?;
+                    self.client.source_binary(source, Some(thumb_size)).await
+                }
+                None => {
+                    self.client
+                        .source_binary(content.source.clone(), None)
+                        .await
+                }
+            },
             NewsContent::Location(content) => {
-                let buf = Vec::<u8>::new();
-                Ok(FfiBuffer::new(buf))
+                if thumb_size.is_none() {
+                    warn!("DeveloperError: location has not file");
+                }
+                let source = content
+                    .info
+                    .as_ref()
+                    .and_then(|info| info.thumbnail_source.clone())
+                    .context("thumbnail source doesn't exist")?;
+                self.client.source_binary(source, thumb_size).await
             }
         }
     }

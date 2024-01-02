@@ -1,4 +1,0 @@
-- Use `ref.watch()` instead of `ref.read()` in build function
-- Use `ref.read()` instead of `ref.watch()` in event handling
-- Improve riverpod notifier
-- Replace `var` with `final` as much as possible

@@ -1,3 +1,0 @@
-- Implement editing of text message
-- Implement editing of image/audio/video/file message
-- Implement editing of location message

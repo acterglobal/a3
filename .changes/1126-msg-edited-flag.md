@@ -1,3 +1,0 @@
-- [new-feature] We need the flag that shows whether a message is the edited version of other.
-- [bugfix] Edited message should show the latest body, not original body.
-- [new-feature] Timeline-based integration test should be implemented.

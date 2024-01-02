@@ -1,8 +1,10 @@
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/video_dialog.dart';
+import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
@@ -22,37 +24,109 @@ class VideoMessageBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final videoFile = ref.watch(videoFileFromMessageIdProvider(message.id));
-    return videoFile.when(
-      data: (videoFileData) {
-        return ClipRRect(
-          borderRadius: isReplyContent
-              ? BorderRadius.circular(6)
-              : BorderRadius.circular(15),
-          child: SizedBox(
-            height: 150,
-            child: ActerVideoPlayer(
-              videoFile: videoFileData,
-              onTapFullScreen: () {
-                showAdaptiveDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  useRootNavigator: false,
-                  builder: (ctx) => VideoDialog(
-                    title: message.name,
-                    videoFile: videoFileData,
-                  ),
-                );
-              },
+    final mediaState = ref.watch(mediaChatStateProvider(message.id));
+    if (mediaState.mediaChatLoadingState.isLoading ||
+        mediaState.isDownloading) {
+      return loadingIndication(context);
+    } else if (mediaState.mediaFile == null) {
+      return videoPlaceholder(context, mediaState, ref);
+    } else {
+      return videoUI(context, mediaState);
+    }
+  }
+
+  Widget loadingIndication(BuildContext context) {
+    return const SizedBox(
+      width: 150,
+      height: 150,
+      child: Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  Widget videoPlaceholder(
+    BuildContext context,
+    MediaChatState mediaState,
+    WidgetRef ref,
+  ) {
+    return InkWell(
+      onTap: () async {
+        if (mediaState.mediaFile != null) {
+          showAdaptiveDialog(
+            context: context,
+            barrierDismissible: false,
+            useRootNavigator: false,
+            builder: (ctx) => VideoDialog(
+              title: message.name,
+              videoFile: mediaState.mediaFile!,
             ),
-          ),
-        );
+          );
+        } else {
+          await ref
+              .read(mediaChatStateProvider(message.id).notifier)
+              .downloadMedia();
+        }
       },
-      error: (error, stack) => Center(child: Text('Loading failed: $error')),
-      loading: () => const SizedBox(
+      child: SizedBox(
+        width: 200,
         height: 150,
-        width: 150,
-        child: Icon(Icons.video_collection_outlined),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.download,
+              size: 28,
+            ),
+            const SizedBox(height: 8),
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.onSecondary,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.video_library_rounded,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    formatBytes(message.size.truncate()),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget videoUI(
+    BuildContext context,
+    MediaChatState mediaState,
+  ) {
+    return ClipRRect(
+      borderRadius:
+          isReplyContent ? BorderRadius.circular(6) : BorderRadius.circular(15),
+      child: SizedBox(
+        height: 150,
+        child: ActerVideoPlayer(
+          videoFile: mediaState.mediaFile!,
+          onTapFullScreen: () {
+            showAdaptiveDialog(
+              context: context,
+              barrierDismissible: false,
+              useRootNavigator: false,
+              builder: (ctx) => VideoDialog(
+                title: message.name,
+                videoFile: mediaState.mediaFile!,
+              ),
+            );
+          },
+        ),
       ),
     );
   }

@@ -126,10 +126,10 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     info!("8");
 
     kyra_timeline
-        .send_reaction(received.to_string(), "👏".to_string())
+        .toggle_reaction(received.to_string(), "👏".to_string())
         .await?;
     worf_timeline
-        .send_reaction(received.to_string(), "😎".to_string())
+        .toggle_reaction(received.to_string(), "😎".to_string())
         .await?;
 
     info!("9 - {:?}", received);

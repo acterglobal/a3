@@ -17,7 +17,7 @@ final invitationProfileProvider =
   try {
     UserProfile profile = await invitation.getSenderProfile();
     displayName = (await profile.getDisplayName()).text();
-    avatar = (await profile.getAvatar()).data();
+    avatar = (await profile.getAvatar(null)).data();
   } catch (e) {
     debugPrint('failed to load profile: $e');
   }

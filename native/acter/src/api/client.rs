@@ -15,7 +15,7 @@ use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStr
 use matrix_sdk::{
     config::SyncSettings,
     event_handler::EventHandlerHandle,
-    media::{MediaFormat, MediaRequest},
+    media::MediaRequest,
     room::Room as SdkRoom,
     ruma::api::client::{
         error::{ErrorBody, ErrorKind},
@@ -49,7 +49,9 @@ use tokio::{
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
 
-use crate::{Account, Convo, Notification, OptionString, Room, Space, UserProfile, RUNTIME};
+use crate::{
+    Account, Convo, Notification, OptionString, Room, Space, ThumbnailSize, UserProfile, RUNTIME,
+};
 
 use super::{
     api::FfiBuffer, device::DeviceController, invitation::InvitationController,
@@ -375,13 +377,15 @@ impl Client {
         Ok(())
     }
 
-    pub(crate) async fn source_binary(&self, source: MediaSource) -> Result<FfiBuffer<u8>> {
+    pub(crate) async fn source_binary(
+        &self,
+        source: MediaSource,
+        thumb_size: Option<Box<ThumbnailSize>>,
+    ) -> Result<FfiBuffer<u8>> {
         // any variable in self can't be called directly in spawn
         let client = self.clone();
-        let request = MediaRequest {
-            source,
-            format: MediaFormat::File,
-        };
+        let format = ThumbnailSize::parse_into_media_format(thumb_size);
+        let request = MediaRequest { source, format };
         trace!(?request, "tasked to get source binary");
         RUNTIME
             .spawn(async move {
@@ -803,7 +807,7 @@ impl Client {
             .spawn(async move {
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().context("MIME type should be given")?;
-                let buf = std::fs::read(path).context("File should be read")?;
+                let buf = std::fs::read(path)?;
                 let response = client.media().upload(&content_type, buf).await?;
                 Ok(response.content_uri)
             })
@@ -865,7 +869,7 @@ impl Client {
     }
 
     pub fn dm_with_user(&self, user_id: String) -> Result<OptionString> {
-        let user_id = UserId::parse(user_id).context("Invalid user id")?;
+        let user_id = UserId::parse(user_id)?;
         let room_id = self
             .core
             .client()
@@ -932,13 +936,11 @@ impl Client {
     }
 
     pub fn device_id(&self) -> Result<OwnedDeviceId> {
-        let device_id = self
-            .core
+        self.core
             .client()
             .device_id()
-            .context("No Device ID found")?
-            .to_owned();
-        Ok(device_id)
+            .context("No Device ID found")
+            .map(|x| x.to_owned())
     }
 
     pub fn get_user_profile(&self) -> Result<UserProfile> {
@@ -951,16 +953,16 @@ impl Client {
     }
 
     pub async fn verified_device(&self, dev_id: String) -> Result<bool> {
-        let c = self.core.client().clone();
+        let client = self.core.client().clone();
         let user_id = self.user_id()?;
         RUNTIME
             .spawn(async move {
-                let dev = c
+                client
                     .encryption()
                     .get_device(&user_id, device_id!(dev_id.as_str()))
                     .await?
-                    .context("client should get device")?;
-                Ok(dev.is_verified())
+                    .context("Unable to find device")
+                    .map(|x| x.is_verified())
             })
             .await?
     }

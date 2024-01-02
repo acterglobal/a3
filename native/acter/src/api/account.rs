@@ -1,11 +1,11 @@
 use anyhow::{bail, Context, Result};
-use matrix_sdk::{media::MediaFormat, Account as SdkAccount};
+use matrix_sdk::Account as SdkAccount;
 use ruma_common::{OwnedMxcUri, OwnedUserId};
 use ruma_events::ignored_user_list::IgnoredUserListEventContent;
 use std::{ops::Deref, path::PathBuf, str::FromStr};
 
 use super::{
-    common::{OptionBuffer, OptionString},
+    common::{OptionBuffer, OptionString, ThumbnailSize},
     RUNTIME,
 };
 
@@ -56,11 +56,12 @@ impl Account {
             .await?
     }
 
-    pub async fn avatar(&self) -> Result<OptionBuffer> {
+    pub async fn avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
         let account = self.account.clone();
         RUNTIME
             .spawn(async move {
-                let buf = account.get_avatar(MediaFormat::File).await?;
+                let format = ThumbnailSize::parse_into_media_format(thumb_size);
+                let buf = account.get_avatar(format).await?;
                 Ok(OptionBuffer::new(buf))
             })
             .await?
@@ -73,7 +74,7 @@ impl Account {
             .spawn(async move {
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().context("MIME type should be given")?;
-                let data = std::fs::read(path).context("File should be read")?;
+                let data = std::fs::read(path)?;
                 let new_url = account.upload_avatar(&content_type, data).await?;
                 Ok(new_url)
             })
