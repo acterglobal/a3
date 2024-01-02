@@ -1008,7 +1008,7 @@ impl Room {
                 let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
-                    .expect("Original msg should be got from event content");
+                    .context("Couldn't get original msg")?;
                 let (source, format) = match thumb_size {
                     Some(thumb_size) => {
                         let source = match &original.content.msgtype {
@@ -1418,7 +1418,7 @@ impl Room {
                 let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
-                    .expect("Original msg should be got from event content");
+                    .context("Couldn't get original msg")?;
                 if is_thumb {
                     let available = matches!(
                         &original.content.msgtype,
