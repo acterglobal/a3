@@ -53,6 +53,7 @@ pub async fn random_user_with_random_convo(prefix: &str) -> Result<(Client, Owne
     let room_id = user.create_convo(Box::new(settings)).await?;
     Ok((user, room_id))
 }
+
 pub async fn random_user_under_token(prefix: &str, registration_token: &str) -> Result<Client> {
     let uuid = Uuid::new_v4().to_string();
     ensure_user(
