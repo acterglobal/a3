@@ -6,7 +6,8 @@ use futures::{
 use matrix_sdk::{
     config::SyncSettings,
     encryption::verification::{
-        SasState, SasVerification, Verification, VerificationRequest, VerificationRequestState,
+        Emoji, SasState, SasVerification, Verification, VerificationRequest,
+        VerificationRequestState,
     },
     event_handler::{Ctx, EventHandlerHandle},
     ruma::{
@@ -119,18 +120,7 @@ impl VerificationEvent {
                         let items = sas.emoji().context("No emojis found. Aborted.")?;
                         let sequence = items
                             .iter()
-                            .filter_map(|e| {
-                                // first char
-                                if let Some(chr) = e.symbol.chars().next() {
-                                    Some((chr, e.description.to_owned()))
-                                } else {
-                                    None
-                                }
-                            })
-                            .map(|(chr, description)| VerificationEmoji {
-                                symbol: chr as u32,
-                                description,
-                            })
+                            .filter_map(|e| VerificationEmoji::new(e))
                             .collect::<Vec<VerificationEmoji>>();
                         return Ok(sequence);
                     }
@@ -143,18 +133,7 @@ impl VerificationEvent {
                         let items = sas.emoji().context("No emojis found. Aborted.")?;
                         let sequence = items
                             .iter()
-                            .filter_map(|e| {
-                                // first char
-                                if let Some(chr) = e.symbol.chars().next() {
-                                    Some((chr, e.description.to_owned()))
-                                } else {
-                                    None
-                                }
-                            })
-                            .map(|(chr, description)| VerificationEmoji {
-                                symbol: chr as u32,
-                                description,
-                            })
+                            .filter_map(|e| VerificationEmoji::new(e))
                             .collect::<Vec<VerificationEmoji>>();
                         return Ok(sequence);
                     }
@@ -501,6 +480,18 @@ pub struct VerificationEmoji {
 }
 
 impl VerificationEmoji {
+    fn new(val: &Emoji) -> Option<Self> {
+        // first char
+        if let Some(chr) = val.symbol.chars().next() {
+            Some(VerificationEmoji {
+                symbol: chr as u32,
+                description: val.description.to_owned(),
+            })
+        } else {
+            None
+        }
+    }
+
     pub fn symbol(&self) -> u32 {
         self.symbol
     }
@@ -729,18 +720,7 @@ async fn sas_verification_handler(
                     let sequence = auth_string
                         .emojis
                         .iter()
-                        .filter_map(|e| {
-                            // first char
-                            if let Some(chr) = e.symbol.chars().next() {
-                                Some((chr, e.description.to_owned()))
-                            } else {
-                                None
-                            }
-                        })
-                        .map(|(chr, description)| VerificationEmoji {
-                            symbol: chr as u32,
-                            description,
-                        })
+                        .filter_map(|e| VerificationEmoji::new(e))
                         .collect::<Vec<VerificationEmoji>>();
                     msg.set_emojis(sequence);
                 }
