@@ -505,21 +505,21 @@ async fn request_verification_handler(
     txn_id: Option<OwnedTransactionId>,
     sender: OwnedUserId,
     methods: Option<Vec<VerificationMethod>>,
-) {
+) -> Result<()> {
     info!(
         "Accepting verification request from {}",
         request.other_user_id()
     );
     if let Some(methods) = methods {
-        request
-            .accept_with_methods(methods)
-            .await
-            .expect("Unable to accept verification request with methods");
+        if let Err(e) = request.accept_with_methods(methods).await {
+            error!("Unable to accept verification request with methods");
+            return Err(e.into());
+        }
     } else {
-        request
-            .accept()
-            .await
-            .expect("Unable to accept verification request without methods");
+        if let Err(e) = request.accept().await {
+            error!("Unable to accept verification request without methods");
+            return Err(e.into());
+        }
     }
 
     let mut stream = request.changes();
@@ -679,6 +679,7 @@ async fn request_verification_handler(
             }
         }
     }
+    Ok(())
 }
 
 async fn sas_verification_handler(
@@ -688,13 +689,15 @@ async fn sas_verification_handler(
     event_id: Option<OwnedEventId>,
     txn_id: Option<OwnedTransactionId>,
     sender: OwnedUserId,
-) {
+) -> Result<()> {
     info!(
         "Starting verification with {} {}",
         &sas.other_device().user_id(),
         &sas.other_device().device_id()
     );
-    sas.accept().await.unwrap();
+    if let Err(e) = sas.accept().await {
+        return Err(e.into());
+    }
 
     let mut stream = sas.changes();
 
@@ -724,7 +727,7 @@ async fn sas_verification_handler(
                     Ok(e) => e,
                     Err(e) => {
                         error!("KeysExchanged: couldn't convert decimals to string");
-                        return;
+                        return Err(e.into());
                     }
                 };
                 msg.set_content("decimals".to_string(), value);
@@ -908,6 +911,7 @@ async fn sas_verification_handler(
             }
         }
     }
+    Ok(())
 }
 
 #[derive(Clone, Debug)]
