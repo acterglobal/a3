@@ -18,8 +18,6 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let sisko_sync = sisko.start_sync();
     sisko_sync.await_has_synced_history().await?;
 
-    info!("2");
-
     let sisko_convo = sisko
         .convo(room_id.to_string())
         .await
@@ -31,18 +29,10 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let sisko_stream = sisko_timeline.diff_stream();
     pin_mut!(sisko_stream);
 
-    info!("3");
+    info!("2");
 
     let kyra_sync = kyra.start_sync();
     kyra_sync.await_has_synced_history().await?;
-    let mut kyra_stream = Box::pin(kyra.sync_stream(Default::default()).await);
-    kyra_stream.next().await;
-    for invited in kyra.invited_rooms().iter() {
-        info!(" - accepting {:?}", invited.room_id());
-        invited.join().await?;
-    }
-
-    info!("4");
 
     let kyra_convo = kyra
         .convo(room_id.to_string())
@@ -52,17 +42,19 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
         .timeline_stream()
         .await
         .expect("kyra should get timeline stream");
+    let kyra_stream = kyra_timeline.diff_stream();
+    pin_mut!(kyra_stream);
 
-    info!("5");
-
-    let worf_sync = worf.start_sync();
-    worf_sync.await_has_synced_history().await?;
-    let mut worf_stream = Box::pin(worf.sync_stream(Default::default()).await);
-    worf_stream.next().await;
-    for invited in worf.invited_rooms().iter() {
+    kyra_stream.next().await;
+    for invited in kyra.invited_rooms().iter() {
         info!(" - accepting {:?}", invited.room_id());
         invited.join().await?;
     }
+
+    info!("3");
+
+    let worf_sync = worf.start_sync();
+    worf_sync.await_has_synced_history().await?;
 
     let worf_convo = worf
         .convo(room_id.to_string())
@@ -72,22 +64,39 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
         .timeline_stream()
         .await
         .expect("worf should get timeline stream");
+    let worf_stream = worf_timeline.diff_stream();
+    pin_mut!(worf_stream);
 
-    info!("6");
+    worf_stream.next().await;
+    for invited in worf.invited_rooms().iter() {
+        info!(" - accepting {:?}", invited.room_id());
+        invited.join().await?;
+    }
+
+    info!("4");
 
     let draft = sisko.text_plain_draft("Hi, everyone".to_string());
     sisko_timeline.send_message(Box::new(draft)).await?;
 
-    info!("7");
+    info!("5");
 
     // text msg may reach via reset action or set action
     let mut i = 30;
     let mut received = None;
     while i > 0 {
         info!("stream loop - {i}");
-        if let Some(diff) = sisko_stream.next().now_or_never().flatten() {
+        if let Some(diff) = kyra_stream.next().now_or_never().flatten() {
             info!("stream diff - {}", diff.action());
             match diff.action().as_str() {
+                "PushBack" => {
+                    let value = diff
+                        .value()
+                        .expect("diff pushback action should have valid value");
+                    info!("diff set - {:?}", value);
+                    if let Some(event_id) = match_text_msg(&value, "Hi, everyone") {
+                        received = Some(event_id);
+                    }
+                }
                 "Reset" => {
                     let values = diff
                         .values()
@@ -98,15 +107,6 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
                             received = Some(event_id);
                             break;
                         }
-                    }
-                }
-                "Set" => {
-                    let value = diff
-                        .value()
-                        .expect("diff set action should have valid value");
-                    info!("diff set - {:?}", value);
-                    if let Some(event_id) = match_text_msg(&value, "Hi, everyone") {
-                        received = Some(event_id);
                     }
                 }
                 _ => {}
@@ -121,18 +121,63 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     info!("loop finished");
-    let received = received.context("Even after 30 seconds, text msg not received")?;
+    let kyra_received = received.context("Even after 30 seconds, text msg not received")?;
 
-    info!("8");
+    info!("6");
+
+    // text msg may reach via reset action or set action
+    i = 30;
+    received = None;
+    while i > 0 {
+        info!("stream loop - {i}");
+        if let Some(diff) = worf_stream.next().now_or_never().flatten() {
+            info!("stream diff - {}", diff.action());
+            match diff.action().as_str() {
+                "PushBack" => {
+                    let value = diff
+                        .value()
+                        .expect("diff pushback action should have valid value");
+                    info!("diff set - {:?}", value);
+                    if let Some(event_id) = match_text_msg(&value, "Hi, everyone") {
+                        received = Some(event_id);
+                    }
+                }
+                "Reset" => {
+                    let values = diff
+                        .values()
+                        .expect("diff reset action should have valid values");
+                    info!("diff reset - {:?}", values);
+                    for value in values.iter() {
+                        if let Some(event_id) = match_text_msg(value, "Hi, everyone") {
+                            received = Some(event_id);
+                            break;
+                        }
+                    }
+                }
+                _ => {}
+            }
+            // yay
+            if received.is_some() {
+                break;
+            }
+        }
+        info!("continue loop");
+        i -= 1;
+        sleep(Duration::from_secs(1)).await;
+    }
+    info!("loop finished");
+    let worf_received = received.context("Even after 30 seconds, text msg not received")?;
+
+    info!("7");
 
     kyra_timeline
-        .toggle_reaction(received.to_string(), "👏".to_string())
+        .toggle_reaction(kyra_received.to_string(), "👏".to_string())
         .await?;
     worf_timeline
-        .toggle_reaction(received.to_string(), "😎".to_string())
+        .toggle_reaction(worf_received.to_string(), "😎".to_string())
         .await?;
 
-    info!("9 - {:?}", received);
+    info!("8");
 
     // msg reaction may reach via set action
     i = 10;
