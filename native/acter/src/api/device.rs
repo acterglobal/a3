@@ -134,18 +134,10 @@ impl Client {
         let client = self.clone();
         RUNTIME
             .spawn(async move {
-                let user_id = client
-                    .user_id()
-                    .context("guest user cannot get the verified devices")?;
-                let this_device_id = client
-                    .device_id()
-                    .context("logged in user must have a device")?;
+                let user_id = client.user_id()?;
+                let this_device_id = client.device_id()?;
                 let response = client.devices().await?;
-                let crypto_devices = client
-                    .encryption()
-                    .get_user_devices(&user_id)
-                    .await
-                    .context("Couldn't get crypto devices")?;
+                let crypto_devices = client.encryption().get_user_devices(&user_id).await?;
                 let mut sessions = vec![];
                 for device in response.devices {
                     let is_verified = crypto_devices.get(&device.device_id).is_some_and(|d| {
@@ -156,8 +148,7 @@ impl Client {
                         let limit = SystemTime::now()
                             .checked_sub(Duration::from_secs(90 * 24 * 60 * 60))
                             .context("Couldn't get time of 90 days ago")?
-                            .duration_since(UNIX_EPOCH)
-                            .context("Couldn't calculate duration from Unix epoch")?;
+                            .duration_since(UNIX_EPOCH)?;
                         let secs: u64 = last_seen_ts.as_secs().into();
                         if secs < limit.as_secs() {
                             is_active = true;

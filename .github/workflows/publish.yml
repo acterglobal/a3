@@ -760,7 +760,7 @@ jobs:
  ######   ####    ##    ##     ##  #######  ########     ##         #######  ########  ######## ####  ######  ##     ## 
 
   publish:
-    environment: release
+    environment: nightly
     runs-on: ubuntu-latest
     name: Publish
     # if: ${{ github.event.schedule }}
@@ -787,10 +787,18 @@ jobs:
           echo "" >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
           cat CHANGELOG.md >> docs/content/releases/${{ needs.tags.outputs.tag }}.md
 
-      - name: Tag for release
+      - name: Configure git
         run: |
           git config --global user.name 'Sari'
           git config --global user.email 'acter-sari@users.noreply.github.com'
+
+      - name: Clear old docs
+        run: |
+          git rm .changes/*.md
+          git commit -m "Clearing .changes for v${{ needs.tags.outputs.tag }}"
+
+      - name: Tag for release
+        run: |
           git add "docs/content/releases/${{ needs.tags.outputs.tag }}.md"
           echo "Add release ${{ needs.tags.outputs.tag }}"
           git commit -m "Releasing v${{ needs.tags.outputs.tag }}"

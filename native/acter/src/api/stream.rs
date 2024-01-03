@@ -9,20 +9,17 @@ use matrix_sdk::{
     ruma::{api::client::receipt::create_receipt, assign, UInt},
     Client as SdkClient, RoomState,
 };
-use matrix_sdk_ui::timeline::{
-    BackPaginationStatus, EventTimelineItem, PaginationOptions, Timeline,
-};
+use matrix_sdk_ui::timeline::{BackPaginationStatus, PaginationOptions, Timeline};
 use ruma_common::{EventId, OwnedEventId, OwnedTransactionId};
 use ruma_events::{
-    reaction::ReactionEventContent,
     receipt::ReceiptThread,
-    relation::{Annotation, Replacement},
+    relation::Annotation,
     room::{
         message::{
             AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent, ForwardThread,
             ImageMessageEventContent, LocationInfo, LocationMessageEventContent, MessageType,
-            Relation, RoomMessageEvent, RoomMessageEventContent,
-            RoomMessageEventContentWithoutRelation, VideoInfo, VideoMessageEventContent,
+            RoomMessageEvent, RoomMessageEventContent, RoomMessageEventContentWithoutRelation,
+            VideoInfo, VideoMessageEventContent,
         },
         ImageInfo,
     },
@@ -235,11 +232,11 @@ impl TimelineStream {
                     bail!("No permission to send message in this room");
                 }
 
-                let timeline_event = room.event(&event_id).await?;
-                let event_content = timeline_event
+                let event_content = room
+                    .event(&event_id)
+                    .await?
                     .event
-                    .deserialize_as::<RoomMessageEvent>()
-                    .context("Couldn't deserialise event")?;
+                    .deserialize_as::<RoomMessageEvent>()?;
 
                 let mut sent_by_me = false;
                 if let Some(user_id) = client.user_id() {
@@ -251,8 +248,12 @@ impl TimelineStream {
                     bail!("Can't edit an event not sent by own user");
                 }
 
-                let edited_content = draft.into_edited_content(client, room, event_id).await?;
-                timeline.send(edited_content.into()).await;
+                let edit_item = timeline
+                    .item_by_event_id(&event_id)
+                    .await
+                    .context("Not found which item would be edited")?;
+                let new_content = draft.into_edited_content(client, room, event_id).await?;
+                timeline.edit(new_content, &edit_item).await?;
                 Ok(true)
             })
             .await?
@@ -286,10 +287,11 @@ impl TimelineStream {
                     bail!("No permission to send message in this room");
                 }
 
-                let Some(reply_item) = timeline.item_by_event_id(&event_id).await else {
-                    bail!("Not found which item would be replied to")
-                };
-                let content = draft.into_replied_content(client, room, event_id).await?;
+                let reply_item = timeline
+                    .item_by_event_id(&event_id)
+                    .await
+                    .context("Not found which item would be replied to")?;
+                let content = draft.into_replied_content(client, room).await?;
                 timeline
                     .send_reply(content, &reply_item, ForwardThread::Yes)
                     .await?;
@@ -379,7 +381,7 @@ impl TimelineStream {
             .await?
     }
 
-    pub async fn send_reaction(&self, event_id: String, key: String) -> Result<bool> {
+    pub async fn toggle_reaction(&self, event_id: String, key: String) -> Result<bool> {
         if !self.is_joined() {
             bail!("Can't send message to a room we are not in");
         }
@@ -401,9 +403,8 @@ impl TimelineStream {
                 if !member.can_send_message(MessageLikeEventType::Reaction) {
                     bail!("No permission to send reaction in this room");
                 }
-                let relates_to = Annotation::new(event_id, key);
-                let content = ReactionEventContent::new(relates_to);
-                timeline.send(content.into()).await;
+                let annotation = Annotation::new(event_id, key);
+                timeline.toggle_reaction(&annotation).await?;
                 Ok(true)
             })
             .await?
@@ -411,7 +412,7 @@ impl TimelineStream {
 
     pub async fn retry_send(&self, txn_id: String) -> Result<bool> {
         let timeline = self.timeline.clone();
-        let transaction_id = OwnedTransactionId::from(txn_id);
+        let txn_id = OwnedTransactionId::try_from(txn_id)?;
 
         let room = self.room.clone();
         let my_id = room
@@ -430,7 +431,7 @@ impl TimelineStream {
                     bail!("No permission to send message in this room");
                 }
 
-                timeline.retry_send(&transaction_id).await;
+                timeline.retry_send(&txn_id).await?;
                 Ok(true)
             })
             .await?
@@ -438,7 +439,7 @@ impl TimelineStream {
 
     pub async fn cancel_send(&self, txn_id: String) -> Result<bool> {
         let timeline = self.timeline.clone();
-        let transaction_id = OwnedTransactionId::from(txn_id);
+        let txn_id = OwnedTransactionId::try_from(txn_id)?;
 
         let room = self.room.clone();
         let my_id = room
@@ -457,7 +458,7 @@ impl TimelineStream {
                     bail!("No permission to send message in this room");
                 }
 
-                timeline.cancel_send(&transaction_id).await;
+                timeline.cancel_send(&txn_id).await;
                 Ok(true)
             })
             .await?
@@ -699,19 +700,9 @@ impl MsgContentDraft {
         event_id: OwnedEventId,
     ) -> Result<RoomMessageEventContent> {
         match self {
-            MsgContentDraft::TextPlain { body } => {
-                let replacement =
-                    Replacement::new(event_id, MessageType::text_plain(body.clone()).into());
-                let mut edited_content = RoomMessageEventContent::text_plain(body);
-                edited_content.relates_to = Some(Relation::Replacement(replacement));
-                Ok(edited_content)
-            }
+            MsgContentDraft::TextPlain { body } => Ok(RoomMessageEventContent::text_plain(body)),
             MsgContentDraft::TextMarkdown { body } => {
-                let replacement =
-                    Replacement::new(event_id, MessageType::text_markdown(body.clone()).into());
-                let mut edited_content = RoomMessageEventContent::text_markdown(body);
-                edited_content.relates_to = Some(Relation::Replacement(replacement));
-                Ok(edited_content)
+                Ok(RoomMessageEventContent::text_markdown(body))
             }
             MsgContentDraft::Image { source, info } => {
                 let info = info.expect("image info needed");
@@ -740,11 +731,8 @@ impl MsgContentDraft {
                     ImageMessageEventContent::plain(body, response.content_uri)
                 };
                 image_content.info = Some(Box::new(info));
-                let mut edited_content =
-                    RoomMessageEventContent::new(MessageType::Image(image_content.clone()));
-                let replacement =
-                    Replacement::new(event_id, MessageType::Image(image_content).into());
-                edited_content.relates_to = Some(Relation::Replacement(replacement));
+                let edited_content =
+                    RoomMessageEventContent::new(MessageType::Image(image_content));
                 Ok(edited_content)
             }
             MsgContentDraft::Audio { source, info } => {
@@ -774,11 +762,8 @@ impl MsgContentDraft {
                     AudioMessageEventContent::plain(body, response.content_uri)
                 };
                 audio_content.info = Some(Box::new(info));
-                let mut edited_content =
-                    RoomMessageEventContent::new(MessageType::Audio(audio_content.clone()));
-                let replacement =
-                    Replacement::new(event_id, MessageType::Audio(audio_content).into());
-                edited_content.relates_to = Some(Relation::Replacement(replacement));
+                let edited_content =
+                    RoomMessageEventContent::new(MessageType::Audio(audio_content));
                 Ok(edited_content)
             }
             MsgContentDraft::Video { source, info } => {
@@ -808,11 +793,8 @@ impl MsgContentDraft {
                     VideoMessageEventContent::plain(body, response.content_uri)
                 };
                 video_content.info = Some(Box::new(info));
-                let mut edited_content =
-                    RoomMessageEventContent::new(MessageType::Video(video_content.clone()));
-                let replacement =
-                    Replacement::new(event_id, MessageType::Video(video_content).into());
-                edited_content.relates_to = Some(Relation::Replacement(replacement));
+                let edited_content =
+                    RoomMessageEventContent::new(MessageType::Video(video_content));
                 Ok(edited_content)
             }
             MsgContentDraft::File {
@@ -847,11 +829,7 @@ impl MsgContentDraft {
                 };
                 file_content.info = Some(Box::new(info));
                 file_content.filename = filename.clone();
-                let mut edited_content =
-                    RoomMessageEventContent::new(MessageType::File(file_content.clone()));
-                let replacement =
-                    Replacement::new(event_id, MessageType::File(file_content).into());
-                edited_content.relates_to = Some(Relation::Replacement(replacement));
+                let edited_content = RoomMessageEventContent::new(MessageType::File(file_content));
                 Ok(edited_content)
             }
             MsgContentDraft::Location {
@@ -863,11 +841,8 @@ impl MsgContentDraft {
                 if let Some(info) = info {
                     location_content.info = Some(Box::new(info));
                 }
-                let mut edited_content =
-                    RoomMessageEventContent::new(MessageType::Location(location_content.clone()));
-                let replacement =
-                    Replacement::new(event_id, MessageType::Location(location_content).into());
-                edited_content.relates_to = Some(Relation::Replacement(replacement));
+                let edited_content =
+                    RoomMessageEventContent::new(MessageType::Location(location_content));
                 Ok(edited_content)
             }
         }
@@ -877,7 +852,6 @@ impl MsgContentDraft {
         self, // into_* fn takes self by value not reference
         client: SdkClient,
         room: Room,
-        event_id: OwnedEventId,
     ) -> Result<RoomMessageEventContentWithoutRelation> {
         match self {
             MsgContentDraft::TextPlain { body } => {

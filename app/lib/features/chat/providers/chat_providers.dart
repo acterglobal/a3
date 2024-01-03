@@ -1,8 +1,10 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
+import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/notifiers/chat_input_notifier.dart';
 import 'package:acter/features/chat/providers/notifiers/chat_room_notifier.dart';
+import 'package:acter/features/chat/providers/notifiers/media_chat_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,6 +18,10 @@ final chatInputFocusProvider = StateProvider<FocusNode>((ref) => FocusNode());
 final chatStateProvider =
     StateNotifierProvider.family<ChatRoomNotifier, ChatRoomState, Convo>(
   (ref, convo) => ChatRoomNotifier(ref: ref, convo: convo),
+);
+
+final mediaChatStateProvider = StateNotifierProvider.family<MediaChatNotifier, MediaChatState, String>(
+      (ref, messageId) => MediaChatNotifier(ref: ref, messageId: messageId),
 );
 
 final chatSearchValueProvider = StateProvider.autoDispose<String?>((ref) => null);

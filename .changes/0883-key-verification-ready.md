@@ -1,2 +1,0 @@
-- Implement the `KeyVerficationReady` event handling
-- Fix bug in action button layout of emoji confirmation dialog

@@ -1,1 +1,0 @@
-- You can now directly invite anyone in the invite screen all you need is type their full user-id

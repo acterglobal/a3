@@ -1,1 +1,0 @@
-- We now support MacOS down to version 10.14 (Mojave)

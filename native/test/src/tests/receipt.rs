@@ -1,5 +1,5 @@
 use acter::{api::RoomMessage, ruma_common::OwnedEventId};
-use anyhow::{bail, Result};
+use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
 use tokio::time::sleep;
@@ -85,9 +85,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     info!("loop finished");
-    let Some(received) = received else {
-        bail!("Even after 30 seconds, text msg not received")
-    };
+    let received = received.context("Even after 30 seconds, text msg not received")?;
 
     info!("4 - {:?}", received);
 
@@ -109,9 +107,9 @@ async fn sisko_detects_kyra_read() -> Result<()> {
 
     info!("5");
 
-    let Some(mut event_rx) = sisko.receipt_event_rx() else {
-        bail!("sisko needs receipt event receiver")
-    };
+    let mut event_rx = sisko
+        .receipt_event_rx()
+        .context("sisko needs receipt event receiver")?;
 
     i = 30; // sometimes read receipt not reached
     let mut found = false;

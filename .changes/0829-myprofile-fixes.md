@@ -1,2 +1,0 @@
-- [fix] fixed profile display name and username overlap
-- Users can now copy username to clipboard

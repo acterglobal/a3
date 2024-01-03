@@ -1,1 +1,0 @@
-- [fix] Some space members avatars failed to load due to internal wrong references. This has been fixed.

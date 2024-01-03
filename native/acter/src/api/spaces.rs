@@ -27,7 +27,8 @@ use matrix_sdk::{
     ruma::api::client::state::send_state_event,
 };
 use ruma_common::{
-    directory::RoomTypeFilter, serde::Raw, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
+    directory::RoomTypeFilter, serde::Raw, OwnedRoomAliasId, OwnedRoomId, RoomAliasId, RoomId,
+    RoomOrAliasId, ServerName,
 };
 use ruma_events::{
     reaction::SyncReactionEvent, space::child::SpaceChildEventContent, AnyStateEventContent,
@@ -501,11 +502,13 @@ impl Space {
 
                 for state in default_acter_space_states() {
                     println!("{:?}", state);
-                    let event_type: StateEventType = state.get_field("type")?.context("given")?;
+                    let event_type = state
+                        .get_field::<StateEventType>("type")?
+                        .context("couldn't get state event type")?;
                     let state_key = state.get_field("state_key")?.unwrap_or_default();
                     let body = state
                         .get_field::<Raw<AnyStateEventContent>>("content")?
-                        .context("body is given")?;
+                        .context("couldn't get state content")?;
                     if !member.can_send_state(event_type.clone()) {
                         bail!(
                             "No permission to set {event_type} states of this room. Can't convert"
@@ -533,7 +536,7 @@ impl Space {
         if !self.inner.is_joined() {
             bail!("You can't update a space you aren't part of");
         }
-        let room_id = OwnedRoomId::try_from(room_id)?;
+        let room_id = RoomId::parse(room_id)?;
         if !self
             .get_my_membership()
             .await?
@@ -546,7 +549,7 @@ impl Space {
 
         RUNTIME
             .spawn(async move {
-                let Some(Ok(homeserver)) = client.homeserver().host_str().map(|h| h.try_into()) else {
+                let Some(Ok(homeserver)) = client.homeserver().host_str().map(ServerName::parse) else {
                     return Err(Error::HomeserverMissesHostname)?;
                 };
                 let response = room
@@ -564,7 +567,7 @@ impl Space {
         if !self.inner.is_joined() {
             bail!("You can't update a space you aren't part of");
         }
-        let room_id = OwnedRoomId::try_from(room_id)?;
+        let room_id = RoomId::parse(room_id)?;
         if !self
             .get_my_membership()
             .await?
@@ -583,10 +586,7 @@ impl Space {
                     warn!("Room {} is not a child", room_id);
                     return Ok(true);
                 };
-                let Ok(state) = raw_state.deserialize() else {
-                    bail!("Invalid space child event")
-                };
-                let event_id = match state {
+                let event_id = match raw_state.deserialize()? {
                     SyncOrStrippedState::Stripped(ev) => {
                         bail!("Couldn't get event id about stripped event")
                     }
@@ -599,7 +599,7 @@ impl Space {
     }
 
     pub async fn is_child_space_of(&self, room_id: String) -> bool {
-        let Ok(room_id) = OwnedRoomId::try_from(room_id) else {
+        let Ok(room_id) = RoomId::parse(room_id) else {
             warn!("Asked for a not proper room id");
             return false
         };
@@ -737,14 +737,14 @@ impl Client {
     }
 
     pub async fn space(&self, room_id_or_alias: String) -> Result<Space> {
-        let either = OwnedRoomOrAliasId::try_from(room_id_or_alias.as_str())?;
+        let either = RoomOrAliasId::parse(room_id_or_alias.as_str())?;
         if either.is_room_id() {
-            let room_id = OwnedRoomId::try_from(either.as_str())?;
+            let room_id = RoomId::parse(either.as_str())?;
             self.space_typed(&room_id)
                 .await
                 .context(format!("Space {room_id} not found"))
         } else if either.is_room_alias_id() {
-            let room_alias = OwnedRoomAliasId::try_from(either.as_str())?;
+            let room_alias = RoomAliasId::parse(either.as_str())?;
             self.space_by_alias_typed(room_alias).await
         } else {
             bail!("{room_id_or_alias} isn't a valid room id or alias...");

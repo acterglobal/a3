@@ -1,3 +1,0 @@
-- [fix] Overflow error of feature sections in quick jump on small screens
-- [UX] hide the bottom navigation when the on-screen keyboard is visible (to regain some space)
-- [UX] dismiss the on-screen keyboard by tapping anywhere non-interactive
