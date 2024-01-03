@@ -511,12 +511,14 @@ async fn request_verification_handler(
         request.other_user_id()
     );
     if let Some(methods) = methods {
-        if let Err(e) = request.accept_with_methods(methods).await {
+        let result = request.accept_with_methods(methods).await;
+        if let Err(e) = result {
             error!("Unable to accept verification request with methods");
             return Err(e.into());
         }
     } else {
-        if let Err(e) = request.accept().await {
+        let result = request.accept().await;
+        if let Err(e) = result {
             error!("Unable to accept verification request without methods");
             return Err(e.into());
         }
