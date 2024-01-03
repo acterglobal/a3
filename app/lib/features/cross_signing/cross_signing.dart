@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -10,35 +11,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:sprintf/sprintf.dart';
-
-Widget elevatedButton(
-  String title,
-  Color color,
-  VoidCallback? callback,
-  bool wrap,
-  TextStyle? textstyle,
-) {
-  return ElevatedButton(
-    onPressed: callback,
-    style: ElevatedButton.styleFrom(
-      backgroundColor: color,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-    ),
-    child: wrap
-        ? Text(
-            title,
-            softWrap: false,
-            overflow: TextOverflow.ellipsis,
-            style: textstyle,
-          )
-        : Text(
-            title,
-            style: textstyle,
-          ),
-  );
-}
 
 class VerificationProcess {
   bool verifiyingThisDevice;
@@ -242,10 +214,12 @@ class CrossSigning {
     if (acceptingRequest) {
       return const CircularProgressIndicator();
     }
-    return elevatedButton(
-      AppLocalizations.of(context)!.acceptRequest,
-      Theme.of(context).colorScheme.success,
-      () async {
+    return DefaultButton(
+      title: AppLocalizations.of(context)!.acceptRequest,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Theme.of(context).colorScheme.success,
+      ),
+      onPressed: () async {
         if (_mounted) {
           acceptingRequest = true;
         }
@@ -257,8 +231,6 @@ class CrossSigning {
           _onKeyVerificationReady(event, true);
         });
       },
-      true,
-      null,
     );
   }
 
@@ -574,16 +546,16 @@ class CrossSigning {
           flex: 1,
           child: SizedBox(
             width: MediaQuery.of(context).size.width * 0.40,
-            child: elevatedButton(
-              AppLocalizations.of(context)!.sasGotIt,
-              Theme.of(context).colorScheme.success,
-              () {
+            child: DefaultButton(
+              title: AppLocalizations.of(context)!.sasGotIt,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.success,
+              ),
+              onPressed: () {
                 rootNavKey.currentContext?.pop();
                 // finish verification
                 _processMap.remove(flowId);
               },
-              true,
-              null,
             ),
           ),
         ),
@@ -758,9 +730,10 @@ class CrossSigning {
               margin: const EdgeInsets.symmetric(horizontal: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
+                color: Theme.of(context).colorScheme.neutral2,
               ),
               child: Padding(
-                padding: const EdgeInsets.only(top: 10),
+                padding: const EdgeInsets.all(10),
                 child: GridView.count(
                   crossAxisCount: isDesktop ? 7 : 4,
                   children: List.generate(emojis.length, (index) {
@@ -811,42 +784,37 @@ class CrossSigning {
       );
     }
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 20),
-          child: elevatedButton(
-            AppLocalizations.of(context)!.verificationSasDoNotMatch,
-            Theme.of(context).colorScheme.success,
-            () async {
-              rootNavKey.currentContext?.pop();
-              // mismatch sas verification
-              await event.mismatchSasVerification();
-            },
-            true,
-            null,
+        DefaultButton(
+          title: AppLocalizations.of(context)!.verificationSasDoNotMatch,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.errorContainer,
           ),
+          onPressed: () async {
+            rootNavKey.currentContext?.pop();
+            // mismatch sas verification
+            await event.mismatchSasVerification();
+          },
         ),
-        Padding(
-          padding: const EdgeInsets.only(right: 20),
-          child: elevatedButton(
-            AppLocalizations.of(context)!.verificationSasMatch,
-            Theme.of(context).colorScheme.success,
-            () async {
-              if (_mounted) {
-                waitForMatch = true;
-              }
-              rootNavKey.currentContext?.pop();
-              // confirm sas verification
-              await event.confirmSasVerification();
-              // close dialog
-              if (_mounted) {
-                waitForMatch = false;
-              }
-            },
-            true,
-            null,
+        const SizedBox(width: 15),
+        DefaultButton(
+          title: AppLocalizations.of(context)!.verificationSasMatch,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.success,
           ),
+          onPressed: () async {
+            if (_mounted) {
+              waitForMatch = true;
+            }
+            rootNavKey.currentContext?.pop();
+            // confirm sas verification
+            await event.confirmSasVerification();
+            // close dialog
+            if (_mounted) {
+              waitForMatch = false;
+            }
+          },
         ),
       ],
     );
@@ -945,16 +913,16 @@ class CrossSigning {
           child: Center(
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.40,
-              child: elevatedButton(
-                AppLocalizations.of(context)!.sasGotIt,
-                Theme.of(context).colorScheme.success,
-                () {
+              child: DefaultButton(
+                title: AppLocalizations.of(context)!.sasGotIt,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.success,
+                ),
+                onPressed: () {
                   rootNavKey.currentContext?.pop();
                   // finish verification
                   _processMap.remove(flowId);
                 },
-                true,
-                null,
               ),
             ),
           ),
