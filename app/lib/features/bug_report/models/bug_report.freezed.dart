@@ -78,10 +78,11 @@ class _$BugReportCopyWithImpl<$Res, $Val extends BugReport>
 }
 
 /// @nodoc
-abstract class _$$_BugReportCopyWith<$Res> implements $BugReportCopyWith<$Res> {
-  factory _$$_BugReportCopyWith(
-          _$_BugReport value, $Res Function(_$_BugReport) then) =
-      __$$_BugReportCopyWithImpl<$Res>;
+abstract class _$$BugReportImplCopyWith<$Res>
+    implements $BugReportCopyWith<$Res> {
+  factory _$$BugReportImplCopyWith(
+          _$BugReportImpl value, $Res Function(_$BugReportImpl) then) =
+      __$$BugReportImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -92,11 +93,11 @@ abstract class _$$_BugReportCopyWith<$Res> implements $BugReportCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_BugReportCopyWithImpl<$Res>
-    extends _$BugReportCopyWithImpl<$Res, _$_BugReport>
-    implements _$$_BugReportCopyWith<$Res> {
-  __$$_BugReportCopyWithImpl(
-      _$_BugReport _value, $Res Function(_$_BugReport) _then)
+class __$$BugReportImplCopyWithImpl<$Res>
+    extends _$BugReportCopyWithImpl<$Res, _$BugReportImpl>
+    implements _$$BugReportImplCopyWith<$Res> {
+  __$$BugReportImplCopyWithImpl(
+      _$BugReportImpl _value, $Res Function(_$BugReportImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -107,7 +108,7 @@ class __$$_BugReportCopyWithImpl<$Res>
     Object? withLog = null,
     Object? withScreenshot = null,
   }) {
-    return _then(_$_BugReport(
+    return _then(_$BugReportImpl(
       description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -130,8 +131,8 @@ class __$$_BugReportCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_BugReport implements _BugReport {
-  const _$_BugReport(
+class _$BugReportImpl implements _BugReport {
+  const _$BugReportImpl(
       {required this.description,
       required final List<String> tags,
       this.withLog = false,
@@ -164,7 +165,7 @@ class _$_BugReport implements _BugReport {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_BugReport &&
+            other is _$BugReportImpl &&
             (identical(other.description, description) ||
                 other.description == description) &&
             const DeepCollectionEquality().equals(other._tags, _tags) &&
@@ -180,8 +181,8 @@ class _$_BugReport implements _BugReport {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_BugReportCopyWith<_$_BugReport> get copyWith =>
-      __$$_BugReportCopyWithImpl<_$_BugReport>(this, _$identity);
+  _$$BugReportImplCopyWith<_$BugReportImpl> get copyWith =>
+      __$$BugReportImplCopyWithImpl<_$BugReportImpl>(this, _$identity);
 }
 
 abstract class _BugReport implements BugReport {
@@ -189,7 +190,7 @@ abstract class _BugReport implements BugReport {
       {required final String description,
       required final List<String> tags,
       final bool withLog,
-      final bool withScreenshot}) = _$_BugReport;
+      final bool withScreenshot}) = _$BugReportImpl;
 
   @override
   String get description;
@@ -201,6 +202,6 @@ abstract class _BugReport implements BugReport {
   bool get withScreenshot;
   @override
   @JsonKey(ignore: true)
-  _$$_BugReportCopyWith<_$_BugReport> get copyWith =>
+  _$$BugReportImplCopyWith<_$BugReportImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -20,13 +20,16 @@ final chatStateProvider =
   (ref, convo) => ChatRoomNotifier(ref: ref, convo: convo),
 );
 
-final mediaChatStateProvider = StateNotifierProvider.family<MediaChatNotifier, MediaChatState, String>(
-      (ref, messageId) => MediaChatNotifier(ref: ref, messageId: messageId),
+final mediaChatStateProvider =
+    StateNotifierProvider.family<MediaChatNotifier, MediaChatState, String>(
+  (ref, messageId) => MediaChatNotifier(ref: ref, messageId: messageId),
 );
 
-final chatSearchValueProvider = StateProvider.autoDispose<String?>((ref) => null);
+final chatSearchValueProvider =
+    StateProvider.autoDispose<String?>((ref) => null);
 
-final searchedChatsProvider = FutureProvider.autoDispose<List<Convo>>((ref) async {
+final searchedChatsProvider =
+    FutureProvider.autoDispose<List<Convo>>((ref) async {
   final allRooms = ref.watch(chatsProvider);
   final searchValue = ref.watch(chatSearchValueProvider);
   if (searchValue == null || searchValue.isEmpty) {
