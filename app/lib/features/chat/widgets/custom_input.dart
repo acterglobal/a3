@@ -154,7 +154,9 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     repliedToMessage != null
-                        ? Consumer(builder: replyBuilder)
+                        ? Consumer(
+                            builder: (ctx, ref, child) => replyBuilder(roomId),
+                          )
                         : const SizedBox.shrink(),
                     if (repliedToMessage != null &&
                         chatInputState.replyWidget != null)
@@ -634,11 +636,12 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     }
   }
 
-  Widget replyBuilder(BuildContext context, WidgetRef ref, Widget? child) {
+  Widget replyBuilder(String roomId) {
     final roomId = widget.convo.getRoomIdStr();
     final chatInputState = ref.watch(chatInputProvider(roomId));
     final authorId = chatInputState.repliedToMessage!.author.id;
-    final replyProfile = ref.watch(memberProfileByIdProvider(authorId));
+    final replyProfile = ref
+        .watch(memberProfileByInfoProvider((userId: authorId, roomId: roomId)));
     final inputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     return Row(
       children: [
@@ -969,6 +972,7 @@ class _TextInputWidget extends ConsumerWidget {
                 final title = roomMember['display'] ?? authorId;
                 return ListTile(
                   leading: MentionProfileBuilder(
+                    roomId: roomId,
                     authorId: authorId,
                     title: title,
                   ),

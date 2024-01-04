@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,26 +8,25 @@ import 'package:path_provider/path_provider.dart';
 
 class MediaChatNotifier extends StateNotifier<MediaChatState> {
   final Ref ref;
-  final String messageId;
+  final ChatMessageInfo messageInfo;
   Convo? _convo;
 
   MediaChatNotifier({
-    required this.messageId,
+    required this.messageInfo,
     required this.ref,
   }) : super(const MediaChatState()) {
     _init();
   }
 
   void _init() async {
-    // FIXME: Remove currentConvoProvider - https://github.com/acterglobal/a3/issues/1244
-    _convo = await ref.read(currentConvoProvider.future);
+    _convo = await ref.read(chatProvider(messageInfo.roomId).future);
     if (_convo != null) {
       state = state.copyWith(
         mediaChatLoadingState: const MediaChatLoadingState.loading(),
       );
       try {
         //Get media path if already downloaded
-        final mediaPath = await _convo!.mediaPath(messageId, false);
+        final mediaPath = await _convo!.mediaPath(messageInfo.messageId, false);
         if (mediaPath.text() != null) {
           state = state.copyWith(
             mediaFile: File(mediaPath.text()!),
@@ -61,7 +61,7 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
       //Download media if media path is not available
       final tempDir = await getTemporaryDirectory();
       final result = await _convo!.downloadMedia(
-        messageId,
+        messageInfo.messageId,
         null,
         tempDir.path,
       );

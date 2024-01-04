@@ -23,17 +23,3 @@ class ProfileData {
     return avatarMem;
   }
 }
-
-class ChatWithProfileData {
-  final Convo chat;
-  final ProfileData profile;
-
-  const ChatWithProfileData(this.chat, this.profile);
-}
-
-class SpaceWithProfileData {
-  final Space space;
-  final ProfileData profile;
-
-  const SpaceWithProfileData(this.space, this.profile);
-}
