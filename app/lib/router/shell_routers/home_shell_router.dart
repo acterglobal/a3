@@ -236,7 +236,7 @@ List<RouteBase> makeHomeShellRoutes(ref) {
       path: Routes.spaceTasks.route,
       redirect: authGuardRedirect,
       pageBuilder: (context, state) {
-        ref.read(selectedTabKeyProvider.notifier).switchTo(const Key('tasks'));
+        tabKeyNotifier.switchTo(const Key('tasks'));
         return NoTransitionPage(
           key: state.pageKey,
           child: SpaceTasksPage(

@@ -1,5 +1,6 @@
 import 'dart:core';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:acter/features/tasks/widgets/all_tasks_done.dart';
 import 'package:acter/features/tasks/widgets/task_list_card.dart';
@@ -25,6 +26,9 @@ class SpaceTasksPage extends ConsumerWidget {
         padding: const EdgeInsets.all(20),
         child: CustomScrollView(
           slivers: [
+            SliverToBoxAdapter(
+              child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
+            ),
             SliverToBoxAdapter(
               child: Row(
                 children: [

@@ -5,6 +5,7 @@ import 'package:acter/features/space/pages/tasks_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
+import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
 import 'package:acter/features/tasks/dialogs/create_task_list_sheet.dart';
 import 'package:acter/features/tasks/pages/task_list_page.dart';
@@ -180,6 +181,7 @@ void tasksTests() {
     );
 
     await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    await t.ensureHasWidget<SpaceHeader>();
     // we see our entry now
     await find.text('Errands').should(findsOneWidget);
     await find.text('Buy milk').should(findsOneWidget);

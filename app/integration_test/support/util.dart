@@ -6,7 +6,6 @@ import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:acter/router/router.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'spaces.dart';
@@ -22,9 +21,13 @@ extension ActerUtil on ConvenientTest {
   }
 
   Future<void> ensureHasBackButton() async {
-    await find.byWidgetPredicate((widget) => widget is BackButton).should(
+    await ensureHasWidget<BackButton>();
+  }
+
+  Future<void> ensureHasWidget<T>() async {
+    await find.byWidgetPredicate((widget) => widget is T).should(
           findsOneWidget,
-          reason: 'Back button was expected but not found',
+          reason: '$T was expected but not found',
         );
   }
 
