@@ -74,7 +74,7 @@ class NotificationsListNotifier extends StateNotifier<NotificationListState>
       _poller = _listener!.listen((ev) {
         state = state.addNotification(ev);
       });
-      ref.onDispose(() => _poller != null ? _poller!.cancel() : null);
+      ref.onDispose(() => _poller?.cancel());
     }
   }
 

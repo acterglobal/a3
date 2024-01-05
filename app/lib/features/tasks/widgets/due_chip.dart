@@ -6,25 +6,35 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:intl/intl.dart';
 
-class DueChip extends StatelessWidget {
+class DueChip extends StatefulWidget {
   final Task task;
   final Widget? noneChild;
   final bool canChange;
   final TextStyle? baseTextStyle;
   final VisualDensity? visualDensity;
-  late DateTime? dueDate;
-  DueChip({
+
+  const DueChip({
     Key? key,
     required this.task,
     this.canChange = false,
     this.noneChild,
     this.baseTextStyle,
     this.visualDensity,
-  }) : super(key: key) {
-    final dueDateStr = task.dueDate();
+  }) : super(key: key);
+
+  @override
+  State<DueChip> createState() => _DueChipState();
+}
+
+class _DueChipState extends State<DueChip> {
+  DateTime? dueDate;
+
+  @override
+  void initState() {
+    super.initState();
+    final dueDateStr = widget.task.dueDate();
     if (dueDateStr != null) {
       dueDate = DateTime.parse(dueDateStr);
-      // FIXME: time of day support!?!
     } else {
       dueDate = null;
     }
@@ -32,7 +42,7 @@ class DueChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (canChange) {
+    if (widget.canChange) {
       return InkWell(
         child: inner(context),
         onTap: () async {
@@ -45,10 +55,11 @@ class DueChip extends StatelessWidget {
   }
 
   Widget inner(BuildContext context) {
-    final textStyle = baseTextStyle ?? Theme.of(context).textTheme.bodySmall!;
+    final textStyle =
+        widget.baseTextStyle ?? Theme.of(context).textTheme.bodySmall!;
     if (dueDate == null) {
-      if (noneChild != null) {
-        return noneChild!;
+      if (widget.noneChild != null) {
+        return widget.noneChild!;
       } else {
         return const SizedBox.shrink();
       }
@@ -69,12 +80,12 @@ class DueChip extends StatelessWidget {
     }
 
     return Chip(
-      visualDensity: visualDensity,
+      visualDensity: widget.visualDensity,
       label: Text(
         // FIXME: tooltip to show the full date?
         label ??
             'due: ${DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(dueDate!)}',
-        style: task.isDone() ? null : dueTheme,
+        style: widget.task.isDone() ? null : dueTheme,
       ),
     );
   }
@@ -89,7 +100,7 @@ class DueChip extends StatelessWidget {
     }
     EasyLoading.show(status: 'Updating due');
     try {
-      final updater = task.updateBuilder();
+      final updater = widget.task.updateBuilder();
       updater.dueDate(newDue.due.year, newDue.due.month, newDue.due.day);
       if (newDue.includeTime) {
         final seconds = newDue.due.hour * 60 * 60 +
@@ -97,7 +108,7 @@ class DueChip extends StatelessWidget {
             newDue.due.second;
         // adapt the timezone value
         updater.utcDueTimeOfDay(seconds + newDue.due.timeZoneOffset.inSeconds);
-      } else if (task.utcDueTimeOfDay() != null) {
+      } else if (widget.task.utcDueTimeOfDay() != null) {
         // we have one, we need to reset it
         updater.unsetUtcDueTimeOfDay();
       }

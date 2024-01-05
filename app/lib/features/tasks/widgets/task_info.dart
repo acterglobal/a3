@@ -146,7 +146,7 @@ class TaskTitle extends StatefulWidget {
   const TaskTitle({Key? key, required this.task}) : super(key: key);
 
   @override
-  _TaskTitleState createState() => _TaskTitleState();
+  State<TaskTitle> createState() => _TaskTitleState();
 }
 
 class _TaskTitleState extends State<TaskTitle> {
@@ -233,7 +233,7 @@ class TaskBody extends StatefulWidget {
   const TaskBody({Key? key, required this.task}) : super(key: key);
 
   @override
-  _TaskBodyState createState() => _TaskBodyState();
+  State<TaskBody> createState() => _TaskBodyState();
 }
 
 class _TaskBodyState extends State<TaskBody> {

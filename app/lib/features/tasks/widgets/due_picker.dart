@@ -42,7 +42,7 @@ class DuePicker extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _DuePickerState createState() => _DuePickerState();
+  State<DuePicker> createState() => _DuePickerState();
 
   static Future<PickedDue?> showPicker({
     required BuildContext context,
