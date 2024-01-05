@@ -216,11 +216,10 @@ class MemberNotFound extends Error {}
 
 class RoomNotFound extends Error {}
 
-class RoomMemberQuery {
-  final String roomId;
-  final String userId;
-  const RoomMemberQuery(this.roomId, this.userId);
-}
+typedef RoomMemberQuery = ({
+  String roomId,
+  String userId,
+});
 
 final roomMemberProvider = FutureProvider.autoDispose
     .family<ProfileData, RoomMemberQuery>((ref, query) async {

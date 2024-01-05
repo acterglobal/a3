@@ -4,19 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AvatarBuilder extends ConsumerWidget {
-  late RoomMemberQuery query;
+  final String roomId;
+  final String userId;
 
-  AvatarBuilder({
+  const AvatarBuilder({
     Key? key,
-    userId,
-    roomId,
-  }) : super(key: key) {
-    query = RoomMemberQuery(roomId, userId);
-  }
+    required this.userId,
+    required this.roomId,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final memberProfile = ref.watch(roomMemberProvider(query));
+    final memberProfile =
+        ref.watch(roomMemberProvider((userId: userId, roomId: roomId)));
     return memberProfile.when(
       data: (profile) {
         return Padding(
@@ -24,8 +24,8 @@ class AvatarBuilder extends ConsumerWidget {
           child: ActerAvatar(
             mode: DisplayMode.DM,
             avatarInfo: AvatarInfo(
-              uniqueId: query.userId,
-              displayName: profile.displayName ?? query.userId,
+              uniqueId: userId,
+              displayName: profile.displayName ?? userId,
               avatar: profile.getAvatarImage(),
             ),
             size: 14,
@@ -38,8 +38,7 @@ class AvatarBuilder extends ConsumerWidget {
           padding: const EdgeInsets.only(right: 10),
           child: ActerAvatar(
             mode: DisplayMode.DM,
-            avatarInfo:
-                AvatarInfo(uniqueId: query.userId, displayName: query.userId),
+            avatarInfo: AvatarInfo(uniqueId: userId, displayName: userId),
             size: 14,
           ),
         );
@@ -48,8 +47,7 @@ class AvatarBuilder extends ConsumerWidget {
         padding: const EdgeInsets.only(right: 10),
         child: ActerAvatar(
           mode: DisplayMode.DM,
-          avatarInfo:
-              AvatarInfo(uniqueId: query.userId, displayName: query.userId),
+          avatarInfo: AvatarInfo(uniqueId: userId, displayName: userId),
           size: 14,
         ),
       ),
