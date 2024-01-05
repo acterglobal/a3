@@ -511,17 +511,9 @@ async fn request_verification_handler(
         request.other_user_id()
     );
     if let Some(methods) = methods {
-        let result = request.accept_with_methods(methods).await;
-        if let Err(e) = result {
-            error!("Unable to accept verification request with methods");
-            return Err(e.into());
-        }
+        request.accept_with_methods(methods).await?;
     } else {
-        let result = request.accept().await;
-        if let Err(e) = result {
-            error!("Unable to accept verification request without methods");
-            return Err(e.into());
-        }
+        request.accept().await?;
     }
 
     let mut stream = request.changes();
@@ -697,9 +689,7 @@ async fn sas_verification_handler(
         &sas.other_device().user_id(),
         &sas.other_device().device_id()
     );
-    if let Err(e) = sas.accept().await {
-        return Err(e.into());
-    }
+    sas.accept().await?;
 
     let mut stream = sas.changes();
 
