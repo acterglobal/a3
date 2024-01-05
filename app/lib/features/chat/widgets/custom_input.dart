@@ -8,6 +8,7 @@ import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/features/chat/chat_utils/chat_utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/chat_attachment_options.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
@@ -474,35 +475,15 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
         final aTagElementList = document.getElementsByTagName('a');
 
         for (final aTagElement in aTagElementList) {
-          // Get 'A Tag' href link
-          final hrefLink = aTagElement.attributes['href'] ?? '';
+          final userMentionMessageData =
+              parseUserMentionMessage(msg, aTagElement);
+          msg = userMentionMessageData.parsedMessage;
 
-          //Check for mentioned user link
-          final mentionedUserLinkRegex = RegExp(
-            r'https://matrix.to/#/(?<alias>.+):(?<server>.+)',
-          );
-          final mentionedUserLink = mentionedUserLinkRegex.firstMatch(hrefLink);
-
-          if (mentionedUserLink != null) {
-            //Get Username from mentioned user link
-            final alias = mentionedUserLink.namedGroup('alias') ?? '';
-            final server = mentionedUserLink.namedGroup('server') ?? '';
-            final userName = '$alias:$server';
-
-            //Get Display name from mentioned user link
-            final displayName = aTagElement.text;
-
-            // Replace displayName with @displayName
-            msg = msg.replaceAll(
-              aTagElement.outerHtml,
-              '@$displayName',
-            );
-
-            // Adding mentions data
-            ref
-                .read(chatInputProvider(roomId).notifier)
-                .addMention(displayName, userName);
-          }
+          // Adding mentions data
+          ref.read(chatInputProvider(roomId).notifier).addMention(
+                userMentionMessageData.displayName,
+                userMentionMessageData.userName,
+              );
         }
 
         // Parse data
