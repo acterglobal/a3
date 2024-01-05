@@ -168,7 +168,7 @@ class _UserReceiptsWidget extends ConsumerWidget {
                     radius: 8,
                     child: Text(
                       '+${seenList.length - subList.length}',
-                      textScaleFactor: 0.4,
+                      textScaler: const TextScaler.linear(0.4),
                     ),
                   ),
                 ]
