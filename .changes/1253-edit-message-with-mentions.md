@@ -1,1 +1,1 @@
-- [fix] Html content related issues are now fixed while an editing message (With user mentioned data).
+- [fix] Editing chat message with user mention doesn't expose HTML anymore
