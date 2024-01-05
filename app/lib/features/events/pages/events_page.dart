@@ -18,7 +18,6 @@ class EventsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final upcoming = ref.watch(myUpcomingEventsProvider);
     final past = ref.watch(myPastEventsProvider);
-    final size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.neutral,
       body: CustomScrollView(
@@ -39,12 +38,10 @@ class EventsPage extends ConsumerWidget {
                 onPressed: () => context.pushNamed(Routes.createEvent.name),
               ),
             ],
-            expandedContent: size.width <= 600
-                ? null
-                : Text(
-                    'Calendar events from all the Spaces you are part of',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
+            expandedContent: Text(
+              'Calendar events from all the Spaces you are part of',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           ),
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),

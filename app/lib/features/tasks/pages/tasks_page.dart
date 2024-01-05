@@ -35,8 +35,10 @@ class TasksPage extends ConsumerWidget {
                 },
               ),
             ],
-            expandedContent: const Text(
+            expandedContent: Text(
               'ToDo Lists and Tasks of all your spaces can be found here',
+              softWrap: true,
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
           taskLists.when(
