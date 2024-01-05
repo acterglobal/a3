@@ -7,6 +7,7 @@ import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:acter/router/router.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'spaces.dart';
 
@@ -20,8 +21,18 @@ extension ActerUtil on ConvenientTest {
     }
   }
 
-  Future<void> fillForm(Map<Key, String> fields,
-      {Key? submitBtnKey, String? selectSpaceId,}) async {
+  Future<void> ensureHasBackButton() async {
+    await find.byWidgetPredicate((widget) => widget is BackButton).should(
+          findsOneWidget,
+          reason: 'Back button was expected but not found',
+        );
+  }
+
+  Future<void> fillForm(
+    Map<Key, String> fields, {
+    Key? submitBtnKey,
+    String? selectSpaceId,
+  }) async {
     for (final entry in fields.entries) {
       final textField = find.byKey(entry.key);
       await tester.ensureVisible(textField);

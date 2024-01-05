@@ -69,7 +69,7 @@ class _CreateTaskListSheetConsumerState
           return;
         }
         Navigator.of(context, rootNavigator: true).pop();
-        context.goNamed(
+        context.pushNamed(
           Routes.taskList.name,
           pathParameters: {'taskListId': taskListId.toString()},
         );
@@ -157,13 +157,10 @@ class _CreateTaskListSheetConsumerState
             await submitForm(context);
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: _titleController.text.isNotEmpty
-                ? Theme.of(context).colorScheme.success
-                : Theme.of(context).colorScheme.success.withOpacity(0.6),
+            backgroundColor: Theme.of(context).colorScheme.success,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6),
             ),
-            foregroundColor: Theme.of(context).colorScheme.neutral6,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ),
           child: const Text('Create task list'),

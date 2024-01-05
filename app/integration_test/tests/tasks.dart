@@ -71,6 +71,7 @@ extension ActerTasks on ConvenientTest {
     final inlineAddBtn =
         find.byKey(Key('task-list-$taskListId-add-task-inline'));
     await inlineAddBtn.should(findsOneWidget);
+    await ensureHasBackButton();
     if (tasks != null) {
       await inlineAddBtn.tap(); // activate inline add
       final inlineAddTxt =
