@@ -11,19 +11,17 @@ class TaskPage extends ConsumerWidget {
   static const taskListTitleKey = Key('task-list-title');
   final String taskListId;
   final String taskId;
-  late TaskQuery query;
-  TaskPage({
+  const TaskPage({
     required this.taskListId,
     required this.taskId,
     super.key,
-  }) {
-    query = TaskQuery(taskListId, taskId);
-  }
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final taskList = ref.watch(taskListProvider(taskListId));
-    final task = ref.watch(taskProvider(query));
+    final task =
+        ref.watch(taskProvider((taskListId: taskListId, taskId: taskId)));
     return Scaffold(
       appBar: AppBar(
         title: Wrap(

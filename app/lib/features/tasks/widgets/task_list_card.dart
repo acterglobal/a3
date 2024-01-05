@@ -181,14 +181,7 @@ class _InlineTaskAdd extends StatefulWidget {
 class _InlineTaskAddState extends State<_InlineTaskAdd> {
   final _formKey = GlobalKey<FormState>();
   final _textCtrl = TextEditingController();
-  late FocusNode focusNode;
-
-  @override
-  void initState() {
-    super.initState();
-    focusNode = FocusNode();
-    focusNode.requestFocus();
-  }
+  final FocusNode focusNode = FocusNode();
 
   @override
   void dispose() {
@@ -204,6 +197,7 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
       child: TextFormField(
         key: Key('task-list-$tlId-add-task-inline-txt'),
         focusNode: focusNode,
+        autofocus: true,
         controller: _textCtrl,
         decoration: InputDecoration(
           prefixIcon: const Icon(Atlas.plus_circle_thin),

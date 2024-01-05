@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/user_chip.dart';
@@ -25,7 +26,6 @@ class TaskInfo extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDone = task.isDone();
-    final roomId = task.roomIdStr();
 
     return Column(
       children: [
@@ -92,6 +92,7 @@ class TaskInfo extends ConsumerWidget {
 
   ListTile buildAssignees(BuildContext context, WidgetRef ref) {
     final assignees = task.assigneesStr().map((s) => s.toDartString()).toList();
+    final account = ref.watch(accountProvider);
     final roomId = task.roomIdStr();
 
     return ListTile(
@@ -106,22 +107,23 @@ class TaskInfo extends ConsumerWidget {
                   visualDensity: VisualDensity.compact,
                   roomId: roomId,
                   memberId: userId,
+                  deleteIcon:
+                      const Icon(Atlas.xmark_circle_thin, key: selfUnassignKey),
+                  onDeleted: account.hasValue &&
+                          account.value!.userId().toString() == userId
+                      ? () async {
+                          await task.unassignSelf();
+                          EasyLoading.showToast(
+                            'assignment withdrawn',
+                            toastPosition: EasyLoadingToastPosition.bottom,
+                          );
+                        }
+                      : null,
                 ),
               )
               .toList(),
-          task.isAssignedToMe()
+          !task.isAssignedToMe()
               ? ActionChip(
-                  key: selfUnassignKey,
-                  label: const Text('withdraw'),
-                  onPressed: () async {
-                    await task.unassignSelf();
-                    EasyLoading.showToast(
-                      'assignment withdrawn',
-                      toastPosition: EasyLoadingToastPosition.bottom,
-                    );
-                  },
-                )
-              : ActionChip(
                   key: selfAssignKey,
                   label: const Text('volunteer'),
                   onPressed: () async {
@@ -131,7 +133,8 @@ class TaskInfo extends ConsumerWidget {
                       toastPosition: EasyLoadingToastPosition.bottom,
                     );
                   },
-                ),
+                )
+              : const SizedBox.shrink(),
         ],
       ),
     );

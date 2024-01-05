@@ -16,13 +16,13 @@ class MyOpenTasksNotifier extends AsyncNotifier<List<Task>> {
     _subscriber = client.subscribeMyOpenTasksStream();
     _listener = _subscriber.listen((element) async {
       state = await AsyncValue.guard(() async {
-        return await refresh(client);
+        return await fetchMyOpenTask(client);
       });
     });
-    return await refresh(client);
+    return await fetchMyOpenTask(client);
   }
 
-  Future<List<Task>> refresh(Client client) async {
+  Future<List<Task>> fetchMyOpenTask(Client client) async {
     return (await client.myOpenTasks()).toList();
   }
 }

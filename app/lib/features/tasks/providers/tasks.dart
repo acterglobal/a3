@@ -11,11 +11,7 @@ final tasksProvider =
 
 class TaskNotFound extends Error {}
 
-class TaskQuery {
-  final String taskListId;
-  final String taskId;
-  const TaskQuery(this.taskListId, this.taskId);
-}
+typedef TaskQuery = ({String taskListId, String taskId});
 
 final notifierTaskProvider =
     AsyncNotifierProvider.family<TaskNotifier, Task, Task>(() {
