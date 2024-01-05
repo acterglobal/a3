@@ -5,15 +5,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AvatarBuilder extends ConsumerWidget {
   final String userId;
+  final String roomId;
 
   const AvatarBuilder({
     Key? key,
     required this.userId,
+    required this.roomId,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final memberProfile = ref.watch(memberProfileByIdProvider(userId));
+    final memberProfile = ref
+        .watch(memberProfileByInfoProvider((userId: userId, roomId: roomId)));
     return memberProfile.when(
       data: (profile) {
         return Padding(
