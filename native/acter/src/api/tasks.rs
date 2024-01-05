@@ -456,8 +456,7 @@ impl TaskList {
 
     pub async fn task(&self, task_id: String) -> Result<Task> {
         let event_id = ruma::EventId::parse(task_id)?;
-        self
-            .tasks_with_filter(move |t| t.event_id() == event_id)
+        self.tasks_with_filter(move |t| t.event_id() == event_id)
             .await?
             .into_iter()
             .next()
