@@ -1,5 +1,6 @@
 use dashmap::{mapref::one::RefMut, DashMap, DashSet};
 use matrix_sdk::Client;
+use ruma_common::{OwnedUserId, UserId};
 use std::{iter::FromIterator, sync::Arc};
 use tracing::{debug, instrument, trace, warn};
 
@@ -12,6 +13,7 @@ use crate::{
 pub struct Store {
     pub(crate) client: Client,
     fresh: bool,
+    user_id: OwnedUserId,
     models: Arc<DashMap<String, AnyActerModel>>,
     indizes: Arc<DashMap<String, Vec<String>>>,
     dirty: Arc<DashSet<String>>,
@@ -38,6 +40,10 @@ impl Store {
         get_from_store(self.client.clone(), key).await
     }
 
+    pub fn user_id(&self) -> &UserId {
+        &self.user_id
+    }
+
     pub async fn set_raw<T: serde::Serialize>(&self, key: &str, value: &T) -> Result<()> {
         trace!(key, "set_raw");
         self.client
@@ -51,6 +57,16 @@ impl Store {
     }
 
     pub async fn new(client: Client) -> Result<Self> {
+        let user_id = client.user_id().ok_or(Error::ClientNotLoggedIn)?.to_owned();
+        Self::new_inner(client, user_id).await
+    }
+
+    #[cfg(test)]
+    pub(crate) async fn new_with_auth(client: Client, user_id: OwnedUserId) -> Result<Self> {
+        Self::new_inner(client, user_id).await
+    }
+
+    async fn new_inner(client: Client, user_id: OwnedUserId) -> Result<Self> {
         let ver = client
             .store()
             .get_custom_value(DB_VERSION_KEY.as_bytes())
@@ -78,6 +94,7 @@ impl Store {
             return Ok(Store {
                 fresh: true,
                 client,
+                user_id,
                 indizes: Default::default(),
                 models: Default::default(),
                 dirty: Default::default(),
@@ -117,8 +134,6 @@ impl Store {
             vec![]
         };
 
-        let user_id = client.user_id().ok_or(Error::ClientNotLoggedIn)?;
-
         let indizes = DashMap::new();
         let mut models_sources = Vec::new();
         for m in models_vec {
@@ -127,7 +142,7 @@ impl Store {
                 continue
             };
             let key = m.event_id().to_string();
-            for idx in m.indizes(user_id) {
+            for idx in m.indizes(&user_id) {
                 let mut r: RefMut<String, Vec<String>> = indizes.entry(idx).or_default();
                 r.value_mut().push(key.clone())
             }
@@ -139,6 +154,7 @@ impl Store {
         Ok(Store {
             fresh: false,
             client,
+            user_id,
             indizes: Arc::new(indizes),
             models: Arc::new(models),
             dirty: Default::default(),
@@ -150,7 +166,7 @@ impl Store {
         let listing = if let Some(r) = self.indizes.get(key) {
             r.value().clone()
         } else {
-            debug!(user=?self.client.user_id(), key, "No list found");
+            debug!(user=?self.user_id, key, "No list found");
             vec![]
         };
         let models = self.models.clone();
@@ -178,12 +194,12 @@ impl Store {
     #[instrument(skip(self))]
     pub async fn save_model_inner(&self, mdl: AnyActerModel) -> Result<Vec<String>> {
         let key = mdl.event_id().to_string();
-        let user_id = self.client.user_id().ok_or(Error::ClientNotLoggedIn)?;
+        let user_id = self.user_id();
         let mut keys_changed = vec![key.clone()];
         trace!(user = ?user_id, key, "saving");
         let mut indizes = mdl.indizes(user_id);
         if let Some(prev) = self.models.insert(key.clone(), mdl) {
-            trace!(user=?self.client.user_id(), key, "previous model found");
+            trace!(user=?self.user_id, key, "previous model found");
             let mut remove_idzs = Vec::new();
             for idz in prev.indizes(user_id) {
                 if let Some(idx) = indizes.iter().position(|i| i == &idz) {
@@ -201,16 +217,16 @@ impl Store {
             }
         }
         for idx in indizes.into_iter() {
-            trace!(user = ?self.client.user_id(), idx, key, exists=self.indizes.contains_key(&idx), "adding to index");
+            trace!(user = ?self.user_id, idx, key, exists=self.indizes.contains_key(&idx), "adding to index");
             self.indizes
                 .entry(idx.clone())
                 .or_default()
                 .value_mut()
                 .push(key.clone());
-            trace!(user = ?self.client.user_id(), idx, key, "added to index");
+            trace!(user = ?self.user_id, idx, key, "added to index");
             keys_changed.push(idx);
         }
-        trace!(user=?self.client.user_id(), key, ?keys_changed, "saved");
+        trace!(user=?self.user_id, key, ?keys_changed, "saved");
         self.dirty.insert(key);
         Ok(keys_changed)
     }
@@ -245,7 +261,6 @@ impl Store {
         for key in dirty {
             if let Some(r) = self.models.get(&key) {
                 trace!(?key, "syncing");
-                // FIXME: parallize
                 client_store
                     .set_custom_value(
                         format!("acter:{key}").as_bytes(),
