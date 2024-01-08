@@ -6,6 +6,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/cli/main.dart';
 import 'package:acter/l10n/l10n.dart';
 import 'package:acter/router/providers/router_providers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 void main(List<String> args) async {
   if (args.isNotEmpty) {
@@ -42,6 +44,10 @@ Future<void> startApp() async {
 Future<void> startAppInner(Widget app) async {
   await initializeNotifications();
   await initLogging();
+
+  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+    await InAppWebViewController.setWebContentsDebuggingEnabled(kDebugMode);
+  }
   runApp(app);
 }
 

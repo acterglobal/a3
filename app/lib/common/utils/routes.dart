@@ -53,6 +53,7 @@ enum Routes {
   spaceEvents('/:spaceId([!#][^/]+)/events'),
   spaceChats('/:spaceId([!#][^/]+)/chats'),
   spaceTasks('/:spaceId([!#][^/]+)/tasks'),
+  spaceWidgets('/:spaceId([!#][^/]+)/widgets'),
   // -- space Settings
   spaceSettings('/:spaceId([!#][^/]+)/settings'),
   spaceSettingsApps('/:spaceId([!#][^/]+)/settings/app'),

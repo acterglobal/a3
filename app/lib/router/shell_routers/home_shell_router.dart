@@ -16,6 +16,7 @@ import 'package:acter/features/settings/pages/sessions_page.dart';
 import 'package:acter/features/settings/super_invites/pages/super_invites.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/pages/events_page.dart';
+import 'package:acter/features/space/pages/matrix_widget.dart';
 import 'package:acter/features/space/pages/members_page.dart';
 import 'package:acter/features/space/pages/overview_page.dart';
 import 'package:acter/features/space/pages/pins_page.dart';
@@ -238,6 +239,22 @@ List<RouteBase> makeHomeShellRoutes(ref) {
         return NoTransitionPage(
           key: state.pageKey,
           child: SpaceTasksPage(
+            spaceIdOrAlias: state.pathParameters['spaceId']!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.spaceWidgets.name,
+      path: Routes.spaceWidgets.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        ref
+            .read(selectedTabKeyProvider.notifier)
+            .switchTo(const Key('widgets'));
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: SpaceWidgets(
             spaceIdOrAlias: state.pathParameters['spaceId']!,
           ),
         );

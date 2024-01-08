@@ -86,6 +86,15 @@ final tabsProvider =
 
   tabs.add(
     TabEntry(
+      key: const Key('widgets'),
+      label: 'Widgets',
+      makeIcon: (ctx) => const Icon(Atlas.plugin_thin),
+      target: Routes.spaceWidgets.name,
+    ),
+  );
+
+  tabs.add(
+    TabEntry(
       key: TabEntry.chatsKey,
       label: 'Chats',
       makeIcon: (ctx) => const Icon(Atlas.chats_thin),
