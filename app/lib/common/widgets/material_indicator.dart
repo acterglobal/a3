@@ -1,5 +1,6 @@
 /// This file is taken from https://github.com/adar2378/tab_indicator_styler and all credits
 /// goes to the developer of the library.
+library;
 
 import 'package:flutter/material.dart';
 

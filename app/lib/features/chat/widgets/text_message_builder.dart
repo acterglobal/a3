@@ -18,12 +18,12 @@ class TextMessageBuilder extends ConsumerStatefulWidget {
   final bool isReply;
 
   const TextMessageBuilder({
-    Key? key,
+    super.key,
     required this.convo,
     required this.message,
     this.isReply = false,
     required this.messageWidth,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<TextMessageBuilder> createState() =>

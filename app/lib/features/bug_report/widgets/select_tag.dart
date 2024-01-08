@@ -24,7 +24,7 @@ class SelectTag extends ConsumerWidget {
     'wontfix',
   ];
 
-  SelectTag({Key? key}) : super(key: key);
+  SelectTag({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

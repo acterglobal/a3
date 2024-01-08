@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class TasksPage extends ConsumerWidget {
-  const TasksPage({Key? key}) : super(key: key);
+  const TasksPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

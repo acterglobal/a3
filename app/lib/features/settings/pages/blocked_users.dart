@@ -10,8 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AddUserToBlock extends StatefulWidget {
   const AddUserToBlock({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<AddUserToBlock> createState() => _AddUserToBlockState();

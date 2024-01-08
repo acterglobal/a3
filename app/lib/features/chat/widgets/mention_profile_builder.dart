@@ -9,11 +9,11 @@ class MentionProfileBuilder extends ConsumerWidget {
   final String title;
 
   const MentionProfileBuilder({
-    Key? key,
+    super.key,
     required this.roomId,
     required this.authorId,
     required this.title,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -9,10 +9,10 @@ class CustomMessageBuilder extends StatelessWidget {
   final int messageWidth;
 
   const CustomMessageBuilder({
-    Key? key,
+    super.key,
     required this.message,
     required this.messageWidth,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -8,7 +8,7 @@ import 'package:jiffy/jiffy.dart';
 
 class TaskEntry extends ConsumerWidget {
   final Task task;
-  const TaskEntry({Key? key, required this.task}) : super(key: key);
+  const TaskEntry({super.key, required this.task});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
