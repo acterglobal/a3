@@ -116,7 +116,7 @@ impl ThreePidManager {
                     .context("That email address was not registered")?;
                 let user_id = client
                     .user_id()
-                    .context("user must be logged in")?
+                    .context("You must be logged in to do that")?
                     .to_string();
                 let session_id = record.session_id();
                 let passphrase = record.passphrase();
@@ -196,7 +196,7 @@ impl ThreePidManager {
                 }
                 let user_id = client
                     .user_id()
-                    .context("user must be logged in")?
+                    .context("You must be logged in to do that")?
                     .to_string();
                 // try again with password
                 // FIXME: this shouldn't be hardcoded but use an Actual IUAA-flow

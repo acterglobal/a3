@@ -40,16 +40,16 @@ _not yet supported_ [tracking issue here](https://github.com/acterglobal/a3/issu
 
 Linux stable releases are available via [flatpak](https://www.flatpak.org/) in our own flatpak repo. Most modern Linux distribution ship with flatpak preinstalled, if not [learn how to set it up for you here](https://www.flatpak.org/setup/).
 
-To add the acter repo to your local setup, run:
+To install acter through our own flatpak repo via:
 
 ```
-flatpak remote-add acter https://acterglobal.github.io/a3-flatpak/acter.flatpakrepo
+flatpak install --user https://acterglobal.github.io/a3-flatpak/acter.flatpakref
 ```
 
-Now you can install (and update) the latest acter by running:
+And you can update it later via
 
 ```
-flatpak install --or-update acter global.acter.a3
+flatpak update global.acter.a3
 ```
 
 ---

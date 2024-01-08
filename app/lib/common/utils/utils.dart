@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:async';
 
+import 'package:acter/common/models/profile_data.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jiffy/jiffy.dart';
@@ -290,3 +291,8 @@ const List<(RSVP, String)> rsvpOptions = <(RSVP, String)>[
   (RSVP.Maybe, 'Maybe'),
   (RSVP.Yes, 'Yes'),
 ];
+
+typedef ChatWithProfileData = ({Convo chat, ProfileData profile});
+typedef SpaceWithProfileData = ({Space space, ProfileData profile});
+typedef MemberInfo = ({String userId, String? roomId});
+typedef ChatMessageInfo = ({String messageId, String roomId});

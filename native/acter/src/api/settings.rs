@@ -133,7 +133,7 @@ impl Room {
                 let content = room
                     .get_state_event_static::<RoomPowerLevelsEventContent>()
                     .await?
-                    .context("No Power levels set")?
+                    .context("Power levels not set up")?
                     .deserialize()?;
                 Ok(content.power_levels())
             })
@@ -146,7 +146,7 @@ impl Room {
         power_level: Option<i32>,
     ) -> Result<bool> {
         if !self.is_joined() {
-            bail!("You can't update a space you aren't part of");
+            bail!("Unable to update a space you aren't part of");
         }
         let mut current_power_levels = self.power_levels_content().await?;
         let mut updated = false;
@@ -177,7 +177,7 @@ impl Room {
             .await?
             .can(crate::MemberPermission::CanUpdatePowerLevels)
         {
-            bail!("You don't have permissions to change the power levels");
+            bail!("No permissions to change the power levels");
         }
 
         let client = self.room.client().clone();
@@ -222,12 +222,12 @@ impl Room {
             .await?
             .can(crate::MemberPermission::CanChangeAppSettings)
         {
-            bail!("You don't have permissions to change the app settings");
+            bail!("No permissions to change the app settings");
         }
 
         let client = self.room.client().clone();
         if !self.is_joined() {
-            bail!("You can't update a space you aren't part of");
+            bail!("Unable to update a space you aren't part of");
         }
         let room = self.room.clone();
 

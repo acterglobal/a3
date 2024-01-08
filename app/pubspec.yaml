@@ -85,6 +85,7 @@ dependencies:
   settings_ui: '2.0.2'
 
   # Utilities
+  html: ^0.15.4
   path_provider: ^2.0.8
   path: ^1.8.3
   url_launcher: ^6.1.10

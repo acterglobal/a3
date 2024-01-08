@@ -20,7 +20,7 @@ async fn load_pending_invitation() -> Result<()> {
 
     let tmp_dir = TempDir::new()?;
     let mut sisko = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
+        tmp_dir.path().to_string_lossy().to_string(),
         "@sisko".to_string(),
         default_user_password("sisko"),
         homeserver_name.clone(),
@@ -32,7 +32,7 @@ async fn load_pending_invitation() -> Result<()> {
 
     let tmp_dir = TempDir::new()?;
     let mut kyra = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_string(),
+        tmp_dir.path().to_string_lossy().to_string(),
         "@kyra".to_string(),
         default_user_password("kyra"),
         homeserver_name.clone(),
