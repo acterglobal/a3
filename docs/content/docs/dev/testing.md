@@ -108,7 +108,7 @@ sudo apt install matrix-synapse-py3
 
 At the end of `sudo apt install matrix-synapse-py3`, you will get the following dialog.
 
-![Ubuntu ServerName](/images/ubuntu-servername.png)
+![Ubuntu ServerName](../../../static/images/ubuntu-servername.png)
 
 Keep `localhost` in this dialog, that is domain applied to all users in `acter-test`.
 `server_name` in `/etc/matrix-synapse/homeserver.yaml` seems to not affect synapse config and the setting of this dialog during installation affects synapse config clearly.
@@ -186,7 +186,7 @@ You needn't to add `admin` user with `register_new_matrix_user`.
 
 If you are running synapse on a virtual or remote machine and API call is not working, you can update the firewall rules to allow access to the ports. To turn off the public profile of a server firewall on a `Ubuntu` linux, you can use `gufw` and disable it like so:
 
-![Ubuntu Firewall](/images/ubuntu-firewall.png)
+![Ubuntu Firewall](../../../static/images/ubuntu-firewall.png)
 
 </details>
 
@@ -210,7 +210,7 @@ sudo apt install matrix-synapse-py3
 
 At the end of `sudo apt install matrix-synapse-py3`, you will get the following dialog.
 
-![Ubuntu ServerName](/images/ubuntu-servername.png)
+![Ubuntu ServerName](../../../static/images/ubuntu-servername.png)
 
 Keep `localhost` in this dialog, that is domain applied to all users in `acter-test`.
 `server_name` in `homeserver.yaml` seems to not affect synapse config and the setting of this dialog during installation affects synapse config clearly.
@@ -338,7 +338,7 @@ You needn't to add `admin` user with `register_new_matrix_user`.
 
 If you are running synapse on a virtual or remote machine and API call is not working, you can update the firewall rules to allow access to the ports. To turn off the public profile of a server firewall on a `Ubuntu` linux, you can use `gufw` and disable it like so:
 
-![Ubuntu Firewall](/images/ubuntu-firewall.png)
+![Ubuntu Firewall](../../../static/images/ubuntu-firewall.png)
 
 </details>
 
@@ -465,4 +465,4 @@ That will create a folder with the entire report in your `$TMPFOLDER/ConvenientT
 
 If you have the [Flutter extension for vscode](https://marketplace.visualstudio.com/items?itemName=Dart-Code.flutter) you can also run the `Run Integration Tests (acter)` launch commend from within your VSCode to run the tests directly or use the `Run Local Integration Tests` on the specific test from within your editor. To **debug** an integration tests, use the `Debug Integration Tests (acter)` on the specific test from within the editor - which allows you to add breakpoints and debugging widgets as usual:
 
-![](/images/integration-tests-debug-vscode-example.png)
+![](../../../static/images/integration-tests-debug-vscode-example.png)
