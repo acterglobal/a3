@@ -1,6 +1,5 @@
 import 'dart:core';
 
-import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/tasks/models/tasks.dart';
@@ -20,11 +19,12 @@ final myOpenTasksProvider =
 
         final space = tl.space();
         final profile = await ref.watch(spaceProfileDataProvider(space).future);
+
         myTasks.add(
           TaskBrief(
             task: task,
             taskList: tl,
-            space: SpaceWithProfileData(space, profile),
+            space: (space: space, profile: profile),
           ),
         );
         // }
