@@ -86,9 +86,7 @@ impl Client {
                 let AnyActerModel::Pin(t) = client.store().get(&pin_id).await? else {
                     bail!("Ping not found");
                 };
-                let room = client
-                    .get_room(t.room_id())
-                    .context("Room of pin not found")?;
+                let room = client.get_room(t.room_id()).context("Room not found")?;
                 Ok(Pin {
                     client,
                     room,
@@ -461,7 +459,7 @@ impl PinUpdateBuilder {
 impl Space {
     pub fn pin_draft(&self) -> Result<PinDraft> {
         if !self.is_joined() {
-            bail!("You can't create pins for spaces we are not part on");
+            bail!("Unable to create pins for spaces we are not part on");
         }
         Ok(PinDraft {
             client: self.client.clone(),
@@ -472,7 +470,7 @@ impl Space {
 
     pub fn pin_draft_with_builder(&self, content: PinBuilder) -> Result<PinDraft> {
         if !self.is_joined() {
-            bail!("You can't create pins for spaces we are not part on");
+            bail!("Unable to create pins for spaces we are not part on");
         }
         Ok(PinDraft {
             client: self.client.clone(),

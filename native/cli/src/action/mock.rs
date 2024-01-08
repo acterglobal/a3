@@ -385,7 +385,7 @@ impl<'a> Mock<'a> {
         std::fs::create_dir_all(".local")?;
 
         futures::future::try_join_all(self.users.values().map(|cl| async move {
-            let full_username = cl.user_id().expect("You seem to be not logged in");
+            let full_username = cl.user_id().expect("UserId needed");
             let user_export_file = sanitize(".local", &format!("mock_export_{full_username:}"));
 
             cl.sync_once(Default::default()).await?;

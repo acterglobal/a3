@@ -230,7 +230,7 @@ impl NewsSlide {
                         .info
                         .as_ref()
                         .and_then(|info| info.thumbnail_source.clone())
-                        .context("thumbnail source doesn't exist")?;
+                        .context("thumbnail source not found")?;
                     self.client.source_binary(source, Some(thumb_size)).await
                 }
                 None => {
@@ -253,7 +253,7 @@ impl NewsSlide {
                         .info
                         .as_ref()
                         .and_then(|info| info.thumbnail_source.clone())
-                        .context("thumbnail source doesn't exist")?;
+                        .context("thumbnail source not found")?;
                     self.client.source_binary(source, Some(thumb_size)).await
                 }
                 None => {
@@ -268,7 +268,7 @@ impl NewsSlide {
                         .info
                         .as_ref()
                         .and_then(|info| info.thumbnail_source.clone())
-                        .context("thumbnail source doesn't exist")?;
+                        .context("thumbnail source not found")?;
                     self.client.source_binary(source, Some(thumb_size)).await
                 }
                 None => {
@@ -285,7 +285,7 @@ impl NewsSlide {
                     .info
                     .as_ref()
                     .and_then(|info| info.thumbnail_source.clone())
-                    .context("thumbnail source doesn't exist")?;
+                    .context("thumbnail source not found")?;
                 self.client.source_binary(source, thumb_size).await
             }
         }
@@ -523,7 +523,7 @@ impl NewsEntryUpdateBuilder {
 impl Space {
     pub fn news_draft(&self) -> Result<NewsEntryDraft> {
         if !self.is_joined() {
-            bail!("You can't create news for spaces we are not part on");
+            bail!("Unable to create news for spaces we are not part on");
         }
         Ok(NewsEntryDraft {
             client: self.client.clone(),
@@ -535,7 +535,7 @@ impl Space {
 
     pub fn news_draft_with_builder(&self, content: NewsEntryBuilder) -> Result<NewsEntryDraft> {
         if !self.is_joined() {
-            bail!("You can't create news for spaces we are not part on");
+            bail!("Unable to create news for spaces we are not part on");
         }
         Ok(NewsEntryDraft {
             client: self.client.clone(),

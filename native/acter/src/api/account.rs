@@ -73,7 +73,7 @@ impl Account {
         RUNTIME
             .spawn(async move {
                 let guess = mime_guess::from_path(path.clone());
-                let content_type = guess.first().context("MIME type should be given")?;
+                let content_type = guess.first().context("don't know mime type")?;
                 let data = std::fs::read(path)?;
                 let new_url = account.upload_avatar(&content_type, data).await?;
                 Ok(new_url)
@@ -110,11 +110,11 @@ impl Account {
 
         RUNTIME
             .spawn(async move {
-                let maybe_content = account
+                let content = account
                     .account_data::<IgnoredUserListEventContent>()
-                    .await?;
-                let raw_content = maybe_content.context("No ignored Users found")?;
-                let content = raw_content.deserialize()?;
+                    .await?
+                    .context("Ignored users not found")?
+                    .deserialize()?;
                 Ok(content.ignored_users.keys().map(Clone::clone).collect())
             })
             .await?

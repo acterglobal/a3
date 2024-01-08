@@ -133,7 +133,7 @@ impl SuperInvites {
                     // we just checked for it
                     let token = builder
                         .into_update_token()
-                        .context("couldn't convert to get update token from builder")?;
+                        .context("Unable to get update token from builder")?;
                     let req = api::update::Request::new(token);
                     let resp = c.send(req, None).await?;
                     resp.token

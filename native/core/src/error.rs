@@ -1,4 +1,3 @@
-use matrix_sdk::{Error as MatrixError, HttpError};
 use ruma_events::UnsignedRoomRedactionEvent;
 
 use crate::models::EventMeta;
@@ -6,10 +5,10 @@ use crate::models::EventMeta;
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("Error in the inner MatrixSDK")]
-    MatrixSdk(#[from] MatrixError),
+    MatrixSdk(#[from] matrix_sdk::Error),
 
     #[error("Error in the MatrixSDK HTTP")]
-    HttpError(#[from] HttpError),
+    HttpError(#[from] matrix_sdk::HttpError),
 
     #[error("Not a known Acter Event")]
     UnknownEvent,
@@ -19,6 +18,9 @@ pub enum Error {
 
     #[error("Error with the matrix sdk Store")]
     Store(#[from] matrix_sdk::StoreError),
+
+    #[error("IO Error: {0}")]
+    IoError(#[from] std::io::Error),
 
     #[error("Model not found at {0}.")]
     ModelNotFound(String),

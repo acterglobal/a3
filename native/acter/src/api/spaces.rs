@@ -327,7 +327,7 @@ impl Space {
         let room_id = self.room.room_id();
         trace!(name, ?room_id, "refreshing history");
         let client = self.room.client();
-        // self.room.sync_members().await.context("Couldn't sync members of room")?;
+        // self.room.sync_members().await.context("Unable to sync members of room")?;
 
         let custom_storage_key = format!("{room_id}::history");
 
@@ -467,18 +467,18 @@ impl Space {
 
     pub async fn set_acter_space_states(&self) -> Result<bool> {
         if !self.inner.is_joined() {
-            bail!("You can't convert a space you didn't join");
+            bail!("Unable to convert a space you didn't join");
         }
         let room = self.inner.room.clone();
         RUNTIME
             .spawn(async move {
                 let client = room.client();
-                let my_id = client.user_id().context("User not found")?.to_owned();
+                let my_id = client.user_id().context("You must be logged in to do that")?.to_owned();
                 let room_id = room.room_id().to_owned();
                 let member = room
                     .get_member(&my_id)
                     .await?
-                    .context("Couldn't find me among room members")?;
+                    .context("Unable to find me in room")?;
 
                 let mut requests = Vec::new();
 
@@ -486,14 +486,14 @@ impl Space {
                     println!("{:?}", state);
                     let event_type = state
                         .get_field::<StateEventType>("type")?
-                        .context("couldn't get state event type")?;
+                        .context("Unable to get state event type")?;
                     let state_key = state.get_field("state_key")?.unwrap_or_default();
                     let body = state
                         .get_field::<Raw<AnyStateEventContent>>("content")?
-                        .context("couldn't get state content")?;
+                        .context("Unable to get state content")?;
                     if !member.can_send_state(event_type.clone()) {
                         bail!(
-                            "No permission to set {event_type} states of this room. Can't convert"
+                            "No permissions to set {event_type} states of this room. Unable to convert"
                         );
                     }
 
@@ -516,7 +516,7 @@ impl Space {
 
     pub async fn add_child_room(&self, room_id: String) -> Result<String> {
         if !self.inner.is_joined() {
-            bail!("You can't update a space you aren't part of");
+            bail!("Unable to update a space you aren't part of");
         }
         let room_id = RoomId::parse(room_id)?;
         if !self
@@ -524,7 +524,7 @@ impl Space {
             .await?
             .can(crate::MemberPermission::CanLinkSpaces)
         {
-            bail!("You don't have permissions to add child to space");
+            bail!("No permissions to add child to space");
         }
         let room = self.inner.room.clone();
         let client = self.client.clone();
@@ -547,7 +547,7 @@ impl Space {
 
     pub async fn remove_child_room(&self, room_id: String, reason: Option<String>) -> Result<bool> {
         if !self.inner.is_joined() {
-            bail!("You can't update a space you aren't part of");
+            bail!("Unable to update a space you aren't part of");
         }
         let room_id = RoomId::parse(room_id)?;
         if !self
@@ -555,7 +555,7 @@ impl Space {
             .await?
             .can(crate::MemberPermission::CanLinkSpaces)
         {
-            bail!("You don't have permissions to remove child from space");
+            bail!("No permissions to remove child from space");
         }
         let room = self.inner.room.clone();
 
@@ -570,7 +570,7 @@ impl Space {
                 };
                 let event_id = match raw_state.deserialize()? {
                     SyncOrStrippedState::Stripped(ev) => {
-                        bail!("Couldn't get event id about stripped event")
+                        bail!("Unable to get event id about stripped event")
                     }
                     SyncOrStrippedState::Sync(ev) => ev.event_id().to_owned(),
                 };
