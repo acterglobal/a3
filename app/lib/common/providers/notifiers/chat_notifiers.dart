@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod/riverpod.dart';
@@ -162,5 +161,18 @@ class ChatRoomsListNotifier extends StateNotifier<List<Convo>> {
       default:
         break;
     }
+  }
+}
+
+class SelectedChatIdNotifier extends Notifier<String?> {
+  @override
+  String? build() {
+    return null;
+  }
+
+  void select(String? input) {
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      state = input;
+    });
   }
 }

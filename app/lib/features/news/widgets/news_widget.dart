@@ -1,9 +1,15 @@
 import 'package:acter/common/animations/like_animation.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/empty_state_widget.dart';
 
 class NewsWidget extends ConsumerStatefulWidget {
   const NewsWidget({super.key});
@@ -32,6 +38,25 @@ class _NewsWidgetState extends ConsumerState<NewsWidget>
     final newsList = ref.watch(newsListProvider);
     return newsList.when(
       data: (data) {
+        if (data.isEmpty) {
+          return Center(
+            child: EmptyState(
+              title: 'You have no updates',
+              subtitle:
+                  'Create actionable posts and engage everyone within your space.',
+              image: 'assets/images/empty_updates.svg',
+              primaryButton: DefaultButton(
+                onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
+                title: 'Create New update',
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.success,
+                  disabledBackgroundColor:
+                      Theme.of(context).colorScheme.success.withOpacity(0.5),
+                ),
+              ),
+            ),
+          );
+        }
         return PageView.builder(
           itemCount: data.length,
           onPageChanged: (int page) {},

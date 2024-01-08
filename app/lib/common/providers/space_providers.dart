@@ -4,6 +4,7 @@ import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +42,8 @@ final spaceProfileDataForSpaceIdProvider = FutureProvider.autoDispose
     .family<SpaceWithProfileData, String>((ref, spaceId) async {
   final space = await ref.watch(spaceProvider(spaceId).future);
   final profileData = await ref.watch(spaceProfileDataProvider(space).future);
-  return SpaceWithProfileData(space, profileData);
+  final SpaceWithProfileData data = (space: space, profile: profileData);
+  return data;
 });
 
 /// Attempts to map a spaceId to the space, but could come back empty (null) rather than throw.

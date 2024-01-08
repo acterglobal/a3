@@ -24,6 +24,7 @@ class MessageMetadataBuilder extends ConsumerWidget {
     EventSendState? sendState = message.metadata?['eventState'];
     if (receipts != null && receipts.isNotEmpty) {
       return _UserReceiptsWidget(
+        roomId: convo.getRoomIdStr(),
         seenList: (receipts as Map<String, int>).keys.toList(),
       );
     } else {
@@ -106,8 +107,9 @@ class MessageMetadataBuilder extends ConsumerWidget {
 }
 
 class _UserReceiptsWidget extends ConsumerWidget {
+  final String roomId;
   final List<String> seenList;
-  const _UserReceiptsWidget({required this.seenList});
+  const _UserReceiptsWidget({required this.roomId, required this.seenList});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -125,8 +127,11 @@ class _UserReceiptsWidget extends ConsumerWidget {
                   for (var userId in subList)
                     Consumer(
                       builder: (context, ref, child) {
-                        final memberProfile =
-                            ref.watch(memberProfileByIdProvider(userId));
+                        final memberProfile = ref.watch(
+                          memberProfileByInfoProvider(
+                            (userId: userId, roomId: roomId),
+                          ),
+                        );
                         return memberProfile.when(
                           data: (profile) {
                             return Padding(
@@ -176,8 +181,11 @@ class _UserReceiptsWidget extends ConsumerWidget {
                   seenList.length,
                   (idx) => Consumer(
                     builder: (context, ref, child) {
-                      final memberProfile =
-                          ref.watch(memberProfileByIdProvider(seenList[idx]));
+                      final memberProfile = ref.watch(
+                        memberProfileByInfoProvider(
+                          (userId: seenList[idx], roomId: roomId),
+                        ),
+                      );
                       final userId = seenList[idx];
                       return memberProfile.when(
                         data: (profile) {
@@ -246,8 +254,11 @@ class _UserReceiptsWidget extends ConsumerWidget {
                   final userId = seenList[index];
                   return Consumer(
                     builder: (context, ref, child) {
-                      final member =
-                          ref.watch(memberProfileByIdProvider(userId));
+                      final member = ref.watch(
+                        memberProfileByInfoProvider(
+                          (userId: userId, roomId: roomId),
+                        ),
+                      );
                       return ListTile(
                         leading: member.when(
                           data: (profile) {
