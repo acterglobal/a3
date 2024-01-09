@@ -36,7 +36,7 @@ async fn message_redaction() -> Result<()> {
     let mut received = None;
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
-            info!("diff action: {}", diff.action());
+            info!("stream diff: {}", diff.action());
             match diff.action().as_str() {
                 "Reset" => {
                     let values = diff
