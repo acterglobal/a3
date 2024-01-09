@@ -1,21 +1,14 @@
-use acter_core::{
-    models::{self, ActerModel, AnyActerModel},
-    statics::KEYS,
-};
+use acter_core::models::{self, ActerModel, AnyActerModel};
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use futures::stream::StreamExt;
-use matrix_sdk::{room::Room, RoomState};
-use ruma_common::{EventId, OwnedEventId, OwnedTransactionId, OwnedUserId, TransactionId};
-use ruma_events::{
-    reaction::{self, ReactionEventContent},
-    relation::Annotation,
-    AnyMessageLikeEventContent, MessageLikeEventType,
-};
+use matrix_sdk::room::Room;
+use ruma_common::{EventId, OwnedEventId, OwnedTransactionId, OwnedUserId};
+use ruma_events::{reaction::ReactionEventContent, relation::Annotation, MessageLikeEventType};
 use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::{error, trace, warn};
+use tracing::trace;
 
 use super::{client::Client, RUNTIME};
 
@@ -107,11 +100,8 @@ impl ReactionManager {
 
     pub async fn send_reaction(&self, event_id: String, key: String) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let reaction = self.inner.clone();
-
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
-
         let event_id = EventId::parse(&event_id)?;
 
         RUNTIME
