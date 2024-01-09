@@ -303,16 +303,23 @@ object NewsSlide {
 
 /// A news entry
 object NewsEntry {
+    /// the slides count in this news item
     fn slides_count() -> u8;
+
     /// The slides belonging to this news item
     fn get_slide(pos: u8) -> Option<NewsSlide>;
+
     /// The color setting
     fn colors() -> Option<Colorize>;
 
     /// how many comments on this news entry
-    fn comments_count() -> u32;
+    fn comments_count() -> Future<Result<u32>>;
+
     /// how many likes on this news entry
-    fn likes_count() -> u32;
+    fn likes_count() -> Future<Result<u32>>;
+
+    /// get my like status on this news entry
+    fn my_like_status() -> Future<Result<bool>>;
 
     /// get room id
     fn room_id() -> RoomId;
@@ -324,7 +331,7 @@ object NewsEntry {
     fn event_id() -> EventId;
 
     /// get the reaction manager
-    fn reaction_manager() -> Future<Result<ReactionManager>>;
+    fn reactions() -> Future<Result<ReactionManager>>;
 }
 
 object NewsEntryDraft {

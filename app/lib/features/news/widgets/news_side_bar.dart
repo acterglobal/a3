@@ -29,9 +29,8 @@ class NewsSideBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = news.roomId().toString();
     final userId = ref.watch(alwaysClientProvider).userId().toString();
-    final reactions = ref.watch(reactionsProvider(news));
-    final reactionManager = ref.watch(newsReactionManagerProvider(news));
-    final reactionStatus = ref.watch(myReactionStatusProvider(news));
+    final reactions = ref.watch(reactionEntriesProvider(news));
+    final isLikedByMe = ref.watch(myNewsReactionStatusProvider(news));
     final space = ref.watch(briefSpaceItemWithMembershipProvider(roomId));
     final bgColor = convertColor(
       news.colors()?.background(),
@@ -52,42 +51,38 @@ class NewsSideBar extends ConsumerWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        reactionManager.maybeWhen(
-          data: (manager) {
-            return SizedBox(
-              height: 75,
-              width: 75,
-              child: LikeButton(
-                isLiked: reactionStatus.valueOrNull ?? false,
-                likeCount: reactions.valueOrNull != null
-                    ? reactions.valueOrNull!.length.toString()
-                    : '0',
-                style: style,
-                color: fgColor,
-                index: index,
-                onTap: () async {
-                  final client = ref.read(alwaysClientProvider);
-                  final status = await manager.myStatus();
-                  debugPrint('STATUS: $status');
-                  if (!status) {
-                    final eventId = await manager.sendReaction(
-                      news.eventId().toString(),
-                      '\u{dd25}',
-                    );
+        SizedBox(
+          height: 75,
+          width: 75,
+          child: LikeButton(
+            isLiked: isLikedByMe.valueOrNull ?? false,
+            likeCount: reactions.valueOrNull != null
+                ? reactions.valueOrNull!.length.toString()
+                : '0',
+            style: style,
+            color: fgColor,
+            index: index,
+            onTap: () async {
+              final client = ref.read(alwaysClientProvider);
+              final status = await news.myLikeStatus();
+              final manager = await news.reactions();
+              debugPrint('STATUS: $status');
+              if (!status) {
+                final eventId = await manager.sendReaction(
+                  news.eventId().toString(),
+                  '\u{dd25}',
+                );
 
-                    await client.waitForReaction(eventId.toString(), null);
-                  } else {
-                    final reactions = await manager
-                        .reactionEntries()
-                        .then((value) => value.toList());
-                    final eventId = reactions[0].eventIdStr();
-                    await manager.redactReaction(eventId, '', '');
-                  }
-                },
-              ),
-            );
-          },
-          orElse: () => const SizedBox(),
+                await client.waitForReaction(eventId.toString(), null);
+              } else {
+                final reactions = await manager
+                    .reactionEntries()
+                    .then((value) => value.toList());
+                final eventId = reactions[0].eventIdStr();
+                await manager.redactReaction(eventId, '', '');
+              }
+            },
+          ),
         ),
         const SizedBox(height: 10),
         space.maybeWhen(

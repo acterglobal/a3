@@ -347,7 +347,7 @@ impl NewsEntry {
             .await?
     }
 
-    pub async fn reaction_manager(&self) -> Result<crate::ReactionManager> {
+    pub async fn reactions(&self) -> Result<crate::ReactionManager> {
         let client = self.client.clone();
         let room = self.room.clone();
         let event_id = self.content.event_id().to_owned();
@@ -401,12 +401,40 @@ impl NewsEntry {
             .await?
     }
 
-    pub fn comments_count(&self) -> u32 {
-        4
+    pub async fn comments_count(&self) -> Result<u32> {
+        let me = self.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let manager = me.comments().await?;
+                Ok(manager.stats().total_comments_count().clone())
+            })
+            .await?
     }
 
-    pub fn likes_count(&self) -> u32 {
-        19
+    pub async fn likes_count(&self) -> Result<u32> {
+        let me = self.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let manager = me.reactions().await?;
+                Ok(manager.stats().total_reaction_count().clone())
+            })
+            .await?
+    }
+
+    pub async fn my_like_status(&self) -> Result<bool> {
+        let me = self.clone();
+        let client = self.client.clone();
+        let event_id = self.content.event_id().to_owned();
+        let my_id = self.client.user_id()?;
+
+        RUNTIME
+            .spawn(async move {
+                let manager = me.reactions().await?;
+                manager.my_status().await
+            })
+            .await?
     }
 
     pub fn room_id(&self) -> OwnedRoomId {

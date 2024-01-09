@@ -40,7 +40,7 @@ impl ActerModel for TestModel {
     }
 
     fn capabilities(&self) -> &[super::Capability] {
-        &[super::Capability::Commentable]
+        &[super::Capability::Commentable, super::Capability::Reactable]
     }
 
     fn indizes(&self) -> Vec<String> {

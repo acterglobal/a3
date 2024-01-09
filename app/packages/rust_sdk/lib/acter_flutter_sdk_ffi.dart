@@ -1838,7 +1838,7 @@ class Api {
     return tmp7;
   }
 
-  ReactionManager? __newsEntryReactionManagerFuturePoll(
+  int? __newsEntryCommentsCountFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -1852,7 +1852,139 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _newsEntryReactionManagerFuturePoll(
+    final tmp6 = _newsEntryCommentsCountFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13;
+    return tmp7;
+  }
+
+  int? __newsEntryLikesCountFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _newsEntryLikesCountFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13;
+    return tmp7;
+  }
+
+  bool? __newsEntryMyLikeStatusFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _newsEntryMyLikeStatusFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  ReactionManager? __newsEntryReactionsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _newsEntryReactionsFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -12938,7 +13070,7 @@ class Api {
       )>();
   late final _newsEntryCommentsCountPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint32 Function(
+          ffi.Int64 Function(
             ffi.Int64,
           )>>("__NewsEntry_comments_count");
 
@@ -12948,11 +13080,21 @@ class Api {
       )>();
   late final _newsEntryLikesCountPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint32 Function(
+          ffi.Int64 Function(
             ffi.Int64,
           )>>("__NewsEntry_likes_count");
 
   late final _newsEntryLikesCount = _newsEntryLikesCountPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _newsEntryMyLikeStatusPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__NewsEntry_my_like_status");
+
+  late final _newsEntryMyLikeStatus = _newsEntryMyLikeStatusPtr.asFunction<
       int Function(
         int,
       )>();
@@ -12986,17 +13128,16 @@ class Api {
       int Function(
         int,
       )>();
-  late final _newsEntryReactionManagerPtr = _lookup<
+  late final _newsEntryReactionsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__NewsEntry_reaction_manager");
+          )>>("__NewsEntry_reactions");
 
-  late final _newsEntryReactionManager =
-      _newsEntryReactionManagerPtr.asFunction<
-          int Function(
-            int,
-          )>();
+  late final _newsEntryReactions = _newsEntryReactionsPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _newsEntryDraftAddSlidePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -21788,17 +21929,62 @@ class Api {
             int,
             int,
           )>();
-  late final _newsEntryReactionManagerFuturePollPtr = _lookup<
+  late final _newsEntryCommentsCountFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _NewsEntryReactionManagerFuturePollReturn Function(
+          _NewsEntryCommentsCountFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__NewsEntry_reaction_manager_future_poll");
+          )>>("__NewsEntry_comments_count_future_poll");
 
-  late final _newsEntryReactionManagerFuturePoll =
-      _newsEntryReactionManagerFuturePollPtr.asFunction<
-          _NewsEntryReactionManagerFuturePollReturn Function(
+  late final _newsEntryCommentsCountFuturePoll =
+      _newsEntryCommentsCountFuturePollPtr.asFunction<
+          _NewsEntryCommentsCountFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _newsEntryLikesCountFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsEntryLikesCountFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__NewsEntry_likes_count_future_poll");
+
+  late final _newsEntryLikesCountFuturePoll =
+      _newsEntryLikesCountFuturePollPtr.asFunction<
+          _NewsEntryLikesCountFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _newsEntryMyLikeStatusFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsEntryMyLikeStatusFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__NewsEntry_my_like_status_future_poll");
+
+  late final _newsEntryMyLikeStatusFuturePoll =
+      _newsEntryMyLikeStatusFuturePollPtr.asFunction<
+          _NewsEntryMyLikeStatusFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _newsEntryReactionsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsEntryReactionsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__NewsEntry_reactions_future_poll");
+
+  late final _newsEntryReactionsFuturePoll =
+      _newsEntryReactionsFuturePollPtr.asFunction<
+          _NewsEntryReactionsFuturePollReturn Function(
             int,
             int,
             int,
@@ -28291,6 +28477,7 @@ class NewsEntry {
 
   NewsEntry._(this._api, this._box);
 
+  /// the slides count in this news item
   int slidesCount() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -28347,26 +28534,47 @@ class NewsEntry {
   }
 
   /// how many comments on this news entry
-  int commentsCount() {
+  Future<int> commentsCount() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._newsEntryCommentsCount(
       tmp0,
     );
     final tmp3 = tmp1;
-    final tmp2 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__NewsEntry_comments_count_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__newsEntryCommentsCountFuturePoll);
     return tmp2;
   }
 
   /// how many likes on this news entry
-  int likesCount() {
+  Future<int> likesCount() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._newsEntryLikesCount(
       tmp0,
     );
     final tmp3 = tmp1;
-    final tmp2 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__NewsEntry_likes_count_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__newsEntryLikesCountFuturePoll);
+    return tmp2;
+  }
+
+  /// get my like status on this news entry
+  Future<bool> myLikeStatus() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntryMyLikeStatus(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__NewsEntry_my_like_status_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__newsEntryMyLikeStatusFuturePoll);
     return tmp2;
   }
 
@@ -28416,19 +28624,17 @@ class NewsEntry {
   }
 
   /// get the reaction manager
-  Future<ReactionManager> reactionManager() {
+  Future<ReactionManager> reactions() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._newsEntryReactionManager(
+    final tmp1 = _api._newsEntryReactions(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__NewsEntry_reaction_manager_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__NewsEntry_reactions_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__newsEntryReactionManagerFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__newsEntryReactionsFuturePoll);
     return tmp2;
   }
 
@@ -48141,7 +48347,52 @@ class _NewsSlideSourceBinaryFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _NewsEntryReactionManagerFuturePollReturn extends ffi.Struct {
+class _NewsEntryCommentsCountFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint32()
+  external int arg5;
+}
+
+class _NewsEntryLikesCountFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint32()
+  external int arg5;
+}
+
+class _NewsEntryMyLikeStatusFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _NewsEntryReactionsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

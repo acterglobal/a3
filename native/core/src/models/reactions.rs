@@ -123,10 +123,6 @@ impl super::ActerModel for Reaction {
         &self.meta.event_id
     }
 
-    fn capabilities(&self) -> &[super::Capability] {
-        &[super::Capability::Reactable]
-    }
-
     async fn execute(self, store: &Store) -> Result<Vec<String>> {
         let belongs_to = self.belongs_to().unwrap();
         trace!(event_id=?self.event_id(), ?belongs_to, "applying reaction");

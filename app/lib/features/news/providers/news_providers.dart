@@ -8,20 +8,19 @@ final newsListProvider =
   () => AsyncNewsListNotifier(),
 );
 
-final newsReactionManagerProvider = FutureProvider.autoDispose
+final newsReactionsProvider = FutureProvider.autoDispose
     .family<ReactionManager, NewsEntry>((ref, news) async {
-  final manager = await news.reactionManager();
+  final manager = await news.reactions();
   return manager;
 });
 
-final myReactionStatusProvider =
-    FutureProvider.autoDispose.family<bool, NewsEntry>((ref, news) async {
-  final manager = await ref.watch(newsReactionManagerProvider(news).future);
-  return await manager.myStatus();
+final reactionEntriesProvider = FutureProvider.autoDispose
+    .family<List<Reaction>, NewsEntry>((ref, news) async {
+  final manager = await ref.watch(newsReactionsProvider(news).future);
+  return await manager.reactionEntries().then((ffiList) => ffiList.toList());
 });
 
-final reactionsProvider = FutureProvider.autoDispose
-    .family<List<Reaction>, NewsEntry>((ref, news) async {
-  final manager = await ref.watch(newsReactionManagerProvider(news).future);
-  return await manager.reactionEntries().then((ffiList) => ffiList.toList());
+final myNewsReactionStatusProvider =
+    FutureProvider.autoDispose.family<bool, NewsEntry>((ref, news) async {
+  return await news.myLikeStatus();
 });
