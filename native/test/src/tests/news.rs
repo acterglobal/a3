@@ -99,7 +99,7 @@ async fn news_smoketest() -> Result<()> {
 }
 
 #[tokio::test]
-async fn news_markdown_raw_text_test() -> Result<()> {
+async fn news_plain_text_test() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, space_id) = random_user_with_random_space("news-mkd-").await?;
     let state_sync = user.start_sync();
