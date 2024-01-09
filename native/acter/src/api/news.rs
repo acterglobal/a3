@@ -407,7 +407,7 @@ impl NewsEntry {
         RUNTIME
             .spawn(async move {
                 let manager = me.comments().await?;
-                Ok(manager.stats().total_comments_count().clone())
+                Ok(manager.stats().total_comments_count().to_owned())
             })
             .await?
     }
@@ -418,7 +418,7 @@ impl NewsEntry {
         RUNTIME
             .spawn(async move {
                 let manager = me.reactions().await?;
-                Ok(manager.stats().total_reaction_count().clone())
+                Ok(manager.stats().total_reaction_count().to_owned())
             })
             .await?
     }
