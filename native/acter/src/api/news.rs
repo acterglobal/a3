@@ -425,9 +425,6 @@ impl NewsEntry {
 
     pub async fn my_like_status(&self) -> Result<bool> {
         let me = self.clone();
-        let client = self.client.clone();
-        let event_id = self.content.event_id().to_owned();
-        let my_id = self.client.user_id()?;
 
         RUNTIME
             .spawn(async move {
