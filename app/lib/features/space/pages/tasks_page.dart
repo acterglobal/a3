@@ -22,72 +22,69 @@ class SpaceTasksPage extends ConsumerWidget {
     // get platform of context.
     return DecoratedBox(
       decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
-            ),
-            SliverToBoxAdapter(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Tasks',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ),
-                  IconButton(
-                    key: createTaskKey,
-                    icon: Icon(
-                      Atlas.plus_circle_thin,
-                      color: Theme.of(context).colorScheme.neutral5,
-                    ),
-                    iconSize: 28,
-                    color: Theme.of(context).colorScheme.surface,
-                    onPressed: () => context.pushNamed(
-                      Routes.actionAddTaskList.name,
-                      queryParameters: {'spaceId': spaceIdOrAlias},
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            taskLists.when(
-              data: (taskLists) {
-                if (taskLists.isEmpty) {
-                  return const SliverToBoxAdapter(child: AllTasksDone());
-                }
-                return SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                      TaskList taskList = taskLists[index];
-                      return TaskListCard(taskList: taskList);
-                    },
-                    childCount: taskLists.length,
-                  ),
-                );
-              },
-              error: (error, stack) => SliverToBoxAdapter(
-                child: SizedBox(
-                  height: 450,
-                  child: Center(
-                    child: Text('Loading tasks failed: $error'),
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
+          ),
+          SliverToBoxAdapter(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Tasks',
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
-              ),
-              loading: () => const SliverToBoxAdapter(
-                child: SizedBox(
-                  height: 450,
-                  child: Center(
-                    child: Text('Loading'),
+                IconButton(
+                  key: createTaskKey,
+                  icon: Icon(
+                    Atlas.plus_circle_thin,
+                    color: Theme.of(context).colorScheme.neutral5,
                   ),
+                  iconSize: 28,
+                  color: Theme.of(context).colorScheme.surface,
+                  onPressed: () => context.pushNamed(
+                    Routes.actionAddTaskList.name,
+                    queryParameters: {'spaceId': spaceIdOrAlias},
+                  ),
+                ),
+              ],
+            ),
+          ),
+          taskLists.when(
+            data: (taskLists) {
+              if (taskLists.isEmpty) {
+                return const SliverToBoxAdapter(child: AllTasksDone());
+              }
+              return SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int index) {
+                    TaskList taskList = taskLists[index];
+                    return TaskListCard(taskList: taskList);
+                  },
+                  childCount: taskLists.length,
+                ),
+              );
+            },
+            error: (error, stack) => SliverToBoxAdapter(
+              child: SizedBox(
+                height: 450,
+                child: Center(
+                  child: Text('Loading tasks failed: $error'),
                 ),
               ),
             ),
-          ],
-        ),
+            loading: () => const SliverToBoxAdapter(
+              child: SizedBox(
+                height: 450,
+                child: Center(
+                  child: Text('Loading'),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
