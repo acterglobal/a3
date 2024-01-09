@@ -263,6 +263,124 @@ void tasksTests() {
     await find.text('Order chips').should(findsOneWidget);
     await find.text('Remind everyone of the potluck').should(findsOneWidget);
   });
+  acterTestWidget('Multiple TaskLists & tasks', (t) async {
+    final spaceId = await t.freshAccountWithSpace(
+      spaceDisplayName: 'Multiple Tasks & Lists',
+    );
+    await t.ensureTasksAreEnabled(spaceId);
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      QuickJumpKeys.createTaskListAction,
+    ]);
+
+    // the first one
+
+    await t.createTaskList(
+      'Club Party',
+      description: 'Things we have to do for the party on the 11th',
+      tasks: [
+        'Get drinks',
+        'Order chips',
+        'Remind everyone of the potluck',
+      ],
+      selectSpaceId: spaceId,
+    );
+
+    //
+    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    // we see our entry now
+    await find.text('Club Party').should(findsOneWidget);
+    await find.text('Get drinks').should(findsOneWidget);
+    await find.text('Order chips').should(findsOneWidget);
+    await find.text('Remind everyone of the potluck').should(findsOneWidget);
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      MainNavKeys.quickJump,
+      QuickJumpKeys.tasks,
+    ]);
+    // we see our entry now
+    await find.text('Club Party').should(findsOneWidget);
+    await find.text('Get drinks').should(findsOneWidget);
+    await find.text('Order chips').should(findsOneWidget);
+    await find.text('Remind everyone of the potluck').should(findsOneWidget);
+
+    // the second one, created via the space itself.
+
+    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    await t.navigateTo([
+      SpaceTasksPage.createTaskKey,
+    ]);
+
+    await t.createTaskList(
+      'Errands',
+      description: 'These are the most important things to do',
+      tasks: [
+        'Buy milk',
+        'Pickup dogs med',
+      ],
+    );
+
+    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    await t.ensureHasWidget<SpaceHeader>();
+    // we see our entry now
+
+    final errands = find.text('Errands');
+
+    await t.tester.ensureVisible(errands);
+    await errands.should(findsOneWidget);
+    await find.text('Buy milk').should(findsOneWidget);
+    await find.text('Pickup dogs med').should(findsOneWidget);
+
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      MainNavKeys.quickJump,
+      QuickJumpKeys.tasks,
+    ]);
+    // we see our entry now
+    await find.text('Errands').should(findsOneWidget);
+    await find.text('Buy milk').should(findsOneWidget);
+    await find.text('Pickup dogs med').should(findsOneWidget);
+
+    // and a third one
+
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      MainNavKeys.quickJump,
+      QuickJumpKeys.tasks,
+      TasksPage.createNewTaskListKey,
+    ]);
+
+    await t.createTaskList(
+      'Protest Preparations',
+      description: 'Things we have to do for the protest',
+      tasks: [
+        'Buy markers',
+        'Pick up banner',
+      ],
+      selectSpaceId: spaceId,
+    );
+
+    //
+    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    // we see our entry now
+
+    final protestPrep = find.text('Protest Preparations');
+
+    await t.tester.ensureVisible(protestPrep);
+
+    await protestPrep.should(findsOneWidget);
+    await find.text('Buy markers').should(findsOneWidget);
+    await find.text('Pick up banner').should(findsOneWidget);
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      MainNavKeys.quickJump,
+      QuickJumpKeys.tasks,
+    ]);
+    // we see our entry now
+    await find.text('Protest Preparations').should(findsOneWidget);
+    await find.text('Buy markers').should(findsOneWidget);
+    await find.text('Pick up banner').should(findsOneWidget);
+  });
 
   acterTestWidget('Check and uncheck', (t) async {
     final spaceId = await t.freshAccountWithSpace(

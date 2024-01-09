@@ -24,6 +24,7 @@ extension ActerSpace on ConvenientTest {
     await find.byKey(Keys.mainNav).should(findsOneWidget);
     await navigateTo([
       MainNavKeys.dashboardHome,
+      MainNavKeys.dashboardHome,
       DashboardKeys.widgetMySpacesHeader,
     ]);
 
@@ -37,6 +38,7 @@ extension ActerSpace on ConvenientTest {
   Future<void> gotoSpace(String spaceId, {Key? appTab}) async {
     await find.byKey(Keys.mainNav).should(findsOneWidget);
     await navigateTo([
+      MainNavKeys.dashboardHome,
       MainNavKeys.dashboardHome,
       DashboardKeys.widgetMySpacesHeader,
     ]);
