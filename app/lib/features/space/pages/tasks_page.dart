@@ -32,7 +32,9 @@ class SpaceTasksPage extends ConsumerWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'Tasks',
+                    taskLists.hasValue && taskLists.valueOrNull!.isNotEmpty
+                        ? 'Tasks (${taskLists.valueOrNull!.length})'
+                        : 'Tasks',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
