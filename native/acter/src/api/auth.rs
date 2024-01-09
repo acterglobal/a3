@@ -109,7 +109,7 @@ pub async fn guest_client(
             let device_id = response
                 .device_id
                 .clone()
-                .context("device id is given by server")?;
+                .context("device id not given by server")?;
             let auth_session = MatrixSession {
                 meta: SessionMeta {
                     user_id: response.user_id.clone(),

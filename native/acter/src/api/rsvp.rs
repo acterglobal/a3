@@ -60,9 +60,7 @@ impl Client {
                                 continue;
                             }
                         }
-                        let room = client
-                            .get_room(inner.room_id())
-                            .context("Room of calendar event not found")?;
+                        let room = client.get_room(inner.room_id()).context("Room not found")?;
                         let cal_event = CalendarEvent::new(client.clone(), room, inner);
                         cal_events.push(cal_event);
                     } else {
@@ -99,9 +97,7 @@ impl Client {
                                 continue;
                             }
                         }
-                        let room = client
-                            .get_room(inner.room_id())
-                            .context("Room of calendar event not found")?;
+                        let room = client.get_room(inner.room_id()).context("Room not found")?;
                         let cal_event = CalendarEvent::new(client.clone(), room, inner);
                         // fliter only events that i sent rsvp
                         let rsvp_manager = cal_event.rsvp_manager().await?;
@@ -143,9 +139,7 @@ impl Client {
                                 continue;
                             }
                         }
-                        let room = client
-                            .get_room(inner.room_id())
-                            .context("Room of calendar event not found")?;
+                        let room = client.get_room(inner.room_id()).context("Room not found")?;
                         let cal_event = CalendarEvent::new(client.clone(), room, inner);
                         // fliter only events that i sent rsvp
                         let rsvp_manager = cal_event.rsvp_manager().await?;
@@ -219,16 +213,19 @@ impl RsvpDraft {
         trace!("rsvp draft spawn");
 
         let client = room.client();
-        let my_id = client.user_id().context("User not found")?.to_owned();
+        let my_id = client
+            .user_id()
+            .context("You must be logged in to do that")?
+            .to_owned();
 
         RUNTIME
             .spawn(async move {
                 let member = room
                     .get_member(&my_id)
                     .await?
-                    .context("Couldn't find me among room members")?;
+                    .context("Unable to find me in room")?;
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
+                    bail!("No permissions to send message in this room");
                 }
 
                 trace!("before sending rsvp");

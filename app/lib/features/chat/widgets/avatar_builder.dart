@@ -1,4 +1,4 @@
-import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,8 +15,8 @@ class AvatarBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final memberProfile =
-        ref.watch(roomMemberProvider((userId: userId, roomId: roomId)));
+    final memberProfile = ref
+        .watch(memberProfileByInfoProvider((userId: userId, roomId: roomId)));
     return memberProfile.when(
       data: (profile) {
         return Padding(

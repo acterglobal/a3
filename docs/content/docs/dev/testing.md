@@ -112,7 +112,7 @@ sudo apt install matrix-synapse-py3
 
 At the end of `sudo apt install matrix-synapse-py3`, you will get the following dialog.
 
-![Ubuntu ServerName](/images/ubuntu-servername.png)
+![Ubuntu ServerName](../../../static/images/ubuntu-servername.png)
 
 Keep `localhost` in this dialog, that is domain applied to all users in `acter-test`.
 `server_name` in `/etc/matrix-synapse/homeserver.yaml` seems to not affect synapse config and the setting of this dialog during installation affects synapse config clearly.
@@ -190,7 +190,7 @@ You needn't to add `admin` user with `register_new_matrix_user`.
 
 If you are running synapse on a virtual or remote machine and API call is not working, you can update the firewall rules to allow access to the ports. To turn off the public profile of a server firewall on a `Ubuntu` linux, you can use `gufw` and disable it like so:
 
-![Ubuntu Firewall](/images/ubuntu-firewall.png)
+![Ubuntu Firewall](../../../static/images/ubuntu-firewall.png)
 
 </details>
 
@@ -214,7 +214,7 @@ sudo apt install matrix-synapse-py3
 
 At the end of `sudo apt install matrix-synapse-py3`, you will get the following dialog.
 
-![Ubuntu ServerName](/images/ubuntu-servername.png)
+![Ubuntu ServerName](../../../static/images/ubuntu-servername.png)
 
 Keep `localhost` in this dialog, that is domain applied to all users in `acter-test`.
 `server_name` in `homeserver.yaml` seems to not affect synapse config and the setting of this dialog during installation affects synapse config clearly.
@@ -342,7 +342,7 @@ You needn't to add `admin` user with `register_new_matrix_user`.
 
 If you are running synapse on a virtual or remote machine and API call is not working, you can update the firewall rules to allow access to the ports. To turn off the public profile of a server firewall on a `Ubuntu` linux, you can use `gufw` and disable it like so:
 
-![Ubuntu Firewall](/images/ubuntu-firewall.png)
+![Ubuntu Firewall](../../../static/images/ubuntu-firewall.png)
 
 </details>
 
@@ -354,7 +354,7 @@ Your server should now show the default "welcome" screen when you open the brows
 
 The rust integration tests expect a certain set of `mock` data. You can easily get this set up by running
 
-`cargo run -p acter-cli -- mock --homeserver-url $HOMESERVER --homeserver-name localhost`
+`cargo run -p acter-cli -- mock --homeserver-url $DEFAULT_HOMESERVER_URL --homeserver-name localhost`
 
 **Reset docker**
 
@@ -369,7 +369,7 @@ To start the docker-compose afresh:
 1. Stop service with `sudo systemctl stop matrix-synapse`
 2. Delete this file `/var/lib/matrix-synapse/homeserver.db`
 3. Start service with `sudo systemctl start matrix-synapse`
-4. Run this command `cargo run -p acter-cli -- mock --homeserver-url $HOMESERVER --homeserver-name localhost`
+4. Run this command `cargo run -p acter-cli -- mock --homeserver-url $DEFAULT_HOMESERVER_URL --homeserver-name localhost`
 
 Don't forget to rerun the `mock data` generation again.
 
@@ -393,14 +393,14 @@ This server name must be the same as one in `/etc/matrix-synapse/conf.d/server_n
 
 ### Rust integration tests
 
-To run the rust integration tests, you need a fresh integration testing infrastructure (see above) available at `$HOMESERVER`. Assuming you are running the docker-compose setup, this would be `http://localhost:8118` (which is the fallback default, so you don't have to put it into your environment). Then you can run the integration test with:
+To run the rust integration tests, you need a fresh integration testing infrastructure (see above) available at `$DEFAULT_HOMESERVER_URL`. Assuming you are running the docker-compose setup, this would be `http://localhost:8118` (which is the fallback default, so you don't have to put it into your environment). Then you can run the integration test with:
 
 <details><summary><strong>Custom Environment variable under Windows PowerShell</strong></summary>
 
 You can set up environment variable for `cargo` as following (assuming the server is accessible at `10.0.0.1:8008` and log level is `info`):
 
 ```bash
-$env:HOMESERVER="http://10.0.0.1:8008"; $env:RUST_LOG="info"; cargo test -p acter-test -- --nocapture
+$env:DEFAULT_HOMESERVER_URL="http://10.0.0.1:8008"; $env:RUST_LOG="info"; cargo test -p acter-test -- --nocapture
 ```
 
 </details>
@@ -410,7 +410,7 @@ $env:HOMESERVER="http://10.0.0.1:8008"; $env:RUST_LOG="info"; cargo test -p acte
 You can set up environment variable for `cargo` as following (assuming the server is available at `10.0.0.1:8008` and log level is `warn`):
 
 ```bash
-HOMESERVER="http://10.0.0.1:8008" RUST_LOG="warn" cargo test -p acter-test -- --nocapture
+DEFAULT_HOMESERVER_URL="http://10.0.0.1:8008" RUST_LOG="warn" cargo test -p acter-test -- --nocapture
 ```
 
 </details>
@@ -484,4 +484,4 @@ That will create a folder with the entire report in your `$TMPFOLDER/ConvenientT
 
 If you have the [Flutter extension for vscode](https://marketplace.visualstudio.com/items?itemName=Dart-Code.flutter) you can also run the `Run Integration Tests (acter)` launch commend from within your VSCode to run the tests directly or use the `Run Local Integration Tests` on the specific test from within your editor. To **debug** an integration tests, use the `Debug Integration Tests (acter)` on the specific test from within the editor - which allows you to add breakpoints and debugging widgets as usual:
 
-![](/images/integration-tests-debug-vscode-example.png)
+![](../../../static/images/integration-tests-debug-vscode-example.png)

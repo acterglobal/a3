@@ -529,6 +529,7 @@ jobs:
       - name: Add repo metadata
         run: |
           cp app/assets/icon/acter-logo.svg ${{ steps.flatpak.outputs.repository }}/logo.svg
+          cp app/flatpak/acter.flatpakref ${{ steps.flatpak.outputs.repository }}/acter.flatpakref
           cp app/flatpak/acter.flatpakrepo ${{ steps.flatpak.outputs.repository }}/acter.flatpakrepo
 
       - name: Deploy Flatpak Repository
