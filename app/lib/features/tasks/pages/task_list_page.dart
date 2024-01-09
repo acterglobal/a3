@@ -32,17 +32,19 @@ class TaskListPage extends ConsumerWidget {
         ),
       ),
       body: CenteredPage(
-        child: Column(
-          children: [
-            taskList.maybeWhen(
-              data: (taskList) => TaskListCard(
-                taskList: taskList,
-                showDescription: true,
-                showTitle: false,
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: taskList.maybeWhen(
+                data: (taskList) => TaskListCard(
+                  taskList: taskList,
+                  showDescription: true,
+                  showTitle: false,
+                ),
+                orElse: () => const Text('loading'),
               ),
-              orElse: () => const Text('loading'),
+              // following: comments
             ),
-            // following: comments
           ],
         ),
       ),

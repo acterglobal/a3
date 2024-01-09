@@ -242,6 +242,9 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
       return;
     }
     _textCtrl.text = '';
+    if (_formKey.currentContext != null) {
+      Scrollable.ensureVisible(_formKey.currentContext!);
+    }
     focusNode.requestFocus();
   }
 }

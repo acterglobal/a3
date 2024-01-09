@@ -263,6 +263,43 @@ void tasksTests() {
     await find.text('Order chips').should(findsOneWidget);
     await find.text('Remind everyone of the potluck').should(findsOneWidget);
   });
+  acterTestWidget('Add many tasks scrolls fine', (t) async {
+    final spaceId = await t.freshAccountWithSpace(
+      spaceDisplayName: 'Many Tasks',
+    );
+    await t.ensureTasksAreEnabled(spaceId);
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      QuickJumpKeys.createTaskListAction,
+    ]);
+
+    // the first one
+
+    await t.createTaskList(
+      'Club Party Groceries',
+      description: 'Things we have to do buy for the party',
+      tasks: [
+        '4x packs cola',
+        '3 bottles orange juice',
+        '2 bottles apple juice',
+        'card deck',
+        'glitter',
+        '4 packs of crisps',
+        'bag of flips',
+        'pretzels',
+        'bananas',
+        'apples',
+        'bag of potatoes',
+        'apple pie',
+        'cheese cake',
+        '50 plates',
+        '10 forks',
+        '50 cups',
+      ],
+      selectSpaceId: spaceId,
+    );
+  });
+
   acterTestWidget('Multiple TaskLists & tasks', (t) async {
     final spaceId = await t.freshAccountWithSpace(
       spaceDisplayName: 'Multiple Tasks & Lists',
