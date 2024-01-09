@@ -38,7 +38,7 @@ utc_end = "{{ future(add_days=25).as_rfc3339 }}"
 #[tokio::test]
 async fn calendar_smoketest() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) = random_user_with_template("calendar-smoke-", TMPL).await?;
+    let (user, _sync_state, _engine) = random_user_with_template("calendar_smoke", TMPL).await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);

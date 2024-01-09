@@ -64,7 +64,7 @@ url = "mxc://acter.global/tVLtaQaErMyoXmcCroPZdfNG"
 #[tokio::test]
 async fn news_smoketest() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) = random_user_with_template("news-smoke-", TMPL).await?;
+    let (user, _sync_state, _engine) = random_user_with_template("news_smoke", TMPL).await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -101,7 +101,7 @@ async fn news_smoketest() -> Result<()> {
 #[tokio::test]
 async fn news_plain_text_test() -> Result<()> {
     let _ = env_logger::try_init();
-    let (mut user, space_id) = random_user_with_random_space("news-mkd-").await?;
+    let (mut user, space_id) = random_user_with_random_space("news_plain").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
 
@@ -149,7 +149,7 @@ async fn news_plain_text_test() -> Result<()> {
 #[tokio::test]
 async fn news_markdown_text_test() -> Result<()> {
     let _ = env_logger::try_init();
-    let (mut user, space_id) = random_user_with_random_space("news-mkd-").await?;
+    let (mut user, space_id) = random_user_with_random_space("news_mkd").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
 
@@ -200,7 +200,7 @@ async fn news_markdown_text_test() -> Result<()> {
 #[tokio::test]
 async fn news_jpg_image_with_text_test() -> Result<()> {
     let _ = env_logger::try_init();
-    let (mut user, space_id) = random_user_with_random_space("news-mkd-").await?;
+    let (mut user, space_id) = random_user_with_random_space("news_jpg").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
 
@@ -254,7 +254,7 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
 #[tokio::test]
 async fn news_png_image_with_text_test() -> Result<()> {
     let _ = env_logger::try_init();
-    let (mut user, space_id) = random_user_with_random_space("news-mkd-").await?;
+    let (mut user, space_id) = random_user_with_random_space("news_png").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
 
