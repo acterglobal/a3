@@ -8,7 +8,7 @@ use tracing::{error, trace};
 use super::{AnyActerModel, EventMeta};
 use crate::{store::Store, Result};
 
-static REACTION_FIELD: &str = "reactions";
+static REACTION_FIELD: &str = "reaction";
 static REACTION_STATS_FIELD: &str = "reaction_stats";
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Getters)]
