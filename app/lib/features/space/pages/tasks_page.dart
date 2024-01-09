@@ -13,6 +13,7 @@ import 'package:go_router/go_router.dart';
 
 class SpaceTasksPage extends ConsumerWidget {
   static const createTaskKey = Key('space-create-task');
+  static const scrollView = Key('space-task-lists');
   final String spaceIdOrAlias;
   const SpaceTasksPage({super.key, required this.spaceIdOrAlias});
 
@@ -23,6 +24,7 @@ class SpaceTasksPage extends ConsumerWidget {
     return DecoratedBox(
       decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
       child: CustomScrollView(
+        key: scrollView,
         slivers: [
           SliverToBoxAdapter(
             child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),

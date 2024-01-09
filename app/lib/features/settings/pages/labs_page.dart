@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 
 class SettingsLabsPage extends ConsumerWidget {
-  static Key tasksLabSwitch = const Key('settings-labs-tasks-toggle');
+  static Key tasksLabSwitch = const Key('labs-tasks');
 
   const SettingsLabsPage({super.key});
 

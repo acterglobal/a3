@@ -30,7 +30,7 @@ extension ActerTasks on ConvenientTest {
 
       final tasksKey = find.byKey(TabEntry.tasks);
       if (tasksKey.evaluate().isEmpty) {
-        // we don't have it activated on this space yet, dp it
+        // we don't have it activated on this space yet, do it
         await navigateTo([
           SpaceToolbar.optionsMenu,
           SpaceToolbar.settingsMenu,
@@ -397,24 +397,28 @@ void tasksTests() {
       selectSpaceId: spaceId,
     );
 
-    //
-    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
-    // we see our entry now
-
     final protestPrep = find.text('Protest Preparations');
 
-    await t.tester.ensureVisible(protestPrep);
-
-    await protestPrep.should(findsOneWidget);
-    await find.text('Buy markers').should(findsOneWidget);
-    await find.text('Pick up banner').should(findsOneWidget);
     await t.navigateTo([
       MainNavKeys.quickJump,
       MainNavKeys.quickJump,
       QuickJumpKeys.tasks,
     ]);
+
+    // scroll down to make the item visible
+    await t.tester.scrollUntilVisible(protestPrep, 50);
+    await find.text('Buy markers').should(findsOneWidget);
+    await find.text('Pick up banner').should(findsOneWidget);
+
+    //
+    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+
     // we see our entry now
-    await find.text('Protest Preparations').should(findsOneWidget);
+    await t.tester.dragUntilVisible(
+      protestPrep,
+      find.byKey(SpaceTasksPage.scrollView),
+      const Offset(0, -500),
+    );
     await find.text('Buy markers').should(findsOneWidget);
     await find.text('Pick up banner').should(findsOneWidget);
   });

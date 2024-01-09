@@ -13,6 +13,7 @@ import 'package:go_router/go_router.dart';
 
 class TasksPage extends ConsumerWidget {
   static const createNewTaskListKey = Key('tasks-create-list');
+  static const taskListsKey = Key('tasks-task-lists');
   const TasksPage({Key? key}) : super(key: key);
 
   @override
@@ -47,6 +48,7 @@ class TasksPage extends ConsumerWidget {
                 return const SliverToBoxAdapter(child: AllTasksDone());
               }
               return SliverList(
+                key: taskListsKey,
                 delegate: SliverChildBuilderDelegate(
                   (BuildContext context, int index) {
                     TaskList taskList = taskLists[index];
