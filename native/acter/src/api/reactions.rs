@@ -12,7 +12,7 @@ use ruma_events::{
     relation::Annotation,
     AnyMessageLikeEventContent, MessageLikeEventType,
 };
-use std::{ops::Deref, str::FromStr};
+use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::{error, trace, warn};
@@ -112,7 +112,7 @@ impl ReactionManager {
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
 
-        let event_id = OwnedEventId::from_str(&event_id).unwrap();
+        let event_id = EventId::parse(&event_id)?;
 
         RUNTIME
             .spawn(async move {
