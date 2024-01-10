@@ -157,10 +157,9 @@ async fn pin_attachments() -> Result<()> {
 
     // ---- let's make a attachment
 
+    let bytes = include_bytes!("./fixtures/kingfisher.jpg");
     let mut jpg_file = NamedTempFile::new()?;
-    jpg_file
-        .as_file_mut()
-        .write_all(include_bytes!("./fixtures/kingfisher.jpg"))?;
+    jpg_file.as_file_mut().write_all(bytes)?;
 
     let attachments_listener = attachments_manager.subscribe();
     let base_draft = user.image_draft(
@@ -190,10 +189,9 @@ async fn pin_attachments() -> Result<()> {
 
     // go for the second
 
+    let bytes = include_bytes!("./fixtures/PNG_transparency_demonstration_1.png");
     let mut png_file = NamedTempFile::new()?;
-    png_file.as_file_mut().write_all(include_bytes!(
-        "./fixtures/PNG_transparency_demonstration_1.png"
-    ))?;
+    png_file.as_file_mut().write_all(bytes)?;
 
     let attachments_listener = attachments_manager.subscribe();
     let base_draft = user.file_draft(

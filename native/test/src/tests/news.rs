@@ -215,10 +215,9 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
     })
     .await?;
 
+    let bytes = include_bytes!("./fixtures/kingfisher.jpg");
     let mut tmp_file = NamedTempFile::new()?;
-    tmp_file
-        .as_file_mut()
-        .write_all(include_bytes!("./fixtures/kingfisher.jpg"))?;
+    tmp_file.as_file_mut().write_all(bytes)?;
 
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
@@ -269,10 +268,9 @@ async fn news_png_image_with_text_test() -> Result<()> {
     })
     .await?;
 
+    let bytes = include_bytes!("./fixtures/PNG_transparency_demonstration_1.png");
     let mut tmp_file = NamedTempFile::new()?;
-    tmp_file.as_file_mut().write_all(include_bytes!(
-        "./fixtures/PNG_transparency_demonstration_1.png"
-    ))?;
+    tmp_file.as_file_mut().write_all(bytes)?;
 
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
@@ -323,10 +321,9 @@ async fn news_like_reaction_test() -> Result<()> {
     })
     .await?;
 
+    let bytes = include_bytes!("./fixtures/PNG_transparency_demonstration_1.png");
     let mut tmp_file = NamedTempFile::new()?;
-    tmp_file.as_file_mut().write_all(include_bytes!(
-        "./fixtures/PNG_transparency_demonstration_1.png"
-    ))?;
+    tmp_file.as_file_mut().write_all(bytes)?;
 
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
@@ -400,10 +397,9 @@ async fn news_unlike_reaction_test() -> Result<()> {
     })
     .await?;
 
+    let bytes = include_bytes!("./fixtures/PNG_transparency_demonstration_1.png");
     let mut tmp_file = NamedTempFile::new()?;
-    tmp_file.as_file_mut().write_all(include_bytes!(
-        "./fixtures/PNG_transparency_demonstration_1.png"
-    ))?;
+    tmp_file.as_file_mut().write_all(bytes)?;
 
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
