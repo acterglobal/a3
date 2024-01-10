@@ -92,7 +92,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
-                    info!("diff set - {:?}", value);
+                    info!("diff pushback - {:?}", value);
                     if let Some(event_id) = match_text_msg(&value, "Hi, everyone") {
                         received = Some(event_id);
                     }
@@ -137,7 +137,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
-                    info!("diff set - {:?}", value);
+                    info!("diff pushback - {:?}", value);
                     if let Some(event_id) = match_text_msg(&value, "Hi, everyone") {
                         received = Some(event_id);
                     }
