@@ -308,7 +308,7 @@ async fn news_png_image_with_text_test() -> Result<()> {
 #[tokio::test]
 async fn news_like_reaction_test() -> Result<()> {
     let _ = env_logger::try_init();
-    let (mut user, space_id) = random_user_with_random_space("news-mkd-").await?;
+    let (mut user, space_id) = random_user_with_random_space("news_like").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
 
@@ -385,7 +385,7 @@ async fn news_like_reaction_test() -> Result<()> {
 #[tokio::test]
 async fn news_unlike_reaction_test() -> Result<()> {
     let _ = env_logger::try_init();
-    let (mut user, space_id) = random_user_with_random_space("news-mkd-").await?;
+    let (mut user, space_id) = random_user_with_random_space("news_unlike").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
 
