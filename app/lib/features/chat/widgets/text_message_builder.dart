@@ -1,5 +1,7 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/chat_theme.dart';
+import 'package:acter/common/utils/rooms.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -10,6 +12,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class TextMessageBuilder extends ConsumerStatefulWidget {
   final Convo convo;
@@ -56,7 +59,7 @@ class _TextMessageBuilderConsumerState
     //remove mx-reply tags.
     String parsedString = simplifyBody(widget.message.text);
     final urlRegexp = RegExp(
-      r'https://matrix\.to/#/@[A-Za-z0-9\-]+:[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+',
+      r'https://matrix\.to/#/[@!#][A-Za-z0-9\-]+:[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+',
       caseSensitive: false,
     );
     final matches = urlRegexp.allMatches(parsedString);
@@ -153,9 +156,7 @@ class _TextWidget extends ConsumerWidget {
                   maxLines: isReply ? 3 : null,
                 )
               : Html(
-                  onLinkTap: (url) async {
-                    await openLink(url.toString(), context);
-                  },
+                  onLinkTap: (url) => onLinkTap(url, context, ref),
                   backgroundColor: Colors.transparent,
                   data: message.text,
                   shrinkToFit: true,
@@ -182,6 +183,64 @@ class _TextWidget extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Future<void> onLinkTap(Uri uri, BuildContext context, WidgetRef ref) async {
+    final roomId = getRoomId(uri);
+
+    if (roomId != null) {
+      joinOrNavigateToChatRoom(context, ref, roomId);
+    } else {
+      // Open any other links
+      await openLink(uri.toString(), context);
+    }
+  }
+
+  String? getRoomId(Uri uri) {
+    // Match regex of matrix room link
+    final urlRegexp = RegExp(
+      r'https://matrix\.to/#/(?<roomId>.+):(?<server>.+)+',
+      caseSensitive: false,
+    );
+    final matches = urlRegexp.firstMatch(uri.toString());
+
+    if (matches != null) {
+      final roomId = matches.namedGroup('roomId');
+      var server = matches.namedGroup('server');
+
+      //Check & remove if string contains "?via=<server> pattern"
+      server = server!.split('?via=').first;
+
+      var roomIdWithServer = '$roomId:$server';
+
+      //For public groups - Replace encoded '%23' string with #
+      if (roomIdWithServer.startsWith('%23')) {
+        roomIdWithServer = roomIdWithServer.replaceAll('%23', '#');
+      }
+
+      return roomIdWithServer;
+    }
+    return null;
+  }
+
+  void joinOrNavigateToChatRoom(
+    BuildContext context,
+    WidgetRef ref,
+    String roomId,
+  ) async {
+    // Checking room is available and if is available then return Convo object else return null
+    final server = roomId.split(':').last;
+    await joinRoom(
+      context,
+      ref,
+      'Trying to join $roomId',
+      roomId,
+      server,
+      (roomId) => context.goNamed(
+        Routes.chatroom.name,
+        pathParameters: {'roomId': roomId},
+      ),
     );
   }
 }

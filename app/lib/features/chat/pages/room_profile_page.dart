@@ -139,9 +139,10 @@ class RoomProfilePage extends ConsumerWidget {
                   tiles: [
                     SettingsTile(
                       onPressed: (ctx) {
+                        final serverName = roomId.split(':').last;
                         Clipboard.setData(
                           ClipboardData(
-                            text: roomId,
+                            text: 'https://matrix.to/#/$roomId?via=$serverName',
                           ),
                         );
                         customMsgSnackbar(
