@@ -278,7 +278,7 @@ class _ChatBubble extends ConsumerWidget {
   // send emoji reaction to message event
   Future<void> toggleReaction(String eventId, String emoji) async {
     try {
-      final stream = await convo.timelineStream();
+      final stream = convo.timelineStream();
       await stream.toggleReaction(eventId, emoji);
     } catch (e) {
       debugPrint('$e');

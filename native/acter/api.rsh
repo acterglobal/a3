@@ -963,7 +963,7 @@ object Convo {
     fn get_member(user_id: string) -> Future<Result<Member>>;
 
     /// Get the timeline for the room
-    fn timeline_stream() -> Future<Result<TimelineStream>>;
+    fn timeline_stream() -> TimelineStream;
 
     /// The last message sent to the room
     fn latest_message() -> Option<RoomMessage>;

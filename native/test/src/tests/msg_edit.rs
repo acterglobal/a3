@@ -18,7 +18,7 @@ async fn edit_text_msg() -> Result<()> {
     state_sync.await_has_synced_history().await?;
 
     let convo = user.convo(room_id.to_string()).await?;
-    let timeline = convo.timeline_stream().await?;
+    let timeline = convo.timeline_stream();
     let stream = timeline.diff_stream();
     pin_mut!(stream);
 
@@ -134,7 +134,7 @@ async fn edit_image_msg() -> Result<()> {
     state_sync.await_has_synced_history().await?;
 
     let convo = user.convo(room_id.to_string()).await?;
-    let timeline = convo.timeline_stream().await?;
+    let timeline = convo.timeline_stream();
     let stream = timeline.diff_stream();
     pin_mut!(stream);
 

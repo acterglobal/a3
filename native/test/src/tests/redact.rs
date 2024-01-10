@@ -21,10 +21,7 @@ async fn message_redaction() -> Result<()> {
         .convo(room_id.to_string())
         .await
         .expect("user should belong to convo");
-    let timeline = convo
-        .timeline_stream()
-        .await
-        .expect("user should get timeline stream");
+    let timeline = convo.timeline_stream();
     let stream = timeline.diff_stream();
     pin_mut!(stream);
 

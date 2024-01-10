@@ -33,7 +33,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   void _init() async {
     try {
-      timeline = await convo.timelineStream();
+      timeline = convo.timelineStream();
       subscription = timeline?.diffStream().listen((timelineDiff) async {
         await _handleDiff(timelineDiff);
       });
