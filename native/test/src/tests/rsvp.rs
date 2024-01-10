@@ -38,7 +38,7 @@ utc_end = "{{ future(add_days=25).as_rfc3339 }}"
 #[tokio::test]
 async fn rsvp_last_status() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) = random_user_with_template("rsvp-last-status-", TMPL).await?;
+    let (user, _sync_state, _engine) = random_user_with_template("rsvp_last_status", TMPL).await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -110,7 +110,7 @@ async fn rsvp_last_status() -> Result<()> {
 #[tokio::test]
 async fn rsvp_my_status() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) = random_user_with_template("rsvp-my-status-", TMPL).await?;
+    let (user, _sync_state, _engine) = random_user_with_template("rsvp_my_status", TMPL).await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -187,7 +187,7 @@ async fn rsvp_my_status() -> Result<()> {
 async fn rsvp_count_at_status() -> Result<()> {
     let _ = env_logger::try_init();
     let (user, _sync_state, _engine) =
-        random_user_with_template("rsvp-count-at-status-", TMPL).await?;
+        random_user_with_template("rsvp_count_at_status", TMPL).await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);

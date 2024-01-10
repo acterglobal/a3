@@ -13,7 +13,7 @@ use crate::utils::random_user_with_random_convo;
 async fn message_redaction() -> Result<()> {
     let _ = env_logger::try_init();
 
-    let (mut user, room_id) = random_user_with_random_convo("redaction").await?;
+    let (mut user, room_id) = random_user_with_random_convo("redact").await?;
     let syncer = user.start_sync();
     syncer.await_has_synced_history().await?;
 
@@ -36,7 +36,7 @@ async fn message_redaction() -> Result<()> {
     let mut received = None;
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
-            info!("diff action: {}", diff.action());
+            info!("stream diff: {}", diff.action());
             match diff.action().as_str() {
                 "Reset" => {
                     let values = diff
