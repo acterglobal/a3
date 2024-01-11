@@ -51,3 +51,35 @@ UserMentionMessageData parseUserMentionMessage(
     displayName: displayName,
   );
 }
+
+String? getRoomIdFromLink(Uri uri) {
+  // Match regex for matrix room link
+  final urlRegexp = RegExp(
+    r'https://matrix\.to/#/(?<roomId>.+):(?<server>.+)+',
+    caseSensitive: false,
+  );
+  final matches = urlRegexp.firstMatch(uri.toString());
+
+  //Link is type of matrix room link
+  if (matches != null) {
+    final roomId = matches.namedGroup('roomId');
+    var server = matches.namedGroup('server');
+
+    //Check & remove if string contains "?via=<server> pattern"
+    server = server!.split('?via=').first;
+
+    //Create complete roomId with home server information
+    var roomIdWithServer = '$roomId:$server';
+
+    //For public groups - Replace encoded '%23' string with #
+    if (roomIdWithServer.startsWith('%23')) {
+      roomIdWithServer = roomIdWithServer.replaceAll('%23', '#');
+    }
+
+    //Return roomId
+    return roomIdWithServer;
+  }
+
+  //Link is other than matrix room link
+  return null;
+}

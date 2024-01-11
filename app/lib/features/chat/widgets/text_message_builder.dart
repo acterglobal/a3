@@ -3,6 +3,7 @@ import 'package:acter/common/themes/chat_theme.dart';
 import 'package:acter/common/utils/rooms.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat/chat_utils/chat_utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -187,49 +188,25 @@ class _TextWidget extends ConsumerWidget {
   }
 
   Future<void> onLinkTap(Uri uri, BuildContext context, WidgetRef ref) async {
-    final roomId = getRoomId(uri);
+    final roomId = getRoomIdFromLink(uri);
 
+    //If link is type of matrix room link
     if (roomId != null) {
-      joinOrNavigateToChatRoom(context, ref, roomId);
-    } else {
-      // Open any other links
+      joinAndOrNavigateToChatRoom(context, ref, roomId);
+    }
+
+    //If link is other than matrix room link
+    //Then open it on browser
+    else {
       await openLink(uri.toString(), context);
     }
   }
 
-  String? getRoomId(Uri uri) {
-    // Match regex of matrix room link
-    final urlRegexp = RegExp(
-      r'https://matrix\.to/#/(?<roomId>.+):(?<server>.+)+',
-      caseSensitive: false,
-    );
-    final matches = urlRegexp.firstMatch(uri.toString());
-
-    if (matches != null) {
-      final roomId = matches.namedGroup('roomId');
-      var server = matches.namedGroup('server');
-
-      //Check & remove if string contains "?via=<server> pattern"
-      server = server!.split('?via=').first;
-
-      var roomIdWithServer = '$roomId:$server';
-
-      //For public groups - Replace encoded '%23' string with #
-      if (roomIdWithServer.startsWith('%23')) {
-        roomIdWithServer = roomIdWithServer.replaceAll('%23', '#');
-      }
-
-      return roomIdWithServer;
-    }
-    return null;
-  }
-
-  void joinOrNavigateToChatRoom(
+  void joinAndOrNavigateToChatRoom(
     BuildContext context,
     WidgetRef ref,
     String roomId,
   ) async {
-    // Checking room is available and if is available then return Convo object else return null
     final server = roomId.split(':').last;
     await joinRoom(
       context,
