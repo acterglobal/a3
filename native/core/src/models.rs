@@ -60,12 +60,12 @@ use crate::{
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum Capability {
-    // someone can react on this
+    // someone can add reaction on this
     Reactable,
-    // someone can comment on this
+    // someone can add comment on this
     Commentable,
-    // someone can add attchments on this
-    HasAttachments,
+    // someone can add attachment on this
+    Attachable,
     // another custom capability
     Custom(&'static str),
 }

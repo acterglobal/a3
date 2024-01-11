@@ -64,7 +64,11 @@ impl ActerModel for Pin {
     }
 
     fn capabilities(&self) -> &[Capability] {
-        &[Capability::Commentable, Capability::HasAttachments]
+        &[
+            Capability::Commentable,
+            Capability::Attachable,
+            Capability::Reactable,
+        ]
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {

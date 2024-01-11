@@ -134,7 +134,7 @@ impl ActerModel for Rsvp {
     }
 
     fn capabilities(&self) -> &[Capability] {
-        &[Capability::Commentable]
+        &[]
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {

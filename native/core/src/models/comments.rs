@@ -143,7 +143,7 @@ impl ActerModel for Comment {
     }
 
     fn capabilities(&self) -> &[Capability] {
-        &[Capability::Commentable]
+        &[Capability::Commentable, Capability::Reactable]
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {

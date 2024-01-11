@@ -137,7 +137,7 @@ impl ActerModel for Attachment {
     }
 
     fn capabilities(&self) -> &[Capability] {
-        &[]
+        &[Capability::Commentable, Capability::Reactable]
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {
@@ -149,7 +149,7 @@ impl ActerModel for Attachment {
         let mut managers = vec![];
         for p in belongs_to {
             let parent = store.get(&p).await?;
-            if !parent.capabilities().contains(&Capability::HasAttachments) {
+            if !parent.capabilities().contains(&Capability::Attachable) {
                 error!(?parent, attachment = ?self, "doesn't support attachments. can't apply");
                 continue;
             }
