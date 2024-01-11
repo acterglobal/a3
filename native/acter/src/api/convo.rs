@@ -194,10 +194,7 @@ impl Convo {
     }
 
     pub fn timeline_stream(&self) -> TimelineStream {
-        TimelineStream::new(
-            self.inner.room.clone(),
-            self.timeline.clone(),
-        )
+        TimelineStream::new(self.inner.room.clone(), self.timeline.clone())
     }
 
     pub fn latest_message_ts(&self) -> u64 {
