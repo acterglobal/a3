@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use tracing::{error, trace};
 
-use super::{AnyActerModel, EventMeta};
+use super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta};
 use crate::{
     events::attachments::{
         AttachmentBuilder, AttachmentEventContent, AttachmentUpdateBuilder,
@@ -123,7 +123,7 @@ impl Attachment {
     }
 }
 
-impl super::ActerModel for Attachment {
+impl ActerModel for Attachment {
     fn indizes(&self) -> Vec<String> {
         self.belongs_to()
             .expect("we always have some as attachments")
@@ -136,7 +136,7 @@ impl super::ActerModel for Attachment {
         &self.meta.event_id
     }
 
-    fn capabilities(&self) -> &[super::Capability] {
+    fn capabilities(&self) -> &[Capability] {
         &[]
     }
 
@@ -149,10 +149,7 @@ impl super::ActerModel for Attachment {
         let mut managers = vec![];
         for p in belongs_to {
             let parent = store.get(&p).await?;
-            if !parent
-                .capabilities()
-                .contains(&super::Capability::HasAttachments)
-            {
+            if !parent.capabilities().contains(&Capability::HasAttachments) {
                 error!(?parent, attachment = ?self, "doesn't support attachments. can't apply");
                 continue;
             }
@@ -175,7 +172,7 @@ impl super::ActerModel for Attachment {
         Some(vec![self.inner.on.event_id.to_string()])
     }
 
-    fn transition(&mut self, model: &super::AnyActerModel) -> Result<bool> {
+    fn transition(&mut self, model: &AnyActerModel) -> Result<bool> {
         let AnyActerModel::AttachmentUpdate(update) = model else {
             return Ok(false)
         };
@@ -212,7 +209,7 @@ pub struct AttachmentUpdate {
     meta: EventMeta,
 }
 
-impl super::ActerModel for AttachmentUpdate {
+impl ActerModel for AttachmentUpdate {
     fn indizes(&self) -> Vec<String> {
         vec![format!("{:}::history", self.inner.attachment.event_id)]
     }
@@ -225,8 +222,8 @@ impl super::ActerModel for AttachmentUpdate {
         Some(vec![self.inner.attachment.event_id.to_string()])
     }
 
-    async fn execute(self, store: &super::Store) -> Result<Vec<String>> {
-        super::default_model_execute(store, self.into()).await
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+        default_model_execute(store, self.into()).await
     }
 }
 

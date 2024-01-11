@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Deref};
 use tracing::{error, trace};
 
-use super::{AnyActerModel, EventMeta};
+use super::{ActerModel, AnyActerModel, Capability, EventMeta};
 use crate::{
     events::rsvp::{RsvpBuilder, RsvpEventContent},
     store::Store,
@@ -120,7 +120,7 @@ impl Rsvp {
     }
 }
 
-impl super::ActerModel for Rsvp {
+impl ActerModel for Rsvp {
     fn indizes(&self) -> Vec<String> {
         self.belongs_to()
             .expect("we always have some as entries")
@@ -133,8 +133,8 @@ impl super::ActerModel for Rsvp {
         &self.meta.event_id
     }
 
-    fn capabilities(&self) -> &[super::Capability] {
-        &[super::Capability::Commentable]
+    fn capabilities(&self) -> &[Capability] {
+        &[Capability::Commentable]
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {
@@ -144,10 +144,7 @@ impl super::ActerModel for Rsvp {
         let mut managers = vec![];
         for m in belongs_to {
             let model = store.get(&m).await?;
-            if !model
-                .capabilities()
-                .contains(&super::Capability::Commentable)
-            {
+            if !model.capabilities().contains(&Capability::Commentable) {
                 error!(?model, rsvp = ?self, "doesn't support entries. can't apply");
                 continue;
             }

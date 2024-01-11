@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use tracing::{error, trace};
 
-use super::{AnyActerModel, EventMeta};
+use super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta};
 use crate::{
     events::comments::{
         CommentBuilder, CommentEventContent, CommentUpdateBuilder, CommentUpdateEventContent,
@@ -129,7 +129,7 @@ impl Comment {
     }
 }
 
-impl super::ActerModel for Comment {
+impl ActerModel for Comment {
     fn indizes(&self) -> Vec<String> {
         self.belongs_to()
             .expect("we always have some as comments")
@@ -142,8 +142,8 @@ impl super::ActerModel for Comment {
         &self.meta.event_id
     }
 
-    fn capabilities(&self) -> &[super::Capability] {
-        &[super::Capability::Commentable]
+    fn capabilities(&self) -> &[Capability] {
+        &[Capability::Commentable]
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {
@@ -153,10 +153,7 @@ impl super::ActerModel for Comment {
         let mut managers = vec![];
         for p in belongs_to {
             let parent = store.get(&p).await?;
-            if !parent
-                .capabilities()
-                .contains(&super::Capability::Commentable)
-            {
+            if !parent.capabilities().contains(&Capability::Commentable) {
                 error!(?parent, comment = ?self, "doesn't support comments. can't apply");
                 continue;
             }
@@ -191,7 +188,7 @@ impl super::ActerModel for Comment {
         Some(references)
     }
 
-    fn transition(&mut self, model: &super::AnyActerModel) -> Result<bool> {
+    fn transition(&mut self, model: &AnyActerModel) -> Result<bool> {
         let AnyActerModel::CommentUpdate(update) = model else {
             return Ok(false)
         };
@@ -228,7 +225,7 @@ pub struct CommentUpdate {
     meta: EventMeta,
 }
 
-impl super::ActerModel for CommentUpdate {
+impl ActerModel for CommentUpdate {
     fn indizes(&self) -> Vec<String> {
         vec![format!("{:}::history", self.inner.comment.event_id)]
     }
@@ -241,8 +238,8 @@ impl super::ActerModel for CommentUpdate {
         Some(vec![self.inner.comment.event_id.to_string()])
     }
 
-    async fn execute(self, store: &super::Store) -> Result<Vec<String>> {
-        super::default_model_execute(store, self.into()).await
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+        default_model_execute(store, self.into()).await
     }
 }
 

@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Deref};
 use tracing::{error, trace};
 
-use super::{AnyActerModel, EventMeta};
+use super::{ActerModel, AnyActerModel, Capability, EventMeta};
 use crate::{store::Store, Result};
 
 static REACTIONS_FIELD: &str = "reactions";
@@ -110,10 +110,10 @@ impl Reaction {
     }
 }
 
-impl super::ActerModel for Reaction {
+impl ActerModel for Reaction {
     fn indizes(&self) -> Vec<String> {
         self.belongs_to()
-            .unwrap() // we always have some as entries
+            .expect("we always have some as entries")
             .into_iter()
             .map(|v| Reaction::index_for(&v))
             .collect()
@@ -130,7 +130,7 @@ impl super::ActerModel for Reaction {
         let mut managers = vec![];
         for m in belongs_to {
             let model = store.get(&m).await?;
-            if !model.capabilities().contains(&super::Capability::Reactable) {
+            if !model.capabilities().contains(&Capability::Reactable) {
                 error!(?model, reaction = ?self, "doesn't support entries. can't apply");
                 continue;
             }
