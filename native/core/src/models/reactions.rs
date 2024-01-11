@@ -8,8 +8,8 @@ use tracing::{error, trace};
 use super::{AnyActerModel, EventMeta};
 use crate::{store::Store, Result};
 
-static REACTION_FIELD: &str = "reaction";
-static REACTION_STATS_FIELD: &str = "reaction_stats";
+static REACTIONS_FIELD: &str = "reactions";
+static REACTIONS_STATS_FIELD: &str = "reactions_stats";
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Getters)]
 pub struct ReactionStats {
@@ -27,7 +27,7 @@ pub struct ReactionManager {
 impl ReactionManager {
     fn stats_field_for<T: AsRef<str>>(parent: &T) -> String {
         let r = parent.as_ref();
-        format!("{r}::{REACTION_STATS_FIELD}")
+        format!("{r}::{REACTIONS_STATS_FIELD}")
     }
 
     pub async fn from_store_and_event_id(store: &Store, event_id: &EventId) -> ReactionManager {
@@ -106,7 +106,7 @@ impl Deref for Reaction {
 impl Reaction {
     pub fn index_for<T: AsRef<str>>(parent: &T) -> String {
         let r = parent.as_ref();
-        format!("{r}::{REACTION_FIELD}")
+        format!("{r}::{REACTIONS_FIELD}")
     }
 }
 
