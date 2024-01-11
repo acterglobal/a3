@@ -151,7 +151,7 @@ class RoomProfilePage extends ConsumerWidget {
                         );
                       },
                       title: Text(
-                        'Copy Room ID',
+                        'Copy room link',
                         style: tileTextTheme,
                       ),
                       leading: const Icon(Atlas.chain_link_thin, size: 18),
