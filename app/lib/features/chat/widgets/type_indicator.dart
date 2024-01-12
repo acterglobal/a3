@@ -322,7 +322,7 @@ class AvatarHandler extends StatelessWidget {
                   '${authors.length - 2}',
                   style: const TextStyle(color: Color(0xFFFFFFFF)),
                   textAlign: TextAlign.center,
-                  textScaleFactor: 0.7,
+                  textScaler: const TextScaler.linear(0.7),
                 ),
               ),
             ),
@@ -352,7 +352,7 @@ class TypingAvatar extends StatelessWidget {
           fontWeight: FontWeight.w500,
           color: neutral2,
         ),
-        textScaleFactor: 0.7,
+        textScaler: const TextScaler.linear(0.7),
       ),
     );
   }
