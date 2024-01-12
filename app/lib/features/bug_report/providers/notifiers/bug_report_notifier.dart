@@ -69,6 +69,7 @@ class BugReportStateNotifier extends StateNotifier<BugReport> {
         ),
       );
     }
+    print("sending $rageshakeUrl");
     final resp = await request.send();
     if (resp.statusCode == HttpStatus.ok) {
       Map<String, dynamic> json = jsonDecode(await resp.stream.bytesToString());

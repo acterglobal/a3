@@ -10,6 +10,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class BugReportPage extends ConsumerStatefulWidget {
+  static const titleField = Key('bug-report-title');
+  static const includeScreenshot = Key('bug-report-include-screenshot');
+  static const includeLog = Key('bug-report-include-log');
+  static const submitBtn = Key('bug-report-submit');
   final String? imagePath;
 
   const BugReportPage({super.key, this.imagePath});
@@ -61,22 +65,25 @@ class _BugReportState extends ConsumerState<BugReportPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 10),
-              const Text('Please describe the issue'),
+              const Text('Brief description of the issue'),
               const SizedBox(height: 10),
               TextFormField(
+                key: BugReportPage.titleField,
                 style: const TextStyle(color: Colors.white),
                 onChanged: (value) => reportNotifier.setDescription(value),
               ),
               const SizedBox(height: 10),
               CheckboxListTile(
-                title: const Text('Including log file'),
+                key: BugReportPage.includeLog,
+                title: const Text('Include current logs'),
                 value: bugReport.withLog,
                 onChanged: (bool? value) => reportNotifier.toggleLog(),
                 controlAffinity: ListTileControlAffinity.leading,
               ),
               const SizedBox(height: 10),
               CheckboxListTile(
-                title: const Text('Including screenshot'),
+                key: BugReportPage.includeScreenshot,
+                title: const Text('Include screenshot'),
                 value: bugReport.withScreenshot,
                 onChanged: (bool? value) => reportNotifier.toggleScreenshot(),
                 controlAffinity: ListTileControlAffinity.leading,
@@ -101,6 +108,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
               isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : DefaultButton(
+                      key: BugReportPage.submitBtn,
                       onPressed: () async {
                         if (bugReport.description.isEmpty) {
                           _descriptionDialog();
