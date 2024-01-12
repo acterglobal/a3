@@ -14,6 +14,15 @@ services:
       - 8448:8448/tcp
       - 8118:8008/tcp
 
+  rageshake:
+    image: "ghcr.io/matrix-org/rageshake"
+    restart: unless-stopped
+    volumes:
+      - ./.config/rageshake.yml:/rageshake.yml:rw
+    command: "-config /rageshake.yml"
+    ports:
+      - 9110:9110/tcp
+
   setup-admin:
     build:
       context: .config/acter-synapse-ci
