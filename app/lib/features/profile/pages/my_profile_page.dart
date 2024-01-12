@@ -17,9 +17,9 @@ class ChangeDisplayName extends StatefulWidget {
   final AccountProfile account;
 
   const ChangeDisplayName({
-    Key? key,
+    super.key,
     required this.account,
-  }) : super(key: key);
+  });
 
   @override
   State<ChangeDisplayName> createState() => _ChangeDisplayNameState();

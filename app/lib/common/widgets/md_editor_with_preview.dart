@@ -19,13 +19,13 @@ class MdEditorWithPreview extends ConsumerStatefulWidget {
   final TextEditingController? controller;
 
   const MdEditorWithPreview({
-    Key? key,
+    super.key,
     this.onChanged,
     this.validator,
     this.hintText = 'Description',
     this.labelText = 'Description',
     this.controller,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>

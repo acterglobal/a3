@@ -94,13 +94,13 @@ class MessageMetadataBuilder extends ConsumerWidget {
   }
 
   Future<void> _handleRetry() async {
-    final stream = await convo.timelineStream();
+    final stream = convo.timelineStream();
     // attempts to retry sending local echo to server
     await stream.retrySend(message.id);
   }
 
   Future<void> _handleCancelRetrySend() async {
-    final stream = await convo.timelineStream();
+    final stream = convo.timelineStream();
     // cancels the retry sending of local echos
     await stream.cancelSend(message.id);
   }

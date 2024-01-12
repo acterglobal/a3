@@ -1,4 +1,5 @@
 /// Get the relations of the given SpaceId.  Throws
+library;
 import 'dart:core';
 
 import 'package:acter/common/models/profile_data.dart';

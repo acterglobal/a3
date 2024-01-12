@@ -17,12 +17,12 @@ class TaskListCard extends ConsumerStatefulWidget {
   final bool showTitle;
   final bool showDescription;
   const TaskListCard({
-    Key? key,
+    super.key,
     required this.taskList,
     this.showSpace = true,
     this.showTitle = true,
     this.showDescription = false,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _TaskListCardState();
@@ -171,8 +171,7 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
 class _InlineTaskAdd extends StatefulWidget {
   final Function() cancel;
   final TaskList taskList;
-  const _InlineTaskAdd({Key? key, required this.cancel, required this.taskList})
-      : super(key: key);
+  const _InlineTaskAdd({required this.cancel, required this.taskList});
 
   @override
   _InlineTaskAddState createState() => _InlineTaskAddState();

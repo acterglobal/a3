@@ -55,8 +55,7 @@ final spaceAppSettingsProvider = FutureProvider.autoDispose
 class SpaceAppsSettingsPage extends ConsumerWidget {
   static const tasksSwitch = Key('space-settings-tasks');
   final String spaceId;
-  const SpaceAppsSettingsPage({Key? key, required this.spaceId})
-      : super(key: key);
+  const SpaceAppsSettingsPage({super.key, required this.spaceId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -450,11 +449,11 @@ class ChangePowerLevel extends StatefulWidget {
   final String currentPowerLevelName;
 
   const ChangePowerLevel({
-    Key? key,
+    super.key,
     required this.featureName,
     required this.currentPowerLevelName,
     this.currentPowerLevel,
-  }) : super(key: key);
+  });
 
   @override
   State<ChangePowerLevel> createState() => _ChangePowerLevelState();

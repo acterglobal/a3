@@ -5,7 +5,7 @@ class ExpandableText extends StatefulWidget {
   final String text;
   bool isExpanded = false;
 
-  ExpandableText(this.text, {Key? key}) : super(key: key);
+  ExpandableText(this.text, {super.key});
 
   @override
   State<ExpandableText> createState() => _ExpandableTextState();

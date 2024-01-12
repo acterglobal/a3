@@ -590,7 +590,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     final roomId = widget.convo.getRoomIdStr();
     final client = ref.read(clientProvider)!;
     final inputState = ref.read(chatInputProvider(roomId));
-    final stream = await widget.convo.timelineStream();
+    final stream = widget.convo.timelineStream();
 
     try {
       for (File file in files) {
@@ -790,7 +790,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
     await widget.convo.typingNotice(false);
-    final stream = await widget.convo.timelineStream();
+    final stream = widget.convo.timelineStream();
     final draft = client.textMarkdownDraft(markdownMessage);
     if (inputState.repliedToMessage != null) {
       await stream.replyMessage(inputState.repliedToMessage!.id, draft);

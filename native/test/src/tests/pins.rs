@@ -38,7 +38,7 @@ content = { body = "example pin data" }
 #[tokio::test]
 async fn pins_smoketest() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) = random_user_with_template("pins-smoke-", TMPL).await?;
+    let (user, _sync_state, _engine) = random_user_with_template("pin_smoke", TMPL).await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -70,7 +70,7 @@ async fn pins_smoketest() -> Result<()> {
 #[tokio::test]
 async fn pin_comments() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) = random_user_with_template("pins-comments--", TMPL).await?;
+    let (user, _sync_state, _engine) = random_user_with_template("pin_comments", TMPL).await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
@@ -127,8 +127,7 @@ async fn pin_comments() -> Result<()> {
 #[tokio::test]
 async fn pin_attachments() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) =
-        random_user_with_template("pins-attachments--", TMPL).await?;
+    let (user, _sync_state, _engine) = random_user_with_template("pin_attachments", TMPL).await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();

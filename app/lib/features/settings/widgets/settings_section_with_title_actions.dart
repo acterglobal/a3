@@ -51,7 +51,7 @@ class SettingsSectionWithTitleActions extends AbstractSettingsSection {
 
   Padding _platformPaddingTitle(BuildContext context) {
     final theme = SettingsTheme.of(context);
-    final textScalar = MediaQuery.of(context).textScaler;
+    final scaleFactor = MediaQuery.of(context).textScaler;
 
     switch (theme.platform) {
       case DevicePlatform.android:
@@ -59,8 +59,8 @@ class SettingsSectionWithTitleActions extends AbstractSettingsSection {
       case DevicePlatform.linux:
         return Padding(
           padding: EdgeInsetsDirectional.only(
-            top: textScalar.scale(24),
-            bottom: textScalar.scale(10),
+            top: scaleFactor.scale(24),
+            bottom: scaleFactor.scale(10),
             start: 24,
             end: 24,
           ),
@@ -77,7 +77,7 @@ class SettingsSectionWithTitleActions extends AbstractSettingsSection {
         return Padding(
           padding: EdgeInsetsDirectional.only(
             start: 18,
-            bottom: textScalar.scale(5),
+            bottom: scaleFactor.scale(5),
           ),
           child: DefaultTextStyle(
             style: TextStyle(

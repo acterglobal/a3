@@ -22,10 +22,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
         .convo(room_id.to_string())
         .await
         .expect("sisko should belong to convo");
-    let sisko_timeline = sisko_convo
-        .timeline_stream()
-        .await
-        .expect("sisko should get timeline stream");
+    let sisko_timeline = sisko_convo.timeline_stream();
     let sisko_stream = sisko_timeline.diff_stream();
     pin_mut!(sisko_stream);
 
@@ -38,10 +35,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
         .convo(room_id.to_string())
         .await
         .expect("kyra should belong to convo");
-    let kyra_timeline = kyra_convo
-        .timeline_stream()
-        .await
-        .expect("kyra should get timeline stream");
+    let kyra_timeline = kyra_convo.timeline_stream();
     let kyra_stream = kyra_timeline.diff_stream();
     pin_mut!(kyra_stream);
 
@@ -60,10 +54,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
         .convo(room_id.to_string())
         .await
         .expect("worf should belong to convo");
-    let worf_timeline = worf_convo
-        .timeline_stream()
-        .await
-        .expect("worf should get timeline stream");
+    let worf_timeline = worf_convo.timeline_stream();
     let worf_stream = worf_timeline.diff_stream();
     pin_mut!(worf_stream);
 
@@ -92,7 +83,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
-                    info!("diff set - {:?}", value);
+                    info!("diff pushback - {:?}", value);
                     if let Some(event_id) = match_text_msg(&value, "Hi, everyone") {
                         received = Some(event_id);
                     }
@@ -137,7 +128,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
-                    info!("diff set - {:?}", value);
+                    info!("diff pushback - {:?}", value);
                     if let Some(event_id) = match_text_msg(&value, "Hi, everyone") {
                         received = Some(event_id);
                     }

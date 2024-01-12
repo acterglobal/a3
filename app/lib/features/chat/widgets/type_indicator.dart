@@ -27,11 +27,11 @@ class TypeIndicator extends StatefulWidget {
   final bool showIndicator;
 
   const TypeIndicator({
-    Key? key,
+    super.key,
     required this.bubbleAlignment,
     this.options = const TypingIndicatorOptions(),
     required this.showIndicator,
-  }) : super(key: key);
+  });
 
   @override
   State<TypeIndicator> createState() => _TypeIndicatorState();
@@ -206,10 +206,10 @@ class TypingWidget extends StatelessWidget {
   final TypingIndicatorMode mode;
 
   const TypingWidget({
-    Key? key,
+    super.key,
     required this.widget,
     required this.mode,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -283,7 +283,7 @@ class TypingWidget extends StatelessWidget {
 class AvatarHandler extends StatelessWidget {
   final List<types.User> authors;
 
-  const AvatarHandler({Key? key, required this.authors}) : super(key: key);
+  const AvatarHandler({super.key, required this.authors});
 
   @override
   Widget build(BuildContext context) {
@@ -337,7 +337,7 @@ class AvatarHandler extends StatelessWidget {
 class TypingAvatar extends StatelessWidget {
   final types.User author;
 
-  const TypingAvatar({Key? key, required this.author}) : super(key: key);
+  const TypingAvatar({super.key, required this.author});
 
   @override
   Widget build(BuildContext context) {
@@ -371,10 +371,10 @@ class AnimatedBubble extends StatelessWidget {
   final Animation<Offset> animationOffset;
 
   const AnimatedBubble({
-    Key? key,
+    super.key,
     required this.color,
     required this.animationOffset,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

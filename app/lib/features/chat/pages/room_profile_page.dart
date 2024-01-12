@@ -23,8 +23,8 @@ class RoomProfilePage extends ConsumerWidget {
 
   const RoomProfilePage({
     required this.roomId,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

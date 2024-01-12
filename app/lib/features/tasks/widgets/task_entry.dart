@@ -17,11 +17,11 @@ class TaskEntry extends ConsumerWidget {
   final bool showBreadCrumb;
   final Function()? onDone;
   const TaskEntry({
-    Key? key,
+    super.key,
     required this.task,
     this.showBreadCrumb = false,
     this.onDone,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -14,7 +14,7 @@ import 'package:go_router/go_router.dart';
 class TasksPage extends ConsumerWidget {
   static const createNewTaskListKey = Key('tasks-create-list');
   static const taskListsKey = Key('tasks-task-lists');
-  const TasksPage({Key? key}) : super(key: key);
+  const TasksPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -16,11 +16,11 @@ class NotificationListState extends PagedState<Next?, ffi.Notification> {
   // We can extends [PagedState] to add custom parameters to our state
 
   const NotificationListState({
-    List<ffi.Notification>? records,
-    String? error,
-    Next? nextPageKey = const Next(isStart: true),
+    super.records,
+    String? super.error,
+    super.nextPageKey = const Next(isStart: true),
     List<Next?>? previousPageKeys,
-  }) : super(records: records, error: error, nextPageKey: nextPageKey);
+  });
 
   NotificationListState addNotification(ffi.Notification n) {
     final r = records ?? [];
