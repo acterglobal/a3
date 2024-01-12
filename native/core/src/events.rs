@@ -10,8 +10,8 @@ pub mod tasks;
 pub mod three_pid;
 
 pub use common::{
-    BelongsTo, BrandIcon, Color, Colorize, Icon, Labels, ObjRef, Position, RefDetails, Reference,
-    References, Update, UtcDateTime,
+    BelongsTo, BrandIcon, Color, Colorize, Date, Icon, Labels, ObjRef, Position, RefDetails,
+    Reference, References, Update, UtcDateTime,
 };
 use ruma_common::exports::serde::de::Error as SerdeDeError;
 use ruma_events::{
@@ -35,6 +35,8 @@ pub enum AnyActerEvent {
 
     Task(tasks::TaskEvent),
     TaskUpdate(tasks::TaskUpdateEvent),
+    TaskSelfAssign(tasks::TaskSelfAssignEvent),
+    TaskSelfUnassign(tasks::TaskSelfUnassignEvent),
 
     // Generic Relative Features
     Comment(comments::CommentEvent),
@@ -130,6 +132,22 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
                 Ok(Self::TaskUpdate(event))
             }
 
+            tasks::TaskSelfAssignEventContent::TYPE => {
+                let event = ::ruma_common::exports::serde_json::from_str::<
+                    tasks::TaskSelfAssignEvent,
+                >(json.get())
+                .map_err(D::Error::custom)?;
+                Ok(Self::TaskSelfAssign(event))
+            }
+
+            tasks::TaskSelfUnassignEventContent::TYPE => {
+                let event = ::ruma_common::exports::serde_json::from_str::<
+                    tasks::TaskSelfUnassignEvent,
+                >(json.get())
+                .map_err(D::Error::custom)?;
+                Ok(Self::TaskSelfUnassign(event))
+            }
+
             comments::CommentEventContent::TYPE => {
                 let event = ::ruma_common::exports::serde_json::from_str::<comments::CommentEvent>(
                     json.get(),
@@ -187,6 +205,8 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
                     tasks::TaskListUpdateEventContent::TYPE,
                     tasks::TaskEventContent::TYPE,
                     tasks::TaskUpdateEventContent::TYPE,
+                    tasks::TaskSelfAssignEventContent::TYPE,
+                    tasks::TaskSelfUnassignEventContent::TYPE,
                     comments::CommentEventContent::TYPE,
                     comments::CommentUpdateEventContent::TYPE,
                     attachments::AttachmentEventContent::TYPE,

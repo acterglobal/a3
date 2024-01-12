@@ -26,7 +26,7 @@ class InvitationListNotifier extends Notifier<List<Invitation>> {
         );
         state = asList;
       });
-      ref.onDispose(() => _poller != null ? _poller!.cancel() : null);
+      ref.onDispose(() => _poller?.cancel());
     }
     return [];
   }

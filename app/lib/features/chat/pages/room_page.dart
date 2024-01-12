@@ -49,8 +49,8 @@ class ChatRoom extends ConsumerStatefulWidget {
 
   const ChatRoom({
     required this.convo,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   ConsumerState<ChatRoom> createState() => _ChatRoomConsumerState();

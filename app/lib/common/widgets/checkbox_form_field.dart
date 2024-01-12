@@ -4,16 +4,13 @@ import 'package:flutter/material.dart';
 class CheckboxFormField extends FormField<bool> {
   CheckboxFormField({
     Widget? title,
-    FormFieldSetter<bool>? onSaved,
-    FormFieldValidator<bool>? validator,
+    super.onSaved,
+    super.validator,
     FormFieldSetter<bool>? onChanged,
-    bool initialValue = false,
+    bool super.initialValue = false,
     bool autovalidate = false,
     super.key,
   }) : super(
-          onSaved: onSaved,
-          validator: validator,
-          initialValue: initialValue,
           builder: (FormFieldState<bool> state) {
             return CheckboxListTile(
               dense: state.hasError,

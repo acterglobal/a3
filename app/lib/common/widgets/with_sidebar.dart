@@ -6,11 +6,11 @@ class WithSidebar extends StatelessWidget {
   final Widget sidebar;
   final bool preferSidebar;
   const WithSidebar({
-    Key? key,
+    super.key,
     required this.child,
     required this.sidebar,
     this.preferSidebar = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class InDashboard extends StatelessWidget {
   final Widget child;
-  const InDashboard({Key? key, required this.child}) : super(key: key);
+  const InDashboard({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

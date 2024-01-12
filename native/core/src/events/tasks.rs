@@ -2,7 +2,6 @@ use chrono_tz::Tz;
 use core::result::Result as CoreResult;
 use derive_builder::Builder;
 use derive_getters::Getters;
-use ruma_common::OwnedUserId;
 use ruma_events::{macros::EventContent, room::message::TextMessageEventContent};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
@@ -12,7 +11,7 @@ use tracing::trace;
 /// modeled after [JMAP Tasks](https://jmap.io/spec-tasks.html), extensions to
 /// [ietf rfc8984](https://www.rfc-editor.org/rfc/rfc8984.html#name-task).
 ///
-use super::{BelongsTo, Color, Update, UtcDateTime};
+use super::{BelongsTo, Color, Date, Update, UtcDateTime};
 use crate::{util::deserialize_some, Result as ActerResult};
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -87,10 +86,6 @@ pub struct TaskListEventContent {
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub categories: Vec<String>,
-
-    #[builder(setter(into), default)]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub subscribers: Vec<OwnedUserId>,
 }
 
 /// The TaskList Event
@@ -167,14 +162,6 @@ pub struct TaskListUpdateEventContent {
         deserialize_with = "deserialize_some"
     )]
     pub categories: Option<Vec<String>>,
-
-    #[builder(setter(into), default)]
-    #[serde(
-        default,
-        skip_serializing_if = "Option::is_none",
-        deserialize_with = "deserialize_some"
-    )]
-    pub subscribers: Option<Vec<OwnedUserId>>,
 }
 
 impl TaskListUpdateEventContent {
@@ -198,10 +185,6 @@ impl TaskListUpdateEventContent {
         }
         if let Some(sort_order) = &self.sort_order {
             task_list.sort_order = *sort_order;
-            updated = true;
-        }
-        if let Some(subscribers) = &self.subscribers {
-            task_list.subscribers = subscribers.clone();
             updated = true;
         }
         if let Some(time_zone) = &self.time_zone {
@@ -249,25 +232,16 @@ pub struct TaskEventContent {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<TextMessageEventContent>,
 
-    /// The users this task is assigned to
-    #[builder(default)]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub assignees: Vec<OwnedUserId>,
-
-    /// Other users subscribed to updates of this item
-    #[builder(setter(into), default)]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub subscribers: Vec<OwnedUserId>,
-
-    /// When is this task due
+    /// Which day is this task due
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub utc_due: Option<UtcDateTime>,
+    pub due_date: Option<Date>,
 
-    /// Should the due be shown as a date only?
-    #[builder(default)]
-    #[serde(default)]
-    pub show_without_time: bool,
+    /// Any particular time this task is due as seconds since/to midnight UTC
+    /// make sure to include any
+    #[builder(setter(into), default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub utc_due_time_of_day: Option<i32>,
 
     /// When was this task started?
     #[builder(setter(into), default)]
@@ -308,7 +282,7 @@ impl TaskBuilder {
     fn validate(&self) -> CoreResult<(), String> {
         if let Some(Some(percent)) = &self.progress_percent {
             if *percent > 100 {
-                return Err("Progress Precent can't be higher than 100".to_string());
+                return Err("Progress percent can't be higher than 100".to_string());
             }
         }
         Ok(())
@@ -347,41 +321,23 @@ pub struct TaskUpdateEventContent {
     )]
     pub description: Option<Option<TextMessageEventContent>>,
 
-    /// The users this task is assigned to
+    /// Day when is this task due
     #[builder(default)]
     #[serde(
         default,
         skip_serializing_if = "Option::is_none",
         deserialize_with = "deserialize_some"
     )]
-    pub assignees: Option<Vec<OwnedUserId>>,
+    pub due_date: Option<Option<Date>>,
 
-    /// Other users subscribed to updates of this item
+    /// Specific time on the day is this task due
     #[builder(default)]
     #[serde(
         default,
         skip_serializing_if = "Option::is_none",
         deserialize_with = "deserialize_some"
     )]
-    pub subscribers: Option<Vec<OwnedUserId>>,
-
-    /// When is this task due
-    #[builder(default)]
-    #[serde(
-        default,
-        skip_serializing_if = "Option::is_none",
-        deserialize_with = "deserialize_some"
-    )]
-    pub utc_due: Option<Option<UtcDateTime>>,
-
-    /// Whether to ignore time of day when showing the due date
-    #[builder(default)]
-    #[serde(
-        default,
-        skip_serializing_if = "Option::is_none",
-        deserialize_with = "deserialize_some"
-    )]
-    pub show_without_time: Option<bool>,
+    pub utc_due_time_of_day: Option<Option<i32>>,
 
     /// When was this task started?
     #[builder(default)]
@@ -457,16 +413,12 @@ impl TaskUpdateEventContent {
             task.description = description.clone();
             updated = true;
         }
-        if let Some(assignees) = &self.assignees {
-            task.assignees = assignees.clone();
+        if let Some(due_date) = &self.due_date {
+            task.due_date = *due_date;
             updated = true;
         }
-        if let Some(subscribers) = &self.subscribers {
-            task.subscribers = subscribers.clone();
-            updated = true;
-        }
-        if let Some(utc_due) = &self.utc_due {
-            task.utc_due = *utc_due;
+        if let Some(utc_due_time_of_day) = &self.utc_due_time_of_day {
+            task.utc_due_time_of_day = *utc_due_time_of_day;
             updated = true;
         }
         if let Some(utc_start) = &self.utc_start {
@@ -479,10 +431,6 @@ impl TaskUpdateEventContent {
         }
         if let Some(sort_order) = &self.sort_order {
             task.sort_order = *sort_order;
-            updated = true;
-        }
-        if let Some(show_without_time) = &self.show_without_time {
-            task.show_without_time = *show_without_time;
             updated = true;
         }
         if let Some(priority) = &self.priority {
@@ -506,4 +454,24 @@ impl TaskUpdateEventContent {
 
         Ok(updated)
     }
+}
+
+/// TaskSelfAssign Event
+#[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Getters)]
+#[ruma_event(type = "global.acter.dev.task.self_assign", kind = MessageLike)]
+#[builder(name = "TaskSelfAssignBuilder", derive(Debug))]
+pub struct TaskSelfAssignEventContent {
+    #[builder(setter(into))]
+    #[serde(rename = "m.relates_to")]
+    pub task: BelongsTo,
+}
+
+/// TaskSelfUnassign Event
+#[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Getters)]
+#[ruma_event(type = "global.acter.dev.task.self_unassign", kind = MessageLike)]
+#[builder(name = "TaskSelfUnassignBuilder", derive(Debug))]
+pub struct TaskSelfUnassignEventContent {
+    #[builder(setter(into))]
+    #[serde(rename = "m.relates_to")]
+    pub task: BelongsTo,
 }

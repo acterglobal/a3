@@ -124,13 +124,13 @@ class RegularSlide extends ConsumerWidget {
   final Widget child;
 
   const RegularSlide({
-    Key? key,
+    super.key,
     required this.news,
     required this.index,
     required this.bgColor,
     required this.fgColor,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -193,9 +193,9 @@ class ImageSlide extends StatefulWidget {
   final NewsSlide slide;
 
   const ImageSlide({
-    Key? key,
+    super.key,
     required this.slide,
-  }) : super(key: key);
+  });
 
   @override
   State<ImageSlide> createState() => _ImageSlideState();

@@ -8,10 +8,10 @@ class SpaceChip extends ConsumerWidget {
   final String? spaceId;
 
   const SpaceChip({
-    Key? key,
+    super.key,
     this.space,
     this.spaceId,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

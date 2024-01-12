@@ -11,14 +11,14 @@ class LikeButton extends StatefulWidget {
   final void Function()? onTap;
 
   const LikeButton({
-    Key? key,
+    super.key,
     required this.likeCount,
     required this.style,
     required this.color,
     required this.index,
     this.isLiked = false,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   State<LikeButton> createState() => _LikeButtonState();

@@ -11,9 +11,9 @@ class SpacesBuilder extends ConsumerWidget {
   }) navigateTo;
 
   const SpacesBuilder({
-    Key? key,
+    super.key,
     required this.navigateTo,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

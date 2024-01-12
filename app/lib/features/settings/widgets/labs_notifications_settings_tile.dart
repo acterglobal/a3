@@ -14,8 +14,7 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
   final String? title;
   const _LabNotificationSettingsTile({
     this.title,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -71,8 +70,8 @@ class LabsNotificationsSettingsTile extends AbstractSettingsTile {
   final String? title;
   const LabsNotificationsSettingsTile({
     this.title,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

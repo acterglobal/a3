@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:dart_date/dart_date.dart';
 
 class CalendarWidget extends ConsumerStatefulWidget {
   final int? eventsLimit;
@@ -184,7 +185,7 @@ class _CalendarWidgetConsumerState extends ConsumerState<CalendarWidget> {
                   ],
                 ),
                 child: Text(
-                  (!_focusedDay.isToday())
+                  (!_focusedDay.isToday)
                       ? DateFormat.yMMMEd().format(_focusedDay)
                       : 'Today Events',
                   style: Theme.of(context).textTheme.titleSmall,

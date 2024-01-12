@@ -1,21 +1,27 @@
-use ruma_common::{EventId, OwnedUserId, RoomId};
+use ruma_common::{EventId, OwnedUserId, RoomId, UserId};
 use ruma_events::OriginalMessageLikeEvent;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
 use super::{
     super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store},
-    TaskList, TASKS_KEY,
+    TaskList, KEYS,
 };
 use crate::{
-    events::tasks::{TaskEventContent, TaskUpdateBuilder, TaskUpdateEventContent},
+    events::tasks::{
+        TaskEventContent, TaskSelfAssignEventContent, TaskSelfUnassignEventContent,
+        TaskUpdateBuilder, TaskUpdateEventContent,
+    },
     Result,
 };
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Task {
     inner: TaskEventContent,
-    meta: EventMeta,
+    pub meta: EventMeta,
+
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    assignees: Vec<OwnedUserId>,
 }
 
 impl Deref for Task {
@@ -30,8 +36,8 @@ impl Task {
         &self.inner.title
     }
 
-    pub fn subscribers(&self) -> Vec<OwnedUserId> {
-        self.inner.subscribers.clone()
+    pub fn assignees(&self) -> Vec<OwnedUserId> {
+        self.assignees.clone()
     }
 
     pub fn room_id(&self) -> &RoomId {
@@ -45,15 +51,22 @@ impl Task {
             .unwrap_or_default()
     }
 
+    pub fn is_assigned(&self, user_id: &UserId) -> bool {
+        self.assignees.iter().any(|o| o == user_id)
+    }
+
     pub fn percent(&self) -> Option<u8> {
         self.inner.progress_percent
     }
 
-    pub fn utc_due_rfc3339(&self) -> Option<String> {
+    pub fn due_date(&self) -> Option<String> {
         self.inner
-            .utc_due
-            .as_ref()
-            .map(|d| d.to_rfc3339_opts(chrono::SecondsFormat::Secs, true))
+            .due_date
+            .map(|d| d.format("%Y-%m-%d").to_string())
+    }
+
+    pub fn utc_due_time_of_day(&self) -> Option<i32> {
+        self.inner.utc_due_time_of_day
     }
 
     pub fn utc_start_rfc3339(&self) -> Option<String> {
@@ -69,14 +82,36 @@ impl Task {
             .to_owned()
     }
 
+    pub fn self_assign_event_content(&self) -> TaskSelfAssignEventContent {
+        TaskSelfAssignEventContent {
+            task: self.meta.event_id.clone().into(),
+        }
+    }
+
+    pub fn self_unassign_event_content(&self) -> TaskSelfUnassignEventContent {
+        TaskSelfUnassignEventContent {
+            task: self.meta.event_id.clone().into(),
+        }
+    }
+
     pub fn key_from_event(event_id: &EventId) -> String {
         event_id.to_string()
     }
 }
 
 impl ActerModel for Task {
-    fn indizes(&self) -> Vec<String> {
-        vec![format!("{}::{TASKS_KEY}", self.inner.task_list_id.event_id)]
+    fn indizes(&self, user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
+        let tasks_key = KEYS::TASKS;
+        let task_list_id_idx = format!("{}::{tasks_key}", self.inner.task_list_id.event_id);
+        if self.is_assigned(user_id) {
+            if self.is_done() {
+                return vec![KEYS::MY_DONE_TASKS.to_owned(), task_list_id_idx];
+            } else {
+                return vec![KEYS::MY_OPEN_TASKS.to_owned(), task_list_id_idx];
+            }
+        }
+        // not mine
+        vec![task_list_id_idx]
     }
 
     fn event_id(&self) -> &EventId {
@@ -102,11 +137,12 @@ impl ActerModel for Task {
     }
 
     fn transition(&mut self, model: &AnyActerModel) -> Result<bool> {
-        let AnyActerModel::TaskUpdate(update) = model else {
-            return Ok(false)
-        };
-
-        update.apply(&mut self.inner)
+        match model {
+            AnyActerModel::TaskUpdate(update) => update.apply(&mut self.inner),
+            AnyActerModel::TaskSelfAssign(update) => update.apply(self),
+            AnyActerModel::TaskSelfUnassign(update) => update.apply(self),
+            _ => Ok(false),
+        }
     }
 }
 
@@ -122,6 +158,7 @@ impl From<OriginalMessageLikeEvent<TaskEventContent>> for Task {
         } = outer;
         Task {
             inner: content,
+            assignees: Vec::with_capacity(0),
             meta: EventMeta {
                 room_id,
                 event_id,
@@ -139,7 +176,7 @@ pub struct TaskUpdate {
 }
 
 impl ActerModel for TaskUpdate {
-    fn indizes(&self) -> Vec<String> {
+    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
         vec![format!("{:}::history", self.inner.task.event_id)]
     }
 
@@ -174,6 +211,118 @@ impl From<OriginalMessageLikeEvent<TaskUpdateEventContent>> for TaskUpdate {
             ..
         } = outer;
         TaskUpdate {
+            inner: content,
+            meta: EventMeta {
+                room_id,
+                event_id,
+                sender,
+                origin_server_ts,
+            },
+        }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct TaskSelfAssign {
+    inner: TaskSelfAssignEventContent,
+    meta: EventMeta,
+}
+
+impl TaskSelfAssign {
+    fn apply(&self, task: &mut Task) -> Result<bool> {
+        let new_user_id = self.meta.sender.clone();
+        // remove any existing instance of the user in the list.
+        task.assignees.retain(|u| u != &new_user_id);
+        // add it at the new first entry;
+        task.assignees.insert(0, new_user_id);
+        Ok(true)
+    }
+}
+
+impl ActerModel for TaskSelfAssign {
+    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
+        vec![format!("{:}::history", self.inner.task.event_id)]
+    }
+
+    fn event_id(&self) -> &EventId {
+        &self.meta.event_id
+    }
+
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+        default_model_execute(store, self.into()).await
+    }
+
+    fn belongs_to(&self) -> Option<Vec<String>> {
+        Some(vec![Task::key_from_event(&self.inner.task.event_id)])
+    }
+}
+
+impl From<OriginalMessageLikeEvent<TaskSelfAssignEventContent>> for TaskSelfAssign {
+    fn from(outer: OriginalMessageLikeEvent<TaskSelfAssignEventContent>) -> Self {
+        let OriginalMessageLikeEvent {
+            content,
+            room_id,
+            event_id,
+            sender,
+            origin_server_ts,
+            ..
+        } = outer;
+        TaskSelfAssign {
+            inner: content,
+            meta: EventMeta {
+                room_id,
+                event_id,
+                sender,
+                origin_server_ts,
+            },
+        }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct TaskSelfUnassign {
+    inner: TaskSelfUnassignEventContent,
+    meta: EventMeta,
+}
+
+impl TaskSelfUnassign {
+    fn apply(&self, task: &mut Task) -> Result<bool> {
+        let new_user_id = self.meta.sender.clone();
+        // remove the user from the list.
+        task.assignees.retain(|u| u != &new_user_id);
+        Ok(true)
+    }
+}
+
+impl ActerModel for TaskSelfUnassign {
+    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
+        vec![format!("{:}::history", self.inner.task.event_id)]
+    }
+
+    fn event_id(&self) -> &EventId {
+        &self.meta.event_id
+    }
+
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+        default_model_execute(store, self.into()).await
+    }
+
+    fn belongs_to(&self) -> Option<Vec<String>> {
+        Some(vec![Task::key_from_event(&self.inner.task.event_id)])
+    }
+}
+
+impl From<OriginalMessageLikeEvent<TaskSelfUnassignEventContent>> for TaskSelfUnassign {
+    fn from(outer: OriginalMessageLikeEvent<TaskSelfUnassignEventContent>) -> Self {
+        let OriginalMessageLikeEvent {
+            content,
+            room_id,
+            event_id,
+            sender,
+            origin_server_ts,
+            ..
+        } = outer;
+        TaskSelfUnassign {
             inner: content,
             meta: EventMeta {
                 room_id,

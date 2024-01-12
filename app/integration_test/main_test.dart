@@ -6,6 +6,7 @@ import 'support/appstart.dart';
 import 'tests/auth.dart';
 import 'tests/sub_spaces.dart';
 import 'tests/super_invites.dart';
+import 'tests/tasks.dart';
 import 'tests/updates.dart';
 
 void main() {
@@ -14,6 +15,7 @@ void main() {
     group('Updates', updateTests);
     group('Subspace', subSpaceTests);
     group('SuperInvites', superInvitesTests);
+    group('Tasks', tasksTests);
   });
 }
 

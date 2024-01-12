@@ -118,7 +118,7 @@ class SpaceHeaderProfile extends ConsumerWidget {
                     child: Text(
                       '+${membersCount - 5}',
                       textAlign: TextAlign.center,
-                      textScaleFactor: 0.8,
+                      textScaler: const TextScaler.linear(0.8),
                     ),
                   ),
               ],

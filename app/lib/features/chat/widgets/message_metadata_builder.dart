@@ -94,13 +94,13 @@ class MessageMetadataBuilder extends ConsumerWidget {
   }
 
   Future<void> _handleRetry() async {
-    final stream = await convo.timelineStream();
+    final stream = convo.timelineStream();
     // attempts to retry sending local echo to server
     await stream.retrySend(message.id);
   }
 
   Future<void> _handleCancelRetrySend() async {
-    final stream = await convo.timelineStream();
+    final stream = convo.timelineStream();
     // cancels the retry sending of local echos
     await stream.cancelSend(message.id);
   }
@@ -173,7 +173,7 @@ class _UserReceiptsWidget extends ConsumerWidget {
                     radius: 8,
                     child: Text(
                       '+${seenList.length - subList.length}',
-                      textScaleFactor: 0.4,
+                      textScaler: const TextScaler.linear(0.4),
                     ),
                   ),
                 ]

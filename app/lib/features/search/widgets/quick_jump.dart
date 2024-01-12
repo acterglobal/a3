@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/icons/tasks_icon.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/search/providers/search.dart';
 import 'package:acter/features/search/widgets/quick_actions_builder.dart';
@@ -10,7 +11,6 @@ import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class QuickJump extends ConsumerWidget {
   final Future<void> Function({Routes? route, bool push, String? target})
@@ -112,6 +112,7 @@ class QuickJump extends ConsumerWidget {
                 : null,
             isActive(LabsFeature.tasks)
                 ? IconButton(
+                    key: QuickJumpKeys.tasks,
                     style: IconButton.styleFrom(
                       side: BorderSide(
                         color: Theme.of(context)
@@ -124,19 +125,7 @@ class QuickJump extends ConsumerWidget {
                       navigateTo(route: Routes.tasks);
                     },
                     // this is slightly differently sized and padded to look the same as the others
-                    icon: Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: SvgPicture.asset(
-                        'assets/images/tasks.svg',
-                        semanticsLabel: 'tasks',
-                        height: 28,
-                        width: 28,
-                        colorFilter: ColorFilter.mode(
-                          Theme.of(context).colorScheme.onSurface,
-                          BlendMode.srcIn,
-                        ),
-                      ),
-                    ),
+                    icon: const TasksIcon(),
                   )
                 : null,
             IconButton(

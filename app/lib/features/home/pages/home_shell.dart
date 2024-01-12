@@ -1,9 +1,9 @@
-import 'dart:io';
 
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/device.dart';
 import 'package:acter/features/activities/providers/notifications_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/providers/navigation.dart';
@@ -16,7 +16,6 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jiffy/jiffy.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:shake/shake.dart';
@@ -38,11 +37,15 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   @override
   void initState() {
     super.initState();
-    // shake is possible in only mobile
-    if (Platform.isAndroid || Platform.isIOS) {
+    initShake();
+  }
+
+  Future<void> initShake() async {
+    // shake is possible in only actual mobile devices
+    if (await isRealPhone()) {
       detector = ShakeDetector.waitForStart(
         onPhoneShake: () {
-          detector.stopListening();
+          handleBugReport();
         },
       );
       detector.startListening();
@@ -238,7 +241,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   Future<void> handleBugReport() async {
     final appDocDir = await getApplicationDocumentsDirectory();
     // rage shake disallows dot in filename
-    String timestamp = Jiffy.now().toUtc().format();
+    String timestamp = DateTime.now().toIso8601String();
     final imagePath = await screenshotController.captureAndSave(
       appDocDir.path,
       fileName: 'screenshot_$timestamp.png',

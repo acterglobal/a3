@@ -13,6 +13,7 @@ import 'package:settings_ui/settings_ui.dart';
 const defaultSpaceSettingsMenuKey = Key('space-settings-menu');
 
 class SpaceSettingsMenu extends ConsumerWidget {
+  static const appsMenu = Key('space-settings-apps');
   final String spaceId;
   const SpaceSettingsMenu({
     required this.spaceId,
@@ -107,6 +108,7 @@ class SpaceSettingsMenu extends ConsumerWidget {
                     },
                   ),
                   SettingsTile(
+                    key: appsMenu,
                     title: const Text('Apps'),
                     description:
                         const Text('Customize Apps and their features'),

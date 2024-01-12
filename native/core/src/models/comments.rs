@@ -130,7 +130,7 @@ impl Comment {
 }
 
 impl ActerModel for Comment {
-    fn indizes(&self) -> Vec<String> {
+    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
         self.belongs_to()
             .expect("we always have some as comments")
             .into_iter()
@@ -226,7 +226,7 @@ pub struct CommentUpdate {
 }
 
 impl ActerModel for CommentUpdate {
-    fn indizes(&self) -> Vec<String> {
+    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
         vec![format!("{:}::history", self.inner.comment.event_id)]
     }
 

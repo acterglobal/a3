@@ -111,7 +111,7 @@ impl Reaction {
 }
 
 impl ActerModel for Reaction {
-    fn indizes(&self) -> Vec<String> {
+    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
         self.belongs_to()
             .expect("we always have some as entries")
             .into_iter()

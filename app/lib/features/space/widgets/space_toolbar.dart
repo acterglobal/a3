@@ -10,6 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class SpaceToolbar extends ConsumerWidget {
+  static const optionsMenu = Key('space-options-menu');
+  static const settingsMenu = Key('space-options-settings');
   final String spaceId;
 
   const SpaceToolbar({
@@ -35,6 +37,7 @@ class SpaceToolbar extends ConsumerWidget {
         );
         submenu.add(
           PopupMenuItem(
+            key: settingsMenu,
             onTap: () => context.pushNamed(
               Routes.spaceSettings.name,
               pathParameters: {'spaceId': spaceId},
@@ -74,6 +77,7 @@ class SpaceToolbar extends ConsumerWidget {
             padding: const EdgeInsets.only(top: 18),
             child: PopupMenuButton(
               icon: Icon(
+                key: optionsMenu,
                 Icons.more_vert,
                 color: Theme.of(context).colorScheme.neutral5,
               ),

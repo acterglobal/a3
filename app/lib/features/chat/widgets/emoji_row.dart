@@ -38,12 +38,12 @@ class EmojiRow extends ConsumerWidget {
   final String roomId;
   final Function(String messageId, String emoji) onEmojiTap;
   EmojiRow({
-    Key? key,
+    super.key,
     required this.message,
     required this.roomId,
     required this.onEmojiTap,
     this.size,
-  }) : super(key: key);
+  });
 
   final List<String> _emojiUnicodes = [
     heart,

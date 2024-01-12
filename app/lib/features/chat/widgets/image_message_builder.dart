@@ -15,12 +15,12 @@ class ImageMessageBuilder extends ConsumerWidget {
   final Convo convo;
 
   const ImageMessageBuilder({
-    Key? key,
+    super.key,
     required this.convo,
     required this.message,
     required this.messageWidth,
     this.isReplyContent = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
