@@ -10,12 +10,12 @@ class RoomAvatarBuilder extends ConsumerWidget {
   final double avatarSize;
 
   const RoomAvatarBuilder({
-    Key? key,
+    super.key,
     required this.roomId,
     this.padding,
     this.displayMode = DisplayMode.Space,
     this.avatarSize = 14,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

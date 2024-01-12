@@ -14,13 +14,13 @@ class DueChip extends StatefulWidget {
   final VisualDensity? visualDensity;
 
   const DueChip({
-    Key? key,
+    super.key,
     required this.task,
     this.canChange = false,
     this.noneChild,
     this.baseTextStyle,
     this.visualDensity,
-  }) : super(key: key);
+  });
 
   @override
   State<DueChip> createState() => _DueChipState();

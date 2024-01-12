@@ -21,7 +21,7 @@ class TaskInfo extends ConsumerWidget {
   static const selfAssignKey = Key('task-self-assign');
   static const selfUnassignKey = Key('task-self-unassign');
   final Task task;
-  const TaskInfo({Key? key, required this.task}) : super(key: key);
+  const TaskInfo({super.key, required this.task});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -121,7 +121,7 @@ class TaskInfo extends ConsumerWidget {
                       : null,
                 ),
               )
-              .toList(),
+              ,
           !task.isAssignedToMe()
               ? ActionChip(
                   key: selfAssignKey,
@@ -143,7 +143,7 @@ class TaskInfo extends ConsumerWidget {
 
 class TaskTitle extends StatefulWidget {
   final Task task;
-  const TaskTitle({Key? key, required this.task}) : super(key: key);
+  const TaskTitle({super.key, required this.task});
 
   @override
   State<TaskTitle> createState() => _TaskTitleState();
@@ -230,7 +230,7 @@ class TaskBody extends StatefulWidget {
   static const saveEditKey = Key('task-body-save');
   static const cancelEditKey = Key('task-body-cancel');
   final Task task;
-  const TaskBody({Key? key, required this.task}) : super(key: key);
+  const TaskBody({super.key, required this.task});
 
   @override
   State<TaskBody> createState() => _TaskBodyState();
@@ -361,7 +361,7 @@ class _TaskBodyState extends State<TaskBody> {
 }
 
 class TaskInfoSkeleton extends StatelessWidget {
-  const TaskInfoSkeleton({Key? key}) : super(key: key);
+  const TaskInfoSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {

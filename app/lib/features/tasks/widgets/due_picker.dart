@@ -27,7 +27,7 @@ class DuePicker extends StatefulWidget {
   final OnSelect onSelect;
 
   const DuePicker({
-    Key? key,
+    super.key,
     this.title,
     this.separator,
     this.initialDate,
@@ -39,7 +39,7 @@ class DuePicker extends StatefulWidget {
     this.constraints,
     this.selectableDayPredicate,
     required this.onSelect,
-  }) : super(key: key);
+  });
 
   @override
   State<DuePicker> createState() => _DuePickerState();

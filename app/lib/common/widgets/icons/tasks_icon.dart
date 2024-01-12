@@ -3,7 +3,7 @@ import 'package:flutter_svg/svg.dart';
 
 class TasksIcon extends StatelessWidget {
   final double size;
-  const TasksIcon({Key? key, this.size = 28}) : super(key: key);
+  const TasksIcon({super.key, this.size = 28});
 
   @override
   Widget build(BuildContext context) {
