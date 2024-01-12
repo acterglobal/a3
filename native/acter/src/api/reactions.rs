@@ -131,7 +131,11 @@ impl ReactionManager {
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let my_id = room.client().user_id().context("User not found")?.to_owned();
+        let my_id = room
+            .client()
+            .user_id()
+            .context("User not found")?
+            .to_owned();
         let event_id = EventId::parse(event_id)?;
         let txn_id = match txn_id {
             Some(x) => Some(OwnedTransactionId::try_from(x)?),
@@ -148,9 +152,7 @@ impl ReactionManager {
                     bail!("No permission to send message in this room");
                 }
                 trace!("before redacting reaction");
-                let response = room
-                    .redact(&event_id, reason.as_deref(), txn_id)
-                    .await?;
+                let response = room.redact(&event_id, reason.as_deref(), txn_id).await?;
                 trace!("after redacting reaction");
                 Ok(response.event_id)
             })
