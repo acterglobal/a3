@@ -19,10 +19,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
         .convo(room_id.to_string())
         .await
         .expect("sisko should belong to convo");
-    let sisko_timeline = sisko_convo
-        .timeline_stream()
-        .await
-        .expect("sisko should get timeline stream");
+    let sisko_timeline = sisko_convo.timeline_stream();
     let sisko_stream = sisko_timeline.diff_stream();
     pin_mut!(sisko_stream);
 
@@ -93,10 +90,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
         .convo(room_id.to_string())
         .await
         .expect("kyra should belong to convo");
-    let kyra_timeline = kyra_convo
-        .timeline_stream()
-        .await
-        .expect("kyra should get timeline stream");
+    let kyra_timeline = kyra_convo.timeline_stream();
     kyra_timeline
         .send_single_receipt(
             "Read".to_string(), // will test only Read, because ReadPrivate not reached
