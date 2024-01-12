@@ -23,59 +23,69 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
           'Deactivate Account',
           style: TextStyle(
             color: AppTheme.brandColorScheme.error,
-            fontSize: 32,
+            fontSize: 26,
           ),
         ),
-        content: SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 650),
-            child: Wrap(
-              children: [
-                Text(
-                  'Careful: You are about to permanently deactivate your account ',
-                  style: TextStyle(
-                    color: AppTheme.brandColorScheme.error,
-                    fontSize: 24,
-                  ),
-                ),
-                const Text('If you proceed: \n  \n'
-                    '- All your personal data will be removed from your homeserver, including display name and avatar \n'
-                    '- All your sessions will be closed immediately, no other device will be able to continue their sessions \n'
-                    '- You will leave all rooms, chats, spaces and DMs that you are in \n'
-                    '- You will not be able to reactivate your account \n'
-                    '- You will no longer be able to log in \n'
-                    '- No one will be able to reuse your username (MXID), including you: this username will remain unavailable indefinitely \n'
-                    '- You will be removed from the identity server, if you provided any information to be found through that (e.g. email or phone number) \n'
-                    '- All local data, including any encryption keys, will be permanently deleted from this device \n'
-                    '- Your old messages will still be visible to people who received them, just like emails you sent in the past. \n'
-                    '\n You will not be able to reverse any of this. This is a permanent and irrevocable action.'),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10, bottom: 10),
-                  child: Text(
-                    'Please provide your user password to confirm you want to deactivate your account.',
-                    style: TextStyle(
-                      color: AppTheme.brandColorScheme.error,
-                      fontSize: 24,
+        content: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 650),
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                    color: Theme.of(context).colorScheme.background,
+                    child: Column(
+                      children: [
+                        Text(
+                          'Careful: You are about to permanently deactivate your account ',
+                          style: TextStyle(
+                            color: AppTheme.brandColorScheme.error,
+                            fontSize: 20,
+                          ),
+                        ),
+                        const Text('If you proceed: \n  \n'
+                            '- All your personal data will be removed from your homeserver, including display name and avatar \n'
+                            '- All your sessions will be closed immediately, no other device will be able to continue their sessions \n'
+                            '- You will leave all rooms, chats, spaces and DMs that you are in \n'
+                            '- You will not be able to reactivate your account \n'
+                            '- You will no longer be able to log in \n'
+                            '- No one will be able to reuse your username (MXID), including you: this username will remain unavailable indefinitely \n'
+                            '- You will be removed from the identity server, if you provided any information to be found through that (e.g. email or phone number) \n'
+                            '- All local data, including any encryption keys, will be permanently deleted from this device \n'
+                            '- Your old messages will still be visible to people who received them, just like emails you sent in the past. \n'
+                            '\n You will not be able to reverse any of this. This is a permanent and irrevocable action.'),
+                      ],
                     ),
                   ),
                 ),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 250),
-                  child: TextField(
-                    key: deactivatePasswordField,
-                    controller: passwordController,
-                    obscureText: true,
-                    decoration: const InputDecoration(hintText: 'Password'),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 10, bottom: 10),
+                child: Text(
+                  'Please provide your user password to confirm you want to deactivate your account.',
+                  style: TextStyle(
+                    color: AppTheme.brandColorScheme.error,
+                    fontSize: 20,
                   ),
                 ),
-              ],
-            ),
+              ),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 250),
+                child: TextField(
+                  key: deactivatePasswordField,
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(hintText: 'Password'),
+                ),
+              ),
+            ],
           ),
         ),
         actions: <Widget>[
           TextButton(
             key: deactivateCancelBtn,
-            onPressed: () => ctx.pop(),
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
             child: const Text('Cancel'),
           ),
           TextButton(
