@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
@@ -932,6 +931,13 @@ class _TextInputWidget extends ConsumerWidget {
           maxLines: 6,
           minLines: 1,
           focusNode: ref.watch(chatInputFocusProvider),
+          onTap: () {
+            ///Hide emoji picker before input field get focus if
+            ///Platform is mobile & Emoji picker is visible
+            if (!isDesktop && chatInputState.emojiPickerVisible) {
+              chatInputNotifier.emojiPickerVisible(false);
+            }
+          },
           decoration: InputDecoration(
             isCollapsed: true,
             prefixIcon: isEncrypted
@@ -943,9 +949,16 @@ class _TextInputWidget extends ConsumerWidget {
                   )
                 : null,
             suffixIcon: InkWell(
-              onTap: () => chatInputState.emojiPickerVisible
-                  ? chatInputNotifier.emojiPickerVisible(false)
-                  : chatInputNotifier.emojiPickerVisible(true),
+              onTap: () {
+                if (!chatInputState.emojiPickerVisible) {
+                  //Hide soft keyboard and then show Emoji Picker
+                  FocusScope.of(context).unfocus();
+                  chatInputNotifier.emojiPickerVisible(true);
+                } else {
+                  //Hide Emoji Picker
+                  chatInputNotifier.emojiPickerVisible(false);
+                }
+              },
               child: const Icon(Icons.emoji_emotions),
             ),
             border: OutlineInputBorder(
