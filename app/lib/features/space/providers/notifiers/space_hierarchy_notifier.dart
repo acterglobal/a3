@@ -18,11 +18,11 @@ class SpaceHierarchyListState
   // We can extends [PagedState] to add custom parameters to our state
 
   const SpaceHierarchyListState({
-    List<ffi.SpaceHierarchyRoomInfo>? records,
-    String? error,
-    Next? nextPageKey = const Next(isStart: true),
+    super.records,
+    String? super.error,
+    super.nextPageKey = const Next(isStart: true),
     List<Next?>? previousPageKeys,
-  }) : super(records: records, error: error, nextPageKey: nextPageKey);
+  });
 
   SpaceHierarchyListState filtered(FilterFn filter) {
     return copyWith(

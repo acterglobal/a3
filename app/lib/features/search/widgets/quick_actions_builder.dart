@@ -16,9 +16,9 @@ class QuickActionsBuilder extends ConsumerWidget {
   }) navigateTo;
 
   const QuickActionsBuilder({
-    Key? key,
+    super.key,
     required this.navigateTo,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

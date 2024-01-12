@@ -80,7 +80,7 @@ class Features<T extends Enum> {
 }
 
 class FeaturesNotifier<T extends Enum> extends StateNotifier<Features<T>> {
-  FeaturesNotifier(initState) : super(initState);
+  FeaturesNotifier(super.initState);
 
   // Let's the UI update the state of a flag
   void setActive(T f, bool active) {

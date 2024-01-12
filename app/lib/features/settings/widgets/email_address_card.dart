@@ -16,10 +16,10 @@ class EmailAddressCard extends ConsumerWidget {
   final bool isConfirmed;
 
   const EmailAddressCard({
-    Key? key,
+    super.key,
     required this.emailAddress,
     required this.isConfirmed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -225,7 +225,7 @@ class EmailConfirm {
 }
 
 class PasswordConfirm extends StatefulWidget {
-  const PasswordConfirm({Key? key}) : super(key: key);
+  const PasswordConfirm({super.key});
 
   @override
   State<PasswordConfirm> createState() => _PasswordConfirmState();
@@ -296,7 +296,7 @@ class _PasswordConfirmState extends State<PasswordConfirm> {
 }
 
 class TokenConfirm extends StatefulWidget {
-  const TokenConfirm({Key? key}) : super(key: key);
+  const TokenConfirm({super.key});
 
   @override
   State<TokenConfirm> createState() => _TokenConfirmState();

@@ -39,10 +39,10 @@ class UserBuilder extends ConsumerWidget {
   final String roomId;
 
   const UserBuilder({
-    Key? key,
+    super.key,
     required this.profile,
     required this.roomId,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

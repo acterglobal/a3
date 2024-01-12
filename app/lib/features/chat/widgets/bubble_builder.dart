@@ -25,13 +25,13 @@ class BubbleBuilder extends ConsumerWidget {
   final bool enlargeEmoji;
 
   const BubbleBuilder({
-    Key? key,
+    super.key,
     required this.convo,
     required this.child,
     required this.message,
     required this.nextMessageInGroup,
     required this.enlargeEmoji,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -9,11 +9,11 @@ class EmojiReactionItem extends ConsumerWidget {
   final String userId;
   final String roomId;
   const EmojiReactionItem({
-    Key? key,
+    super.key,
     required this.emojis,
     required this.userId,
     required this.roomId,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

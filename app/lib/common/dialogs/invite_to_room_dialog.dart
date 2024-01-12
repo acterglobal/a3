@@ -348,10 +348,9 @@ class _DirectInvite extends ConsumerWidget {
   final String roomId;
 
   const _DirectInvite({
-    Key? key,
     required this.userId,
     required this.roomId,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

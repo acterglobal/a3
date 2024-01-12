@@ -11,8 +11,7 @@ import 'package:flutter/material.dart';
 class TaskListCard extends ConsumerStatefulWidget {
   final TaskList taskList;
   final bool showSpace;
-  const TaskListCard({Key? key, required this.taskList, this.showSpace = true})
-      : super(key: key);
+  const TaskListCard({super.key, required this.taskList, this.showSpace = true});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _TaskListCardState();
@@ -125,8 +124,7 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
 class _InlineTaskAdd extends StatefulWidget {
   final Function() cancel;
   final TaskList taskList;
-  const _InlineTaskAdd({Key? key, required this.cancel, required this.taskList})
-      : super(key: key);
+  const _InlineTaskAdd({required this.cancel, required this.taskList});
 
   @override
   _InlineTaskAddState createState() => _InlineTaskAddState();

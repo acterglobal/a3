@@ -8,11 +8,11 @@ class ReplyView extends StatefulWidget {
   final int currentPos;
 
   const ReplyView({
-    Key? key,
+    super.key,
     required this.replyModel,
     required this.currentPos,
     required this.commentPos,
-  }) : super(key: key);
+  });
 
   @override
   ReplyViewState createState() => ReplyViewState();

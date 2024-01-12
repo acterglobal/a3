@@ -8,10 +8,10 @@ class AvatarBuilder extends ConsumerWidget {
   final String roomId;
 
   const AvatarBuilder({
-    Key? key,
+    super.key,
     required this.userId,
     required this.roomId,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

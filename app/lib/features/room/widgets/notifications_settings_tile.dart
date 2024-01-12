@@ -22,8 +22,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
 
   const _NotificationSettingsTile({
     required this.roomId,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -122,8 +121,8 @@ class NotificationsSettingsTile extends AbstractSettingsTile {
 
   const NotificationsSettingsTile({
     required this.roomId,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

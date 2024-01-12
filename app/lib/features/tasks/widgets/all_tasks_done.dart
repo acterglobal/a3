@@ -3,7 +3,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
 class AllTasksDone extends StatelessWidget {
-  const AllTasksDone({Key? key}) : super(key: key);
+  const AllTasksDone({super.key});
 
   @override
   Widget build(BuildContext context) {
