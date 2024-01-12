@@ -261,10 +261,10 @@ packages:
     dependency: "direct dev"
     description:
       name: convenient_test
-      sha256: "5c1e725a175c575b8265ba026c778b3003d7936cdd3c09a17c76ccb5a7c7f88e"
+      sha256: de571272596f9d8498ac520b588726f54d330146165812fb8eab34874e688c29
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.1"
+    version: "1.3.2"
   convenient_test_common:
     dependency: transitive
     description:
@@ -285,10 +285,10 @@ packages:
     dependency: "direct dev"
     description:
       name: convenient_test_dev
-      sha256: aec27095cabf2806f95d0d3b5e9dd28fc6c829e95761a0933ff93eef797a77e3
+      sha256: "165d31fcd90bb76ced24344c3b1500e4a3b7970e0e87bb12ddcd342a8814d20c"
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.1"
+    version: "1.3.2"
   convenient_test_manager_dart:
     dependency: "direct dev"
     description:
@@ -346,6 +346,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.6"
+  dart_date:
+    dependency: "direct main"
+    description:
+      name: dart_date
+      sha256: "3e337559e021a73c186e4e53c5a7b90ee7bae2d7d8b752fff28759f4105834cf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.3.2"
   dart_style:
     dependency: transitive
     description:
@@ -1256,10 +1264,11 @@ packages:
   omni_datetime_picker:
     dependency: "direct main"
     description:
-      name: omni_datetime_picker
-      sha256: d13f237b7fe8a849203563e4e95ca2a43fe3b357364ad9b224899e0710fd72fb
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "2d641f467b00fb433a57666484b7decefd4f22a8"
+      url: "https://github.com/acterglobal/OmniDateTimePicker"
+    source: git
     version: "1.0.9"
   overlay_support:
     dependency: "direct main"
@@ -1757,6 +1766,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.0"
+  skeletonizer:
+    dependency: "direct main"
+    description:
+      name: skeletonizer
+      sha256: ff4c36e826efd5288d7a84e7619a6e9be8185d3064cecf101a9133762f3b401b
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.8.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -1898,6 +1915,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.1"
+  timeago:
+    dependency: transitive
+    description:
+      name: timeago
+      sha256: c44b80cbc6b44627c00d76960f2af571f6f50e5dbedef4d9215d455e4335165b
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.6.0"
   timezone:
     dependency: transitive
     description:

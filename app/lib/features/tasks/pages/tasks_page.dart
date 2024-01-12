@@ -12,6 +12,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class TasksPage extends ConsumerWidget {
+  static const createNewTaskListKey = Key('tasks-create-list');
+  static const taskListsKey = Key('tasks-task-lists');
   const TasksPage({super.key});
 
   @override
@@ -27,14 +29,17 @@ class TasksPage extends ConsumerWidget {
             ),
             actions: [
               IconButton(
+                key: createNewTaskListKey,
                 icon: const Icon(Atlas.plus_circle),
                 onPressed: () {
                   context.pushNamed(Routes.actionAddTaskList.name);
                 },
               ),
             ],
-            expandedContent: const Text(
+            expandedContent: Text(
               'ToDo Lists and Tasks of all your spaces can be found here',
+              softWrap: true,
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
           taskLists.when(
@@ -43,6 +48,7 @@ class TasksPage extends ConsumerWidget {
                 return const SliverToBoxAdapter(child: AllTasksDone());
               }
               return SliverList(
+                key: taskListsKey,
                 delegate: SliverChildBuilderDelegate(
                   (BuildContext context, int index) {
                     TaskList taskList = taskLists[index];

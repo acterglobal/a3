@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AvatarBuilder extends ConsumerWidget {
-  final String userId;
   final String roomId;
+  final String userId;
 
   const AvatarBuilder({
     super.key,
@@ -43,7 +43,14 @@ class AvatarBuilder extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const CircularProgressIndicator(),
+      loading: () => Padding(
+        padding: const EdgeInsets.only(right: 10),
+        child: ActerAvatar(
+          mode: DisplayMode.DM,
+          avatarInfo: AvatarInfo(uniqueId: userId, displayName: userId),
+          size: 14,
+        ),
+      ),
     );
   }
 }

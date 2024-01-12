@@ -108,7 +108,7 @@ impl Executor {
             Ok(model) => {
                 let redacted = RedactedActerModel::new(
                     model_type.to_owned(),
-                    model.indizes(),
+                    model.indizes(self.store.user_id()),
                     event_meta,
                     reason,
                 );
@@ -136,7 +136,7 @@ mod tests {
     use env_logger;
     use matrix_sdk::Client;
     use matrix_sdk_base::store::{MemoryStore, StoreConfig};
-    use ruma_common::{api::MatrixVersion, event_id};
+    use ruma_common::{api::MatrixVersion, event_id, user_id};
     use ruma_events::room::message::TextMessageEventContent;
 
     async fn fresh_executor() -> Result<Executor> {
@@ -149,7 +149,7 @@ mod tests {
             .await
             .unwrap();
 
-        let store = Store::new(client).await?;
+        let store = Store::new_with_auth(client, user_id!("@test:example.org").to_owned()).await?;
         Executor::new(store).await
     }
 
@@ -167,10 +167,10 @@ mod tests {
         let model = TestModelBuilder::default().simple().build().unwrap();
         let model_id = model.event_id();
         let sub = executor.subscribe(model_id.to_string());
-        assert!(sub.is_empty());
+        assert!(sub.is_empty(), "Already received an event");
 
         executor.handle(model.into()).await?;
-        assert!(!sub.is_empty());
+        assert!(!sub.is_empty(), "No subscription event found");
 
         Ok(())
     }

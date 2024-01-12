@@ -13,6 +13,8 @@ pub use rendering::{BrandIcon, Color, Colorize, Icon, Position};
 /// Default UTC DateTime Object
 pub type UtcDateTime = DateTime<Utc>;
 
+pub type Date = chrono::NaiveDate;
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "rel_type", rename = "m.thread")]
 pub struct InThread {

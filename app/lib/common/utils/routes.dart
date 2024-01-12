@@ -34,8 +34,8 @@ enum Routes {
 
   // --- tasks
   tasks('/tasks'),
-  task('/tasks/:taskListId([!#][^/]+)/:taskId([!#][^/]+)'),
-  taskList('/tasks/:taskListId([!#][^/]+)'),
+  task('/tasks/:taskListId([^/]+)/:taskId([^/]+)'),
+  taskList('/tasks/:taskListId([^/]+)'),
 
   // -- spaces
   spaces('/spaces'),

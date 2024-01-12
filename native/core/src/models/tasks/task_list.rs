@@ -5,9 +5,8 @@ use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use tracing::{trace, warn};
 
-use super::{
-    super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store},
-    TASKS_KEY,
+use super::super::{
+    default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store,
 };
 use crate::{
     events::tasks::{TaskListEventContent, TaskListUpdateBuilder, TaskListUpdateEventContent},
@@ -45,7 +44,7 @@ impl TaskList {
     }
 
     pub fn tasks_key(&self) -> String {
-        format!("{}::{TASKS_KEY}", self.meta.event_id)
+        format!("{}::{}", self.meta.event_id, KEYS::TASKS::TASKS)
     }
 
     pub fn key_from_event(event_id: &EventId) -> String {
@@ -87,10 +86,10 @@ impl From<OriginalMessageLikeEvent<TaskListEventContent>> for TaskList {
 }
 
 impl ActerModel for TaskList {
-    fn indizes(&self) -> Vec<String> {
+    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
         vec![
-            format!("{}::{}", self.meta.room_id, KEYS::TASKS),
-            KEYS::TASKS.to_owned(),
+            format!("{}::{}", self.meta.room_id, KEYS::TASKS::TASKS),
+            KEYS::TASKS::TASKS.to_owned(),
         ]
     }
 
@@ -131,7 +130,7 @@ pub struct TaskListUpdate {
 }
 
 impl ActerModel for TaskListUpdate {
-    fn indizes(&self) -> Vec<String> {
+    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
         vec![format!(
             "tasklist-{:}::history",
             self.inner.task_list.event_id

@@ -46,7 +46,7 @@ void _resetDisableOverflowErrors() {
 void acterTestWidget(
   // ... forward the arguments ...
   String description,
-  TWidgetTesterCallback callback, {
+  TWidgetTesterCallback actualTest, {
   bool skip = false,
   bool settle = true,
   Timeout? timeout,
@@ -54,7 +54,7 @@ void acterTestWidget(
   tTestWidgets(description, (t) async {
     _disableOverflowErrors();
     try {
-      await callback(t);
+      await actualTest(t);
     } finally {
       // reset regardless
       _resetDisableOverflowErrors();

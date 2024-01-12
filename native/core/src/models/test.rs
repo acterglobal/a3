@@ -43,7 +43,7 @@ impl ActerModel for TestModel {
         &[super::Capability::Commentable]
     }
 
-    fn indizes(&self) -> Vec<String> {
+    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
         self.indizes.clone()
     }
 

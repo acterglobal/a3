@@ -112,12 +112,10 @@ fn match_text_msg(msg: &RoomMessage, body: &str, modified: bool) -> Option<Owned
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
         if let Some(msg_content) = event_item.msg_content() {
-            if msg_content.body() == body {
-                if event_item.was_edited() == modified {
-                    // exclude the pending msg
-                    if let Some(event_id) = event_item.evt_id() {
-                        return Some(event_id);
-                    }
+            if msg_content.body() == body && event_item.was_edited() == modified {
+                // exclude the pending msg
+                if let Some(event_id) = event_item.evt_id() {
+                    return Some(event_id);
                 }
             }
         }

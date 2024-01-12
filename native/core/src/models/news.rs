@@ -46,7 +46,7 @@ impl NewsEntry {
 }
 
 impl ActerModel for NewsEntry {
-    fn indizes(&self) -> Vec<String> {
+    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
         vec![
             NEWS_KEY.to_string(),
             format!("{}::{NEWS_KEY}", self.meta.room_id),
@@ -107,7 +107,7 @@ pub struct NewsEntryUpdate {
 }
 
 impl ActerModel for NewsEntryUpdate {
-    fn indizes(&self) -> Vec<String> {
+    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
         vec![format!("{:}::history", self.inner.news_entry.event_id)]
     }
 

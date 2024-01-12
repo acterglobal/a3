@@ -1,55 +1,32 @@
+import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/icons/tasks_icon.dart';
+import 'package:acter/common/widgets/room/room_avatar_builder.dart';
+import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:acter/features/tasks/providers/tasks.dart';
+import 'package:acter/features/tasks/widgets/due_chip.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jiffy/jiffy.dart';
+import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class TaskEntry extends ConsumerWidget {
   final Task task;
-  const TaskEntry({super.key, required this.task});
+  final bool showBreadCrumb;
+  final Function()? onDone;
+  const TaskEntry({
+    super.key,
+    required this.task,
+    this.showBreadCrumb = false,
+    this.onDone,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<Widget> extraInfo = [];
-    final dueDate = task.utcDueRfc3339();
+    final List<Widget> extraInfo = [DueChip(task: task)];
     final isDone = task.isDone();
-    if (!isDone) {
-      if (dueDate != null) {
-        final due = Jiffy.parse(dueDate);
-        final now = Jiffy.now();
-        if (due.isBefore(now)) {
-          extraInfo.add(
-            Padding(
-              padding: const EdgeInsets.only(left: 3),
-              child: Tooltip(
-                message: due.format(),
-                child: Text(
-                  due.fromNow(),
-                  style: isDone
-                      ? null
-                      : Theme.of(context).textTheme.bodySmall!.copyWith(
-                            color: Theme.of(context).colorScheme.taskOverdueFG,
-                          ),
-                ),
-              ),
-            ),
-          );
-        } else {
-          // FIXME: HL today, tomorrow
-          extraInfo.add(
-            Padding(
-              padding: const EdgeInsets.only(left: 3),
-              child: Text(
-                due.fromNow(),
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ),
-          );
-        }
-      }
-    }
     final description = task.description();
     if (description != null) {
       extraInfo.add(
@@ -99,6 +76,7 @@ class TaskEntry extends ConsumerWidget {
           )
           .style,
       leading: InkWell(
+        key: isDone ? doneKey() : notDoneKey(),
         child: Padding(
           padding: const EdgeInsets.only(right: 5),
           child: Icon(
@@ -113,22 +91,64 @@ class TaskEntry extends ConsumerWidget {
             updater.markUndone();
           }
           await updater.send();
+          if (onDone != null) {
+            onDone!();
+          }
         },
       ),
-      title: Row(
-        children: [
-          Text(
-            task.title(),
-            style: isDone
-                ? Theme.of(context).textTheme.bodySmall!.copyWith(
-                      fontWeight: FontWeight.w100,
-                      color: AppTheme.brandColorScheme.neutral5,
-                    )
-                : Theme.of(context).textTheme.bodyMedium!,
-          ),
-          ...extraInfo,
-        ],
+      title: InkWell(
+        child: Wrap(
+          children: [
+            Text(
+              task.title(),
+              style: isDone
+                  ? Theme.of(context).textTheme.bodySmall!.copyWith(
+                        fontWeight: FontWeight.w100,
+                        color: AppTheme.brandColorScheme.neutral5,
+                      )
+                  : Theme.of(context).textTheme.bodyMedium!,
+            ),
+            ...extraInfo,
+          ],
+        ),
+        onTap: () {
+          context.pushNamed(
+            Routes.task.name,
+            pathParameters: {
+              'taskId': task.eventIdStr(),
+              'taskListId': task.taskListIdStr(),
+            },
+          );
+        },
       ),
+      subtitle: showBreadCrumb
+          ? Wrap(
+              children: [
+                RoomAvatarBuilder(
+                  roomId: task.roomIdStr(),
+                  avatarSize: 18,
+                ),
+                const TasksIcon(size: 18),
+                ref.watch(taskListProvider(task.taskListIdStr())).when(
+                      data: (tl) => Text(tl.name()),
+                      error: (e, s) => Text('Loading failed: $e'),
+                      loading: () => const Skeletonizer(
+                        child: Text('some default text'),
+                      ),
+                    ),
+              ],
+            )
+          : null,
     );
+  }
+
+  Key doneKey() {
+    final taskId = task.eventIdStr();
+    return Key('task-entry-$taskId-status-btn-done');
+  }
+
+  Key notDoneKey() {
+    final taskId = task.eventIdStr();
+    return Key('task-entry-$taskId-status-btn-not-done');
   }
 }

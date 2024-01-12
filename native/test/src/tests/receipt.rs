@@ -113,7 +113,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
             Ok(Some(event)) => {
                 info!("received: {:?}", event.clone());
                 for record in event.receipt_records() {
-                    if record.seen_by() == kyra.user_id()?.to_string() {
+                    if record.seen_by() == kyra.user_id()? {
                         assert_eq!(record.receipt_type(), "m.read", "Incorrect receipt type");
                         let receipt_thread = record.receipt_thread();
                         assert!(receipt_thread.is_main(), "Incorrect receipt thread");

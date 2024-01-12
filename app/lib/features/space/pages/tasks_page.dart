@@ -1,5 +1,6 @@
 import 'dart:core';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
 import 'package:acter/features/tasks/widgets/all_tasks_done.dart';
 import 'package:acter/features/tasks/widgets/task_list_card.dart';
@@ -11,6 +12,8 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:go_router/go_router.dart';
 
 class SpaceTasksPage extends ConsumerWidget {
+  static const createTaskKey = Key('space-create-task');
+  static const scrollView = Key('space-task-lists');
   final String spaceIdOrAlias;
   const SpaceTasksPage({super.key, required this.spaceIdOrAlias});
 
@@ -20,68 +23,72 @@ class SpaceTasksPage extends ConsumerWidget {
     // get platform of context.
     return DecoratedBox(
       decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Tasks',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Atlas.plus_circle_thin,
-                      color: Theme.of(context).colorScheme.neutral5,
-                    ),
-                    iconSize: 28,
-                    color: Theme.of(context).colorScheme.surface,
-                    onPressed: () => context.pushNamed(
-                      Routes.actionAddPin.name,
-                      queryParameters: {'spaceId': spaceIdOrAlias},
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            taskLists.when(
-              data: (taskLists) {
-                if (taskLists.isEmpty) {
-                  return const SliverToBoxAdapter(child: AllTasksDone());
-                }
-                return SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                      TaskList taskList = taskLists[index];
-                      return TaskListCard(taskList: taskList);
-                    },
-                    childCount: taskLists.length,
-                  ),
-                );
-              },
-              error: (error, stack) => SliverToBoxAdapter(
-                child: SizedBox(
-                  height: 450,
-                  child: Center(
-                    child: Text('Loading tasks failed: $error'),
+      child: CustomScrollView(
+        key: scrollView,
+        slivers: [
+          SliverToBoxAdapter(
+            child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
+          ),
+          SliverToBoxAdapter(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    taskLists.hasValue && taskLists.valueOrNull!.isNotEmpty
+                        ? 'Tasks (${taskLists.valueOrNull!.length})'
+                        : 'Tasks',
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
-              ),
-              loading: () => const SliverToBoxAdapter(
-                child: SizedBox(
-                  height: 450,
-                  child: Center(
-                    child: Text('Loading'),
+                IconButton(
+                  key: createTaskKey,
+                  icon: Icon(
+                    Atlas.plus_circle_thin,
+                    color: Theme.of(context).colorScheme.neutral5,
                   ),
+                  iconSize: 28,
+                  color: Theme.of(context).colorScheme.surface,
+                  onPressed: () => context.pushNamed(
+                    Routes.actionAddTaskList.name,
+                    queryParameters: {'spaceId': spaceIdOrAlias},
+                  ),
+                ),
+              ],
+            ),
+          ),
+          taskLists.when(
+            data: (taskLists) {
+              if (taskLists.isEmpty) {
+                return const SliverToBoxAdapter(child: AllTasksDone());
+              }
+              return SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int index) {
+                    TaskList taskList = taskLists[index];
+                    return TaskListCard(taskList: taskList);
+                  },
+                  childCount: taskLists.length,
+                ),
+              );
+            },
+            error: (error, stack) => SliverToBoxAdapter(
+              child: SizedBox(
+                height: 450,
+                child: Center(
+                  child: Text('Loading tasks failed: $error'),
                 ),
               ),
             ),
-          ],
-        ),
+            loading: () => const SliverToBoxAdapter(
+              child: SizedBox(
+                height: 450,
+                child: Center(
+                  child: Text('Loading'),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

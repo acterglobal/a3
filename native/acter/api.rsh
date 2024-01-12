@@ -1160,14 +1160,22 @@ object Task {
     /// the name of this task
     fn title() -> string;
 
+    /// unique event id associated with this task
+    fn event_id_str() -> string;
+    /// the room this task lives in
+    fn room_id_str() -> string;
+
+    /// unique task list id associated with this task
+    fn task_list_id_str() -> string;
+
     /// the description of this task
     fn description() -> Option<MsgContent>;
 
-    /// the users assigned
-    fn assignees() -> Vec<UserId>;
+    /// initial author
+    fn author_str() -> string;
 
-    /// other users to inform about updates
-    fn subscribers() -> Vec<UserId>;
+    /// the users assigned
+    fn assignees_str() -> Vec<string>;
 
     /// order in the list
     fn sort_order() -> u32;
@@ -1185,8 +1193,11 @@ object Task {
     /// Lowest = 9,
     fn priority() -> Option<u8>;
 
-    /// When this is due
-    fn utc_due_rfc3339() -> Option<string>;
+    /// Day When this is due
+    fn due_date() -> Option<string>;
+
+    /// Time of day when this is due compared to UTC00:00
+    fn utc_due_time_of_day() -> Option<i32>;
 
     /// When this was started
     fn utc_start_rfc3339() -> Option<string>;
@@ -1209,6 +1220,15 @@ object Task {
 
     /// make a builder for updating the task
     fn update_builder() -> Result<TaskUpdateBuilder>;
+
+    /// Is this assigned to the current user?
+    fn is_assigned_to_me() -> bool;
+
+    /// Assign this task to myself
+    fn assign_self() -> Future<Result<EventId>>;
+
+    /// UnAssign this task to myself
+    fn unassign_self() -> Future<Result<EventId>>;
 
     /// get informed about changes to this task
     fn subscribe_stream() -> Stream<bool>;
@@ -1239,14 +1259,15 @@ object TaskUpdateBuilder {
     fn unset_color();
     fn unset_color_update();
 
-    /// set the utc_due for this task list in rfc3339 format
-    fn utc_due_from_rfc3339(utc_due: string) -> Result<()>;
-    /// set the utc_due for this task list in rfc2822 format
-    fn utc_due_from_rfc2822(utc_due: string) -> Result<()>;
-    /// set the utc_due for this task list in custom format
-    fn utc_due_from_format(utc_due: string, format: string) -> Result<()>;
-    fn unset_utc_due();
-    fn unset_utc_due_update();
+    /// set the due day for this task
+    fn due_date(year: i32, month: u32, day: u32);
+    fn unset_due_date();
+    fn unset_due_date_update();
+
+    /// set the due time of day in seconds since midnight UTC
+    fn utc_due_time_of_day(seconds: i32);
+    fn unset_utc_due_time_of_day();
+    fn unset_utc_due_time_of_day_update();
 
     /// set the utc_start for this task list in rfc3339 format
     fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
@@ -1271,16 +1292,6 @@ object TaskUpdateBuilder {
     fn categories(categories: Vec<string>);
     fn unset_categories();
     fn unset_categories_update();
-
-    /// set the assignees for this task list
-    fn assignees(assignees: Vec<UserId>);
-    fn unset_assignees();
-    fn unset_assignees_update();
-
-    /// set the subscribers for this task list
-    fn subscribers(subscribers: Vec<UserId>);
-    fn unset_subscribers();
-    fn unset_subscribers_update();
 
     /// send this task list draft
     /// mark it done
@@ -1308,13 +1319,12 @@ object TaskDraft {
     fn color(color: EfkColor);
     fn unset_color();
 
-    /// set the utc_due for this task in rfc3339 format
-    fn utc_due_from_rfc3339(utc_due: string) -> Result<()>;
-    /// set the utc_due for this task in rfc2822 format
-    fn utc_due_from_rfc2822(utc_due: string) -> Result<()>;
-    /// set the utc_due for this task in custom format
-    fn utc_due_from_format(utc_due: string, format: string) -> Result<()>;
-    fn unset_utc_due();
+    /// set the due day for this task
+    fn due_date(year: i32, month: u32, day: u32);
+    fn unset_due_date();
+    /// set the due time of day in seconds since midnight UTC
+    fn utc_due_time_of_day(seconds: i32);
+    fn unset_utc_due_time_of_day();
 
     /// set the utc_start for this task in rfc3339 format
     fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
@@ -1336,14 +1346,6 @@ object TaskDraft {
     fn categories(categories: Vec<string>);
     fn unset_categories();
 
-    /// set the assignees for this task
-    fn assignees(assignees: Vec<UserId>);
-    fn unset_assignees();
-
-    /// set the subscribers for this task
-    fn subscribers(subscribers: Vec<UserId>);
-    fn unset_subscribers();
-
     /// create this task
     fn send() -> Future<Result<EventId>>;
 }
@@ -1352,11 +1354,11 @@ object TaskList {
     /// the name of this task list
     fn name() -> string;
 
+    /// the event_id of this task list
+    fn event_id_str() -> string;
+
     /// the description of this task list
     fn description() -> Option<MsgContent>;
-
-    /// who wants to be informed on updates about this?
-    fn subscribers() -> Vec<UserId>;
 
     /// does this list have a special role?
     fn role() -> Option<string>;
@@ -1378,6 +1380,9 @@ object TaskList {
 
     /// The tasks belonging to this tasklist
     fn tasks() -> Future<Result<Vec<Task>>>;
+
+    /// The specific task belonging to this task list
+    fn task(task_id: string) -> Future<Result<Task>>;
 
     /// make a builder for creating the task draft
     fn task_builder() -> Result<TaskDraft>;
@@ -1422,10 +1427,6 @@ object TaskListDraft {
     fn categories(categories: Vec<string>);
     fn unset_categories();
 
-    /// set the subscribers for this task list
-    fn subscribers(subscribers: Vec<UserId>);
-    fn unset_subscribers();
-
     /// create this task list
     fn send() -> Future<Result<EventId>>;
 }
@@ -1456,11 +1457,6 @@ object TaskListUpdateBuilder {
     fn categories(categories: Vec<string>);
     fn unset_categories();
     fn unset_categories_update();
-
-    /// set the subscribers for this task list
-    fn subscribers(subscribers: Vec<UserId>);
-    fn unset_subscribers();
-    fn unset_subscribers_update();
 
     /// update this task
     fn send() -> Future<Result<EventId>>;
@@ -2202,6 +2198,12 @@ object Client {
 
     /// the Tasks list for the client
     fn task_list(key: string) -> Future<Result<TaskList>>;
+
+    /// the Tasks lists of this Space
+    fn my_open_tasks() -> Future<Result<Vec<Task>>>;
+
+    /// listen to updates of the my_open_tasks list
+    fn subscribe_my_open_tasks_stream() -> Stream<bool>;
 
     /// get all calendar events
     fn calendar_events() -> Future<Result<Vec<CalendarEvent>>>;
