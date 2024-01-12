@@ -1,5 +1,5 @@
 use derive_getters::Getters;
-use ruma_common::{EventId, RoomId};
+use ruma_common::{EventId, RoomId, UserId};
 use ruma_events::OriginalMessageLikeEvent;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
@@ -86,7 +86,7 @@ impl From<OriginalMessageLikeEvent<TaskListEventContent>> for TaskList {
 }
 
 impl ActerModel for TaskList {
-    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
+    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
         vec![
             format!("{}::{}", self.meta.room_id, KEYS::TASKS::TASKS),
             KEYS::TASKS::TASKS.to_owned(),
@@ -130,7 +130,7 @@ pub struct TaskListUpdate {
 }
 
 impl ActerModel for TaskListUpdate {
-    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
+    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
         vec![format!(
             "tasklist-{:}::history",
             self.inner.task_list.event_id

@@ -1,5 +1,5 @@
 use derive_getters::Getters;
-use ruma_common::{EventId, OwnedEventId};
+use ruma_common::{EventId, OwnedEventId, UserId};
 use ruma_events::OriginalMessageLikeEvent;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
@@ -130,7 +130,7 @@ impl Comment {
 }
 
 impl ActerModel for Comment {
-    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
+    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
         self.belongs_to()
             .expect("we always have some as comments")
             .into_iter()
@@ -226,7 +226,7 @@ pub struct CommentUpdate {
 }
 
 impl ActerModel for CommentUpdate {
-    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
+    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
         vec![format!("{:}::history", self.inner.comment.event_id)]
     }
 

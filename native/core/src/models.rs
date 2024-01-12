@@ -25,7 +25,7 @@ pub use pins::{Pin, PinUpdate};
 pub use reactions::{Reaction, ReactionManager, ReactionStats};
 pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
 use ruma_common::{
-    serde::Raw, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId,
+    serde::Raw, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, UserId,
 };
 use ruma_events::{
     reaction::ReactionEventContent, room::redaction::RoomRedactionEventContent,
@@ -113,7 +113,7 @@ pub async fn default_model_execute(
 
 #[enum_dispatch(AnyActerModel)]
 pub trait ActerModel: Debug {
-    fn indizes(&self, user_id: &matrix_sdk::ruma::UserId) -> Vec<String>;
+    fn indizes(&self, user_id: &UserId) -> Vec<String>;
     /// The key to store this model under
     fn event_id(&self) -> &EventId;
     /// The models to inform about this model as it belongs to that
@@ -214,7 +214,7 @@ impl RedactedActerModel {
 }
 
 impl ActerModel for RedactedActerModel {
-    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
+    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
         self.indizes.clone()
     }
 
