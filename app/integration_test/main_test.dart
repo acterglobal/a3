@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'support/appstart.dart';
 import 'tests/auth.dart';
 import 'tests/pins.dart';
+import 'tests/bug_reporter.dart';
 import 'tests/sub_spaces.dart';
 import 'tests/super_invites.dart';
 import 'tests/tasks.dart';
@@ -18,6 +19,7 @@ void main() {
     group('SuperInvites', superInvitesTests);
     group('Tasks', tasksTests);
     group('Pins', pinsTests);
+    group('Bug Reporting', bugReporterTests);
   });
 }
 

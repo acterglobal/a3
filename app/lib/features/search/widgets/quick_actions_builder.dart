@@ -135,6 +135,7 @@ class QuickActionsBuilder extends ConsumerWidget {
                 )
               : null,
           OutlinedButton.icon(
+            key: QuickJumpKeys.bugReport,
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.greenAccent,
               side: const BorderSide(width: 1, color: Colors.greenAccent),
