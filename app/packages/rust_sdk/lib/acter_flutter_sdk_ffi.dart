@@ -14506,9 +14506,11 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -14517,6 +14519,8 @@ class Api {
   late final _reactionManagerRedactReaction =
       _reactionManagerRedactReactionPtr.asFunction<
           int Function(
+            int,
+            int,
             int,
             int,
             int,
@@ -31082,22 +31086,24 @@ class ReactionManager {
   /// redact the reaction
   Future<EventId> redactReaction(
     String eventId,
-    String reason,
-    String txnId,
+    String? reason,
+    String? txnId,
   ) {
     final tmp1 = eventId;
     final tmp5 = reason;
-    final tmp9 = txnId;
+    final tmp11 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp4 = 0;
     var tmp6 = 0;
-    var tmp7 = 0;
     var tmp8 = 0;
+    var tmp9 = 0;
     var tmp10 = 0;
-    var tmp11 = 0;
     var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp15 = 0;
+    var tmp16 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -31107,42 +31113,56 @@ class ReactionManager {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      final tmp7_0 = utf8.encode(tmp7);
+      tmp9 = tmp7_0.length;
 
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    final tmp9_0 = utf8.encode(tmp9);
-    tmp11 = tmp9_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
+      final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
+      tmp8_1.setAll(0, tmp7_0);
+      tmp8 = tmp8_0.address;
+      tmp10 = tmp9;
+    }
+    if (tmp11 == null) {
+      tmp12 = 0;
+    } else {
+      tmp12 = 1;
+      final tmp13 = tmp11;
+      final tmp13_0 = utf8.encode(tmp13);
+      tmp15 = tmp13_0.length;
 
-    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-    tmp10_1.setAll(0, tmp9_0);
-    tmp10 = tmp10_0.address;
-    tmp12 = tmp11;
-    final tmp13 = _api._reactionManagerRedactReaction(
+      final ffi.Pointer<ffi.Uint8> tmp14_0 = _api.__allocate(tmp15 * 1, 1);
+      final Uint8List tmp14_1 = tmp14_0.asTypedList(tmp15);
+      tmp14_1.setAll(0, tmp13_0);
+      tmp14 = tmp14_0.address;
+      tmp16 = tmp15;
+    }
+    final tmp17 = _api._reactionManagerRedactReaction(
       tmp0,
       tmp2,
       tmp3,
       tmp4,
       tmp6,
-      tmp7,
       tmp8,
+      tmp9,
       tmp10,
-      tmp11,
       tmp12,
+      tmp14,
+      tmp15,
+      tmp16,
     );
-    final tmp15 = tmp13;
-    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
-    final tmp15_1 =
-        _Box(_api, tmp15_0, "__ReactionManager_redact_reaction_future_drop");
-    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
-    final tmp14 =
-        _nativeFuture(tmp15_1, _api.__reactionManagerRedactReactionFuturePoll);
-    return tmp14;
+    final tmp19 = tmp17;
+    final ffi.Pointer<ffi.Void> tmp19_0 = ffi.Pointer.fromAddress(tmp19);
+    final tmp19_1 =
+        _Box(_api, tmp19_0, "__ReactionManager_redact_reaction_future_drop");
+    tmp19_1._finalizer = _api._registerFinalizer(tmp19_1);
+    final tmp18 =
+        _nativeFuture(tmp19_1, _api.__reactionManagerRedactReactionFuturePoll);
+    return tmp18;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.

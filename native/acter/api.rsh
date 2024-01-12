@@ -631,7 +631,7 @@ object ReactionManager {
     fn send_reaction(event_id: string, key: string) -> Future<Result<EventId>>;
 
     /// redact the reaction
-    fn redact_reaction(event_id: string, reason: string, txn_id: string) -> Future<Result<EventId>>;
+    fn redact_reaction(event_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
 }
 
 object Reaction {
