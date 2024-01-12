@@ -137,8 +137,8 @@ class SpaceChatsPage extends ConsumerWidget {
                             ),
                           );
                         }
-                        return SliverToBoxAdapter(
-                          child: Container(),
+                        return const SliverToBoxAdapter(
+                          child: SizedBox.shrink(),
                         );
                       },
                       error: (error, stackTrace) => SliverToBoxAdapter(
