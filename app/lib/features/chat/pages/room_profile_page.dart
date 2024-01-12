@@ -139,6 +139,7 @@ class RoomProfilePage extends ConsumerWidget {
                   tiles: [
                     SettingsTile(
                       onPressed: (ctx) {
+                        //FIXME : ?via=$serverName data should be handle from rust helper function
                         final serverName = roomId.split(':').last;
                         Clipboard.setData(
                           ClipboardData(

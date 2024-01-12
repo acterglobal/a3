@@ -1,8 +1,5 @@
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/chat_theme.dart';
-import 'package:acter/common/utils/rooms.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/chat_utils/chat_utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -14,7 +11,6 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class TextMessageBuilder extends ConsumerStatefulWidget {
   final Convo convo;
@@ -191,79 +187,15 @@ class _TextWidget extends ConsumerWidget {
   Future<void> onLinkTap(Uri uri, BuildContext context, WidgetRef ref) async {
     final roomId = getRoomIdFromLink(uri);
 
-    //If link is type of matrix room link
+    ///If link is type of matrix room link
     if (roomId != null) {
-      try {
-        final chat = await ref.read(chatProvider(roomId).future);
-        if (!context.mounted) return;
-        if (chat.isJoined()) {
-          // Navigate to chat room
-          context.goNamed(
-            Routes.chatroom.name,
-            pathParameters: {'roomId': chat.getRoomIdStr()},
-          );
-        } else {
-          askToJoinGroup(context, ref, roomId);
-        }
-      } catch (e) {
-        askToJoinGroup(context, ref, roomId);
-      }
+      await navigateToRoomOrAskToJoin(context, ref, roomId);
     }
 
-    //If link is other than matrix room link
-    //Then open it on browser
+    ///If link is other than matrix room link
+    ///Then open it on browser
     else {
       await openLink(uri.toString(), context);
     }
-  }
-
-  void askToJoinGroup(
-    BuildContext context,
-    WidgetRef ref,
-    String roomId,
-  ) async {
-    showModalBottomSheet(
-      context: context,
-      isDismissible: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topRight: Radius.circular(20),
-          topLeft: Radius.circular(20),
-        ),
-      ),
-      builder: (ctx) => Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'You are not part of this group. Would you like to join?',
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                final server = roomId.split(':').last;
-                await joinRoom(
-                  context,
-                  ref,
-                  'Trying to join $roomId',
-                  roomId,
-                  server,
-                  (roomId) => context.goNamed(
-                    Routes.chatroom.name,
-                    pathParameters: {'roomId': roomId},
-                  ),
-                );
-              },
-              child: const Text('Join Room'),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
