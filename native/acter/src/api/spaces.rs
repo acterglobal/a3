@@ -26,6 +26,7 @@ use matrix_sdk::{
     room::{Messages, MessagesOptions, Room as SdkRoom},
     ruma::api::client::state::send_state_event,
 };
+use matrix_sdk_ui::timeline::RoomExt;
 use ruma_common::{
     directory::RoomTypeFilter, serde::Raw, OwnedRoomAliasId, OwnedRoomId, RoomAliasId, RoomId,
     RoomOrAliasId, ServerName,
@@ -35,12 +36,12 @@ use ruma_events::{
     MessageLikeEvent, StateEventType,
 };
 use serde::{Deserialize, Serialize};
-use std::ops::Deref;
+use std::{ops::Deref, sync::Arc};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::{error, trace, warn};
 
-use crate::{Client, PublicSearchResult, Room, RUNTIME};
+use crate::{Client, PublicSearchResult, Room, TimelineStream, RUNTIME};
 
 use super::utils::{remap_for_diff, ApiVectorDiff};
 
@@ -78,6 +79,10 @@ struct HistoryState {
 
 // internal API
 impl Space {
+    pub(crate) fn new(client: Client, inner: Room) -> Self {
+        Space { client, inner }
+    }
+
     pub(crate) fn update_room(self, room: Room) -> Self {
         let Space { client, .. } = self;
         Space {
@@ -85,6 +90,7 @@ impl Space {
             inner: room,
         }
     }
+
     pub(crate) async fn setup_handles(&self) -> Vec<EventHandlerHandle> {
         self.room
             .client()
@@ -444,9 +450,13 @@ impl Space {
 // External API
 
 impl Space {
-    pub fn new(client: Client, inner: Room) -> Self {
-        Space { client, inner }
+    #[cfg(feature = "testing")]
+    pub async fn timeline_stream(&self) -> TimelineStream {
+        let room = self.inner.room.clone();
+        let timeline = Arc::new(room.timeline().await);
+        TimelineStream::new(room, timeline)
     }
+
     pub async fn create_onboarding_data(&self) -> Result<()> {
         let mut engine = Engine::with_template(std::include_str!("../templates/onboarding.toml"))?;
         engine

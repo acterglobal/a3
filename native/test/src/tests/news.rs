@@ -1,10 +1,15 @@
+use acter::{api::RoomMessage, ruma_common::OwnedEventId};
 use anyhow::{bail, Result};
+use core::time::Duration;
+use futures::{pin_mut, stream::StreamExt, FutureExt};
 use std::io::Write;
 use tempfile::NamedTempFile;
+use tokio::time::sleep;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
 };
+use tracing::info;
 
 use crate::utils::{random_user_with_random_space, random_user_with_template};
 
@@ -348,33 +353,65 @@ async fn news_like_reaction_test() -> Result<()> {
     })
     .await?;
 
+    let timeline = space.timeline_stream().await;
+    let stream = timeline.diff_stream();
+    pin_mut!(stream);
+
     let slides = space.latest_news_entries(1).await?;
     let final_entry = slides.first().expect("Item is there");
     let reaction_manager = final_entry.reactions().await?;
+    info!("send like reaction ------------------------------------");
     let entry_evt_id = final_entry.event_id().to_string();
     reaction_manager
         .send_reaction(entry_evt_id, "❤️".to_string())
         .await?;
 
-    // wait for sync to catch up
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let space_cl = space.clone();
-    Retry::spawn(retry_strategy, move || {
-        let inner_space = space_cl.clone();
-        async move {
-            if inner_space.latest_news_entries(1).await?.len() != 1 {
-                bail!("news not found");
-            } else {
-                Ok(())
+    // text msg may reach via reset action or set action
+    let mut i = 10;
+    let mut received = None;
+    while i > 0 {
+        info!("stream loop - {i}");
+        if let Some(diff) = stream.next().now_or_never().flatten() {
+            info!("stream diff - {}", diff.action());
+            match diff.action().as_str() {
+                "PushBack" => {
+                    let value = diff
+                        .value()
+                        .expect("diff pushback action should have valid value");
+                    info!("diff pushback - {:?}", value);
+                    if let Some(event_id) = match_text_msg(&value, "Hi, everyone") {
+                        received = Some(event_id);
+                    }
+                }
+                "Reset" => {
+                    let values = diff
+                        .values()
+                        .expect("diff reset action should have valid values");
+                    info!("diff reset - {:?}", values);
+                    for value in values.iter() {
+                        if let Some(event_id) = match_text_msg(value, "Hi, everyone") {
+                            received = Some(event_id);
+                            break;
+                        }
+                    }
+                }
+                _ => {}
+            }
+            // yay
+            if received.is_some() {
+                break;
             }
         }
-    })
-    .await?;
+        info!("continue loop");
+        i -= 1;
+        sleep(Duration::from_secs(1)).await;
+    }
+    info!("loop finished");
 
     let my_status = reaction_manager.my_status().await?;
 
     // indicates news is reacted with like
-    assert_eq!(my_status, true);
+    assert!(my_status);
 
     Ok(())
 }
@@ -453,4 +490,20 @@ async fn news_unlike_reaction_test() -> Result<()> {
     assert_eq!(my_status, true);
 
     Ok(())
+}
+
+fn match_text_msg(msg: &RoomMessage, body: &str) -> Option<OwnedEventId> {
+    info!("match room msg - {:?}", msg.clone());
+    if msg.item_type() == "event" {
+        let event_item = msg.event_item().expect("room msg should have event item");
+        if let Some(msg_content) = event_item.msg_content() {
+            if msg_content.body() == body {
+                // exclude the pending msg
+                if let Some(event_id) = event_item.evt_id() {
+                    return Some(event_id);
+                }
+            }
+        }
+    }
+    None
 }
