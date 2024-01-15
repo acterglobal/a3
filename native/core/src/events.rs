@@ -16,6 +16,7 @@ pub use common::{
 use ruma_common::exports::serde::de::Error as SerdeDeError;
 use ruma_events::{
     reaction::{ReactionEvent, ReactionEventContent},
+    room::redaction::{RoomRedactionEvent, RoomRedactionEventContent},
     StaticEventContent,
 };
 
@@ -47,6 +48,8 @@ pub enum AnyActerEvent {
 
     Reaction(ReactionEvent),
     Rsvp(rsvp::RsvpEvent),
+
+    Redaction(RoomRedactionEvent),
 }
 
 impl<'de> serde::Deserialize<'de> for AnyActerEvent {
@@ -192,6 +195,13 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
                 Ok(Self::Reaction(event))
             }
 
+            RoomRedactionEventContent::TYPE => {
+                let event =
+                    ::ruma_common::exports::serde_json::from_str::<RoomRedactionEvent>(json.get())
+                        .map_err(D::Error::custom)?;
+                Ok(Self::Redaction(event))
+            }
+
             _ => Err(SerdeDeError::unknown_variant(
                 &ev_type,
                 &[
@@ -213,6 +223,7 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
                     attachments::AttachmentUpdateEventContent::TYPE,
                     rsvp::RsvpEventContent::TYPE,
                     ReactionEventContent::TYPE,
+                    RoomRedactionEventContent::TYPE,
                 ],
             )),
         }

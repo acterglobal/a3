@@ -35,14 +35,16 @@ use ruma_common::{
     RoomOrAliasId, ServerName,
 };
 use ruma_events::{
-    reaction::SyncReactionEvent, space::child::SpaceChildEventContent, AnyStateEventContent,
-    MessageLikeEvent, StateEventType,
+    reaction::SyncReactionEvent,
+    room::redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
+    space::child::SpaceChildEventContent,
+    AnyStateEventContent, MessageLikeEvent, StateEventType,
 };
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, sync::Arc};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::{error, trace, warn};
+use tracing::{error, info, trace, warn};
 
 use crate::{Client, PublicSearchResult, Room, TimelineStream, RUNTIME};
 
@@ -324,23 +326,6 @@ impl Space {
                     }
                 },
             ),
-            // Reactions
-            self.room.add_event_handler(
-                |ev: SyncReactionEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    // FIXME: handle redactions
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor
-                            .handle(AnyActerModel::Reaction(t.into()))
-                            .await
-                        {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
 
             // NewsEntrys
             self.room.add_event_handler(
@@ -365,6 +350,42 @@ impl Space {
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         if let Err(error) = executor
                             .handle(AnyActerModel::NewsEntryUpdate(t.into()))
+                            .await
+                        {
+                            error!(?error, "execution failed");
+                        }
+                    }
+                },
+            ),
+
+            // Reactions
+            self.room.add_event_handler(
+                |ev: SyncReactionEvent,
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                        if let Err(error) = executor
+                            .handle(AnyActerModel::Reaction(t.into()))
+                            .await
+                        {
+                            error!(?error, "execution failed");
+                        }
+                    }
+                },
+            ),
+
+            // Redaction
+            self.room.add_event_handler(
+                |ev: SyncRoomRedactionEvent,
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
+                    if let RoomRedactionEvent::Original(t) = ev.into_full_event(room_id) {
+                        info!("RoomRedactionEvent for AnyActerModel: {:?}", t);
+                        if let Err(error) = executor
+                            .handle(AnyActerModel::Redaction(t.into()))
                             .await
                         {
                             error!(?error, "execution failed");

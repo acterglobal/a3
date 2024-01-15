@@ -192,7 +192,7 @@ impl Store {
     }
 
     #[instrument(skip(self))]
-    pub async fn save_model_inner(&self, mdl: AnyActerModel) -> Result<Vec<String>> {
+    async fn save_model_inner(&self, mdl: AnyActerModel) -> Result<Vec<String>> {
         let key = mdl.event_id().to_string();
         let user_id = self.user_id();
         let mut keys_changed = vec![key.clone()];
@@ -246,7 +246,7 @@ impl Store {
         Ok(keys)
     }
 
-    pub async fn sync(&self) -> Result<()> {
+    async fn sync(&self) -> Result<()> {
         trace!("sync");
         let client_store = self.client.store();
         let dirty = {
