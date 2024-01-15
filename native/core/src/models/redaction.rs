@@ -1,10 +1,13 @@
 use ruma_common::{EventId, UserId};
-use ruma_events::room::redaction::{OriginalRoomRedactionEvent, RoomRedactionEventContent};
+use ruma_events::{
+    room::redaction::{OriginalRoomRedactionEvent, RoomRedactionEventContent},
+    StaticEventContent,
+};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
-use tracing::{info, trace};
+use tracing::trace;
 
-use super::{ActerModel, EventMeta};
+use super::{ActerModel, Error, EventMeta, RedactedActerModel, RedactionContent};
 use crate::{store::Store, Result};
 
 static REDACTIONS_FIELD: &str = "redactions";
@@ -45,8 +48,30 @@ impl ActerModel for Redaction {
     async fn execute(self, store: &Store) -> Result<Vec<String>> {
         let belongs_to = self.belongs_to().unwrap();
         trace!(event_id=?self.event_id(), ?belongs_to, "applying redaction");
-        info!("applying redaction ------------------------------------------------");
-        Ok(vec![])
+
+        let Some(redacts) = self.inner.redacts.clone() else {
+            // This field is required starting from room version 11.
+            return Err(Error::MissingField("redacts".to_owned()));
+        };
+        let redacted = RedactedActerModel {
+            orig_type: RoomRedactionEventContent::TYPE.to_owned(),
+            indizes: self.indizes(store.user_id()),
+            meta: EventMeta {
+                room_id: self.meta.room_id.clone(),
+                event_id: redacts.clone(),
+                sender: self.meta.sender.clone(),
+                origin_server_ts: self.meta.origin_server_ts,
+            },
+            content: RedactionContent {
+                content: self.inner.clone(),
+                event_id: self.meta.event_id.clone(),
+                sender: self.meta.sender.clone(),
+                origin_server_ts: self.meta.origin_server_ts,
+            },
+        };
+        let updates = self.redact(store, redacted).await?;
+        trace!(event_id=?self.event_id(), "redacted model");
+        Ok(updates)
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
