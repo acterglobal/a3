@@ -177,7 +177,8 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
         base_path,
         token.session.user_id.as_str(),
         token.db_passphrase.clone(),
-        "", ""
+        "",
+        "",
     )
     .await?;
     login_with_token_under_config(token, config).await
