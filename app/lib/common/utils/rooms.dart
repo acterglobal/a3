@@ -42,6 +42,7 @@ Future<void> joinRoom(
     if (!context.mounted) {
       return;
     }
+    Navigator.of(context, rootNavigator: true).pop();
     showAdaptiveDialog(
       barrierDismissible: false,
       context: context,

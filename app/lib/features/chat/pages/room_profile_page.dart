@@ -139,9 +139,11 @@ class RoomProfilePage extends ConsumerWidget {
                   tiles: [
                     SettingsTile(
                       onPressed: (ctx) {
+                        //FIXME : ?via=$serverName data should be handle from rust helper function
+                        final serverName = roomId.split(':').last;
                         Clipboard.setData(
                           ClipboardData(
-                            text: roomId,
+                            text: 'https://matrix.to/#/$roomId?via=$serverName',
                           ),
                         );
                         customMsgSnackbar(
@@ -150,7 +152,7 @@ class RoomProfilePage extends ConsumerWidget {
                         );
                       },
                       title: Text(
-                        'Copy Room ID',
+                        'Copy room link',
                         style: tileTextTheme,
                       ),
                       leading: const Icon(Atlas.chain_link_thin, size: 18),
