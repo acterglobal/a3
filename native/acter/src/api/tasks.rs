@@ -1,6 +1,6 @@
 use acter_core::{
     events::tasks::{self, Priority, TaskBuilder, TaskListBuilder},
-    models::{self, ActerModel, AnyActerModel, Color, TaskStats},
+    models::{self, ActerModel, AnyActerModel, Color, TaskSelfAssign, TaskStats},
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
@@ -75,7 +75,7 @@ impl Client {
         let client = self.clone();
         RUNTIME
             .spawn(async move {
-                for mdl in client.store().get_list(KEYS::TASKS).await? {
+                for mdl in client.store().get_list(KEYS::TASKS::TASKS).await? {
                     #[allow(irrefutable_let_patterns)]
                     if let AnyActerModel::TaskList(content) = mdl {
                         let room_id = content.room_id().to_owned();
@@ -103,6 +103,54 @@ impl Client {
                 Ok(task_lists)
             })
             .await?
+    }
+
+    pub async fn my_open_tasks(&self) -> Result<Vec<Task>> {
+        let mut tasks = Vec::new();
+        let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
+        let client = self.clone();
+        RUNTIME
+            .spawn(async move {
+                for mdl in client.store().get_list(KEYS::TASKS::MY_OPEN_TASKS).await? {
+                    #[allow(irrefutable_let_patterns)]
+                    if let AnyActerModel::Task(content) = mdl {
+                        let room_id = content.room_id().to_owned();
+                        let room = match rooms_map.entry(room_id) {
+                            Entry::Occupied(t) => t.get().clone(),
+                            Entry::Vacant(e) => {
+                                if let Some(room) = client.get_room(e.key()) {
+                                    e.insert(room.clone());
+                                    room
+                                } else {
+                                    /// User not part of the room anymore, ignore
+                                    continue;
+                                }
+                            }
+                        };
+                        tasks.push(Task {
+                            client: client.clone(),
+                            room,
+                            content,
+                        })
+                    } else {
+                        warn!(
+                            "Non task list model found in `my open tasks` index: {:?}",
+                            mdl
+                        );
+                    }
+                }
+                Ok(tasks)
+            })
+            .await?
+    }
+
+    pub fn subscribe_my_open_tasks_stream(&self) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.subscribe_my_open_tasks()).map(|_| true)
+    }
+
+    pub fn subscribe_my_open_tasks(&self) -> Receiver<()> {
+        self.executor()
+            .subscribe(KEYS::TASKS::MY_OPEN_TASKS.to_owned())
     }
 
     pub async fn task_list(&self, key: String) -> Result<TaskList> {
@@ -136,7 +184,7 @@ impl Space {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let k = format!("{room_id}::{}", KEYS::TASKS);
+                let k = format!("{room_id}::{}", KEYS::TASKS::TASKS);
                 for mdl in client.store().get_list(&k).await? {
                     #[allow(irrefutable_let_patterns)]
                     if let AnyActerModel::TaskList(content) = mdl {
@@ -247,17 +295,6 @@ impl TaskListDraft {
         self
     }
 
-    #[allow(clippy::ptr_arg)]
-    pub fn subscribers(&mut self, subscribers: &mut Vec<OwnedUserId>) -> &mut Self {
-        self.content.subscribers(subscribers.to_vec());
-        self
-    }
-
-    pub fn unset_subscribers(&mut self) -> &mut Self {
-        self.content.subscribers(vec![]);
-        self
-    }
-
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
         let content = self.content.build()?;
@@ -303,6 +340,10 @@ impl TaskList {
 
     pub fn sort_order(&self) -> u32 {
         self.content.sort_order
+    }
+
+    pub fn event_id_str(&self) -> String {
+        self.content.event_id().to_string()
     }
 
     pub fn time_zone(&self) -> Option<String> {
@@ -410,9 +451,22 @@ impl TaskList {
     }
 
     pub async fn tasks(&self) -> Result<Vec<Task>> {
-        if !self.content.stats().has_tasks() {
-            return Ok(vec![]);
-        };
+        self.tasks_with_filter(|_| true).await
+    }
+
+    pub async fn task(&self, task_id: String) -> Result<Task> {
+        let event_id = ruma::EventId::parse(task_id)?;
+        self.tasks_with_filter(move |t| t.event_id() == event_id)
+            .await?
+            .into_iter()
+            .next()
+            .context("Task not found")
+    }
+
+    async fn tasks_with_filter<F>(&self, filter: F) -> Result<Vec<Task>>
+    where
+        F: Fn(&acter_core::models::Task) -> bool + Send + Sync + 'static,
+    {
         let tasks_key = self.content.tasks_key();
         let client = self.client.clone();
         let room = self.room.clone();
@@ -426,14 +480,15 @@ impl TaskList {
                     .flatten()
                     .filter_map(|e| {
                         if let AnyActerModel::Task(content) = e {
-                            Some(Task {
-                                client: client.clone(),
-                                room: room.clone(),
-                                content,
-                            })
-                        } else {
-                            None
+                            if filter(&content) {
+                                return Some(Task {
+                                    client: client.clone(),
+                                    room: room.clone(),
+                                    content,
+                                });
+                            }
                         }
+                        None
                     })
                     .collect();
                 Ok(res)
@@ -477,6 +532,14 @@ impl Task {
         self.content.title().to_owned()
     }
 
+    pub fn event_id_str(&self) -> String {
+        self.content.event_id().to_string()
+    }
+
+    pub fn task_list_id_str(&self) -> String {
+        self.content.task_list_id.event_id.to_string()
+    }
+
     pub fn description(&self) -> Option<MsgContent> {
         self.content.description.as_ref().map(MsgContent::from)
     }
@@ -487,6 +550,22 @@ impl Task {
 
     pub fn room_id_str(&self) -> String {
         self.content.room_id().to_string()
+    }
+
+    pub fn author(&self) -> OwnedUserId {
+        self.content.meta.sender.clone()
+    }
+
+    pub fn author_str(&self) -> String {
+        self.content.meta.sender.to_string()
+    }
+
+    pub fn assignees_str(&self) -> Vec<String> {
+        self.content
+            .assignees()
+            .into_iter()
+            .map(|a| a.to_string())
+            .collect()
     }
 
     pub fn priority(&self) -> Option<u8> {
@@ -558,6 +637,45 @@ impl Task {
 
     fn is_joined(&self) -> bool {
         matches!(self.room.state(), RoomState::Joined)
+    }
+
+    pub fn is_assigned_to_me(&self) -> bool {
+        let assignees = self.content.assignees();
+        if assignees.is_empty() {
+            return false;
+        }
+        let Ok(user_id) = self.client.account().map(|a| a.user_id()) else {
+            return false
+        };
+        assignees.contains(&user_id)
+    }
+
+    pub async fn assign_self(&self) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Can only update tasks in joined rooms");
+        }
+        let room = self.room.clone();
+        let content = self.content.self_assign_event_content();
+        RUNTIME
+            .spawn(async move {
+                let resp = room.send(content).await?;
+                Ok(resp.event_id)
+            })
+            .await?
+    }
+
+    pub async fn unassign_self(&self) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Can only update tasks in joined rooms");
+        }
+        let room = self.room.clone();
+        let content = self.content.self_unassign_event_content();
+        RUNTIME
+            .spawn(async move {
+                let resp = room.send(content).await?;
+                Ok(resp.event_id)
+            })
+            .await?
     }
 
     pub fn update_builder(&self) -> Result<TaskUpdateBuilder> {
@@ -635,26 +753,23 @@ impl TaskDraft {
         self
     }
 
-    pub fn utc_due_from_rfc3339(&mut self, utc_due: String) -> Result<()> {
-        let dt = DateTime::parse_from_rfc3339(&utc_due)?.into();
-        self.content.utc_due(Some(dt));
-        Ok(())
+    pub fn due_date(&mut self, year: i32, month: u32, day: u32) -> &mut Self {
+        self.content
+            .due_date(chrono::NaiveDate::from_ymd_opt(year, month, day));
+        self
     }
 
-    pub fn utc_due_from_rfc2822(&mut self, utc_due: String) -> Result<()> {
-        let dt = DateTime::parse_from_rfc2822(&utc_due)?.into();
-        self.content.utc_due(Some(dt));
-        Ok(())
+    pub fn unset_due_date(&mut self) -> &mut Self {
+        self.content.due_date(None);
+        self
     }
 
-    pub fn utc_due_from_format(&mut self, utc_due: String, format: String) -> Result<()> {
-        let dt = DateTime::parse_from_str(&utc_due, &format)?.into();
-        self.content.utc_due(Some(dt));
-        Ok(())
+    pub fn utc_due_time_of_day(&mut self, seconds: i32) -> &mut Self {
+        self.content.utc_due_time_of_day(Some(seconds));
+        self
     }
-
-    pub fn unset_utc_due(&mut self) -> &mut Self {
-        self.content.utc_due(None);
+    pub fn unset_utc_due_time_of_day(&mut self) -> &mut Self {
+        self.content.utc_due_time_of_day(None);
         self
     }
 
@@ -714,28 +829,6 @@ impl TaskDraft {
 
     pub fn unset_categories(&mut self) -> &mut Self {
         self.content.categories(vec![]);
-        self
-    }
-
-    #[allow(clippy::ptr_arg)]
-    pub fn subscribers(&mut self, subscribers: &mut Vec<OwnedUserId>) -> &mut Self {
-        self.content.subscribers(subscribers.to_vec());
-        self
-    }
-
-    pub fn unset_subscribers(&mut self) -> &mut Self {
-        self.content.subscribers(vec![]);
-        self
-    }
-
-    #[allow(clippy::ptr_arg)]
-    pub fn assignees(&mut self, assignees: &mut Vec<OwnedUserId>) -> &mut Self {
-        self.content.assignees(assignees.to_vec());
-        self
-    }
-
-    pub fn unset_assignees(&mut self) -> &mut Self {
-        self.content.assignees(vec![]);
         self
     }
 
@@ -842,39 +935,6 @@ impl TaskUpdateBuilder {
         self.content.categories(None);
         self
     }
-
-    #[allow(clippy::ptr_arg)]
-    pub fn subscribers(&mut self, subscribers: &mut Vec<OwnedUserId>) -> &mut Self {
-        self.content.subscribers(Some(subscribers.to_vec()));
-        self
-    }
-
-    pub fn unset_subscribers(&mut self) -> &mut Self {
-        self.content.subscribers(Some(vec![]));
-        self
-    }
-
-    pub fn unset_subscribers_update(&mut self) -> &mut Self {
-        self.content.subscribers(None);
-        self
-    }
-
-    #[allow(clippy::ptr_arg)]
-    pub fn assignees(&mut self, assignees: &mut Vec<OwnedUserId>) -> &mut Self {
-        self.content.assignees(Some(assignees.to_vec()));
-        self
-    }
-
-    pub fn unset_assignees(&mut self) -> &mut Self {
-        self.content.assignees(Some(vec![]));
-        self
-    }
-
-    pub fn unset_assignees_update(&mut self) -> &mut Self {
-        self.content.assignees(None);
-        self
-    }
-
     pub fn mark_done(&mut self) -> &mut Self {
         self.content.progress_percent(Some(Some(100)));
         self
@@ -885,31 +945,32 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn utc_due_from_rfc3339(&mut self, utc_due: String) -> Result<()> {
-        let dt = DateTime::parse_from_rfc3339(&utc_due)?.into();
-        self.content.utc_due(Some(Some(dt)));
-        Ok(())
+    pub fn due_date(&mut self, year: i32, month: u32, day: u32) -> &mut Self {
+        self.content
+            .due_date(Some(chrono::NaiveDate::from_ymd_opt(year, month, day)));
+        self
     }
-
-    pub fn utc_due_from_rfc2822(&mut self, utc_due: String) -> Result<()> {
-        let dt = DateTime::parse_from_rfc2822(&utc_due)?.into();
-        self.content.utc_due(Some(Some(dt)));
-        Ok(())
-    }
-
-    pub fn utc_due_from_format(&mut self, utc_due: String, format: String) -> Result<()> {
-        let dt = DateTime::parse_from_str(&utc_due, &format)?.into();
-        self.content.utc_due(Some(Some(dt)));
-        Ok(())
-    }
-
-    pub fn unset_utc_due(&mut self) -> &mut Self {
-        self.content.utc_due(Some(None));
+    pub fn unset_due_date(&mut self) -> &mut Self {
+        self.content.due_date(Some(None));
         self
     }
 
-    pub fn unset_utc_due_update(&mut self) -> &mut Self {
-        self.content.utc_due(None);
+    pub fn unset_due_date_update(&mut self) -> &mut Self {
+        self.content.due_date(None);
+        self
+    }
+
+    pub fn utc_due_time_of_day(&mut self, seconds: i32) -> &mut Self {
+        self.content.utc_due_time_of_day(Some(Some(seconds)));
+        self
+    }
+    pub fn unset_utc_due_time_of_day(&mut self) -> &mut Self {
+        self.content.utc_due_time_of_day(Some(None));
+        self
+    }
+
+    pub fn unset_utc_due_time_of_day_update(&mut self) -> &mut Self {
+        self.content.utc_due_time_of_day(None);
         self
     }
 
@@ -1059,22 +1120,6 @@ impl TaskListUpdateBuilder {
         self
     }
 
-    #[allow(clippy::ptr_arg)]
-    pub fn subscribers(&mut self, subscribers: &mut Vec<OwnedUserId>) -> &mut Self {
-        self.content.subscribers(Some(subscribers.to_vec()));
-        self
-    }
-
-    pub fn unset_subscribers(&mut self) -> &mut Self {
-        self.content.subscribers(Some(vec![]));
-        self
-    }
-
-    pub fn unset_subscribers_update(&mut self) -> &mut Self {
-        self.content.subscribers(None);
-        self
-    }
-
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
         let content = self.content.build()?;
@@ -1090,7 +1135,7 @@ impl TaskListUpdateBuilder {
 impl Space {
     pub fn task_list_draft(&self) -> Result<TaskListDraft> {
         if !self.inner.is_joined() {
-            bail!("You can't create tasks for spaces we are not part on");
+            bail!("Unable to create tasks for spaces we are not part on");
         }
         Ok(TaskListDraft {
             client: self.client.clone(),
@@ -1101,7 +1146,7 @@ impl Space {
 
     pub fn task_list_draft_with_builder(&self, content: TaskListBuilder) -> Result<TaskListDraft> {
         if !self.inner.is_joined() {
-            bail!("You can't create tasks for spaces we are not part on");
+            bail!("Unable to create tasks for spaces we are not part on");
         }
         Ok(TaskListDraft {
             client: self.client.clone(),

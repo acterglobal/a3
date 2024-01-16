@@ -6,7 +6,8 @@ use futures::{
 use matrix_sdk::{
     config::SyncSettings,
     encryption::verification::{
-        SasState, SasVerification, Verification, VerificationRequest, VerificationRequestState,
+        Emoji, SasState, SasVerification, Verification, VerificationRequest,
+        VerificationRequestState,
     },
     event_handler::{Ctx, EventHandlerHandle},
     ruma::{
@@ -119,13 +120,7 @@ impl VerificationEvent {
                         let items = sas.emoji().context("No emojis found. Aborted.")?;
                         let sequence = items
                             .iter()
-                            .map(|e| {
-                                let chr = e.symbol.chars().next().expect("first char not found");
-                                VerificationEmoji {
-                                    symbol: chr as u32,
-                                    description: e.description.to_string(),
-                                }
-                            })
+                            .filter_map(VerificationEmoji::new)
                             .collect::<Vec<VerificationEmoji>>();
                         return Ok(sequence);
                     }
@@ -138,13 +133,7 @@ impl VerificationEvent {
                         let items = sas.emoji().context("No emojis found. Aborted.")?;
                         let sequence = items
                             .iter()
-                            .map(|e| {
-                                let chr = e.symbol.chars().next().expect("first char not found");
-                                VerificationEmoji {
-                                    symbol: chr as u32,
-                                    description: e.description.to_string(),
-                                }
-                            })
+                            .filter_map(VerificationEmoji::new)
                             .collect::<Vec<VerificationEmoji>>();
                         return Ok(sequence);
                     }
@@ -491,6 +480,14 @@ pub struct VerificationEmoji {
 }
 
 impl VerificationEmoji {
+    fn new(val: &Emoji) -> Option<Self> {
+        // first char would be symbol
+        val.symbol.chars().next().map(|chr| VerificationEmoji {
+            symbol: chr as u32,
+            description: val.description.to_owned(),
+        })
+    }
+
     pub fn symbol(&self) -> u32 {
         self.symbol
     }
@@ -508,21 +505,15 @@ async fn request_verification_handler(
     txn_id: Option<OwnedTransactionId>,
     sender: OwnedUserId,
     methods: Option<Vec<VerificationMethod>>,
-) {
+) -> Result<()> {
     info!(
         "Accepting verification request from {}",
         request.other_user_id()
     );
     if let Some(methods) = methods {
-        request
-            .accept_with_methods(methods)
-            .await
-            .expect("Can't accept verification request");
+        request.accept_with_methods(methods).await?;
     } else {
-        request
-            .accept()
-            .await
-            .expect("Can't accept verification request");
+        request.accept().await?;
     }
 
     let mut stream = request.changes();
@@ -530,7 +521,7 @@ async fn request_verification_handler(
     while let Some(state) = stream.next().await {
         match state {
             VerificationRequestState::Created { our_methods } => {
-                let device_id = client.device_id().expect("Device not found");
+                let device_id = client.device_id().expect("DeviceId needed");
                 let event_type = "VerificationRequestState::Created".to_string();
                 info!("{} got {}", device_id, event_type);
                 let mut msg = VerificationEvent::new(
@@ -560,7 +551,7 @@ async fn request_verification_handler(
                 their_methods,
                 other_device_id,
             } => {
-                let device_id = client.device_id().expect("Device not found");
+                let device_id = client.device_id().expect("DeviceId needed");
                 let event_type = "VerificationRequestState::Requested".to_string();
                 info!("{} got {}", device_id, event_type);
                 let mut msg = VerificationEvent::new(
@@ -592,7 +583,7 @@ async fn request_verification_handler(
                 our_methods,
                 other_device_id,
             } => {
-                let device_id = client.device_id().expect("Device not found");
+                let device_id = client.device_id().expect("DeviceId needed");
                 let event_type = "VerificationRequestState::Ready".to_string();
                 info!("{} got {}", device_id, event_type);
                 let mut msg = VerificationEvent::new(
@@ -632,7 +623,7 @@ async fn request_verification_handler(
                 }
             },
             VerificationRequestState::Done => {
-                let device_id = client.device_id().expect("Device not found");
+                let device_id = client.device_id().expect("DeviceId needed");
                 let event_type = "VerificationRequestState::Done".to_string();
                 info!("{} got {}", device_id, event_type);
                 let msg = VerificationEvent::new(
@@ -654,7 +645,7 @@ async fn request_verification_handler(
                 break;
             }
             VerificationRequestState::Cancelled(cancel_info) => {
-                let device_id = client.device_id().expect("Device not found");
+                let device_id = client.device_id().expect("DeviceId needed");
                 let event_type = "VerificationRequestState::Cancelled".to_string();
                 info!("{} got {}", device_id, event_type);
                 let mut msg = VerificationEvent::new(
@@ -682,6 +673,7 @@ async fn request_verification_handler(
             }
         }
     }
+    Ok(())
 }
 
 async fn sas_verification_handler(
@@ -691,20 +683,20 @@ async fn sas_verification_handler(
     event_id: Option<OwnedEventId>,
     txn_id: Option<OwnedTransactionId>,
     sender: OwnedUserId,
-) {
+) -> Result<()> {
     info!(
         "Starting verification with {} {}",
         &sas.other_device().user_id(),
         &sas.other_device().device_id()
     );
-    sas.accept().await.unwrap();
+    sas.accept().await?;
 
     let mut stream = sas.changes();
 
     while let Some(state) = stream.next().await {
         match state {
             SasState::KeysExchanged { emojis, decimals } => {
-                let device_id = client.device_id().expect("Device not found");
+                let device_id = client.device_id().expect("DeviceId needed");
                 let event_type = "SasState::KeysExchanged".to_string();
                 info!("{} got {}", device_id, event_type);
                 let mut msg = VerificationEvent::new(
@@ -719,13 +711,7 @@ async fn sas_verification_handler(
                     let sequence = auth_string
                         .emojis
                         .iter()
-                        .map(|e| {
-                            let chr = e.symbol.chars().next().expect("first char not found");
-                            VerificationEmoji {
-                                symbol: chr as u32,
-                                description: e.description.to_string(),
-                            }
-                        })
+                        .filter_map(VerificationEmoji::new)
                         .collect::<Vec<VerificationEmoji>>();
                     msg.set_emojis(sequence);
                 }
@@ -733,7 +719,7 @@ async fn sas_verification_handler(
                     Ok(e) => e,
                     Err(e) => {
                         error!("KeysExchanged: couldn't convert decimals to string");
-                        return;
+                        return Err(e.into());
                     }
                 };
                 msg.set_content("decimals".to_string(), value);
@@ -750,7 +736,7 @@ async fn sas_verification_handler(
                 verified_devices,
                 verified_identities,
             } => {
-                let device_id = client.device_id().expect("Device not found");
+                let device_id = client.device_id().expect("DeviceId needed");
                 let event_type = "SasState::Done".to_string();
                 info!("{} got {}", device_id, event_type);
                 let mut msg = VerificationEvent::new(
@@ -782,7 +768,7 @@ async fn sas_verification_handler(
                 break;
             }
             SasState::Cancelled(cancel_info) => {
-                let device_id = client.device_id().expect("Device not found");
+                let device_id = client.device_id().expect("DeviceId needed");
                 let event_type = "SasState::Cancelled".to_string();
                 info!("{} got {}", device_id, event_type);
                 let mut msg = VerificationEvent::new(
@@ -809,7 +795,7 @@ async fn sas_verification_handler(
                 break;
             }
             SasState::Started { protocols } => {
-                let device_id = client.device_id().expect("Device not found");
+                let device_id = client.device_id().expect("DeviceId needed");
                 let event_type = "SasState::Started".to_string();
                 info!("{} got {}", device_id, event_type);
                 let mut msg = VerificationEvent::new(
@@ -863,7 +849,7 @@ async fn sas_verification_handler(
                 }
             }
             SasState::Accepted { accepted_protocols } => {
-                let device_id = client.device_id().expect("Device not found");
+                let device_id = client.device_id().expect("DeviceId needed");
                 let event_type = "SasState::Accepted".to_string();
                 info!("{} got {}", device_id, event_type);
                 let mut msg = VerificationEvent::new(
@@ -895,7 +881,7 @@ async fn sas_verification_handler(
                 }
             }
             SasState::Confirmed => {
-                let device_id = client.device_id().expect("Device not found");
+                let device_id = client.device_id().expect("DeviceId needed");
                 let event_type = "SasState::Confirmed".to_string();
                 info!("{} got {}", device_id, event_type);
                 let msg = VerificationEvent::new(
@@ -917,6 +903,7 @@ async fn sas_verification_handler(
             }
         }
     }
+    Ok(())
 }
 
 #[derive(Clone, Debug)]
@@ -947,7 +934,7 @@ impl VerificationController {
              Ctx(mut me): Ctx<VerificationController>| async move {
                 if let MessageType::VerificationRequest(content) = &ev.content.msgtype {
                     info!("MessageType::VerificationRequest");
-                    let device_id = c.device_id().expect("guest user cannot get device id");
+                    let device_id = c.device_id().expect("DeviceId needed");
                     let event_type = ev.content.event_type();
                     info!("{} got {}", device_id, event_type);
                     let mut msg = VerificationEvent::new(
@@ -993,7 +980,7 @@ impl VerificationController {
             |ev: AnyToDeviceEvent,
              c: SdkClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
-                let device_id = c.device_id().expect("guest user cannot get device id");
+                let device_id = c.device_id().expect("DeviceId needed");
                 match ev {
                     AnyToDeviceEvent::KeyVerificationRequest(evt) => {
                         info!("AnyToDeviceEvent::KeyVerificationRequest");
@@ -1218,8 +1205,10 @@ impl SessionManager {
         let client = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let user_id = client.user_id().context("User not found")?;
-                let device_id = client.device_id().context("Client had no device. Wat?!?")?;
+                let user_id = client
+                    .user_id()
+                    .context("You must be logged in to do that")?;
+                let device_id = client.device_id().context("DeviceId not found")?;
                 let response = client.devices().await?;
                 let crypto_devices = client.encryption().get_user_devices(user_id).await?;
                 let mut sessions = vec![];
@@ -1231,7 +1220,7 @@ impl SessionManager {
                     if let Some(last_seen_ts) = device.last_seen_ts {
                         let limit = SystemTime::now()
                             .checked_sub(Duration::from_secs(90 * 24 * 60 * 60))
-                            .context("Couldn't get time of 90 days ago")?
+                            .context("Unable to get time of 90 days ago")?
                             .duration_since(UNIX_EPOCH)?;
                         let secs: u64 = last_seen_ts.as_secs().into();
                         if secs < limit.as_secs() {
@@ -1290,7 +1279,9 @@ impl SessionManager {
         let client = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let user_id = client.user_id().context("User not found")?;
+                let user_id = client
+                    .user_id()
+                    .context("You must be logged in to do that")?;
                 if let Some(device) = client
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
@@ -1330,7 +1321,7 @@ impl DeviceNewEvent {
             .spawn(async move {
                 let user_id = client
                     .user_id()
-                    .context("guest user cannot request verification")?;
+                    .context("You must be logged in to do that")?;
                 let user = client
                     .encryption()
                     .get_user_identity(user_id)
@@ -1348,7 +1339,7 @@ impl DeviceNewEvent {
             .spawn(async move {
                 let user_id = client
                     .user_id()
-                    .context("guest user cannot request verification")?;
+                    .context("You must be logged in to do that")?;
                 let dev = client
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
@@ -1371,7 +1362,7 @@ impl DeviceNewEvent {
             .spawn(async move {
                 let user_id = client
                     .user_id()
-                    .context("guest user cannot request verification")?;
+                    .context("You must be logged in to do that")?;
                 let user = client
                     .encryption()
                     .get_user_identity(user_id)
@@ -1394,7 +1385,7 @@ impl DeviceNewEvent {
             .spawn(async move {
                 let user_id = client
                     .user_id()
-                    .context("guest user cannot request verification")?;
+                    .context("You must be logged in to do that")?;
                 let dev = client
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))

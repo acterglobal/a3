@@ -237,14 +237,14 @@ Future<void> initializeNotifications() async {
     });
 
     // Handle push notifications
-    Push.instance.onMessage.listen((message) async {
+    Push.instance.addOnMessage((message) async {
       await handleMessage(message, background: false);
     });
 
     // Handle push notifications on background - in iOS we are doing that in
     // the other instance.
     if (!Platform.isIOS) {
-      Push.instance.onBackgroundMessage.listen((message) async {
+      Push.instance.addOnBackgroundMessage((message) async {
         await handleMessage(message, background: true);
       });
     }

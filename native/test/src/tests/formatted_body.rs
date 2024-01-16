@@ -19,10 +19,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
         .convo(room_id.to_string())
         .await
         .expect("sisko should belong to convo");
-    let sisko_timeline = sisko_convo
-        .timeline_stream()
-        .await
-        .expect("sisko should get timeline stream");
+    let sisko_timeline = sisko_convo.timeline_stream();
 
     let kyra_sync = kyra.start_sync();
     kyra_sync.await_has_synced_history().await?;
@@ -31,10 +28,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
         .convo(room_id.to_string())
         .await
         .expect("kyra should belong to convo");
-    let kyra_timeline = kyra_convo
-        .timeline_stream()
-        .await
-        .expect("kyra should get timeline stream");
+    let kyra_timeline = kyra_convo.timeline_stream();
     let kyra_stream = kyra_timeline.diff_stream();
     pin_mut!(kyra_stream);
 

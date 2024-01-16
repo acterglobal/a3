@@ -66,8 +66,12 @@ void authTests() {
     ]);
 
     // items _not_ present!
-    find.byKey(ActivitiesPage.oneUnverifiedSessionsCard).should(findsNothing);
-    find.byKey(ActivitiesPage.unverifiedSessionsCard).should(findsNothing);
+    await find
+        .byKey(ActivitiesPage.oneUnverifiedSessionsCard)
+        .should(findsNothing);
+    await find
+        .byKey(ActivitiesPage.unverifiedSessionsCard)
+        .should(findsNothing);
   });
   acterTestWidget('ensure unicode registration works', (t) async {
     const testName = "Dwayne 'the 🪨' Johnson";

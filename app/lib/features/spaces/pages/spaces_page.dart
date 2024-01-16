@@ -8,7 +8,6 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:go_router/go_router.dart';
-
 import 'dart:math';
 
 class SpacesPage extends ConsumerStatefulWidget {

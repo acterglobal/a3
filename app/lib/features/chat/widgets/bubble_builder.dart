@@ -25,13 +25,13 @@ class BubbleBuilder extends ConsumerWidget {
   final bool enlargeEmoji;
 
   const BubbleBuilder({
-    Key? key,
+    super.key,
     required this.convo,
     required this.child,
     required this.message,
     required this.nextMessageInGroup,
     required this.enlargeEmoji,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -182,7 +182,14 @@ class _ChatBubble extends ConsumerWidget {
                                     left: 10,
                                     top: 15,
                                   ),
-                                  child: Consumer(builder: replyProfileBuilder),
+                                  child: Consumer(
+                                    builder: (ctx, ref, child) =>
+                                        replyProfileBuilder(
+                                      context,
+                                      roomId,
+                                      ref,
+                                    ),
+                                  ),
                                 ),
                                 _OriginalMessageBuilder(
                                   convo: convo,
@@ -200,6 +207,7 @@ class _ChatBubble extends ConsumerWidget {
         Align(
           alignment: !isAuthor ? Alignment.bottomLeft : Alignment.bottomRight,
           child: _EmojiContainer(
+            roomId: roomId,
             onToggle: toggleReaction,
             isAuthor: isAuthor,
             message: message,
@@ -221,11 +229,12 @@ class _ChatBubble extends ConsumerWidget {
 
   Widget replyProfileBuilder(
     BuildContext context,
+    String roomId,
     WidgetRef ref,
-    Widget? child,
   ) {
     final authorId = message.repliedMessage!.author.id;
-    final replyProfile = ref.watch(memberProfileByIdProvider(authorId));
+    final replyProfile = ref
+        .watch(memberProfileByInfoProvider((userId: authorId, roomId: roomId)));
     return Row(
       children: [
         replyProfile.when(
@@ -269,7 +278,7 @@ class _ChatBubble extends ConsumerWidget {
   // send emoji reaction to message event
   Future<void> toggleReaction(String eventId, String emoji) async {
     try {
-      final stream = await convo.timelineStream();
+      final stream = convo.timelineStream();
       await stream.toggleReaction(eventId, emoji);
     } catch (e) {
       debugPrint('$e');
@@ -278,12 +287,14 @@ class _ChatBubble extends ConsumerWidget {
 }
 
 class _EmojiContainer extends ConsumerStatefulWidget {
+  final String roomId;
   final Function(String messageId, String emoji) onToggle;
   final bool isAuthor;
   final types.Message message;
   final bool nextMessageInGroup;
 
   const _EmojiContainer({
+    required this.roomId,
     required this.onToggle,
     required this.isAuthor,
     required this.message,
@@ -335,7 +346,7 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
                   .any((x) => x.sentByMe());
               return InkWell(
                 onLongPress: () {
-                  showEmojiReactionsSheet(reactions);
+                  showEmojiReactionsSheet(reactions, widget.roomId);
                 },
                 onTap: () {
                   if (sentByMe) {
@@ -371,7 +382,7 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
   }
 
   //Emoji reaction info bottom sheet.
-  void showEmojiReactionsSheet(Map<String, dynamic> reactions) {
+  void showEmojiReactionsSheet(Map<String, dynamic> reactions, String roomId) {
     List<String> keys = reactions.keys.toList();
     Map<String, List<String>> reactionsByUsers = {};
     Map<String, List<String>> usersByReaction = {};
@@ -471,11 +482,13 @@ class __EmojiContainerState extends ConsumerState<_EmojiContainer>
                   controller: tabBarController,
                   children: [
                     _ReactionListing(
+                      roomId: roomId,
                       users: allUsers,
                       usersMap: reactionsByUsers,
                     ),
                     for (var key in keys)
                       _ReactionListing(
+                        roomId: roomId,
                         users: usersByReaction[key]!,
                         usersMap: reactionsByUsers,
                       ),
@@ -553,10 +566,12 @@ class _OriginalMessageBuilder extends ConsumerWidget {
 }
 
 class _ReactionListing extends StatelessWidget {
+  final String roomId;
   final List<String> users;
   final Map<String, List<String>> usersMap; // UserId -> List of Emoji
 
   const _ReactionListing({
+    required this.roomId,
     required this.users,
     required this.usersMap,
   });
@@ -569,6 +584,7 @@ class _ReactionListing extends StatelessWidget {
       itemCount: users.length,
       itemBuilder: (BuildContext context, int index) {
         return EmojiReactionItem(
+          roomId: roomId,
           userId: users[index],
           emojis: usersMap[users[index]]!,
         );

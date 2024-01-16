@@ -40,13 +40,13 @@ class PublicSearchState extends PagedState<Next?, PublicSearchResultItem> {
   final String? searchValue;
 
   const PublicSearchState({
-    List<PublicSearchResultItem>? records,
-    String? error,
-    Next? nextPageKey = const Next(isStart: true),
+    super.records,
+    String? super.error,
+    super.nextPageKey = const Next(isStart: true),
     List<Next?>? previousPageKeys,
     this.server,
     this.searchValue,
-  }) : super(records: records, error: error, nextPageKey: nextPageKey);
+  });
 
   @override
   PublicSearchState copyWith({

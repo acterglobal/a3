@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
@@ -20,9 +21,9 @@ final chatStateProvider =
   (ref, convo) => ChatRoomNotifier(ref: ref, convo: convo),
 );
 
-final mediaChatStateProvider =
-    StateNotifierProvider.family<MediaChatNotifier, MediaChatState, String>(
-  (ref, messageId) => MediaChatNotifier(ref: ref, messageId: messageId),
+final mediaChatStateProvider = StateNotifierProvider.family<MediaChatNotifier,
+    MediaChatState, ChatMessageInfo>(
+  (ref, messageInfo) => MediaChatNotifier(ref: ref, messageInfo: messageInfo),
 );
 
 final chatSearchValueProvider =

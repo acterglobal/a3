@@ -1,3 +1,4 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -15,23 +16,25 @@ class FileMessageBuilder extends ConsumerWidget {
   final Convo convo;
 
   const FileMessageBuilder({
-    Key? key,
+    super.key,
     required this.convo,
     required this.message,
     required this.messageWidth,
     this.isReplyContent = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mediaState = ref.watch(mediaChatStateProvider(message.id));
+    final ChatMessageInfo messageInfo =
+        (messageId: message.id, roomId: convo.getRoomIdStr());
+    final mediaState = ref.watch(mediaChatStateProvider(messageInfo));
     return InkWell(
       onTap: () async {
         if (mediaState.mediaFile != null) {
           Share.shareXFiles([XFile(mediaState.mediaFile!.path)]);
         } else {
           await ref
-              .read(mediaChatStateProvider(message.id).notifier)
+              .read(mediaChatStateProvider(messageInfo).notifier)
               .downloadMedia();
         }
       },

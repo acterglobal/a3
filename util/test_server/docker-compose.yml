@@ -9,7 +9,7 @@ services:
     environment:
       - SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
     volumes:
-      - ./.local/docker-data:/data
+      - ./.local/docker-data:/data:rw
     ports:
       - 8448:8448/tcp
       - 8118:8008/tcp
@@ -20,7 +20,7 @@ services:
       dockerfile: Dockerfile
     restart: on-failure
     volumes:
-      - ./.local/docker-data:/data:r
+      - ./.local/docker-data:/data:ro
     links:
       - synapse
     entrypoint: "/bin/bash -c"

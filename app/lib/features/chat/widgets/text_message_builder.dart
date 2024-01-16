@@ -1,6 +1,7 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/chat_theme.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat/chat_utils/chat_utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -18,12 +19,12 @@ class TextMessageBuilder extends ConsumerStatefulWidget {
   final bool isReply;
 
   const TextMessageBuilder({
-    Key? key,
+    super.key,
     required this.convo,
     required this.message,
     this.isReply = false,
     required this.messageWidth,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<TextMessageBuilder> createState() =>
@@ -56,7 +57,7 @@ class _TextMessageBuilderConsumerState
     //remove mx-reply tags.
     String parsedString = simplifyBody(widget.message.text);
     final urlRegexp = RegExp(
-      r'https://matrix\.to/#/@[A-Za-z0-9\-]+:[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+',
+      r'https://matrix\.to/#/[@!#][A-Za-z0-9\-]+:[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+',
       caseSensitive: false,
     );
     final matches = urlRegexp.allMatches(parsedString);
@@ -153,9 +154,7 @@ class _TextWidget extends ConsumerWidget {
                   maxLines: isReply ? 3 : null,
                 )
               : Html(
-                  onLinkTap: (url) async {
-                    await openLink(url.toString(), context);
-                  },
+                  onLinkTap: (url) => onLinkTap(url, context, ref),
                   backgroundColor: Colors.transparent,
                   data: message.text,
                   shrinkToFit: true,
@@ -183,5 +182,20 @@ class _TextWidget extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  Future<void> onLinkTap(Uri uri, BuildContext context, WidgetRef ref) async {
+    final roomId = getRoomIdFromLink(uri);
+
+    ///If link is type of matrix room link
+    if (roomId != null) {
+      await navigateToRoomOrAskToJoin(context, ref, roomId);
+    }
+
+    ///If link is other than matrix room link
+    ///Then open it on browser
+    else {
+      await openLink(uri.toString(), context);
+    }
   }
 }

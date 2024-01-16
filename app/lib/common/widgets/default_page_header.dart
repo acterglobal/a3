@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+const expandedHeighMinWidth = 600;
+
 class PageHeaderWidget extends StatelessWidget {
   final String title;
   final bool? centerTitle;
@@ -9,17 +11,18 @@ class PageHeaderWidget extends StatelessWidget {
   final List<Widget>? actions;
 
   const PageHeaderWidget({
-    Key? key,
+    super.key,
     required this.title,
     this.sectionDecoration,
     this.centerTitle = false,
     this.expandedHeight = 120,
     this.actions,
     this.expandedContent,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return SliverAppBar(
       pinned: true,
       expandedHeight: expandedHeight,
@@ -53,7 +56,9 @@ class PageHeaderWidget extends StatelessWidget {
                               top: 50,
                               right: 50,
                             ),
-                            child: expandedContent,
+                            child: size.width <= expandedHeighMinWidth
+                                ? null
+                                : expandedContent,
                           ),
                         ),
                       ],

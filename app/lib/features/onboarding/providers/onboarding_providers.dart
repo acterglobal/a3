@@ -4,5 +4,3 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final authStateProvider = StateNotifierProvider<AuthStateNotifier, bool>(
   (ref) => AuthStateNotifier(ref),
 );
-
-final isLoggedInProvider = StateProvider<bool>((ref) => false);

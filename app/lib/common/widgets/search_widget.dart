@@ -7,11 +7,11 @@ class SearchWidget extends StatelessWidget {
   final Function(dynamic) onChanged;
   final Function()? onReset;
   const SearchWidget({
-    Key? key,
+    super.key,
     required this.searchController,
     required this.onChanged,
     this.onReset,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

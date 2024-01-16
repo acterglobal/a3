@@ -1,10 +1,10 @@
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/providers/notifiers/chat_notifiers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider the profile data of a the given space, keeps up to date with underlying client
@@ -72,37 +72,18 @@ final relatedChatsProvider = FutureProvider.autoDispose
       .knownChats;
 });
 
-class SelectedChatIdNotifier extends Notifier<String?> {
-  @override
-  String? build() {
-    return null;
-  }
-
-  void select(String? input) {
-    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      state = input;
-    });
-  }
-}
-
 final selectedChatIdProvider =
     NotifierProvider<SelectedChatIdNotifier, String?>(
   () => SelectedChatIdNotifier(),
 );
 
-final currentConvoProvider = FutureProvider<Convo?>((ref) async {
-  final roomId = ref.watch(selectedChatIdProvider);
-  if (roomId == null) {
-    throw 'No chat selected';
-  }
-  return await ref.watch(chatProvider(roomId).future);
-});
-
 // Member Providers
-// TODO: improve this to be reusable for space and chat members alike.
-final memberProfileByIdProvider =
-    FutureProvider.family<ProfileData, String>((ref, userId) async {
-  final member = await ref.read(memberProvider(userId).future);
+final memberProfileByInfoProvider =
+    FutureProvider.family<ProfileData, MemberInfo>((ref, memberInfo) async {
+  final member = await ref.read(
+    memberProvider((roomId: memberInfo.roomId, userId: memberInfo.userId))
+        .future,
+  );
   if (member == null) {
     throw 'Member not found';
   }
@@ -120,10 +101,11 @@ final memberProfileProvider =
 });
 
 final memberProvider =
-    FutureProvider.family<Member?, String>((ref, userId) async {
-  final convo = await ref.read(currentConvoProvider.future);
-  if (convo == null) {
-    throw 'No chat selected';
+    FutureProvider.family<Member?, MemberInfo>((ref, memberInfo) async {
+  try {
+    final convo = await ref.read(chatProvider((memberInfo.roomId!)).future);
+    return await convo.getMember(memberInfo.userId);
+  } catch (e) {
+    throw e.toString();
   }
-  return await convo.getMember(userId);
 });

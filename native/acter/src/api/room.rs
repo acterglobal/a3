@@ -555,7 +555,7 @@ impl Room {
 
     pub async fn add_parent_room(&self, room_id: String, canonical: bool) -> Result<String> {
         if !self.is_joined() {
-            bail!("You can't update a room you aren't part of");
+            bail!("Unable to update a room you aren't part of");
         }
         let room_id = RoomId::parse(room_id)?;
         if !self
@@ -563,7 +563,7 @@ impl Room {
             .await?
             .can(crate::MemberPermission::CanLinkSpaces)
         {
-            bail!("You don't have permissions to add parent to room");
+            bail!("No permissions to add parent to room");
         }
         let room = self.room.clone();
         let client = self.core.client().clone();
@@ -591,7 +591,7 @@ impl Room {
         reason: Option<String>,
     ) -> Result<bool> {
         if !self.is_joined() {
-            bail!("You can't update a room you aren't part of");
+            bail!("Unable to update a room you aren't part of");
         }
         let room_id = RoomId::parse(room_id)?;
         if !self
@@ -599,7 +599,7 @@ impl Room {
             .await?
             .can(crate::MemberPermission::CanLinkSpaces)
         {
-            bail!("You don't have permissions to remove parent from room");
+            bail!("No permissions to remove parent from room");
         }
         let room = self.room.clone();
 
@@ -616,7 +616,7 @@ impl Room {
                 };
                 let event_id = match raw_state.deserialize()? {
                     SyncOrStrippedState::Stripped(ev) => {
-                        bail!("Couldn't get event id about stripped event")
+                        bail!("Unable to get event id about stripped event")
                     }
                     SyncOrStrippedState::Sync(ev) => ev.event_id().to_owned(),
                 };
@@ -633,7 +633,10 @@ impl Room {
         let room = self.room.clone();
 
         let client = room.client();
-        let my_id = client.user_id().context("User not found")?.to_owned();
+        let my_id = client
+            .user_id()
+            .context("You must be logged in to do that")?
+            .to_owned();
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
             Some(self.app_settings_content().await?)
@@ -646,7 +649,7 @@ impl Room {
                 let member = room
                     .get_member(&my_id)
                     .await?
-                    .context("Couldn't find me among room members")?;
+                    .context("Unable to find me in room")?;
                 Ok(Member {
                     member,
                     acter_app_settings,
@@ -663,12 +666,15 @@ impl Room {
 
     pub async fn upload_avatar(&self, uri: String) -> Result<OwnedMxcUri> {
         if !self.is_joined() {
-            bail!("Can't upload avatar to a room we are not in");
+            bail!("Unable to upload avatar to a room we are not in");
         }
         let room = self.room.clone();
 
         let client = room.client();
-        let my_id = client.user_id().context("User not found")?.to_owned();
+        let my_id = client
+            .user_id()
+            .context("You must be logged in to do that")?
+            .to_owned();
         let path = PathBuf::from(uri);
 
         RUNTIME
@@ -676,13 +682,13 @@ impl Room {
                 let member = room
                     .get_member(&my_id)
                     .await?
-                    .context("Couldn't find me among room members")?;
+                    .context("Unable to find me in room")?;
                 if !member.can_send_state(StateEventType::RoomAvatar) {
-                    bail!("No permission to change avatar of this room");
+                    bail!("No permissions to change avatar of this room");
                 }
 
                 let guess = mime_guess::from_path(path.clone());
-                let content_type = guess.first().context("MIME type should be given")?;
+                let content_type = guess.first().context("don't know mime type")?;
                 let buf = std::fs::read(path)?;
                 let response = client.media().upload(&content_type, buf).await?;
 
@@ -699,14 +705,14 @@ impl Room {
 
     pub async fn remove_avatar(&self) -> Result<OwnedEventId> {
         if !self.is_joined() {
-            bail!("Can't remove avatar to a room we are not in");
+            bail!("Unable to remove avatar to a room we are not in");
         }
         let room = self.room.clone();
 
         let my_id = room
             .client()
             .user_id()
-            .context("User not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
 
         RUNTIME
@@ -714,9 +720,9 @@ impl Room {
                 let member = room
                     .get_member(&my_id)
                     .await?
-                    .context("Couldn't find me among room members")?;
+                    .context("Unable to find me in room")?;
                 if !member.can_send_state(StateEventType::RoomAvatar) {
-                    bail!("No permission to change avatar of this room");
+                    bail!("No permissions to change avatar of this room");
                 }
                 let response = room.remove_avatar().await?;
                 Ok(response.event_id)
@@ -726,14 +732,14 @@ impl Room {
 
     pub async fn set_topic(&self, topic: String) -> Result<OwnedEventId> {
         if !self.is_joined() {
-            bail!("Can't set topic to a room we are not in");
+            bail!("Unable to set topic to a room we are not in");
         }
         let room = self.room.clone();
 
         let my_id = room
             .client()
             .user_id()
-            .context("User not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
 
         RUNTIME
@@ -741,9 +747,9 @@ impl Room {
                 let member = room
                     .get_member(&my_id)
                     .await?
-                    .context("Couldn't find me among room members")?;
+                    .context("Unable to find me in room")?;
                 if !member.can_send_state(StateEventType::RoomTopic) {
-                    bail!("No permission to change topic of this room");
+                    bail!("No permissions to change topic of this room");
                 }
                 let response = room.set_room_topic(topic.as_str()).await?;
                 Ok(response.event_id)
@@ -753,14 +759,14 @@ impl Room {
 
     pub async fn set_name(&self, name: String) -> Result<OwnedEventId> {
         if !self.is_joined() {
-            bail!("Can't set name to a room we are not in");
+            bail!("Unable to set name to a room we are not in");
         }
         let room = self.room.clone();
 
         let my_id = room
             .client()
             .user_id()
-            .context("User not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
 
         RUNTIME
@@ -768,9 +774,9 @@ impl Room {
                 let member = room
                     .get_member(&my_id)
                     .await?
-                    .context("Couldn't find me among room members")?;
+                    .context("Unable to find me in room")?;
                 if !member.can_send_state(StateEventType::RoomName) {
-                    bail!("No permission to change name of this room");
+                    bail!("No permissions to change name of this room");
                 }
                 let response = room.set_name(name).await?;
                 Ok(response.event_id)
@@ -869,7 +875,7 @@ impl Room {
                 let member = room
                     .get_member(&uid)
                     .await?
-                    .context("User not found among room members")?;
+                    .context("Unable to find user in room")?;
                 Ok(Member {
                     member,
                     acter_app_settings: acter_app_settings.clone(),
@@ -959,14 +965,14 @@ impl Room {
 
     pub async fn typing_notice(&self, typing: bool) -> Result<bool> {
         if !self.is_joined() {
-            bail!("Can't send typing notice to a room we are not in");
+            bail!("Unable to send typing notice to a room we are not in");
         }
         let room = self.room.clone();
 
         let my_id = room
             .client()
             .user_id()
-            .context("User not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
 
         RUNTIME
@@ -974,9 +980,9 @@ impl Room {
                 let member = room
                     .get_member(&my_id)
                     .await?
-                    .context("Couldn't find me among room members")?;
+                    .context("Unable to find me in room")?;
                 if !member.can_send_message(MessageLikeEventType::RoomMessage) {
-                    bail!("No permission to send message in this room");
+                    bail!("No permissions to send message in this room");
                 }
                 room.typing_notice(typing).await?;
                 Ok(true)
@@ -990,7 +996,7 @@ impl Room {
         thumb_size: Option<Box<ThumbnailSize>>,
     ) -> Result<FfiBuffer<u8>> {
         if !self.is_joined() {
-            bail!("Can't read media message from a room we are not in");
+            bail!("Unable to read media message from a room we are not in");
         }
         let room = self.room.clone();
         let client = self.room.client();
@@ -1002,7 +1008,7 @@ impl Room {
                 let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
-                    .expect("Couldn't get original msg");
+                    .context("Couldn't get original msg")?;
                 let (source, format) = match thumb_size {
                     Some(thumb_size) => {
                         let source = match &original.content.msgtype {
@@ -1094,14 +1100,14 @@ impl Room {
 
     pub async fn invite_user(&self, user_id: String) -> Result<bool> {
         if !self.is_joined() {
-            bail!("Can't send message to a room we are not in");
+            bail!("Unable to send message to a room we are not in");
         }
         let room = self.room.clone();
 
         let my_id = room
             .client()
             .user_id()
-            .context("User not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
 
         let user_id = UserId::parse(user_id.as_str())?;
@@ -1111,9 +1117,9 @@ impl Room {
                 let member = room
                     .get_member(&my_id)
                     .await?
-                    .context("Couldn't find me among room members")?;
+                    .context("Unable to find me in room")?;
                 if !member.can_invite() {
-                    bail!("No permission to invite someone in this room");
+                    bail!("No permissions to invite someone in this room");
                 }
                 room.invite_user_by_id(&user_id).await?;
                 Ok(true)
@@ -1123,7 +1129,7 @@ impl Room {
 
     pub async fn join(&self) -> Result<bool> {
         if !self.is_left() {
-            bail!("Can't join a room we are not left");
+            bail!("Unable to join a room we are not left");
         }
         let room = self.room.clone();
 
@@ -1137,7 +1143,7 @@ impl Room {
 
     pub async fn leave(&self) -> Result<bool> {
         if !self.is_joined() {
-            bail!("Can't leave a room we are not joined");
+            bail!("Unable to leave a room we are not joined");
         }
         let room = self.room.clone();
 
@@ -1152,7 +1158,7 @@ impl Room {
     pub async fn get_invitees(&self) -> Result<Vec<Member>> {
         let my_client = self.room.client();
         if !self.is_invited() {
-            bail!("Can't get a room we are not invited");
+            bail!("Unable to get a room we are not invited");
         }
         let room = self.room.clone();
         let is_acter_space = self.is_acter_space().await?;
@@ -1189,7 +1195,7 @@ impl Room {
         dir_path: String,
     ) -> Result<OptionString> {
         if !self.is_joined() {
-            bail!("Can't read message from a room we are not in");
+            bail!("Unable to read message from a room we are not in");
         }
         let room = self.room.clone();
         let client = self.room.client();
@@ -1201,7 +1207,7 @@ impl Room {
                 let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
-                    .context("Couldn't get original msg")?;
+                    .context("Unable to get original msg")?;
                 // get file extension from msg info
                 let (request, mut filename) = match thumb_size.clone() {
                     Some(thumb_size) => match &original.content.msgtype {
@@ -1353,7 +1359,7 @@ impl Room {
                     },
                 };
                 let Some(request) = request else {
-                    // content info or thumbnail source doesn't exist
+                    warn!("Content info or thumbnail source not found");
                     return Ok(OptionString::new(None));
                 };
                 let data = client.media().get_media_content(&request, false).await?;
@@ -1399,7 +1405,7 @@ impl Room {
 
     pub async fn media_path(&self, event_id: String, is_thumb: bool) -> Result<OptionString> {
         if !self.is_joined() {
-            bail!("Can't read message from a room we are not in");
+            bail!("Unable to read message from a room we are not in");
         }
         let room = self.room.clone();
         let client = self.room.client();
@@ -1412,7 +1418,7 @@ impl Room {
                 let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
-                    .expect("Couldn't get original msg");
+                    .context("Couldn't get original msg")?;
                 if is_thumb {
                     let available = matches!(
                         &original.content.msgtype,
@@ -1462,7 +1468,7 @@ impl Room {
 
     pub async fn is_encrypted(&self) -> Result<bool> {
         if !self.is_joined() {
-            bail!("Can't know if a room we are not in is encrypted");
+            bail!("Unable to know if a room we are not in is encrypted");
         }
         let room = self.room.clone();
 
@@ -1516,7 +1522,7 @@ impl Room {
 
     pub async fn get_message(&self, event_id: String) -> Result<RoomMessage> {
         if !self.is_joined() {
-            bail!("Can't read message from a room we are not in");
+            bail!("Unable to read message from a room we are not in");
         }
         let room = self.room.clone();
         let r = self.room.clone();
@@ -1745,14 +1751,14 @@ impl Room {
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
-            bail!("Can't redact any message from a room we are not in");
+            bail!("Unable to redact any message from a room we are not in");
         }
         let room = self.room.clone();
 
         let my_id = room
             .client()
             .user_id()
-            .context("User not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
 
         let event_id = EventId::parse(event_id)?;
@@ -1762,9 +1768,9 @@ impl Room {
                 let member = room
                     .get_member(&my_id)
                     .await?
-                    .context("Couldn't find me among room members")?;
+                    .context("Unable to find me in room")?;
                 if !member.can_redact() {
-                    bail!("No permission to redact message in this room");
+                    bail!("No permissions to redact message in this room");
                 }
                 let response = room
                     .redact(&event_id, reason.as_deref(), txn_id.map(Into::into))
@@ -1776,14 +1782,14 @@ impl Room {
 
     pub async fn update_power_level(&self, user_id: String, level: i32) -> Result<OwnedEventId> {
         if !self.is_joined() {
-            bail!("Can't update power level in a room we are not in");
+            bail!("Unable to update power level in a room we are not in");
         }
         let room = self.room.clone();
 
         let my_id = room
             .client()
             .user_id()
-            .context("User not found")?
+            .context("You must be logged in to do that")?
             .to_owned();
 
         let user_id = UserId::parse(user_id)?;
@@ -1793,9 +1799,9 @@ impl Room {
                 let member = room
                     .get_member(&my_id)
                     .await?
-                    .context("Couldn't find me among room members")?;
+                    .context("Unable to find me in room")?;
                 if !member.can_send_state(StateEventType::RoomPowerLevels) {
-                    bail!("No permission to change power levels in this room");
+                    bail!("No permissions to change power levels in this room");
                 }
                 let response = room
                     .update_power_levels(vec![(&user_id, Int::from(level))])
@@ -1812,7 +1818,7 @@ impl Room {
         reason: Option<String>,
     ) -> Result<bool> {
         if !self.is_joined() {
-            bail!("Can't block content in a room we are not in");
+            bail!("Unable to block content in a room we are not in");
         }
         let room = self.room.clone();
         let event_id = EventId::parse(event_id)?;
@@ -1838,7 +1844,7 @@ impl Room {
         reason: Option<String>,
     ) -> Result<OwnedEventId> {
         if !self.is_joined() {
-            bail!("Can't redact content in a room we are not in");
+            bail!("Unable to redact content in a room we are not in");
         }
         let event_id = EventId::parse(event_id)?;
         let room = self.room.clone();

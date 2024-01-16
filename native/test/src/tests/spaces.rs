@@ -32,7 +32,7 @@ name = "{{ main.display_name }}'s second test space"
 async fn spaces_deleted() -> Result<()> {
     let _ = env_logger::try_init();
     let (user, _sync_state, _engine) =
-        random_user_with_template("spaces-deleted-", THREE_SPACES_TMPL).await?;
+        random_user_with_template("spaces_deleted", THREE_SPACES_TMPL).await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -142,7 +142,7 @@ name = "{{ main.display_name }}'s main test space"
 #[tokio::test]
 async fn create_subspace() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) = random_user_with_template("subspaces-create-", TMPL).await?;
+    let (user, _sync_state, _engine) = random_user_with_template("subspace_create", TMPL).await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -208,8 +208,7 @@ async fn create_subspace() -> Result<()> {
 #[tokio::test]
 async fn update_name() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) =
-        random_user_with_template("space-update-name-", TMPL).await?;
+    let (user, _sync_state, _engine) = random_user_with_template("space_update_name", TMPL).await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -315,7 +314,7 @@ async fn update_name() -> Result<()> {
 async fn update_topic() -> Result<()> {
     let _ = env_logger::try_init();
     let (user, _sync_state, _engine) =
-        random_user_with_template("space-update-topic-", TMPL).await?;
+        random_user_with_template("space_update_topic", TMPL).await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);

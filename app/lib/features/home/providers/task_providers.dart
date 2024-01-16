@@ -1,35 +1,33 @@
+import 'dart:async';
 import 'dart:core';
-
-import 'package:acter/common/models/profile_data.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/tasks/models/tasks.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final myOpenTasksProvider =
-    FutureProvider.autoDispose<List<TaskBrief>>((ref) async {
-  final client = ref.watch(alwaysClientProvider);
-  // FIXME: how to get informed about updates!?!
-  final taskLists = await client.taskLists();
-  final myTasks = List<TaskBrief>.empty(growable: true);
-  for (final tl in taskLists) {
-    final tasks = await tl.tasks();
-    for (final task in tasks) {
-      if (!task.isDone()) {
-        // if (task.assignees().contains(my_id)) {
+class MyOpenTasksNotifier extends AsyncNotifier<List<Task>> {
+  late Stream<void> _subscriber;
+  // ignore: unused_field
+  late StreamSubscription<void> _listener;
 
-        final space = tl.space();
-        final profile = await ref.watch(spaceProfileDataProvider(space).future);
-        myTasks.add(
-          TaskBrief(
-            task: task,
-            taskList: tl,
-            space: SpaceWithProfileData(space, profile),
-          ),
-        );
-        // }
-      }
-    }
+  @override
+  Future<List<Task>> build() async {
+    // Load initial todo list from the remote repository
+    final client = ref.watch(alwaysClientProvider);
+    _subscriber = client.subscribeMyOpenTasksStream();
+    _listener = _subscriber.listen((element) async {
+      state = await AsyncValue.guard(() async {
+        return await fetchMyOpenTask(client);
+      });
+    });
+    return await fetchMyOpenTask(client);
   }
-  return myTasks;
+
+  Future<List<Task>> fetchMyOpenTask(Client client) async {
+    return (await client.myOpenTasks()).toList();
+  }
+}
+
+final myOpenTasksProvider =
+    AsyncNotifierProvider<MyOpenTasksNotifier, List<Task>>(() {
+  return MyOpenTasksNotifier();
 });

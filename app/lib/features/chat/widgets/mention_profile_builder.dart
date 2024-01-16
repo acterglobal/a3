@@ -4,18 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MentionProfileBuilder extends ConsumerWidget {
+  final String roomId;
   final String authorId;
   final String title;
 
   const MentionProfileBuilder({
-    Key? key,
+    super.key,
+    required this.roomId,
     required this.authorId,
     required this.title,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mentionProfile = ref.watch(memberProfileByIdProvider(authorId));
+    final mentionProfile = ref
+        .watch(memberProfileByInfoProvider((userId: authorId, roomId: roomId)));
     return mentionProfile.when(
       data: (profile) => ActerAvatar(
         mode: DisplayMode.DM,

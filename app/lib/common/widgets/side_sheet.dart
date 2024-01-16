@@ -112,13 +112,12 @@ class _SheetHeader extends StatelessWidget {
   final String? closeButtonTooltip;
 
   const _SheetHeader({
-    Key? key,
     required this.header,
     required this.addBackIconButton,
     required this.addCloseIconButton,
     this.backButtonTooltip,
     this.closeButtonTooltip,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -178,7 +177,6 @@ class _SheetFooter extends StatelessWidget {
   final void Function()? cancelActionOnPressed;
 
   const _SheetFooter({
-    Key? key,
     required this.addDivider,
     required this.confirmActionTitle,
     required this.cancelActionTitle,
@@ -186,7 +184,7 @@ class _SheetFooter extends StatelessWidget {
     this.confirmActionOnPressed,
     this.cancelActionOnPressed,
     this.confirmActionKey,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

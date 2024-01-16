@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChatSelectPage extends ConsumerWidget {
-  const ChatSelectPage({Key? key}) : super(key: key);
+  const ChatSelectPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

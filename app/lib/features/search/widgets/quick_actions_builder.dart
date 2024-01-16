@@ -16,9 +16,9 @@ class QuickActionsBuilder extends ConsumerWidget {
   }) navigateTo;
 
   const QuickActionsBuilder({
-    Key? key,
+    super.key,
     required this.navigateTo,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,8 +38,13 @@ class QuickActionsBuilder extends ConsumerWidget {
     final canPostEventProvider = ref.watch(
       hasSpaceWithPermissionProvider('CanPostEvent'),
     );
+    final canCreateTaskListProvider = ref.watch(
+      hasSpaceWithPermissionProvider('CanPostTaskList'),
+    );
     final canPostEvent = isActive(LabsFeature.events) &&
         (canPostEventProvider.valueOrNull ?? false);
+    final canPostTaskList = isActive(LabsFeature.tasks) &&
+        (canCreateTaskListProvider.valueOrNull ?? false);
     return Wrap(
       alignment: WrapAlignment.spaceBetween,
       spacing: 8,
@@ -81,6 +86,18 @@ class QuickActionsBuilder extends ConsumerWidget {
                   icon: const Icon(Atlas.plus_circle_thin, size: 18),
                   label: Text(
                     'Event',
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                )
+              : null,
+          canPostTaskList
+              ? OutlinedButton.icon(
+                  key: QuickJumpKeys.createTaskListAction,
+                  onPressed: () =>
+                      context.pushNamed(Routes.actionAddTaskList.name),
+                  icon: const Icon(Atlas.plus_circle_thin, size: 18),
+                  label: Text(
+                    'Task List',
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
                 )

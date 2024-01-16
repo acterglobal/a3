@@ -4,6 +4,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
+import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/providers/notifiers/space_hierarchy_notifier.dart';
 import 'package:acter/features/space/providers/space_providers.dart';
@@ -14,6 +15,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
+import 'package:acter/common/widgets/default_button.dart';
+
+import 'package:acter/common/providers/room_providers.dart';
 
 class SpaceChatsPage extends ConsumerWidget {
   static const createChatKey = Key('space-chat-create');
@@ -42,7 +46,9 @@ class SpaceChatsPage extends ConsumerWidget {
                 return false;
               }
 
-              if (!checkPermission('CanLinkSpaces')) {
+              final canLinkSpace = checkPermission('CanLinkSpaces');
+
+              if (!canLinkSpace) {
                 return const SliverToBoxAdapter(child: SizedBox.shrink());
               }
 
@@ -97,6 +103,10 @@ class SpaceChatsPage extends ConsumerWidget {
           ),
           chats.when(
             data: (rooms) {
+              final membership =
+                  ref.watch(roomMembershipProvider(spaceIdOrAlias));
+              bool canCreateSpace =
+                  membership.requireValue!.canString('CanLinkSpaces');
               if (rooms.isNotEmpty) {
                 return SliverAnimatedList(
                   initialItemCount: rooms.length,
@@ -115,10 +125,33 @@ class SpaceChatsPage extends ConsumerWidget {
                   ),
                 );
               }
-              return const SliverToBoxAdapter(
+              return SliverToBoxAdapter(
                 child: Center(
-                  heightFactor: 5,
-                  child: Text('Chats are empty'),
+                  heightFactor: 1,
+                  child: EmptyState(
+                    title: 'No chats in this space yet',
+                    subtitle:
+                        'Get the conversation going to start organizing collaborating',
+                    image: 'assets/images/empty_chat.svg',
+                    primaryButton: canCreateSpace
+                        ? DefaultButton(
+                            onPressed: () => context.pushNamed(
+                              Routes.createChat.name,
+                              queryParameters: {'spaceId': spaceIdOrAlias},
+                              extra: 1,
+                            ),
+                            title: 'Create Space Chat',
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.success,
+                              disabledBackgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .success
+                                  .withOpacity(0.5),
+                            ),
+                          )
+                        : null,
+                  ),
                 ),
               );
             },

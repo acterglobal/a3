@@ -9,10 +9,10 @@ class CommentView extends StatefulWidget {
   final int postition;
 
   const CommentView({
-    Key? key,
+    super.key,
     required this.commentModel,
     required this.postition,
-  }) : super(key: key);
+  });
 
   @override
   CommentViewState createState() => CommentViewState();

@@ -12,10 +12,10 @@ class InvitationCard extends ConsumerWidget {
   final Color avatarColor;
 
   const InvitationCard({
-    Key? key,
+    super.key,
     required this.invitation,
     required this.avatarColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

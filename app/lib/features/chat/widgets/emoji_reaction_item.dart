@@ -7,15 +7,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class EmojiReactionItem extends ConsumerWidget {
   final List<String> emojis;
   final String userId;
+  final String roomId;
   const EmojiReactionItem({
-    Key? key,
+    super.key,
     required this.emojis,
     required this.userId,
-  }) : super(key: key);
+    required this.roomId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(memberProfileByIdProvider(userId));
+    final profile = ref
+        .watch(memberProfileByInfoProvider((userId: userId, roomId: roomId)));
 
     return ListTile(
       leading: profile.when(

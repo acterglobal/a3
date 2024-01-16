@@ -17,10 +17,10 @@ class ChangePowerLevel extends StatefulWidget {
   final Member member;
   final Member? myMembership;
   const ChangePowerLevel({
-    Key? key,
+    super.key,
     required this.member,
     this.myMembership,
-  }) : super(key: key);
+  });
 
   @override
   State<ChangePowerLevel> createState() => _ChangePowerLevelState();

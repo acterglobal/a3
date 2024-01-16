@@ -1,3 +1,4 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/video_dialog.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
@@ -15,21 +16,23 @@ class VideoMessageBuilder extends ConsumerWidget {
   final Convo convo;
 
   const VideoMessageBuilder({
-    Key? key,
+    super.key,
     required this.convo,
     required this.message,
     required this.messageWidth,
     this.isReplyContent = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mediaState = ref.watch(mediaChatStateProvider(message.id));
+    final ChatMessageInfo messageInfo =
+        (messageId: message.id, roomId: convo.getRoomIdStr());
+    final mediaState = ref.watch(mediaChatStateProvider(messageInfo));
     if (mediaState.mediaChatLoadingState.isLoading ||
         mediaState.isDownloading) {
       return loadingIndication(context);
     } else if (mediaState.mediaFile == null) {
-      return videoPlaceholder(context, mediaState, ref);
+      return videoPlaceholder(context, convo.getRoomIdStr(), mediaState, ref);
     } else {
       return videoUI(context, mediaState);
     }
@@ -45,6 +48,7 @@ class VideoMessageBuilder extends ConsumerWidget {
 
   Widget videoPlaceholder(
     BuildContext context,
+    String roomId,
     MediaChatState mediaState,
     WidgetRef ref,
   ) {
@@ -62,7 +66,11 @@ class VideoMessageBuilder extends ConsumerWidget {
           );
         } else {
           await ref
-              .read(mediaChatStateProvider(message.id).notifier)
+              .read(
+                mediaChatStateProvider(
+                  (messageId: message.id, roomId: roomId),
+                ).notifier,
+              )
               .downloadMedia();
         }
       },

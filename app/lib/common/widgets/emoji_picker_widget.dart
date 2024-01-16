@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 
 class EmojiPickerWidget extends StatelessWidget {
   const EmojiPickerWidget({
-    Key? key,
+    super.key,
     this.size,
     this.onEmojiSelected,
     this.onBackspacePressed,
     this.withBoarder = false,
-  }) : super(key: key);
+  });
 
   final Size? size;
   final bool withBoarder;

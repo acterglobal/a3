@@ -54,7 +54,7 @@ impl Client {
                 };
                 let room = client
                     .get_room(inner.room_id())
-                    .context("Room of calendar event not found")?;
+                    .context("Room not found")?;
                 Ok(CalendarEvent::new(client, room, inner))
             })
             .await?
@@ -414,7 +414,7 @@ impl CalendarEventUpdateBuilder {
 impl Space {
     pub fn calendar_event_draft(&self) -> Result<CalendarEventDraft> {
         if !self.is_joined() {
-            bail!("You can't create calendar_events for spaces we are not part on");
+            bail!("Unable to create calendar_events for spaces we are not part on");
         }
         Ok(CalendarEventDraft {
             client: self.client.clone(),
@@ -428,7 +428,7 @@ impl Space {
         inner: CalendarEventBuilder,
     ) -> Result<CalendarEventDraft> {
         if !self.is_joined() {
-            bail!("You can't create calendar_events for spaces we are not part on");
+            bail!("Unable to create calendar_events for spaces we are not part on");
         }
         Ok(CalendarEventDraft {
             client: self.client.clone(),

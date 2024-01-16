@@ -74,10 +74,8 @@ impl DeviceController {
                 .encryption()
                 .devices_stream()
                 .await
-                .expect("We have to get devices stream");
-            let my_id = client
-                .user_id()
-                .expect("We should know our user id after we have logged in");
+                .expect("Stream of devices needed");
+            let my_id = client.user_id().expect("UserId needed");
             pin_mut!(devices_stream);
 
             while let Some(device_updates) = devices_stream.next().await {
@@ -147,7 +145,7 @@ impl Client {
                     if let Some(last_seen_ts) = device.last_seen_ts {
                         let limit = SystemTime::now()
                             .checked_sub(Duration::from_secs(90 * 24 * 60 * 60))
-                            .context("Couldn't get time of 90 days ago")?
+                            .context("Unable to get time of 90 days ago")?
                             .duration_since(UNIX_EPOCH)?;
                         let secs: u64 = last_seen_ts.as_secs().into();
                         if secs < limit.as_secs() {

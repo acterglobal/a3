@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
@@ -8,6 +7,7 @@ import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/features/chat/chat_utils/chat_utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/chat_attachment_options.dart';
 import 'package:acter/features/chat/widgets/image_message_builder.dart';
@@ -25,6 +25,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:html/parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:mime/mime.dart';
@@ -154,7 +155,9 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     repliedToMessage != null
-                        ? Consumer(builder: replyBuilder)
+                        ? Consumer(
+                            builder: (ctx, ref, child) => replyBuilder(roomId),
+                          )
                         : const SizedBox.shrink(),
                     if (repliedToMessage != null &&
                         chatInputState.replyWidget != null)
@@ -303,41 +306,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                   ),
                   if (showEditButton)
                     InkWell(
-                      onTap: () async {
-                        final emojiRowVisible = ref.read(
-                          chatInputProvider(roomId).select((ci) {
-                            return ci.emojiRowVisible;
-                          }),
-                        );
-                        final inputNotifier =
-                            ref.read(chatInputProvider(roomId).notifier);
-                        if (emojiRowVisible) {
-                          inputNotifier.setCurrentMessageId(null);
-                          inputNotifier.emojiRowVisible(false);
-                        }
-
-                        inputNotifier.showEditView(true);
-                        final message = ref
-                            .read(chatStateProvider(widget.convo))
-                            .messages
-                            .firstWhere(
-                              (element) => element.id == currentMessageId,
-                            );
-                        inputNotifier.setEditMessage(message);
-                        if (message is TextMessage) {
-                          ref
-                              .read(_textValuesProvider(roomId).notifier)
-                              .update((state) => message.text);
-                        }
-
-                        final chatInputFocusState =
-                            ref.read(chatInputFocusProvider.notifier);
-                        WidgetsBinding.instance
-                            .addPostFrameCallback((timeStamp) {
-                          FocusScope.of(context)
-                              .requestFocus(chatInputFocusState.state);
-                        });
-                      },
+                      onTap: () => onPressEditMessage(roomId, currentMessageId),
                       child: const Text('Edit'),
                     ),
                   InkWell(
@@ -477,6 +446,64 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     );
   }
 
+  void onPressEditMessage(String roomId, String? currentMessageId) {
+    final emojiRowVisible = ref.read(
+      chatInputProvider(roomId).select((ci) {
+        return ci.emojiRowVisible;
+      }),
+    );
+    final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
+    if (emojiRowVisible) {
+      inputNotifier.setCurrentMessageId(null);
+      inputNotifier.emojiRowVisible(false);
+    }
+
+    inputNotifier.showEditView(true);
+    final message =
+        ref.read(chatStateProvider(widget.convo)).messages.firstWhere(
+              (element) => element.id == currentMessageId,
+            );
+    inputNotifier.setEditMessage(message);
+    if (message is TextMessage) {
+      // Parse String Data to HTML document
+      final document = parse(message.text);
+
+      if (document.body != null) {
+        // Get message data
+        String msg = message.text.trim();
+
+        // Get list of 'A Tags' values
+        final aTagElementList = document.getElementsByTagName('a');
+
+        for (final aTagElement in aTagElementList) {
+          final userMentionMessageData =
+              parseUserMentionMessage(msg, aTagElement);
+          msg = userMentionMessageData.parsedMessage;
+
+          // Adding mentions data
+          ref.read(chatInputProvider(roomId).notifier).addMention(
+                userMentionMessageData.displayName,
+                userMentionMessageData.userName,
+              );
+        }
+
+        // Parse data
+        final messageDocument = parse(msg);
+        final messageBodyText = messageDocument.body?.text ?? '';
+
+        // Update text value with msg value
+        ref
+            .read(_textValuesProvider(roomId).notifier)
+            .update((state) => messageBodyText);
+      }
+    }
+
+    final chatInputFocusState = ref.read(chatInputFocusProvider.notifier);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      FocusScope.of(context).requestFocus(chatInputFocusState.state);
+    });
+  }
+
   // delete message event
   Future<void> redactRoomMessage(String eventId) async {
     await widget.convo.redactMessage(eventId, '', null);
@@ -562,7 +589,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     final roomId = widget.convo.getRoomIdStr();
     final client = ref.read(clientProvider)!;
     final inputState = ref.read(chatInputProvider(roomId));
-    final stream = await widget.convo.timelineStream();
+    final stream = widget.convo.timelineStream();
 
     try {
       for (File file in files) {
@@ -634,11 +661,12 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     }
   }
 
-  Widget replyBuilder(BuildContext context, WidgetRef ref, Widget? child) {
+  Widget replyBuilder(String roomId) {
     final roomId = widget.convo.getRoomIdStr();
     final chatInputState = ref.watch(chatInputProvider(roomId));
     final authorId = chatInputState.repliedToMessage!.author.id;
-    final replyProfile = ref.watch(memberProfileByIdProvider(authorId));
+    final replyProfile = ref
+        .watch(memberProfileByInfoProvider((userId: authorId, roomId: roomId)));
     final inputNotifier = ref.watch(chatInputProvider(roomId).notifier);
     return Row(
       children: [
@@ -761,7 +789,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
     await widget.convo.typingNotice(false);
-    final stream = await widget.convo.timelineStream();
+    final stream = widget.convo.timelineStream();
     final draft = client.textMarkdownDraft(markdownMessage);
     if (inputState.repliedToMessage != null) {
       await stream.replyMessage(inputState.repliedToMessage!.id, draft);
@@ -903,6 +931,13 @@ class _TextInputWidget extends ConsumerWidget {
           maxLines: 6,
           minLines: 1,
           focusNode: ref.watch(chatInputFocusProvider),
+          onTap: () {
+            ///Hide emoji picker before input field get focus if
+            ///Platform is mobile & Emoji picker is visible
+            if (!isDesktop && chatInputState.emojiPickerVisible) {
+              chatInputNotifier.emojiPickerVisible(false);
+            }
+          },
           decoration: InputDecoration(
             isCollapsed: true,
             prefixIcon: isEncrypted
@@ -914,9 +949,16 @@ class _TextInputWidget extends ConsumerWidget {
                   )
                 : null,
             suffixIcon: InkWell(
-              onTap: () => chatInputState.emojiPickerVisible
-                  ? chatInputNotifier.emojiPickerVisible(false)
-                  : chatInputNotifier.emojiPickerVisible(true),
+              onTap: () {
+                if (!chatInputState.emojiPickerVisible) {
+                  //Hide soft keyboard and then show Emoji Picker
+                  FocusScope.of(context).unfocus();
+                  chatInputNotifier.emojiPickerVisible(true);
+                } else {
+                  //Hide Emoji Picker
+                  chatInputNotifier.emojiPickerVisible(false);
+                }
+              },
               child: const Icon(Icons.emoji_emotions),
             ),
             border: OutlineInputBorder(
@@ -969,6 +1011,7 @@ class _TextInputWidget extends ConsumerWidget {
                 final title = roomMember['display'] ?? authorId;
                 return ListTile(
                   leading: MentionProfileBuilder(
+                    roomId: roomId,
                     authorId: authorId,
                     title: title,
                   ),

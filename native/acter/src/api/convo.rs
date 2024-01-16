@@ -193,11 +193,8 @@ impl Convo {
         }
     }
 
-    pub async fn timeline_stream(&self) -> Result<TimelineStream> {
-        Ok(TimelineStream::new(
-            self.inner.room.clone(),
-            self.timeline.clone(),
-        ))
+    pub fn timeline_stream(&self) -> TimelineStream {
+        TimelineStream::new(self.inner.room.clone(), self.timeline.clone())
     }
 
     pub fn latest_message_ts(&self) -> u64 {
@@ -365,16 +362,16 @@ impl Client {
                         // local uri
                         let path = PathBuf::from(avatar_uri);
                         let guess = mime_guess::from_path(path.clone());
-                        let content_type = guess.first().expect("MIME type should be given");
+                        let content_type = guess.first().context("don't know mime type")?;
                         let buf = std::fs::read(path)?;
-                        let upload_resp = client.media().upload(&content_type, buf).await?;
+                        let response = client.media().upload(&content_type, buf).await?;
 
                         let info = assign!(ImageInfo::new(), {
-                            blurhash: upload_resp.blurhash,
+                            blurhash: response.blurhash,
                             mimetype: Some(content_type.to_string()),
                         });
                         assign!(RoomAvatarEventContent::new(), {
-                            url: Some(upload_resp.content_uri),
+                            url: Some(response.content_uri),
                             info: Some(Box::new(info)),
                         })
                     };

@@ -13,9 +13,9 @@ class SessionCard extends ConsumerWidget {
   final DeviceRecord deviceRecord;
 
   const SessionCard({
-    Key? key,
+    super.key,
     required this.deviceRecord,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
