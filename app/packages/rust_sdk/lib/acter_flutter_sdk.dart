@@ -401,7 +401,7 @@ class ActerSdk {
 
     try {
       if (httpProxy.isNotEmpty) {
-        developer.log('Setting http proxy to $httpProxy');
+        debugPrint('Setting http proxy to $httpProxy');
         api.setProxy(httpProxy);
       }
     } catch (e) {
