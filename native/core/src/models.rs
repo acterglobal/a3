@@ -6,7 +6,6 @@ mod common;
 mod news;
 mod pins;
 mod reactions;
-mod redaction;
 mod rsvp;
 mod tag;
 mod tasks;
@@ -24,14 +23,12 @@ use enum_dispatch::enum_dispatch;
 pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
 pub use reactions::{Reaction, ReactionManager, ReactionStats};
-pub use redaction::Redaction;
 pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
 use ruma_common::{
     serde::Raw, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, UserId,
 };
 use ruma_events::{
-    reaction::ReactionEventContent,
-    room::redaction::{RoomRedactionEvent, RoomRedactionEventContent},
+    reaction::ReactionEventContent, room::redaction::RoomRedactionEventContent,
     AnySyncTimelineEvent, AnyTimelineEvent, MessageLikeEvent, StaticEventContent,
     UnsignedRoomRedactionEvent,
 };
@@ -40,7 +37,7 @@ pub use tag::Tag;
 pub use tasks::{
     Task, TaskList, TaskListUpdate, TaskSelfAssign, TaskSelfUnassign, TaskStats, TaskUpdate,
 };
-use tracing::{error, info, trace};
+use tracing::{error, trace};
 
 #[cfg(test)]
 pub use test::{TestModel, TestModelBuilder, TestModelBuilderError};
@@ -279,8 +276,6 @@ pub enum AnyActerModel {
 
     Rsvp(Rsvp),
     Reaction(Reaction),
-
-    Redaction(Redaction),
 
     #[cfg(test)]
     TestModel(TestModel),
@@ -526,23 +521,6 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                     reason: r.unsigned.redacted_because,
                 }),
             },
-
-            AnyActerEvent::Redaction(e) => {
-                info!("AnyActerEvent::Redaction - {:?}", e);
-                match e {
-                    RoomRedactionEvent::Original(m) => Ok(AnyActerModel::Redaction(m.into())),
-                    RoomRedactionEvent::Redacted(r) => Err(Error::ModelRedacted {
-                        model_type: RoomRedactionEventContent::TYPE.to_owned(),
-                        meta: EventMeta {
-                            room_id: r.room_id,
-                            event_id: r.event_id,
-                            sender: r.sender,
-                            origin_server_ts: r.origin_server_ts,
-                        },
-                        reason: r.unsigned.redacted_because,
-                    }),
-                }
-            }
         }
     }
 }

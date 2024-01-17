@@ -5,19 +5,33 @@ pub use acter_core::spaces::{
 use acter_core::{
     error::Error,
     events::{
-        attachments::{SyncAttachmentEvent, SyncAttachmentUpdateEvent},
-        calendar::{SyncCalendarEventEvent, SyncCalendarEventUpdateEvent},
-        comments::{SyncCommentEvent, SyncCommentUpdateEvent},
-        news::{SyncNewsEntryEvent, SyncNewsEntryUpdateEvent},
-        pins::{SyncPinEvent, SyncPinUpdateEvent},
-        rsvp::SyncRsvpEvent,
+        attachments::{
+            AttachmentEventContent, AttachmentUpdateEventContent, SyncAttachmentEvent,
+            SyncAttachmentUpdateEvent,
+        },
+        calendar::{
+            CalendarEventEventContent, CalendarEventUpdateEventContent, SyncCalendarEventEvent,
+            SyncCalendarEventUpdateEvent,
+        },
+        comments::{
+            CommentEventContent, CommentUpdateEventContent, SyncCommentEvent,
+            SyncCommentUpdateEvent,
+        },
+        news::{
+            NewsEntryEventContent, NewsEntryUpdateEventContent, SyncNewsEntryEvent,
+            SyncNewsEntryUpdateEvent,
+        },
+        pins::{PinEventContent, PinUpdateEventContent, SyncPinEvent, SyncPinUpdateEvent},
+        rsvp::{RsvpEventContent, SyncRsvpEvent},
         tasks::{
             SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent, SyncTaskSelfAssignEvent,
-            SyncTaskSelfUnassignEvent, SyncTaskUpdateEvent,
+            SyncTaskSelfUnassignEvent, SyncTaskUpdateEvent, TaskEventContent, TaskListEventContent,
+            TaskListUpdateEventContent, TaskSelfAssignEventContent, TaskSelfUnassignEventContent,
+            TaskUpdateEventContent,
         },
     },
     executor::Executor,
-    models::AnyActerModel,
+    models::{AnyActerModel, EventMeta},
     statics::default_acter_space_states,
     templates::Engine,
 };
@@ -31,14 +45,15 @@ use matrix_sdk::{
 };
 use matrix_sdk_ui::timeline::RoomExt;
 use ruma_common::{
-    directory::RoomTypeFilter, serde::Raw, OwnedRoomAliasId, OwnedRoomId, RoomAliasId, RoomId,
-    RoomOrAliasId, ServerName,
+    directory::RoomTypeFilter, exports, serde::Raw, OwnedRoomAliasId, OwnedRoomId, RoomAliasId,
+    RoomId, RoomOrAliasId, ServerName,
 };
 use ruma_events::{
-    reaction::SyncReactionEvent,
+    reaction::{ReactionEventContent, SyncReactionEvent},
     room::redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
     space::child::SpaceChildEventContent,
-    AnyStateEventContent, MessageLikeEvent, StateEventType,
+    AnyStateEventContent, MessageLikeEvent, StateEventType, StaticEventContent,
+    UnsignedRoomRedactionEvent,
 };
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, sync::Arc};
@@ -382,14 +397,224 @@ impl Space {
                  room: SdkRoom,
                  Ctx(executor): Ctx<Executor>| async move {
                     let room_id = room.room_id().to_owned();
-                    if let RoomRedactionEvent::Original(t) = ev.into_full_event(room_id) {
-                        info!("RoomRedactionEvent for AnyActerModel: {:?}", t);
-                        if let Err(error) = executor
-                            .handle(AnyActerModel::Redaction(t.into()))
-                            .await
-                        {
-                            error!(?error, "execution failed");
+                    let RoomRedactionEvent::Original(t) = ev.into_full_event(room_id.clone()) else {
+                        error!("couldn't get original content of redaction event");
+                        return;
+                    };
+                    let Some(redacts) = t.redacts else {
+                        error!("redacts field is missing");
+                        return;
+                    };
+                    let Ok(evt) = room.event(&redacts).await else {
+                        error!("couldn't get event to be redacted");
+                        return;
+                    };
+                    let Ok(Some(event_type)) = evt.event.get_field("type") else {
+                        error!("couldn't get event type");
+                        return;
+                    };
+                    let Ok(evt) = evt.event.deserialize() else {
+                        error!("couldn't deserialize event to be redacted");
+                        return;
+                    };
+                    let Ok(reason) = exports::serde_json::from_value::<UnsignedRoomRedactionEvent>(exports::serde_json::json!({
+                        "content": {},
+                        "event_id": evt.event_id().to_string(),
+                        "sender": evt.sender().to_string(),
+                        "origin_server_ts": evt.origin_server_ts(),
+                        "unsigned": { "reason": "foo" }
+                    })) else {
+                        error!("couldn't get unsigned room redaction event");
+                        return;
+                    };
+                    let meta = EventMeta {
+                        room_id,
+                        event_id: evt.event_id().to_owned(),
+                        sender: evt.sender().to_owned(),
+                        origin_server_ts: evt.origin_server_ts(),
+                    };
+                    match event_type {
+                        CalendarEventEventContent::TYPE => {
+                            if let Err(error) = executor.redact(
+                                CalendarEventEventContent::TYPE.to_owned(),
+                                meta,
+                                reason,
+                            )
+                            .await {
+                                error!(?error, "execution failed");
+                            }
                         }
+                        CalendarEventUpdateEventContent::TYPE => {
+                            if let Err(error) = executor.redact(
+                                CalendarEventUpdateEventContent::TYPE.to_owned(),
+                                meta,
+                                reason,
+                            )
+                            .await {
+                                error!(?error, "execution failed");
+                            }
+                        }
+                        PinEventContent::TYPE => {
+                            if let Err(error) = executor.redact(
+                                PinEventContent::TYPE.to_owned(),
+                                meta,
+                                reason,
+                            )
+                            .await {
+                                error!(?error, "execution failed");
+                            }
+                        }
+                        PinUpdateEventContent::TYPE => {
+                            if let Err(error) = executor.redact(
+                                PinUpdateEventContent::TYPE.to_owned(),
+                                meta,
+                                reason,
+                            )
+                            .await {
+                                error!(?error, "execution failed");
+                            }
+                        }
+                        NewsEntryEventContent::TYPE => {
+                            if let Err(error) = executor.redact(
+                                NewsEntryEventContent::TYPE.to_owned(),
+                                meta,
+                                reason,
+                            )
+                            .await {
+                                error!(?error, "execution failed");
+                            }
+                        }
+                        NewsEntryUpdateEventContent::TYPE => {
+                            if let Err(error) = executor.redact(
+                                NewsEntryUpdateEventContent::TYPE.to_owned(),
+                                meta,
+                                reason,
+                            )
+                            .await {
+                                error!(?error, "execution failed");
+                            }
+                        }
+                        TaskListEventContent::TYPE => {
+                            if let Err(error) = executor.redact(
+                                TaskListEventContent::TYPE.to_owned(),
+                                meta,
+                                reason,
+                            )
+                            .await {
+                                error!(?error, "execution failed");
+                            }
+                        }
+                        TaskListUpdateEventContent::TYPE => {
+                            if let Err(error) = executor.redact(
+                                TaskListUpdateEventContent::TYPE.to_owned(),
+                                meta,
+                                reason,
+                            )
+                            .await {
+                                error!(?error, "execution failed");
+                            }
+                        }
+                        TaskEventContent::TYPE => {
+                            if let Err(error) = executor.redact(
+                                TaskEventContent::TYPE.to_owned(),
+                                meta,
+                                reason,
+                            )
+                            .await {
+                                error!(?error, "execution failed");
+                            }
+                        }
+                        TaskUpdateEventContent::TYPE => {
+                            if let Err(error) = executor.redact(
+                                TaskUpdateEventContent::TYPE.to_owned(),
+                                meta,
+                                reason,
+                            )
+                            .await {
+                                error!(?error, "execution failed");
+                            }
+                        }
+                        TaskSelfAssignEventContent::TYPE => {
+                            if let Err(error) = executor.redact(
+                                TaskSelfAssignEventContent::TYPE.to_owned(),
+                                meta,
+                                reason,
+                            )
+                            .await {
+                                error!(?error, "execution failed");
+                            }
+                        }
+                        TaskSelfUnassignEventContent::TYPE => {
+                            if let Err(error) = executor.redact(
+                                TaskSelfUnassignEventContent::TYPE.to_owned(),
+                                meta,
+                                reason,
+                            )
+                            .await {
+                                error!(?error, "execution failed");
+                            }
+                        }
+                        CommentEventContent::TYPE => {
+                            if let Err(error) = executor.redact(
+                                CommentEventContent::TYPE.to_owned(),
+                                meta,
+                                reason,
+                            )
+                            .await {
+                                error!(?error, "execution failed");
+                            }
+                        }
+                        CommentUpdateEventContent::TYPE => {
+                            if let Err(error) = executor.redact(
+                                CommentUpdateEventContent::TYPE.to_owned(),
+                                meta,
+                                reason,
+                            )
+                            .await {
+                                error!(?error, "execution failed");
+                            }
+                        }
+                        AttachmentEventContent::TYPE => {
+                            if let Err(error) = executor.redact(
+                                AttachmentEventContent::TYPE.to_owned(),
+                                meta,
+                                reason,
+                            )
+                            .await {
+                                error!(?error, "execution failed");
+                            }
+                        }
+                        AttachmentUpdateEventContent::TYPE => {
+                            if let Err(error) = executor.redact(
+                                AttachmentUpdateEventContent::TYPE.to_owned(),
+                                meta,
+                                reason,
+                            )
+                            .await {
+                                error!(?error, "execution failed");
+                            }
+                        }
+                        RsvpEventContent::TYPE => {
+                            if let Err(error) = executor.redact(
+                                RsvpEventContent::TYPE.to_owned(),
+                                meta,
+                                reason,
+                            )
+                            .await {
+                                error!(?error, "execution failed");
+                            }
+                        }
+                        ReactionEventContent::TYPE => {
+                            if let Err(error) = executor.redact(
+                                ReactionEventContent::TYPE.to_owned(),
+                                meta,
+                                reason,
+                            )
+                            .await {
+                                error!(?error, "execution failed");
+                            }
+                        }
+                        _ => {}
                     }
                 },
             )
