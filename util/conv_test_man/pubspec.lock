@@ -61,34 +61,34 @@ packages:
     dependency: transitive
     description:
       name: convenient_test
-      sha256: "5c1e725a175c575b8265ba026c778b3003d7936cdd3c09a17c76ccb5a7c7f88e"
+      sha256: de571272596f9d8498ac520b588726f54d330146165812fb8eab34874e688c29
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.1"
+    version: "1.3.2"
   convenient_test_common:
     dependency: transitive
     description:
       name: convenient_test_common
-      sha256: ae896b8b058c8da49f188f6fbdc3ca4e9a60cdaa80d7b4408c46c62601c7ab70
+      sha256: "81eb6174a0bfa5da8c49b72e9b52cd6392e6ff7a3435e5df7bcd1f5a8a01a1ae"
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.1"
+    version: "1.3.2"
   convenient_test_common_dart:
     dependency: transitive
     description:
       name: convenient_test_common_dart
-      sha256: "9e158c5309f15bb0e05aad310a373d69870d06b860319c4f9cffc4642f961952"
+      sha256: ff1f073d7078c48120a05d653ac0ac21c0c18ddffaded54e456fa0d6801b5d93
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.1"
+    version: "1.3.2"
   convenient_test_dev:
     dependency: transitive
     description:
       name: convenient_test_dev
-      sha256: aec27095cabf2806f95d0d3b5e9dd28fc6c829e95761a0933ff93eef797a77e3
+      sha256: "165d31fcd90bb76ced24344c3b1500e4a3b7970e0e87bb12ddcd342a8814d20c"
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.1"
+    version: "1.3.2"
   convenient_test_manager:
     dependency: "direct main"
     description:
@@ -103,10 +103,10 @@ packages:
     description:
       path: "packages/convenient_test_manager_dart"
       ref: HEAD
-      resolved-ref: c24191d1298b1f969b2053b8b98891d58161cf15
+      resolved-ref: fc4294f4e10fd2fe5db64bed42d61e2fc2f3874d
       url: "https://github.com/fzyzcjy/flutter_convenient_test/"
     source: git
-    version: "1.3.1"
+    version: "1.3.2"
   convert:
     dependency: transitive
     description:
@@ -334,10 +334,10 @@ packages:
     dependency: transitive
     description:
       name: lint
-      sha256: "77b3777e8e9adca8e942da1e835882ae3248dfa00488a2ebbdbc1f1a4aa3f4a7"
+      sha256: d758a5211fce7fd3f5e316f804daefecdc34c7e53559716125e6da7388ae8565
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.0"
+    version: "2.3.0"
   lints:
     dependency: transitive
     description:
@@ -374,10 +374,10 @@ packages:
     dependency: transitive
     description:
       name: mobx
-      sha256: "42ae7277ec5c36fa5ce02aa14551065babce3c38a35947330144ff47bc775c75"
+      sha256: "1226c02cdb2a5f321be977a9a0d5cc0c9e6e395b72be3bca90b2299ff0845198"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.1"
+    version: "2.2.3+1"
   path:
     dependency: transitive
     description:
@@ -555,10 +555,10 @@ packages:
     dependency: transitive
     description:
       name: synchronized
-      sha256: "5fcbd27688af6082f5abd611af56ee575342c30e87541d0245f7ff99faa02c60"
+      sha256: "539ef412b170d65ecdafd780f924e5be3f60032a1128df156adad6c5b373d558"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.0"
+    version: "3.1.0+1"
   term_glyph:
     dependency: transitive
     description:
@@ -651,10 +651,10 @@ packages:
     dependency: transitive
     description:
       name: xml
-      sha256: af5e77e9b83f2f4adc5d3f0a4ece1c7f45a2467b695c2540381bac793e34e556
+      sha256: b015a8ad1c488f66851d762d3090a21c600e479dc75e68328c52774040cf9226
       url: "https://pub.dev"
     source: hosted
-    version: "6.4.2"
+    version: "6.5.0"
 sdks:
   dart: ">=3.2.0 <4.0.0"
   flutter: ">=3.7.0"

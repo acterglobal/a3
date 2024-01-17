@@ -12,7 +12,7 @@ import 'package:go_router/go_router.dart';
 class BugReportPage extends ConsumerStatefulWidget {
   final String? imagePath;
 
-  const BugReportPage({Key? key, this.imagePath}) : super(key: key);
+  const BugReportPage({super.key, this.imagePath});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _BugReportState();

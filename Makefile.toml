@@ -628,3 +628,82 @@ script = [
     end
     """
 ]
+
+
+
+#  ##     ## ####    ######## ########  ######  ######## 
+#  ##     ##  ##        ##    ##       ##    ##    ##    
+#  ##     ##  ##        ##    ##       ##          ##    
+#  ##     ##  ##        ##    ######    ######     ##    
+#  ##     ##  ##        ##    ##             ##    ##    
+#  ##     ##  ##        ##    ##       ##    ##    ##    
+#   #######  ####       ##    ########  ######     ##    
+
+[tasks.test-server]
+# condition = { platforms = ["mac"], env_true = ["RELEASE"] }
+script_runner =  "@duckscript"
+script = [
+    """
+    os = os_family
+    cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/util/test_server/
+    if eq ${os} "linux"
+        exec docker-compose up -d
+    else
+        exec vagrant up --provision
+    endif
+    """
+]
+
+[tasks.ui-test-manager]
+private = true
+# condition = { platforms = ["mac"], env_true = ["RELEASE"] }
+script_runner = "@duckscript"
+script = [
+    """
+    os = os_family
+    cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/util/conv_test_man
+
+    if eq ${os} "linux"
+        exec flutter run -d linux
+    elseif eq ${os} "windows"
+        exec flutter run -d windows
+    elseif eq ${os} "macos"
+        exec flutter run -d macos
+    end
+    """
+]
+
+
+[tasks.ui-tester]
+dependencies = [
+    "test-server",
+    "ui-test-manager"
+]
+
+[tasks.ui-test-app-android-emulator]
+script = [
+    """
+    cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/app
+    flutter run integration_test/main_test.dart \
+        --host-vmservice-port 9753 \
+        --disable-service-auth-codes \
+        --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib \
+        --dart-define CONVENIENT_TEST_MANAGER_HOST=10.0.2.2 \
+        --dart-define DEFAULT_HOMESERVER_URL=http:/10.0.2.2:8118/ \
+        --dart-define DEFAULT_HOMESERVER_NAME=localhost
+    """
+]
+
+[tasks.ui-test-app-local]
+script = [
+    """
+    cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/app
+    flutter run integration_test/main_test.dart \
+        --host-vmservice-port 9753 \
+        --disable-service-auth-codes \
+        --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib \
+        --dart-define CONVENIENT_TEST_MANAGER_HOST=10.0.2.2 \
+        --dart-define DEFAULT_HOMESERVER_URL=http:/10.0.2.2:8118/ \
+        --dart-define DEFAULT_HOMESERVER_NAME=localhost
+    """
+]

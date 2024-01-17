@@ -11,6 +11,11 @@ typedef MakeIconFn = Widget Function(BuildContext);
 
 class TabEntry {
   static const chatsKey = Key('chat');
+  static const overview = Key('overview');
+  static const pins = Key('pins');
+  static const tasks = Key('tasks');
+  static const events = Key('events');
+
   final Key key;
   final String label;
   final String target;
@@ -32,7 +37,7 @@ final tabsProvider =
   bool isActive(f) => features.isActive(f);
   List<TabEntry> tabs = [
     TabEntry(
-      key: const Key('overview'),
+      key: TabEntry.overview,
       label: 'Overview',
       makeIcon: (ctx) => const Icon(Atlas.layout_half_thin),
       target: Routes.space.name,
@@ -44,7 +49,7 @@ final tabsProvider =
     if (isActive(LabsFeature.pins) && appSettings.pins().active()) {
       tabs.add(
         TabEntry(
-          key: const Key('pins'),
+          key: TabEntry.pins,
           label: 'Pins',
           makeIcon: (ctx) => const Icon(Atlas.pin_thin),
           target: Routes.spacePins.name,
@@ -55,7 +60,7 @@ final tabsProvider =
     if (isActive(LabsFeature.tasks) && appSettings.tasks().active()) {
       tabs.add(
         TabEntry(
-          key: const Key('tasks'),
+          key: TabEntry.tasks,
           label: 'Tasks',
           makeIcon: (context) => SvgPicture.asset(
             'assets/images/tasks.svg',
@@ -75,7 +80,7 @@ final tabsProvider =
     if (isActive(LabsFeature.events) && appSettings.events().active()) {
       tabs.add(
         TabEntry(
-          key: const Key('events'),
+          key: TabEntry.events,
           label: 'Events',
           makeIcon: (ctx) => const Icon(Atlas.calendar_schedule_thin),
           target: Routes.spaceEvents.name,

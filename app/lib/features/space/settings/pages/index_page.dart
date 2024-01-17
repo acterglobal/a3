@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 
 class SpaceSettingsMenuIndexPage extends StatelessWidget {
   final String spaceId;
-  const SpaceSettingsMenuIndexPage({Key? key, required this.spaceId})
-      : super(key: key);
+  const SpaceSettingsMenuIndexPage({super.key, required this.spaceId});
 
   @override
   Widget build(BuildContext context) {

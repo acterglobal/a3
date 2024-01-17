@@ -19,10 +19,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
         .convo(room_id.to_string())
         .await
         .expect("sisko should belong to convo");
-    let sisko_timeline = sisko_convo
-        .timeline_stream()
-        .await
-        .expect("sisko should get timeline stream");
+    let sisko_timeline = sisko_convo.timeline_stream();
     let sisko_stream = sisko_timeline.diff_stream();
     pin_mut!(sisko_stream);
 
@@ -93,10 +90,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
         .convo(room_id.to_string())
         .await
         .expect("kyra should belong to convo");
-    let kyra_timeline = kyra_convo
-        .timeline_stream()
-        .await
-        .expect("kyra should get timeline stream");
+    let kyra_timeline = kyra_convo.timeline_stream();
     kyra_timeline
         .send_single_receipt(
             "Read".to_string(), // will test only Read, because ReadPrivate not reached
@@ -119,7 +113,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
             Ok(Some(event)) => {
                 info!("received: {:?}", event.clone());
                 for record in event.receipt_records() {
-                    if record.seen_by() == kyra.user_id()?.to_string() {
+                    if record.seen_by() == kyra.user_id()? {
                         assert_eq!(record.receipt_type(), "m.read", "Incorrect receipt type");
                         let receipt_thread = record.receipt_thread();
                         assert!(receipt_thread.is_main(), "Incorrect receipt thread");

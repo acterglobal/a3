@@ -26,12 +26,12 @@ class ConvoCard extends ConsumerStatefulWidget {
   final Widget? trailing;
 
   const ConvoCard({
-    Key? key,
+    super.key,
     required this.room,
     this.onTap,
     this.showParent = true,
     this.trailing,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<ConvoCard> createState() => _ConvoCardState();

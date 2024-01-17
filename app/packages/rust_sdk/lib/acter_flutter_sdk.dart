@@ -262,7 +262,12 @@ class ActerSdk {
       debugPrint("Secure Storage isn't available yet. Delaying");
       await Future.delayed(const Duration(milliseconds: 50));
     }
+
     debugPrint('Secure Storage is available. Attempting to read.');
+    if (Platform.isAndroid) {
+      // fake read for https://github.com/mogol/flutter_secure_storage/issues/566
+      await storage.read(key: _sessionKey);
+    }
     if (!await storage.containsKey(key: _sessionKey)) {
       // not yet set. let's see if we maybe want to migrate instead:
       await _maybeMigrateFromPrefs(appDocPath);
@@ -396,7 +401,7 @@ class ActerSdk {
 
     try {
       if (httpProxy.isNotEmpty) {
-        developer.log('Setting http proxy to $httpProxy');
+        debugPrint('Setting http proxy to $httpProxy');
         api.setProxy(httpProxy);
       }
     } catch (e) {

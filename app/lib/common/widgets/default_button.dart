@@ -10,12 +10,12 @@ class DefaultButton extends StatelessWidget {
   final String title;
 
   const DefaultButton({
-    Key? key,
+    super.key,
     required this.onPressed,
     required this.title,
     this.isOutlined = false,
     this.style,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

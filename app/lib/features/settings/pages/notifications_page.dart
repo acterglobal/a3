@@ -16,9 +16,7 @@ import 'package:settings_ui/settings_ui.dart';
 class _AddEmail extends StatefulWidget {
   final List<String> emails;
   const _AddEmail(
-    this.emails, {
-    Key? key,
-  }) : super(key: key);
+    this.emails,);
 
   @override
   State<_AddEmail> createState() => __AddEmailState();

@@ -21,7 +21,6 @@ class ActivitiesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final size = MediaQuery.of(context).size;
     // ignore: unused_local_variable
     final allDone = ref.watch(hasActivitiesProvider) == HasActivities.none;
     final allSessions = ref.watch(unknownSessionsProvider);
@@ -134,13 +133,11 @@ class ActivitiesPage extends ConsumerWidget {
             sectionDecoration: const BoxDecoration(
               gradient: AppTheme.primaryGradient,
             ),
-            expandedContent: size.width <= 600
-                ? null
-                : Text(
-                    'All the important stuff requiring your attention can be found here',
-                    softWrap: true,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
+            expandedContent: Text(
+              'All the important stuff requiring your attention can be found here',
+              softWrap: true,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           ),
           ...children,
         ],

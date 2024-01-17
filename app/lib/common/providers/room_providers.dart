@@ -1,8 +1,10 @@
 /// Get the relations of the given SpaceId.  Throws
+library;
 import 'dart:core';
 
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/notifiers/room_notifiers.dart';
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -211,4 +213,38 @@ final roomIsMutedProvider =
     FutureProvider.autoDispose.family<bool, String>((ref, roomId) async {
   return (await ref.watch(roomNotificationStatusProvider(roomId).future)) ==
       'muted';
+});
+
+class MemberNotFound extends Error {}
+
+class RoomNotFound extends Error {}
+
+typedef RoomMemberQuery = ({
+  String roomId,
+  String userId,
+});
+
+final roomMemberProvider = FutureProvider.autoDispose
+    .family<ProfileData, RoomMemberQuery>((ref, query) async {
+  final room = await ref.watch(maybeRoomProvider(query.roomId).future);
+  if (room == null) {
+    throw RoomNotFound;
+  }
+  final member = await room.getMember(query.userId);
+  return ref.watch(userProfileDataProvider(member).future);
+});
+
+// Chat Providers
+final userProfileDataProvider =
+    FutureProvider.family<ProfileData, Member>((ref, member) async {
+  final sdk = await ref.watch(sdkProvider.future);
+  // this ensure we are staying up to dates on updates to convo
+  final profile = member.getProfile();
+  final displayName = await profile.getDisplayName();
+  if (!await profile.hasAvatar()) {
+    return ProfileData(displayName.text(), null);
+  }
+  final size = sdk.newThumbSize(48, 48);
+  final avatar = await profile.getAvatar(size);
+  return ProfileData(displayName.text(), avatar.data());
 });
