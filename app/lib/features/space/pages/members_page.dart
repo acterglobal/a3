@@ -71,7 +71,7 @@ class SpaceMembersPage extends ConsumerWidget {
             data: (members) {
               final widthCount =
                   (MediaQuery.of(context).size.width ~/ 600).toInt();
-              const int minCount = 2;
+              const int minCount = 3;
               if (members.isEmpty) {
                 return const SliverToBoxAdapter(
                   child: Center(
@@ -85,7 +85,7 @@ class SpaceMembersPage extends ConsumerWidget {
                 itemCount: members.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: max(1, min(widthCount, minCount)),
-                  childAspectRatio: 4.0,
+                  childAspectRatio: 9.0,
                 ),
                 itemBuilder: (context, index) {
                   final member = members[index];

@@ -173,7 +173,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                     itemCount: spaces.knownSubspaces.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: max(1, min(widthCount, minCount)),
-                      childAspectRatio: 4.0,
+                      childAspectRatio: 9.0,
                     ),
                     itemBuilder: (context, index) {
                       final space = spaces.knownSubspaces[index];
