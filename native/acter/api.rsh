@@ -389,7 +389,7 @@ object ActerPin {
     /// get the title of the pin
     fn title() -> string;
     /// get the content_text of the pin
-    fn content_text() -> Option<string>;
+    fn content_text() -> Option<MsgContent>;
     /// get the formatted content of the pin
     fn content_formatted() -> Option<string>;
     /// Whether the inner text is coming as formatted

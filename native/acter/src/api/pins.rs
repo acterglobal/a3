@@ -20,6 +20,8 @@ use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::warn;
 
+use crate::MsgContent;
+
 use super::{client::Client, spaces::Space, RUNTIME};
 
 impl Client {
@@ -224,8 +226,8 @@ impl Pin {
             .and_then(|t| t.formatted.as_ref().map(|f| f.body.clone()))
     }
 
-    pub fn content_text(&self) -> Option<String> {
-        self.content.content.as_ref().map(|t| t.body.clone())
+    pub fn content_text(&self) -> Option<MsgContent> {
+        self.content.content.as_ref().map(MsgContent::from)
     }
 
     pub fn url(&self) -> Option<String> {

@@ -6,6 +6,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/cli/main.dart';
 import 'package:acter/l10n/l10n.dart';
 import 'package:acter/router/providers/router_providers.dart';
+import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -69,6 +70,7 @@ class _ActerState extends ConsumerState<Acter> {
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
+            AppFlowyEditorLocalizations.delegate,
           ],
           supportedLocales: ApplicationLocalizations.supportedLocales,
           // MaterialApp contains our top-level Navigator
