@@ -14,6 +14,7 @@ testing = ["dep:matrix-sdk-base"]
 cbindgen = []
 dart = []
 uniffi = ["dep:uniffi", "dep:thiserror"]
+proxyman = ["dep:reqwest", "dep:openssl"]
 
 
 [build-dependencies]
@@ -39,8 +40,6 @@ mime = "0.3.16"
 mime2ext = "0.1.52"
 mime_guess = "2.0.4"
 parse-env-filter = "0.1.0"
-# enable support for system native TLS certificates
-reqwest = { version = "*", features = ["rustls-tls-native-roots"]}
 ruma = { workspace = true, features = ["html", "unstable-unspecified", "unstable-msc3488", "compat-unset-avatar", "unstable-msc3245-v1-compat"] }
 ruma-common = { workspace = true, features = ["client"] }
 ruma-events = { workspace = true }
@@ -61,6 +60,10 @@ pulldown-cmark = { version = "0.9.1", default-features = false }
 # for uniffi support
 uniffi = { git = "https://github.com/mozilla/uniffi-rs/", features = ["cli"], optional = true }
 thiserror = { version = "1.0.49", optional = true }
+
+# for proxyman support
+# enable support for system native TLS certificates
+reqwest = { optional = true, version = "*", default-features = false, features = ["rustls-tls-native-roots"]}
 
 [dev-dependencies]
 tempfile = "3.3.0"
@@ -100,7 +103,7 @@ matrix-sdk-ui = { workspace = true }
 android_logger = "0.12"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 tracing-android = "0.2"
-openssl = { version = "*", features = ["vendored"]}
+openssl = { version = "*", optional = true, features = ["vendored"]}
 
 #   ----   IOS/MACOS
 [target.'cfg(target_os = "ios")'.dependencies]
