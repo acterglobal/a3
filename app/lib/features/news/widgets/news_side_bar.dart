@@ -66,7 +66,6 @@ class NewsSideBar extends ConsumerWidget {
               final client = ref.read(alwaysClientProvider);
               final status = await news.myLikeStatus();
               final manager = await news.reactions();
-              debugPrint('STATUS: $status');
               if (!status) {
                 final eventId = await manager.sendReaction(
                   news.eventId().toString(),
@@ -79,7 +78,7 @@ class NewsSideBar extends ConsumerWidget {
                     .reactionEntries()
                     .then((value) => value.toList());
                 final eventId = reactions[0].eventIdStr();
-                await manager.redactReaction(eventId, '', '');
+                await manager.redactReaction(eventId, null, null);
               }
             },
           ),
