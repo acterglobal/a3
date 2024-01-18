@@ -100,7 +100,7 @@ impl Client {
                         let room = client.get_room(inner.room_id()).context("Room not found")?;
                         let cal_event = CalendarEvent::new(client.clone(), room, inner);
                         // fliter only events that i sent rsvp
-                        let rsvp_manager = cal_event.rsvp_manager().await?;
+                        let rsvp_manager = cal_event.rsvps().await?;
                         let status = rsvp_manager.my_status().await?;
                         match status.as_str() {
                             "Yes" | "Maybe" => {
@@ -142,7 +142,7 @@ impl Client {
                         let room = client.get_room(inner.room_id()).context("Room not found")?;
                         let cal_event = CalendarEvent::new(client.clone(), room, inner);
                         // fliter only events that i sent rsvp
-                        let rsvp_manager = cal_event.rsvp_manager().await?;
+                        let rsvp_manager = cal_event.rsvps().await?;
                         let status = rsvp_manager.my_status().await?;
                         match status.as_str() {
                             "Yes" | "Maybe" => {

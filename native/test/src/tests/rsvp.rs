@@ -58,7 +58,7 @@ async fn rsvp_last_status() -> Result<()> {
     let events = user.calendar_events().await?;
     assert_eq!(events.len(), 3);
 
-    let rsvp_manager = events[0].rsvp_manager().await?;
+    let rsvp_manager = events[0].rsvps().await?;
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 
     // send 1st RSVP
@@ -130,7 +130,7 @@ async fn rsvp_my_status() -> Result<()> {
     let events = user.calendar_events().await?;
     assert_eq!(events.len(), 3);
 
-    let rsvp_manager = events[0].rsvp_manager().await?;
+    let rsvp_manager = events[0].rsvps().await?;
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 
     // send 1st RSVP
@@ -207,7 +207,7 @@ async fn rsvp_count_at_status() -> Result<()> {
     let events = user.calendar_events().await?;
     assert_eq!(events.len(), 3);
 
-    let rsvp_manager = events[0].rsvp_manager().await?;
+    let rsvp_manager = events[0].rsvps().await?;
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 
     // send 1st RSVP
@@ -284,7 +284,7 @@ async fn rsvp_users_at_status() -> Result<()> {
     let events = user.calendar_events().await?;
     assert_eq!(events.len(), 3);
 
-    let rsvp_manager = events[0].rsvp_manager().await?;
+    let rsvp_manager = events[0].rsvps().await?;
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 
     // send 1st RSVP

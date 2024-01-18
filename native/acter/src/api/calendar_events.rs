@@ -217,7 +217,7 @@ impl CalendarEvent {
             .await?
     }
 
-    pub async fn rsvp_manager(&self) -> Result<crate::RsvpManager> {
+    pub async fn rsvps(&self) -> Result<crate::RsvpManager> {
         let client = self.client.clone();
         let room = self.room.clone();
         let event_id = self.inner.event_id().to_owned();
@@ -254,7 +254,7 @@ impl CalendarEvent {
 
         RUNTIME
             .spawn(async move {
-                let manager = me.rsvp_manager().await?;
+                let manager = me.rsvps().await?;
                 manager.my_status().await
             })
             .await?

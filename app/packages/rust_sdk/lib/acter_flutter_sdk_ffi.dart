@@ -2390,7 +2390,7 @@ class Api {
     return tmp7;
   }
 
-  RsvpManager? __calendarEventRsvpManagerFuturePoll(
+  RsvpManager? __calendarEventRsvpsFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2404,7 +2404,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _calendarEventRsvpManagerFuturePoll(
+    final tmp6 = _calendarEventRsvpsFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -13920,17 +13920,16 @@ class Api {
           _CalendarEventUpdateBuilderReturn Function(
             int,
           )>();
-  late final _calendarEventRsvpManagerPtr = _lookup<
+  late final _calendarEventRsvpsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__CalendarEvent_rsvp_manager");
+          )>>("__CalendarEvent_rsvps");
 
-  late final _calendarEventRsvpManager =
-      _calendarEventRsvpManagerPtr.asFunction<
-          int Function(
-            int,
-          )>();
+  late final _calendarEventRsvps = _calendarEventRsvpsPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _calendarEventReactionsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -22197,17 +22196,17 @@ class Api {
             int,
             int,
           )>();
-  late final _calendarEventRsvpManagerFuturePollPtr = _lookup<
+  late final _calendarEventRsvpsFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _CalendarEventRsvpManagerFuturePollReturn Function(
+          _CalendarEventRsvpsFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__CalendarEvent_rsvp_manager_future_poll");
+          )>>("__CalendarEvent_rsvps_future_poll");
 
-  late final _calendarEventRsvpManagerFuturePoll =
-      _calendarEventRsvpManagerFuturePollPtr.asFunction<
-          _CalendarEventRsvpManagerFuturePollReturn Function(
+  late final _calendarEventRsvpsFuturePoll =
+      _calendarEventRsvpsFuturePollPtr.asFunction<
+          _CalendarEventRsvpsFuturePollReturn Function(
             int,
             int,
             int,
@@ -29854,19 +29853,17 @@ class CalendarEvent {
   }
 
   /// get RSVP manager
-  Future<RsvpManager> rsvpManager() {
+  Future<RsvpManager> rsvps() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._calendarEventRsvpManager(
+    final tmp1 = _api._calendarEventRsvps(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__CalendarEvent_rsvp_manager_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__CalendarEvent_rsvps_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__calendarEventRsvpManagerFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__calendarEventRsvpsFuturePoll);
     return tmp2;
   }
 
@@ -48561,7 +48558,7 @@ class _PinUpdateBuilderSendFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _CalendarEventRsvpManagerFuturePollReturn extends ffi.Struct {
+class _CalendarEventRsvpsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

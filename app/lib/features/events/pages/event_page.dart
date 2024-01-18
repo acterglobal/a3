@@ -374,7 +374,7 @@ class CalendarEventPage extends ConsumerWidget {
   ) async {
     EasyLoading.show(status: 'Updating RSVP', dismissOnTap: false);
     final event = await ref.read(calendarEventProvider(calendarId).future);
-    final rsvpManager = await event.rsvpManager();
+    final rsvpManager = await event.rsvps();
     final draft = rsvpManager.rsvpDraft();
     draft.status(status);
     final rsvpId = await draft.send();

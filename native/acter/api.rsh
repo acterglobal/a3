@@ -490,7 +490,7 @@ object CalendarEvent {
     /// update builder
     fn update_builder() -> Result<CalendarEventUpdateBuilder>;
     /// get RSVP manager
-    fn rsvp_manager() -> Future<Result<RsvpManager>>;
+    fn rsvps() -> Future<Result<RsvpManager>>;
     /// get the reaction manager
     fn reactions() -> Future<Result<ReactionManager>>;
     /// get my RSVP status, one of Yes/Maybe/No/Pending
