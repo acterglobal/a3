@@ -2437,7 +2437,7 @@ class Api {
     return tmp7;
   }
 
-  ReactionManager? __calendarEventReactionManagerFuturePoll(
+  ReactionManager? __calendarEventReactionsFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2451,7 +2451,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _calendarEventReactionManagerFuturePoll(
+    final tmp6 = _calendarEventReactionsFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -13931,17 +13931,16 @@ class Api {
           int Function(
             int,
           )>();
-  late final _calendarEventReactionManagerPtr = _lookup<
+  late final _calendarEventReactionsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__CalendarEvent_reaction_manager");
+          )>>("__CalendarEvent_reactions");
 
-  late final _calendarEventReactionManager =
-      _calendarEventReactionManagerPtr.asFunction<
-          int Function(
-            int,
-          )>();
+  late final _calendarEventReactions = _calendarEventReactionsPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _calendarEventMyRsvpStatusPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -22213,17 +22212,17 @@ class Api {
             int,
             int,
           )>();
-  late final _calendarEventReactionManagerFuturePollPtr = _lookup<
+  late final _calendarEventReactionsFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _CalendarEventReactionManagerFuturePollReturn Function(
+          _CalendarEventReactionsFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__CalendarEvent_reaction_manager_future_poll");
+          )>>("__CalendarEvent_reactions_future_poll");
 
-  late final _calendarEventReactionManagerFuturePoll =
-      _calendarEventReactionManagerFuturePollPtr.asFunction<
-          _CalendarEventReactionManagerFuturePollReturn Function(
+  late final _calendarEventReactionsFuturePoll =
+      _calendarEventReactionsFuturePollPtr.asFunction<
+          _CalendarEventReactionsFuturePollReturn Function(
             int,
             int,
             int,
@@ -29872,19 +29871,17 @@ class CalendarEvent {
   }
 
   /// get the reaction manager
-  Future<ReactionManager> reactionManager() {
+  Future<ReactionManager> reactions() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._calendarEventReactionManager(
+    final tmp1 = _api._calendarEventReactions(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__CalendarEvent_reaction_manager_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__CalendarEvent_reactions_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__calendarEventReactionManagerFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__calendarEventReactionsFuturePoll);
     return tmp2;
   }
 
@@ -48579,7 +48576,7 @@ class _CalendarEventRsvpManagerFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _CalendarEventReactionManagerFuturePollReturn extends ffi.Struct {
+class _CalendarEventReactionsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

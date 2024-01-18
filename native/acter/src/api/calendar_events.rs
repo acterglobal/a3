@@ -231,7 +231,7 @@ impl CalendarEvent {
             .await?
     }
 
-    pub async fn reaction_manager(&self) -> Result<crate::ReactionManager> {
+    pub async fn reactions(&self) -> Result<crate::ReactionManager> {
         let client = self.client.clone();
         let room = self.room.clone();
         let event_id = self.inner.event_id().to_owned();
