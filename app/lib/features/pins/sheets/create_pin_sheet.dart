@@ -12,6 +12,10 @@ import 'package:go_router/go_router.dart';
 
 class CreatePinSheet extends ConsumerStatefulWidget {
   final String? initialSelectedSpace;
+  static const titleFieldKey = Key('create-pin-title-field');
+  static const urlFieldKey = Key('create-pin-url-field');
+  static const submitBtn = Key('create-pin-submit');
+
   const CreatePinSheet({super.key, this.initialSelectedSpace});
 
   @override
@@ -59,6 +63,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                   ),
                   InputTextField(
                     hintText: 'Pin Name',
+                    key: CreatePinSheet.titleFieldKey,
                     textInputType: TextInputType.text,
                     controller: _titleController,
                     validator: (value) =>
@@ -79,6 +84,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                   ),
                   InputTextField(
                     hintText: 'https://',
+                    key: CreatePinSheet.urlFieldKey,
                     textInputType: TextInputType.url,
                     controller: _linkController,
                     validator: (value) =>
@@ -106,6 +112,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
         ),
       ),
       confirmActionTitle: 'Create Pin',
+      confirmActionKey: CreatePinSheet.submitBtn,
       cancelActionTitle: 'Cancel',
       confirmActionOnPressed: () async {
         if (_formKey.currentState!.validate()) {

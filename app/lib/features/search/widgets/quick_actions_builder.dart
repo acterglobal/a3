@@ -69,6 +69,7 @@ class QuickActionsBuilder extends ConsumerWidget {
               : null,
           canPostPin
               ? OutlinedButton.icon(
+                  key: QuickJumpKeys.createPinAction,
                   onPressed: () => context.pushNamed(Routes.actionAddPin.name),
                   icon: const Icon(
                     Atlas.plus_circle_thin,
