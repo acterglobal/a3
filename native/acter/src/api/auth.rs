@@ -173,11 +173,12 @@ pub async fn login_with_token_under_config(
 
 pub async fn login_with_token(base_path: String, restore_token: String) -> Result<Client> {
     let token: RestoreToken = serde_json::from_str(&restore_token)?;
-    let config = platform::new_client_config(
+    let (config, user_id) = make_client_config(
         base_path,
-        token.session.user_id.to_string(),
+        token.session.user_id.as_str(),
         token.db_passphrase.clone(),
-        false,
+        "",
+        "",
     )
     .await?;
     login_with_token_under_config(token, config).await
