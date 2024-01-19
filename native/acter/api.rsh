@@ -791,7 +791,7 @@ object ReactionRecord {
     fn sent_by_me() -> bool;
 }
 
-object TimelineDiff {
+object RoomMessageDiff {
     /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
     fn action() -> string;
 
@@ -945,7 +945,7 @@ object MsgContentDraft {
 /// Timeline with Room Events
 object TimelineStream {
     /// Fires whenever new diff found
-    fn diff_stream() -> Stream<TimelineDiff>;
+    fn messages_stream() -> Stream<RoomMessageDiff>;
 
     /// Get the next count messages backwards, and return whether it has more items
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;

@@ -354,7 +354,7 @@ async fn news_like_reaction_test() -> Result<()> {
     .await?;
 
     let timeline = space.timeline_stream().await;
-    let stream = timeline.diff_stream();
+    let stream = timeline.messages_stream();
     pin_mut!(stream);
 
     let slides = space.latest_news_entries(1).await?;
@@ -462,7 +462,7 @@ async fn news_unlike_reaction_test() -> Result<()> {
     .await?;
 
     let timeline = space.timeline_stream().await;
-    let stream = timeline.diff_stream();
+    let stream = timeline.messages_stream();
     pin_mut!(stream);
 
     let slides = space.latest_news_entries(1).await?;

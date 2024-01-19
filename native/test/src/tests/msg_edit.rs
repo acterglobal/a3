@@ -19,7 +19,7 @@ async fn edit_text_msg() -> Result<()> {
 
     let convo = user.convo(room_id.to_string()).await?;
     let timeline = convo.timeline_stream();
-    let stream = timeline.diff_stream();
+    let stream = timeline.messages_stream();
     pin_mut!(stream);
 
     let draft = user.text_plain_draft("Hi, everyone".to_string());
@@ -133,7 +133,7 @@ async fn edit_image_msg() -> Result<()> {
 
     let convo = user.convo(room_id.to_string()).await?;
     let timeline = convo.timeline_stream();
-    let stream = timeline.diff_stream();
+    let stream = timeline.messages_stream();
     pin_mut!(stream);
 
     let bytes = include_bytes!("./fixtures/kingfisher.jpg");

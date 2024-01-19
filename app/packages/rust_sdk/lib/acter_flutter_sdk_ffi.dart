@@ -11740,7 +11740,7 @@ class Api {
     return;
   }
 
-  TimelineDiff? __timelineStreamDiffStreamStreamPoll(
+  RoomMessageDiff? __timelineStreamMessagesStreamStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -11758,7 +11758,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _timelineStreamDiffStreamStreamPoll(
+    final tmp8 = _timelineStreamMessagesStreamStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -11770,9 +11770,9 @@ class Api {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_TimelineDiff");
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_RoomMessageDiff");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp9 = TimelineDiff._(this, tmp11_1);
+    final tmp9 = RoomMessageDiff._(this, tmp11_1);
     return tmp9;
   }
 
@@ -14977,44 +14977,44 @@ class Api {
       int Function(
         int,
       )>();
-  late final _timelineDiffActionPtr = _lookup<
+  late final _roomMessageDiffActionPtr = _lookup<
       ffi.NativeFunction<
-          _TimelineDiffActionReturn Function(
+          _RoomMessageDiffActionReturn Function(
             ffi.Int64,
-          )>>("__TimelineDiff_action");
+          )>>("__RoomMessageDiff_action");
 
-  late final _timelineDiffAction = _timelineDiffActionPtr.asFunction<
-      _TimelineDiffActionReturn Function(
+  late final _roomMessageDiffAction = _roomMessageDiffActionPtr.asFunction<
+      _RoomMessageDiffActionReturn Function(
         int,
       )>();
-  late final _timelineDiffValuesPtr = _lookup<
+  late final _roomMessageDiffValuesPtr = _lookup<
       ffi.NativeFunction<
-          _TimelineDiffValuesReturn Function(
+          _RoomMessageDiffValuesReturn Function(
             ffi.Int64,
-          )>>("__TimelineDiff_values");
+          )>>("__RoomMessageDiff_values");
 
-  late final _timelineDiffValues = _timelineDiffValuesPtr.asFunction<
-      _TimelineDiffValuesReturn Function(
+  late final _roomMessageDiffValues = _roomMessageDiffValuesPtr.asFunction<
+      _RoomMessageDiffValuesReturn Function(
         int,
       )>();
-  late final _timelineDiffIndexPtr = _lookup<
+  late final _roomMessageDiffIndexPtr = _lookup<
       ffi.NativeFunction<
-          _TimelineDiffIndexReturn Function(
+          _RoomMessageDiffIndexReturn Function(
             ffi.Int64,
-          )>>("__TimelineDiff_index");
+          )>>("__RoomMessageDiff_index");
 
-  late final _timelineDiffIndex = _timelineDiffIndexPtr.asFunction<
-      _TimelineDiffIndexReturn Function(
+  late final _roomMessageDiffIndex = _roomMessageDiffIndexPtr.asFunction<
+      _RoomMessageDiffIndexReturn Function(
         int,
       )>();
-  late final _timelineDiffValuePtr = _lookup<
+  late final _roomMessageDiffValuePtr = _lookup<
       ffi.NativeFunction<
-          _TimelineDiffValueReturn Function(
+          _RoomMessageDiffValueReturn Function(
             ffi.Int64,
-          )>>("__TimelineDiff_value");
+          )>>("__RoomMessageDiff_value");
 
-  late final _timelineDiffValue = _timelineDiffValuePtr.asFunction<
-      _TimelineDiffValueReturn Function(
+  late final _roomMessageDiffValue = _roomMessageDiffValuePtr.asFunction<
+      _RoomMessageDiffValueReturn Function(
         int,
       )>();
   late final _joinRuleBuilderJoinRulePtr = _lookup<
@@ -15461,14 +15461,14 @@ class Api {
         int,
         int,
       )>();
-  late final _timelineStreamDiffStreamPtr = _lookup<
+  late final _timelineStreamMessagesStreamPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__TimelineStream_diff_stream");
+          )>>("__TimelineStream_messages_stream");
 
-  late final _timelineStreamDiffStream =
-      _timelineStreamDiffStreamPtr.asFunction<
+  late final _timelineStreamMessagesStream =
+      _timelineStreamMessagesStreamPtr.asFunction<
           int Function(
             int,
           )>();
@@ -25202,18 +25202,18 @@ class Api {
             int,
             int,
           )>();
-  late final _timelineStreamDiffStreamStreamPollPtr = _lookup<
+  late final _timelineStreamMessagesStreamStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _TimelineStreamDiffStreamStreamPollReturn Function(
+          _TimelineStreamMessagesStreamStreamPollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__TimelineStream_diff_stream_stream_poll");
+          )>>("__TimelineStream_messages_stream_stream_poll");
 
-  late final _timelineStreamDiffStreamStreamPoll =
-      _timelineStreamDiffStreamStreamPollPtr.asFunction<
-          _TimelineStreamDiffStreamStreamPollReturn Function(
+  late final _timelineStreamMessagesStreamStreamPoll =
+      _timelineStreamMessagesStreamStreamPollPtr.asFunction<
+          _TimelineStreamMessagesStreamStreamPollReturn Function(
             int,
             int,
             int,
@@ -32261,17 +32261,17 @@ class ReactionRecord {
   }
 }
 
-class TimelineDiff {
+class RoomMessageDiff {
   final Api _api;
   final _Box _box;
 
-  TimelineDiff._(this._api, this._box);
+  RoomMessageDiff._(this._api, this._box);
 
   /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
   String action() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._timelineDiffAction(
+    final tmp1 = _api._roomMessageDiffAction(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32301,7 +32301,7 @@ class TimelineDiff {
   FfiListRoomMessage? values() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._timelineDiffValues(
+    final tmp1 = _api._roomMessageDiffValues(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32321,7 +32321,7 @@ class TimelineDiff {
   int? index() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._timelineDiffIndex(
+    final tmp1 = _api._roomMessageDiffIndex(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -32337,7 +32337,7 @@ class TimelineDiff {
   RoomMessage? value() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._timelineDiffValue(
+    final tmp1 = _api._roomMessageDiffValue(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -33273,19 +33273,19 @@ class TimelineStream {
   TimelineStream._(this._api, this._box);
 
   /// Fires whenever new diff found
-  Stream<TimelineDiff> diffStream() {
+  Stream<RoomMessageDiff> messagesStream() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._timelineStreamDiffStream(
+    final tmp1 = _api._timelineStreamMessagesStream(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 =
-        _Box(_api, tmp3_0, "__TimelineStream_diff_stream_stream_drop");
+        _Box(_api, tmp3_0, "__TimelineStream_messages_stream_stream_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 =
-        _nativeStream(tmp3_1, _api.__timelineStreamDiffStreamStreamPoll);
+        _nativeStream(tmp3_1, _api.__timelineStreamMessagesStreamStreamPoll);
     return tmp2;
   }
 
@@ -46999,7 +46999,7 @@ class _MsgContentGeoUriReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _TimelineDiffActionReturn extends ffi.Struct {
+class _RoomMessageDiffActionReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -47008,21 +47008,21 @@ class _TimelineDiffActionReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _TimelineDiffValuesReturn extends ffi.Struct {
+class _RoomMessageDiffValuesReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
 }
 
-class _TimelineDiffIndexReturn extends ffi.Struct {
+class _RoomMessageDiffIndexReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint64()
   external int arg1;
 }
 
-class _TimelineDiffValueReturn extends ffi.Struct {
+class _RoomMessageDiffValueReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -51577,7 +51577,7 @@ class _ActerPinSubscribeStreamStreamPollReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _TimelineStreamDiffStreamStreamPollReturn extends ffi.Struct {
+class _TimelineStreamMessagesStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

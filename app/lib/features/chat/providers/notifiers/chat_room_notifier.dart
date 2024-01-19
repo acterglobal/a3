@@ -21,7 +21,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   final Ref ref;
   final Convo convo;
   TimelineStream? timeline;
-  StreamSubscription<TimelineDiff>? subscription;
+  StreamSubscription<RoomMessageDiff>? subscription;
 
   ChatRoomNotifier({
     required this.convo,
@@ -34,8 +34,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   void _init() async {
     try {
       timeline = convo.timelineStream();
-      subscription = timeline?.diffStream().listen((timelineDiff) async {
-        await _handleDiff(timelineDiff);
+      subscription = timeline?.messagesStream().listen((diff) async {
+        await _handleDiff(diff);
       });
       do {
         await loadMore();
@@ -115,11 +115,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   // parses `RoomMessage` event to `types.Message` and updates messages list
-  Future<void> _handleDiff(TimelineDiff timelineEvent) async {
+  Future<void> _handleDiff(RoomMessageDiff diff) async {
     List<PostProcessItem> postProcessing = [];
-    switch (timelineEvent.action()) {
+    switch (diff.action()) {
       case 'Append':
-        List<RoomMessage> messages = timelineEvent.values()!.toList();
+        List<RoomMessage> messages = diff.values()!.toList();
         List<types.Message> messagesToAdd = [];
         for (final m in messages) {
           final message = _parseMessage(m);
@@ -133,25 +133,25 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
         break;
       case 'Set': // used to update UnableToDecrypt message
-        RoomMessage m = timelineEvent.value()!;
-        final index = timelineEvent.index()!;
+        RoomMessage m = diff.value()!;
+        final index = diff.index()!;
         final message = _parseMessage(m);
         replaceMessageAt(index, message);
         postProcessing.add(PostProcessItem(m, message));
         break;
       case 'Insert':
-        RoomMessage m = timelineEvent.value()!;
-        final index = timelineEvent.index()!;
+        RoomMessage m = diff.value()!;
+        final index = diff.index()!;
         final message = _parseMessage(m);
         insertMessage(index, message);
         postProcessing.add(PostProcessItem(m, message));
         break;
       case 'Remove':
-        int index = timelineEvent.index()!;
+        int index = diff.index()!;
         removeMessage(index);
         break;
       case 'PushBack':
-        RoomMessage m = timelineEvent.value()!;
+        RoomMessage m = diff.value()!;
         final message = _parseMessage(m);
         final newList = messagesCopy();
         newList.add(message);
@@ -159,7 +159,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         postProcessing.add(PostProcessItem(m, message));
         break;
       case 'PushFront':
-        RoomMessage m = timelineEvent.value()!;
+        RoomMessage m = diff.value()!;
         final message = _parseMessage(m);
         insertMessage(0, message);
         postProcessing.add(PostProcessItem(m, message));
@@ -178,7 +178,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         setMessages([]);
         break;
       case 'Reset':
-        List<RoomMessage> messages = timelineEvent.values()!.toList();
+        List<RoomMessage> messages = diff.values()!.toList();
         List<types.Message> newList = [];
         for (final m in messages) {
           final message = _parseMessage(m);
@@ -190,7 +190,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
         break;
       case 'Truncate':
-        final length = timelineEvent.index()!;
+        final length = diff.index()!;
         final newList = messagesCopy();
         setMessages(newList.take(length).toList());
         break;

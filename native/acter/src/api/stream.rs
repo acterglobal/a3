@@ -32,7 +32,7 @@ use crate::{Client, RoomMessage, RUNTIME};
 
 use super::utils::{remap_for_diff, ApiVectorDiff};
 
-pub type TimelineDiff = ApiVectorDiff<RoomMessage>;
+pub type RoomMessageDiff = ApiVectorDiff<RoomMessage>;
 
 #[derive(Clone)]
 pub struct TimelineStream {
@@ -45,13 +45,13 @@ impl TimelineStream {
         TimelineStream { room, timeline }
     }
 
-    pub fn diff_stream(&self) -> impl Stream<Item = TimelineDiff> {
+    pub fn messages_stream(&self) -> impl Stream<Item = RoomMessageDiff> {
         let timeline = self.timeline.clone();
         let room = self.room.clone();
 
         async_stream::stream! {
             let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
-            yield TimelineDiff::current_items(timeline_items.clone().into_iter().map(|x| RoomMessage::from((x, room.clone()))).collect());
+            yield RoomMessageDiff::current_items(timeline_items.clone().into_iter().map(|x| RoomMessage::from((x, room.clone()))).collect());
 
             let mut remap = timeline_stream.map(|diff| remap_for_diff(
                 diff,
