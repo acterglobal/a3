@@ -1,12 +1,12 @@
 use acter_core::{
     events::{
-        news::{self, NewsContent, NewsEntryBuilder},
-        Colorize,
+        news::{self, NewsContent, NewsEntryBuilder, NewsSlideBuilder},
+        Colorize, ObjRef,
     },
     models::{self, ActerModel, AnyActerModel},
     statics::KEYS,
 };
-use anyhow::{bail, Context, Result};
+use anyhow::{bail, Context, Ok, Result};
 use core::time::Duration;
 use futures::stream::StreamExt;
 use matrix_sdk::{
@@ -23,17 +23,21 @@ use ruma_events::room::{
     ImageInfo,
 };
 use std::{
+    any::Any,
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
     path::PathBuf,
+    thread::spawn,
 };
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::{trace, warn};
 
+use crate::ClientStateBuilder;
+
 use super::{
     api::FfiBuffer,
-    client::Client,
+    client::{Client, ClientState},
     common::{MsgContent, ThumbnailSize},
     spaces::Space,
     stream::MsgContentDraft,
@@ -292,6 +296,20 @@ impl NewsSlide {
     }
 }
 
+#[derive(Clone)]
+pub struct NewsSlideDraft {
+    client: Client,
+    room: Room,
+    content: news::NewsSlideBuilder,
+}
+
+impl NewsSlideDraft {
+    pub fn save(&self) -> Result<news::NewsSlide> {
+        let content = self.content.build()?;
+        Ok(content)
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct NewsEntry {
     client: Client,
@@ -357,6 +375,18 @@ impl NewsEntry {
         })
     }
 
+    pub fn slide_builder(&self) -> Result<NewsSlideDraft> {
+        if !self.is_joined() {
+            bail!("Can only update news in joined rooms");
+        }
+        let mut content = NewsSlideBuilder::default();
+        Ok(NewsSlideDraft {
+            client: self.client.clone(),
+            room: self.room.clone(),
+            content,
+        })
+    }
+
     pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
         BroadcastStream::new(self.subscribe()).map(|_| true)
     }
@@ -400,6 +430,10 @@ impl NewsEntry {
     pub fn event_id(&self) -> OwnedEventId {
         self.content.event_id().to_owned()
     }
+
+    pub fn colors(&self) -> Option<Colorize> {
+        self.content.colors().to_owned()
+    }
 }
 
 #[derive(Clone)]
@@ -407,26 +441,21 @@ pub struct NewsEntryDraft {
     client: Client,
     room: Room,
     content: NewsEntryBuilder,
-    slides: Vec<NewsSlide>,
+    slides: Vec<NewsSlideDraft>,
 }
 
 impl NewsEntryDraft {
     pub async fn add_slide(&mut self, base_draft: Box<MsgContentDraft>) -> Result<bool> {
+        let client = self.client.clone();
         let room = self.room.clone();
-        let client = self.room.client();
 
         let inner = RUNTIME
             .spawn(async move {
-                let slide = base_draft.into_news_slide(client, room).await?;
-                anyhow::Ok(slide)
+                let draft = base_draft.into_news_slide_draft(client, room).await?;
+                anyhow::Ok(draft)
             })
             .await??;
-        let slide = NewsSlide {
-            client: self.client.clone(),
-            room: self.room.clone(),
-            inner,
-        };
-        self.slides.push(slide);
+        self.slides.push(inner);
         Ok(true)
     }
 
@@ -447,11 +476,11 @@ impl NewsEntryDraft {
 
     pub async fn send(&mut self) -> Result<OwnedEventId> {
         trace!("starting send");
-        let slides = self
-            .slides
-            .iter()
-            .map(|x| (*x.to_owned()).clone())
-            .collect();
+        let mut slides = Vec::new();
+        for slide in &self.slides {
+            let saved_slide = slide.to_owned().save()?;
+            slides.push(saved_slide);
+        }
         self.content.slides(slides);
 
         let room = self.room.clone();
@@ -544,27 +573,62 @@ impl Space {
             slides: vec![],
         })
     }
+
+    pub fn news_slide_draft(&self) -> Result<NewsSlideDraft> {
+        if !self.is_joined() {
+            bail!("Unable to create news slide for spaces we are not part on");
+        }
+        Ok(NewsSlideDraft {
+            client: self.client.clone(),
+            room: self.inner.room.clone(),
+            content: Default::default(),
+        })
+    }
+
+    pub fn news_slide_draft_with_builder(
+        &self,
+        content: NewsSlideBuilder,
+    ) -> Result<NewsSlideDraft> {
+        if !self.is_joined() {
+            bail!("Unable to create news slide for spaces we are not part on");
+        }
+        Ok(NewsSlideDraft {
+            client: self.client.clone(),
+            room: self.inner.room.clone(),
+            content,
+        })
+    }
 }
 
 impl MsgContentDraft {
-    async fn into_news_slide(
+    async fn into_news_slide_draft(
         self, // into_* fn takes self by value not reference
-        client: SdkClient,
+        client: Client,
         room: Room,
-    ) -> Result<news::NewsSlide> {
+    ) -> Result<NewsSlideDraft> {
         match self {
             MsgContentDraft::TextPlain { body } => {
                 let text_content = TextMessageEventContent::plain(body);
-                Ok(news::NewsSlide {
-                    content: NewsContent::Text(text_content),
-                    references: Default::default(),
+                let builder = NewsSlideBuilder::default()
+                    .content(NewsContent::Text(text_content))
+                    .references(Default::default())
+                    .clone();
+                Ok(NewsSlideDraft {
+                    client,
+                    room,
+                    content: builder,
                 })
             }
             MsgContentDraft::TextMarkdown { body } => {
                 let text_content = TextMessageEventContent::markdown(body);
-                Ok(news::NewsSlide {
-                    content: NewsContent::Text(text_content),
-                    references: Default::default(),
+                let builder = NewsSlideBuilder::default()
+                    .content(NewsContent::Text(text_content))
+                    .references(Default::default())
+                    .clone();
+                Ok(NewsSlideDraft {
+                    client,
+                    room,
+                    content: builder,
                 })
             }
             MsgContentDraft::Image { source, info } => {
@@ -594,9 +658,15 @@ impl MsgContentDraft {
                     ImageMessageEventContent::plain(body, response.content_uri)
                 };
                 image_content.info = Some(Box::new(info));
-                Ok(news::NewsSlide {
-                    content: NewsContent::Image(image_content),
-                    references: Default::default(),
+
+                let builder = NewsSlideBuilder::default()
+                    .content(NewsContent::Image(image_content))
+                    .references(Default::default())
+                    .clone();
+                Ok(NewsSlideDraft {
+                    client,
+                    room,
+                    content: builder,
                 })
             }
             MsgContentDraft::Audio { source, info } => {
@@ -626,9 +696,15 @@ impl MsgContentDraft {
                     AudioMessageEventContent::plain(body, response.content_uri)
                 };
                 audio_content.info = Some(Box::new(info));
-                Ok(news::NewsSlide {
-                    content: NewsContent::Audio(audio_content),
-                    references: Default::default(),
+
+                let builder = NewsSlideBuilder::default()
+                    .content(NewsContent::Audio(audio_content))
+                    .references(Default::default())
+                    .clone();
+                Ok(NewsSlideDraft {
+                    client,
+                    room,
+                    content: builder,
                 })
             }
             MsgContentDraft::Video { source, info } => {
@@ -658,9 +734,15 @@ impl MsgContentDraft {
                     VideoMessageEventContent::plain(body, response.content_uri)
                 };
                 video_content.info = Some(Box::new(info));
-                Ok(news::NewsSlide {
-                    content: NewsContent::Video(video_content),
-                    references: Default::default(),
+
+                let builder = NewsSlideBuilder::default()
+                    .content(NewsContent::Video(video_content))
+                    .references(Default::default())
+                    .clone();
+                Ok(NewsSlideDraft {
+                    client,
+                    room,
+                    content: builder,
                 })
             }
             MsgContentDraft::File {
@@ -695,9 +777,15 @@ impl MsgContentDraft {
                 };
                 file_content.info = Some(Box::new(info));
                 file_content.filename = filename.clone();
-                Ok(news::NewsSlide {
-                    content: NewsContent::File(file_content),
-                    references: Default::default(),
+
+                let builder = NewsSlideBuilder::default()
+                    .content(NewsContent::File(file_content))
+                    .references(Default::default())
+                    .clone();
+                Ok(NewsSlideDraft {
+                    client,
+                    room,
+                    content: builder,
                 })
             }
             MsgContentDraft::Location {
@@ -709,9 +797,15 @@ impl MsgContentDraft {
                 if let Some(info) = info {
                     location_content.info = Some(Box::new(info));
                 }
-                Ok(news::NewsSlide {
-                    content: NewsContent::Location(location_content),
-                    references: Default::default(),
+
+                let builder = NewsSlideBuilder::default()
+                    .content(NewsContent::Location(location_content))
+                    .references(Default::default())
+                    .clone();
+                Ok(NewsSlideDraft {
+                    client,
+                    room,
+                    content: builder,
                 })
             }
         }

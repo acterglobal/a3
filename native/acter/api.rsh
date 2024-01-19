@@ -301,6 +301,10 @@ object NewsSlide {
     fn source_binary(thumb_size: Option<ThumbnailSize>) -> Future<Result<buffer<u8>>>;
 }
 
+object NewsSlideDraft {
+    
+}
+
 /// A news entry
 object NewsEntry {
     fn slides_count() -> u8;
@@ -1703,6 +1707,9 @@ object Space {
 
     /// create news draft
     fn news_draft() -> Result<NewsEntryDraft>;
+
+    /// create news slide draft
+    fn news_slide_draft() -> Result<NewsSlideDraft>;
 
     /// the pins of this Space
     fn pins() -> Future<Result<Vec<ActerPin>>>;

@@ -18190,6 +18190,16 @@ class Api {
       _SpaceNewsDraftReturn Function(
         int,
       )>();
+  late final _spaceNewsSlideDraftPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceNewsSlideDraftReturn Function(
+            ffi.Int64,
+          )>>("__Space_news_slide_draft");
+
+  late final _spaceNewsSlideDraft = _spaceNewsSlideDraftPtr.asFunction<
+      _SpaceNewsSlideDraftReturn Function(
+        int,
+      )>();
   late final _spacePinsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -27766,6 +27776,18 @@ class NewsSlide {
     final tmp6 = _nativeFuture(tmp7_1, _api.__newsSlideSourceBinaryFuturePoll);
     return tmp6;
   }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class NewsSlideDraft {
+  final Api _api;
+  final _Box _box;
+
+  NewsSlideDraft._(this._api, this._box);
 
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
@@ -38277,6 +38299,37 @@ class Space {
     return tmp2;
   }
 
+  /// create news slide draft
+  NewsSlideDraft newsSlideDraft() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceNewsSlideDraft(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 =
+          utf8.decode(tmp4_0.asTypedList(tmp5), allowMalformed: true);
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_NewsSlideDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = NewsSlideDraft._(_api, tmp7_1);
+    return tmp2;
+  }
+
   /// the pins of this Space
   Future<FfiListActerPin> pins() {
     var tmp0 = 0;
@@ -46432,6 +46485,19 @@ class _SpaceCalendarEventDraftReturn extends ffi.Struct {
 }
 
 class _SpaceNewsDraftReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
+class _SpaceNewsSlideDraftReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
