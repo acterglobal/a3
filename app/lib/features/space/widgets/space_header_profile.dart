@@ -115,10 +115,14 @@ class SpaceHeaderProfile extends ConsumerWidget {
                 ),
                 if (membersCount > 5)
                   CircleAvatar(
-                    child: Text(
-                      '+${membersCount - 5}',
-                      textAlign: TextAlign.center,
-                      textScaler: const TextScaler.linear(0.8),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Text(
+                        '+${membersCount - 5}',
+                        textAlign: TextAlign.center,
+                        textScaler: const TextScaler.linear(0.8),
+                        style: Theme.of(context).textTheme.labelMedium,
+                      ),
                     ),
                   ),
               ],

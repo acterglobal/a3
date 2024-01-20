@@ -54,8 +54,8 @@ class SpaceEventsPage extends ConsumerWidget {
           spaceEvents.when(
             data: (events) {
               final widthCount =
-                  (MediaQuery.of(context).size.width ~/ 600).toInt();
-              const int minCount = 2;
+                  (MediaQuery.of(context).size.width ~/ 300).toInt();
+              const int minCount = 3;
               if (events.isEmpty) {
                 final membership =
                     ref.watch(roomMembershipProvider(spaceIdOrAlias));
@@ -93,6 +93,7 @@ class SpaceEventsPage extends ConsumerWidget {
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: max(1, min(widthCount, minCount)),
                   childAspectRatio: 4.0,
+                  mainAxisExtent: 120,
                 ),
                 itemBuilder: (context, index) =>
                     EventItem(event: events[index]),
