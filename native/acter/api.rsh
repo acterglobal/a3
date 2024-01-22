@@ -2095,9 +2095,6 @@ object Client {
     /// get the room id of dm from user id
     fn dm_with_user(user_id: string) -> Result<OptionString>;
 
-    /// get the user profile that contains avatar and display name
-    fn get_user_profile() -> Result<UserProfile>;
-
     /// upload file and return remote url
     fn upload_media(uri: string) -> Future<Result<MxcUri>>;
 

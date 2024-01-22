@@ -932,7 +932,7 @@ impl Client {
     pub fn account(&self) -> Result<Account> {
         let account = self.core.client().account();
         let user_id = self.user_id()?;
-        Ok(Account::new(account, user_id))
+        Ok(Account::new(account, user_id, self.core.client().clone()))
     }
 
     pub fn device_id(&self) -> Result<OwnedDeviceId> {
@@ -941,15 +941,6 @@ impl Client {
             .device_id()
             .context("DeviceId not found")
             .map(|x| x.to_owned())
-    }
-
-    pub fn get_user_profile(&self) -> Result<UserProfile> {
-        let client = self.core.client();
-        let user_id = client
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
-        Ok(UserProfile::from_account(client.account(), user_id))
     }
 
     pub async fn verified_device(&self, dev_id: String) -> Result<bool> {

@@ -1,7 +1,7 @@
 use anyhow::{bail, Context, Result};
-use matrix_sdk::Account as SdkAccount;
+use matrix_sdk::{media::MediaRequest, Account as SdkAccount, Client as SdkClient};
 use ruma_common::{OwnedMxcUri, OwnedUserId};
-use ruma_events::ignored_user_list::IgnoredUserListEventContent;
+use ruma_events::{ignored_user_list::IgnoredUserListEventContent, room::MediaSource};
 use std::{ops::Deref, path::PathBuf, str::FromStr};
 
 use super::{
@@ -12,6 +12,7 @@ use super::{
 #[derive(Clone, Debug)]
 pub struct Account {
     account: SdkAccount,
+    client: SdkClient,
     user_id: OwnedUserId,
 }
 
@@ -23,8 +24,12 @@ impl Deref for Account {
 }
 
 impl Account {
-    pub fn new(account: SdkAccount, user_id: OwnedUserId) -> Self {
-        Account { account, user_id }
+    pub fn new(account: SdkAccount, user_id: OwnedUserId, client: SdkClient) -> Self {
+        Account {
+            account,
+            client,
+            user_id,
+        }
     }
 
     pub fn user_id(&self) -> OwnedUserId {
@@ -58,11 +63,21 @@ impl Account {
 
     pub async fn avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
         let account = self.account.clone();
+        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
+                let source = match account.get_cached_avatar_url().await? {
+                    Some(url) => MediaSource::Plain(url.try_into()?),
+                    None => match account.get_avatar_url().await? {
+                        Some(e) => MediaSource::Plain(e.to_owned()),
+                        None => return Ok(OptionBuffer::new(None)),
+                    },
+                };
                 let format = ThumbnailSize::parse_into_media_format(thumb_size);
-                let buf = account.get_avatar(format).await?;
-                Ok(OptionBuffer::new(buf))
+                let request = MediaRequest { source, format };
+                Ok(OptionBuffer::new(Some(
+                    client.media().get_media_content(&request, true).await?,
+                )))
             })
             .await?
     }

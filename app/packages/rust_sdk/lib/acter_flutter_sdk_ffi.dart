@@ -19584,16 +19584,6 @@ class Api {
         int,
         int,
       )>();
-  late final _clientGetUserProfilePtr = _lookup<
-      ffi.NativeFunction<
-          _ClientGetUserProfileReturn Function(
-            ffi.Int64,
-          )>>("__Client_get_user_profile");
-
-  late final _clientGetUserProfile = _clientGetUserProfilePtr.asFunction<
-      _ClientGetUserProfileReturn Function(
-        int,
-      )>();
   late final _clientUploadMediaPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -41186,37 +41176,6 @@ class Client {
     return tmp6;
   }
 
-  /// get the user profile that contains avatar and display name
-  UserProfile getUserProfile() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._clientGetUserProfile(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    final tmp7 = tmp1.arg4;
-    if (tmp3 == 0) {
-      debugAllocation("handle error", tmp4, tmp5);
-      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      final tmp3_0 =
-          utf8.decode(tmp4_0.asTypedList(tmp5), allowMalformed: true);
-      if (tmp5 > 0) {
-        final ffi.Pointer<ffi.Void> tmp4_0;
-        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-        _api.__deallocate(tmp4_0, tmp6, 1);
-      }
-      throw tmp3_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_UserProfile");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp2 = UserProfile._(_api, tmp7_1);
-    return tmp2;
-  }
-
   /// upload file and return remote url
   Future<MxcUri> uploadMedia(
     String uri,
@@ -46785,19 +46744,6 @@ class _ClientUserIdReturn extends ffi.Struct {
 }
 
 class _ClientDmWithUserReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Int64()
-  external int arg4;
-}
-
-class _ClientGetUserProfileReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

@@ -41,25 +41,14 @@ impl PublicProfile {
 
 #[derive(Clone)]
 pub struct UserProfile {
-    account: Option<Account>,
     public_profile: Option<PublicProfile>,
     user_id: OwnedUserId,
     member: Option<RoomMember>,
 }
 
 impl UserProfile {
-    pub(crate) fn from_account(account: Account, user_id: OwnedUserId) -> Self {
-        UserProfile {
-            account: Some(account),
-            user_id,
-            member: None,
-            public_profile: None,
-        }
-    }
-
     pub(crate) fn from_member(member: RoomMember) -> Self {
         UserProfile {
-            account: None,
             user_id: member.user_id().to_owned(),
             member: Some(member),
             public_profile: None,
@@ -68,7 +57,6 @@ impl UserProfile {
 
     pub(crate) fn from_search(public_profile: PublicProfile) -> Self {
         UserProfile {
-            account: None,
             user_id: public_profile.inner.user_id.to_owned(),
             member: None,
             public_profile: Some(public_profile),
@@ -80,14 +68,6 @@ impl UserProfile {
     }
 
     pub async fn has_avatar(&self) -> Result<bool> {
-        if let Some(account) = self.account.clone() {
-            return RUNTIME
-                .spawn(async move {
-                    let url = account.get_avatar_url().await?;
-                    Ok(url.is_some())
-                })
-                .await?;
-        }
         if let Some(member) = self.member.as_ref() {
             return Ok(member.avatar_url().is_some());
         }
@@ -100,14 +80,6 @@ impl UserProfile {
 
     pub async fn get_avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
-        if let Some(account) = self.account.clone() {
-            return RUNTIME
-                .spawn(async move {
-                    let buf = account.get_avatar(format).await?;
-                    Ok(OptionBuffer::new(buf))
-                })
-                .await?;
-        }
         if let Some(member) = self.member.clone() {
             return RUNTIME
                 .spawn(async move {
@@ -129,14 +101,6 @@ impl UserProfile {
     }
 
     pub async fn get_display_name(&self) -> Result<OptionString> {
-        if let Some(account) = self.account.clone() {
-            return RUNTIME
-                .spawn(async move {
-                    let text = account.get_display_name().await?;
-                    Ok(OptionString::new(text))
-                })
-                .await?;
-        }
         if let Some(member) = self.member.clone() {
             let text = member.display_name().map(|x| x.to_string());
             return Ok(OptionString::new(text));
