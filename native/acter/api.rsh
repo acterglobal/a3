@@ -350,7 +350,7 @@ object NewsEntryDraft {
 
 object NewsEntryUpdateBuilder {
     /// set the slides for this news entry
-    fn slides(slides: Vec<NewsSlide>);
+    fn slides(slides: Vec<NewsSlideDraft>);
     fn unset_slides();
     fn unset_slides_update();
 

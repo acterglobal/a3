@@ -6,9 +6,9 @@ use acter_core::{
     models::{self, ActerModel, AnyActerModel},
     statics::KEYS,
 };
-use anyhow::{bail, Context, Ok, Result};
+use anyhow::{anyhow, bail, Context, Ok, Result};
 use core::time::Duration;
-use futures::stream::StreamExt;
+use futures::{future::err, stream::StreamExt};
 use matrix_sdk::{
     room::Room,
     ruma::{assign, UInt},
@@ -27,6 +27,7 @@ use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
     path::PathBuf,
+    result::Result as r_std,
     thread::spawn,
 };
 use tokio::sync::broadcast::Receiver;
@@ -530,8 +531,17 @@ pub struct NewsEntryUpdateBuilder {
 
 impl NewsEntryUpdateBuilder {
     #[allow(clippy::ptr_arg)]
-    pub fn slides(&mut self, slides: &mut Vec<NewsSlide>) -> &mut Self {
-        let items = slides.iter().map(|x| (*x.to_owned()).clone()).collect();
+    pub fn slides(&mut self, slides: &mut Vec<NewsSlideDraft>) -> &mut Self {
+        let mut news_slides = Vec::new();
+
+        for slide in slides {
+            match slide.to_owned().save() {
+                r_std::Ok(v) => news_slides.push(v),
+                Err(e) => (),
+            };
+        }
+
+        let items = news_slides.iter().map(|x| (x.to_owned()).clone()).collect();
         self.content.slides(Some(items));
         self
     }
