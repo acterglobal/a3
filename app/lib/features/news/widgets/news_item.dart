@@ -26,10 +26,6 @@ class NewsItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final slides = news.slides().toList();
-
-    debugPrint('SLIDES COUNT: ${news.slidesCount()}');
-
-    // else
     final bgColor = convertColor(
       news.colors()?.background(),
       Theme.of(context).colorScheme.background,
@@ -38,6 +34,7 @@ class NewsItem extends ConsumerWidget {
       news.colors()?.color(),
       Theme.of(context).colorScheme.primary,
     );
+
     return PageView.builder(
       scrollDirection: Axis.horizontal,
       itemCount: slides.length,
