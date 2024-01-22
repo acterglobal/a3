@@ -84,7 +84,9 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
               NewsEntryDraft draft = space.newsDraft();
               if (file == null) {
                 final textDraft = client.textMarkdownDraft(caption.text);
+                final text2Draft = client.textMarkdownDraft('hello');
                 await draft.addSlide(textDraft);
+                await draft.insertSlide(1, text2Draft);
               } else {
                 String? mimeType = file.mimeType ?? lookupMimeType(file.path);
                 if (mimeType == null) {

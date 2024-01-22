@@ -310,6 +310,8 @@ object NewsEntry {
     fn slides_count() -> u8;
     /// The slides belonging to this news item
     fn get_slide(pos: u8) -> Option<NewsSlide>;
+    /// get all slides of this news item
+    fn slides() -> Vec<NewsSlide>;
     /// The color setting
     fn colors() -> Option<Colorize>;
 
@@ -329,8 +331,11 @@ object NewsEntry {
 }
 
 object NewsEntryDraft {
-    /// create news slide
+    /// create news slide draft
     fn add_slide(base_draft: MsgContentDraft) -> Future<Result<bool>>;
+
+    /// insert news slide draft at specific index
+    fn insert_slide(pos: u8, base_draft: MsgContentDraft) -> Future<Result<bool>>;
 
     /// clear slides
     fn unset_slides();
@@ -1707,9 +1712,6 @@ object Space {
 
     /// create news draft
     fn news_draft() -> Result<NewsEntryDraft>;
-
-    /// create news slide draft
-    fn news_slide_draft() -> Result<NewsSlideDraft>;
 
     /// the pins of this Space
     fn pins() -> Future<Result<Vec<ActerPin>>>;

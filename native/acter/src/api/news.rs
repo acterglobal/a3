@@ -341,6 +341,20 @@ impl NewsEntry {
             })
     }
 
+    pub fn slides(&self) -> Vec<NewsSlide> {
+        self.content
+            .slides()
+            .iter()
+            .map(|slide| {
+                (NewsSlide {
+                    inner: slide.clone(),
+                    client: self.client.clone(),
+                    room: self.room.clone(),
+                })
+            })
+            .collect()
+    }
+
     pub async fn refresh(&self) -> Result<NewsEntry> {
         let key = self.content.event_id().to_string();
         let client = self.client.clone();
@@ -372,18 +386,6 @@ impl NewsEntry {
             client: self.client.clone(),
             room: self.room.clone(),
             content: self.content.updater(),
-        })
-    }
-
-    pub fn slide_builder(&self) -> Result<NewsSlideDraft> {
-        if !self.is_joined() {
-            bail!("Can only update news in joined rooms");
-        }
-        let mut content = NewsSlideBuilder::default();
-        Ok(NewsSlideDraft {
-            client: self.client.clone(),
-            room: self.room.clone(),
-            content,
         })
     }
 
@@ -456,6 +458,28 @@ impl NewsEntryDraft {
             })
             .await??;
         self.slides.push(inner);
+        Ok(true)
+    }
+
+    pub async fn insert_slide(
+        &mut self,
+        pos: u8,
+        base_draft: Box<MsgContentDraft>,
+    ) -> Result<bool> {
+        let client = self.client.clone();
+        let room = self.room.clone();
+
+        let inner = RUNTIME
+            .spawn(async move {
+                let draft = base_draft.into_news_slide_draft(client, room).await?;
+                anyhow::Ok(draft)
+            })
+            .await??;
+        if (!self.slides.is_empty() || self.slides.len() > 1) {
+            self.slides.insert(pos as usize, inner)
+        } else {
+            self.slides.push(inner)
+        }
         Ok(true)
     }
 
@@ -571,31 +595,6 @@ impl Space {
             room: self.inner.room.clone(),
             content,
             slides: vec![],
-        })
-    }
-
-    pub fn news_slide_draft(&self) -> Result<NewsSlideDraft> {
-        if !self.is_joined() {
-            bail!("Unable to create news slide for spaces we are not part on");
-        }
-        Ok(NewsSlideDraft {
-            client: self.client.clone(),
-            room: self.inner.room.clone(),
-            content: Default::default(),
-        })
-    }
-
-    pub fn news_slide_draft_with_builder(
-        &self,
-        content: NewsSlideBuilder,
-    ) -> Result<NewsSlideDraft> {
-        if !self.is_joined() {
-            bail!("Unable to create news slide for spaces we are not part on");
-        }
-        Ok(NewsSlideDraft {
-            client: self.client.clone(),
-            room: self.inner.room.clone(),
-            content,
         })
     }
 }
