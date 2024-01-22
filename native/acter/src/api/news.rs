@@ -6,7 +6,7 @@ use acter_core::{
     models::{self, ActerModel, AnyActerModel},
     statics::KEYS,
 };
-use anyhow::{bail, Context, Ok, Result};
+use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use futures::stream::StreamExt;
 use matrix_sdk::{
@@ -27,7 +27,6 @@ use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
     path::PathBuf,
-    result::Result as r_std,
     thread::spawn,
 };
 use tokio::sync::broadcast::Receiver;
@@ -536,7 +535,7 @@ impl NewsEntryUpdateBuilder {
 
         for slide in slides {
             match slide.to_owned().save() {
-                r_std::Ok(v) => news_slides.push(v),
+                Ok(v) => news_slides.push(v),
                 Err(e) => (),
             };
         }
