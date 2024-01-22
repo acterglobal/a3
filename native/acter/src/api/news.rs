@@ -6,9 +6,9 @@ use acter_core::{
     models::{self, ActerModel, AnyActerModel},
     statics::KEYS,
 };
-use anyhow::{anyhow, bail, Context, Ok, Result};
+use anyhow::{bail, Context, Ok, Result};
 use core::time::Duration;
-use futures::{future::err, stream::StreamExt};
+use futures::stream::StreamExt;
 use matrix_sdk::{
     room::Room,
     ruma::{assign, UInt},
