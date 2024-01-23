@@ -301,11 +301,17 @@ object NewsSlide {
     fn source_binary(thumb_size: Option<ThumbnailSize>) -> Future<Result<buffer<u8>>>;
 }
 
+object NewsSlideDraft {
+    
+}
+
 /// A news entry
 object NewsEntry {
     fn slides_count() -> u8;
     /// The slides belonging to this news item
     fn get_slide(pos: u8) -> Option<NewsSlide>;
+    /// get all slides of this news item
+    fn slides() -> Vec<NewsSlide>;
     /// The color setting
     fn colors() -> Option<Colorize>;
 
@@ -325,8 +331,11 @@ object NewsEntry {
 }
 
 object NewsEntryDraft {
-    /// create news slide
+    /// create news slide draft
     fn add_slide(base_draft: MsgContentDraft) -> Future<Result<bool>>;
+
+    /// change position of slides draft of this news entry
+    fn swap_slides(from: u8, to:u8);
 
     /// clear slides
     fn unset_slides();
@@ -341,9 +350,14 @@ object NewsEntryDraft {
 
 object NewsEntryUpdateBuilder {
     /// set the slides for this news entry
-    fn slides(slides: Vec<NewsSlide>);
+    fn add_slide(base_draft: MsgContentDraft);
+
+    /// reset slides for this news entry
     fn unset_slides();
     fn unset_slides_update();
+
+    /// set position of slides for this news entry
+    fn swap_slides(from: u8, to: u8);
 
     /// set the color for this news entry
     fn colors(colors: Colorize);

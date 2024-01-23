@@ -83,7 +83,7 @@ pub use core::time::Duration as EfkDuration;
 pub use device::{DeviceChangedEvent, DeviceNewEvent};
 pub use invitation::Invitation;
 pub use message::{EventSendState, RoomEventItem, RoomMessage, RoomVirtualItem};
-pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide};
+pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide, NewsSlideDraft};
 pub use notifications::{Notification, NotificationListResult};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
