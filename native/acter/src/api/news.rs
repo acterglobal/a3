@@ -31,7 +31,7 @@ use std::{
 };
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::{debug, trace, warn};
+use tracing::{trace, warn};
 
 use crate::ClientStateBuilder;
 
