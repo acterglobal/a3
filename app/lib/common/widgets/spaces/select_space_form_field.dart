@@ -3,6 +3,7 @@ import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class SelectSpaceFormField extends ConsumerWidget {
   static Key openKey = const Key('select-space-form-field-open');
@@ -91,7 +92,9 @@ class SelectSpaceFormField extends ConsumerWidget {
       data: (space) =>
           space != null ? SpaceChip(space: space) : Text(currentSelectedSpace!),
       error: (e, s) => Text('error: $e'),
-      loading: () => const Text('loading'),
+      loading: () => const Skeletonizer(
+        child: Text('loading'),
+      ),
     );
   }
 }

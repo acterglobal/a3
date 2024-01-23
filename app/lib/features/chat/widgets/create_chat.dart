@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 /// saves selected users from search result
 final _selectedUsersProvider =
@@ -727,7 +728,13 @@ class _UserWidget extends ConsumerWidget {
           );
         },
         error: (e, st) => Text('Error loading avatar $e'),
-        loading: () => const CircularProgressIndicator(),
+        loading: () => Skeletonizer(
+          child: ActerAvatar(
+            mode: DisplayMode.DM,
+            avatarInfo: AvatarInfo(uniqueId: userId),
+            size: 18,
+          ),
+        ),
       ),
     );
   }

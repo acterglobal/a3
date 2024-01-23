@@ -7,6 +7,7 @@ import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class RoomHierarchyJoinButtons extends ConsumerWidget {
   final Function(String)? forward;
@@ -193,9 +194,11 @@ class SpaceHierarchyCard extends ConsumerWidget {
         title: Text('Error loading: $roomId'),
         subtitle: Text('$error'),
       ),
-      loading: () => ListTile(
-        title: Text(roomId),
-        subtitle: const Text('loading'),
+      loading: () => Skeletonizer(
+        child: ListTile(
+          title: Text(roomId),
+          subtitle: const Text('loading'),
+        ),
       ),
     );
   }

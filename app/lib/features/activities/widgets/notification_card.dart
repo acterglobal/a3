@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 final notificationSpaceDataProvider = FutureProvider.autoDispose
     .family<ProfileData, ffi.Notification>((ref, notification) async {
@@ -65,8 +66,13 @@ class NotificationCard extends ConsumerWidget {
                     size: 48,
                   );
                 },
-                loading: () => const Center(
-                  child: CircularProgressIndicator(),
+                loading: () => Skeletonizer(
+                  child: ActerAvatar(
+                    mode: DisplayMode.Space,
+                    avatarInfo:
+                        AvatarInfo(uniqueId: roomId, displayName: roomId),
+                    size: 48,
+                  ),
                 ),
               ),
             );
@@ -80,7 +86,9 @@ class NotificationCard extends ConsumerWidget {
               data: (value) => Text(value.displayName ?? roomId),
               error: (error, stackTrace) =>
                   Text('Failed to load space Text(roomId)due to $error'),
-              loading: () => Text(roomId),
+              loading: () => Skeletonizer(
+                child: Text(roomId),
+              ),
             );
           },
         );
@@ -115,8 +123,13 @@ class NotificationCard extends ConsumerWidget {
                     size: 48,
                   );
                 },
-                loading: () => const Center(
-                  child: CircularProgressIndicator(),
+                loading: () => Skeletonizer(
+                  child: ActerAvatar(
+                    mode: DisplayMode.Space,
+                    avatarInfo:
+                        AvatarInfo(uniqueId: roomId, displayName: roomId),
+                    size: 48,
+                  ),
                 ),
               ),
             );
@@ -130,7 +143,9 @@ class NotificationCard extends ConsumerWidget {
               data: (value) => Text(value.displayName ?? roomId),
               error: (error, stackTrace) =>
                   Text('Failed to load room due to $error'),
-              loading: () => Text(roomId),
+              loading: () => Skeletonizer(
+                child: Text(roomId),
+              ),
             );
           },
         );

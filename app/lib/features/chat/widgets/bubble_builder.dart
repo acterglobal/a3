@@ -15,6 +15,7 @@ import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:swipe_to/swipe_to.dart';
 
 class BubbleBuilder extends ConsumerWidget {
@@ -255,7 +256,13 @@ class _ChatBubble extends ConsumerWidget {
               size: 24,
             );
           },
-          loading: () => const CircularProgressIndicator(),
+          loading: () => Skeletonizer(
+            child: ActerAvatar(
+              mode: DisplayMode.DM,
+              avatarInfo: AvatarInfo(uniqueId: authorId),
+              size: 24,
+            ),
+          ),
         ),
         const SizedBox(width: 5),
         replyProfile.when(
@@ -269,7 +276,7 @@ class _ChatBubble extends ConsumerWidget {
             debugPrint('Failed to load profile due to $err');
             return const Text('');
           },
-          loading: () => const CircularProgressIndicator(),
+          loading: () => Skeletonizer(child: Text(authorId)),
         ),
       ],
     );

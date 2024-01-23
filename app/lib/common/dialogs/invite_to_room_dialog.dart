@@ -8,6 +8,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 final userNameRegExp = RegExp(
   r'@\S+:\S+.\S+$',
@@ -364,7 +365,7 @@ class _DirectInvite extends ConsumerWidget {
             invited: isInvited(userId, invited),
           ),
           error: (err, stackTrace) => Text('Error: $err'),
-          loading: () => const Text('Loading room'),
+          loading: () => const Skeletonizer(child: Text('Loading room')),
         ),
       ),
     );
