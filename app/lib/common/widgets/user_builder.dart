@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final userAvatarProvider =
     FutureProvider.family<MemoryImage?, UserProfile>((ref, user) async {
-  if (await user.hasAvatar()) {
+  if (user.hasAvatar()) {
     try {
       final data = (await user.getAvatar(null)).data();
       if (data != null) {
@@ -18,11 +18,6 @@ final userAvatarProvider =
     }
   }
   return null;
-});
-
-final displayNameProvider =
-    FutureProvider.family<String?, UserProfile>((ref, user) async {
-  return (await user.getDisplayName()).text();
 });
 
 bool isInvited(String userId, List<Member> invited) {
@@ -50,27 +45,17 @@ class UserBuilder extends ConsumerWidget {
     final invited =
         ref.watch(roomInvitedMembersProvider(roomId)).valueOrNull ?? [];
     final avatarProv = ref.watch(userAvatarProvider(profile));
-    final displayName = ref.watch(displayNameProvider(profile));
+    final displayName = profile.getDisplayName();
     final userId = profile.userId().toString();
     return Card(
       child: ListTile(
-        title: displayName.when(
-          data: (data) => Text(data ?? userId),
-          error: (err, stackTrace) => Text('Error: $err'),
-          loading: () => const Text('Loading display name'),
-        ),
-        subtitle: displayName.when(
-          data: (data) {
-            return (data == null) ? null : Text(userId);
-          },
-          error: (err, stackTrace) => Text('Error: $err'),
-          loading: () => const Text('Loading display name'),
-        ),
+        title: Text(displayName ?? userId),
+        subtitle: (displayName == null) ? null : Text(userId),
         leading: ActerAvatar(
           mode: DisplayMode.DM,
           avatarInfo: AvatarInfo(
             uniqueId: userId,
-            displayName: displayName.valueOrNull,
+            displayName: displayName,
             avatar: avatarProv.valueOrNull,
           ),
         ),

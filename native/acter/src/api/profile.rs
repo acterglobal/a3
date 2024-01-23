@@ -5,6 +5,7 @@ use matrix_sdk::{
     ruma::api::client::user_directory::search_users,
     Account, Client, DisplayName, Room,
 };
+use ruma::api::client::user_directory::search_users::v3::User;
 use ruma_common::{OwnedRoomId, OwnedUserId};
 use ruma_events::room::MediaSource;
 
@@ -24,6 +25,10 @@ impl PublicProfile {
         PublicProfile { inner, client }
     }
 
+    pub fn user_id(&self) -> OwnedUserId {
+        self.inner.user_id.clone()
+    }
+
     pub(crate) async fn avatar(&self, format: MediaFormat) -> Result<Option<Vec<u8>>> {
         let Some(url) = self.inner.avatar_url.as_ref() else { return Ok(None) };
         let request = MediaRequest {
@@ -40,76 +45,58 @@ impl PublicProfile {
 }
 
 #[derive(Clone)]
-pub struct UserProfile {
-    public_profile: Option<PublicProfile>,
-    user_id: OwnedUserId,
-    member: Option<RoomMember>,
+pub enum UserProfile {
+    Member(RoomMember),
+    PublicProfile(PublicProfile),
 }
 
 impl UserProfile {
     pub(crate) fn from_member(member: RoomMember) -> Self {
-        UserProfile {
-            user_id: member.user_id().to_owned(),
-            member: Some(member),
-            public_profile: None,
-        }
+        UserProfile::Member(member)
     }
 
     pub(crate) fn from_search(public_profile: PublicProfile) -> Self {
-        UserProfile {
-            user_id: public_profile.inner.user_id.to_owned(),
-            member: None,
-            public_profile: Some(public_profile),
-        }
+        UserProfile::PublicProfile(public_profile)
     }
 
     pub fn user_id(&self) -> OwnedUserId {
-        self.user_id.clone()
+        match self {
+            UserProfile::Member(m) => m.user_id().to_owned(),
+            UserProfile::PublicProfile(p) => p.user_id(),
+        }
     }
 
-    pub async fn has_avatar(&self) -> Result<bool> {
-        if let Some(member) = self.member.as_ref() {
-            return Ok(member.avatar_url().is_some());
+    pub fn has_avatar(&self) -> bool {
+        match self {
+            UserProfile::Member(member) => member.avatar_url().is_some(),
+            UserProfile::PublicProfile(public_profile) => public_profile.inner.avatar_url.is_some(),
         }
-
-        if let Some(public_profile) = self.public_profile.as_ref() {
-            return Ok(public_profile.inner.avatar_url.is_some());
-        }
-        Ok(false)
     }
 
     pub async fn get_avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
-        if let Some(member) = self.member.clone() {
-            return RUNTIME
-                .spawn(async move {
-                    let buf = member.avatar(format).await?;
-                    Ok(OptionBuffer::new(buf))
-                })
-                .await?;
-        }
 
-        if let Some(public_profile) = self.public_profile.clone() {
-            return RUNTIME
-                .spawn(async move {
-                    let buf = public_profile.avatar(format).await?;
-                    Ok(OptionBuffer::new(buf))
-                })
-                .await?;
-        }
-        Ok(OptionBuffer::new(None))
+        Ok(OptionBuffer::new(match self {
+            UserProfile::Member(member) => {
+                let member = member.clone();
+                RUNTIME
+                    .spawn(async move { member.avatar(format).await })
+                    .await??
+            }
+            UserProfile::PublicProfile(public_profile) => {
+                let public_profile = public_profile.clone();
+                RUNTIME
+                    .spawn(async move { public_profile.avatar(format).await })
+                    .await??
+            }
+        }))
     }
 
-    pub async fn get_display_name(&self) -> Result<OptionString> {
-        if let Some(member) = self.member.clone() {
-            let text = member.display_name().map(|x| x.to_string());
-            return Ok(OptionString::new(text));
+    pub fn get_display_name(&self) -> Option<String> {
+        match self {
+            UserProfile::Member(member) => member.display_name().map(|x| x.to_string()),
+            UserProfile::PublicProfile(public_profile) => public_profile.inner.display_name.clone(),
         }
-        if let Some(public_profile) = self.public_profile.clone() {
-            let text = public_profile.inner.display_name;
-            return Ok(OptionString::new(text));
-        }
-        Ok(OptionString::new(None))
     }
 }
 
@@ -123,8 +110,8 @@ impl RoomProfile {
         RoomProfile { room }
     }
 
-    pub fn has_avatar(&self) -> Result<bool> {
-        Ok(self.room.avatar_url().is_some())
+    pub fn has_avatar(&self) -> bool {
+        self.room.avatar_url().is_some()
     }
 
     pub async fn get_avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {

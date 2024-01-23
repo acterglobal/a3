@@ -40,7 +40,7 @@ class FoundUser {
 
 final userAvatarProvider =
     FutureProvider.family<MemoryImage?, UserProfile>((ref, user) async {
-  if (await user.hasAvatar()) {
+  if (user.hasAvatar()) {
     try {
       final data = (await user.getAvatar(null)).data();
       if (data != null) {
@@ -51,11 +51,6 @@ final userAvatarProvider =
     }
   }
   return null;
-});
-
-final displayNameProvider =
-    FutureProvider.family<String?, UserProfile>((ref, user) async {
-  return (await user.getDisplayName()).text();
 });
 
 final searchResultProvider = FutureProvider<List<UserProfile>>((ref) async {
@@ -80,9 +75,9 @@ final suggestedUsersProvider =
   final suggested = (await client.suggestedUsersToInvite(roomId)).toList();
   final List<FoundUser> ret = [];
   for (final user in suggested) {
-    String? displayName = (await user.getDisplayName()).text();
+    String? displayName = user.getDisplayName();
     FfiBufferUint8? avatar;
-    if (await user.hasAvatar()) {
+    if (user.hasAvatar()) {
       try {
         avatar = (await user.getAvatar(null)).data();
       } catch (e) {

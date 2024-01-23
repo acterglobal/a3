@@ -69,7 +69,7 @@ impl Account {
                 let source = match account.get_cached_avatar_url().await? {
                     Some(url) => MediaSource::Plain(url.try_into()?),
                     None => match account.get_avatar_url().await? {
-                        Some(e) => MediaSource::Plain(e.to_owned()),
+                        Some(e) => MediaSource::Plain(e),
                         None => return Ok(OptionBuffer::new(None)),
                     },
                 };

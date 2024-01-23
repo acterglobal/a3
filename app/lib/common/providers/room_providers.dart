@@ -1,5 +1,6 @@
 /// Get the relations of the given SpaceId.  Throws
 library;
+
 import 'dart:core';
 
 import 'package:acter/common/models/profile_data.dart';
@@ -240,11 +241,11 @@ final userProfileDataProvider =
   final sdk = await ref.watch(sdkProvider.future);
   // this ensure we are staying up to dates on updates to convo
   final profile = member.getProfile();
-  final displayName = await profile.getDisplayName();
-  if (!await profile.hasAvatar()) {
-    return ProfileData(displayName.text(), null);
+  final displayName = profile.getDisplayName();
+  if (!profile.hasAvatar()) {
+    return ProfileData(displayName, null);
   }
   final size = sdk.newThumbSize(48, 48);
   final avatar = await profile.getAvatar(size);
-  return ProfileData(displayName.text(), avatar.data());
+  return ProfileData(displayName, avatar.data());
 });

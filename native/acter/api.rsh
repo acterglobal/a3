@@ -154,7 +154,7 @@ object UserProfile {
     fn user_id() -> UserId;
 
     /// whether to have avatar
-    fn has_avatar() -> Future<Result<bool>>;
+    fn has_avatar() -> bool;
 
     /// get the binary data of avatar
     /// if thumb size is given, avatar thumbnail is returned
@@ -162,12 +162,12 @@ object UserProfile {
     fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
-    fn get_display_name() -> Future<Result<OptionString>>;
+    fn get_display_name() -> Option<string>;
 }
 
 object RoomProfile {
     /// whether to have avatar
-    fn has_avatar() -> Result<bool>;
+    fn has_avatar() -> bool;
 
     /// get the binary data of avatar
     /// if thumb size is given, avatar thumbnail is returned

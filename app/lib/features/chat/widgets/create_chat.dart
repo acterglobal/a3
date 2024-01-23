@@ -278,8 +278,8 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                       builder: (context, ref, child) {
                         final avatarProv =
                             ref.watch(userAvatarProvider(selectedUsers[index]));
-                        final displayName = ref
-                            .watch(displayNameProvider(selectedUsers[index]));
+                        final displayName =
+                            selectedUsers[index].getDisplayName();
                         final userId = selectedUsers[index].userId().toString();
                         return Row(
                           mainAxisSize: MainAxisSize.min,
@@ -288,14 +288,14 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                               mode: DisplayMode.DM,
                               avatarInfo: AvatarInfo(
                                 uniqueId: userId,
-                                displayName: displayName.valueOrNull ?? userId,
+                                displayName: displayName ?? userId,
                                 avatar: avatarProv.valueOrNull,
                               ),
                               size: 14,
                             ),
                             const SizedBox(width: 5),
                             Text(
-                              displayName.valueOrNull ?? userId,
+                              displayName ?? userId,
                               style: Theme.of(context)
                                   .textTheme
                                   .labelMedium!
@@ -390,9 +390,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                         mode: DisplayMode.DM,
                         avatarInfo: AvatarInfo(
                           uniqueId: selectedUsers[0].userId().toString(),
-                          displayName: ref
-                              .watch(displayNameProvider(selectedUsers[0]))
-                              .valueOrNull,
+                          displayName: selectedUsers[0].getDisplayName(),
                           avatar: ref
                               .watch(userAvatarProvider(selectedUsers[0]))
                               .valueOrNull,
@@ -692,7 +690,7 @@ class _UserWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final avatarProv = ref.watch(userAvatarProvider(profile));
-    final displayName = ref.watch(displayNameProvider(profile));
+    final displayName = profile.getDisplayName();
     final userId = profile.userId().toString();
     return ListTile(
       onTap: () {
@@ -704,35 +702,25 @@ class _UserWidget extends ConsumerWidget {
         }
         onUp();
       },
-      title: displayName.when(
-        data: (data) => Text(
-          data ?? userId,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        error: (err, stackTrace) => Text('Error: $err'),
-        loading: () => const Text('Loading display name'),
+      title: Text(
+        displayName ?? userId,
+        style: Theme.of(context).textTheme.bodyMedium,
       ),
-      subtitle: displayName.when(
-        data: (data) {
-          return (data == null)
-              ? null
-              : Text(
-                  userId,
-                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                        color: Theme.of(context).colorScheme.neutral5,
-                      ),
-                );
-        },
-        error: (err, stackTrace) => Text('Error: $err'),
-        loading: () => const Text('Loading display name'),
-      ),
+      subtitle: (displayName == null)
+          ? null
+          : Text(
+              userId,
+              style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                    color: Theme.of(context).colorScheme.neutral5,
+                  ),
+            ),
       leading: avatarProv.when(
         data: (data) {
           return ActerAvatar(
             mode: DisplayMode.DM,
             avatarInfo: AvatarInfo(
               uniqueId: userId,
-              displayName: displayName.valueOrNull,
+              displayName: displayName,
               avatar: data,
             ),
             size: 18,
