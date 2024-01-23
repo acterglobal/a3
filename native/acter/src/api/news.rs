@@ -471,7 +471,7 @@ impl NewsEntryDraft {
                 anyhow::Ok(draft)
             })
             .await??;
-        if (!self.slides.is_empty() || self.slides.len() > 1) {
+        if (!self.slides.is_empty() && pos < self.slides.len() as u8) {
             self.slides.insert(pos as usize, inner)
         } else {
             self.slides.push(inner)
