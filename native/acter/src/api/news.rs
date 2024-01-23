@@ -6,7 +6,7 @@ use acter_core::{
     models::{self, ActerModel, AnyActerModel},
     statics::KEYS,
 };
-use anyhow::{bail, Context, Result};
+use anyhow::{bail, Context, Error, Ok, Result};
 use core::time::Duration;
 use futures::stream::StreamExt;
 use matrix_sdk::{
@@ -31,7 +31,7 @@ use std::{
 };
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::{trace, warn};
+use tracing::{debug, trace, warn};
 
 use crate::ClientStateBuilder;
 
@@ -530,19 +530,34 @@ pub struct NewsEntryUpdateBuilder {
 
 impl NewsEntryUpdateBuilder {
     #[allow(clippy::ptr_arg)]
-    pub fn slides(&mut self, slides: &mut Vec<NewsSlideDraft>) -> &mut Self {
-        let mut news_slides = Vec::new();
+    pub async fn add_slide(&mut self, base_draft: Box<MsgContentDraft>) -> Result<&mut Self> {
+        let client = self.client.clone();
+        let room = self.room.clone();
+        let mut slides = Vec::new();
 
-        for slide in slides {
-            match slide.to_owned().save() {
-                Ok(v) => news_slides.push(v),
-                Err(e) => (),
-            };
+        let slide_draft = RUNTIME
+            .spawn(async move {
+                let draft = base_draft.into_news_slide_draft(client, room).await?;
+                anyhow::Ok(draft)
+            })
+            .await??;
+
+        let slide = slide_draft.save()?;
+        slides.push(slide);
+
+        self.content.slides(Some(slides));
+        Ok(self)
+    }
+
+    pub fn swap_slides(&mut self, from: u8, to: u8) -> Result<&mut Self> {
+        let content = self.content.build()?;
+        let mut slides = content.slides.clone().expect("content slides");
+        if to > slides.len() as u8 {
+            bail!("upper bound is exceeded")
         }
-
-        let items = news_slides.iter().map(|x| (x.to_owned()).clone()).collect();
-        self.content.slides(Some(items));
-        self
+        slides.swap(from as usize, to as usize);
+        self.content.slides(Some(slides));
+        Ok(self)
     }
 
     pub fn unset_slides(&mut self) -> &mut Self {
@@ -572,6 +587,7 @@ impl NewsEntryUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+
         let content = self.content.build()?;
         RUNTIME
             .spawn(async move {

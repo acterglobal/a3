@@ -350,9 +350,14 @@ object NewsEntryDraft {
 
 object NewsEntryUpdateBuilder {
     /// set the slides for this news entry
-    fn slides(slides: Vec<NewsSlideDraft>);
+    fn add_slide(base_draft: MsgContentDraft);
+
+    /// reset slides for this news entry
     fn unset_slides();
     fn unset_slides_update();
+
+    /// set position of slides for this news entry
+    fn swap_slides(from: u8, to: u8);
 
     /// set the color for this news entry
     fn colors(colors: Colorize);
