@@ -6,7 +6,7 @@ use acter_core::{
     models::{self, ActerModel, AnyActerModel},
     statics::KEYS,
 };
-use anyhow::{bail, Context, Error, Ok, Result};
+use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use futures::stream::StreamExt;
 use matrix_sdk::{
@@ -23,21 +23,17 @@ use ruma_events::room::{
     ImageInfo,
 };
 use std::{
-    any::Any,
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
     path::PathBuf,
-    thread::spawn,
 };
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::{trace, warn};
 
-use crate::ClientStateBuilder;
-
 use super::{
     api::FfiBuffer,
-    client::{Client, ClientState},
+    client::Client,
     common::{MsgContent, ThumbnailSize},
     spaces::Space,
     stream::MsgContentDraft,
