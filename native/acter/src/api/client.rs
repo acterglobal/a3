@@ -911,11 +911,7 @@ impl Client {
         self.executor().subscribe(key)
     }
 
-    pub async fn wait_for(
-        &self,
-        key: String,
-        timeout: Option<Box<Duration>>,
-    ) -> Result<AnyActerModel> {
+    pub async fn wait_for(&self, key: String, timeout: Option<u8>) -> Result<AnyActerModel> {
         let executor = self.core.executor().clone();
 
         RUNTIME
@@ -924,7 +920,7 @@ impl Client {
                 let Some(tm) = timeout else {
                     return Ok(waiter.await?);
                 };
-                Ok(time::timeout(*Box::leak(tm), waiter).await??)
+                Ok(time::timeout(Duration::from_secs(tm as u64), waiter).await??)
             })
             .await?
     }

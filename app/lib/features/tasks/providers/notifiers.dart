@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/tasks/models/tasks.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/foundation.dart';
@@ -41,6 +42,31 @@ class TasksNotifier extends FamilyAsyncNotifier<TasksOverview, TaskList> {
       });
     });
     return retState;
+  }
+}
+
+class TaskListNotifier extends FamilyAsyncNotifier<TaskList, String> {
+  late Stream<void> _subscriber;
+  // ignore: unused_field
+  late StreamSubscription<void> _listener;
+
+  Future<TaskList> _refresh(Client client, String taskListId) async {
+    return await client.taskList(taskListId, 60);
+  }
+
+  @override
+  Future<TaskList> build(String arg) async {
+    // Load initial todo list from the remote repository
+    final client = ref.watch(alwaysClientProvider);
+    final taskList = await _refresh(client, arg);
+    _subscriber = taskList.subscribeStream();
+    _listener = _subscriber.listen((element) async {
+      debugPrint('got taskList update');
+      state = await AsyncValue.guard(() async {
+        return await _refresh(client, arg);
+      });
+    });
+    return taskList;
   }
 }
 
