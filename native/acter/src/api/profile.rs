@@ -3,7 +3,7 @@ use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::RoomMember,
     ruma::api::client::user_directory::search_users,
-    Account, Client, DisplayName,
+    Account, Client, DisplayName, Room,
 };
 use ruma_common::{OwnedRoomId, OwnedUserId};
 use ruma_events::room::MediaSource;
@@ -115,27 +115,20 @@ impl UserProfile {
 
 #[derive(Clone)]
 pub struct RoomProfile {
-    client: Client,
-    room_id: OwnedRoomId,
+    room: Room,
 }
 
 impl RoomProfile {
-    pub(crate) fn new(client: Client, room_id: OwnedRoomId) -> Self {
-        RoomProfile { client, room_id }
+    pub(crate) fn new(room: Room) -> Self {
+        RoomProfile { room }
     }
 
     pub fn has_avatar(&self) -> Result<bool> {
-        self.client
-            .get_room(&self.room_id)
-            .context("Room not found")
-            .map(|x| x.avatar_url().is_some())
+        Ok(self.room.avatar_url().is_some())
     }
 
     pub async fn get_avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
-        let room = self
-            .client
-            .get_room(&self.room_id)
-            .context("Room not found")?;
+        let room = self.room.clone();
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
         RUNTIME
             .spawn(async move {
@@ -146,10 +139,7 @@ impl RoomProfile {
     }
 
     pub async fn get_display_name(&self) -> Result<OptionString> {
-        let room = self
-            .client
-            .get_room(&self.room_id)
-            .context("Room not found")?;
+        let room = self.room.clone();
         RUNTIME
             .spawn(async move {
                 let result = room.display_name().await?;
