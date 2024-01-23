@@ -294,8 +294,6 @@ impl NewsSlide {
 
 #[derive(Clone)]
 pub struct NewsSlideDraft {
-    client: Client,
-    room: Room,
     content: news::NewsSlideBuilder,
 }
 
@@ -633,11 +631,7 @@ impl MsgContentDraft {
                     .content(NewsContent::Text(text_content))
                     .references(Default::default())
                     .clone();
-                Ok(NewsSlideDraft {
-                    client,
-                    room,
-                    content: builder,
-                })
+                Ok(NewsSlideDraft { content: builder })
             }
             MsgContentDraft::TextMarkdown { body } => {
                 let text_content = TextMessageEventContent::markdown(body);
@@ -645,11 +639,7 @@ impl MsgContentDraft {
                     .content(NewsContent::Text(text_content))
                     .references(Default::default())
                     .clone();
-                Ok(NewsSlideDraft {
-                    client,
-                    room,
-                    content: builder,
-                })
+                Ok(NewsSlideDraft { content: builder })
             }
             MsgContentDraft::Image { source, info } => {
                 let info = info.expect("image info needed");
@@ -683,11 +673,7 @@ impl MsgContentDraft {
                     .content(NewsContent::Image(image_content))
                     .references(Default::default())
                     .clone();
-                Ok(NewsSlideDraft {
-                    client,
-                    room,
-                    content: builder,
-                })
+                Ok(NewsSlideDraft { content: builder })
             }
             MsgContentDraft::Audio { source, info } => {
                 let info = info.expect("audio info needed");
@@ -721,11 +707,7 @@ impl MsgContentDraft {
                     .content(NewsContent::Audio(audio_content))
                     .references(Default::default())
                     .clone();
-                Ok(NewsSlideDraft {
-                    client,
-                    room,
-                    content: builder,
-                })
+                Ok(NewsSlideDraft { content: builder })
             }
             MsgContentDraft::Video { source, info } => {
                 let info = info.expect("image info needed");
@@ -759,11 +741,7 @@ impl MsgContentDraft {
                     .content(NewsContent::Video(video_content))
                     .references(Default::default())
                     .clone();
-                Ok(NewsSlideDraft {
-                    client,
-                    room,
-                    content: builder,
-                })
+                Ok(NewsSlideDraft { content: builder })
             }
             MsgContentDraft::File {
                 source,
@@ -802,11 +780,7 @@ impl MsgContentDraft {
                     .content(NewsContent::File(file_content))
                     .references(Default::default())
                     .clone();
-                Ok(NewsSlideDraft {
-                    client,
-                    room,
-                    content: builder,
-                })
+                Ok(NewsSlideDraft { content: builder })
             }
             MsgContentDraft::Location {
                 body,
@@ -822,11 +796,7 @@ impl MsgContentDraft {
                     .content(NewsContent::Location(location_content))
                     .references(Default::default())
                     .clone();
-                Ok(NewsSlideDraft {
-                    client,
-                    room,
-                    content: builder,
-                })
+                Ok(NewsSlideDraft { content: builder })
             }
         }
     }
