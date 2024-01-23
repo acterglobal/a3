@@ -627,10 +627,13 @@ impl Client {
             let room_handles = room_handles.clone();
             let notifications = notifications.clone();
 
+            // keep the sync timeout below the actual connection timeout to ensure we receive it
+            // back before the server timeout occured
+            let sync_settings = SyncSettings::new().timeout(Duration::from_secs(25));
             // fetch the events that received when offline
             client
                 .clone()
-                .sync_with_result_callback(SyncSettings::new(), |result| async {
+                .sync_with_result_callback(sync_settings, |result| async {
                     info!("received sync callback");
                     let client = client.clone();
                     let me = me.clone();
