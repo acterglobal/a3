@@ -334,8 +334,8 @@ object NewsEntryDraft {
     /// create news slide draft
     fn add_slide(base_draft: MsgContentDraft) -> Future<Result<bool>>;
 
-    /// insert news slide draft at specific index
-    fn insert_slide(pos: u8, base_draft: MsgContentDraft) -> Future<Result<bool>>;
+    /// change position of slides draft of this news entry
+    fn swap_slides(from: u8, to:u8);
 
     /// clear slides
     fn unset_slides();

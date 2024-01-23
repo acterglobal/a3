@@ -455,26 +455,12 @@ impl NewsEntryDraft {
         Ok(true)
     }
 
-    pub async fn insert_slide(
-        &mut self,
-        pos: u8,
-        base_draft: Box<MsgContentDraft>,
-    ) -> Result<bool> {
-        let client = self.client.clone();
-        let room = self.room.clone();
-
-        let inner = RUNTIME
-            .spawn(async move {
-                let draft = base_draft.into_news_slide_draft(client, room).await?;
-                anyhow::Ok(draft)
-            })
-            .await??;
-        if (!self.slides.is_empty() && pos < self.slides.len() as u8) {
-            self.slides.insert(pos as usize, inner)
-        } else {
-            self.slides.push(inner)
+    pub fn swap_slides(&mut self, from: u8, to: u8) -> Result<&mut Self> {
+        if to > self.slides.len() as u8 {
+            bail!("upper bound is exceeded")
         }
-        Ok(true)
+        self.slides.swap(from as usize, to as usize);
+        Ok(self)
     }
 
     pub fn unset_slides(&mut self) -> &mut Self {
@@ -494,7 +480,7 @@ impl NewsEntryDraft {
 
     pub async fn send(&mut self) -> Result<OwnedEventId> {
         trace!("starting send");
-        let mut slides = Vec::new();
+        let mut slides = vec![];
         for slide in &self.slides {
             let saved_slide = slide.to_owned().save()?;
             slides.push(saved_slide);
@@ -527,7 +513,7 @@ impl NewsEntryUpdateBuilder {
     pub async fn add_slide(&mut self, base_draft: Box<MsgContentDraft>) -> Result<&mut Self> {
         let client = self.client.clone();
         let room = self.room.clone();
-        let mut slides = Vec::new();
+        let mut slides = vec![];
 
         let slide_draft = RUNTIME
             .spawn(async move {
