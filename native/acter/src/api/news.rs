@@ -547,7 +547,7 @@ impl NewsEntryUpdateBuilder {
 
     pub fn swap_slides(&mut self, from: u8, to: u8) -> Result<&mut Self> {
         let content = self.content.build()?;
-        let mut slides = content.slides.clone().expect("content slides");
+        let mut slides = content.slides.expect("content slides");
         if to > slides.len() as u8 {
             bail!("upper bound is exceeded")
         }
