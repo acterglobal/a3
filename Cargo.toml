@@ -43,7 +43,7 @@ version = "0.27.7"
 version = "0.12.0"
 
 [workspace.dependencies]
-strum = { version = "0.24.1", features = ["derive"] }
+strum = { version = "0.25.0", features = ["derive"] }
 
 [profile.release]
 panic = "unwind"
