@@ -2,6 +2,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class RoomAvatarBuilder extends ConsumerWidget {
   final String roomId;
@@ -38,10 +39,12 @@ class RoomAvatarBuilder extends ConsumerWidget {
           size: avatarSize,
         );
       },
-      loading: () => ActerAvatar(
-        mode: displayMode,
-        avatarInfo: AvatarInfo(uniqueId: roomId, displayName: roomId),
-        size: avatarSize,
+      loading: () => Skeletonizer(
+        child: ActerAvatar(
+          mode: displayMode,
+          avatarInfo: AvatarInfo(uniqueId: roomId, displayName: roomId),
+          size: avatarSize,
+        ),
       ),
     );
     if (padding != null) {

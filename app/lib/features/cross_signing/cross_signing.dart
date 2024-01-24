@@ -9,7 +9,6 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
-import 'package:overlay_support/overlay_support.dart';
 import 'package:sprintf/sprintf.dart';
 
 class VerificationProcess {
@@ -26,64 +25,18 @@ class CrossSigning {
   Client client;
   bool acceptingRequest = false;
   bool waitForMatch = false;
-  late StreamSubscription<DeviceNewEvent>? _deviceNewPoller;
   late StreamSubscription<VerificationEvent>? _verificationPoller;
   final Map<String, VerificationProcess> _processMap = {};
   bool _mounted = true;
   bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
 
   CrossSigning({required this.client}) {
-    _installDeviceEvent();
     _installVerificationEvent();
   }
 
   void dispose() {
     _mounted = false;
-    _deviceNewPoller?.cancel();
     _verificationPoller?.cancel();
-  }
-
-  void _installDeviceEvent() {
-    _deviceNewPoller = client.deviceNewEventRx()?.listen((event) async {
-      final records = await client.deviceRecords(false);
-      final myDevId = client.deviceId();
-      var newDevFound = false;
-      for (var record in records) {
-        final newDevId = record.deviceId();
-        if (newDevId.toString() != myDevId.toString()) {
-          // ignore detection of this device in this device
-          newDevFound = true;
-          debugPrint('found device id: $newDevId');
-        }
-      }
-
-      if (!_shouldShowNewDevicePopup() || !newDevFound) {
-        return;
-      }
-      showSimpleNotification(
-        ListTile(
-          leading: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
-          title: const Text('New Session Alert'),
-          subtitle: const Text('Tap to review and verify!'),
-        ),
-        duration: const Duration(seconds: 1),
-      );
-    });
-  }
-
-  bool _shouldShowNewDevicePopup() {
-    // between `m.key.verification.mac` event and `m.key.verification.done` event,
-    // device new event occurs automatically.
-    // on this event, `New device` popup must not appear.
-    // thus skip this event.
-    bool result = true;
-    _processMap.forEach((key, value) {
-      if (value.stage == 'm.key.verification.mac') {
-        result = false;
-        return;
-      }
-    });
-    return result;
   }
 
   void _installVerificationEvent() {

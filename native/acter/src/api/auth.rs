@@ -66,10 +66,16 @@ pub async fn make_client_config(
     db_passphrase: Option<String>,
     default_homeserver_name: &str,
     default_homeserver_url: &str,
+    reset_if_existing: bool,
 ) -> Result<(ClientBuilder, OwnedUserId)> {
     let (user_id, fallback) = sanitize_user(username, default_homeserver_name).await?;
-    let mut builder =
-        platform::new_client_config(base_path, user_id.to_string(), db_passphrase, true).await?;
+    let mut builder = platform::new_client_config(
+        base_path,
+        user_id.to_string(),
+        db_passphrase,
+        reset_if_existing,
+    )
+    .await?;
 
     if let Some(proxy) = PROXY_URL.read().expect("Reading PROXY_URL failed").clone() {
         builder = builder.proxy(proxy);
@@ -179,6 +185,7 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
         token.db_passphrase.clone(),
         "",
         "",
+        false,
     )
     .await?;
     login_with_token_under_config(token, config).await
@@ -230,25 +237,6 @@ pub async fn login_new_client_under_config(
         .await?
 }
 
-pub async fn smart_login(
-    base_path: String,
-    username: String,
-    password: String,
-    default_homeserver_name: String,
-    default_homeserver_url: String,
-    device_name: Option<String>,
-) -> Result<Client> {
-    let (config, user_id) = make_client_config(
-        base_path,
-        &username,
-        None,
-        &default_homeserver_name,
-        &default_homeserver_url,
-    )
-    .await?;
-    login_new_client_under_config(config, user_id, password, None, device_name).await
-}
-
 pub async fn login_new_client(
     base_path: String,
     username: String,
@@ -264,6 +252,7 @@ pub async fn login_new_client(
         Some(db_passphrase.clone()),
         &default_homeserver_name,
         &default_homeserver_url,
+        true,
     )
     .await?;
     login_new_client_under_config(config, user_id, password, Some(db_passphrase), device_name).await
@@ -285,6 +274,7 @@ pub async fn register(
         Some(db_passphrase.clone()),
         &default_homeserver_name,
         &default_homeserver_url,
+        true,
     )
     .await?;
     register_under_config(config, user_id, password, Some(db_passphrase), user_agent).await
@@ -354,6 +344,7 @@ pub async fn register_with_token(
         Some(db_passphrase.clone()),
         &default_homeserver_name,
         &default_homeserver_url,
+        true,
     )
     .await?;
     register_with_token_under_config(

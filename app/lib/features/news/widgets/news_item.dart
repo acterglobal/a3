@@ -10,6 +10,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class NewsItem extends ConsumerWidget {
   final Client client;
@@ -25,10 +26,7 @@ class NewsItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final slide = news.getSlide(0)!;
-    final slideType = slide.typeStr();
-
-    // else
+    final slides = news.slides().toList();
     final bgColor = convertColor(
       news.colors()?.background(),
       Theme.of(context).colorScheme.background,
@@ -38,84 +36,96 @@ class NewsItem extends ConsumerWidget {
       Theme.of(context).colorScheme.primary,
     );
 
-    switch (slideType) {
-      case 'image':
-        return RegularSlide(
-          news: news,
-          index: index,
-          bgColor: bgColor,
-          fgColor: fgColor,
-          child: ImageSlide(slide: slide),
-        );
+    return PageView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: slides.length,
+      itemBuilder: (context, idx) {
+        final slideType = slides[idx].typeStr();
+        switch (slideType) {
+          case 'image':
+            return RegularSlide(
+              news: news,
+              index: index,
+              bgColor: bgColor,
+              fgColor: fgColor,
+              child: ImageSlide(slide: slides[idx]),
+            );
 
-      case 'video':
-        return RegularSlide(
-          news: news,
-          index: index,
-          bgColor: bgColor,
-          fgColor: fgColor,
-          child: const Expanded(
-            child: Center(
-              child: Text('video slides not yet supported'),
-            ),
-          ),
-        );
-
-      case 'text':
-        return Stack(
-          children: <Widget>[
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8, right: 80, bottom: 8),
-                child: Card(
-                  color: bgColor,
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: slide.hasFormattedText()
-                        ? RenderHtml(
-                            key: NewsUpdateKeys.textUpdateContent,
-                            text: slide.text(),
-                            defaultTextStyle:
-                                Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                      color: fgColor,
-                                    ),
-                          )
-                        : Text(
-                            key: NewsUpdateKeys.textUpdateContent,
-                            slide.text(),
-                            softWrap: true,
-                            style:
-                                Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                      color: fgColor,
-                                    ),
-                          ),
-                  ),
+          case 'video':
+            return RegularSlide(
+              news: news,
+              index: index,
+              bgColor: bgColor,
+              fgColor: fgColor,
+              child: const Expanded(
+                child: Center(
+                  child: Text('video slides not yet supported'),
                 ),
               ),
-            ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: NewsSideBar(
-                news: news,
-                index: index,
-              ),
-            ),
-          ],
-        );
+            );
 
-      default:
-        return RegularSlide(
-          news: news,
-          index: index,
-          bgColor: bgColor,
-          fgColor: fgColor,
-          child: Expanded(
-            child: Center(
-              child: Text('$slideType slides not yet supported'),
-            ),
-          ),
-        );
-    }
+          case 'text':
+            return Stack(
+              children: <Widget>[
+                Center(
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(left: 8, right: 80, bottom: 8),
+                    child: Card(
+                      color: bgColor,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: slides[idx].hasFormattedText()
+                            ? RenderHtml(
+                                key: NewsUpdateKeys.textUpdateContent,
+                                text: slides[idx].text(),
+                                defaultTextStyle: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                      color: fgColor,
+                                    ),
+                              )
+                            : Text(
+                                key: NewsUpdateKeys.textUpdateContent,
+                                slides[idx].text(),
+                                softWrap: true,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                      color: fgColor,
+                                    ),
+                              ),
+                      ),
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: NewsSideBar(
+                    news: news,
+                    index: index,
+                  ),
+                ),
+              ],
+            );
+
+          default:
+            return RegularSlide(
+              news: news,
+              index: index,
+              bgColor: bgColor,
+              fgColor: fgColor,
+              child: Expanded(
+                child: Center(
+                  child: Text('$slideType slides not yet supported'),
+                ),
+              ),
+            );
+        }
+      },
+    );
   }
 }
 
@@ -160,7 +170,9 @@ class RegularSlide extends ConsumerWidget {
                   data: (space) =>
                       Text(space!.spaceProfileData.displayName ?? roomId),
                   error: (e, st) => Text('Error loading space: $e'),
-                  loading: () => Text(roomId),
+                  loading: () => Skeletonizer(
+                    child: Text(roomId),
+                  ),
                 ),
               ),
               Text(

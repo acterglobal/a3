@@ -22,6 +22,11 @@ import '../support/spaces.dart';
 import '../support/super_invites.dart';
 import '../support/util.dart';
 
+typedef TaskListCreateResult = ({
+  String spaceId,
+  String taskListId,
+});
+
 extension ActerTasks on ConvenientTest {
   Future<void> ensureTasksAreEnabled(String? spaceId) async {
     await ensureLabEnabled(LabsFeature.tasks);
@@ -41,6 +46,20 @@ extension ActerTasks on ConvenientTest {
         await tester.ensureVisible(taskLabsSwitch);
         await taskLabsSwitch.tap();
       }
+    }
+  }
+
+  Future<void> addTasks(
+    String taskListId,
+    List<String> tasks,
+  ) async {
+    final inlineAddTxt =
+        find.byKey(Key('task-list-$taskListId-add-task-inline-txt'));
+    for (final taskTitle in tasks) {
+      await inlineAddTxt.should(findsOneWidget);
+      await inlineAddTxt.enterTextWithoutReplace(taskTitle);
+      await tester.testTextInput.receiveAction(TextInputAction.done); // submit
+      await find.text(taskTitle).should(findsOneWidget);
     }
   }
 
@@ -75,15 +94,7 @@ extension ActerTasks on ConvenientTest {
     await ensureHasBackButton();
     if (tasks != null) {
       await inlineAddBtn.tap(); // activate inline add
-      final inlineAddTxt =
-          find.byKey(Key('task-list-$taskListId-add-task-inline-txt'));
-      for (final taskTitle in tasks) {
-        await inlineAddTxt.should(findsOneWidget);
-        await inlineAddTxt.enterTextWithoutReplace(taskTitle);
-        await tester.testTextInput
-            .receiveAction(TextInputAction.done); // submit
-        await find.text(taskTitle).should(findsOneWidget);
-      }
+      await addTasks(taskListId, tasks);
       // close inline add
       final cancelInlineAdd =
           find.byKey(Key('task-list-$taskListId-add-task-inline-cancel'));
@@ -93,7 +104,7 @@ extension ActerTasks on ConvenientTest {
     return taskListId;
   }
 
-  Future<String> freshWithTasks(
+  Future<TaskListCreateResult> freshWithTasks(
     List<String> tasks, {
     String? listTitle,
     String? spaceDisplayName,
@@ -109,11 +120,11 @@ extension ActerTasks on ConvenientTest {
       SpaceTasksPage.createTaskKey,
     ]);
 
-    await createTaskList(
+    final taskListId = await createTaskList(
       listTitle ?? 'Errands',
       tasks: tasks,
     );
-    return spaceId;
+    return ((spaceId: spaceId, taskListId: taskListId));
   }
 
   Future<void> renameTask(String newTitle) async {
@@ -460,6 +471,52 @@ void tasksTests() {
     await btnNotDoneFinder.should(findsOneWidget); // is undone again
   });
 
+  acterTestWidget('Create Tasks from overview', (t) async {
+    final taskListId = (await t.freshWithTasks(
+      [], // no tasks yet
+      listTitle: 'Operations',
+      spaceDisplayName: 'Protest Camp',
+    ))
+        .taskListId;
+
+    await t.navigateTo([MainNavKeys.quickJump, QuickJumpKeys.tasks]);
+    await find.text('Operations').should(findsOneWidget);
+
+    final inlineAddBtn =
+        find.byKey(Key('task-list-$taskListId-add-task-inline'));
+    await inlineAddBtn.should(findsOneWidget);
+    await inlineAddBtn.tap(); // activate inline add
+    await t.addTasks(taskListId, ['Buy duct tape']);
+    // close inline add
+    final cancelInlineAdd =
+        find.byKey(Key('task-list-$taskListId-add-task-inline-cancel'));
+    await cancelInlineAdd.should(findsOneWidget);
+    await cancelInlineAdd.tap();
+
+    // we see our entry now
+    await find.text('Operations').should(findsOneWidget);
+    await find.text('Buy duct tape').should(findsOneWidget);
+    final taskEntry = find
+        .ancestor(
+          of: find.text('Buy duct tape'),
+          matching:
+              find.byWidgetPredicate((Widget widget) => widget is TaskEntry),
+        )
+        .evaluate()
+        .first
+        .widget as TaskEntry;
+
+    final btnNotDoneFinder = find.byKey(taskEntry.notDoneKey());
+    await btnNotDoneFinder.should(findsOneWidget);
+    await btnNotDoneFinder.tap(); // toggle done
+
+    final btnDoneFinder = find.byKey(taskEntry.doneKey());
+    await btnDoneFinder.should(findsOneWidget);
+    await btnDoneFinder.tap(); // toggle undone
+
+    await btnNotDoneFinder.should(findsOneWidget); // is undone again
+  });
+
   acterTestWidget('Check and uncheck in overview', (t) async {
     await t.freshWithTasks(
       [
@@ -683,14 +740,15 @@ void tasksTests() {
   });
 
   acterTestWidget('Full multi user run', (t) async {
-    final spaceId = await t.freshWithTasks(
+    final spaceId = (await t.freshWithTasks(
       [
         'Trash',
       ],
       listTitle: 'Cleaning',
       spaceDisplayName: 'Club House',
       userDisplayName: 'Alice',
-    );
+    ))
+        .spaceId;
 
     // we see our entry now
     await find.text('Cleaning').should(findsOneWidget);

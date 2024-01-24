@@ -23,7 +23,7 @@ use tracing::warn;
 use super::{client::Client, spaces::Space, RUNTIME};
 
 impl Client {
-    pub async fn wait_for_pin(&self, key: String, timeout: Option<Box<Duration>>) -> Result<Pin> {
+    pub async fn wait_for_pin(&self, key: String, timeout: Option<u8>) -> Result<Pin> {
         let client = self.clone();
         RUNTIME
             .spawn(async move {

@@ -36,7 +36,7 @@ impl Client {
     pub async fn wait_for_attachment(
         &self,
         key: String,
-        timeout: Option<Box<Duration>>,
+        timeout: Option<u8>,
     ) -> Result<Attachment> {
         let me = self.clone();
         RUNTIME

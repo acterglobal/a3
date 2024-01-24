@@ -15,11 +15,7 @@ use tokio_stream::{wrappers::BroadcastStream, Stream};
 use super::{client::Client, RUNTIME};
 
 impl Client {
-    pub async fn wait_for_comment(
-        &self,
-        key: String,
-        timeout: Option<Box<Duration>>,
-    ) -> Result<Comment> {
+    pub async fn wait_for_comment(&self, key: String, timeout: Option<u8>) -> Result<Comment> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
