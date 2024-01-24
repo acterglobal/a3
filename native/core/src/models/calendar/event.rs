@@ -98,7 +98,7 @@ impl ActerModel for CalendarEvent {
 
     fn transition(&mut self, model: &AnyActerModel) -> Result<bool> {
         let AnyActerModel::CalendarEventUpdate(update) = model else {
-            return Ok(false)
+            return Ok(false);
         };
 
         // FIXME: redacting a CalendarEventUpdate would mean reverting to the previous

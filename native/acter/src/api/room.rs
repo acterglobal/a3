@@ -570,16 +570,14 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let Some(Ok(homeserver)) = client.homeserver().host_str().map(ServerName::parse) else {
+                let Some(Ok(homeserver)) = client.homeserver().host_str().map(ServerName::parse)
+                else {
                     return Err(Error::HomeserverMissesHostname)?;
                 };
-                let content = assign!(SpaceParentEventContent::new(vec![homeserver]), { canonical });
-                let response = room
-                    .send_state_event_for_key(
-                        &room_id,
-                        content,
-                    )
-                    .await?;
+                let content = assign!(SpaceParentEventContent::new(vec![homeserver]), {
+                    canonical
+                });
+                let response = room.send_state_event_for_key(&room_id, content).await?;
                 Ok(response.event_id.to_string())
             })
             .await?

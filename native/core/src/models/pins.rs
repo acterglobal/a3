@@ -75,7 +75,7 @@ impl super::ActerModel for Pin {
 
     fn transition(&mut self, model: &super::AnyActerModel) -> Result<bool> {
         let AnyActerModel::PinUpdate(update) = model else {
-            return Ok(false)
+            return Ok(false);
         };
 
         update.apply(&mut self.inner)

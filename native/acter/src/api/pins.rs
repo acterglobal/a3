@@ -27,7 +27,8 @@ impl Client {
         let client = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Pin(content) = client.wait_for(key.clone(), timeout).await? else {
+                let AnyActerModel::Pin(content) = client.wait_for(key.clone(), timeout).await?
+                else {
                     bail!("{key} is not a pin");
                 };
                 let room = client

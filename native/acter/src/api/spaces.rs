@@ -570,7 +570,8 @@ impl Space {
 
         RUNTIME
             .spawn(async move {
-                let Some(Ok(homeserver)) = client.homeserver().host_str().map(ServerName::parse) else {
+                let Some(Ok(homeserver)) = client.homeserver().host_str().map(ServerName::parse)
+                else {
                     return Err(Error::HomeserverMissesHostname)?;
                 };
                 let response = room
@@ -622,7 +623,7 @@ impl Space {
     pub async fn is_child_space_of(&self, room_id: String) -> bool {
         let Ok(room_id) = RoomId::parse(room_id) else {
             warn!("Asked for a not proper room id");
-            return false
+            return false;
         };
 
         let space_relations = match self.space_relations().await {

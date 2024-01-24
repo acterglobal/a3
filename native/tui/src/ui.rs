@@ -69,7 +69,7 @@ pub fn next(list_state: &mut ListState, list_len: usize) {
     }
     let Some(current) = list_state.selected() else {
         list_state.select(Some(0));
-        return
+        return;
     };
 
     let next = current + 1;

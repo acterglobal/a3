@@ -139,7 +139,7 @@ impl Store {
         for m in models_vec {
             let Some(m) = m else {
                 // skip None's
-                continue
+                continue;
             };
             let key = m.event_id().to_string();
             for idx in m.indizes(&user_id) {

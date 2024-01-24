@@ -32,7 +32,8 @@ impl Client {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::CalendarEvent(inner) = me.wait_for(key.clone(), timeout).await? else {
+                let AnyActerModel::CalendarEvent(inner) = me.wait_for(key.clone(), timeout).await?
+                else {
                     bail!("{key} is not a calendar_event");
                 };
                 let room = me
@@ -49,12 +50,11 @@ impl Client {
         let client = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::CalendarEvent(inner) = client.store().get(&calendar_id).await? else {
+                let AnyActerModel::CalendarEvent(inner) = client.store().get(&calendar_id).await?
+                else {
                     bail!("Calendar event not found");
                 };
-                let room = client
-                    .get_room(inner.room_id())
-                    .context("Room not found")?;
+                let room = client.get_room(inner.room_id()).context("Room not found")?;
                 Ok(CalendarEvent::new(client, room, inner))
             })
             .await?
