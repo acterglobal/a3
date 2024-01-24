@@ -459,7 +459,7 @@ impl App {
                 _ => false,
             },
             Widget::Logs => match key.code {
-                KeyCode::Char(c) if c == 'f' => {
+                KeyCode::Char('f') => {
                     self.logs_fullscreen = !self.logs_fullscreen;
                     true
                 }
