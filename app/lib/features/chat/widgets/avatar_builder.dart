@@ -2,6 +2,7 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class AvatarBuilder extends ConsumerWidget {
   final String roomId;
@@ -43,12 +44,14 @@ class AvatarBuilder extends ConsumerWidget {
           ),
         );
       },
-      loading: () => Padding(
-        padding: const EdgeInsets.only(right: 10),
-        child: ActerAvatar(
-          mode: DisplayMode.DM,
-          avatarInfo: AvatarInfo(uniqueId: userId, displayName: userId),
-          size: 14,
+      loading: () => Skeletonizer(
+        child: Padding(
+          padding: const EdgeInsets.only(right: 10),
+          child: ActerAvatar(
+            mode: DisplayMode.DM,
+            avatarInfo: AvatarInfo(uniqueId: userId, displayName: userId),
+            size: 14,
+          ),
         ),
       ),
     );

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class MemberAvatar extends ConsumerWidget {
   final Member member;
@@ -40,8 +41,12 @@ class MemberAvatar extends ConsumerWidget {
             size: 18,
           );
         },
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
+        loading: () => Skeletonizer(
+          child: ActerAvatar(
+            mode: DisplayMode.DM,
+            avatarInfo: AvatarInfo(uniqueId: userId),
+            size: 18,
+          ),
         ),
       ),
     );

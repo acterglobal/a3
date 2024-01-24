@@ -29,6 +29,7 @@ import 'package:html/parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:mime/mime.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 enum ChatAttachmentType { camera, image, audio, video, file }
 
@@ -691,7 +692,13 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
               size: 24,
             );
           },
-          loading: () => const CircularProgressIndicator(),
+          loading: () => Skeletonizer(
+            child: ActerAvatar(
+              mode: DisplayMode.DM,
+              avatarInfo: AvatarInfo(uniqueId: authorId),
+              size: 24,
+            ),
+          ),
         ),
         const SizedBox(width: 5),
         Text(

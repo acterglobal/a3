@@ -1,6 +1,7 @@
 import 'dart:core';
 
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/tasks/providers/notifiers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -27,21 +28,15 @@ class AsyncTaskListsNotifier extends AsyncNotifier<List<TaskList>> {
   }
 }
 
-final taskListProvider = FutureProvider.autoDispose
-    .family<TaskList, String>((ref, taskListId) async {
-  final lists = await ref.watch(tasksListsProvider.future);
-  for (final list in lists) {
-    if (list.eventIdStr() == taskListId) {
-      return list;
-    }
-  }
-  throw 'Task List not found';
-});
+final taskListProvider =
+    AsyncNotifierProvider.family<TaskListNotifier, TaskList, String>(
+  () => TaskListNotifier(),
+);
 
 final tasksListsProvider =
-    AsyncNotifierProvider<AsyncTaskListsNotifier, List<TaskList>>(() {
-  return AsyncTaskListsNotifier();
-});
+    AsyncNotifierProvider<AsyncTaskListsNotifier, List<TaskList>>(
+  () => AsyncTaskListsNotifier(),
+);
 
 final spaceTasksListsProvider =
     FutureProvider.family<List<TaskList>, String>((ref, spaceId) async {

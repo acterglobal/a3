@@ -14,6 +14,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class NewsSideBar extends ConsumerWidget {
   final ffi.NewsEntry news;
@@ -109,7 +110,13 @@ class NewsSideBar extends ConsumerWidget {
               size: 42,
             );
           },
-          loading: () => const Text('l'),
+          loading: () => Skeletonizer(
+            child: ActerAvatar(
+              mode: DisplayMode.Space,
+              avatarInfo: AvatarInfo(uniqueId: roomId),
+              size: 42,
+            ),
+          ),
         ),
         const SizedBox(height: 15),
       ],

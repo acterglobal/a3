@@ -10,6 +10,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class NewsItem extends ConsumerWidget {
   final Client client;
@@ -169,7 +170,9 @@ class RegularSlide extends ConsumerWidget {
                   data: (space) =>
                       Text(space!.spaceProfileData.displayName ?? roomId),
                   error: (e, st) => Text('Error loading space: $e'),
-                  loading: () => Text(roomId),
+                  loading: () => Skeletonizer(
+                    child: Text(roomId),
+                  ),
                 ),
               ),
               Text(
