@@ -1617,7 +1617,7 @@ dependencies = [
 [[package]]
 name = "ffi-gen"
 version = "0.1.13"
-source = "git+https://github.com/acterglobal/ffi-gen?branch=proc-macro2-unpin#d2d2a573d9b54f512e697a78bbe381a49f08fea4"
+source = "git+https://github.com/acterglobal/ffi-gen?branch=proc-macro2-unpin#ef009dd0e8492b9f50290ac670f1febad4390a2c"
 dependencies = [
  "anyhow",
  "genco",
@@ -1629,12 +1629,12 @@ dependencies = [
 [[package]]
 name = "ffi-gen-macro"
 version = "0.1.2"
-source = "git+https://github.com/acterglobal/ffi-gen?branch=proc-macro2-unpin#d2d2a573d9b54f512e697a78bbe381a49f08fea4"
+source = "git+https://github.com/acterglobal/ffi-gen?branch=proc-macro2-unpin#ef009dd0e8492b9f50290ac670f1febad4390a2c"
 dependencies = [
  "ffi-gen",
  "proc-macro2 1.0.78",
  "quote 1.0.35",
- "syn 1.0.109",
+ "syn 2.0.48",
 ]
 
 [[package]]
