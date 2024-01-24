@@ -1,6 +1,7 @@
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -21,9 +22,19 @@ class PinListItem extends ConsumerStatefulWidget {
 }
 
 class _PinListItemState extends ConsumerState<PinListItem> {
+  String pinContent = '';
   @override
   void initState() {
     super.initState();
+    MsgContent? msgContent = widget.pin.contentText();
+    if (msgContent != null) {
+      final formattedBody = msgContent.formattedBody();
+      if (formattedBody != null) {
+        pinContent = formattedBody;
+      } else {
+        pinContent = msgContent.body();
+      }
+    }
   }
 
   @override
@@ -53,28 +64,87 @@ class _PinListItemState extends ConsumerState<PinListItem> {
       onTap: onTap,
       onLongPress: openItem,
       child: Card(
-        child: ListTile(
-          key: Key(pin.eventIdStr()), // FIXME: causes crashes in ffigen
-          leading: Icon(isLink ? Atlas.link_chain_thin : Atlas.document_thin),
-          title: Text(
-            pin.title(),
-            softWrap: false,
-            overflow: TextOverflow.ellipsis,
-          ),
-          titleTextStyle: Theme.of(context).textTheme.titleSmall,
-          subtitle: widget.showSpace
-              ? Wrap(
-                  alignment: WrapAlignment.start,
-                  children: [SpaceChip(spaceId: spaceId)],
-                )
-              : null,
-          onTap: onTap,
-          trailing: IconButton(
-            icon: isLink
-                ? const Icon(Icons.open_in_full_sharp)
-                : const Icon(Icons.chevron_right_sharp),
-            onPressed: openItem,
-          ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Column(
+                key: Key(pinId), // FIXME: causes crashes in ffigen
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Flexible(
+                          child: Icon(
+                            isLink
+                                ? Atlas.link_chain_thin
+                                : Atlas.document_thin,
+                            size: 18,
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        Flexible(
+                          child: Text(
+                            pin.title(),
+                            softWrap: false,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall!
+                                .copyWith(
+                                  color: isLink ? Colors.blue : null,
+                                  decorationColor: isLink ? Colors.blue : null,
+                                ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Visibility(
+                    visible: widget.showSpace,
+                    child: SpaceChip(spaceId: spaceId),
+                  ),
+                  const SizedBox(height: 5),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: constraints.maxWidth * 0.5,
+                          ),
+                          child: Visibility(
+                            visible: pinContent.isNotEmpty,
+                            child: Html(
+                              padding: const EdgeInsets.all(0),
+                              data: pinContent,
+                              maxLines: widget.showSpace ? 2 : 1,
+                              defaultTextStyle: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall!
+                                  .copyWith(
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                            ),
+                          ),
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          icon: isLink
+                              ? const Icon(Icons.open_in_full_sharp, size: 18)
+                              : const Icon(Icons.chevron_right_sharp, size: 18),
+                          onPressed: openItem,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );

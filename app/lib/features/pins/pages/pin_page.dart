@@ -105,51 +105,58 @@ class PinPage extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.neutral,
-      appBar: AppBar(
-        automaticallyImplyLeading: true,
-        toolbarHeight: 100,
-        centerTitle: false,
-        leading: IconButton(
-          onPressed: () => context.pop(),
-          icon: const Icon(
-            Icons.chevron_left,
-            size: 42,
+      appBar: pin.when(
+        data: (data) => AppBar(
+          automaticallyImplyLeading: true,
+          toolbarHeight: 100,
+          centerTitle: false,
+          leading: IconButton(
+            onPressed: () => context.pop(),
+            icon: const Icon(
+              Icons.chevron_left,
+              size: 42,
+            ),
           ),
-        ),
-        title: Consumer(
-          builder: (context, ref, child) {
-            final membership =
-                ref.watch(roomMembershipProvider(pin.valueOrNull!.roomIdStr()));
-            final canEdit = membership.valueOrNull != null
-                ? membership.requireValue!.canString('CanPostPin')
-                    ? true
-                    : false
-                : false;
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                initialValue: pin.hasValue ? pin.value!.title() : 'Loading pin',
-                readOnly: !canEdit,
-                style: Theme.of(context).textTheme.headlineMedium,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  filled: false,
+          title: Consumer(
+            builder: (context, ref, child) {
+              final membership =
+                  ref.watch(roomMembershipProvider(data.roomIdStr()));
+              final canEdit = membership.valueOrNull != null
+                  ? membership.requireValue!.canString('CanPostPin')
+                      ? true
+                      : false
+                  : false;
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  initialValue:
+                      pin.hasValue ? pin.value!.title() : 'Loading pin',
+                  readOnly: !canEdit,
+                  style: Theme.of(context).textTheme.headlineMedium,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    filled: false,
+                  ),
                 ),
-              ),
-            );
-          },
-        ),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: AppTheme.primaryGradient,
+              );
+            },
           ),
-        ),
-        actions: [
-          pin.maybeWhen(
-            data: (pin) => buildActions(context, ref, pin),
-            orElse: () => const SizedBox.shrink(),
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: AppTheme.primaryGradient,
+            ),
           ),
-        ],
+          actions: [
+            pin.maybeWhen(
+              data: (pin) => buildActions(context, ref, pin),
+              orElse: () => const SizedBox.shrink(),
+            ),
+          ],
+        ),
+        error: (err, st) =>
+            const PreferredSize(preferredSize: Size.zero, child: SizedBox()),
+        loading: () =>
+            const PreferredSize(preferredSize: Size.zero, child: SizedBox()),
       ),
       body: pin.when(
         data: (pin) => PinItem(pin),

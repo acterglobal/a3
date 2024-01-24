@@ -70,6 +70,7 @@ class HtmlEditor extends StatefulWidget {
   final bool autoFocus;
   final EdgeInsets? editorPadding;
   final MsgContent? content;
+  final bool editable;
   final Function(String, String?)? onSave;
   final Function()? onCancel;
   const HtmlEditor({
@@ -78,6 +79,7 @@ class HtmlEditor extends StatefulWidget {
     this.onSave,
     this.onCancel,
     this.autoFocus = true,
+    this.editable = true,
     this.editorPadding = const EdgeInsets.all(10),
     this.header,
     this.footer,
@@ -198,6 +200,7 @@ class _HtmlEditorState extends State<HtmlEditor> {
             child: Directionality(
               textDirection: _textDirection,
               child: AppFlowyEditor(
+                editable: widget.editable,
                 shrinkWrap: true,
                 editorStyle: customEditorStyle(true),
                 editorScrollController: editorScrollController,
@@ -225,11 +228,15 @@ class _HtmlEditorState extends State<HtmlEditor> {
             selectionColor: Theme.of(context).colorScheme.neutral,
             textStyleConfiguration: TextStyleConfiguration(
               text: Theme.of(context).textTheme.bodySmall!,
-            ))
+            ),
+          )
         : EditorStyle.mobile(
             padding: widget.editorPadding,
             cursorColor: Theme.of(context).colorScheme.primary,
             selectionColor: Theme.of(context).colorScheme.neutral6,
+            textStyleConfiguration: TextStyleConfiguration(
+              text: Theme.of(context).textTheme.bodySmall!,
+            ),
           );
   }
 }

@@ -1,11 +1,11 @@
+import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-final _editModeProvider = StateProvider<bool>((ref) => false);
 
 class PinItem extends ConsumerStatefulWidget {
   final ActerPin pin;
@@ -19,7 +19,13 @@ class _PinItemState extends ConsumerState<PinItem> {
   final GlobalKey<FormFieldState> _formkey = GlobalKey<FormFieldState>();
   @override
   Widget build(BuildContext context) {
-    final editMode = ref.watch(_editModeProvider);
+    final membership =
+        ref.watch(roomMembershipProvider(widget.pin.roomIdStr()));
+    final canEdit = membership.valueOrNull != null
+        ? membership.requireValue!.canString('CanPostPin')
+            ? true
+            : false
+        : false;
     final isLink = widget.pin.isLink();
     final spaceId = widget.pin.roomIdStr();
     final autoFocus = widget.pin.contentText() != null
@@ -45,37 +51,38 @@ class _PinItemState extends ConsumerState<PinItem> {
               key: _formkey,
               child: TextFormField(
                 initialValue: widget.pin.url() ?? '',
-                readOnly: !editMode,
+                readOnly: !canEdit,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                   focusedBorder: InputBorder.none,
                   filled: false,
                 ),
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),
-            onPressed: () =>
-                ref.read(_editModeProvider.notifier).update((state) => true),
-          ),
-        ),
-      );
-    } else {
-      content.add(
-        Expanded(
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            height: double.infinity,
-            padding: const EdgeInsets.all(8),
-            child: HtmlEditor(
-              autoFocus: autoFocus,
-              content: widget.pin.contentText(),
-              footer: const SizedBox(),
-              onCancel: () => {},
-              onSave: (plain, htmlBody) => {},
-            ),
+            onPressed: () async => await openLink(widget.pin.url()!, context),
           ),
         ),
       );
     }
+    content.add(
+      Expanded(
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          height: double.infinity,
+          padding: const EdgeInsets.all(8),
+          child: HtmlEditor(
+            editable: canEdit,
+            autoFocus: autoFocus,
+            content: widget.pin.contentText(),
+            footer: const SizedBox(),
+            onCancel: () => {},
+            onSave: (plain, htmlBody) => {},
+          ),
+        ),
+      ),
+    );
+
     return Padding(
       padding: const EdgeInsets.all(15),
       child: Column(
