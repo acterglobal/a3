@@ -69,9 +69,7 @@ impl Eq for Convo {}
 
 impl PartialOrd for Convo {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        other
-            .latest_message_ts()
-            .partial_cmp(&self.latest_message_ts())
+        Some(self.cmp(other))
     }
 }
 
@@ -452,7 +450,7 @@ impl Client {
                 }
                 false
             })
-            .map(Clone::clone);
+            .cloned();
         match convo {
             Some(convo) => Ok(convo),
             None => {
@@ -508,7 +506,7 @@ impl Client {
             .await
             .iter()
             .find(|s| s.room_id() == room_id)
-            .map(Clone::clone)
+            .cloned()
     }
 
     pub fn convos_stream(&self) -> impl Stream<Item = ConvoDiff> {

@@ -222,11 +222,11 @@ impl Pin {
         self.content
             .content
             .as_ref()
-            .and_then(|t| t.formatted.as_ref().map(|f| f.body.clone()))
+            .and_then(|t| t.formatted.clone().map(|f| f.body))
     }
 
     pub fn content_text(&self) -> Option<String> {
-        self.content.content.as_ref().map(|t| t.body.clone())
+        self.content.content.clone().map(|t| t.body)
     }
 
     pub fn url(&self) -> Option<String> {

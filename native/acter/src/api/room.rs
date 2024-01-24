@@ -1376,16 +1376,12 @@ impl Room {
                 let key = if thumb_size.is_some() {
                     [
                         room.room_id().as_str().as_bytes(),
-                        event_id.as_str().as_bytes(),
+                        event_id.as_bytes(),
                         "thumbnail".as_bytes(),
                     ]
                     .concat()
                 } else {
-                    [
-                        room.room_id().as_str().as_bytes(),
-                        event_id.as_str().as_bytes(),
-                    ]
-                    .concat()
+                    [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat()
                 };
                 let path_text = path
                     .to_str()
@@ -1441,16 +1437,12 @@ impl Room {
                 let key = if is_thumb {
                     [
                         room.room_id().as_str().as_bytes(),
-                        event_id.as_str().as_bytes(),
+                        event_id.as_bytes(),
                         "thumbnail".as_bytes(),
                     ]
                     .concat()
                 } else {
-                    [
-                        room.room_id().as_str().as_bytes(),
-                        event_id.as_str().as_bytes(),
-                    ]
-                    .concat()
+                    [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat()
                 };
                 let path = client.store().get_custom_value(&key).await?;
                 let text = match path {

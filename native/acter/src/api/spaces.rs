@@ -63,7 +63,7 @@ impl Eq for Space {}
 
 impl PartialOrd for Space {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.room_id().partial_cmp(other.room_id())
+        Some(self.cmp(other))
     }
 }
 
@@ -724,7 +724,7 @@ impl Client {
             .await
             .iter()
             .find(|s| s.room_id() == room_id)
-            .map(Clone::clone)
+            .cloned()
     }
 
     pub async fn space_by_alias_typed(&self, room_alias: OwnedRoomAliasId) -> Result<Space> {
@@ -746,7 +746,7 @@ impl Client {
                 }
                 false
             })
-            .map(Clone::clone);
+            .cloned();
         match space {
             Some(space) => Ok(space),
             None => {

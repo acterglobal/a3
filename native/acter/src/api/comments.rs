@@ -81,11 +81,7 @@ impl Comment {
     }
 
     pub fn content_formatted(&self) -> Option<String> {
-        self.inner
-            .content
-            .formatted
-            .as_ref()
-            .map(|f| f.body.clone())
+        self.inner.content.formatted.clone().map(|f| f.body)
     }
 }
 
