@@ -1,4 +1,5 @@
 [workspace]
+resolver = "2"
 members = [
   "native/*",
   "util/mr_minutes"
