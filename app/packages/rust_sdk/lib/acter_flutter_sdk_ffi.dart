@@ -12774,6 +12774,16 @@ class Api {
         int,
         int,
       )>();
+  late final _newsEntrySlidesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__NewsEntry_slides");
+
+  late final _newsEntrySlides = _newsEntrySlidesPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _newsEntryColorsPtr = _lookup<
       ffi.NativeFunction<
           _NewsEntryColorsReturn Function(
@@ -12846,6 +12856,21 @@ class Api {
         int,
         int,
       )>();
+  late final _newsEntryDraftSwapSlidesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Uint8,
+            ffi.Uint8,
+          )>>("__NewsEntryDraft_swap_slides");
+
+  late final _newsEntryDraftSwapSlides =
+      _newsEntryDraftSwapSlidesPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
+          )>();
   late final _newsEntryDraftUnsetSlidesPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -12890,15 +12915,15 @@ class Api {
       int Function(
         int,
       )>();
-  late final _newsEntryUpdateBuilderSlidesPtr = _lookup<
+  late final _newsEntryUpdateBuilderAddSlidePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
             ffi.Int64,
             ffi.Int64,
-          )>>("__NewsEntryUpdateBuilder_slides");
+          )>>("__NewsEntryUpdateBuilder_add_slide");
 
-  late final _newsEntryUpdateBuilderSlides =
-      _newsEntryUpdateBuilderSlidesPtr.asFunction<
+  late final _newsEntryUpdateBuilderAddSlide =
+      _newsEntryUpdateBuilderAddSlidePtr.asFunction<
           void Function(
             int,
             int,
@@ -12923,6 +12948,21 @@ class Api {
   late final _newsEntryUpdateBuilderUnsetSlidesUpdate =
       _newsEntryUpdateBuilderUnsetSlidesUpdatePtr.asFunction<
           void Function(
+            int,
+          )>();
+  late final _newsEntryUpdateBuilderSwapSlidesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Uint8,
+            ffi.Uint8,
+          )>>("__NewsEntryUpdateBuilder_swap_slides");
+
+  late final _newsEntryUpdateBuilderSwapSlides =
+      _newsEntryUpdateBuilderSwapSlidesPtr.asFunction<
+          void Function(
+            int,
+            int,
             int,
           )>();
   late final _newsEntryUpdateBuilderColorsPtr = _lookup<
@@ -27773,6 +27813,18 @@ class NewsSlide {
   }
 }
 
+class NewsSlideDraft {
+  final Api _api;
+  final _Box _box;
+
+  NewsSlideDraft._(this._api, this._box);
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 /// A news entry
 class NewsEntry {
   final Api _api;
@@ -27814,6 +27866,22 @@ class NewsEntry {
     tmp6_1._finalizer = _api._registerFinalizer(tmp6_1);
     final tmp4 = NewsSlide._(_api, tmp6_1);
     return tmp4;
+  }
+
+  /// get all slides of this news item
+  FfiListNewsSlide slides() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntrySlides(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListNewsSlide");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListNewsSlide._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
   }
 
   /// The color setting
@@ -27916,7 +27984,7 @@ class NewsEntryDraft {
 
   NewsEntryDraft._(this._api, this._box);
 
-  /// create news slide
+  /// create news slide draft
   Future<bool> addSlide(
     MsgContentDraft baseDraft,
   ) {
@@ -27935,6 +28003,27 @@ class NewsEntryDraft {
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
     final tmp4 = _nativeFuture(tmp5_1, _api.__newsEntryDraftAddSlideFuturePoll);
     return tmp4;
+  }
+
+  /// change position of slides draft of this news entry
+  void swapSlides(
+    int from,
+    int to,
+  ) {
+    final tmp1 = from;
+    final tmp3 = to;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    tmp4 = tmp3;
+    _api._newsEntryDraftSwapSlides(
+      tmp0,
+      tmp2,
+      tmp4,
+    );
+    return;
   }
 
   /// clear slides
@@ -28000,21 +28089,22 @@ class NewsEntryUpdateBuilder {
   NewsEntryUpdateBuilder._(this._api, this._box);
 
   /// set the slides for this news entry
-  void slides(
-    FfiListNewsSlide slides,
+  void addSlide(
+    MsgContentDraft baseDraft,
   ) {
-    final tmp1 = slides;
+    final tmp1 = baseDraft;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    _api._newsEntryUpdateBuilderSlides(
+    _api._newsEntryUpdateBuilderAddSlide(
       tmp0,
       tmp2,
     );
     return;
   }
 
+  /// reset slides for this news entry
   void unsetSlides() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -28029,6 +28119,27 @@ class NewsEntryUpdateBuilder {
     tmp0 = _box.borrow();
     _api._newsEntryUpdateBuilderUnsetSlidesUpdate(
       tmp0,
+    );
+    return;
+  }
+
+  /// set position of slides for this news entry
+  void swapSlides(
+    int from,
+    int to,
+  ) {
+    final tmp1 = from;
+    final tmp3 = to;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    tmp4 = tmp3;
+    _api._newsEntryUpdateBuilderSwapSlides(
+      tmp0,
+      tmp2,
+      tmp4,
     );
     return;
   }
