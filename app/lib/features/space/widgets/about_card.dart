@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 
 class AboutCard extends ConsumerWidget {
   final String spaceId;
+
   const AboutCard({super.key, required this.spaceId});
 
   @override
@@ -20,7 +21,6 @@ class AboutCard extends ConsumerWidget {
     final showInviteBtn =
         membership != null && membership.canString('CanInvite');
     return Card(
-      color: Theme.of(context).colorScheme.onPrimary,
       elevation: 0,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

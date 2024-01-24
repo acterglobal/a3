@@ -141,8 +141,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
               decoration: BoxDecoration(
                 color: Theme.of(context)
                     .colorScheme
-                    .primaryContainer
-                    .withOpacity(0.5),
+                    .primaryContainer,
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Padding(
@@ -181,8 +180,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
               decoration: BoxDecoration(
                 color: Theme.of(context)
                     .colorScheme
-                    .primaryContainer
-                    .withOpacity(0.5),
+                    .primaryContainer,
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Padding(
@@ -214,9 +212,6 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
           replacement: FrostEffect(
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 16),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.5),
-              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -325,7 +320,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 15),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.5),
+                color: Theme.of(context).colorScheme.background,
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -913,7 +908,7 @@ class _TextInputWidget extends ConsumerWidget {
                 .addMention(displayName, authorId);
           },
           suggestionListDecoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.onSecondary,
+            color: Theme.of(context).colorScheme.background,
             borderRadius: BorderRadius.circular(6),
           ),
           onChanged: (String value) async {
@@ -996,7 +991,7 @@ class _TextInputWidget extends ConsumerWidget {
                 ? 'New Encrypted Message '
                 : AppLocalizations.of(context)!.newMessage,
             hintStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                  color: Theme.of(context).colorScheme.onBackground,
                 ),
             contentPadding: const EdgeInsets.all(15),
             hintMaxLines: 1,

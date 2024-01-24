@@ -67,59 +67,28 @@ class _IntroProfileState extends State<IntroProfile> {
                     ),
                     child: Column(
                       children: [
-                        GestureDetector(
+                        ElevatedButton(
                           key: LoginPageKeys.signUpBtn,
-                          onTap: () =>
+                          onPressed: () =>
                               context.pushNamed(Routes.authRegister.name),
-                          child: Container(
-                            height: 54,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Create Profile',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: Colors.black,
-                                  size: 18,
-                                ),
-                              ],
-                            ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('Create Profile'),
+                              SizedBox(width: 10),
+                              Icon(Icons.arrow_forward_ios, size: 18),
+                            ],
                           ),
                         ),
                         const SizedBox(
                           height: 25,
                         ),
-                        GestureDetector(
+                        OutlinedButton(
                           key: Keys.loginBtn,
-                          onTap: () => context.pushNamed(Routes.authLogin.name),
-                          child: Container(
-                            height: 54,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.white),
-                            ),
-                            child: const Center(
-                              child: Text(
-                                'Log in',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
+                          onPressed: () =>
+                              context.pushNamed(Routes.authLogin.name),
+                          child: const Center(
+                            child: Text('Log in'),
                           ),
                         ),
                       ],

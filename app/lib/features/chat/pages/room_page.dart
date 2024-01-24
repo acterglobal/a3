@@ -126,8 +126,6 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                   : null,
               flexibleSpace: FrostEffect(
                 child: Container(
-                  color:
-                      Theme.of(context).colorScheme.onPrimary.withOpacity(0.5),
                 ),
               ),
               title: GestureDetector(

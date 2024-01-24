@@ -55,8 +55,6 @@ class RoomProfilePage extends ConsumerWidget {
     );
 
     return Scaffold(
-      backgroundColor:
-          Theme.of(context).colorScheme.onSecondary.withOpacity(0.5),
       extendBodyBehindAppBar: true,
       body: CustomScrollView(
         shrinkWrap: true,
@@ -133,8 +131,6 @@ class RoomProfilePage extends ConsumerWidget {
               physics: const NeverScrollableScrollPhysics(),
               darkTheme: SettingsThemeData(
                 settingsListBackground: Colors.transparent,
-                settingsSectionBackground:
-                    Theme.of(context).colorScheme.onPrimary,
                 dividerColor: Colors.transparent,
                 leadingIconsColor: Theme.of(context).colorScheme.neutral6,
               ),
@@ -186,9 +182,10 @@ class RoomProfilePage extends ConsumerWidget {
                           style: tileTextTheme,
                         ),
                         leading: const Icon(Atlas.user_plus_thin, size: 18),
-                        trailing: const Icon(
+                        trailing: Icon(
                           Icons.chevron_right_outlined,
                           size: 18,
+                          color: Theme.of(context).colorScheme.onBackground,
                         ),
                       ),
                       error: (e, st) => SettingsTile(
@@ -226,8 +223,11 @@ class RoomProfilePage extends ConsumerWidget {
                         Atlas.accounts_group_people_thin,
                         size: 18,
                       ),
-                      trailing:
-                          const Icon(Icons.chevron_right_outlined, size: 18),
+                      trailing: Icon(
+                        Icons.chevron_right_outlined,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
                     ),
                   ],
                 ),

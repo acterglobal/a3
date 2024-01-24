@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
@@ -256,18 +257,7 @@ class _StartPageState extends State<StartPage> {
       body: Container(
         padding: const EdgeInsets.only(top: kToolbarHeight),
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xff121F2B),
-              Color(0xff122334),
-              Color(0xff121315),
-              Color(0xff121315),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.2, 0.4, 0.6, 1.0],
-            tileMode: TileMode.decal,
-          ),
+          gradient: AppTheme.introGradient,
         ),
         child: Column(
           children: [
