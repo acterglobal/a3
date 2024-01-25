@@ -8,6 +8,7 @@ import 'package:acter/common/themes/components/input_decoration_theme.dart';
 import 'package:acter/common/themes/components/list_tile_Theme.dart';
 import 'package:acter/common/themes/components/navigationbar_theme.dart';
 import 'package:acter/common/themes/components/progress_indicator_theme.dart';
+import 'package:acter/common/themes/components/text_theme.dart';
 import 'package:flutter/material.dart';
 
 class ActerTheme {
@@ -15,13 +16,18 @@ class ActerTheme {
     useMaterial3: true,
     colorScheme: colorScheme,
     primaryColor: brandColor,
-    iconTheme: IconThemeData(color: brandColor),
     indicatorColor: brandColor,
     appBarTheme: AppBarTheme(color: brandColor),
     scaffoldBackgroundColor: lightBlueColor,
     highlightColor: Colors.transparent,
     hoverColor: Colors.transparent,
     progressIndicatorTheme: progressIndicatorTheme,
+    tabBarTheme: const TabBarTheme(
+      indicatorColor: Colors.white,
+      labelColor: Colors.white,
+    ),
+    textTheme: textTheme,
+    iconTheme: const IconThemeData(color: Colors.white),
     cardTheme: cardTheme,
     listTileTheme: listTileTheme,
     dividerTheme: dividerTheme,

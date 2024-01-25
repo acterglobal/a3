@@ -57,8 +57,7 @@ class EmailAddressCard extends ConsumerWidget {
                 ],
               )
             : SizedBox(
-                width: 80,
-                child: Row(
+                child: Wrap(
                   children: [
                     IconButton(
                       onPressed: () => alreadyConfirmedAddress(context, ref),
@@ -241,7 +240,8 @@ class _PasswordConfirmState extends State<PasswordConfirm> {
     return AlertDialog(
       title: const Text(
         'Need your password to confirm ',
-      ), // The token-reset path is just the process by which control over that email address is confirmed.
+      ),
+      // The token-reset path is just the process by which control over that email address is confirmed.
       content: Form(
         key: _formKey,
         child: Column(
@@ -313,7 +313,8 @@ class _TokenConfirmState extends State<TokenConfirm> {
     return AlertDialog(
       title: const Text(
         'Confirmation Token',
-      ), // The token-reset path is just the process by which control over that email address is confirmed.
+      ),
+      // The token-reset path is just the process by which control over that email address is confirmed.
       content: Form(
         key: _formKey,
         child: Column(

@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
@@ -31,7 +32,7 @@ class SpaceChatsPage extends ConsumerWidget {
     final chats = ref.watch(relatedChatsProvider(spaceIdOrAlias));
     final related = ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias));
     return DecoratedBox(
-      decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+      decoration: const BoxDecoration(gradient: primaryGradient),
       child: CustomScrollView(
         slivers: <Widget>[
           SliverToBoxAdapter(

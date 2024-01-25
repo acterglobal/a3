@@ -118,7 +118,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
   ) {
     return ListTile(
       selected: isSelected,
-      title: Text(title),
+      title: Text(title,style: Theme.of(context).textTheme.bodyMedium,),
       trailing: isSelected
           ? Icon(
               Atlas.check_circle,

@@ -1,11 +1,10 @@
 import 'dart:math';
 
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:flutter/material.dart';
-
 import 'package:acter/models/onBoard.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class StartPage extends StatefulWidget {
@@ -257,7 +256,7 @@ class _StartPageState extends State<StartPage> {
       body: Container(
         padding: const EdgeInsets.only(top: kToolbarHeight),
         decoration: const BoxDecoration(
-          gradient: AppTheme.introGradient,
+          gradient: introGradient,
         ),
         child: Column(
           children: [

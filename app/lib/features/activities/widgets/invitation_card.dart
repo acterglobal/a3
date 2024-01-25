@@ -24,7 +24,7 @@ class InvitationCard extends ConsumerWidget {
     return invitationProfile.when(
       data: (data) {
         return Card(
-          margin: const EdgeInsets.symmetric(vertical: 1),
+          margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -50,28 +50,27 @@ class InvitationCard extends ConsumerWidget {
               ),
               Divider(
                 color: Theme.of(context).colorScheme.neutral6,
-                indent: 15,
+                indent: 5,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  // Reject Invitation Button
-                  ElevatedButton(
-                    onPressed: () async => await invitation.reject(),
-                    child: Text(AppLocalizations.of(context)!.decline),
-                  ),
-                  // Accept Invitation Button
-                  ElevatedButton(
-                    onPressed: () =>
-                        _onTapAcceptInvite(ref, context, data.roomId),
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                        Theme.of(context).colorScheme.success,
-                      ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    // Reject Invitation Button
+                    OutlinedButton(
+                      onPressed: () async => await invitation.reject(),
+                      child: Text(AppLocalizations.of(context)!.decline),
                     ),
-                    child: Text(AppLocalizations.of(context)!.accept),
-                  ),
-                ],
+                    const SizedBox(width: 15),
+                    // Accept Invitation Button
+                    ElevatedButton(
+                      onPressed: () =>
+                          _onTapAcceptInvite(ref, context, data.roomId),
+                      child: Text(AppLocalizations.of(context)!.accept),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

@@ -928,7 +928,7 @@ class _TextInputWidget extends ConsumerWidget {
           textInputAction: TextInputAction.newline,
           enabled: chatInputState.allowEdit,
           onSubmitted: (value) => onSendButtonPressed(),
-          style: Theme.of(context).textTheme.bodySmall,
+          style: Theme.of(context).textTheme.titleSmall,
           cursorColor: Theme.of(context).colorScheme.primary,
           maxLines: 6,
           minLines: 1,
@@ -968,7 +968,7 @@ class _TextInputWidget extends ConsumerWidget {
               borderSide: BorderSide(
                 width: 0.5,
                 style: BorderStyle.solid,
-                color: Theme.of(context).colorScheme.secondary,
+                color: Theme.of(context).colorScheme.surface,
               ),
             ),
             focusedBorder: OutlineInputBorder(
@@ -976,7 +976,7 @@ class _TextInputWidget extends ConsumerWidget {
               borderSide: BorderSide(
                 width: 0.5,
                 style: BorderStyle.solid,
-                color: Theme.of(context).colorScheme.secondary,
+                color: Theme.of(context).colorScheme.onSecondaryContainer,
               ),
             ),
             enabledBorder: OutlineInputBorder(
@@ -984,14 +984,14 @@ class _TextInputWidget extends ConsumerWidget {
               borderSide: BorderSide(
                 width: 0.5,
                 style: BorderStyle.solid,
-                color: Theme.of(context).colorScheme.secondaryContainer,
+                color: Theme.of(context).colorScheme.onBackground,
               ),
             ),
             hintText: isEncrypted
                 ? 'New Encrypted Message '
                 : AppLocalizations.of(context)!.newMessage,
             hintStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
             contentPadding: const EdgeInsets.all(15),
             hintMaxLines: 1,

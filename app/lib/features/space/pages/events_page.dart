@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
@@ -23,7 +24,7 @@ class SpaceEventsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final spaceEvents = ref.watch(spaceEventsProvider(spaceIdOrAlias));
     return DecoratedBox(
-      decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+      decoration: const BoxDecoration(gradient: primaryGradient),
       child: CustomScrollView(
         slivers: <Widget>[
           SliverToBoxAdapter(

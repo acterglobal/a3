@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
@@ -32,7 +33,7 @@ class RelatedSpacesPage extends ConsumerWidget {
     final spaces = ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias));
     // get platform of context.
     return DecoratedBox(
-      decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+      decoration: const BoxDecoration(gradient: primaryGradient),
       child: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(

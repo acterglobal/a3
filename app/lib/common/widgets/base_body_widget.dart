@@ -1,4 +1,4 @@
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:flutter/material.dart';
 
 /// Reusable base body widget.
@@ -15,7 +15,7 @@ class BaseBody extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: const BoxDecoration(
-        gradient: AppTheme.primaryGradient,
+        gradient: primaryGradient,
       ),
       child: child,
     );

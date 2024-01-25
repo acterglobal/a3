@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
@@ -91,7 +92,7 @@ class Dashboard extends ConsumerWidget {
     return InDashboard(
       child: Scaffold(
         body: Container(
-          decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+          decoration: const BoxDecoration(gradient: primaryGradient),
           child: CustomScrollView(
             slivers: <Widget>[
               SliverAppBar(
