@@ -294,14 +294,22 @@ where
         &self,
         user_id: &UserId,
     ) -> Result<Option<Raw<PresenceEvent>>, Self::Error> {
-        self.get_presence_event(user_id).await
+        Ok(self
+            .inner
+            .get_presence_event(user_id)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn get_presence_events(
         &self,
         user_ids: &[OwnedUserId],
     ) -> Result<Vec<Raw<PresenceEvent>>, Self::Error> {
-        self.get_presence_events(user_ids).await
+        Ok(self
+            .inner
+            .get_presence_events(user_ids)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn get_state_event(
@@ -310,7 +318,11 @@ where
         event_type: StateEventType,
         state_key: &str,
     ) -> Result<Option<RawAnySyncOrStrippedState>, Self::Error> {
-        self.get_state_event(room_id, event_type, state_key).await
+        Ok(self
+            .inner
+            .get_state_event(room_id, event_type, state_key)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn get_state_events(
@@ -318,7 +330,11 @@ where
         room_id: &RoomId,
         event_type: StateEventType,
     ) -> Result<Vec<RawAnySyncOrStrippedState>, Self::Error> {
-        self.get_state_events(room_id, event_type).await
+        Ok(self
+            .inner
+            .get_state_events(room_id, event_type)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn get_state_events_for_keys(
@@ -327,8 +343,11 @@ where
         event_type: StateEventType,
         state_keys: &[&str],
     ) -> Result<Vec<RawAnySyncOrStrippedState>, Self::Error> {
-        self.get_state_events_for_keys(room_id, event_type, state_keys)
+        Ok(self
+            .inner
+            .get_state_events_for_keys(room_id, event_type, state_keys)
             .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn get_profile(
@@ -336,7 +355,11 @@ where
         room_id: &RoomId,
         user_id: &UserId,
     ) -> Result<Option<MinimalRoomMemberEvent>, Self::Error> {
-        self.get_profile(room_id, user_id).await
+        Ok(self
+            .inner
+            .get_profile(room_id, user_id)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn get_profiles<'a>(
@@ -344,7 +367,11 @@ where
         room_id: &RoomId,
         user_ids: &'a [OwnedUserId],
     ) -> Result<BTreeMap<&'a UserId, MinimalRoomMemberEvent>, Self::Error> {
-        self.get_profiles(room_id, user_ids).await
+        Ok(self
+            .inner
+            .get_profiles(room_id, user_ids)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn get_user_ids(
@@ -352,26 +379,46 @@ where
         room_id: &RoomId,
         membership: RoomMemberships,
     ) -> Result<Vec<OwnedUserId>, Self::Error> {
-        self.get_user_ids(room_id, membership).await
+        Ok(self
+            .inner
+            .get_user_ids(room_id, membership)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn get_invited_user_ids(
         &self,
         room_id: &RoomId,
     ) -> Result<Vec<OwnedUserId>, Self::Error> {
-        self.get_invited_user_ids(room_id).await
+        Ok(self
+            .inner
+            .get_invited_user_ids(room_id)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn get_joined_user_ids(&self, room_id: &RoomId) -> Result<Vec<OwnedUserId>, Self::Error> {
-        self.get_joined_user_ids(room_id).await
+        Ok(self
+            .inner
+            .get_joined_user_ids(room_id)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn get_room_infos(&self) -> Result<Vec<RoomInfo>, Self::Error> {
-        self.get_room_infos().await
+        Ok(self
+            .inner
+            .get_room_infos()
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn get_stripped_room_infos(&self) -> Result<Vec<RoomInfo>, Self::Error> {
-        self.get_stripped_room_infos().await
+        Ok(self
+            .inner
+            .get_stripped_room_infos()
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn get_users_with_display_name(
@@ -379,8 +426,11 @@ where
         room_id: &RoomId,
         display_name: &str,
     ) -> Result<BTreeSet<OwnedUserId>, Self::Error> {
-        self.get_users_with_display_name(room_id, display_name)
+        Ok(self
+            .inner
+            .get_users_with_display_name(room_id, display_name)
             .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn get_users_with_display_names<'a>(
@@ -388,15 +438,22 @@ where
         room_id: &RoomId,
         display_names: &'a [String],
     ) -> Result<BTreeMap<&'a str, BTreeSet<OwnedUserId>>, Self::Error> {
-        self.get_users_with_display_names(room_id, display_names)
+        Ok(self
+            .inner
+            .get_users_with_display_names(room_id, display_names)
             .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn get_account_data_event(
         &self,
         event_type: GlobalAccountDataEventType,
     ) -> Result<Option<Raw<AnyGlobalAccountDataEvent>>, Self::Error> {
-        self.get_account_data_event(event_type).await
+        Ok(self
+            .inner
+            .get_account_data_event(event_type)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn get_room_account_data_event(
@@ -404,7 +461,11 @@ where
         room_id: &RoomId,
         event_type: RoomAccountDataEventType,
     ) -> Result<Option<Raw<AnyRoomAccountDataEvent>>, Self::Error> {
-        self.get_room_account_data_event(room_id, event_type).await
+        Ok(self
+            .inner
+            .get_room_account_data_event(room_id, event_type)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn get_user_room_receipt_event(
@@ -414,8 +475,11 @@ where
         thread: ReceiptThread,
         user_id: &UserId,
     ) -> Result<Option<(OwnedEventId, Receipt)>, Self::Error> {
-        self.get_user_room_receipt_event(room_id, receipt_type, thread, user_id)
+        Ok(self
+            .inner
+            .get_user_room_receipt_event(room_id, receipt_type, thread, user_id)
             .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn get_event_room_receipt_events(
@@ -425,12 +489,19 @@ where
         thread: ReceiptThread,
         event_id: &EventId,
     ) -> Result<Vec<(OwnedUserId, Receipt)>, Self::Error> {
-        self.get_event_room_receipt_events(room_id, receipt_type, thread, event_id)
+        Ok(self
+            .inner
+            .get_event_room_receipt_events(room_id, receipt_type, thread, event_id)
             .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn get_custom_value(&self, key: &[u8]) -> Result<Option<Vec<u8>>, Self::Error> {
-        self.get_custom_value(key).await
+        Ok(self
+            .inner
+            .get_custom_value(key)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn set_custom_value(
@@ -438,11 +509,19 @@ where
         key: &[u8],
         value: Vec<u8>,
     ) -> Result<Option<Vec<u8>>, Self::Error> {
-        self.set_custom_value(key, value).await
+        Ok(self
+            .inner
+            .set_custom_value(key, value)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn remove_custom_value(&self, key: &[u8]) -> Result<Option<Vec<u8>>, Self::Error> {
-        self.remove_custom_value(key).await
+        Ok(self
+            .inner
+            .remove_custom_value(key)
+            .await
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
     async fn remove_room(&self, room_id: &RoomId) -> Result<(), Self::Error> {
@@ -536,6 +615,7 @@ mod tests {
         let enc_key = {
             // first media cache
             let cipher = StoreCipher::new()?;
+            let export = cipher.export(passphrase)?;
             let fmc =
                 FileCacheMediaStore::with_store_cipher(cache_dir.path().to_path_buf(), cipher);
             fmc.add_media_content(&fake_mr(my_item_id), some_content.into())
@@ -544,7 +624,7 @@ mod tests {
                 fmc.get_media_content(&fake_mr(my_item_id)).await?,
                 Some(some_content.into())
             );
-            fmc.export(passphrase)?
+            export
         };
 
         // second media cache
@@ -591,6 +671,10 @@ mod tests {
             outer.get_media_content(&fake_mr(my_item_id)).await?,
             Some(some_content.into())
         );
+
+        // and try out all the functions.
+        outer.set_custom_value(b"A", "b".into()).await?;
+        assert_eq!(outer.get_custom_value(b"A").await?, Some("b".into()));
 
         Ok(())
     }
