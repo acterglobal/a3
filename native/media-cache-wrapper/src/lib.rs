@@ -214,6 +214,9 @@ where
         cipher
     };
 
+    fs::create_dir_all(cache_path.as_path())
+        .map_err(|e| StoreCacheWrapperError::StoreError(StoreError::Backend(Box::new(e))))?;
+
     Ok(MediaStoreWrapper::new(
         state_store,
         FileCacheMediaStore::with_store_cipher(cache_path, cipher),
