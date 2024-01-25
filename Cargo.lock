@@ -26,6 +26,7 @@ dependencies = [
  "matrix-sdk",
  "matrix-sdk-base",
  "matrix-sdk-sqlite",
+ "matrix-sdk-store-media-cache-wrapper",
  "matrix-sdk-ui",
  "mime",
  "mime2ext",
@@ -96,6 +97,7 @@ dependencies = [
  "indexmap 2.1.0",
  "matrix-sdk",
  "matrix-sdk-base",
+ "matrix-sdk-sqlite",
  "mime_guess",
  "minijinja",
  "ruma-common",
@@ -962,6 +964,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "console_error_panic_hook"
+version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a06aeb73f470f66dcdbf7223caeebb85984942f22f1adb2a088cf9668146bbbc"
+dependencies = [
+ "cfg-if",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "const-oid"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1108,6 +1120,16 @@ checksum = "eb2a7d3066da2de787b7f032c736763eb7ae5d355f81a68bab2675a96008b0bf"
 dependencies = [
  "phf 0.11.2",
  "serde",
+]
+
+[[package]]
+name = "ctor"
+version = "0.2.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "30d2b3721e861707777e3195b0158f950ae6dc4a27e4d02ff9f67e3eb3de199e"
+dependencies = [
+ "quote 1.0.35",
+ "syn 2.0.48",
 ]
 
 [[package]]
@@ -3030,6 +3052,51 @@ dependencies = [
  "sha2",
  "thiserror",
  "zeroize",
+]
+
+[[package]]
+name = "matrix-sdk-store-media-cache-wrapper"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "base64ct",
+ "matrix-sdk-base",
+ "matrix-sdk-sqlite",
+ "matrix-sdk-store-encryption",
+ "matrix-sdk-test",
+ "rmp-serde",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "uuid 1.6.1",
+]
+
+[[package]]
+name = "matrix-sdk-test"
+version = "0.6.0"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=98df2b35c3ccb4702256b461449260c7d76ce99e#98df2b35c3ccb4702256b461449260c7d76ce99e"
+dependencies = [
+ "ctor",
+ "getrandom",
+ "http",
+ "matrix-sdk-test-macros",
+ "once_cell",
+ "ruma",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing-subscriber",
+ "wasm-bindgen-test",
+]
+
+[[package]]
+name = "matrix-sdk-test-macros"
+version = "0.3.0"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=98df2b35c3ccb4702256b461449260c7d76ce99e#98df2b35c3ccb4702256b461449260c7d76ce99e"
+dependencies = [
+ "quote 1.0.35",
+ "syn 1.0.109",
 ]
 
 [[package]]
@@ -5283,9 +5350,9 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "tokio"
-version = "1.34.0"
+version = "1.35.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d0c014766411e834f7af5b8f4cf46257aab4036ca95e9d2c144a10f59ad6f5b9"
+checksum = "c89b4efa943be685f629b149f53829423f8f5531ea21249408e8e2f8671ec104"
 dependencies = [
  "backtrace",
  "bytes",
@@ -6023,6 +6090,31 @@ name = "wasm-bindgen-shared"
 version = "0.2.90"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4d91413b1c31d7539ba5ef2451af3f0b833a005eb27a631cec32bc0635a8602b"
+
+[[package]]
+name = "wasm-bindgen-test"
+version = "0.3.40"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "139bd73305d50e1c1c4333210c0db43d989395b64a237bd35c10ef3832a7f70c"
+dependencies = [
+ "console_error_panic_hook",
+ "js-sys",
+ "scoped-tls",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test-macro",
+]
+
+[[package]]
+name = "wasm-bindgen-test-macro"
+version = "0.3.40"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "70072aebfe5da66d2716002c729a14e4aec4da0e23cc2ea66323dac541c93928"
+dependencies = [
+ "proc-macro2 1.0.78",
+ "quote 1.0.35",
+ "syn 2.0.48",
+]
 
 [[package]]
 name = "wasm-streams"
