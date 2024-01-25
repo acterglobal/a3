@@ -7,7 +7,6 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/base_body_widget.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -597,13 +596,12 @@ class _CreateRoomFormWidgetConsumerState
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              DefaultButton(
+              OutlinedButton(
                 onPressed: () => Navigator.of(context).pop(),
-                title: 'Cancel',
-                isOutlined: true,
+                child: const Text('Cancel'),
               ),
               const SizedBox(width: 10),
-              DefaultButton(
+              ElevatedButton(
                 key: CreateChatPage.submiteKey,
                 onPressed: titleInput.trim().isEmpty
                     ? null
@@ -627,12 +625,7 @@ class _CreateRoomFormWidgetConsumerState
                           );
                         }
                       },
-                title: 'Create',
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.success,
-                  disabledBackgroundColor:
-                      Theme.of(context).colorScheme.success.withOpacity(0.5),
-                ),
+                child: const Text('Create'),
               ),
             ],
           ),

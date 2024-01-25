@@ -3,7 +3,6 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -252,19 +251,13 @@ class RoomProfilePage extends ConsumerWidget {
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                           actions: [
-                            DefaultButton(
+                            OutlinedButton(
                               onPressed: () =>
                                   Navigator.of(context, rootNavigator: true)
                                       .pop(),
-                              title: 'No',
-                              isOutlined: true,
-                              style: OutlinedButton.styleFrom(
-                                side: BorderSide(
-                                  color: Theme.of(context).colorScheme.success,
-                                ),
-                              ),
+                              child: const Text('No'),
                             ),
-                            DefaultButton(
+                            ElevatedButton(
                               onPressed: () async {
                                 Navigator.of(context, rootNavigator: true)
                                     .pop();
@@ -282,11 +275,7 @@ class RoomProfilePage extends ConsumerWidget {
                                   );
                                 }
                               },
-                              title: 'Yes',
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.badgeUrgent,
-                              ),
+                              child: const Text('Yes'),
                             ),
                           ],
                         ),

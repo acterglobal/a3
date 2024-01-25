@@ -1,19 +1,16 @@
 import 'dart:math';
-import 'package:acter/common/themes/app_theme.dart';
+
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
+import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/events_item.dart';
+import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter/features/space/widgets/space_header.dart';
-
-import 'package:acter/common/widgets/default_button.dart';
-import 'package:acter/common/widgets/empty_state_widget.dart';
-
-import 'package:acter/common/providers/room_providers.dart';
 
 class SpaceEventsPage extends ConsumerWidget {
   final String spaceIdOrAlias;
@@ -71,18 +68,10 @@ class SpaceEventsPage extends ConsumerWidget {
                           'Create new event and bring your community together',
                       image: 'assets/images/empty_event.svg',
                       primaryButton: canCreateEvent
-                          ? DefaultButton(
+                          ? ElevatedButton(
                               onPressed: () =>
                                   context.pushNamed(Routes.createEvent.name),
-                              title: 'Create Event',
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.success,
-                                disabledBackgroundColor: Theme.of(context)
-                                    .colorScheme
-                                    .success
-                                    .withOpacity(0.5),
-                              ),
+                              child: const Text('Create Event'),
                             )
                           : null,
                     ),

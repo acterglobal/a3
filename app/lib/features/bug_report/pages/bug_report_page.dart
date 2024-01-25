@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/features/bug_report/models/bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:flutter/material.dart';
@@ -100,7 +99,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
               const SizedBox(height: 10),
               isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : DefaultButton(
+                  : ElevatedButton(
                       onPressed: () async {
                         if (bugReport.description.isEmpty) {
                           _descriptionDialog();
@@ -108,7 +107,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                         }
                         reportBug(bugReport);
                       },
-                      title: 'Submit',
+                      child: const Text('Submit'),
                     ),
             ],
           ),

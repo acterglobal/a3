@@ -4,7 +4,6 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 // Can be extended to be reusable dialog as riverpod states get added.
 // Ref can be used to read any provider which are declared.
@@ -50,7 +49,7 @@ void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
                     border: Border.all(color: Colors.grey),
                   ),
                   child: TextButton(
-                    onPressed: () => ctx.pop(),
+                    onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                     child: const Text(
                       'No',
                       key: LogoutDialogKeys.cancel,

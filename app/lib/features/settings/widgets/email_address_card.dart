@@ -3,7 +3,6 @@ import 'dart:core';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -124,15 +123,14 @@ class EmailAddressCard extends ConsumerWidget {
           'Are you sure you want to unregister this email address? This action cannot be undone.',
         ),
         actions: <Widget>[
-          DefaultButton(
+          OutlinedButton(
             onPressed: () => Navigator.of(
               context,
               rootNavigator: true,
             ).pop(),
-            title: 'No',
-            isOutlined: true,
+            child: const Text('No'),
           ),
-          DefaultButton(
+          ElevatedButton(
             onPressed: () async {
               final client = ref.read(alwaysClientProvider);
               final manager = client.threePidManager();
@@ -144,10 +142,7 @@ class EmailAddressCard extends ConsumerWidget {
               }
               Navigator.of(context, rootNavigator: true).pop();
             },
-            title: 'Yes',
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.onError,
-            ),
+            child: const Text('Yes'),
           ),
         ],
       ),
@@ -269,11 +264,11 @@ class _PasswordConfirmState extends State<PasswordConfirm> {
         ),
       ),
       actions: <Widget>[
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
           child: const Text('Cancel'),
         ),
-        TextButton(
+        ElevatedButton(
           onPressed: () => onSubmit(context),
           child: const Text('Submit'),
         ),
@@ -349,11 +344,11 @@ class _TokenConfirmState extends State<TokenConfirm> {
         ),
       ),
       actions: <Widget>[
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
           child: const Text('Cancel'),
         ),
-        TextButton(
+        ElevatedButton(
           onPressed: () => onSubmit(context),
           child: const Text('Submit'),
         ),

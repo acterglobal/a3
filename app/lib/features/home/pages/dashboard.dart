@@ -3,10 +3,9 @@ import 'dart:math';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/constants.dart';
-import 'package:acter/common/widgets/default_button.dart';
-import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/in_dashboard.dart';
@@ -71,19 +70,13 @@ class Dashboard extends ConsumerWidget {
           subtitle:
               'Create or join space, to start organizing and collaborating!',
           image: 'assets/images/empty_home.svg',
-          primaryButton: DefaultButton(
+          primaryButton: ElevatedButton(
             onPressed: () => context.pushNamed(Routes.createSpace.name),
-            title: 'Create New Space',
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.success,
-              disabledBackgroundColor:
-                  Theme.of(context).colorScheme.success.withOpacity(0.5),
-            ),
+            child: const Text('Create New Space'),
           ),
-          secondaryButton: DefaultButton(
+          secondaryButton: OutlinedButton(
             onPressed: () => context.pushNamed(Routes.joinSpace.name),
-            title: 'Join Existing Space',
-            isOutlined: true,
+            child: const Text('Join Existing Space'),
           ),
         ),
       );

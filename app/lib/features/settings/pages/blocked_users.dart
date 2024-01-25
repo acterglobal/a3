@@ -45,11 +45,11 @@ class _AddUserToBlockState extends State<AddUserToBlock> {
         ),
       ),
       actions: <Widget>[
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
           child: const Text('Cancel'),
         ),
-        TextButton(
+        ElevatedButton(
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               Navigator.pop(context, userName.text);

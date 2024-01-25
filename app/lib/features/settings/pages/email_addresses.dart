@@ -44,11 +44,11 @@ class _AddEmailAddrState extends State<AddEmailAddr> {
         ),
       ),
       actions: <Widget>[
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
           child: const Text('Cancel'),
         ),
-        TextButton(
+        ElevatedButton(
           onPressed: () => onSubmit(context),
           child: const Text('Submit'),
         ),

@@ -1,8 +1,8 @@
 import 'dart:io';
+
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
@@ -225,15 +225,14 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                               'Are you sure you want to delete this message? This action cannot be undone.',
                             ),
                             actions: <Widget>[
-                              DefaultButton(
+                              OutlinedButton(
                                 onPressed: () => Navigator.of(
                                   context,
                                   rootNavigator: true,
                                 ).pop(),
-                                title: 'No',
-                                isOutlined: true,
+                                child: const Text('No'),
                               ),
-                              DefaultButton(
+                              ElevatedButton(
                                 onPressed: () async {
                                   if (currentMessageId != null) {
                                     try {
@@ -264,11 +263,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                     debugPrint(currentMessageId);
                                   }
                                 },
-                                title: 'Yes',
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      Theme.of(context).colorScheme.onError,
-                                ),
+                                child: const Text('Yes'),
                               ),
                             ],
                           ),
@@ -550,26 +545,17 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
               child: Text(fileName, style: Theme.of(ctx).textTheme.bodySmall),
             ),
             actions: <Widget>[
-              DefaultButton(
+              OutlinedButton(
                 onPressed: () =>
                     Navigator.of(context, rootNavigator: true).pop(),
-                title: 'Cancel',
-                isOutlined: true,
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(
-                    color: Theme.of(ctx).colorScheme.errorContainer,
-                  ),
-                ),
+                child: const Text('Cancel'),
               ),
-              DefaultButton(
+              ElevatedButton(
                 onPressed: () async {
                   Navigator.of(context, rootNavigator: true).pop();
                   await handleFileUpload(selectedFiles, chatAttachmentType);
                 },
-                title: 'Upload',
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(ctx).colorScheme.success,
-                ),
+                child: const Text('Upload'),
               ),
             ],
           ),

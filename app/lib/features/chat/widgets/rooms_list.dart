@@ -108,13 +108,6 @@ class RoomsListWidget extends ConsumerWidget {
             },
           ),
           SliverToBoxAdapter(
-            child: Container(
-              height: 1,
-              width: double.infinity,
-              color: Theme.of(context).colorScheme.secondaryContainer,
-            ),
-          ),
-          SliverToBoxAdapter(
             child: client.isGuest()
                 ? empty
                 : ConvosList(

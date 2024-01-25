@@ -1,4 +1,3 @@
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:flutter/material.dart';
@@ -52,9 +51,9 @@ Future<void> joinRoom(
           style: Theme.of(context).textTheme.titleSmall,
         ),
         actions: <Widget>[
-          DefaultButton(
+          ElevatedButton(
             onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-            title: 'Close',
+            child: const Text('Close'),
           ),
         ],
       ),
