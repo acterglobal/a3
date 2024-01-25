@@ -724,19 +724,21 @@ class Api {
 
   /// Create a new client for homeserver at url with storage at data_path
   Future<Client> loginNewClient(
-    String basepath,
+    String basePath,
+    String mediaCacheBasePath,
     String username,
     String password,
     String defaultHomeserverName,
     String defaultHomeserverUrl,
     String? deviceName,
   ) {
-    final tmp0 = basepath;
-    final tmp4 = username;
-    final tmp8 = password;
-    final tmp12 = defaultHomeserverName;
-    final tmp16 = defaultHomeserverUrl;
-    final tmp20 = deviceName;
+    final tmp0 = basePath;
+    final tmp4 = mediaCacheBasePath;
+    final tmp8 = username;
+    final tmp12 = password;
+    final tmp16 = defaultHomeserverName;
+    final tmp20 = defaultHomeserverUrl;
+    final tmp24 = deviceName;
     var tmp1 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -753,9 +755,12 @@ class Api {
     var tmp18 = 0;
     var tmp19 = 0;
     var tmp21 = 0;
+    var tmp22 = 0;
     var tmp23 = 0;
-    var tmp24 = 0;
     var tmp25 = 0;
+    var tmp27 = 0;
+    var tmp28 = 0;
+    var tmp29 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
 
@@ -796,21 +801,29 @@ class Api {
     tmp17_1.setAll(0, tmp16_0);
     tmp17 = tmp17_0.address;
     tmp19 = tmp18;
-    if (tmp20 == null) {
-      tmp21 = 0;
-    } else {
-      tmp21 = 1;
-      final tmp22 = tmp20;
-      final tmp22_0 = utf8.encode(tmp22);
-      tmp24 = tmp22_0.length;
+    final tmp20_0 = utf8.encode(tmp20);
+    tmp22 = tmp20_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp23_0 = this.__allocate(tmp24 * 1, 1);
-      final Uint8List tmp23_1 = tmp23_0.asTypedList(tmp24);
-      tmp23_1.setAll(0, tmp22_0);
-      tmp23 = tmp23_0.address;
-      tmp25 = tmp24;
+    final ffi.Pointer<ffi.Uint8> tmp21_0 = this.__allocate(tmp22 * 1, 1);
+    final Uint8List tmp21_1 = tmp21_0.asTypedList(tmp22);
+    tmp21_1.setAll(0, tmp20_0);
+    tmp21 = tmp21_0.address;
+    tmp23 = tmp22;
+    if (tmp24 == null) {
+      tmp25 = 0;
+    } else {
+      tmp25 = 1;
+      final tmp26 = tmp24;
+      final tmp26_0 = utf8.encode(tmp26);
+      tmp28 = tmp26_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp27_0 = this.__allocate(tmp28 * 1, 1);
+      final Uint8List tmp27_1 = tmp27_0.asTypedList(tmp28);
+      tmp27_1.setAll(0, tmp26_0);
+      tmp27 = tmp27_0.address;
+      tmp29 = tmp28;
     }
-    final tmp26 = _loginNewClient(
+    final tmp30 = _loginNewClient(
       tmp1,
       tmp2,
       tmp3,
@@ -827,24 +840,27 @@ class Api {
       tmp18,
       tmp19,
       tmp21,
+      tmp22,
       tmp23,
-      tmp24,
       tmp25,
+      tmp27,
+      tmp28,
+      tmp29,
     );
-    final tmp28 = tmp26;
-    final ffi.Pointer<ffi.Void> tmp28_0 = ffi.Pointer.fromAddress(tmp28);
-    final tmp28_1 = _Box(this, tmp28_0, "__login_new_client_future_drop");
-    tmp28_1._finalizer = this._registerFinalizer(tmp28_1);
-    final tmp27 = _nativeFuture(tmp28_1, this.__loginNewClientFuturePoll);
-    return tmp27;
+    final tmp32 = tmp30;
+    final ffi.Pointer<ffi.Void> tmp32_0 = ffi.Pointer.fromAddress(tmp32);
+    final tmp32_1 = _Box(this, tmp32_0, "__login_new_client_future_drop");
+    tmp32_1._finalizer = this._registerFinalizer(tmp32_1);
+    final tmp31 = _nativeFuture(tmp32_1, this.__loginNewClientFuturePoll);
+    return tmp31;
   }
 
   /// Create a new client from the restore token
   Future<Client> loginWithToken(
-    String basepath,
+    String basePath,
     String restoreToken,
   ) {
-    final tmp0 = basepath;
+    final tmp0 = basePath;
     final tmp4 = restoreToken;
     var tmp1 = 0;
     var tmp2 = 0;
@@ -886,15 +902,17 @@ class Api {
 
   /// Create an anonymous client connecting to the homeserver
   Future<Client> guestClient(
-    String basepath,
+    String basePath,
+    String mediaCacheBasePath,
     String defaultHomeserverName,
     String defaultHomeserverUrl,
     String? deviceName,
   ) {
-    final tmp0 = basepath;
-    final tmp4 = defaultHomeserverName;
-    final tmp8 = defaultHomeserverUrl;
-    final tmp12 = deviceName;
+    final tmp0 = basePath;
+    final tmp4 = mediaCacheBasePath;
+    final tmp8 = defaultHomeserverName;
+    final tmp12 = defaultHomeserverUrl;
+    final tmp16 = deviceName;
     var tmp1 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -905,9 +923,12 @@ class Api {
     var tmp10 = 0;
     var tmp11 = 0;
     var tmp13 = 0;
+    var tmp14 = 0;
     var tmp15 = 0;
-    var tmp16 = 0;
     var tmp17 = 0;
+    var tmp19 = 0;
+    var tmp20 = 0;
+    var tmp21 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
 
@@ -932,21 +953,29 @@ class Api {
     tmp9_1.setAll(0, tmp8_0);
     tmp9 = tmp9_0.address;
     tmp11 = tmp10;
-    if (tmp12 == null) {
-      tmp13 = 0;
-    } else {
-      tmp13 = 1;
-      final tmp14 = tmp12;
-      final tmp14_0 = utf8.encode(tmp14);
-      tmp16 = tmp14_0.length;
+    final tmp12_0 = utf8.encode(tmp12);
+    tmp14 = tmp12_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp15_0 = this.__allocate(tmp16 * 1, 1);
-      final Uint8List tmp15_1 = tmp15_0.asTypedList(tmp16);
-      tmp15_1.setAll(0, tmp14_0);
-      tmp15 = tmp15_0.address;
-      tmp17 = tmp16;
+    final ffi.Pointer<ffi.Uint8> tmp13_0 = this.__allocate(tmp14 * 1, 1);
+    final Uint8List tmp13_1 = tmp13_0.asTypedList(tmp14);
+    tmp13_1.setAll(0, tmp12_0);
+    tmp13 = tmp13_0.address;
+    tmp15 = tmp14;
+    if (tmp16 == null) {
+      tmp17 = 0;
+    } else {
+      tmp17 = 1;
+      final tmp18 = tmp16;
+      final tmp18_0 = utf8.encode(tmp18);
+      tmp20 = tmp18_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp19_0 = this.__allocate(tmp20 * 1, 1);
+      final Uint8List tmp19_1 = tmp19_0.asTypedList(tmp20);
+      tmp19_1.setAll(0, tmp18_0);
+      tmp19 = tmp19_0.address;
+      tmp21 = tmp20;
     }
-    final tmp18 = _guestClient(
+    final tmp22 = _guestClient(
       tmp1,
       tmp2,
       tmp3,
@@ -957,21 +986,25 @@ class Api {
       tmp10,
       tmp11,
       tmp13,
+      tmp14,
       tmp15,
-      tmp16,
       tmp17,
+      tmp19,
+      tmp20,
+      tmp21,
     );
-    final tmp20 = tmp18;
-    final ffi.Pointer<ffi.Void> tmp20_0 = ffi.Pointer.fromAddress(tmp20);
-    final tmp20_1 = _Box(this, tmp20_0, "__guest_client_future_drop");
-    tmp20_1._finalizer = this._registerFinalizer(tmp20_1);
-    final tmp19 = _nativeFuture(tmp20_1, this.__guestClientFuturePoll);
-    return tmp19;
+    final tmp24 = tmp22;
+    final ffi.Pointer<ffi.Void> tmp24_0 = ffi.Pointer.fromAddress(tmp24);
+    final tmp24_1 = _Box(this, tmp24_0, "__guest_client_future_drop");
+    tmp24_1._finalizer = this._registerFinalizer(tmp24_1);
+    final tmp23 = _nativeFuture(tmp24_1, this.__guestClientFuturePoll);
+    return tmp23;
   }
 
   /// Create a new client from the registration token
   Future<Client> registerWithToken(
-    String basepath,
+    String basePath,
+    String mediaCacheBasePath,
     String username,
     String password,
     String registrationToken,
@@ -979,13 +1012,14 @@ class Api {
     String defaultHomeserverUrl,
     String deviceName,
   ) {
-    final tmp0 = basepath;
-    final tmp4 = username;
-    final tmp8 = password;
-    final tmp12 = registrationToken;
-    final tmp16 = defaultHomeserverName;
-    final tmp20 = defaultHomeserverUrl;
-    final tmp24 = deviceName;
+    final tmp0 = basePath;
+    final tmp4 = mediaCacheBasePath;
+    final tmp8 = username;
+    final tmp12 = password;
+    final tmp16 = registrationToken;
+    final tmp20 = defaultHomeserverName;
+    final tmp24 = defaultHomeserverUrl;
+    final tmp28 = deviceName;
     var tmp1 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -1007,6 +1041,9 @@ class Api {
     var tmp25 = 0;
     var tmp26 = 0;
     var tmp27 = 0;
+    var tmp29 = 0;
+    var tmp30 = 0;
+    var tmp31 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
 
@@ -1063,7 +1100,15 @@ class Api {
     tmp25_1.setAll(0, tmp24_0);
     tmp25 = tmp25_0.address;
     tmp27 = tmp26;
-    final tmp28 = _registerWithToken(
+    final tmp28_0 = utf8.encode(tmp28);
+    tmp30 = tmp28_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp29_0 = this.__allocate(tmp30 * 1, 1);
+    final Uint8List tmp29_1 = tmp29_0.asTypedList(tmp30);
+    tmp29_1.setAll(0, tmp28_0);
+    tmp29 = tmp29_0.address;
+    tmp31 = tmp30;
+    final tmp32 = _registerWithToken(
       tmp1,
       tmp2,
       tmp3,
@@ -1085,33 +1130,42 @@ class Api {
       tmp25,
       tmp26,
       tmp27,
+      tmp29,
+      tmp30,
+      tmp31,
     );
-    final tmp30 = tmp28;
-    final ffi.Pointer<ffi.Void> tmp30_0 = ffi.Pointer.fromAddress(tmp30);
-    final tmp30_1 = _Box(this, tmp30_0, "__register_with_token_future_drop");
-    tmp30_1._finalizer = this._registerFinalizer(tmp30_1);
-    final tmp29 = _nativeFuture(tmp30_1, this.__registerWithTokenFuturePoll);
-    return tmp29;
+    final tmp34 = tmp32;
+    final ffi.Pointer<ffi.Void> tmp34_0 = ffi.Pointer.fromAddress(tmp34);
+    final tmp34_1 = _Box(this, tmp34_0, "__register_with_token_future_drop");
+    tmp34_1._finalizer = this._registerFinalizer(tmp34_1);
+    final tmp33 = _nativeFuture(tmp34_1, this.__registerWithTokenFuturePoll);
+    return tmp33;
   }
 
   /// destroy the local data of a session
   Future<bool> destroyLocalData(
-    String basepath,
+    String basePath,
+    String? mediaCacheBasePath,
     String userId,
     String defaultHomeserverName,
   ) {
-    final tmp0 = basepath;
-    final tmp4 = userId;
-    final tmp8 = defaultHomeserverName;
+    final tmp0 = basePath;
+    final tmp4 = mediaCacheBasePath;
+    final tmp10 = userId;
+    final tmp14 = defaultHomeserverName;
     var tmp1 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp5 = 0;
-    var tmp6 = 0;
     var tmp7 = 0;
+    var tmp8 = 0;
     var tmp9 = 0;
-    var tmp10 = 0;
     var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp13 = 0;
+    var tmp15 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
 
@@ -1120,39 +1174,57 @@ class Api {
     tmp1_1.setAll(0, tmp0_0);
     tmp1 = tmp1_0.address;
     tmp3 = tmp2;
-    final tmp4_0 = utf8.encode(tmp4);
-    tmp6 = tmp4_0.length;
+    if (tmp4 == null) {
+      tmp5 = 0;
+    } else {
+      tmp5 = 1;
+      final tmp6 = tmp4;
+      final tmp6_0 = utf8.encode(tmp6);
+      tmp8 = tmp6_0.length;
 
-    final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
-    final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
-    tmp5_1.setAll(0, tmp4_0);
-    tmp5 = tmp5_0.address;
-    tmp7 = tmp6;
-    final tmp8_0 = utf8.encode(tmp8);
-    tmp10 = tmp8_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp7_0 = this.__allocate(tmp8 * 1, 1);
+      final Uint8List tmp7_1 = tmp7_0.asTypedList(tmp8);
+      tmp7_1.setAll(0, tmp6_0);
+      tmp7 = tmp7_0.address;
+      tmp9 = tmp8;
+    }
+    final tmp10_0 = utf8.encode(tmp10);
+    tmp12 = tmp10_0.length;
 
-    final ffi.Pointer<ffi.Uint8> tmp9_0 = this.__allocate(tmp10 * 1, 1);
-    final Uint8List tmp9_1 = tmp9_0.asTypedList(tmp10);
-    tmp9_1.setAll(0, tmp8_0);
-    tmp9 = tmp9_0.address;
-    tmp11 = tmp10;
-    final tmp12 = _destroyLocalData(
+    final ffi.Pointer<ffi.Uint8> tmp11_0 = this.__allocate(tmp12 * 1, 1);
+    final Uint8List tmp11_1 = tmp11_0.asTypedList(tmp12);
+    tmp11_1.setAll(0, tmp10_0);
+    tmp11 = tmp11_0.address;
+    tmp13 = tmp12;
+    final tmp14_0 = utf8.encode(tmp14);
+    tmp16 = tmp14_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp15_0 = this.__allocate(tmp16 * 1, 1);
+    final Uint8List tmp15_1 = tmp15_0.asTypedList(tmp16);
+    tmp15_1.setAll(0, tmp14_0);
+    tmp15 = tmp15_0.address;
+    tmp17 = tmp16;
+    final tmp18 = _destroyLocalData(
       tmp1,
       tmp2,
       tmp3,
       tmp5,
-      tmp6,
       tmp7,
+      tmp8,
       tmp9,
-      tmp10,
       tmp11,
+      tmp12,
+      tmp13,
+      tmp15,
+      tmp16,
+      tmp17,
     );
-    final tmp14 = tmp12;
-    final ffi.Pointer<ffi.Void> tmp14_0 = ffi.Pointer.fromAddress(tmp14);
-    final tmp14_1 = _Box(this, tmp14_0, "__destroy_local_data_future_drop");
-    tmp14_1._finalizer = this._registerFinalizer(tmp14_1);
-    final tmp13 = _nativeFuture(tmp14_1, this.__destroyLocalDataFuturePoll);
-    return tmp13;
+    final tmp20 = tmp18;
+    final ffi.Pointer<ffi.Void> tmp20_0 = ffi.Pointer.fromAddress(tmp20);
+    final tmp20_1 = _Box(this, tmp20_0, "__destroy_local_data_future_drop");
+    tmp20_1._finalizer = this._registerFinalizer(tmp20_1);
+    final tmp19 = _nativeFuture(tmp20_1, this.__destroyLocalDataFuturePoll);
+    return tmp19;
   }
 
   EfkDuration durationFromSecs(
@@ -11800,6 +11872,9 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -11808,6 +11883,9 @@ class Api {
 
   late final _loginNewClient = _loginNewClientPtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -11860,6 +11938,9 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -11881,10 +11962,16 @@ class Api {
         int,
         int,
         int,
+        int,
+        int,
+        int,
       )>();
   late final _registerWithTokenPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -11931,10 +12018,17 @@ class Api {
         int,
         int,
         int,
+        int,
+        int,
+        int,
       )>();
   late final _destroyLocalDataPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
@@ -11948,6 +12042,10 @@ class Api {
 
   late final _destroyLocalData = _destroyLocalDataPtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
+        int,
         int,
         int,
         int,

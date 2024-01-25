@@ -19,7 +19,7 @@ use matrix_sdk_base::{
     MinimalRoomMemberEvent, RoomInfo, RoomMemberships, StateChanges, StateStore, StateStoreDataKey,
     StateStoreDataValue, StoreError,
 };
-use matrix_sdk_store_encryption::{Error, StoreCipher};
+use matrix_sdk_store_encryption::StoreCipher;
 use serde_json;
 
 use std::{
