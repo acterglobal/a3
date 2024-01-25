@@ -25,9 +25,10 @@ use serde_json;
 use std::{
     collections::{BTreeMap, BTreeSet},
     fs,
-    ops::Deref,
     path::PathBuf,
 };
+
+use tracing::instrument;
 #[async_trait]
 trait MediaStore: Debug + Sync + Send {
     type Error: Debug + Into<StoreError> + From<serde_json::Error>;
@@ -89,18 +90,11 @@ impl FileCacheMediaStore {
     }
 }
 
-impl Deref for FileCacheMediaStore {
-    type Target = StoreCipher;
-
-    fn deref(&self) -> &Self::Target {
-        &self.store_cipher
-    }
-}
-
 #[async_trait]
 impl MediaStore for FileCacheMediaStore {
     type Error = StoreError;
 
+    #[instrument(skip_all)]
     async fn add_media_content(
         &self,
         request: &MediaRequest,
@@ -115,6 +109,7 @@ impl MediaStore for FileCacheMediaStore {
         Ok(())
     }
 
+    #[instrument(skip_all)]
     async fn get_media_content(
         &self,
         request: &MediaRequest,
@@ -126,6 +121,7 @@ impl MediaStore for FileCacheMediaStore {
             .transpose()
     }
 
+    #[instrument(skip_all)]
     async fn remove_media_content(&self, request: &MediaRequest) -> Result<(), Self::Error> {
         let base_filename = self.encode_key(request.source.unique_key());
         fs::remove_file(self.cache_dir.join(base_filename))
@@ -133,6 +129,7 @@ impl MediaStore for FileCacheMediaStore {
         Ok(())
     }
 
+    #[instrument(skip_all)]
     async fn remove_media_content_for_uri(&self, uri: &ruma::MxcUri) -> Result<(), Self::Error> {
         let base_filename = self.encode_key(uri);
         fs::remove_file(self.cache_dir.join(base_filename))
