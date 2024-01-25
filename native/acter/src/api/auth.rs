@@ -281,7 +281,7 @@ pub async fn login_new_client(
     )
     .await
 }
-
+#[allow(clippy::too_many_arguments)]
 pub async fn register(
     base_path: String,
     media_cache_base_path: String,
@@ -314,6 +314,7 @@ pub async fn register(
     .await
 }
 
+#[allow(clippy::too_many_arguments)]
 pub async fn register_under_config(
     config: ClientBuilder,
     user_id: OwnedUserId,
@@ -372,6 +373,7 @@ pub async fn register_under_config(
         .await?
 }
 
+#[allow(clippy::too_many_arguments)]
 pub async fn register_with_token(
     base_path: String,
     media_cache_base_path: String,

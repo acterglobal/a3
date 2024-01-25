@@ -20,7 +20,6 @@ use matrix_sdk_base::{
     StateStoreDataValue, StoreError,
 };
 use matrix_sdk_store_encryption::StoreCipher;
-use serde_json;
 
 use std::{
     collections::{BTreeMap, BTreeSet},
@@ -65,7 +64,7 @@ impl Debug for FileCacheMediaStore {
 impl FileCacheMediaStore {
     pub fn with_store_cipher(cache_dir: PathBuf, store_cipher: StoreCipher) -> FileCacheMediaStore {
         FileCacheMediaStore {
-            cache_dir: cache_dir,
+            cache_dir,
             store_cipher,
         }
     }
@@ -78,7 +77,7 @@ impl FileCacheMediaStore {
         rmp_serde::to_vec_named(&encoded).map_err(StoreError::backend)
     }
 
-    fn decode_value<'a>(&self, value: &'a [u8]) -> Result<Vec<u8>, StoreError> {
+    fn decode_value(&self, value: &[u8]) -> Result<Vec<u8>, StoreError> {
         let encrypted = rmp_serde::from_slice(value).map_err(StoreError::backend)?;
         self.store_cipher
             .decrypt_value_data(encrypted)
@@ -162,9 +161,9 @@ impl From<serde_json::error::Error> for StoreCacheWrapperError {
     }
 }
 
-impl Into<StoreError> for StoreCacheWrapperError {
-    fn into(self) -> StoreError {
-        match self {
+impl From<StoreCacheWrapperError> for StoreError {
+    fn from(val: StoreCacheWrapperError) -> Self {
+        match val {
             StoreCacheWrapperError::StoreError(e) => e,
             StoreCacheWrapperError::EncryptionError(e) => StoreError::backend(Box::new(e)),
         }
@@ -199,9 +198,8 @@ where
         .await
         .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?
     {
-        let cipher = StoreCipher::import(passphrase, &enc_key)
-            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?;
-        cipher
+        StoreCipher::import(passphrase, &enc_key)
+            .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?
     } else {
         let cipher = StoreCipher::new()?;
         let key = cipher
@@ -386,6 +384,7 @@ where
             .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
+    #[allow(deprecated)]
     async fn get_invited_user_ids(
         &self,
         room_id: &RoomId,
@@ -397,6 +396,7 @@ where
             .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
+    #[allow(deprecated)]
     async fn get_joined_user_ids(&self, room_id: &RoomId) -> Result<Vec<OwnedUserId>, Self::Error> {
         Ok(self
             .inner
@@ -413,6 +413,7 @@ where
             .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
+    #[allow(deprecated)]
     async fn get_stripped_room_infos(&self) -> Result<Vec<RoomInfo>, Self::Error> {
         Ok(self
             .inner
@@ -581,7 +582,6 @@ mod tests {
     use matrix_sdk_base::ruma::{events::room::MediaSource, OwnedMxcUri};
     use matrix_sdk_sqlite::SqliteStateStore;
     use matrix_sdk_test::async_test;
-    use tempfile;
 
     fn fake_mr(id: &str) -> MediaRequest {
         MediaRequest {
