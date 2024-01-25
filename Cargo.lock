@@ -1617,7 +1617,7 @@ dependencies = [
 [[package]]
 name = "ffi-gen"
 version = "0.1.13"
-source = "git+https://github.com/acterglobal/ffi-gen?branch=proc-macro2-unpin#ef009dd0e8492b9f50290ac670f1febad4390a2c"
+source = "git+https://github.com/acterglobal/ffi-gen#410e8f206f69b17090d1c55be2c69f730d4a54ea"
 dependencies = [
  "anyhow",
  "genco",
@@ -1629,7 +1629,7 @@ dependencies = [
 [[package]]
 name = "ffi-gen-macro"
 version = "0.1.2"
-source = "git+https://github.com/acterglobal/ffi-gen?branch=proc-macro2-unpin#ef009dd0e8492b9f50290ac670f1febad4390a2c"
+source = "git+https://github.com/acterglobal/ffi-gen#410e8f206f69b17090d1c55be2c69f730d4a54ea"
 dependencies = [
  "ffi-gen",
  "proc-macro2 1.0.78",
@@ -1836,8 +1836,9 @@ dependencies = [
 
 [[package]]
 name = "genco"
-version = "0.17.5"
-source = "git+https://github.com/udoprog/genco?branch=proc-macro-span#4a0535c03803a0e285335f338f180b11ad440845"
+version = "0.17.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "98d7af598790738fee616426e669360fa361273b1b9c9b7f30c92fa627605cad"
 dependencies = [
  "genco-macros",
  "relative-path",
@@ -1846,12 +1847,13 @@ dependencies = [
 
 [[package]]
 name = "genco-macros"
-version = "0.17.5"
-source = "git+https://github.com/udoprog/genco?branch=proc-macro-span#4a0535c03803a0e285335f338f180b11ad440845"
+version = "0.17.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d4cf186fea4af17825116f72932fe52cce9a13bae39ff63b4dc0cfdb3fb4bde1"
 dependencies = [
  "proc-macro2 1.0.78",
  "quote 1.0.35",
- "syn 1.0.109",
+ "syn 2.0.48",
 ]
 
 [[package]]

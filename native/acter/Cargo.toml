@@ -18,7 +18,7 @@ proxyman = ["dep:reqwest", "dep:openssl"]
 
 
 [build-dependencies]
-ffi-gen = { git = "https://github.com/acterglobal/ffi-gen", branch = "proc-macro2-unpin" }
+ffi-gen = { git = "https://github.com/acterglobal/ffi-gen" }
 cbindgen = "0.26.0"
 uniffi = { git = "https://github.com/mozilla/uniffi-rs/", features = [ "build" ] }
 
@@ -29,7 +29,7 @@ chrono = "0.4"
 derive_builder = "0.13.0"
 eyeball-im = "0.4.2"
 fern = { git = "https://github.com/acterglobal/fern", branch = "rotate", features = ["manual"] }
-ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen", branch = "proc-macro2-unpin" }
+ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen" }
 futures = "0.3.30"
 futures-signals = "0.3.33"
 infer = "0.15.0"
