@@ -9,24 +9,24 @@ default-members = ["native/acter"]
 
 [workspace.dependencies.matrix-sdk]
 git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "4621dd431721a3dea297b93a8d87423997e99c9b"
+rev = "3e17fc207246329d6aee928a960ac5cd8dbb5b4f"
 default-features = false
 features = ["experimental-sliding-sync"]
 
 [workspace.dependencies.matrix-sdk-base]
 git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "4621dd431721a3dea297b93a8d87423997e99c9b"
+rev = "3e17fc207246329d6aee928a960ac5cd8dbb5b4f"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-sqlite]
 git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "4621dd431721a3dea297b93a8d87423997e99c9b"
+rev = "3e17fc207246329d6aee928a960ac5cd8dbb5b4f"
 default-features = false
 features = ["crypto-store", "state-store"]
 
 [workspace.dependencies.matrix-sdk-ui]
 git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "4621dd431721a3dea297b93a8d87423997e99c9b"
+rev = "3e17fc207246329d6aee928a960ac5cd8dbb5b4f"
 default-features = false
 features = ["e2e-encryption"]
 
@@ -35,7 +35,7 @@ version = "0.9.3"
 features = ["client-api-c", "compat-upload-signatures", "compat-user-id", "compat-arbitrary-length-ids", "unstable-msc3401"]
 
 [workspace.dependencies.ruma-common]
-version = "0.12.1"
+version = "0.12.0"
 
 [workspace.dependencies.ruma-events]
 version = "0.27.11"
