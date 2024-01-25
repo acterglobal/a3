@@ -3069,6 +3069,7 @@ dependencies = [
  "serde_json",
  "tempfile",
  "tokio",
+ "tracing",
  "uuid 1.6.1",
 ]
 
