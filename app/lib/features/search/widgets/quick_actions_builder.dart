@@ -6,7 +6,6 @@ import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class QuickActionsBuilder extends ConsumerWidget {
   final Future<void> Function({
@@ -70,7 +69,10 @@ class QuickActionsBuilder extends ConsumerWidget {
           canPostPin
               ? OutlinedButton.icon(
                   key: QuickJumpKeys.createPinAction,
-                  onPressed: () => context.pushNamed(Routes.actionAddPin.name),
+                  onPressed: () => navigateTo(
+                    route: Routes.actionAddPin,
+                    push: true,
+                  ), // this works
                   icon: const Icon(
                     Atlas.plus_circle_thin,
                     size: 18,
@@ -83,7 +85,8 @@ class QuickActionsBuilder extends ConsumerWidget {
               : null,
           canPostEvent
               ? OutlinedButton.icon(
-                  onPressed: () => context.pushNamed(Routes.createEvent.name),
+                  onPressed: () =>
+                      navigateTo(route: Routes.createEvent, push: true),
                   icon: const Icon(Atlas.plus_circle_thin, size: 18),
                   label: Text(
                     'Event',
@@ -95,7 +98,7 @@ class QuickActionsBuilder extends ConsumerWidget {
               ? OutlinedButton.icon(
                   key: QuickJumpKeys.createTaskListAction,
                   onPressed: () =>
-                      context.pushNamed(Routes.actionAddTaskList.name),
+                      navigateTo(route: Routes.actionAddTaskList, push: true),
                   icon: const Icon(Atlas.plus_circle_thin, size: 18),
                   label: Text(
                     'Task List',

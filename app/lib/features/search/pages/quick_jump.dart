@@ -19,7 +19,6 @@ class QuickjumpDialog extends ConsumerWidget {
             bool push = false,
             String? target,
           }) async {
-            context.pop();
             if (push) {
               if (route == null) {
                 await context.push(target!);

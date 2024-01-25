@@ -1,17 +1,13 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/search/model/base_delegate.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/features/search/providers/search.dart';
 
-const fallbackSidebarIdx = 1;
-const fallbackBottomBarIdx = 0;
-
-class SpaceDetails {
-  final String navigationTarget;
+class SpaceDetails extends BaseDelegate {
   final ActerAvatar icon;
-  final String name;
-
-  const SpaceDetails._(this.icon, this.name, this.navigationTarget);
+  const SpaceDetails(String navigationTarget, String name, {required this.icon})
+      : super(name: name, navigationTarget: navigationTarget);
 }
 
 final AutoDisposeFutureProvider<List<SpaceDetails>> spacesFoundProvider =
@@ -29,8 +25,8 @@ final AutoDisposeFutureProvider<List<SpaceDetails>> spacesFoundProvider =
       }
     }
     finalSpaces.add(
-      SpaceDetails._(
-        ActerAvatar(
+      SpaceDetails(
+        icon: ActerAvatar(
           mode: DisplayMode.Space,
           avatarInfo: AvatarInfo(
             uniqueId: roomId,
@@ -38,8 +34,8 @@ final AutoDisposeFutureProvider<List<SpaceDetails>> spacesFoundProvider =
             avatar: info.getAvatarImage(),
           ),
         ),
-        info.displayName ?? roomId,
         '/$roomId',
+        info.displayName ?? roomId,
       ),
     );
   }

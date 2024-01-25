@@ -5,6 +5,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/icons/tasks_icon.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/search/providers/search.dart';
+import 'package:acter/features/search/widgets/pins_builder.dart';
 import 'package:acter/features/search/widgets/quick_actions_builder.dart';
 import 'package:acter/features/search/widgets/spaces_builder.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
@@ -172,7 +173,10 @@ class QuickJump extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final searchValue = ref.watch(searchValueProvider);
 
-    List<Widget> body = [SpacesBuilder(navigateTo: navigateTo)];
+    List<Widget> body = [
+      SpacesBuilder(navigateTo: navigateTo),
+      PinsBuilder(navigateTo: navigateTo),
+    ];
     if (searchValue.isEmpty) {
       body.add(
         const Divider(indent: 24, endIndent: 24),
@@ -185,7 +189,7 @@ class QuickJump extends ConsumerWidget {
           const Divider(indent: 24, endIndent: 24),
         );
       }
-      body.add(QuickActionsBuilder(navigateTo: navigateTo));
+      body.add(Flexible(child: QuickActionsBuilder(navigateTo: navigateTo)));
     }
 
     return Scaffold(
@@ -196,24 +200,27 @@ class QuickJump extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-              child: TextField(
-                autofocus: true,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
+            Flexible(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                child: TextField(
+                  autofocus: true,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    prefixIcon: Icon(
+                      Atlas.magnifying_glass_thin,
+                      color: Colors.white,
+                    ),
+                    labelText: 'jump to',
                   ),
-                  prefixIcon: Icon(
-                    Atlas.magnifying_glass_thin,
-                    color: Colors.white,
-                  ),
-                  labelText: 'jump to',
+                  onChanged: (String value) async {
+                    ref.read(searchValueProvider.notifier).state = value;
+                  },
                 ),
-                onChanged: (String value) async {
-                  ref.read(searchValueProvider.notifier).state = value;
-                },
               ),
             ),
             ...body,

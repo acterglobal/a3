@@ -2,6 +2,7 @@ import 'dart:core';
 
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/pins/widgets/pin_item.dart';
@@ -107,11 +108,13 @@ class PinPage extends ConsumerWidget {
       backgroundColor: Theme.of(context).colorScheme.neutral,
       appBar: pin.when(
         data: (data) => AppBar(
-          automaticallyImplyLeading: true,
+          automaticallyImplyLeading: false,
           toolbarHeight: 100,
           centerTitle: false,
           leading: IconButton(
-            onPressed: () => context.pop(),
+            onPressed: () => context.canPop()
+                ? context.pop()
+                : context.goNamed(Routes.pins.name),
             icon: const Icon(
               Icons.chevron_left,
               size: 42,

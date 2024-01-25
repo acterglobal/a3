@@ -6,6 +6,7 @@ import 'package:acter/router/shell_routers/activities_shell_router.dart';
 import 'package:acter/router/shell_routers/chat_shell_router.dart';
 import 'package:acter/router/general_router.dart';
 import 'package:acter/router/shell_routers/home_shell_router.dart';
+import 'package:acter/router/shell_routers/quick_jump_shell_router.dart';
 import 'package:acter/router/shell_routers/search_shell_router.dart';
 import 'package:acter/router/shell_routers/update_shell_router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -104,6 +105,10 @@ final GlobalKey<NavigatorState> searchTabNavKey = GlobalKey<NavigatorState>(
   debugLabel: 'searchTabNavKey',
 );
 
+final GlobalKey<NavigatorState> quickJumpTabNavKey = GlobalKey<NavigatorState>(
+  debugLabel: 'quickJumpTabNavKey',
+);
+
 List<RouteBase> makeRoutes(Ref ref) {
   return [
     ...makeGeneralRoutes(),
@@ -150,8 +155,8 @@ List<StatefulShellBranch> mobileShellBranches(Ref ref) {
 List<StatefulShellBranch> desktopShellBranches(Ref ref) {
   return [
     StatefulShellBranch(
-      navigatorKey: searchTabNavKey,
-      routes: makeSearchShellRoutes(ref),
+      navigatorKey: quickJumpTabNavKey,
+      routes: makeQuickJumpShellRoutes(ref),
     ),
     StatefulShellBranch(
       navigatorKey: homeTabNavKey,

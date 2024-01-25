@@ -16,7 +16,6 @@ import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/start_page.dart';
 import 'package:acter/features/pins/sheets/create_pin_sheet.dart';
-import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/settings/super_invites/pages/create.dart';
 import 'package:acter/features/space/sheets/edit_space_sheet.dart';
 import 'package:acter/features/space/sheets/link_room_sheet.dart';
@@ -83,14 +82,6 @@ List<RouteBase> makeGeneralRoutes() {
       builder: (context, state) => FatalFailPage(
         error: state.uri.queryParameters['error']!,
         trace: state.uri.queryParameters['trace']!,
-      ),
-    ),
-    GoRoute(
-      parentNavigatorKey: rootNavKey,
-      name: Routes.quickJump.name,
-      path: Routes.quickJump.route,
-      pageBuilder: (context, state) => DialogPage(
-        builder: (BuildContext ctx) => const QuickjumpDialog(),
       ),
     ),
     GoRoute(
