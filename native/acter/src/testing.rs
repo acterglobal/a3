@@ -47,7 +47,7 @@ where
             return Ok(Some(t));
         }
         let Some(new) = remaining.checked_sub(1) else {
-            break
+            break;
         };
         remaining = new;
         sleep(duration).await;
@@ -108,7 +108,7 @@ pub async fn ensure_user(
         .await;
 
     let Err(e) = login_res else {
-        return Client::new(cl, Default::default()).await
+        return Client::new(cl, Default::default()).await;
     };
 
     if let Some(token) = reg_token {

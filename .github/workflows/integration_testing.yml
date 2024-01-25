@@ -52,7 +52,7 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2023-04-10
+          toolchain: nightly
           override: true
 
       - uses: jlumbroso/free-disk-space@main
@@ -135,7 +135,7 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2023-04-10
+          toolchain: nightly
           override: true
 
       - uses: Swatinem/rust-cache@v1
@@ -244,7 +244,7 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2023-04-10
+          toolchain: nightly
           override: true
 
       - uses: Swatinem/rust-cache@v1
@@ -379,7 +379,7 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2023-04-10
+          toolchain: nightly
           override: true
 
       - uses: actions/setup-java@v2

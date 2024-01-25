@@ -515,7 +515,7 @@ impl Client {
                 let Some(room) = self.core.client().get_room(r_id) else {
                     remove_from(&mut spaces, r_id);
                     remove_from_chat(&mut chats, r_id);
-                    continue
+                    continue;
                 };
 
                 if matches!(room.state(), RoomState::Left) {

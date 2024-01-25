@@ -136,7 +136,7 @@ impl From<&TextMessageEventContent> for MsgContent {
     fn from(value: &TextMessageEventContent) -> Self {
         MsgContent::Text {
             body: value.body.clone(),
-            formatted_body: value.formatted.as_ref().map(|x| x.body.clone()),
+            formatted_body: value.formatted.clone().map(|x| x.body),
         }
     }
 }
@@ -201,7 +201,7 @@ impl From<&EmoteMessageEventContent> for MsgContent {
     fn from(value: &EmoteMessageEventContent) -> Self {
         MsgContent::Text {
             body: value.body.clone(),
-            formatted_body: value.formatted.as_ref().map(|x| x.body.clone()),
+            formatted_body: value.formatted.clone().map(|x| x.body),
         }
     }
 }

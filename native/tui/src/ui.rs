@@ -69,7 +69,7 @@ pub fn next(list_state: &mut ListState, list_len: usize) {
     }
     let Some(current) = list_state.selected() else {
         list_state.select(Some(0));
-        return
+        return;
     };
 
     let next = current + 1;
@@ -459,7 +459,7 @@ impl App {
                 _ => false,
             },
             Widget::Logs => match key.code {
-                KeyCode::Char(c) if c == 'f' => {
+                KeyCode::Char('f') => {
                     self.logs_fullscreen = !self.logs_fullscreen;
                     true
                 }

@@ -67,7 +67,7 @@ impl Account {
         RUNTIME
             .spawn(async move {
                 let source = match account.get_cached_avatar_url().await? {
-                    Some(url) => MediaSource::Plain(url.try_into()?),
+                    Some(url) => MediaSource::Plain(url.into()),
                     None => match account.get_avatar_url().await? {
                         Some(e) => MediaSource::Plain(e),
                         None => return Ok(OptionBuffer::new(None)),
@@ -130,7 +130,7 @@ impl Account {
                     .await?
                     .context("Ignored users not found")?
                     .deserialize()?;
-                Ok(content.ignored_users.keys().map(Clone::clone).collect())
+                Ok(content.ignored_users.keys().cloned().collect())
             })
             .await?
     }

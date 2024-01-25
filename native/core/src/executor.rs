@@ -55,7 +55,7 @@ impl Executor {
             if let Err(e) = subscribe.recv().await {
                 error!(key, "Receiving pong failed: {e}");
             }
-            return self.store.get(&key).await
+            return self.store.get(&key).await;
         };
 
         Ok(model)

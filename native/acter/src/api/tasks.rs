@@ -27,7 +27,8 @@ impl Client {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::TaskList(content) = me.wait_for(key.clone(), timeout).await? else {
+                let AnyActerModel::TaskList(content) = me.wait_for(key.clone(), timeout).await?
+                else {
                     bail!("{key} is not a task");
                 };
                 let room = me
@@ -184,7 +185,7 @@ impl Space {
             .spawn(async move {
                 let mdl = client.store().get(key.as_str()).await?;
 
-                let AnyActerModel::TaskList(content) = mdl else  {
+                let AnyActerModel::TaskList(content) = mdl else {
                     bail!("Not a Tasklist model: {key}")
                 };
                 if room_id != content.room_id() {
@@ -618,7 +619,7 @@ impl Task {
             return false;
         }
         let Ok(user_id) = self.client.account().map(|a| a.user_id()) else {
-            return false
+            return false;
         };
         assignees.contains(&user_id)
     }
