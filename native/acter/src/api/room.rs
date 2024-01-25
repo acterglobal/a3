@@ -659,9 +659,7 @@ impl Room {
     }
 
     pub fn get_profile(&self) -> RoomProfile {
-        let client = self.room.client();
-        let room_id = self.room_id().to_owned();
-        RoomProfile::new(client, room_id)
+        RoomProfile::new(self.room.clone())
     }
 
     pub async fn upload_avatar(&self, uri: String) -> Result<OwnedMxcUri> {

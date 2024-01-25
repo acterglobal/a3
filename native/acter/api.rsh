@@ -154,7 +154,7 @@ object UserProfile {
     fn user_id() -> UserId;
 
     /// whether to have avatar
-    fn has_avatar() -> Future<Result<bool>>;
+    fn has_avatar() -> bool;
 
     /// get the binary data of avatar
     /// if thumb size is given, avatar thumbnail is returned
@@ -162,12 +162,12 @@ object UserProfile {
     fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
-    fn get_display_name() -> Future<Result<OptionString>>;
+    fn get_display_name() -> Option<string>;
 }
 
 object RoomProfile {
     /// whether to have avatar
-    fn has_avatar() -> Result<bool>;
+    fn has_avatar() -> bool;
 
     /// get the binary data of avatar
     /// if thumb size is given, avatar thumbnail is returned
@@ -2109,9 +2109,6 @@ object Client {
     /// get the room id of dm from user id
     fn dm_with_user(user_id: string) -> Result<OptionString>;
 
-    /// get the user profile that contains avatar and display name
-    fn get_user_profile() -> Result<UserProfile>;
-
     /// upload file and return remote url
     fn upload_media(uri: string) -> Future<Result<MxcUri>>;
 
@@ -2184,16 +2181,16 @@ object Client {
     fn subscribe_stream(key: string) -> Stream<bool>;
 
     /// Fetch the Comment or use its event_id to wait for it to come down the wire
-    fn wait_for_comment(key: string, timeout: Option<EfkDuration>) -> Future<Result<Comment>>;
+    fn wait_for_comment(key: string, timeout: Option<u8>) -> Future<Result<Comment>>;
 
     /// Fetch the NewsEntry or use its event_id to wait for it to come down the wire
-    fn wait_for_news(key: string, timeout: Option<EfkDuration>) -> Future<Result<NewsEntry>>;
+    fn wait_for_news(key: string, timeout: Option<u8>) -> Future<Result<NewsEntry>>;
 
     /// Get the latest News for the client
     fn latest_news_entries(count: u32) -> Future<Result<Vec<NewsEntry>>>;
 
     /// Fetch the ActerPin or use its event_id to wait for it to come down the wire
-    fn wait_for_pin(key: string, timeout: Option<EfkDuration>) -> Future<Result<ActerPin>>;
+    fn wait_for_pin(key: string, timeout: Option<u8>) -> Future<Result<ActerPin>>;
 
     /// Get the Pins for the client
     fn pins() -> Future<Result<Vec<ActerPin>>>;
@@ -2202,16 +2199,13 @@ object Client {
     fn pin(pin_id: string) -> Future<Result<ActerPin>>;
 
     /// Fetch the Tasklist or use its event_id to wait for it to come down the wire
-    fn wait_for_task_list(key: string, timeout: Option<EfkDuration>) -> Future<Result<TaskList>>;
+    fn task_list(key: string, timeout: Option<u8>) -> Future<Result<TaskList>>;
 
     /// the Tasks lists for the client
     fn task_lists() -> Future<Result<Vec<TaskList>>>;
 
     /// Fetch the Task or use its event_id to wait for it to come down the wire
-    fn wait_for_task(key: string, timeout: Option<EfkDuration>) -> Future<Result<Task>>;
-
-    /// the Tasks list for the client
-    fn task_list(key: string) -> Future<Result<TaskList>>;
+    fn wait_for_task(key: string, timeout: Option<u8>) -> Future<Result<Task>>;
 
     /// the Tasks lists of this Space
     fn my_open_tasks() -> Future<Result<Vec<Task>>>;
@@ -2226,10 +2220,10 @@ object Client {
     fn calendar_event(calendar_id: string) -> Future<Result<CalendarEvent>>;
 
     /// Fetch the calendar event or use its event_id to wait for it to come down the wire
-    fn wait_for_calendar_event(key: string, timeout: Option<EfkDuration>) -> Future<Result<CalendarEvent>>;
+    fn wait_for_calendar_event(key: string, timeout: Option<u8>) -> Future<Result<CalendarEvent>>;
 
     /// Fetch the RSVP or use its event_id to wait for it to come down the wire
-    fn wait_for_rsvp(key: string, timeout: Option<EfkDuration>) -> Future<Result<Rsvp>>;
+    fn wait_for_rsvp(key: string, timeout: Option<u8>) -> Future<Result<Rsvp>>;
 
     /// list the currently queued notifications
     fn list_notifications(since: Option<string>, only: Option<string>) -> Future<Result<NotificationListResult>>;

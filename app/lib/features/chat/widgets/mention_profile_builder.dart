@@ -2,6 +2,7 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class MentionProfileBuilder extends ConsumerWidget {
   final String roomId;
@@ -37,7 +38,13 @@ class MentionProfileBuilder extends ConsumerWidget {
           size: 18,
         );
       },
-      loading: () => const CircularProgressIndicator(),
+      loading: () => Skeletonizer(
+        child: ActerAvatar(
+          mode: DisplayMode.DM,
+          avatarInfo: AvatarInfo(uniqueId: authorId),
+          size: 18,
+        ),
+      ),
     );
   }
 }

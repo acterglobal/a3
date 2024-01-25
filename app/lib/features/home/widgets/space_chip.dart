@@ -2,6 +2,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class SpaceChip extends ConsumerWidget {
   final SpaceItem? space;
@@ -25,12 +26,25 @@ class SpaceChip extends ConsumerWidget {
         error: (error, st) => Chip(
           label: Text('Loading failed: $error'),
         ),
-        loading: () => const Chip(
-          label: Text('loading'),
-        ),
+        loading: () => renderLoading(spaceId!),
       );
     }
     return renderSpace(space!);
+  }
+
+  Widget renderLoading(String spaceId) {
+    return Skeletonizer(
+      child: Chip(
+        avatar: ActerAvatar(
+          mode: DisplayMode.Space,
+          avatarInfo: AvatarInfo(
+            uniqueId: spaceId,
+          ),
+          size: 24,
+        ),
+        label: Text(spaceId),
+      ),
+    );
   }
 
   Widget renderSpace(space) {

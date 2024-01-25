@@ -40,12 +40,7 @@ class AsyncCalendarEventNotifier
 
   Future<ffi.CalendarEvent> _getCalendarEvent() async {
     final client = ref.watch(alwaysClientProvider);
-    try {
-      return await client.calendarEvent(arg);
-    } catch (e) {
-      return await client.waitForCalendarEvent(arg, null);
-    }
-    // this might throw internally
+    return await client.waitForCalendarEvent(arg, null);
   }
 
   @override

@@ -27,7 +27,7 @@ impl Client {
     pub async fn wait_for_calendar_event(
         &self,
         key: String,
-        timeout: Option<Box<Duration>>,
+        timeout: Option<u8>,
     ) -> Result<CalendarEvent> {
         let me = self.clone();
         RUNTIME

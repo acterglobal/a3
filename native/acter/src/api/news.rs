@@ -41,11 +41,7 @@ use super::{
 };
 
 impl Client {
-    pub async fn wait_for_news(
-        &self,
-        key: String,
-        timeout: Option<Box<Duration>>,
-    ) -> Result<NewsEntry> {
+    pub async fn wait_for_news(&self, key: String, timeout: Option<u8>) -> Result<NewsEntry> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {

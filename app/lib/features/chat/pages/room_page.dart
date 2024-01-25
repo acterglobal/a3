@@ -24,6 +24,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class RoomPage extends ConsumerWidget {
   static const roomPageKey = Key('chat-room-page');
@@ -157,7 +158,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                       error: (error, stackTrace) => Text(
                         'Error loading profile $error',
                       ),
-                      loading: () => const CircularProgressIndicator(),
+                      loading: () => const Skeletonizer(child: Text('loading')),
                     ),
                     const SizedBox(height: 5),
                     activeMembers.when(
@@ -171,7 +172,11 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                       skipLoadingOnReload: false,
                       error: (error, stackTrace) =>
                           Text('Error loading members count $error'),
-                      loading: () => const CircularProgressIndicator(),
+                      loading: () => Skeletonizer(
+                        child: Text(
+                          '100 ${AppLocalizations.of(context)!.members}',
+                        ),
+                      ),
                     ),
                   ],
                 ),

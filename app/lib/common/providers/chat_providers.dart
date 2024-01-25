@@ -93,11 +93,11 @@ final memberProfileByInfoProvider =
 final memberProfileProvider =
     FutureProvider.family<ProfileData, Member>((ref, member) async {
   UserProfile profile = member.getProfile();
-  OptionString displayName = await profile.getDisplayName();
+  final displayName = profile.getDisplayName();
   final sdk = await ref.watch(sdkProvider.future);
   final size = sdk.newThumbSize(62, 60);
   final avatar = await profile.getAvatar(size);
-  return ProfileData(displayName.text(), avatar.data());
+  return ProfileData(displayName, avatar.data());
 });
 
 final memberProvider =

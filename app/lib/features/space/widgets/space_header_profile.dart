@@ -7,6 +7,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class SpaceHeaderProfile extends ConsumerWidget {
   static const headerKey = Key('space-header');
@@ -127,7 +128,20 @@ class SpaceHeaderProfile extends ConsumerWidget {
         );
       },
       error: (error, stack) => Text('Loading members failed: $error'),
-      loading: () => const CircularProgressIndicator(),
+      loading: () => const Skeletonizer(
+        child: Wrap(
+          direction: Axis.horizontal,
+          spacing: -12,
+          children: [
+            CircleAvatar(child: Text('0')),
+            CircleAvatar(child: Text('1')),
+            CircleAvatar(child: Text('2')),
+            CircleAvatar(child: Text('3')),
+            CircleAvatar(child: Text('4')),
+            CircleAvatar(child: Text('5')),
+          ],
+        ),
+      ),
     );
   }
 }

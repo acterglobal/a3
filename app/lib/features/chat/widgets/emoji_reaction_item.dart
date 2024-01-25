@@ -3,6 +3,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class EmojiReactionItem extends ConsumerWidget {
   final List<String> emojis;
@@ -31,7 +32,13 @@ class EmojiReactionItem extends ConsumerWidget {
           ),
           size: 18,
         ),
-        loading: () => const Text('loading'),
+        loading: () => Skeletonizer(
+          child: ActerAvatar(
+            mode: DisplayMode.DM,
+            avatarInfo: AvatarInfo(uniqueId: userId),
+            size: 24,
+          ),
+        ),
         error: (e, t) {
           debugPrint('loading avatar failed: $e');
           return ActerAvatar(
@@ -43,7 +50,7 @@ class EmojiReactionItem extends ConsumerWidget {
       ),
       title: profile.when(
         data: (data) => Text(data.displayName ?? userId),
-        loading: () => Text(userId),
+        loading: () => Skeletonizer(child: Text(userId)),
         error: (e, s) => Text('loading profile failed: $e'),
       ),
       subtitle: Text(userId),

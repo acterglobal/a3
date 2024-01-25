@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class InvitationCard extends ConsumerWidget {
   final Invitation invitation;
@@ -77,7 +78,11 @@ class InvitationCard extends ConsumerWidget {
         );
       },
       error: (error, stackTrace) => const Text('Error loading invitation'),
-      loading: () => const CircularProgressIndicator(),
+      loading: () => const Skeletonizer(
+        child: Card(
+          child: ListTile(leading: Text('Something')),
+        ),
+      ),
     );
   }
 
