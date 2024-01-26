@@ -91,6 +91,17 @@ class Dashboard extends ConsumerWidget {
               SliverAppBar(
                 backgroundColor: Colors.transparent,
                 actions: <Widget>[
+                  Visibility(
+                    visible: isDesktop,
+                    child: IconButton(
+                      onPressed: () => context.pushNamed(Routes.updatesEditor.name),
+                      icon: Icon(
+                        Atlas.plus_circle_thin,
+                        color: Theme.of(context).colorScheme.neutral5,
+                        size: 36,
+                      ),
+                    ),
+                  ),
                   IconButton(
                     icon: const Icon(Atlas.construction_tools_thin),
                     onPressed: () => context.pushNamed(Routes.settings.name),
