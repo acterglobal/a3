@@ -10,7 +10,7 @@ license-file = "../../LICENSE.txt"
 
 [features]
 default = ["dart"]
-testing = ["dep:matrix-sdk-base"]
+testing = [ ]
 cbindgen = []
 dart = []
 uniffi = ["dep:uniffi", "dep:thiserror"]
@@ -54,6 +54,7 @@ tracing = { version = "0.1.40", default-features = false, features = ["log"] }
 url = "2.5.0"
 uuid = { version = "1.6.1", features = ["v4"] }
 
+
 # for markdown support.
 pulldown-cmark = { version = "0.9.3", default-features = false }
 
@@ -89,7 +90,9 @@ features = [
 
 [dependencies.matrix-sdk-base]
 workspace = true
-optional = true
+
+[dependencies.matrix-sdk-store-media-cache-wrapper]
+path = "../media-cache-wrapper"
 
 #   ----   WASM
 [target.'cfg(target_arch = "wasm32")'.dependencies]

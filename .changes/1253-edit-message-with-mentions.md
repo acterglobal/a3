@@ -1,1 +1,0 @@
-- [fix] Editing chat message with user mention doesn't expose HTML anymore
