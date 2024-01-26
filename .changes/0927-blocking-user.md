@@ -1,3 +1,0 @@
-- You now have the ability to block users and content. You can report any content, or chat message and block individual users. From the settings screen you can manage, remove and add users to block.
-- Improvements in the Settings screen allow for a more intuitive and cleaner flow
-- Reworked the Sessions screen to give clearer instructions and explain what you see on it.
