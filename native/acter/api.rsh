@@ -21,19 +21,19 @@ fn rotate_log_file() -> Result<string>;
 fn write_log(text: string, level: string) -> Result<()>;
 
 /// Create a new client for homeserver at url with storage at data_path
-fn login_new_client(basepath: string, username: string, password: string, default_homeserver_name: string, default_homeserver_url: string, device_name: Option<string>) -> Future<Result<Client>>;
+fn login_new_client(base_path: string, media_cache_base_path: string, username: string, password: string, default_homeserver_name: string, default_homeserver_url: string, device_name: Option<string>) -> Future<Result<Client>>;
 
 /// Create a new client from the restore token
-fn login_with_token(basepath: string, restore_token: string) -> Future<Result<Client>>;
+fn login_with_token(base_path: string, restore_token: string) -> Future<Result<Client>>;
 
 /// Create an anonymous client connecting to the homeserver
-fn guest_client(basepath: string, default_homeserver_name: string, default_homeserver_url: string, device_name: Option<string>) -> Future<Result<Client>>;
+fn guest_client(base_path: string, media_cache_base_path: string, default_homeserver_name: string, default_homeserver_url: string, device_name: Option<string>) -> Future<Result<Client>>;
 
 /// Create a new client from the registration token
-fn register_with_token(basepath: string, username: string, password: string, registration_token: string, default_homeserver_name: string, default_homeserver_url: string, device_name: string) -> Future<Result<Client>>;
+fn register_with_token(base_path: string, media_cache_base_path: string, username: string, password: string, registration_token: string, default_homeserver_name: string, default_homeserver_url: string, device_name: string) -> Future<Result<Client>>;
 
 /// destroy the local data of a session
-fn destroy_local_data(basepath: string, userId: string, default_homeserver_name: string) -> Future<Result<bool>>;
+fn destroy_local_data(base_path: string, media_cache_base_path: Option<string>, userId: string, default_homeserver_name: string) -> Future<Result<bool>>;
 
 fn duration_from_secs(secs: u64) -> EfkDuration;
 

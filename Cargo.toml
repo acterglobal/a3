@@ -24,6 +24,17 @@ rev = "98df2b35c3ccb4702256b461449260c7d76ce99e"
 default-features = false
 features = ["crypto-store", "state-store"]
 
+[workspace.dependencies.matrix-sdk-store-encryption]
+git = "https://github.com/gnunicorn/matrix-rust-sdk"
+rev = "98df2b35c3ccb4702256b461449260c7d76ce99e"
+default-features = false
+
+[workspace.dependencies.matrix-sdk-test]
+git = "https://github.com/gnunicorn/matrix-rust-sdk"
+rev = "98df2b35c3ccb4702256b461449260c7d76ce99e"
+default-features = false
+
+
 [workspace.dependencies.matrix-sdk-ui]
 git = "https://github.com/gnunicorn/matrix-rust-sdk"
 rev = "98df2b35c3ccb4702256b461449260c7d76ce99e"

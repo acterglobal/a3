@@ -71,6 +71,7 @@ impl LoginConfig {
         let username = self.login_username.clone();
         warn!("Logging in as {}", username);
         let base_path = format!(".local/{username}/");
+        let cache_base_path = format!(".local/cache/{username}/");
 
         if self.force_login && Path::new(&base_path).exists() {
             std::fs::remove_dir_all(&base_path)?;
@@ -99,6 +100,7 @@ impl LoginConfig {
 
         let client = login_new_client(
             base_path,
+            cache_base_path,
             username.clone(),
             self.reg_token
                 .as_ref()

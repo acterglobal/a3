@@ -13,6 +13,8 @@ pub struct RestoreToken {
     pub session: CustomAuthSession,
     /// a passphrase for the underlying database
     pub db_passphrase: Option<String>,
+    /// a separate local cache path
+    pub media_cache_base_path: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
