@@ -48,6 +48,7 @@ dependencies:
   flutter_keyboard_visibility: ^6.0.0
   expandable_text: ^2.3.0
   cached_network_image: ^3.2.1
+  fc_native_video_thumbnail: ^0.7.0
   flutter_mentions:
     git:
       url: https://github.com/gtalha07/flutter_mentions.git

@@ -41,10 +41,12 @@ class NewsItem extends ConsumerWidget {
       itemCount: slides.length,
       itemBuilder: (context, idx) {
         final slideType = slides[idx].typeStr();
+        final slideText = slides[idx].text();
         switch (slideType) {
           case 'image':
             return RegularSlide(
               news: news,
+              slideText: slideText,
               index: index,
               bgColor: bgColor,
               fgColor: fgColor,
@@ -54,6 +56,7 @@ class NewsItem extends ConsumerWidget {
           case 'video':
             return RegularSlide(
               news: news,
+              slideText: slideText,
               index: index,
               bgColor: bgColor,
               fgColor: fgColor,
@@ -114,6 +117,7 @@ class NewsItem extends ConsumerWidget {
           default:
             return RegularSlide(
               news: news,
+              slideText: slideText,
               index: index,
               bgColor: bgColor,
               fgColor: fgColor,
@@ -131,6 +135,7 @@ class NewsItem extends ConsumerWidget {
 
 class RegularSlide extends ConsumerWidget {
   final NewsEntry news;
+  final String slideText;
   final int index;
   final Color bgColor;
   final Color fgColor;
@@ -140,6 +145,7 @@ class RegularSlide extends ConsumerWidget {
     super.key,
     required this.news,
     required this.index,
+    required this.slideText,
     required this.bgColor,
     required this.fgColor,
     required this.child,
@@ -147,7 +153,6 @@ class RegularSlide extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final slide = news.getSlide(0)!;
     final roomId = news.roomId().toString();
     final space = ref.watch(briefSpaceItemProvider(roomId));
     return Stack(
@@ -176,7 +181,7 @@ class RegularSlide extends ConsumerWidget {
                 ),
               ),
               Text(
-                slide.text(),
+                slideText,
                 softWrap: true,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: fgColor,

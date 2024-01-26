@@ -20,9 +20,12 @@ enum Routes {
   // --- generic nav
   main('/'),
   dashboard('/dashboard'),
-  updates('/updates'),
   search('/search'),
   activities('/activities'),
+
+  // --- Updates
+  updates('/updates'),
+  updatesEditor('/updates/updatesEditor'),
 
   // --- chat
   chat('/chat'),
