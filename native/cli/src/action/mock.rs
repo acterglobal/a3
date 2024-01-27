@@ -9,7 +9,7 @@ use clap::{crate_version, Parser, Subcommand};
 use futures::StreamExt;
 use matrix_sdk::{ruma::api::client::room::Visibility, HttpError};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
-use matrix_sdk_sqlite::{SqliteCryptoStore, SqliteStateStore};
+use matrix_sdk_sqlite::SqliteStateStore;
 use ruma_common::OwnedUserId;
 use std::collections::HashMap;
 use tracing::{error, info, trace};
@@ -103,12 +103,8 @@ impl<'a> Mock<'a> {
 
                 let store_config = if self.opts.persist {
                     let path = sanitize(".local", &username);
-                    let config = StoreConfig::new()
-                        .state_store(SqliteStateStore::open(&path, Some(&username)).await?);
-                    #[cfg(feature = "e2e-encryption")]
-                    let config =
-                        config.crypto_store(SqliteCryptoStore::open(&path, Some(&username)).await?);
-                    config
+                    let store = SqliteStateStore::open(&path, Some(&username)).await?;
+                    StoreConfig::new().state_store(store)
                 } else {
                     StoreConfig::new().state_store(MemoryStore::new())
                 };
