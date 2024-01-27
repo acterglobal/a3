@@ -26,8 +26,9 @@ use matrix_sdk::{
     Client as SdkClient, LoopCtrl, RoomState, RumaApiError,
 };
 use ruma_common::{
-    device_id, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
-    OwnedRoomOrAliasId, OwnedServerName, OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
+    device_id, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId,
+    OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId, RoomAliasId, RoomId,
+    RoomOrAliasId, UserId,
 };
 use ruma_events::room::MediaSource;
 use std::{
