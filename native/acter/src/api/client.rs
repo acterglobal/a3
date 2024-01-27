@@ -14,6 +14,7 @@ use futures::{
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
     config::SyncSettings,
+    deserialized_responses::RawAnySyncOrStrippedTimelineEvent,
     event_handler::EventHandlerHandle,
     media::MediaRequest,
     room::Room as SdkRoom,
@@ -25,8 +26,8 @@ use matrix_sdk::{
     Client as SdkClient, LoopCtrl, RoomState, RumaApiError,
 };
 use ruma_common::{
-    device_id, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
-    OwnedServerName, OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
+    device_id, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
+    OwnedRoomOrAliasId, OwnedServerName, OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
 };
 use ruma_events::room::MediaSource;
 use std::{
@@ -736,10 +737,21 @@ impl Client {
                             w.is_syncing = true;
                         }
                     }
-                    for ev in response.notifications.into_values() {
+                    for (room_id, ev) in response.notifications {
                         for item in ev {
-                            trace!("Sending notification");
-                            notifications.send(item);
+                            if let RawAnySyncOrStrippedTimelineEvent::Sync(evt) = item.event {
+                                trace!("Sending notification");
+                                let notif = get_notifications::v3::Notification::new(
+                                    item.actions.to_owned(),
+                                    evt,
+                                    false,
+                                    room_id.clone(),
+                                    MilliSecondsSinceUnixEpoch::now(),
+                                );
+                                notifications.send(notif);
+                            } else {
+                                warn!("This notification is not a sync event");
+                            }
                         }
                     }
 

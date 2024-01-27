@@ -156,7 +156,7 @@ impl Member {
         let tester: PermissionTest = match permission {
             MemberPermission::CanBan => return self.member.can_ban(),
             MemberPermission::CanInvite => return self.member.can_invite(),
-            MemberPermission::CanRedact => return self.member.can_redact(),
+            MemberPermission::CanRedact => return self.member.can_redact_own(),
             MemberPermission::CanKick => return self.member.can_kick(),
             MemberPermission::CanTriggerRoomNotification => {
                 return self.member.can_trigger_room_notification()
@@ -1757,7 +1757,7 @@ impl Room {
                     .get_member(&my_id)
                     .await?
                     .context("Unable to find me in room")?;
-                if !member.can_redact() {
+                if !member.can_redact_own() {
                     bail!("No permissions to redact message in this room");
                 }
                 let response = room
