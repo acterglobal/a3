@@ -72,9 +72,6 @@ tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 path = "../core"
 features = ["templates", "client"]
 
-[dependencies.http]
-version = "0.2.11"
-
 [dependencies.matrix-sdk]
 workspace = true
 features = [
