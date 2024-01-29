@@ -287,11 +287,19 @@ impl Drop for SyncState {
 impl Client {
     fn refresh_history_on_start(
         &self,
+        first_sync_task: Mutable<Option<JoinHandle<Result<()>>>>,
         history: Mutable<HistoryLoadState>,
         room_handles: RoomHandlers,
-    ) -> JoinHandle<Result<()>> {
+    ) {
         let me = self.clone();
-        tokio::spawn(async move {
+        let first_sync_task_inner = first_sync_task.clone();
+        let mut first_sync_inner = first_sync_task.lock_mut();
+        if let Some(inner) = first_sync_inner.deref() {
+            // we drop the existing;
+            inner.abort();
+        }
+
+        *first_sync_inner = Some(tokio::spawn(async move {
             trace!(user_id=?me.user_id_ref(), "refreshing history");
             let mut spaces = me.spaces().await?;
             let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
@@ -327,8 +335,10 @@ impl Client {
                     .set_loading(space.room_id().to_owned(), false);
             }))
             .await;
+            // once done, let's reset the first_sync_task to clear it from memory
+            first_sync_task_inner.set(None);
             Ok(())
-        })
+        }));
     }
 
     async fn refresh_history_on_way(
@@ -678,11 +688,11 @@ impl Client {
                             w.has_first_synced = true;
                         };
                         // background and keep the handle around.
-                        let history_first_sync = me.refresh_history_on_start(
+                        me.refresh_history_on_start(
+                            first_sync_task.clone(),
                             history_loading.clone(),
                             room_handles.clone(),
                         );
-                        first_sync_task.set(Some(history_first_sync)); // keep task in global variable to avoid too early free of temporary varible in release build
                     } else {
                         // see if we have new spaces to catch up upon
                         let mut new_spaces = Vec::new();
