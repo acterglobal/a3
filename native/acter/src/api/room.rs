@@ -570,16 +570,14 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let Some(Ok(homeserver)) = client.homeserver().host_str().map(ServerName::parse) else {
+                let Some(Ok(homeserver)) = client.homeserver().host_str().map(ServerName::parse)
+                else {
                     return Err(Error::HomeserverMissesHostname)?;
                 };
-                let content = assign!(SpaceParentEventContent::new(vec![homeserver]), { canonical });
-                let response = room
-                    .send_state_event_for_key(
-                        &room_id,
-                        content,
-                    )
-                    .await?;
+                let content = assign!(SpaceParentEventContent::new(vec![homeserver]), {
+                    canonical
+                });
+                let response = room.send_state_event_for_key(&room_id, content).await?;
                 Ok(response.event_id.to_string())
             })
             .await?
@@ -1378,16 +1376,12 @@ impl Room {
                 let key = if thumb_size.is_some() {
                     [
                         room.room_id().as_str().as_bytes(),
-                        event_id.as_str().as_bytes(),
+                        event_id.as_bytes(),
                         "thumbnail".as_bytes(),
                     ]
                     .concat()
                 } else {
-                    [
-                        room.room_id().as_str().as_bytes(),
-                        event_id.as_str().as_bytes(),
-                    ]
-                    .concat()
+                    [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat()
                 };
                 let path_text = path
                     .to_str()
@@ -1443,16 +1437,12 @@ impl Room {
                 let key = if is_thumb {
                     [
                         room.room_id().as_str().as_bytes(),
-                        event_id.as_str().as_bytes(),
+                        event_id.as_bytes(),
                         "thumbnail".as_bytes(),
                     ]
                     .concat()
                 } else {
-                    [
-                        room.room_id().as_str().as_bytes(),
-                        event_id.as_str().as_bytes(),
-                    ]
-                    .concat()
+                    [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat()
                 };
                 let path = client.store().get_custom_value(&key).await?;
                 let text = match path {

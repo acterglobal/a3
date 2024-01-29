@@ -42,11 +42,18 @@ async fn main() -> Result<()> {
         app_root(AppDataType::UserData, &APP_INFO)?
     };
 
+    let cache_dir = if cli.local {
+        PathBuf::new().join(".local").join("cache")
+    } else {
+        app_root(AppDataType::UserCache, &APP_INFO)?
+    };
+
     if cli.fresh {
-        std::fs::remove_dir_all(app_dir.clone())?;
+        std::fs::remove_dir_all(app_dir.as_path())?;
+        std::fs::remove_dir_all(cache_dir.as_path())?;
     }
 
-    let mut client = cli.login.client(app_dir).await?;
+    let mut client = cli.login.client(app_dir, cache_dir).await?;
     let sync_state = client.start_sync();
 
     tokio::spawn(async move {

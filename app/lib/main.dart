@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:acter/common/notifications/notifications.dart';
+import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/utils/logging.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/cli/main.dart';
 import 'package:acter/l10n/l10n.dart';
 import 'package:acter/router/providers/router_providers.dart';
@@ -62,7 +62,7 @@ class _ActerState extends ConsumerState<Acter> {
       child: OverlaySupport.global(
         child: MaterialApp.router(
           routerConfig: appRouter,
-          theme: AppTheme.theme,
+          theme: ActerTheme.theme,
           title: 'Acter',
           builder: EasyLoading.init(),
           localizationsDelegates: const [

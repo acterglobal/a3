@@ -1,14 +1,14 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class AboutCard extends ConsumerWidget {
   final String spaceId;
+
   const AboutCard({super.key, required this.spaceId});
 
   @override
@@ -20,7 +20,6 @@ class AboutCard extends ConsumerWidget {
     final showInviteBtn =
         membership != null && membership.canString('CanInvite');
     return Card(
-      color: Theme.of(context).colorScheme.onPrimary,
       elevation: 0,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -37,18 +36,17 @@ class AboutCard extends ConsumerWidget {
                 ),
                 const Spacer(),
                 showInviteBtn && invited.length <= 100
-                    ? DefaultButton(
+                    ? OutlinedButton(
                         onPressed: () => context.pushNamed(
                           Routes.spaceInvite.name,
                           pathParameters: {'spaceId': spaceId},
                         ),
-                        title: 'Invite',
-                        isOutlined: true,
                         style: OutlinedButton.styleFrom(
                           side: BorderSide(
                             color: Theme.of(context).colorScheme.success,
                           ),
                         ),
+                        child: const Text('Invite'),
                       )
                     : const SizedBox.shrink(),
               ],

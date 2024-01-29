@@ -1,5 +1,4 @@
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/features/events/widgets/events_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show CalendarEvent;
@@ -50,11 +49,10 @@ class EventsList extends ConsumerWidget {
               eventsLimit != events.length
                   ? Padding(
                       padding: const EdgeInsets.only(top: 10),
-                      child: DefaultButton(
+                      child: OutlinedButton(
                         onPressed: () =>
                             context.pushNamed(Routes.calendarEvents.name),
-                        title: 'See all my ${events.length} events',
-                        isOutlined: true,
+                        child: Text('See all my ${events.length} events'),
                       ),
                     )
                   : const SizedBox.shrink(),

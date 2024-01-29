@@ -29,7 +29,8 @@ impl Client {
         let client = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Pin(content) = client.wait_for(key.clone(), timeout).await? else {
+                let AnyActerModel::Pin(content) = client.wait_for(key.clone(), timeout).await?
+                else {
                     bail!("{key} is not a pin");
                 };
                 let room = client
@@ -223,11 +224,16 @@ impl Pin {
         self.content
             .content
             .as_ref()
-            .and_then(|t| t.formatted.as_ref().map(|f| f.body.clone()))
+            .and_then(|t| t.formatted.clone().map(|f| f.body))
     }
 
+<<<<<<< HEAD
     pub fn content_text(&self) -> Option<MsgContent> {
         self.content.content.as_ref().map(MsgContent::from)
+=======
+    pub fn content_text(&self) -> Option<String> {
+        self.content.content.clone().map(|t| t.body)
+>>>>>>> main
     }
 
     pub fn url(&self) -> Option<String> {

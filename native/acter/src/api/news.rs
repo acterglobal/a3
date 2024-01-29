@@ -45,7 +45,8 @@ impl Client {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::NewsEntry(content) = me.wait_for(key.clone(), timeout).await? else {
+                let AnyActerModel::NewsEntry(content) = me.wait_for(key.clone(), timeout).await?
+                else {
                     bail!("{key} is not a news");
                 };
                 let room = me

@@ -41,7 +41,9 @@ impl Client {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Attachment(attachment) = me.wait_for(key.clone(), timeout).await? else {
+                let AnyActerModel::Attachment(attachment) =
+                    me.wait_for(key.clone(), timeout).await?
+                else {
                     bail!("{key} is not a attachment");
                 };
                 let room = me

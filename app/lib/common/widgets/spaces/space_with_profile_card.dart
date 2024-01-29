@@ -122,7 +122,6 @@ class SpaceWithProfileCard extends StatelessWidget {
     );
 
     return Card(
-      color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
       shape: renderShape(context),
       child: ListTile(
         contentPadding: contentPadding,
@@ -147,7 +146,7 @@ class SpaceWithProfileCard extends StatelessWidget {
     if (withBorder) {
       return RoundedRectangleBorder(
         side: BorderSide(
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: Theme.of(context).colorScheme.primary,
           width: 1.5,
         ),
         borderRadius: BorderRadius.circular(6),

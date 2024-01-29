@@ -324,7 +324,7 @@ impl Client {
         let client = self.clone();
         let room_id = RoomId::parse(room_name)?;
         let Some(room) = self.core.client().get_room(&room_id) else {
-            return Ok(vec![])
+            return Ok(vec![]);
         };
         RUNTIME
             .spawn(async move {

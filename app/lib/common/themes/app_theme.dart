@@ -102,27 +102,6 @@ class AppTheme {
     scrim: Color(0xFF000000),
   );
 
-  static const primaryGradient = LinearGradient(
-    begin: AlignmentDirectional(-1.5, -2.0),
-    end: AlignmentDirectional(-1.5, 0.5),
-    colors: <Color>[
-      Color(0xFF001B3D),
-      Color(0xFF121212),
-    ],
-  );
-
-  static const introGradient = LinearGradient(
-    colors: [
-      Color(0xff121F2B),
-      Color(0xff122334),
-      Color(0xff121315),
-      Color(0xff121315),
-    ],
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    stops: [0.0, 0.6, 0.8, 1.0],
-    tileMode: TileMode.decal,
-  );
 
   static MaterialStateProperty<Color?> dangerState =
       MaterialStateProperty.all(brandColorScheme.error);

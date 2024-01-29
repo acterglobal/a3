@@ -1,6 +1,5 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
@@ -133,11 +132,10 @@ class _HtmlEditorState extends State<HtmlEditor> {
 
       if (widget.onCancel != null) {
         children.add(
-          DefaultButton(
+          OutlinedButton(
             key: HtmlEditor.cancelEditKey,
             onPressed: widget.onCancel,
-            isOutlined: true,
-            title: 'Cancel',
+            child: const Text('Cancel'),
           ),
         );
       }
@@ -149,7 +147,7 @@ class _HtmlEditorState extends State<HtmlEditor> {
       final onSave = widget.onSave;
       if (onSave != null) {
         children.add(
-          DefaultButton(
+          ElevatedButton(
             key: HtmlEditor.saveEditKey,
             onPressed: () {
               final plain = editorState.intoMarkdown();
@@ -159,10 +157,10 @@ class _HtmlEditorState extends State<HtmlEditor> {
                 htmlBody != plain ? htmlBody : null,
               );
             },
-            title: 'Save',
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.success,
             ),
+            child: const Text('Save'),
           ),
         );
       }

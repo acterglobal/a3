@@ -30,7 +30,9 @@ impl PublicProfile {
     }
 
     pub(crate) async fn avatar(&self, format: MediaFormat) -> Result<Option<Vec<u8>>> {
-        let Some(url) = self.inner.avatar_url.as_ref() else { return Ok(None) };
+        let Some(url) = self.inner.avatar_url.as_ref() else {
+            return Ok(None);
+        };
         let request = MediaRequest {
             source: MediaSource::Plain(url.to_owned()),
             format,

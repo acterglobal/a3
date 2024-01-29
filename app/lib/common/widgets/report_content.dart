@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +16,7 @@ class ReportContentWidget extends ConsumerWidget {
   final String senderId;
   final String roomId;
   final bool isSpace;
+
   const ReportContentWidget({
     super.key,
     required this.title,
@@ -87,17 +87,13 @@ class ReportContentWidget extends ConsumerWidget {
         ],
       ),
       actions: <Widget>[
-        DefaultButton(
+        OutlinedButton(
           onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-          title: 'Close',
-          isOutlined: true,
+          child: const Text('Close'),
         ),
-        DefaultButton(
+        ElevatedButton(
           onPressed: () => reportContent(context, ref, textController.text),
-          title: 'Report',
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-          ),
+          child: const Text('Report'),
         ),
       ],
     );
@@ -142,10 +138,9 @@ class ReportContentWidget extends ConsumerWidget {
             builder: (ctx) => DefaultDialog(
               title: const Text('Report sent!'),
               actions: <Widget>[
-                DefaultButton(
+                OutlinedButton(
                   onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
-                  title: 'Close',
-                  isOutlined: true,
+                  child: const Text('Close'),
                 ),
               ],
             ),
@@ -159,10 +154,9 @@ class ReportContentWidget extends ConsumerWidget {
             builder: (ctx) => DefaultDialog(
               title: const Text('Report sending failed'),
               actions: <Widget>[
-                DefaultButton(
+                OutlinedButton(
                   onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
-                  title: 'Close',
-                  isOutlined: true,
+                  child: const Text('Close'),
                 ),
               ],
             ),
@@ -177,10 +171,9 @@ class ReportContentWidget extends ConsumerWidget {
           builder: (ctx) => DefaultDialog(
             title: Text('Report sending failed due to some $e'),
             actions: <Widget>[
-              DefaultButton(
+              OutlinedButton(
                 onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
-                title: 'Close',
-                isOutlined: true,
+                child: const Text('Close'),
               ),
             ],
           ),

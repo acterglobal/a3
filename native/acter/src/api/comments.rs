@@ -19,7 +19,8 @@ impl Client {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Comment(comment) = me.wait_for(key.clone(), timeout).await? else {
+                let AnyActerModel::Comment(comment) = me.wait_for(key.clone(), timeout).await?
+                else {
                     bail!("{key} is not a comment");
                 };
                 let room = me
@@ -80,11 +81,7 @@ impl Comment {
     }
 
     pub fn content_formatted(&self) -> Option<String> {
-        self.inner
-            .content
-            .formatted
-            .as_ref()
-            .map(|f| f.body.clone())
+        self.inner.content.formatted.clone().map(|f| f.body)
     }
 }
 
