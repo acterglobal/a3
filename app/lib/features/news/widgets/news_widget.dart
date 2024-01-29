@@ -43,7 +43,7 @@ class _NewsWidgetState extends ConsumerState<NewsWidget>
                   'Create actionable posts and engage everyone within your space.',
               image: 'assets/images/empty_updates.svg',
               primaryButton: ElevatedButton(
-                onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
+                onPressed: () => context.pushNamed(Routes.updatesEditor.name),
                 child: const Text('Create New update'),
               ),
             ),
