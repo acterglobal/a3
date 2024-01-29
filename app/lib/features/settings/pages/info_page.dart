@@ -21,11 +21,12 @@ class SettingsInfoPage extends ConsumerStatefulWidget {
 
 class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
   String rustLogSetting = defaultLogSetting;
+  String httpProxySetting = defaultHttpProxy;
 
   @override
   void initState() {
     super.initState();
-    fetchRustLogSettings();
+    fetchSettings();
   }
 
   @override
@@ -125,7 +126,8 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                     'HTTP Proxy',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  value: const Text(httpProxy),
+                  onPressed: _displayHttpProxyEditor,
+                  value: Text(httpProxySetting),
                 ),
                 SettingsTile(
                   title: Text(
@@ -162,38 +164,63 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
     );
   }
 
-  Future<void> fetchRustLogSettings() async {
+  Future<void> fetchSettings() async {
     final preferences = await sharedPrefs();
     final rustLog = preferences.getString(rustLogKey) ?? defaultLogSetting;
+    final httpProxy = preferences.getString(proxyKey) ?? defaultHttpProxy;
     if (mounted) {
-      setState(() => rustLogSetting = rustLog);
+      setState(() {
+        rustLogSetting = rustLog;
+        httpProxySetting = httpProxy;
+      });
     }
   }
 
-  Future<void> setRustLogSettings(String? settings) async {
+  Future<void> setSetting(String logKey, String? settings) async {
     final preferences = await sharedPrefs();
     if (settings == null || settings.isEmpty) {
-      preferences.remove(rustLogKey);
+      preferences.remove(logKey);
     } else {
-      preferences.setString(rustLogKey, settings);
+      preferences.setString(logKey, settings);
     }
-    await fetchRustLogSettings();
+    await fetchSettings();
   }
 
   Future<void> _displayDebugLevelEditor(BuildContext context) async {
+    await _displaySettingsEditor(
+      context,
+      rustLogKey,
+      rustLogSetting,
+      'Set Debug level',
+      'Debug Level',
+    );
+  }
+
+  Future<void> _displayHttpProxyEditor(BuildContext context) async {
+    await _displaySettingsEditor(
+      context,
+      proxyKey,
+      httpProxySetting,
+      'Set HTTP Proxy',
+      'HTTP Proxy',
+    );
+  }
+
+  Future<void> _displaySettingsEditor(BuildContext context, String logKey,
+      String currentValue, String title, String fieldName) async {
     TextEditingController textFieldController =
-        TextEditingController(text: rustLogSetting);
+        TextEditingController(text: currentValue);
     return showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Set Debug level'),
+          title: Text(title),
           content: Wrap(
             children: [
               const Text('needs an app restart to take effect'),
               TextField(
                 controller: textFieldController,
-                decoration: const InputDecoration(hintText: 'Debug Level'),
+                decoration: InputDecoration(hintText: fieldName),
               ),
             ],
           ),
@@ -203,7 +230,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                 foregroundColor: MaterialStateProperty.all(Colors.red),
               ),
               onPressed: () async {
-                await setRustLogSettings('');
+                await setSetting(logKey, null);
                 if (context.mounted) Navigator.pop(context);
               },
               child: const Text('Reset'),
@@ -217,7 +244,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
             ElevatedButton(
               child: const Text('Save'),
               onPressed: () async {
-                await setRustLogSettings(textFieldController.text);
+                await setSetting(logKey, textFieldController.text);
                 if (context.mounted) Navigator.pop(context);
               },
             ),
