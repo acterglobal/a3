@@ -21,7 +21,6 @@ use ruma_events::{
     sticker::StickerEventContent,
 };
 use serde::{Deserialize, Serialize};
-use std::ops::Deref;
 
 use super::api::FfiBuffer;
 

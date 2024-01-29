@@ -1,26 +1,18 @@
 use acter_core::{
     events::{
         news::{self, NewsContent, NewsEntryBuilder, NewsSlideBuilder},
-        Colorize, ObjRef,
+        Colorize,
     },
     models::{self, ActerModel, AnyActerModel},
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
-use core::time::Duration;
 use futures::stream::StreamExt;
-use matrix_sdk::{
-    room::Room,
-    ruma::{assign, UInt},
-    Client as SdkClient, RoomState,
-};
-use ruma_common::{MxcUri, OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::room::{
-    message::{
-        AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
-        LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
-    },
-    ImageInfo,
+use matrix_sdk::{room::Room, RoomState};
+use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
+use ruma_events::room::message::{
+    AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
+    LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
 };
 use std::{
     collections::{hash_map::Entry, HashMap},

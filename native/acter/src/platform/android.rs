@@ -1,8 +1,7 @@
 use android_logger::{AndroidLogger, Config};
 use anyhow::Result;
-use log::{Level, LevelFilter, Log, Metadata, Record};
+use log::LevelFilter;
 use matrix_sdk::ClientBuilder;
-use std::sync::{Arc, Mutex};
 
 use super::native;
 

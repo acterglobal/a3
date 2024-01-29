@@ -621,6 +621,9 @@ async fn request_verification_handler(
                     // from then on, accept_sas_verification takes over
                     break;
                 }
+                _ => {
+                    continue;
+                }
             },
             VerificationRequestState::Done => {
                 let device_id = client.device_id().expect("DeviceId needed");

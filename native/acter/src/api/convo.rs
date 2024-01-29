@@ -41,7 +41,7 @@ use super::{
     client::Client,
     message::RoomMessage,
     receipt::ReceiptRecord,
-    room::{self, Room},
+    room::Room,
     utils::{remap_for_diff, ApiVectorDiff},
     RUNTIME,
 };

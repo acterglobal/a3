@@ -1,33 +1,31 @@
 use async_trait::async_trait;
 use base64ct::{Base64UrlUnpadded, Encoding};
 use core::fmt::Debug;
-use matrix_sdk_base::ruma::{
-    self,
-    events::{
-        presence::PresenceEvent,
-        receipt::{Receipt, ReceiptThread, ReceiptType},
-        AnyGlobalAccountDataEvent, AnyRoomAccountDataEvent, GlobalAccountDataEventType,
-        RoomAccountDataEventType, StateEventType,
-    },
-    serde::Raw,
-    EventId, OwnedEventId, OwnedUserId, RoomId, UserId,
-};
 use matrix_sdk_base::{
     deserialized_responses::RawAnySyncOrStrippedState,
     media::{MediaRequest, UniqueKey},
+    ruma::{
+        events::{
+            presence::PresenceEvent,
+            receipt::{Receipt, ReceiptThread, ReceiptType},
+            AnyGlobalAccountDataEvent, AnyRoomAccountDataEvent, GlobalAccountDataEventType,
+            RoomAccountDataEventType, StateEventType,
+        },
+        serde::Raw,
+        EventId, MxcUri, OwnedEventId, OwnedUserId, RoomId, UserId,
+    },
     store::StoreEncryptionError,
     MinimalRoomMemberEvent, RoomInfo, RoomMemberships, StateChanges, StateStore, StateStoreDataKey,
     StateStoreDataValue, StoreError,
 };
 use matrix_sdk_store_encryption::StoreCipher;
-
 use std::{
     collections::{BTreeMap, BTreeSet},
     fs,
     path::PathBuf,
 };
-
 use tracing::instrument;
+
 #[async_trait]
 trait MediaStore: Debug + Sync + Send {
     type Error: Debug + Into<StoreError> + From<serde_json::Error>;
@@ -45,7 +43,7 @@ trait MediaStore: Debug + Sync + Send {
 
     async fn remove_media_content(&self, request: &MediaRequest) -> Result<(), Self::Error>;
 
-    async fn remove_media_content_for_uri(&self, uri: &ruma::MxcUri) -> Result<(), Self::Error>;
+    async fn remove_media_content_for_uri(&self, uri: &MxcUri) -> Result<(), Self::Error>;
 }
 
 pub struct FileCacheMediaStore {
@@ -129,7 +127,7 @@ impl MediaStore for FileCacheMediaStore {
     }
 
     #[instrument(skip_all)]
-    async fn remove_media_content_for_uri(&self, uri: &ruma::MxcUri) -> Result<(), Self::Error> {
+    async fn remove_media_content_for_uri(&self, uri: &MxcUri) -> Result<(), Self::Error> {
         let base_filename = self.encode_key(uri);
         fs::remove_file(self.cache_dir.join(base_filename))
             .map_err(|e| StoreError::Backend(Box::new(e)))?;
@@ -566,7 +564,7 @@ where
             .map_err(|e| StoreCacheWrapperError::StoreError(e.into()))?)
     }
 
-    async fn remove_media_content_for_uri(&self, uri: &ruma::MxcUri) -> Result<(), Self::Error> {
+    async fn remove_media_content_for_uri(&self, uri: &MxcUri) -> Result<(), Self::Error> {
         Ok(self
             .media
             .remove_media_content_for_uri(uri)
