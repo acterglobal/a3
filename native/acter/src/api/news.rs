@@ -286,7 +286,6 @@ impl NewsSlide {
 }
 
 #[derive(Clone)]
-#[allow(clippy::boxed_local)]
 pub struct NewsSlideDraft {
     content: news::NewsSlideBuilder,
     references: Vec<ObjRef>,
@@ -297,7 +296,7 @@ impl NewsSlideDraft {
         let content = self.content.build()?;
         Ok(content)
     }
-
+    #[allow(clippy::boxed_local)]
     pub fn add_reference(&mut self, reference: Box<ObjRef>) -> &Self {
         self.references.push(*reference);
         self.content.references(self.references.clone());
