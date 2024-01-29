@@ -199,19 +199,22 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
           ),
           actions: <Widget>[
             TextButton(
+              style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.all(Colors.red),
+              ),
+              onPressed: () async {
+                await setRustLogSettings('');
+                if (context.mounted) Navigator.pop(context);
+              },
+              child: const Text('Reset'),
+            ),
+            OutlinedButton(
               child: const Text('Cancel'),
               onPressed: () {
                 Navigator.pop(context);
               },
             ),
-            TextButton(
-              child: const Text('Reset to default'),
-              onPressed: () async {
-                await setRustLogSettings('');
-                if (context.mounted) Navigator.pop(context);
-              },
-            ),
-            TextButton(
+            ElevatedButton(
               child: const Text('Save'),
               onPressed: () async {
                 await setRustLogSettings(textFieldController.text);

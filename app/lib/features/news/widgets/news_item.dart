@@ -33,7 +33,7 @@ class NewsItem extends ConsumerWidget {
     );
     final fgColor = convertColor(
       news.colors()?.color(),
-      Theme.of(context).colorScheme.primary,
+      Theme.of(context).colorScheme.onPrimary,
     );
 
     return PageView.builder(

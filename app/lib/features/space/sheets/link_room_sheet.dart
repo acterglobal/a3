@@ -2,7 +2,6 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/search.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -315,28 +314,21 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
             trailing: SizedBox(
               width: 100,
               child: isLinked
-                  ? DefaultButton(
+                  ? OutlinedButton(
                       onPressed: () => onTapUnlinkChildRoom(roomId),
-                      title: 'Unlink',
                       key: Key('room-list-unlink-$roomId'),
-                      isOutlined: true,
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(
-                          color: Theme.of(context).colorScheme.error,
-                        ),
-                      ),
+                      child: const Text('Unlink'),
                     )
                   : canLink
-                      ? DefaultButton(
+                      ? OutlinedButton(
                           onPressed: () => onTapLinkChildRoom(context, roomId),
-                          title: 'Link',
                           key: Key('room-list-link-$roomId'),
-                          isOutlined: true,
                           style: OutlinedButton.styleFrom(
                             side: BorderSide(
                               color: Theme.of(context).colorScheme.success,
                             ),
                           ),
+                          child: const Text('Link'),
                         )
                       : null,
             ),

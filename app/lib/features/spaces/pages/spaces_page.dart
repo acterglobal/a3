@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/features/spaces/model/keys.dart';
@@ -26,7 +27,7 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: AppTheme.primaryGradient,
+          gradient: primaryGradient,
         ),
         child: CustomScrollView(
           slivers: <Widget>[

@@ -1,8 +1,8 @@
 import 'dart:io';
+
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
@@ -141,8 +141,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
               decoration: BoxDecoration(
                 color: Theme.of(context)
                     .colorScheme
-                    .primaryContainer
-                    .withOpacity(0.5),
+                    .primaryContainer,
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Padding(
@@ -181,8 +180,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
               decoration: BoxDecoration(
                 color: Theme.of(context)
                     .colorScheme
-                    .primaryContainer
-                    .withOpacity(0.5),
+                    .primaryContainer,
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Padding(
@@ -214,9 +212,6 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
           replacement: FrostEffect(
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 16),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.5),
-              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -230,15 +225,14 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                               'Are you sure you want to delete this message? This action cannot be undone.',
                             ),
                             actions: <Widget>[
-                              DefaultButton(
+                              OutlinedButton(
                                 onPressed: () => Navigator.of(
                                   context,
                                   rootNavigator: true,
                                 ).pop(),
-                                title: 'No',
-                                isOutlined: true,
+                                child: const Text('No'),
                               ),
-                              DefaultButton(
+                              ElevatedButton(
                                 onPressed: () async {
                                   if (currentMessageId != null) {
                                     try {
@@ -269,11 +263,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                     debugPrint(currentMessageId);
                                   }
                                 },
-                                title: 'Yes',
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      Theme.of(context).colorScheme.onError,
-                                ),
+                                child: const Text('Yes'),
                               ),
                             ],
                           ),
@@ -325,7 +315,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 15),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.5),
+                color: Theme.of(context).colorScheme.background,
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -555,26 +545,17 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
               child: Text(fileName, style: Theme.of(ctx).textTheme.bodySmall),
             ),
             actions: <Widget>[
-              DefaultButton(
+              OutlinedButton(
                 onPressed: () =>
                     Navigator.of(context, rootNavigator: true).pop(),
-                title: 'Cancel',
-                isOutlined: true,
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(
-                    color: Theme.of(ctx).colorScheme.errorContainer,
-                  ),
-                ),
+                child: const Text('Cancel'),
               ),
-              DefaultButton(
+              ElevatedButton(
                 onPressed: () async {
                   Navigator.of(context, rootNavigator: true).pop();
                   await handleFileUpload(selectedFiles, chatAttachmentType);
                 },
-                title: 'Upload',
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(ctx).colorScheme.success,
-                ),
+                child: const Text('Upload'),
               ),
             ],
           ),
@@ -913,7 +894,7 @@ class _TextInputWidget extends ConsumerWidget {
                 .addMention(displayName, authorId);
           },
           suggestionListDecoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.onSecondary,
+            color: Theme.of(context).colorScheme.background,
             borderRadius: BorderRadius.circular(6),
           ),
           onChanged: (String value) async {
@@ -933,7 +914,7 @@ class _TextInputWidget extends ConsumerWidget {
           textInputAction: TextInputAction.newline,
           enabled: chatInputState.allowEdit,
           onSubmitted: (value) => onSendButtonPressed(),
-          style: Theme.of(context).textTheme.bodySmall,
+          style: Theme.of(context).textTheme.titleSmall,
           cursorColor: Theme.of(context).colorScheme.primary,
           maxLines: 6,
           minLines: 1,
@@ -973,7 +954,7 @@ class _TextInputWidget extends ConsumerWidget {
               borderSide: BorderSide(
                 width: 0.5,
                 style: BorderStyle.solid,
-                color: Theme.of(context).colorScheme.secondary,
+                color: Theme.of(context).colorScheme.surface,
               ),
             ),
             focusedBorder: OutlineInputBorder(
@@ -981,7 +962,7 @@ class _TextInputWidget extends ConsumerWidget {
               borderSide: BorderSide(
                 width: 0.5,
                 style: BorderStyle.solid,
-                color: Theme.of(context).colorScheme.secondary,
+                color: Theme.of(context).colorScheme.onSecondaryContainer,
               ),
             ),
             enabledBorder: OutlineInputBorder(
@@ -989,14 +970,14 @@ class _TextInputWidget extends ConsumerWidget {
               borderSide: BorderSide(
                 width: 0.5,
                 style: BorderStyle.solid,
-                color: Theme.of(context).colorScheme.secondaryContainer,
+                color: Theme.of(context).colorScheme.onBackground,
               ),
             ),
             hintText: isEncrypted
                 ? 'New Encrypted Message '
                 : AppLocalizations.of(context)!.newMessage,
             hintStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
             contentPadding: const EdgeInsets.all(15),
             hintMaxLines: 1,

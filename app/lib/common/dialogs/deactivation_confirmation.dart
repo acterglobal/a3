@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,7 +32,8 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
               Expanded(
                 child: SingleChildScrollView(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     color: Theme.of(context).colorScheme.background,
                     child: Column(
                       children: [
@@ -133,10 +133,10 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     actions: <Widget>[
-                      DefaultButton(
+                      ElevatedButton(
                         onPressed: () =>
                             Navigator.of(context, rootNavigator: true).pop(),
-                        title: 'Close',
+                        child: const Text('Close'),
                       ),
                     ],
                   ),

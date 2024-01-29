@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
@@ -46,17 +45,10 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
         ),
       ),
       actions: [
-        ElevatedButton(
+        OutlinedButton(
           onPressed: () => context.canPop()
               ? context.pop()
               : context.goNamed(Routes.main.name),
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
-            ),
-            foregroundColor: Theme.of(context).colorScheme.neutral6,
-            textStyle: Theme.of(context).textTheme.bodySmall,
-          ),
           child: const Text('Cancel'),
         ),
         const SizedBox(width: 10),
@@ -130,14 +122,6 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
               EasyLoading.showError('$displayMsg failed: \n $err"');
             }
           },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.success,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
-            ),
-            foregroundColor: Theme.of(context).colorScheme.neutral6,
-            textStyle: Theme.of(context).textTheme.bodySmall,
-          ),
           child: const Text('Post Update'),
         ),
       ],

@@ -3,7 +3,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/base_body_widget.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:acter/features/settings/super_invites/providers/super_invites_providers.dart';
@@ -84,13 +84,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     final authState = ref.watch(authStateProvider);
     final authNotifier = ref.watch(authStateProvider.notifier);
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.neutral,
+      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       primary: false,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 10,
-          vertical: 5,
-        ),
+      body: BaseBody(
         child: Center(
           child: Container(
             constraints: const BoxConstraints(maxWidth: 500),
@@ -140,22 +136,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                               controller: name,
                               decoration: InputDecoration(
                                 hintText: AppLocalizations.of(context)!.name,
-                                fillColor: Theme.of(context)
-                                    .colorScheme
-                                    .primaryContainer,
-                                filled: true,
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color:
-                                        Theme.of(context).colorScheme.tertiary,
-                                    width: 0.5,
-                                  ),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
                               ),
                               style: Theme.of(context).textTheme.labelLarge,
                               cursorColor:
@@ -175,22 +155,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                               decoration: InputDecoration(
                                 hintText:
                                     AppLocalizations.of(context)!.username,
-                                fillColor: Theme.of(context)
-                                    .colorScheme
-                                    .primaryContainer,
-                                filled: true,
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color:
-                                        Theme.of(context).colorScheme.tertiary,
-                                    width: 0.5,
-                                  ),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
                               ),
                               inputFormatters: [
                                 TextInputFormatter.withFunction((
@@ -224,22 +188,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                               decoration: InputDecoration(
                                 hintText:
                                     AppLocalizations.of(context)!.password,
-                                fillColor: Theme.of(context)
-                                    .colorScheme
-                                    .primaryContainer,
-                                filled: true,
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color:
-                                        Theme.of(context).colorScheme.tertiary,
-                                    width: 0.5,
-                                  ),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
                               ),
                               obscureText: true,
                               inputFormatters: [
@@ -262,22 +210,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                               controller: token,
                               decoration: InputDecoration(
                                 hintText: AppLocalizations.of(context)!.token,
-                                fillColor: Theme.of(context)
-                                    .colorScheme
-                                    .primaryContainer,
-                                filled: true,
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color:
-                                        Theme.of(context).colorScheme.tertiary,
-                                    width: 0.5,
-                                  ),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
                               ),
                               inputFormatters: [
                                 FilteringTextInputFormatter.deny(
@@ -333,13 +265,11 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         const SizedBox(height: 40),
                         authState
                             ? const Center(child: CircularProgressIndicator())
-                            : DefaultButton(
+                            : ElevatedButton(
                                 key: RegisterPage.submitBtn,
                                 onPressed: handleSubmit,
-                                title: AppLocalizations.of(context)!.register,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      Theme.of(context).colorScheme.success,
+                                child: Text(
+                                  AppLocalizations.of(context)!.register,
                                 ),
                               ),
                         const SizedBox(height: 20),
@@ -350,20 +280,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                               '${AppLocalizations.of(context)!.haveAccount}  ',
                               style: Theme.of(context).textTheme.bodyMedium,
                             ),
-                            InkWell(
+                            TextButton(
                               key: Keys.loginBtn,
-                              onTap: () =>
+                              onPressed: () =>
                                   context.goNamed(Routes.authLogin.name),
                               child: Text(
                                 AppLocalizations.of(context)!.logIn,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .tertiary2,
-                                    ),
                               ),
                             ),
                           ],

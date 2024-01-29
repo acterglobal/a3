@@ -1,9 +1,8 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/base_body_widget.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
 import 'package:flutter/material.dart';
@@ -67,13 +66,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final authState = ref.watch(authStateProvider);
     return Scaffold(
       primary: false,
-      backgroundColor: Theme.of(context).colorScheme.neutral,
+      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       extendBodyBehindAppBar: true,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 10,
-          vertical: 5,
-        ),
+      body: BaseBody(
         child: CustomScrollView(
           slivers: [
             SliverAppBar(
@@ -112,25 +107,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           controller: username,
                           decoration: InputDecoration(
                             hintText: AppLocalizations.of(context)!.username,
-                            fillColor:
-                                Theme.of(context).colorScheme.primaryContainer,
-                            filled: true,
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Theme.of(context).colorScheme.tertiary,
-                                width: 0.5,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
                           ),
                           inputFormatters: [
                             FilteringTextInputFormatter.deny(RegExp(r'\s')),
                           ],
-                          style: Theme.of(context).textTheme.labelLarge,
                           validator: (val) {
                             if (val == null || val.trim().isEmpty) {
                               return AppLocalizations.of(context)!
@@ -146,25 +126,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           obscureText: true,
                           decoration: InputDecoration(
                             hintText: AppLocalizations.of(context)!.password,
-                            fillColor:
-                                Theme.of(context).colorScheme.primaryContainer,
-                            filled: true,
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Theme.of(context).colorScheme.tertiary,
-                                width: 0.5,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
                           ),
                           inputFormatters: [
                             FilteringTextInputFormatter.deny(RegExp(r'\s')),
                           ],
-                          style: Theme.of(context).textTheme.labelLarge,
                           validator: (val) {
                             if (val == null || val.trim().isEmpty) {
                               return AppLocalizations.of(context)!
@@ -176,13 +141,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         const SizedBox(height: 40),
                         authState
                             ? const Center(child: CircularProgressIndicator())
-                            : DefaultButton(
+                            : ElevatedButton(
                                 key: LoginPageKeys.submitBtn,
                                 onPressed: () => handleSubmit(context),
-                                title: AppLocalizations.of(context)!.logIn,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      Theme.of(context).colorScheme.success,
+                                child: Text(
+                                  AppLocalizations.of(context)!.logIn,
                                 ),
                               ),
                         const SizedBox(height: 40),
@@ -191,15 +154,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           children: [
                             Text(AppLocalizations.of(context)!.noAccount),
                             const SizedBox(width: 2),
-                            InkWell(
+                            TextButton(
                               key: LoginPageKeys.signUpBtn,
-                              onTap: () =>
+                              onPressed: () =>
                                   context.goNamed(Routes.authRegister.name),
                               child: Text(
                                 AppLocalizations.of(context)!.register,
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.tertiary,
-                                ),
                               ),
                             ),
                           ],
