@@ -556,7 +556,7 @@ dependencies = [
 [tasks.desktop-tracing]
 # Build rust SDK for desktop
 dependencies = [
-    "desktop-build",
+    "desktop-tracing-inner",
     "copy-desktop-lib",
 ]
 
