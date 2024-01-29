@@ -44,7 +44,8 @@ extension ActerEditorStateHelpers on EditorState {
     AppFlowyEditorMarkdownCodec? codec,
   }) {
     return EditorState(
-        document: (codec ?? defaultMarkdownCodec).decode(content));
+      document: (codec ?? defaultMarkdownCodec).decode(content),
+    );
   }
 
   String intoHtml({
@@ -83,8 +84,8 @@ class HtmlEditor extends StatefulWidget {
     this.header,
     this.footer,
   });
-
   @override
+  // ignore: library_private_types_in_public_api
   _HtmlEditorState createState() => _HtmlEditorState();
 }
 
