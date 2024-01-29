@@ -12712,6 +12712,30 @@ class Api {
         int,
         int,
       )>();
+  late final _newsSlideDraftAddReferencePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__NewsSlideDraft_add_reference");
+
+  late final _newsSlideDraftAddReference =
+      _newsSlideDraftAddReferencePtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _newsSlideDraftUnsetReferencesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+          )>>("__NewsSlideDraft_unset_references");
+
+  late final _newsSlideDraftUnsetReferences =
+      _newsSlideDraftUnsetReferencesPtr.asFunction<
+          void Function(
+            int,
+          )>();
   late final _newsEntrySlidesCountPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
@@ -27764,6 +27788,32 @@ class NewsSlideDraft {
   final _Box _box;
 
   NewsSlideDraft._(this._api, this._box);
+
+  /// add reference for this slide draft
+  void addReference(
+    ObjRef reference,
+  ) {
+    final tmp1 = reference;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._newsSlideDraftAddReference(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// unset references for this slide draft
+  void unsetReferences() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._newsSlideDraftUnsetReferences(
+      tmp0,
+    );
+    return;
+  }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {

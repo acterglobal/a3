@@ -279,17 +279,33 @@ impl NewsSlide {
             }
         }
     }
+
+    pub fn references(&mut self) -> Vec<ObjRef> {
+        self.inner.references().clone()
+    }
 }
 
 #[derive(Clone)]
 pub struct NewsSlideDraft {
     content: news::NewsSlideBuilder,
+    references: Vec<ObjRef>,
 }
 
 impl NewsSlideDraft {
     pub fn save(&self) -> Result<news::NewsSlide> {
         let content = self.content.build()?;
         Ok(content)
+    }
+
+    pub fn add_reference(&mut self, reference: Box<ObjRef>) -> &Self {
+        self.references.push(*reference);
+        self.content.references(self.references.clone());
+        self
+    }
+
+    pub fn unset_references(&mut self) -> &Self {
+        self.references.clear();
+        self
     }
 }
 
@@ -610,7 +626,10 @@ impl MsgContentDraft {
                     .content(NewsContent::Text(text_content))
                     .references(Default::default())
                     .clone();
-                Ok(NewsSlideDraft { content: builder })
+                Ok(NewsSlideDraft {
+                    content: builder,
+                    references: vec![],
+                })
             }
             MsgContentDraft::TextMarkdown { body } => {
                 let text_content = TextMessageEventContent::markdown(body);
@@ -618,7 +637,10 @@ impl MsgContentDraft {
                     .content(NewsContent::Text(text_content))
                     .references(Default::default())
                     .clone();
-                Ok(NewsSlideDraft { content: builder })
+                Ok(NewsSlideDraft {
+                    content: builder,
+                    references: vec![],
+                })
             }
             MsgContentDraft::Image { source, info } => {
                 let info = info.expect("image info needed");
@@ -652,7 +674,10 @@ impl MsgContentDraft {
                     .content(NewsContent::Image(image_content))
                     .references(Default::default())
                     .clone();
-                Ok(NewsSlideDraft { content: builder })
+                Ok(NewsSlideDraft {
+                    content: builder,
+                    references: vec![],
+                })
             }
             MsgContentDraft::Audio { source, info } => {
                 let info = info.expect("audio info needed");
@@ -686,7 +711,10 @@ impl MsgContentDraft {
                     .content(NewsContent::Audio(audio_content))
                     .references(Default::default())
                     .clone();
-                Ok(NewsSlideDraft { content: builder })
+                Ok(NewsSlideDraft {
+                    content: builder,
+                    references: vec![],
+                })
             }
             MsgContentDraft::Video { source, info } => {
                 let info = info.expect("image info needed");
@@ -720,7 +748,10 @@ impl MsgContentDraft {
                     .content(NewsContent::Video(video_content))
                     .references(Default::default())
                     .clone();
-                Ok(NewsSlideDraft { content: builder })
+                Ok(NewsSlideDraft {
+                    content: builder,
+                    references: vec![],
+                })
             }
             MsgContentDraft::File {
                 source,
@@ -759,7 +790,10 @@ impl MsgContentDraft {
                     .content(NewsContent::File(file_content))
                     .references(Default::default())
                     .clone();
-                Ok(NewsSlideDraft { content: builder })
+                Ok(NewsSlideDraft {
+                    content: builder,
+                    references: vec![],
+                })
             }
             MsgContentDraft::Location {
                 body,
@@ -775,7 +809,10 @@ impl MsgContentDraft {
                     .content(NewsContent::Location(location_content))
                     .references(Default::default())
                     .clone();
-                Ok(NewsSlideDraft { content: builder })
+                Ok(NewsSlideDraft {
+                    content: builder,
+                    references: vec![],
+                })
             }
         }
     }

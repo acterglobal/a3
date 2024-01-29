@@ -302,7 +302,11 @@ object NewsSlide {
 }
 
 object NewsSlideDraft {
-    
+    /// add reference for this slide draft
+    fn add_reference(reference: ObjRef);
+
+    /// unset references for this slide draft
+    fn unset_references();
 }
 
 /// A news entry
