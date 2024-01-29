@@ -1,8 +1,8 @@
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result};
 use matrix_sdk::{media::MediaRequest, Account as SdkAccount, Client as SdkClient};
-use ruma_common::{OwnedMxcUri, OwnedUserId};
+use ruma_common::{OwnedMxcUri, OwnedUserId, UserId};
 use ruma_events::{ignored_user_list::IgnoredUserListEventContent, room::MediaSource};
-use std::{ops::Deref, path::PathBuf, str::FromStr};
+use std::{ops::Deref, path::PathBuf};
 
 use super::{
     common::{OptionBuffer, OptionString, ThumbnailSize},
@@ -97,7 +97,7 @@ impl Account {
     }
 
     pub async fn ignore_user(&self, user_id: String) -> Result<bool> {
-        let user_id = OwnedUserId::from_str(&user_id)?;
+        let user_id = UserId::parse(user_id)?;
         let account = self.account.clone();
 
         RUNTIME
@@ -109,7 +109,7 @@ impl Account {
     }
 
     pub async fn unignore_user(&self, user_id: String) -> Result<bool> {
-        let user_id = OwnedUserId::from_str(&user_id)?;
+        let user_id = UserId::parse(user_id)?;
         let account = self.account.clone();
 
         RUNTIME

@@ -2,7 +2,6 @@ use acter_core::RestoreToken;
 use anyhow::{bail, Context, Result};
 use matrix_sdk::{
     matrix_auth::{MatrixSession, MatrixSessionTokens},
-    media,
     ruma::{
         api::client::{
             account::register,

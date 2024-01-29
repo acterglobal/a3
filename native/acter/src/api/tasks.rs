@@ -1,11 +1,10 @@
 use acter_core::{
     events::tasks::{self, Priority, TaskBuilder, TaskListBuilder},
-    models::{self, ActerModel, AnyActerModel, Color, TaskSelfAssign, TaskStats},
+    models::{self, ActerModel, AnyActerModel, Color, TaskStats},
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
 use chrono::DateTime;
-use core::time::Duration;
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
 use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};

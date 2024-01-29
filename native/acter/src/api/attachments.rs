@@ -3,22 +3,13 @@ use acter_core::{
     models::{self, ActerModel, AnyActerModel},
 };
 use anyhow::{bail, Context, Result};
-use core::time::Duration;
 use futures::stream::StreamExt;
-use matrix_sdk::{
-    room::Room,
-    ruma::{assign, UInt},
-    Client as SdkClient, RoomState,
-};
-use ruma_common::{MxcUri, OwnedEventId, OwnedUserId};
+use matrix_sdk::{room::Room, Client as SdkClient, RoomState};
+use ruma_common::{OwnedEventId, OwnedUserId};
 use ruma_events::{
-    room::{
-        message::{
-            AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-            ImageMessageEventContent, LocationInfo, LocationMessageEventContent, VideoInfo,
-            VideoMessageEventContent,
-        },
-        ImageInfo,
+    room::message::{
+        AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
+        LocationMessageEventContent, VideoMessageEventContent,
     },
     MessageLikeEventType,
 };

@@ -1,12 +1,11 @@
-use anyhow::{bail, Context, Result};
+use anyhow::Result;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::RoomMember,
     ruma::api::client::user_directory::search_users,
-    Account, Client, DisplayName, Room,
+    Client, DisplayName, Room,
 };
-use ruma::api::client::user_directory::search_users::v3::User;
-use ruma_common::{OwnedRoomId, OwnedUserId};
+use ruma_common::OwnedUserId;
 use ruma_events::room::MediaSource;
 
 use super::{

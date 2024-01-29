@@ -1,7 +1,7 @@
 use dashmap::{mapref::one::RefMut, DashMap, DashSet};
 use matrix_sdk::Client;
 use ruma_common::{OwnedUserId, UserId};
-use std::{iter::FromIterator, sync::Arc};
+use std::sync::Arc;
 use tracing::{debug, instrument, trace, warn};
 
 use crate::{
