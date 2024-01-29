@@ -542,8 +542,6 @@ run_task = "copy-lib"
 [tasks.post-android]
 dependencies = ["ffigen"]
 
-# TODO: non linux desktops
-# TODO: release build
 [tasks.desktop]
 # Build rust SDK for desktop
 dependencies = [
@@ -554,6 +552,20 @@ dependencies = [
     "copy-desktop-lib",
     "copy-desktop-lib-release",
 ]
+
+[tasks.desktop-tracing]
+# Build rust SDK for desktop
+dependencies = [
+    "desktop-build",
+    "copy-desktop-lib",
+]
+
+[tasks.desktop-tracing-inner]
+private = true
+condition = { env_true = ["DEV"] }
+env = { RUSTFLAGS="--cfg tokio_unstable", MACOSX_DEPLOYMENT_TARGET = 11 }
+command = "cargo"
+args = ["build", "--lib", "--features", "tracing"]
 
 [tasks.desktop-build]
 private = true
