@@ -36,7 +36,7 @@ class _SlideEditorOptionsState extends ConsumerState<SlideEditorOptions> {
   }
 
   Widget slideEditorOptions(BuildContext context) {
-    final slideEditorBackgroundColor = Theme.of(context).colorScheme.onPrimary;
+    final slideEditorBackgroundColor = Theme.of(context).colorScheme.primary;
 
     return Visibility(
       visible: ref.watch(currentNewsSlideProvider) != null,

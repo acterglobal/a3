@@ -15,7 +15,6 @@ class PostAttachmentOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color iconColor = Theme.of(context).colorScheme.primary;
     return ListView(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -28,7 +27,7 @@ class PostAttachmentOptions extends StatelessWidget {
             Navigator.of(context).pop();
             if (onTapAddText != null) onTapAddText!();
           },
-          leading: Icon(Atlas.size_text, color: iconColor),
+          leading: const Icon(Atlas.size_text),
           title: const Text('Add Text Slide'),
         ),
         ListTile(
@@ -36,7 +35,7 @@ class PostAttachmentOptions extends StatelessWidget {
             Navigator.of(context).pop();
             if (onTapImage != null) onTapImage!();
           },
-          leading: Icon(Atlas.file_image, color: iconColor),
+          leading: const Icon(Atlas.file_image),
           title: const Text('Select Picture'),
         ),
         ListTile(
@@ -44,7 +43,7 @@ class PostAttachmentOptions extends StatelessWidget {
             Navigator.of(context).pop();
             if (onTapVideo != null) onTapVideo!();
           },
-          leading: Icon(Atlas.file_video, color: iconColor),
+          leading: const Icon(Atlas.file_video),
           title: const Text('Select Video'),
         ),
         ListTile(

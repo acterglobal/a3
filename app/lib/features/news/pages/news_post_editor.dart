@@ -288,7 +288,6 @@ class _NewsPostEditorState extends ConsumerState<NewsPostEditor> {
         textInputAction: TextInputAction.newline,
         minLines: 1,
         maxLines: 10,
-        style: Theme.of(context).textTheme.titleMedium,
         onChanged: (value) {
           setState(() {
             final index = newsPostList.indexOf(selectedNewsPost!);
@@ -297,6 +296,7 @@ class _NewsPostEditorState extends ConsumerState<NewsPostEditor> {
           });
         },
         decoration: InputDecoration(
+          fillColor: Colors.transparent,
           hintText: 'Type a text',
           hintStyle: Theme.of(context)
               .textTheme
