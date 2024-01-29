@@ -286,6 +286,7 @@ impl NewsSlide {
 }
 
 #[derive(Clone)]
+#[allow(clippy::boxed_local)]
 pub struct NewsSlideDraft {
     content: news::NewsSlideBuilder,
     references: Vec<ObjRef>,
