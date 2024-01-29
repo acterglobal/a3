@@ -3,18 +3,16 @@ import 'dart:math';
 
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
-import 'package:acter/common/widgets/default_button.dart';
+import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_list_item.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import 'package:acter/common/widgets/empty_state_widget.dart';
 
 class SpacePinsPage extends ConsumerWidget {
   final String spaceIdOrAlias;
@@ -28,7 +26,7 @@ class SpacePinsPage extends ConsumerWidget {
 
     // get platform of context.
     return DecoratedBox(
-      decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+      decoration: const BoxDecoration(gradient: primaryGradient),
       child: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -77,20 +75,12 @@ class SpacePinsPage extends ConsumerWidget {
                           'Share important resources with your community such as documents or links so everyone is updated.',
                       image: 'assets/images/empty_pin.svg',
                       primaryButton: canAdd
-                          ? DefaultButton(
+                          ? ElevatedButton(
                               onPressed: () => context.pushNamed(
                                 Routes.actionAddPin.name,
                                 queryParameters: {'spaceId': spaceIdOrAlias},
                               ),
-                              title: 'Share Pin',
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.success,
-                                disabledBackgroundColor: Theme.of(context)
-                                    .colorScheme
-                                    .success
-                                    .withOpacity(0.5),
-                              ),
+                              child: const Text('Share Pin'),
                             )
                           : null,
                     ),

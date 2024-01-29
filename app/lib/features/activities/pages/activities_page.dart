@@ -1,4 +1,5 @@
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
@@ -131,7 +132,7 @@ class ActivitiesPage extends ConsumerWidget {
           PageHeaderWidget(
             title: 'Activities',
             sectionDecoration: const BoxDecoration(
-              gradient: AppTheme.primaryGradient,
+              gradient: primaryGradient,
             ),
             expandedContent: Text(
               'All the important stuff requiring your attention can be found here',

@@ -2,7 +2,7 @@ use anyhow::{bail, Result};
 use chrono::Local;
 use lazy_static::lazy_static;
 use log::{LevelFilter, Log, Metadata, Record};
-use matrix_sdk::{media, Client, ClientBuilder};
+use matrix_sdk::{Client, ClientBuilder};
 use matrix_sdk_base::store::StoreConfig;
 use matrix_sdk_sqlite::{OpenStoreError, SqliteCryptoStore, SqliteStateStore};
 use matrix_sdk_store_media_cache_wrapper::StoreCacheWrapperError;

@@ -27,120 +27,104 @@ class RoomsListWidget extends ConsumerWidget {
     final showSearch = ref.watch(_searchToggleProvider);
     final searchNotifier = ref.watch(_searchToggleProvider.notifier);
     final inSideBar = ref.watch(inSideBarProvider);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.onSecondary.withOpacity(0.8),
-      ),
-      child: PageStorage(
-        bucket: bucketGlobal,
-        child: CustomScrollView(
-          key: const PageStorageKey<String>('convo-list'),
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            SliverLayoutBuilder(
-              builder: (context, constraints) {
-                final scrolled = constraints.scrollOffset > 0;
-                return SliverAppBar(
-                  backgroundColor: scrolled
-                      ? Theme.of(context).colorScheme.primaryContainer
-                      : Colors.transparent,
-                  automaticallyImplyLeading: false,
-                  floating: true,
-                  elevation: 0,
-                  leading: showSearch
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 8,
-                          ),
-                          child: TextFormField(
-                            autofocus: true,
-                            onChanged: (value) => ref
-                                .read(chatSearchValueProvider.notifier)
-                                .update((state) => value),
-                            cursorColor:
-                                Theme.of(context).colorScheme.tertiary2,
-                            decoration: InputDecoration(
-                              hintStyle: const TextStyle(color: Colors.white),
-                              suffixIcon: GestureDetector(
-                                onTap: () {
-                                  searchNotifier.update((state) => false);
-                                  ref
-                                      .read(
-                                        chatSearchValueProvider.notifier,
-                                      )
-                                      .state = null;
-                                },
-                                child: const Icon(
-                                  Icons.close,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              contentPadding: const EdgeInsets.only(
-                                left: 12,
-                                bottom: 2,
-                                top: 2,
+    return PageStorage(
+      bucket: bucketGlobal,
+      child: CustomScrollView(
+        key: const PageStorageKey<String>('convo-list'),
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverLayoutBuilder(
+            builder: (context, constraints) {
+              return SliverAppBar(
+                automaticallyImplyLeading: false,
+                floating: true,
+                elevation: 0,
+                leading: showSearch
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 8,
+                        ),
+                        child: TextFormField(
+                          autofocus: true,
+                          onChanged: (value) => ref
+                              .read(chatSearchValueProvider.notifier)
+                              .update((state) => value),
+                          cursorColor:
+                              Theme.of(context).colorScheme.tertiary2,
+                          decoration: InputDecoration(
+                            hintStyle: const TextStyle(color: Colors.white),
+                            suffixIcon: GestureDetector(
+                              onTap: () {
+                                searchNotifier.update((state) => false);
+                                ref
+                                    .read(
+                                      chatSearchValueProvider.notifier,
+                                    )
+                                    .state = null;
+                              },
+                              child: const Icon(
+                                Icons.close,
+                                color: Colors.white,
                               ),
                             ),
-                          ),
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.all(15),
-                          child: Text(
-                            AppLocalizations.of(context)!.chat,
-                            style: Theme.of(context).textTheme.headlineSmall,
+                            contentPadding: const EdgeInsets.only(
+                              left: 12,
+                              bottom: 2,
+                              top: 2,
+                            ),
                           ),
                         ),
-                  leadingWidth: double.infinity,
-                  actions: showSearch
-                      ? []
-                      : [
-                          IconButton(
-                            onPressed: () {
-                              searchNotifier.update((state) => !state);
-                            },
-                            padding: const EdgeInsets.only(right: 10, left: 5),
-                            icon: const Icon(Atlas.magnifying_glass),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Text(
+                          AppLocalizations.of(context)!.chat,
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                      ),
+                leadingWidth: double.infinity,
+                actions: showSearch
+                    ? []
+                    : [
+                        IconButton(
+                          onPressed: () {
+                            searchNotifier.update((state) => !state);
+                          },
+                          padding: const EdgeInsets.only(right: 10, left: 5),
+                          icon: const Icon(Atlas.magnifying_glass),
+                        ),
+                        IconButton(
+                          onPressed: () async => context.pushNamed(
+                            Routes.createChat.name,
                           ),
-                          IconButton(
-                            onPressed: () async => context.pushNamed(
-                              Routes.createChat.name,
-                            ),
-                            padding: const EdgeInsets.only(right: 10, left: 10),
-                            icon: const Icon(
-                              Atlas.plus_circle_thin,
-                            ),
+                          padding: const EdgeInsets.only(right: 10, left: 10),
+                          icon: const Icon(
+                            Atlas.plus_circle_thin,
                           ),
-                        ],
-                );
-              },
-            ),
-            SliverToBoxAdapter(
-              child: Container(
-                height: 1,
-                width: double.infinity,
-                color: Theme.of(context).colorScheme.secondaryContainer,
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: client.isGuest()
-                  ? empty
-                  : ConvosList(
-                      onSelected: (String roomId) {
-                        inSideBar
-                            ? context.goNamed(
-                                Routes.chatroom.name,
-                                pathParameters: {'roomId': roomId},
-                              )
-                            : context.pushNamed(
-                                Routes.chatroom.name,
-                                pathParameters: {'roomId': roomId},
-                              );
-                      },
-                    ),
-            ),
-          ],
-        ),
+                        ),
+                      ],
+              );
+            },
+          ),
+          SliverToBoxAdapter(
+            child: client.isGuest()
+                ? empty
+                : ConvosList(
+                    onSelected: (String roomId) {
+                      inSideBar
+                          ? context.goNamed(
+                              Routes.chatroom.name,
+                              pathParameters: {'roomId': roomId},
+                            )
+                          : context.pushNamed(
+                              Routes.chatroom.name,
+                              pathParameters: {'roomId': roomId},
+                            );
+                    },
+                  ),
+          ),
+        ],
       ),
     );
   }

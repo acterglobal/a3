@@ -7,7 +7,6 @@ use acter_core::{
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
-use core::time::Duration;
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
 use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};

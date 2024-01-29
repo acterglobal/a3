@@ -1,10 +1,10 @@
 import 'dart:math';
 
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:flutter/material.dart';
-
 import 'package:acter/models/onBoard.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class StartPage extends StatefulWidget {
@@ -256,18 +256,7 @@ class _StartPageState extends State<StartPage> {
       body: Container(
         padding: const EdgeInsets.only(top: kToolbarHeight),
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xff121F2B),
-              Color(0xff122334),
-              Color(0xff121315),
-              Color(0xff121315),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.2, 0.4, 0.6, 1.0],
-            tileMode: TileMode.decal,
-          ),
+          gradient: introGradient,
         ),
         child: Column(
           children: [

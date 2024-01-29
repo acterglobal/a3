@@ -12,6 +12,7 @@ import 'package:dart_date/dart_date.dart';
 
 class CalendarWidget extends ConsumerStatefulWidget {
   final int? eventsLimit;
+
   const CalendarWidget({
     super.key,
     this.eventsLimit = 5,
@@ -26,6 +27,7 @@ class _CalendarWidgetConsumerState extends ConsumerState<CalendarWidget> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime? _selectedDay;
   DateTime _focusedDay = DateTime.now();
+
   // ignore: prefer_final_fields
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
       .toggledOff; // Can be toggled on/off by longpressing a date
@@ -115,7 +117,7 @@ class _CalendarWidgetConsumerState extends ConsumerState<CalendarWidget> {
               color: Theme.of(context).colorScheme.tertiary,
             ),
             formatButtonDecoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onSecondary,
+              color: Theme.of(context).colorScheme.background,
               borderRadius: BorderRadius.circular(12),
             ),
             formatButtonPadding: const EdgeInsets.all(8),

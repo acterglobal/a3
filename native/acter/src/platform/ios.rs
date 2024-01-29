@@ -1,8 +1,6 @@
 use anyhow::Result;
-use log::{Level, Log, Metadata, Record};
 use matrix_sdk::ClientBuilder;
 use oslog::OsLogger;
-use std::sync::{Arc, Mutex};
 
 use super::native;
 

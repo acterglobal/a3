@@ -1,14 +1,14 @@
 import 'dart:math';
 
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/features/space/widgets/space_header.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/features/space/widgets/about_card.dart';
 import 'package:acter/features/space/widgets/chats_card.dart';
 import 'package:acter/features/space/widgets/events_card.dart';
 import 'package:acter/features/space/widgets/links_card.dart';
 import 'package:acter/features/space/widgets/non_acter_space_card.dart';
 import 'package:acter/features/space/widgets/related_spaces_card.dart';
+import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,7 +49,7 @@ class SpaceOverview extends ConsumerWidget {
     const int minCount = 2;
     // get platform of context.
     return DecoratedBox(
-      decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+      decoration: const BoxDecoration(gradient: primaryGradient),
       child: SingleChildScrollView(
         child: Column(
           children: [

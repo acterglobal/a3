@@ -27,8 +27,7 @@ use matrix_sdk::{
 };
 use ruma_common::{
     device_id, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId,
-    OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId, RoomAliasId, RoomId,
-    RoomOrAliasId, UserId,
+    OwnedRoomId, OwnedServerName, OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
 };
 use ruma_events::room::MediaSource;
 use std::{
@@ -51,9 +50,7 @@ use tokio::{
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
 
-use crate::{
-    Account, Convo, Notification, OptionString, Room, Space, ThumbnailSize, UserProfile, RUNTIME,
-};
+use crate::{Account, Convo, Notification, OptionString, Room, Space, ThumbnailSize, RUNTIME};
 
 use super::{
     api::FfiBuffer, device::DeviceController, invitation::InvitationController,

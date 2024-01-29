@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/widgets/email_address_card.dart';
@@ -26,7 +25,8 @@ class _AddEmailAddrState extends State<AddEmailAddr> {
     return AlertDialog(
       title: const Text(
         "Please provide the email address you'd like to add",
-      ), // The token-reset path is just the process by which control over that email address is confirmed.
+      ),
+      // The token-reset path is just the process by which control over that email address is confirmed.
       content: Form(
         key: _formKey,
         child: Column(
@@ -44,11 +44,11 @@ class _AddEmailAddrState extends State<AddEmailAddr> {
         ),
       ),
       actions: <Widget>[
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
           child: const Text('Cancel'),
         ),
-        TextButton(
+        ElevatedButton(
           onPressed: () => onSubmit(context),
           child: const Text('Submit'),
         ),
@@ -84,16 +84,14 @@ class EmailAddressesPage extends ConsumerWidget {
               onPressed: () {
                 ref.invalidate(emailAddressesProvider);
               },
-              icon: Icon(
+              icon: const Icon(
                 Atlas.refresh_account_arrows_thin,
-                color: Theme.of(context).colorScheme.neutral5,
               ),
             ),
             IconButton(
               onPressed: () => addEmailAddress(context, ref),
-              icon: Icon(
+              icon: const Icon(
                 Atlas.plus_circle_thin,
-                color: Theme.of(context).colorScheme.neutral5,
               ),
             ),
           ],

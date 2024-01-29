@@ -2,6 +2,7 @@ import 'dart:core';
 import 'dart:math';
 
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class PinsPage extends ConsumerWidget {
           PageHeaderWidget(
             title: 'Pins',
             sectionDecoration: const BoxDecoration(
-              gradient: AppTheme.primaryGradient,
+              gradient: primaryGradient,
             ),
             actions: [
               IconButton(
