@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -167,11 +166,8 @@ class CrossSigning {
     if (acceptingRequest) {
       return const CircularProgressIndicator();
     }
-    return DefaultButton(
-      title: AppLocalizations.of(context)!.acceptRequest,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.success,
-      ),
+    return ElevatedButton(
+      child:  Text(AppLocalizations.of(context)!.acceptRequest),
       onPressed: () async {
         if (_mounted) {
           acceptingRequest = true;
@@ -499,11 +495,8 @@ class CrossSigning {
           flex: 1,
           child: SizedBox(
             width: MediaQuery.of(context).size.width * 0.40,
-            child: DefaultButton(
-              title: AppLocalizations.of(context)!.sasGotIt,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.success,
-              ),
+            child: ElevatedButton(
+              child:  Text(AppLocalizations.of(context)!.sasGotIt),
               onPressed: () {
                 rootNavKey.currentContext?.pop();
                 // finish verification
@@ -739,11 +732,8 @@ class CrossSigning {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        DefaultButton(
-          title: AppLocalizations.of(context)!.verificationSasDoNotMatch,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-          ),
+        ElevatedButton(
+          child:  Text(AppLocalizations.of(context)!.verificationSasDoNotMatch),
           onPressed: () async {
             rootNavKey.currentContext?.pop();
             // mismatch sas verification
@@ -751,11 +741,8 @@ class CrossSigning {
           },
         ),
         const SizedBox(width: 15),
-        DefaultButton(
-          title: AppLocalizations.of(context)!.verificationSasMatch,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.success,
-          ),
+        ElevatedButton(
+          child:  Text(AppLocalizations.of(context)!.verificationSasMatch),
           onPressed: () async {
             if (_mounted) {
               waitForMatch = true;
@@ -866,11 +853,8 @@ class CrossSigning {
           child: Center(
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.40,
-              child: DefaultButton(
-                title: AppLocalizations.of(context)!.sasGotIt,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.success,
-                ),
+              child: ElevatedButton(
+                child:  Text(AppLocalizations.of(context)!.sasGotIt),
                 onPressed: () {
                   rootNavKey.currentContext?.pop();
                   // finish verification

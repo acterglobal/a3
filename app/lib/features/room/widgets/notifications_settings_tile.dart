@@ -77,6 +77,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
           PopupMenuItem<String>(
             value: 'all',
             child: notificationSettingItemUI(
+              context,
               curNotifStatus == 'all',
               'All Messages',
             ),
@@ -84,6 +85,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
           PopupMenuItem<String>(
             value: 'mentions',
             child: notificationSettingItemUI(
+              context,
               curNotifStatus == 'mentions',
               'Mentions and Keywords only',
             ),
@@ -91,6 +93,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
           PopupMenuItem<String>(
             value: 'muted',
             child: notificationSettingItemUI(
+              context,
               curNotifStatus == 'muted',
               'Muted',
             ),
@@ -98,6 +101,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
           PopupMenuItem<String>(
             value: '',
             child: notificationSettingItemUI(
+              context,
               curNotifStatus == '',
               'Default (${notifToText(defaultNotificationStatus.valueOrNull ?? '') ?? 'unedefined'})',
             ),
@@ -107,11 +111,21 @@ class _NotificationSettingsTile extends ConsumerWidget {
     );
   }
 
-  ListTile notificationSettingItemUI(bool isSelected, String title) {
+  ListTile notificationSettingItemUI(
+    BuildContext context,
+    bool isSelected,
+    String title,
+  ) {
     return ListTile(
       selected: isSelected,
-      title: Text(title),
-      trailing: isSelected ? const Icon(Atlas.check_circle, size: 18) : null,
+      title: Text(title,style: Theme.of(context).textTheme.bodyMedium,),
+      trailing: isSelected
+          ? Icon(
+              Atlas.check_circle,
+              size: 18,
+              color: Theme.of(context).colorScheme.onBackground,
+            )
+          : null,
     );
   }
 }

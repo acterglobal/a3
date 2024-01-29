@@ -2,7 +2,6 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
@@ -67,18 +66,14 @@ class RedactContentWidget extends ConsumerWidget {
         ),
       ),
       actions: <Widget>[
-        DefaultButton(
+        OutlinedButton(
           onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-          title: 'Close',
-          isOutlined: true,
+          child: const Text('Close'),
         ),
-        DefaultButton(
+        ElevatedButton(
           onPressed: onRemove ??
               () => redactContent(context, ref, reasonController.text),
-          title: 'Remove',
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-          ),
+          child: const Text('Remove'),
         ),
       ],
     );
@@ -125,10 +120,9 @@ class RedactContentWidget extends ConsumerWidget {
           builder: (ctx) => DefaultDialog(
             title: Text('Redaction sending failed due to some $e'),
             actions: <Widget>[
-              DefaultButton(
+              OutlinedButton(
                 onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
-                title: 'Close',
-                isOutlined: true,
+                child: const Text('Close'),
               ),
             ],
           ),

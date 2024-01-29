@@ -86,7 +86,7 @@ class ImageMessageBuilder extends ConsumerWidget {
             const SizedBox(height: 8),
             Container(
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onSecondary,
+                color: Theme.of(context).colorScheme.background,
                 borderRadius: BorderRadius.circular(8),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

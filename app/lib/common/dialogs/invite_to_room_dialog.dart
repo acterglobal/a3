@@ -308,7 +308,7 @@ class _InviteToRoomDialogState extends ConsumerState<InviteToRoomDialog>
                           Atlas.magnifying_glass_thin,
                           color: Colors.white,
                         ),
-                        labelText: 'search user',
+                        hintText: 'search user',
                       ),
                       onChanged: (String value) {
                         searchValueNotifier.state = value;
