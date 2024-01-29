@@ -227,13 +227,8 @@ impl Pin {
             .and_then(|t| t.formatted.clone().map(|f| f.body))
     }
 
-<<<<<<< HEAD
     pub fn content_text(&self) -> Option<MsgContent> {
         self.content.content.as_ref().map(MsgContent::from)
-=======
-    pub fn content_text(&self) -> Option<String> {
-        self.content.content.clone().map(|t| t.body)
->>>>>>> main
     }
 
     pub fn url(&self) -> Option<String> {
