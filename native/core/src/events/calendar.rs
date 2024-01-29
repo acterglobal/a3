@@ -1,6 +1,7 @@
 use derive_builder::Builder;
 use derive_getters::Getters;
-use ruma_events::{macros::EventContent, room::message::TextMessageEventContent};
+use ruma_events::room::message::TextMessageEventContent;
+use ruma_macros::EventContent;
 use serde::{Deserialize, Serialize};
 use tracing::trace;
 
