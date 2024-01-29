@@ -26,7 +26,7 @@ use matrix_sdk::{
             room::report_content,
             space::{get_hierarchy, SpaceHierarchyRoomsChunk},
         },
-        assign, Int, UInt,
+        assign, Int,
     },
     RoomMemberships, RoomState,
 };

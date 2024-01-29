@@ -5,7 +5,7 @@ use futures::{
     stream::StreamExt,
 };
 use matrix_sdk::{executor::JoinHandle, Client as SdkClient};
-use ruma_common::{device_id, OwnedDeviceId};
+use ruma_common::OwnedDeviceId;
 use std::{
     sync::Arc,
     time::{Duration, SystemTime, UNIX_EPOCH},
