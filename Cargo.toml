@@ -9,53 +9,53 @@ default-members = ["native/acter"]
 
 [workspace.dependencies.matrix-sdk]
 git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "1d6c01fb342507b917697d02392686c861cbd0a7"
+rev = "18eefcffdb705fdaf2964bd099331dbc19b678e0"
 default-features = false
 features = ["experimental-sliding-sync"]
 
 [workspace.dependencies.matrix-sdk-base]
 git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "1d6c01fb342507b917697d02392686c861cbd0a7"
+rev = "18eefcffdb705fdaf2964bd099331dbc19b678e0"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-sqlite]
 git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "1d6c01fb342507b917697d02392686c861cbd0a7"
+rev = "18eefcffdb705fdaf2964bd099331dbc19b678e0"
 default-features = false
 features = ["crypto-store", "state-store"]
 
 [workspace.dependencies.matrix-sdk-store-encryption]
 git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "1d6c01fb342507b917697d02392686c861cbd0a7"
+rev = "18eefcffdb705fdaf2964bd099331dbc19b678e0"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-test]
 git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "1d6c01fb342507b917697d02392686c861cbd0a7"
+rev = "18eefcffdb705fdaf2964bd099331dbc19b678e0"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-ui]
 git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "1d6c01fb342507b917697d02392686c861cbd0a7"
+rev = "18eefcffdb705fdaf2964bd099331dbc19b678e0"
 default-features = false
 features = ["e2e-encryption"]
 
 [workspace.dependencies.ruma]
 git = "https://github.com/ruma/ruma"
-rev = "a7e1d7fa49d93f4d9cbc369aa28378a89b3dc9e4"
+rev = "684ffc789877355bd25269451b2356817c17cc3f"
 features = ["client-api-c", "compat-upload-signatures", "compat-user-id", "compat-arbitrary-length-ids", "unstable-msc3401"]
 
 [workspace.dependencies.ruma-common]
 git = "https://github.com/ruma/ruma"
-rev = "a7e1d7fa49d93f4d9cbc369aa28378a89b3dc9e4"
+rev = "684ffc789877355bd25269451b2356817c17cc3f"
 
 [workspace.dependencies.ruma-events]
 git = "https://github.com/ruma/ruma"
-rev = "a7e1d7fa49d93f4d9cbc369aa28378a89b3dc9e4"
+rev = "684ffc789877355bd25269451b2356817c17cc3f"
 
 [workspace.dependencies.ruma-macros]
 git = "https://github.com/ruma/ruma"
-rev = "a7e1d7fa49d93f4d9cbc369aa28378a89b3dc9e4"
+rev = "684ffc789877355bd25269451b2356817c17cc3f"
 
 [workspace.dependencies]
 strum = { version = "0.26.1", features = ["derive"] }
