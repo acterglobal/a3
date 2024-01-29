@@ -337,6 +337,9 @@ object NewsEntryDraft {
     /// change position of slides draft of this news entry
     fn swap_slides(from: u8, to:u8);
 
+    /// get news slide set for this news entry draft
+    fn slides() -> Vec<NewsSlideDraft>;
+
     /// clear slides
     fn unset_slides();
 
