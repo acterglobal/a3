@@ -15,13 +15,13 @@ use crate::{util::deserialize_some, Result};
 // if you change the order of these enum variables, enum value will change and parsing of old content will fail
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(untagged)]
-pub enum NewsContent {
+pub enum FallbackNewsContent {
     /// An image message.
     Image(ImageMessageEventContent),
-    /// A text message.
-    Text(TextMessageEventContent),
     /// A video message.
     Video(VideoMessageEventContent),
+    /// A text message.
+    Text(TextMessageEventContent),
     /// An audio message.
     Audio(AudioMessageEventContent),
     /// A file message.
@@ -30,21 +30,114 @@ pub enum NewsContent {
     Location(LocationMessageEventContent),
 }
 
-impl NewsContent {
+impl FallbackNewsContent {
     pub fn type_str(&self) -> String {
         match self {
-            NewsContent::Audio(_) => "audio".to_owned(),
-            NewsContent::File(_) => "file".to_owned(),
-            NewsContent::Image(_) => "image".to_owned(),
-            NewsContent::Location(_) => "location".to_owned(),
-            NewsContent::Text(_) => "text".to_owned(),
-            NewsContent::Video(_) => "video".to_owned(),
+            FallbackNewsContent::Audio(_) => "audio".to_owned(),
+            FallbackNewsContent::File(_) => "file".to_owned(),
+            FallbackNewsContent::Image(_) => "image".to_owned(),
+            FallbackNewsContent::Location(_) => "location".to_owned(),
+            FallbackNewsContent::Text(_) => "text".to_owned(),
+            FallbackNewsContent::Video(_) => "video".to_owned(),
         }
     }
 
     pub fn audio(&self) -> Option<AudioMessageEventContent> {
         match self {
-            NewsContent::Audio(content) => Some(content.clone()),
+            FallbackNewsContent::Audio(content) => Some(content.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn file(&self) -> Option<FileMessageEventContent> {
+        match self {
+            FallbackNewsContent::File(content) => Some(content.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn image(&self) -> Option<ImageMessageEventContent> {
+        match self {
+            FallbackNewsContent::Image(content) => Some(content.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn location(&self) -> Option<LocationMessageEventContent> {
+        match self {
+            FallbackNewsContent::Location(content) => Some(content.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn text(&self) -> Option<TextMessageEventContent> {
+        match self {
+            FallbackNewsContent::Text(content) => Some(content.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn video(&self) -> Option<VideoMessageEventContent> {
+        match self {
+            FallbackNewsContent::Video(content) => Some(content.clone()),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(tag = "type")]
+pub enum NewsContent {
+    /// An image message.
+    Image(ImageMessageEventContent),
+    /// A video message.
+    Video(VideoMessageEventContent),
+    /// A text message.
+    Text(TextMessageEventContent),
+    /// An audio message.
+    Audio(AudioMessageEventContent),
+    /// A file message
+    File(FileMessageEventContent),
+    /// A location message.
+    Location(LocationMessageEventContent),
+
+    #[serde(untagged)]
+    Fallback(FallbackNewsContent),
+}
+
+impl NewsContent {
+    pub fn type_str(&self) -> String {
+        match self {
+            NewsContent::File(_) => "file".to_owned(),
+            NewsContent::Image(_) => "image".to_owned(),
+            NewsContent::Location(_) => "location".to_owned(),
+            NewsContent::Text(_) => "text".to_owned(),
+            NewsContent::Audio(_) => "audio".to_owned(),
+            NewsContent::Video(_) => "video".to_owned(),
+            NewsContent::Fallback(f) => f.type_str(),
+        }
+    }
+
+    pub fn text(&self) -> Option<TextMessageEventContent> {
+        match self {
+            NewsContent::Text(body) => Some(body.clone()),
+            NewsContent::Fallback(f) => f.text(),
+            _ => None,
+        }
+    }
+
+    pub fn audio(&self) -> Option<AudioMessageEventContent> {
+        match self {
+            NewsContent::Audio(body) => Some(body.clone()),
+            NewsContent::Fallback(f) => f.audio(),
+            _ => None,
+        }
+    }
+
+    pub fn video(&self) -> Option<VideoMessageEventContent> {
+        match self {
+            NewsContent::Video(body) => Some(body.clone()),
+            NewsContent::Fallback(f) => f.video(),
             _ => None,
         }
     }
@@ -52,6 +145,7 @@ impl NewsContent {
     pub fn file(&self) -> Option<FileMessageEventContent> {
         match self {
             NewsContent::File(content) => Some(content.clone()),
+            NewsContent::Fallback(f) => f.file(),
             _ => None,
         }
     }
@@ -59,6 +153,7 @@ impl NewsContent {
     pub fn image(&self) -> Option<ImageMessageEventContent> {
         match self {
             NewsContent::Image(content) => Some(content.clone()),
+            NewsContent::Fallback(f) => f.image(),
             _ => None,
         }
     }
@@ -66,25 +161,11 @@ impl NewsContent {
     pub fn location(&self) -> Option<LocationMessageEventContent> {
         match self {
             NewsContent::Location(content) => Some(content.clone()),
-            _ => None,
-        }
-    }
-
-    pub fn text(&self) -> Option<TextMessageEventContent> {
-        match self {
-            NewsContent::Text(content) => Some(content.clone()),
-            _ => None,
-        }
-    }
-
-    pub fn video(&self) -> Option<VideoMessageEventContent> {
-        match self {
-            NewsContent::Video(content) => Some(content.clone()),
+            NewsContent::Fallback(f) => f.location(),
             _ => None,
         }
     }
 }
-
 /// A news slide represents one full-sized slide of news
 #[derive(Clone, Debug, Builder, Deserialize, Getters, Serialize)]
 pub struct NewsSlide {
