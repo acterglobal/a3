@@ -1763,11 +1763,13 @@ impl Room {
                     .await?
                     .context("Unable to find me in room")?;
                 if ev.sender() == my_id {
-                    if !member.can_redact_own() {
+                    let permitted = member.can_redact_own();
+                    if !permitted {
                         bail!("No permissions to redact other's message in this room");
                     }
                 } else {
-                    if !member.can_redact_other() {
+                    let permitted = member.can_redact_other();
+                    if !permitted {
                         bail!("No permissions to redact own message in this room");
                     }
                 }
