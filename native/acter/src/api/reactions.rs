@@ -134,10 +134,7 @@ impl ReactionManager {
             .context("User not found")?
             .to_owned();
         let event_id = EventId::parse(event_id)?;
-        let txn_id = match txn_id {
-            Some(x) => Some(OwnedTransactionId::from(x)),
-            None => None,
-        };
+        let txn_id = txn_id.map(OwnedTransactionId::from);
 
         RUNTIME
             .spawn(async move {
