@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/bug_report/models/bug_report.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -69,7 +70,7 @@ class BugReportStateNotifier extends StateNotifier<BugReport> {
         ),
       );
     }
-    print("sending $rageshakeUrl");
+    debugPrint('sending $rageshakeUrl');
     final resp = await request.send();
     if (resp.statusCode == HttpStatus.ok) {
       Map<String, dynamic> json = jsonDecode(await resp.stream.bytesToString());
@@ -77,7 +78,7 @@ class BugReportStateNotifier extends StateNotifier<BugReport> {
         await File(screenshotPath).delete();
       }
       // example - https://github.com/bitfriend/acter-bugs/issues/9
-      return json['report_url'];
+      return json['report_url'] ?? '';
     } else {
       String body = await resp.stream.bytesToString();
       throw '${resp.statusCode}: $body';

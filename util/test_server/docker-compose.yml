@@ -17,8 +17,13 @@ services:
   rageshake:
     image: "ghcr.io/matrix-org/rageshake"
     restart: unless-stopped
+    user: root
     volumes:
-      - ./.config/rageshake.yml:/rageshake.yml:rw
+      - ./.config/rageshake.yml:/rageshake.yml
+      - type: tmpfs
+        target: /bugs/
+        tmpfs:
+          mode: 777
     command: "-config /rageshake.yml"
     ports:
       - 9110:9110/tcp

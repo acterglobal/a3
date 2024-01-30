@@ -1,15 +1,13 @@
-import 'package:acter/common/utils/constants.dart';
-import 'package:acter/features/bug_report/models/bug_report.dart';
+// ignore_for_file: avoid_print
+
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/home/data/keys.dart';
-import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import '../support/login.dart';
 import '../support/setup.dart';
-import '../support/spaces.dart';
 import '../support/util.dart';
 
 const rageshakeListUrl = String.fromEnvironment(
