@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
@@ -19,29 +17,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 
-class SlideEditorOptions extends ConsumerStatefulWidget {
-  const SlideEditorOptions({super.key});
+class NewsSlideOptions extends ConsumerStatefulWidget {
+  const NewsSlideOptions({super.key});
 
   @override
-  ConsumerState<SlideEditorOptions> createState() => _SlideEditorOptionsState();
+  ConsumerState<NewsSlideOptions> createState() => _NewsSlideOptionsState();
 }
 
-class _SlideEditorOptionsState extends ConsumerState<SlideEditorOptions> {
-  List<NewsSlideItem> newsPostList = <NewsSlideItem>[];
+class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
+  List<NewsSlideItem> newsSlideList = <NewsSlideItem>[];
 
   @override
   Widget build(BuildContext context) {
-    newsPostList = ref.watch(newSlideListProvider).getNewsList();
-    return slideEditorOptions(context);
+    newsSlideList = ref.watch(newSlideListProvider).getNewsSlideList();
+    return newsSlideOptionsUI(context);
   }
 
-  Widget slideEditorOptions(BuildContext context) {
-    final slideEditorBackgroundColor = Theme.of(context).colorScheme.primary;
-
+  Widget newsSlideOptionsUI(BuildContext context) {
     return Visibility(
       visible: ref.watch(currentNewsSlideProvider) != null,
       child: Container(
-        color: slideEditorBackgroundColor,
+        color: Theme.of(context).colorScheme.primary,
         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -52,11 +48,9 @@ class _SlideEditorOptionsState extends ConsumerState<SlideEditorOptions> {
               emptyText: 'Space',
             ),
             verticalDivider(context),
-            Expanded(
-              child: slidePostLists(context),
-            ),
+            Expanded(child: newsSlideListUI(context)),
             IconButton(
-              onPressed: () => sendUpdates(context),
+              onPressed: () => sendNews(context),
               style: ButtonStyle(
                 backgroundColor: MaterialStatePropertyAll(
                   Theme.of(context).colorScheme.background,
@@ -75,11 +69,11 @@ class _SlideEditorOptionsState extends ConsumerState<SlideEditorOptions> {
       height: 50,
       width: 2,
       margin: const EdgeInsets.symmetric(horizontal: 10.0),
-      color: Theme.of(context).colorScheme.background,
+      color: Theme.of(context).colorScheme.onPrimary,
     );
   }
 
-  Widget slidePostLists(BuildContext context) {
+  Widget newsSlideListUI(BuildContext context) {
     return Row(
       children: [
         Expanded(
@@ -87,19 +81,17 @@ class _SlideEditorOptionsState extends ConsumerState<SlideEditorOptions> {
             height: 80,
             child: ListView.builder(
               shrinkWrap: true,
-              itemCount: newsPostList.length,
+              itemCount: newsSlideList.length,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
-                final slidePost = newsPostList[index];
+                final slidePost = newsSlideList[index];
                 return InkWell(
                   onTap: () {
                     ref.watch(currentNewsSlideProvider.notifier).state =
                         slidePost;
-                    setState(() {});
                   },
                   onLongPress: () {
                     ref.watch(newSlideListProvider).deleteSlide(index);
-                    setState(() {});
                   },
                   child: Container(
                     width: 60,
@@ -149,50 +141,11 @@ class _SlideEditorOptionsState extends ConsumerState<SlideEditorOptions> {
         ),
       ),
       builder: (ctx) => PostAttachmentOptions(
-        onTapAddText: () => addTextSlide(),
-        onTapImage: () async => await addImageSlide(),
-        onTapVideo: () async => await addVideoSlide(),
+        onTapAddText: () => NewsUtils.addTextSlide(ref),
+        onTapImage: () async => await NewsUtils.addImageSlide(ref),
+        onTapVideo: () async => await NewsUtils.addVideoSlide(ref),
       ),
     );
-  }
-
-  //Add text slide
-  void addTextSlide() {
-    NewsSlideItem textSlide = NewsSlideItem(
-      type: NewsSlideType.text,
-      text: '',
-      textBackgroundColor: Colors.primaries[Random().nextInt(Colors.primaries.length)],
-    );
-    ref.watch(newSlideListProvider).addSlide(textSlide);
-  }
-
-  //Add image slide
-  Future<void> addImageSlide() async {
-    XFile? imageFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (imageFile != null) {
-      ref.watch(newSlideListProvider).addSlide(
-            NewsSlideItem(
-              type: NewsSlideType.image,
-              mediaFile: imageFile,
-            ),
-          );
-    }
-  }
-
-  //Add video slide
-  Future<void> addVideoSlide() async {
-    XFile? videoFile =
-        await ImagePicker().pickVideo(source: ImageSource.gallery);
-
-    if (videoFile != null) {
-      ref.watch(newSlideListProvider).addSlide(
-            NewsSlideItem(
-              type: NewsSlideType.video,
-              mediaFile: videoFile,
-            ),
-          );
-    }
   }
 
   Widget getIconAsPerSlideType(
@@ -231,7 +184,7 @@ class _SlideEditorOptionsState extends ConsumerState<SlideEditorOptions> {
     }
   }
 
-  Future<void> sendUpdates(BuildContext context) async {
+  Future<void> sendNews(BuildContext context) async {
     final client = ref.read(clientProvider)!;
     final spaceId = ref.read(selectedSpaceIdProvider);
 
@@ -246,7 +199,7 @@ class _SlideEditorOptionsState extends ConsumerState<SlideEditorOptions> {
     try {
       final space = await ref.read(spaceProvider(spaceId).future);
       NewsEntryDraft draft = space.newsDraft();
-      for (final slidePost in newsPostList) {
+      for (final slidePost in newsSlideList) {
         // If slide type is text
         if (slidePost.type == NewsSlideType.text && slidePost.text != null) {
           final textDraft = client.textMarkdownDraft(slidePost.text!);
@@ -299,7 +252,6 @@ class _SlideEditorOptionsState extends ConsumerState<SlideEditorOptions> {
           await draft.addSlide(videoDraft);
         }
       }
-      draft.swapSlides(0, newsPostList.length - 1);
       await draft.send();
 
       // close loading
@@ -312,6 +264,8 @@ class _SlideEditorOptionsState extends ConsumerState<SlideEditorOptions> {
       }
       // FIXME due to #718. well lets at least try forcing a refresh upon route.
       ref.invalidate(newsListProvider);
+      ref.invalidate(currentNewsSlideProvider);
+      ref.invalidate(newSlideListProvider);
       // Navigate back to update screen.
       Navigator.of(context).pop();
     } catch (err) {

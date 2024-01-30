@@ -9,7 +9,7 @@ import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/widgets/create_chat.dart';
 import 'package:acter/features/events/sheets/create_event_sheet.dart';
 import 'package:acter/features/events/sheets/edit_event_sheet.dart';
-import 'package:acter/features/news/pages/simple_post.dart';
+import 'package:acter/features/news/pages/add_news.dart';
 import 'package:acter/features/onboarding/pages/intro_page.dart';
 import 'package:acter/features/onboarding/pages/intro_profile.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
@@ -340,21 +340,11 @@ List<RouteBase> makeGeneralRoutes() {
       parentNavigatorKey: rootNavKey,
       name: Routes.actionAddUpdate.name,
       path: Routes.actionAddUpdate.route,
+      redirect: authGuardRedirect,
       pageBuilder: (context, state) {
-        return SideSheetPage(
+        return NoTransitionPage(
           key: state.pageKey,
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween(
-                begin: const Offset(1, 0),
-                end: const Offset(0, 0),
-              ).animate(
-                animation,
-              ),
-              child: child,
-            );
-          },
-          child: const SimpleNewsPost(),
+          child: const AddNews(),
         );
       },
     ),

@@ -158,10 +158,6 @@ List<StatefulShellBranch> desktopShellBranches(Ref ref) {
       routes: makeHomeShellRoutes(ref),
     ),
     StatefulShellBranch(
-      navigatorKey: updateTabNavKey,
-      routes: makeUpdateShellRoutes(ref),
-    ),
-    StatefulShellBranch(
       navigatorKey: chatTabNavKey,
       routes: makeChatShellRoutes(ref),
     ),

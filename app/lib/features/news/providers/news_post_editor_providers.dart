@@ -15,7 +15,7 @@ class NewSlideListNotifier extends StateNotifier<List<NewsSlideItem>> {
     required this.ref,
   }) : super([]);
 
-  List<NewsSlideItem> getNewsList() {
+  List<NewsSlideItem> getNewsSlideList() {
     return state;
   }
 

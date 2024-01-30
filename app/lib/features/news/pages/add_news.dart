@@ -6,24 +6,23 @@ import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
+import 'package:acter/features/news/news_utils/news_utils.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter/features/news/widgets/news_post_editor/select_action_item.dart';
-import 'package:acter/features/news/widgets/news_post_editor/slide_editor_options.dart';
+import 'package:acter/features/news/widgets/news_post_editor/news_slide_options.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
-
-class NewsPostEditor extends ConsumerStatefulWidget {
-  const NewsPostEditor({super.key});
+class AddNews extends ConsumerStatefulWidget {
+  const AddNews({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _NewsPostEditorState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _AddNewsState();
 }
 
-class _NewsPostEditorState extends ConsumerState<NewsPostEditor> {
+class _AddNewsState extends ConsumerState<AddNews> {
   //General variable declaration
   final textController = TextEditingController();
   NewsSlideItem? selectedNewsPost;
@@ -35,8 +34,7 @@ class _NewsPostEditorState extends ConsumerState<NewsPostEditor> {
   @override
   Widget build(BuildContext context) {
     selectedNewsPost = ref.watch(currentNewsSlideProvider);
-    newsPostList = ref.watch(newSlideListProvider).getNewsList();
-    debugPrint('selectedNewsPost : ${selectedNewsPost?.textBackgroundColor}');
+    newsPostList = ref.watch(newSlideListProvider).getNewsSlideList();
 
     return Scaffold(
       appBar: appBarUI(context),
@@ -54,13 +52,13 @@ class _NewsPostEditorState extends ConsumerState<NewsPostEditor> {
       ),
       backgroundColor: selectedNewsPost == null
           ? Colors.transparent
-          : selectedNewsPost?.textBackgroundColor,
+          : selectedNewsPost?.backgroundColor,
       actions: [
         Visibility(
           visible: selectedNewsPost?.type == NewsSlideType.text,
           child: IconButton(
             onPressed: () {
-              selectedNewsPost?.textBackgroundColor =
+              selectedNewsPost?.backgroundColor =
                   Colors.primaries[Random().nextInt(Colors.primaries.length)];
               setState(() {});
             },
@@ -116,7 +114,7 @@ class _NewsPostEditorState extends ConsumerState<NewsPostEditor> {
         //News content UI
         Expanded(child: newsContentUI()),
         //Slide options
-        const SlideEditorOptions(),
+        const NewsSlideOptions(),
       ],
     );
   }
@@ -219,17 +217,17 @@ class _NewsPostEditorState extends ConsumerState<NewsPostEditor> {
           ),
           const SizedBox(height: 40),
           OutlinedButton(
-            onPressed: () => addTextSlide(),
+            onPressed: () => NewsUtils.addTextSlide(ref),
             child: const Text('Add text slide'),
           ),
           const SizedBox(height: 20),
           OutlinedButton(
-            onPressed: () async => await addImageSlide(),
+            onPressed: () async => await NewsUtils.addImageSlide(ref),
             child: const Text('Add image slide'),
           ),
           const SizedBox(height: 20),
           OutlinedButton(
-            onPressed: () async => await addVideoSlide(),
+            onPressed: () async => await NewsUtils.addVideoSlide(ref),
             child: const Text('Add video slide'),
           ),
         ],
@@ -237,51 +235,13 @@ class _NewsPostEditorState extends ConsumerState<NewsPostEditor> {
     );
   }
 
-  //Add text slide
-  void addTextSlide() {
-    NewsSlideItem textSlide = NewsSlideItem(
-      type: NewsSlideType.text,
-      text: '',
-      textBackgroundColor:
-          Colors.primaries[Random().nextInt(Colors.primaries.length)],
-    );
-    ref.watch(newSlideListProvider).addSlide(textSlide);
-  }
-
-  //Add image slide
-  Future<void> addImageSlide() async {
-    XFile? imageFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (imageFile != null) {
-      ref.watch(newSlideListProvider).addSlide(
-            NewsSlideItem(
-              type: NewsSlideType.image,
-              mediaFile: imageFile,
-            ),
-          );
-    }
-  }
-
-  //Add video slide
-  Future<void> addVideoSlide() async {
-    XFile? videoFile =
-        await ImagePicker().pickVideo(source: ImageSource.gallery);
-    if (videoFile != null) {
-      ref.watch(newSlideListProvider).addSlide(
-            NewsSlideItem(
-              type: NewsSlideType.video,
-              mediaFile: videoFile,
-            ),
-          );
-    }
-  }
 
   Widget slideTextPostUI(BuildContext context) {
     textController.text = selectedNewsPost!.text ?? '';
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5.0),
       alignment: Alignment.center,
-      color: selectedNewsPost!.textBackgroundColor,
+      color: selectedNewsPost!.backgroundColor,
       child: TextField(
         controller: textController,
         textAlign: TextAlign.center,

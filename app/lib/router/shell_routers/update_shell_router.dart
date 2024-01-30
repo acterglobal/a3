@@ -1,6 +1,5 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/news/pages/news_page.dart';
-import 'package:acter/features/news/pages/news_post_editor.dart';
 import 'package:acter/router/router.dart';
 import 'package:go_router/go_router.dart';
 
@@ -14,17 +13,6 @@ List<RouteBase> makeUpdateShellRoutes(ref) {
         return NoTransitionPage(
           key: state.pageKey,
           child: const NewsPage(),
-        );
-      },
-    ),
-    GoRoute(
-      name: Routes.updatesEditor.name,
-      path: Routes.updatesEditor.route,
-      redirect: authGuardRedirect,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const NewsPostEditor(),
         );
       },
     ),
