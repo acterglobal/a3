@@ -207,7 +207,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
   }
 
   Future<void> _displaySettingsEditor(BuildContext context, String logKey,
-      String currentValue, String title, String fieldName) async {
+      String currentValue, String title, String fieldName,) async {
     TextEditingController textFieldController =
         TextEditingController(text: currentValue);
     return showDialog(

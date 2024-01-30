@@ -27,7 +27,7 @@ class ShowCommand extends Command {
     if (argResults != null) {
       if (argResults!['all']) {
         for (final key in supportedKeys.keys) {
-          await printSetting(supportedKeys[key!]!, key);
+          await printSetting(supportedKeys[key]!, key);
         }
         return;
       }
@@ -111,7 +111,7 @@ class ResetCommand extends Command {
     if (argResults != null) {
       if (argResults!['all']) {
         for (final key in supportedKeys.keys) {
-          await resetSetting(supportedKeys[key!]!, key);
+          await resetSetting(supportedKeys[key]!, key);
         }
         return;
       }
