@@ -175,47 +175,7 @@ impl NewsSlide {
     }
 
     pub fn text(&self) -> String {
-        match self.inner.content() {
-            NewsContent::Image(ImageMessageEventContent { body, .. })
-            | NewsContent::Fallback(FallbackNewsContent::Image(ImageMessageEventContent {
-                body,
-                ..
-            })) => body.clone(),
-            NewsContent::File(FileMessageEventContent { body, .. })
-            | NewsContent::Fallback(FallbackNewsContent::File(FileMessageEventContent {
-                body,
-                ..
-            })) => body.clone(),
-            NewsContent::Location(LocationMessageEventContent { body, .. })
-            | NewsContent::Fallback(FallbackNewsContent::Location(LocationMessageEventContent {
-                body,
-                ..
-            })) => body.clone(),
-            NewsContent::Video(VideoMessageEventContent { body, .. })
-            | NewsContent::Fallback(FallbackNewsContent::Video(VideoMessageEventContent {
-                body,
-                ..
-            })) => body.clone(),
-            NewsContent::Audio(AudioMessageEventContent { body, .. })
-            | NewsContent::Fallback(FallbackNewsContent::Audio(AudioMessageEventContent {
-                body,
-                ..
-            })) => body.clone(),
-            NewsContent::Text(TextMessageEventContent {
-                formatted, body, ..
-            })
-            | NewsContent::Fallback(FallbackNewsContent::Text(TextMessageEventContent {
-                formatted,
-                body,
-                ..
-            })) => {
-                if let Some(formatted) = formatted {
-                    formatted.body.clone()
-                } else {
-                    body.clone()
-                }
-            }
-        }
+        self.inner.content.text_str()
     }
 
     pub fn msg_content(&self) -> MsgContent {

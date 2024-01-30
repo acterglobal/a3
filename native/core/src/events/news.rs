@@ -100,7 +100,8 @@ pub enum NewsContent {
     File(FileMessageEventContent),
     /// A location message.
     Location(LocationMessageEventContent),
-
+    /// Backwards-compatible fallback support for previous untagged version
+    /// only for reading existing events.
     #[serde(untagged)]
     Fallback(FallbackNewsContent),
 }
@@ -115,6 +116,50 @@ impl NewsContent {
             NewsContent::Audio(_) => "audio".to_owned(),
             NewsContent::Video(_) => "video".to_owned(),
             NewsContent::Fallback(f) => f.type_str(),
+        }
+    }
+    pub fn text_str(&self) -> String {
+        match self {
+            NewsContent::Image(ImageMessageEventContent { body, .. })
+            | NewsContent::Fallback(FallbackNewsContent::Image(ImageMessageEventContent {
+                body,
+                ..
+            }))
+            | NewsContent::File(FileMessageEventContent { body, .. })
+            | NewsContent::Fallback(FallbackNewsContent::File(FileMessageEventContent {
+                body,
+                ..
+            }))
+            | NewsContent::Location(LocationMessageEventContent { body, .. })
+            | NewsContent::Fallback(FallbackNewsContent::Location(LocationMessageEventContent {
+                body,
+                ..
+            }))
+            | NewsContent::Video(VideoMessageEventContent { body, .. })
+            | NewsContent::Fallback(FallbackNewsContent::Video(VideoMessageEventContent {
+                body,
+                ..
+            }))
+            | NewsContent::Audio(AudioMessageEventContent { body, .. })
+            | NewsContent::Fallback(FallbackNewsContent::Audio(AudioMessageEventContent {
+                body,
+                ..
+            })) => body.clone(),
+
+            NewsContent::Text(TextMessageEventContent {
+                formatted, body, ..
+            })
+            | NewsContent::Fallback(FallbackNewsContent::Text(TextMessageEventContent {
+                formatted,
+                body,
+                ..
+            })) => {
+                if let Some(formatted) = formatted {
+                    formatted.body.clone()
+                } else {
+                    body.clone()
+                }
+            }
         }
     }
 
