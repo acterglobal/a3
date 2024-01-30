@@ -85,8 +85,8 @@ pub struct Client {
     pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
     pub(crate) receipt_controller: ReceiptController,
-    pub spaces: Arc<RwLock<eyeball_im::ObservableVector<Space>>>,
-    pub convos: Arc<RwLock<eyeball_im::ObservableVector<Convo>>>,
+    pub spaces: Arc<RwLock<ObservableVector<Space>>>,
+    pub convos: Arc<RwLock<ObservableVector<Convo>>>,
     pub(crate) notifications: Arc<Sender<get_notifications::v3::Notification>>,
 }
 
