@@ -135,7 +135,7 @@ impl ReactionManager {
             .to_owned();
         let event_id = EventId::parse(event_id)?;
         let txn_id = match txn_id {
-            Some(x) => Some(OwnedTransactionId::try_from(x)?),
+            Some(x) => Some(OwnedTransactionId::from(x)),
             None => None,
         };
 
