@@ -420,6 +420,7 @@ class ActerSdk {
 
     final logSettings = (await sharedPrefs()).getString(rustLogKey);
     try {
+      // ignore: avoid_print
       print('Logs will be found in $logPath');
       api.initLogging(logPath, logSettings ?? defaultLogSetting);
     } catch (e) {
