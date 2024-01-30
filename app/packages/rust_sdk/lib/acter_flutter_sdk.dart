@@ -17,6 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 export './acter_flutter_sdk_ffi.dart' show Client;
 
 const rustLogKey = 'RUST_LOG';
+const proxyKey = 'HTTP_PROXY';
 
 const defaultServerUrl = String.fromEnvironment(
   'DEFAULT_HOMESERVER_URL',
@@ -38,8 +39,8 @@ const defaultSessionKey = String.fromEnvironment(
   defaultValue: 'sessions',
 );
 
-const httpProxy = String.fromEnvironment(
-  'HTTP_PROXY',
+const defaultHttpProxy = String.fromEnvironment(
+  proxyKey,
   defaultValue: '',
 );
 
@@ -421,7 +422,9 @@ class ActerSdk {
     final logSettings = (await sharedPrefs()).getString(rustLogKey);
     try {
       // ignore: avoid_print
-      print('Logs will be found in $logPath');
+      print('log settings: ${logSettings ?? defaultLogSetting}');
+      // ignore: avoid_print
+      print('logs will be found in $logPath');
       api.initLogging(logPath, logSettings ?? defaultLogSetting);
     } catch (e) {
       developer.log(
@@ -431,10 +434,14 @@ class ActerSdk {
       );
     }
 
+    final httpProxySettings =
+        (await sharedPrefs()).getString(proxyKey) ?? defaultHttpProxy;
+
     try {
-      if (httpProxy.isNotEmpty) {
-        debugPrint('Setting http proxy to $httpProxy');
-        api.setProxy(httpProxy);
+      if (httpProxySettings.isNotEmpty) {
+        // ignore: avoid_print
+        print('Setting http proxy to $httpProxySettings');
+        api.setProxy(httpProxySettings);
       }
     } catch (e) {
       developer.log(
