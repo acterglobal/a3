@@ -7,6 +7,8 @@ part 'cross_signing_state.freezed.dart';
 class CrossSigningState with _$CrossSigningState {
   const factory CrossSigningState.init() = _CrossSigningStateInit;
 
+  const factory CrossSigningState.launch() = _CrossSigningStateLaunch;
+
   const factory CrossSigningState.request({
     required VerificationEvent event,
   }) = _CrossSigningStateRequest;

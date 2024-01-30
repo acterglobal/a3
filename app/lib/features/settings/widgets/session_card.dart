@@ -1,6 +1,7 @@
 import 'dart:core';
 
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/features/cross_signing/providers/cross_signing_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -111,25 +112,22 @@ class SessionCard extends ConsumerWidget {
             ],
           ),
           actions: [
-            OutlinedButton(
+            TextButton(
               child: const Text('Cancel'),
               onPressed: () {
                 if (ctx.mounted) {
-                  // remove pop up
-                  Navigator.of(context, rootNavigator: true).pop();
+                  Navigator.of(context).pop(false);
                 }
               },
             ),
-            ElevatedButton(
+            TextButton(
               child: const Text('Ok'),
               onPressed: () {
                 if (passwordController.text.isEmpty) {
                   return;
                 }
-                //FIXME : Need to implement session logout feature here
                 if (ctx.mounted) {
-                  // remove pop up
-                  Navigator.of(context, rootNavigator: true).pop();
+                  Navigator.of(context).pop(true);
                 }
               },
             ),
@@ -151,6 +149,7 @@ class SessionCard extends ConsumerWidget {
 
   Future<void> onVerify(BuildContext context, WidgetRef ref) async {
     final client = ref.read(alwaysClientProvider);
+    final crossSigningState = ref.read(crossSigningProvider(client));
     final manager = client.sessionManager();
     await manager.requestVerification(deviceRecord.deviceId().toString());
   }
