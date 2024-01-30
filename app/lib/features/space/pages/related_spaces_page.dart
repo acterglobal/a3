@@ -149,7 +149,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: max(1, min(widthCount, minCount)),
                         childAspectRatio: 4.0,
-                        mainAxisExtent: 100
+                        mainAxisExtent: 100,
                       ),
                       itemBuilder: (context, index) {
                         final space = spaces.parents[index];
@@ -175,7 +175,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: max(1, min(widthCount, minCount)),
                       childAspectRatio: 9.0,
-                      mainAxisExtent: 100
+                      mainAxisExtent: 100,
                     ),
                     itemBuilder: (context, index) {
                       final space = spaces.knownSubspaces[index];
@@ -246,7 +246,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: max(1, min(widthCount, minCount)),
                       childAspectRatio: 4.0,
-                      mainAxisExtent: 100
+                      mainAxisExtent: 100,
                     ),
                     itemBuilder: (context, index) {
                       final space = spaces.otherRelations[index];
