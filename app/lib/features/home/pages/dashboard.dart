@@ -94,7 +94,7 @@ class Dashboard extends ConsumerWidget {
                   Visibility(
                     visible: isDesktop,
                     child: IconButton(
-                      onPressed: () => context.pushNamed(Routes.updatesEditor.name),
+                      onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
                       icon: Icon(
                         Atlas.plus_circle_thin,
                         color: Theme.of(context).colorScheme.neutral5,

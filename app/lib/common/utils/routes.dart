@@ -4,7 +4,6 @@ enum Routes {
   actionAddTaskList('/actions/addTaskList'),
   actionAddPin('/actions/addPin'),
   actionAddEvent('/actions/addEvent'),
-  actionAddUpdate('/actions/addUpdate'),
   actionCreateSuperInvite('/actions/createSuperInvite'),
 
   // --- Auth
@@ -25,7 +24,7 @@ enum Routes {
 
   // --- Updates
   updates('/updates'),
-  updatesEditor('/updates/updatesEditor'),
+  actionAddUpdate('/actions/addUpdate'),
 
   // --- chat
   chat('/chat'),
