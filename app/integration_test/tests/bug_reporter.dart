@@ -4,8 +4,10 @@ import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import '../support/login.dart';
 import '../support/setup.dart';
 import '../support/util.dart';
@@ -15,17 +17,26 @@ const rageshakeListUrl = String.fromEnvironment(
   defaultValue: '',
 );
 
-Future<String?> latestReportedLog() async {
-  final url = Uri.parse(rageshakeListUrl);
-  print('Connecting to $url');
+RegExp hrefRexp = RegExp(r'href="(.*?)"');
+
+Future<List<String>> latestReported() async {
+  final DateTime now = DateTime.now();
+  final DateFormat formatter = DateFormat('yyyy-MM-dd');
+  final String formatted = formatter.format(now);
+  final fullBaseUrl = '$rageshakeListUrl/$formatted';
+  final url = Uri.parse(fullBaseUrl);
+  print('Reading from $url');
 
   var response = await http.get(url);
   print('Response status: ${response.statusCode}');
-  print('Response body: ${response.body}');
   if (response.statusCode == 404) {
-    return null;
+    return [];
   }
-  return response.body;
+
+  return hrefRexp.allMatches(response.body).map((e) {
+    final inner = e[0];
+    return '$rageshakeListUrl/$formatted/$inner';
+  }).toList();
 }
 
 // extension ActerNews on ConvenientTest {
@@ -56,7 +67,7 @@ void bugReporterTests() {
     if (rageshakeListUrl.isEmpty) {
       throw const Skip('Provide RAGESHAKE_LISTING_URL to run this test');
     }
-    final prevReport = await latestReportedLog();
+    final prevReports = await latestReported();
     // totally clean
     await t.freshAccount();
     await t.navigateTo([
@@ -72,10 +83,15 @@ void bugReporterTests() {
     // disappears until it was submitted.
     await btn.should(findsOne);
 
-    final latestReport = await latestReportedLog();
+    final latestReports = await latestReported();
 
     // successfully submitted
-    assert(prevReport != latestReport);
+    assert(prevReports.length < latestReports.length);
     // we expect to be thrown to the news screen and see our latest item first:
+
+    // ensure the text field was reset
+    final title = find.byKey(BugReportPage.titleField).evaluate().first.widget
+        as TextFormField;
+    assert(title.controller!.text == '', "title field wasn't reset");
   });
 }
