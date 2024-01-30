@@ -1,7 +1,7 @@
 use acter_core::{
     events::{
         news::{self, FallbackNewsContent, NewsContent, NewsEntryBuilder, NewsSlideBuilder},
-        Colorize,ObjRef
+        Colorize, ObjRef,
     },
     models::{self, ActerModel, AnyActerModel},
     statics::KEYS,
@@ -526,10 +526,6 @@ impl NewsEntryDraft {
         }
         self.slides.swap(from as usize, to as usize);
         Ok(self)
-    }
-
-    pub fn slides(&mut self) -> Vec<NewsSlideDraft> {
-        self.slides.clone()
     }
 
     pub fn unset_slides(&mut self) -> &mut Self {
