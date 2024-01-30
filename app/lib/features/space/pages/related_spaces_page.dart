@@ -41,8 +41,8 @@ class RelatedSpacesPage extends ConsumerWidget {
           ...spaces.when(
             data: (spaces) {
               final widthCount =
-                  (MediaQuery.of(context).size.width ~/ 600).toInt();
-              const int minCount = 2;
+                  (MediaQuery.of(context).size.width ~/ 300).toInt();
+              const int minCount = 3;
               // we have more than just the spaces screen, put them into a grid.
               final List<Widget> items = [];
               bool checkPermission(String permission) {
@@ -149,6 +149,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: max(1, min(widthCount, minCount)),
                         childAspectRatio: 4.0,
+                        mainAxisExtent: 100,
                       ),
                       itemBuilder: (context, index) {
                         final space = spaces.parents[index];
@@ -173,7 +174,8 @@ class RelatedSpacesPage extends ConsumerWidget {
                     itemCount: spaces.knownSubspaces.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: max(1, min(widthCount, minCount)),
-                      childAspectRatio: 4.0,
+                      childAspectRatio: 9.0,
+                      mainAxisExtent: 100,
                     ),
                     itemBuilder: (context, index) {
                       final space = spaces.knownSubspaces[index];
@@ -244,6 +246,7 @@ class RelatedSpacesPage extends ConsumerWidget {
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: max(1, min(widthCount, minCount)),
                       childAspectRatio: 4.0,
+                      mainAxisExtent: 100,
                     ),
                     itemBuilder: (context, index) {
                       final space = spaces.otherRelations[index];

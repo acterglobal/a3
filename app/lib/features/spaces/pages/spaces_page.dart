@@ -22,8 +22,8 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
   @override
   Widget build(BuildContext context) {
     final spaces = ref.watch(spacesProvider);
-    final widthCount = (MediaQuery.of(context).size.width ~/ 600).toInt();
-    const int minCount = 2;
+    final widthCount = (MediaQuery.of(context).size.width ~/ 300).toInt();
+    const int minCount = 3;
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -78,6 +78,7 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
               itemCount: spaces.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: max(1, min(widthCount, minCount)),
+                mainAxisExtent: 100,
                 childAspectRatio: 4,
               ),
               itemBuilder: (context, index) {
