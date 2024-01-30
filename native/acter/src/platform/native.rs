@@ -98,6 +98,35 @@ lazy_static! {
     static ref FILE_LOGGER: Mutex<Option<Arc<fern::ImplDispatch>>> = Mutex::new(None);
 }
 
+#[cfg(feature = "tracing")]
+pub fn init_logging(
+    log_dir: String,
+    filter: String,
+    console_logger: Option<Box<dyn Log>>,
+) -> Result<()> {
+    use tracing_subscriber::layer::SubscriberExt;
+
+    let file_appender = tracing_appender::rolling::minutely(log_dir, "acter-tracing.log");
+    let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
+
+    let subscriber = tracing_subscriber::registry()
+        .with(tracing_subscriber::EnvFilter::new(filter))
+        .with(tracing_subscriber::fmt::Layer::new().with_writer(non_blocking))
+        .with(tracing_subscriber::fmt::Layer::new().with_writer(std::io::stdout));
+
+    tracing_log::LogTracer::init()?;
+    #[cfg(feature = "tracing-console")]
+    {
+        let console_layer = console_subscriber::spawn();
+        tracing::subscriber::set_global_default(subscriber.with(console_layer))?;
+    }
+    #[cfg(not(feature = "tracing-console"))]
+    tracing::subscriber::set_global_default(subscriber)?;
+
+    Ok(())
+}
+
+#[cfg(not(feature = "tracing"))]
 pub fn init_logging(
     log_dir: String,
     filter: String,

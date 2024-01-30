@@ -416,11 +416,13 @@ class ActerSdk {
     final api = Platform.isAndroid
         ? ffi.Api(await _getAndroidDynLib('libacter.so'))
         : ffi.Api.load();
-    String appPath = await appDir();
+    String logPath = await appCacheDir();
 
     final logSettings = (await sharedPrefs()).getString(rustLogKey);
     try {
-      api.initLogging(appPath, logSettings ?? defaultLogSetting);
+      // ignore: avoid_print
+      print('Logs will be found in $logPath');
+      api.initLogging(logPath, logSettings ?? defaultLogSetting);
     } catch (e) {
       developer.log(
         'Logging setup failed',
