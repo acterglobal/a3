@@ -1,7 +1,7 @@
 #![warn(clippy::all)]
-#![allow(incomplete_features)] // needed for `async_fn_in_trait`
 #![feature(slice_as_chunks)]
-#![feature(async_fn_in_trait)]
+#![allow(refining_impl_trait)] // we are using enum_dispatch and need this for now
+#![allow(async_fn_in_trait)]
 
 pub use matrix_sdk;
 pub use matrix_sdk::ruma;

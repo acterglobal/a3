@@ -72,7 +72,7 @@ impl ActerModel for NewsEntry {
 
     fn transition(&mut self, model: &AnyActerModel) -> Result<bool> {
         let AnyActerModel::NewsEntryUpdate(update) = model else {
-            return Ok(false)
+            return Ok(false);
         };
 
         update.apply(&mut self.inner)

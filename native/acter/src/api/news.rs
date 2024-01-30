@@ -1,31 +1,18 @@
 use acter_core::{
     events::{
-        news::{self, NewsContent, NewsEntryBuilder},
+        news::{self, NewsContent, NewsEntryBuilder, NewsSlideBuilder},
         Colorize,
     },
     models::{self, ActerModel, AnyActerModel, ReactionManager},
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
-use core::time::Duration;
 use futures::stream::StreamExt;
-use matrix_sdk::{
-    room::Room,
-    ruma::{assign, UInt},
-    Client as SdkClient, RoomState,
-};
-use ruma_common::{MxcUri, OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::{
-    reaction::ReactionEventContent,
-    relation::Annotation,
-    room::{
-        message::{
-            AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
-            LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
-        },
-        ImageInfo,
-    },
-    MessageLikeEventType,
+use matrix_sdk::{room::Room, RoomState};
+use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
+use ruma_events::room::message::{
+    AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
+    LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
 };
 use std::{
     collections::{hash_map::Entry, HashMap},
@@ -46,15 +33,12 @@ use super::{
 };
 
 impl Client {
-    pub async fn wait_for_news(
-        &self,
-        key: String,
-        timeout: Option<Box<Duration>>,
-    ) -> Result<NewsEntry> {
+    pub async fn wait_for_news(&self, key: String, timeout: Option<u8>) -> Result<NewsEntry> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::NewsEntry(content) = me.wait_for(key.clone(), timeout).await? else {
+                let AnyActerModel::NewsEntry(content) = me.wait_for(key.clone(), timeout).await?
+                else {
                     bail!("{key} is not a news");
                 };
                 let room = me
@@ -297,6 +281,18 @@ impl NewsSlide {
     }
 }
 
+#[derive(Clone)]
+pub struct NewsSlideDraft {
+    content: news::NewsSlideBuilder,
+}
+
+impl NewsSlideDraft {
+    pub fn save(&self) -> Result<news::NewsSlide> {
+        let content = self.content.build()?;
+        Ok(content)
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct NewsEntry {
     client: Client,
@@ -326,6 +322,20 @@ impl NewsEntry {
                 client: self.client.clone(),
                 room: self.room.clone(),
             })
+    }
+
+    pub fn slides(&self) -> Vec<NewsSlide> {
+        self.content
+            .slides()
+            .iter()
+            .map(|slide| {
+                (NewsSlide {
+                    inner: slide.clone(),
+                    client: self.client.clone(),
+                    room: self.room.clone(),
+                })
+            })
+            .collect()
     }
 
     pub async fn refresh(&self) -> Result<NewsEntry> {
@@ -445,6 +455,10 @@ impl NewsEntry {
     pub fn event_id(&self) -> OwnedEventId {
         self.content.event_id().to_owned()
     }
+
+    pub fn colors(&self) -> Option<Colorize> {
+        self.content.colors().to_owned()
+    }
 }
 
 #[derive(Clone)]
@@ -452,27 +466,30 @@ pub struct NewsEntryDraft {
     client: Client,
     room: Room,
     content: NewsEntryBuilder,
-    slides: Vec<NewsSlide>,
+    slides: Vec<NewsSlideDraft>,
 }
 
 impl NewsEntryDraft {
     pub async fn add_slide(&mut self, base_draft: Box<MsgContentDraft>) -> Result<bool> {
+        let client = self.client.clone();
         let room = self.room.clone();
-        let client = self.room.client();
 
         let inner = RUNTIME
             .spawn(async move {
-                let slide = base_draft.into_news_slide(client, room).await?;
-                anyhow::Ok(slide)
+                let draft = base_draft.into_news_slide_draft(client, room).await?;
+                anyhow::Ok(draft)
             })
             .await??;
-        let slide = NewsSlide {
-            client: self.client.clone(),
-            room: self.room.clone(),
-            inner,
-        };
-        self.slides.push(slide);
+        self.slides.push(inner);
         Ok(true)
+    }
+
+    pub fn swap_slides(&mut self, from: u8, to: u8) -> Result<&mut Self> {
+        if to > self.slides.len() as u8 {
+            bail!("upper bound is exceeded")
+        }
+        self.slides.swap(from as usize, to as usize);
+        Ok(self)
     }
 
     pub fn unset_slides(&mut self) -> &mut Self {
@@ -492,11 +509,11 @@ impl NewsEntryDraft {
 
     pub async fn send(&mut self) -> Result<OwnedEventId> {
         trace!("starting send");
-        let slides = self
-            .slides
-            .iter()
-            .map(|x| (*x.to_owned()).clone())
-            .collect();
+        let mut slides = vec![];
+        for slide in &self.slides {
+            let saved_slide = slide.to_owned().save()?;
+            slides.push(saved_slide);
+        }
         self.content.slides(slides);
 
         let room = self.room.clone();
@@ -522,10 +539,34 @@ pub struct NewsEntryUpdateBuilder {
 
 impl NewsEntryUpdateBuilder {
     #[allow(clippy::ptr_arg)]
-    pub fn slides(&mut self, slides: &mut Vec<NewsSlide>) -> &mut Self {
-        let items = slides.iter().map(|x| (*x.to_owned()).clone()).collect();
-        self.content.slides(Some(items));
-        self
+    pub async fn add_slide(&mut self, base_draft: Box<MsgContentDraft>) -> Result<&mut Self> {
+        let client = self.client.clone();
+        let room = self.room.clone();
+        let mut slides = vec![];
+
+        let slide_draft = RUNTIME
+            .spawn(async move {
+                let draft = base_draft.into_news_slide_draft(client, room).await?;
+                anyhow::Ok(draft)
+            })
+            .await??;
+
+        let slide = slide_draft.save()?;
+        slides.push(slide);
+
+        self.content.slides(Some(slides));
+        Ok(self)
+    }
+
+    pub fn swap_slides(&mut self, from: u8, to: u8) -> Result<&mut Self> {
+        let content = self.content.build()?;
+        let mut slides = content.slides.expect("content slides");
+        if to > slides.len() as u8 {
+            bail!("upper bound is exceeded")
+        }
+        slides.swap(from as usize, to as usize);
+        self.content.slides(Some(slides));
+        Ok(self)
     }
 
     pub fn unset_slides(&mut self) -> &mut Self {
@@ -555,6 +596,7 @@ impl NewsEntryUpdateBuilder {
 
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
+
         let content = self.content.build()?;
         RUNTIME
             .spawn(async move {
@@ -592,25 +634,27 @@ impl Space {
 }
 
 impl MsgContentDraft {
-    async fn into_news_slide(
+    async fn into_news_slide_draft(
         self, // into_* fn takes self by value not reference
-        client: SdkClient,
+        client: Client,
         room: Room,
-    ) -> Result<news::NewsSlide> {
+    ) -> Result<NewsSlideDraft> {
         match self {
             MsgContentDraft::TextPlain { body } => {
                 let text_content = TextMessageEventContent::plain(body);
-                Ok(news::NewsSlide {
-                    content: NewsContent::Text(text_content),
-                    references: Default::default(),
-                })
+                let builder = NewsSlideBuilder::default()
+                    .content(NewsContent::Text(text_content))
+                    .references(Default::default())
+                    .clone();
+                Ok(NewsSlideDraft { content: builder })
             }
             MsgContentDraft::TextMarkdown { body } => {
                 let text_content = TextMessageEventContent::markdown(body);
-                Ok(news::NewsSlide {
-                    content: NewsContent::Text(text_content),
-                    references: Default::default(),
-                })
+                let builder = NewsSlideBuilder::default()
+                    .content(NewsContent::Text(text_content))
+                    .references(Default::default())
+                    .clone();
+                Ok(NewsSlideDraft { content: builder })
             }
             MsgContentDraft::Image { source, info } => {
                 let info = info.expect("image info needed");
@@ -639,10 +683,12 @@ impl MsgContentDraft {
                     ImageMessageEventContent::plain(body, response.content_uri)
                 };
                 image_content.info = Some(Box::new(info));
-                Ok(news::NewsSlide {
-                    content: NewsContent::Image(image_content),
-                    references: Default::default(),
-                })
+
+                let builder = NewsSlideBuilder::default()
+                    .content(NewsContent::Image(image_content))
+                    .references(Default::default())
+                    .clone();
+                Ok(NewsSlideDraft { content: builder })
             }
             MsgContentDraft::Audio { source, info } => {
                 let info = info.expect("audio info needed");
@@ -671,10 +717,12 @@ impl MsgContentDraft {
                     AudioMessageEventContent::plain(body, response.content_uri)
                 };
                 audio_content.info = Some(Box::new(info));
-                Ok(news::NewsSlide {
-                    content: NewsContent::Audio(audio_content),
-                    references: Default::default(),
-                })
+
+                let builder = NewsSlideBuilder::default()
+                    .content(NewsContent::Audio(audio_content))
+                    .references(Default::default())
+                    .clone();
+                Ok(NewsSlideDraft { content: builder })
             }
             MsgContentDraft::Video { source, info } => {
                 let info = info.expect("image info needed");
@@ -703,10 +751,12 @@ impl MsgContentDraft {
                     VideoMessageEventContent::plain(body, response.content_uri)
                 };
                 video_content.info = Some(Box::new(info));
-                Ok(news::NewsSlide {
-                    content: NewsContent::Video(video_content),
-                    references: Default::default(),
-                })
+
+                let builder = NewsSlideBuilder::default()
+                    .content(NewsContent::Video(video_content))
+                    .references(Default::default())
+                    .clone();
+                Ok(NewsSlideDraft { content: builder })
             }
             MsgContentDraft::File {
                 source,
@@ -740,10 +790,12 @@ impl MsgContentDraft {
                 };
                 file_content.info = Some(Box::new(info));
                 file_content.filename = filename.clone();
-                Ok(news::NewsSlide {
-                    content: NewsContent::File(file_content),
-                    references: Default::default(),
-                })
+
+                let builder = NewsSlideBuilder::default()
+                    .content(NewsContent::File(file_content))
+                    .references(Default::default())
+                    .clone();
+                Ok(NewsSlideDraft { content: builder })
             }
             MsgContentDraft::Location {
                 body,
@@ -754,10 +806,12 @@ impl MsgContentDraft {
                 if let Some(info) = info {
                     location_content.info = Some(Box::new(info));
                 }
-                Ok(news::NewsSlide {
-                    content: NewsContent::Location(location_content),
-                    references: Default::default(),
-                })
+
+                let builder = NewsSlideBuilder::default()
+                    .content(NewsContent::Location(location_content))
+                    .references(Default::default())
+                    .clone();
+                Ok(NewsSlideDraft { content: builder })
             }
         }
     }

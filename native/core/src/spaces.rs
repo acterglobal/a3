@@ -289,7 +289,7 @@ impl CoreClient {
 
             let Some(original) = ev.as_sync().and_then(|x| x.as_original()) else {
                 // FIXME: handle redactions
-                continue
+                continue;
             };
 
             let target = ev.state_key();
@@ -346,7 +346,7 @@ impl CoreClient {
 
             let Some(original) = ev.as_sync().and_then(|x| x.as_original()) else {
                 // FIXME: handle redactions
-                continue
+                continue;
             };
 
             let target = ev.state_key();

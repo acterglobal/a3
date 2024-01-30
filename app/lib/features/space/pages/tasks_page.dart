@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/tasks/providers/tasklists.dart';
@@ -22,7 +23,7 @@ class SpaceTasksPage extends ConsumerWidget {
     final taskLists = ref.watch(spaceTasksListsProvider(spaceIdOrAlias));
     // get platform of context.
     return DecoratedBox(
-      decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+      decoration: const BoxDecoration(gradient: primaryGradient),
       child: CustomScrollView(
         key: scrollView,
         slivers: [

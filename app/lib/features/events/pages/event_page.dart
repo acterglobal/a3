@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
@@ -153,7 +154,7 @@ class CalendarEventPage extends ConsumerWidget {
               return PageHeaderWidget(
                 title: event.hasValue ? event.value!.title() : 'Loading Event',
                 sectionDecoration: const BoxDecoration(
-                  gradient: AppTheme.primaryGradient,
+                  gradient: primaryGradient,
                 ),
                 expandedHeight: 0,
                 actions: [

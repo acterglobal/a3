@@ -80,6 +80,7 @@ Color convertColor(ffi.EfkColor? primary, Color fallback) {
 
 Completer<SharedPreferences>? _sharedPrefCompl;
 Completer<String>? _appDirCompl;
+Completer<String>? _appCacheDirCompl;
 Completer<ActerSdk>? _unrestoredInstanceCompl;
 Completer<ActerSdk>? _instanceCompl;
 
@@ -92,6 +93,15 @@ Future<String> appDir() async {
   return _appDirCompl!.future;
 }
 
+Future<String> appCacheDir() async {
+  if (_appCacheDirCompl == null) {
+    Completer<String> completer = Completer();
+    completer.complete(appCacheDirInner());
+    _appCacheDirCompl = completer;
+  }
+  return _appCacheDirCompl!.future;
+}
+
 Future<String> appDirInner() async {
   Directory appDocDir = await getApplicationSupportDirectory();
   if (versionName == 'DEV') {
@@ -102,6 +112,18 @@ Future<String> appDirInner() async {
     }
   }
   return appDocDir.path;
+}
+
+Future<String> appCacheDirInner() async {
+  Directory appCacheDir = await getApplicationCacheDirectory();
+  if (versionName == 'DEV') {
+    // on dev we put this into a subfolder to separate from any installed version
+    appCacheDir = Directory(p.join(appCacheDir.path, 'DEV'));
+    if (!await appCacheDir.exists()) {
+      await appCacheDir.create();
+    }
+  }
+  return appCacheDir.path;
 }
 
 Future<SharedPreferences> sharedPrefs() async {
@@ -306,8 +328,10 @@ class ActerSdk {
     bool setAsCurrent = false,
   }) async {
     String appDocPath = await appDir();
+    String appCachePath = await appCacheDir();
     ffi.Client client = await _api.guestClient(
       appDocPath,
+      appCachePath,
       serverName ?? defaultServerName,
       serverUrl ?? defaultServerUrl,
       userAgent,
@@ -366,11 +390,17 @@ class ActerSdk {
 
   Future<void> _nuke() async {
     String appDocPath = await appDir();
+    String appCachePath = await appCacheDir();
     for (var cl in _clients) {
       try {
         final userId = cl.userId().toString();
         await cl.logout();
-        await _api.destroyLocalData(appDocPath, userId, defaultServerName);
+        await _api.destroyLocalData(
+          appDocPath,
+          appCachePath,
+          userId,
+          defaultServerName,
+        );
       } catch (e) {
         debugPrint('Error logging out: $e');
       }
@@ -452,8 +482,10 @@ class ActerSdk {
     }
 
     String appDocPath = await appDir();
+    String appCachePath = await appCacheDir();
     final client = await _api.loginNewClient(
       appDocPath,
+      appCachePath,
       username,
       password,
       defaultServerName,
@@ -512,8 +544,10 @@ class ActerSdk {
     }
 
     String appDocPath = await appDir();
+    String appCachePath = await appCacheDir();
     final client = await _api.registerWithToken(
       appDocPath,
+      appCachePath,
       username,
       password,
       token,
@@ -561,8 +595,14 @@ class ActerSdk {
     }
     await _persistSessions();
     String appDocPath = await appDir();
+    String appCachePath = await appCacheDir();
 
-    return await _api.destroyLocalData(appDocPath, userId, defaultServerName);
+    return await _api.destroyLocalData(
+      appDocPath,
+      appCachePath,
+      userId,
+      defaultServerName,
+    );
   }
 
   ffi.CreateConvoSettingsBuilder newConvoSettingsBuilder() {

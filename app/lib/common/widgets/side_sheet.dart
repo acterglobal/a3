@@ -1,5 +1,4 @@
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:flutter/material.dart';
 
 class SideSheet extends StatelessWidget {
@@ -201,7 +200,7 @@ class _SheetFooter extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: actions ??
                 [
-                  DefaultButton(
+                  OutlinedButton(
                     onPressed: () {
                       if (cancelActionOnPressed == null) {
                         Navigator.pop(context);
@@ -209,21 +208,13 @@ class _SheetFooter extends StatelessWidget {
                         cancelActionOnPressed!();
                       }
                     },
-                    title: cancelActionTitle,
-                    isOutlined: true,
+                    child: Text(cancelActionTitle),
                   ),
                   const SizedBox(width: 12),
-                  DefaultButton(
+                  ElevatedButton(
                     key: confirmActionKey,
                     onPressed: confirmActionOnPressed,
-                    title: confirmActionTitle,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.success,
-                      disabledBackgroundColor: Theme.of(context)
-                          .colorScheme
-                          .success
-                          .withOpacity(0.5),
-                    ),
+                    child: Text(confirmActionTitle),
                   ),
                 ],
           ),

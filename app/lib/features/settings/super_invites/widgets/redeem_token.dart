@@ -35,7 +35,7 @@ class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
             ),
             controller: _tokenController,
           ),
-          trailing: OutlinedButton(
+          trailing: ElevatedButton(
             key: RedeemToken.redeemTokenSubmit,
             onPressed: _submit,
             child: const Text('redeem'),

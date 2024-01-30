@@ -51,20 +51,8 @@ class _InputTextFieldState extends State<InputTextField> {
       cursorColor: Theme.of(context).colorScheme.secondary,
       style: Theme.of(context).textTheme.labelLarge,
       decoration: InputDecoration(
-        fillColor: Theme.of(context).colorScheme.primaryContainer,
         filled: true,
         hintText: widget.hintText,
-        border: OutlineInputBorder(
-          borderSide: BorderSide.none,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.tertiary,
-            width: 0.5,
-          ),
-          borderRadius: BorderRadius.circular(12),
-        ),
       ),
     );
   }

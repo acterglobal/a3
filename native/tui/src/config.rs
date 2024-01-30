@@ -28,7 +28,7 @@ pub struct LoginConfig {
 }
 
 impl LoginConfig {
-    pub async fn client(&self, path: PathBuf) -> Result<Client> {
+    pub async fn client(&self, db_path: PathBuf, cache_path: PathBuf) -> Result<Client> {
         let theme = ColorfulTheme::default();
         let username = self.login_username.clone();
         info!("Logging in as {}", username);
@@ -46,7 +46,8 @@ impl LoginConfig {
             .to_string();
 
         let client = login_new_client(
-            String::from(path.to_string_lossy()),
+            String::from(db_path.to_string_lossy()),
+            String::from(cache_path.to_string_lossy()),
             username.to_string(),
             password,
             default_homeserver_name,

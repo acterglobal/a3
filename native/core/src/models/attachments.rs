@@ -174,7 +174,7 @@ impl ActerModel for Attachment {
 
     fn transition(&mut self, model: &AnyActerModel) -> Result<bool> {
         let AnyActerModel::AttachmentUpdate(update) = model else {
-            return Ok(false)
+            return Ok(false);
         };
 
         update.apply(&mut self.inner)

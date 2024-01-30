@@ -1,6 +1,5 @@
 use acter_core::models::{self, ActerModel, AnyActerModel};
 use anyhow::{bail, Context, Result};
-use core::time::Duration;
 use futures::stream::StreamExt;
 use matrix_sdk::room::Room;
 use ruma_common::{EventId, OwnedEventId, OwnedTransactionId, OwnedUserId};
@@ -16,7 +15,7 @@ impl Client {
     pub async fn wait_for_reaction(
         &self,
         key: String,
-        timeout: Option<Box<Duration>>,
+        timeout: Option<u8>,
     ) -> Result<Reaction> {
         let client = self.clone();
         RUNTIME

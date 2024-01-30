@@ -23,6 +23,7 @@ async fn guest_can_login() -> Result<()> {
         let tmp_dir = TempDir::new()?;
         let _client = guest_client(
             tmp_dir.path().to_string_lossy().to_string(),
+            tmp_dir.path().to_string_lossy().to_string(),
             homeserver_name,
             homeserver_url,
             Some("GUEST_DEV".to_string()),
@@ -47,6 +48,7 @@ async fn sisko_can_login() -> Result<()> {
     let tmp_dir = TempDir::new()?;
     let _client = login_new_client(
         tmp_dir.path().to_string_lossy().to_string(),
+        tmp_dir.path().to_string_lossy().to_string(),
         "@sisko".to_string(),
         default_user_password("sisko"),
         homeserver_name,
@@ -70,6 +72,7 @@ async fn kyra_can_login() -> Result<()> {
 
     let _client = login_new_client(
         tmp_dir.path().to_string_lossy().to_string(),
+        tmp_dir.path().to_string_lossy().to_string(),
         "@kyra".to_string(),
         default_user_password("kyra"),
         homeserver_name,
@@ -91,14 +94,23 @@ async fn kyra_can_restore() -> Result<()> {
         .to_string();
     let tmp_dir = TempDir::new()?;
     let base_path = tmp_dir.path().to_string_lossy().to_string();
-    let (config, user_id) =
-        make_client_config(base_path, "@kyra", None, &homeserver_name, &homeserver_url).await?;
+    let (config, user_id) = make_client_config(
+        base_path,
+        "@kyra",
+        None,
+        None,
+        &homeserver_name,
+        &homeserver_url,
+        true,
+    )
+    .await?;
 
     let (token, user_id) = {
         let client = login_new_client_under_config(
             config.clone(),
             user_id,
             default_user_password("kyra"),
+            None,
             None,
             Some("KYRA_DEV".to_string()),
         )
@@ -133,9 +145,11 @@ async fn kyra_can_restore_with_db_passphrase() -> Result<()> {
     let (config, user_id) = make_client_config(
         base_path,
         "@kyra",
+        None,
         Some(db_passphrase.clone()),
         &homeserver_name,
         &homeserver_url,
+        true,
     )
     .await?;
 
@@ -144,6 +158,7 @@ async fn kyra_can_restore_with_db_passphrase() -> Result<()> {
             config.clone(),
             user_id,
             default_user_password("kyra"),
+            None,
             Some(db_passphrase),
             Some("KYRA_DEV".to_string()),
         )

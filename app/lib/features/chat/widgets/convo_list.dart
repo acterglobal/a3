@@ -1,18 +1,16 @@
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
+import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'package:acter/common/widgets/default_button.dart';
-import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:go_router/go_router.dart';
 
 class ConvosList extends ConsumerStatefulWidget {
   final Function(String)? onSelected;
+
   const ConvosList({this.onSelected, super.key});
 
   @override
@@ -56,16 +54,11 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
           subtitle:
               'Get in touch with other change makers, organizers or activists and chat directly with them.',
           image: 'assets/images/empty_chat.svg',
-          primaryButton: DefaultButton(
+          primaryButton: ElevatedButton(
             onPressed: () async => context.pushNamed(
               Routes.createChat.name,
             ),
-            title: 'Send DM',
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.success,
-              disabledBackgroundColor:
-                  Theme.of(context).colorScheme.success.withOpacity(0.5),
-            ),
+            child: const Text('Send DM'),
           ),
         ),
       );

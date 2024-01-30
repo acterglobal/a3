@@ -16,7 +16,7 @@ final invitationProfileProvider =
   FfiBufferUint8? avatar;
   try {
     UserProfile profile = await invitation.getSenderProfile();
-    displayName = (await profile.getDisplayName()).text();
+    displayName = profile.getDisplayName();
     avatar = (await profile.getAvatar(null)).data();
   } catch (e) {
     debugPrint('failed to load profile: $e');

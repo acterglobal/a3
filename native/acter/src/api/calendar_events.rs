@@ -8,7 +8,6 @@ use acter_core::{
 };
 use anyhow::{bail, Context, Result};
 use chrono::DateTime;
-use core::time::Duration;
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
 use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
@@ -27,12 +26,13 @@ impl Client {
     pub async fn wait_for_calendar_event(
         &self,
         key: String,
-        timeout: Option<Box<Duration>>,
+        timeout: Option<u8>,
     ) -> Result<CalendarEvent> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::CalendarEvent(inner) = me.wait_for(key.clone(), timeout).await? else {
+                let AnyActerModel::CalendarEvent(inner) = me.wait_for(key.clone(), timeout).await?
+                else {
                     bail!("{key} is not a calendar_event");
                 };
                 let room = me
@@ -49,12 +49,11 @@ impl Client {
         let client = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::CalendarEvent(inner) = client.store().get(&calendar_id).await? else {
+                let AnyActerModel::CalendarEvent(inner) = client.store().get(&calendar_id).await?
+                else {
                     bail!("Calendar event not found");
                 };
-                let room = client
-                    .get_room(inner.room_id())
-                    .context("Room not found")?;
+                let room = client.get_room(inner.room_id()).context("Room not found")?;
                 Ok(CalendarEvent::new(client, room, inner))
             })
             .await?

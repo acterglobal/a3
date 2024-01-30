@@ -28,15 +28,18 @@ class SpacesBuilder extends ConsumerWidget {
         } else {
           final List<Widget> children = data
               .map(
-                (e) => TextButton(
-                  child: Column(
-                    children: [
-                      e.icon,
-                      const SizedBox(height: 3),
-                      Text(e.name),
-                    ],
+                (e) => InkWell(
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        e.icon,
+                        const SizedBox(height: 3),
+                        Text(e.name),
+                      ],
+                    ),
                   ),
-                  onPressed: () {
+                  onTap: () {
                     navigateTo(target: e.navigationTarget);
                   },
                 ),

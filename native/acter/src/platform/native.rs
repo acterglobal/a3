@@ -3,16 +3,30 @@ use chrono::Local;
 use lazy_static::lazy_static;
 use log::{LevelFilter, Log, Metadata, Record};
 use matrix_sdk::{Client, ClientBuilder};
-use matrix_sdk_sqlite::{make_store_config, OpenStoreError};
+use matrix_sdk_base::store::StoreConfig;
+use matrix_sdk_sqlite::{OpenStoreError, SqliteCryptoStore, SqliteStateStore};
+use matrix_sdk_store_media_cache_wrapper::StoreCacheWrapperError;
 use parse_env_filter::eager::{filters, Filter};
 use std::{
+    fmt::{Display, Error},
     path::{Path, PathBuf},
     sync::{Arc, Mutex},
 };
 
 use crate::RUNTIME;
 
-pub async fn destroy_local_data(base_path: String, home_dir: String) -> Result<bool> {
+pub async fn destroy_local_data(
+    base_path: String,
+    home_dir: String,
+    media_cache_base_path: Option<String>,
+) -> Result<bool> {
+    if let Some(media_base) = media_cache_base_path {
+        let data_path = sanitize(&media_base, &home_dir);
+        if Path::new(&data_path).try_exists()? {
+            std::fs::remove_dir_all(&data_path)?;
+        }
+    }
+
     let data_path = sanitize(&base_path, &home_dir);
     if Path::new(&data_path).try_exists()? {
         std::fs::remove_dir_all(&data_path)?;
@@ -20,36 +34,51 @@ pub async fn destroy_local_data(base_path: String, home_dir: String) -> Result<b
     }
     Ok(false)
 }
+fn make_data_path(
+    base_path: &str,
+    sub_dir: &str,
+    should_reset_if_existing: bool,
+) -> Result<PathBuf> {
+    let data_path = sanitize(base_path, sub_dir);
+
+    if should_reset_if_existing && Path::new(&data_path).try_exists()? {
+        let backup_path = sanitize(
+            base_path,
+            &format!("{sub_dir}_backup_{}", Local::now().to_rfc3339()),
+        );
+        tracing::warn!("{data_path:?} already existing. Moving to backup at {backup_path:?}.");
+        std::fs::rename(&data_path, backup_path)?;
+    }
+    std::fs::create_dir_all(&data_path)?;
+    anyhow::Ok(data_path)
+}
 
 pub async fn new_client_config(
-    base_path: String,
+    db_base_path: String,
     home_dir: String,
+    media_cache_base_path: Option<String>,
     db_passphrase: Option<String>,
     reset_if_existing: bool,
 ) -> Result<ClientBuilder> {
-    let make_data_path = |base_path: &str, home_dir: &str, should_reset_if_existing| {
-        let data_path = sanitize(base_path, home_dir);
-
-        if should_reset_if_existing && Path::new(&data_path).try_exists()? {
-            let backup_path = sanitize(
-                base_path,
-                &format!("{home_dir}_backup_{}", Local::now().to_rfc3339()),
-            );
-            tracing::warn!("{data_path:?} already existing. Moving to backup at {backup_path:?}.");
-            std::fs::rename(&data_path, backup_path)?;
-        }
-        std::fs::create_dir_all(&data_path)?;
-        anyhow::Ok(data_path)
-    };
+    let media_cached_path = media_cache_base_path
+        .map(|p| make_data_path(&p, &home_dir, false))
+        .transpose()?;
     RUNTIME
         .spawn(async move {
-            let data_path = make_data_path(&base_path, &home_dir, reset_if_existing)?;
+            let data_path = make_data_path(&db_base_path, &home_dir, reset_if_existing)?;
 
-            let config = match make_store_config(&data_path, db_passphrase.as_deref()).await {
-                Err(OpenStoreError::InitCipher(e)) => {
+            let config = match make_store_config(
+                &data_path,
+                media_cached_path.clone(),
+                db_passphrase.as_deref(),
+            )
+            .await
+            {
+                Err(MakeStoreConfigError::OpenStoreError(OpenStoreError::InitCipher(e))) => {
                     tracing::warn!("Failed to initialize cipher: {e}");
-                    let data_path = make_data_path(&base_path, &home_dir, true)?; // try resetting the path and do it again.
-                    make_store_config(&data_path, db_passphrase.as_deref()).await?
+                    let data_path = make_data_path(&db_base_path, &home_dir, true)?; // try resetting the path and do it again.
+                    make_store_config(&data_path, media_cached_path, db_passphrase.as_deref())
+                        .await?
                 }
                 Err(e) => {
                     tracing::warn!("Failed to open database: {e}");
@@ -195,4 +224,61 @@ fn get_log_filter(level: &str) -> Option<LevelFilter> {
         "trace" => Some(LevelFilter::Trace),
         _ => None,
     }
+}
+
+#[derive(Debug)]
+enum MakeStoreConfigError {
+    OpenStoreError(OpenStoreError),
+    StoreCacheWrapperError(StoreCacheWrapperError),
+}
+
+impl Display for MakeStoreConfigError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            MakeStoreConfigError::OpenStoreError(i) => {
+                write!(f, "MakeStoreConfigError::OpenStoreError {}", i)
+            }
+            MakeStoreConfigError::StoreCacheWrapperError(i) => {
+                write!(f, "MakeStoreConfigError::StoreCacheWrapperError {}", i)
+            }
+        }
+    }
+}
+
+impl std::error::Error for MakeStoreConfigError {}
+
+impl From<OpenStoreError> for MakeStoreConfigError {
+    fn from(value: OpenStoreError) -> Self {
+        MakeStoreConfigError::OpenStoreError(value)
+    }
+}
+
+impl From<StoreCacheWrapperError> for MakeStoreConfigError {
+    fn from(value: StoreCacheWrapperError) -> Self {
+        MakeStoreConfigError::StoreCacheWrapperError(value)
+    }
+}
+
+async fn make_store_config(
+    path: &Path,
+    media_cache_path: Option<PathBuf>,
+    passphrase: Option<&str>,
+) -> Result<StoreConfig, MakeStoreConfigError> {
+    let config = StoreConfig::new().crypto_store(SqliteCryptoStore::open(path, passphrase).await?);
+
+    let sql_state_store = SqliteStateStore::open(path, passphrase).await?;
+    let Some(passphrase) = passphrase else {
+        return Ok(config.state_store(sql_state_store));
+    };
+    let Some(media_path) = media_cache_path else {
+        return Ok(config.state_store(sql_state_store));
+    };
+
+    let wrapped_state_store = matrix_sdk_store_media_cache_wrapper::wrap_with_file_cache(
+        sql_state_store,
+        media_path,
+        passphrase,
+    )
+    .await?;
+    Ok(config.state_store(wrapped_state_store))
 }

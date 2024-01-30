@@ -80,6 +80,7 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
 class MyProfile extends ConsumerWidget {
   static const logoutKey = Key('my-profile-logout');
   static const displayNameKey = Key('my-profile-display-name');
+
   const MyProfile({super.key});
 
   Future<void> updateDisplayName(
@@ -202,8 +203,9 @@ class MyProfile extends ConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               ConstrainedBox(
-                                constraints:
-                                    BoxConstraints(maxWidth: size.width * 0.8),
+                                constraints: BoxConstraints(
+                                  maxWidth: size.width * 0.8,
+                                ),
                                 child: Text(
                                   key: displayNameKey,
                                   data.profile.displayName ?? '',
@@ -253,7 +255,7 @@ class MyProfile extends ConsumerWidget {
                       Container(
                         margin: const EdgeInsets.symmetric(vertical: 10),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.onPrimary,
+                          color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Column(

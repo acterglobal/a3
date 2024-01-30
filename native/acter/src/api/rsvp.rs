@@ -17,7 +17,7 @@ use tracing::{error, trace, warn};
 use super::{calendar_events::CalendarEvent, client::Client, RUNTIME};
 
 impl Client {
-    pub async fn wait_for_rsvp(&self, key: String, timeout: Option<Box<Duration>>) -> Result<Rsvp> {
+    pub async fn wait_for_rsvp(&self, key: String, timeout: Option<u8>) -> Result<Rsvp> {
         let client = self.clone();
         RUNTIME
             .spawn(async move {

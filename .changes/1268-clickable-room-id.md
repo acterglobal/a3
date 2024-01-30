@@ -1,2 +1,0 @@
-- [enhance] Copy room link instead of roomId
-- [fix] Click on room link will perform appropriate action

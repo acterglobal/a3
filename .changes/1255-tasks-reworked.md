@@ -1,1 +1,0 @@
-- [labs] Tasks and TasksList have seen a complete revamp: if you enable them in your app (and then for the corresponding space) you will find you can create TaskLists, view them in each Space, add Tasks inline and upon clicking on them you can assign due date and volunteer to take responsibility for it. If you do, these (not done) tasks show up in your dashboard as well.

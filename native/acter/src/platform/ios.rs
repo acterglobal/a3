@@ -1,24 +1,33 @@
 use anyhow::Result;
-use log::{Level, Log, Metadata, Record};
 use matrix_sdk::ClientBuilder;
 use oslog::OsLogger;
-use std::sync::{Arc, Mutex};
 
 use super::native;
 
-pub async fn destroy_local_data(base_path: String, home_dir: String) -> Result<bool> {
-    native::destroy_local_data(base_path, home_dir).await
+pub async fn destroy_local_data(
+    base_path: String,
+    home_dir: String,
+    media_cache_base_path: Option<String>,
+) -> Result<bool> {
+    native::destroy_local_data(base_path, home_dir, media_cache_base_path).await
 }
 
 pub async fn new_client_config(
     base_path: String,
     home_dir: String,
+    media_cache_base_path: Option<String>,
     db_passphrase: Option<String>,
     reset_if_existing: bool,
 ) -> Result<ClientBuilder> {
-    let builder = native::new_client_config(base_path, home_dir, db_passphrase, reset_if_existing)
-        .await?
-        .user_agent(format!("acter-ios/{:}", env!("CARGO_PKG_VERSION")));
+    let builder = native::new_client_config(
+        base_path,
+        home_dir,
+        media_cache_base_path,
+        db_passphrase,
+        reset_if_existing,
+    )
+    .await?
+    .user_agent(format!("acter-ios/{:}", env!("CARGO_PKG_VERSION")));
     Ok(builder)
 }
 

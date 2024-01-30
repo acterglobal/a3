@@ -2,14 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
-import 'package:overlay_support/overlay_support.dart';
 import 'package:sprintf/sprintf.dart';
 
 class VerificationProcess {
@@ -26,64 +24,18 @@ class CrossSigning {
   Client client;
   bool acceptingRequest = false;
   bool waitForMatch = false;
-  late StreamSubscription<DeviceNewEvent>? _deviceNewPoller;
   late StreamSubscription<VerificationEvent>? _verificationPoller;
   final Map<String, VerificationProcess> _processMap = {};
   bool _mounted = true;
   bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
 
   CrossSigning({required this.client}) {
-    _installDeviceEvent();
     _installVerificationEvent();
   }
 
   void dispose() {
     _mounted = false;
-    _deviceNewPoller?.cancel();
     _verificationPoller?.cancel();
-  }
-
-  void _installDeviceEvent() {
-    _deviceNewPoller = client.deviceNewEventRx()?.listen((event) async {
-      final records = await client.deviceRecords(false);
-      final myDevId = client.deviceId();
-      var newDevFound = false;
-      for (var record in records) {
-        final newDevId = record.deviceId();
-        if (newDevId.toString() != myDevId.toString()) {
-          // ignore detection of this device in this device
-          newDevFound = true;
-          debugPrint('found device id: $newDevId');
-        }
-      }
-
-      if (!_shouldShowNewDevicePopup() || !newDevFound) {
-        return;
-      }
-      showSimpleNotification(
-        ListTile(
-          leading: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
-          title: const Text('New Session Alert'),
-          subtitle: const Text('Tap to review and verify!'),
-        ),
-        duration: const Duration(seconds: 1),
-      );
-    });
-  }
-
-  bool _shouldShowNewDevicePopup() {
-    // between `m.key.verification.mac` event and `m.key.verification.done` event,
-    // device new event occurs automatically.
-    // on this event, `New device` popup must not appear.
-    // thus skip this event.
-    bool result = true;
-    _processMap.forEach((key, value) {
-      if (value.stage == 'm.key.verification.mac') {
-        result = false;
-        return;
-      }
-    });
-    return result;
   }
 
   void _installVerificationEvent() {
@@ -214,11 +166,8 @@ class CrossSigning {
     if (acceptingRequest) {
       return const CircularProgressIndicator();
     }
-    return DefaultButton(
-      title: AppLocalizations.of(context)!.acceptRequest,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.success,
-      ),
+    return ElevatedButton(
+      child:  Text(AppLocalizations.of(context)!.acceptRequest),
       onPressed: () async {
         if (_mounted) {
           acceptingRequest = true;
@@ -546,11 +495,8 @@ class CrossSigning {
           flex: 1,
           child: SizedBox(
             width: MediaQuery.of(context).size.width * 0.40,
-            child: DefaultButton(
-              title: AppLocalizations.of(context)!.sasGotIt,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.success,
-              ),
+            child: ElevatedButton(
+              child:  Text(AppLocalizations.of(context)!.sasGotIt),
               onPressed: () {
                 rootNavKey.currentContext?.pop();
                 // finish verification
@@ -786,11 +732,8 @@ class CrossSigning {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        DefaultButton(
-          title: AppLocalizations.of(context)!.verificationSasDoNotMatch,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-          ),
+        ElevatedButton(
+          child:  Text(AppLocalizations.of(context)!.verificationSasDoNotMatch),
           onPressed: () async {
             rootNavKey.currentContext?.pop();
             // mismatch sas verification
@@ -798,11 +741,8 @@ class CrossSigning {
           },
         ),
         const SizedBox(width: 15),
-        DefaultButton(
-          title: AppLocalizations.of(context)!.verificationSasMatch,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.success,
-          ),
+        ElevatedButton(
+          child:  Text(AppLocalizations.of(context)!.verificationSasMatch),
           onPressed: () async {
             if (_mounted) {
               waitForMatch = true;
@@ -913,11 +853,8 @@ class CrossSigning {
           child: Center(
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.40,
-              child: DefaultButton(
-                title: AppLocalizations.of(context)!.sasGotIt,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.success,
-                ),
+              child: ElevatedButton(
+                child:  Text(AppLocalizations.of(context)!.sasGotIt),
                 onPressed: () {
                   rootNavKey.currentContext?.pop();
                   // finish verification
