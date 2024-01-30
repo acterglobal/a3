@@ -41,7 +41,7 @@ use super::{
     client::Client,
     message::RoomMessage,
     receipt::ReceiptRecord,
-    room::{self, Room},
+    room::Room,
     utils::{remap_for_diff, ApiVectorDiff},
     RUNTIME,
 };
@@ -69,9 +69,7 @@ impl Eq for Convo {}
 
 impl PartialOrd for Convo {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        other
-            .latest_message_ts()
-            .partial_cmp(&self.latest_message_ts())
+        Some(self.cmp(other))
     }
 }
 
@@ -94,7 +92,10 @@ async fn set_latest_msg(
     let key = latest_message_storage_key(room_id);
     {
         let Ok(mut msg_lock) = lock.write() else {
-            error!(?room_id, "Locking latest message for update failed. poisoned.");
+            error!(
+                ?room_id,
+                "Locking latest message for update failed. poisoned."
+            );
             return;
         };
 
@@ -154,7 +155,9 @@ impl Convo {
                 }
             }
             while let Some(ev) = incoming.next().await {
-                let Some(msg) = last_msg_tl.latest_event().await else { continue };
+                let Some(msg) = last_msg_tl.latest_event().await else {
+                    continue;
+                };
                 let full_event = RoomMessage::from((msg, latest_msg_room.room.clone()));
                 set_latest_msg(
                     &latest_msg_client,
@@ -379,7 +382,9 @@ impl Client {
                 }
 
                 if let Some(parent) = settings.parent {
-                    let Some(Ok(homeserver)) = client.homeserver().host_str().map(ServerName::parse) else {
+                    let Some(Ok(homeserver)) =
+                        client.homeserver().host_str().map(ServerName::parse)
+                    else {
                         return Err(Error::HomeserverMissesHostname)?;
                     };
                     let parent_event = InitialStateEvent::<SpaceParentEventContent> {
@@ -391,9 +396,9 @@ impl Client {
                     initial_states.push(parent_event.to_raw_any());
                     // if we have a parent, by default we allow access to the subspace.
                     let join_rule =
-                        InitialRoomJoinRulesEvent::new(RoomJoinRulesEventContent::restricted(vec![
-                            AllowRule::room_membership(parent),
-                        ]));
+                        InitialRoomJoinRulesEvent::new(RoomJoinRulesEventContent::restricted(
+                            vec![AllowRule::room_membership(parent)],
+                        ));
                     initial_states.push(join_rule.to_raw_any());
                 };
 
@@ -445,7 +450,7 @@ impl Client {
                 }
                 false
             })
-            .map(Clone::clone);
+            .cloned();
         match convo {
             Some(convo) => Ok(convo),
             None => {
@@ -501,7 +506,7 @@ impl Client {
             .await
             .iter()
             .find(|s| s.room_id() == room_id)
-            .map(Clone::clone)
+            .cloned()
     }
 
     pub fn convos_stream(&self) -> impl Stream<Item = ConvoDiff> {

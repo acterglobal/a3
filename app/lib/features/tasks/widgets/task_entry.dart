@@ -16,6 +16,7 @@ class TaskEntry extends ConsumerWidget {
   final Task task;
   final bool showBreadCrumb;
   final Function()? onDone;
+
   const TaskEntry({
     super.key,
     required this.task,
@@ -98,6 +99,7 @@ class TaskEntry extends ConsumerWidget {
       ),
       title: InkWell(
         child: Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             Text(
               task.title(),
@@ -108,6 +110,7 @@ class TaskEntry extends ConsumerWidget {
                       )
                   : Theme.of(context).textTheme.bodyMedium!,
             ),
+            const SizedBox(width: 12),
             ...extraInfo,
           ],
         ),

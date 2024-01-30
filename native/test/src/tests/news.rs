@@ -304,3 +304,78 @@ async fn news_png_image_with_text_test() -> Result<()> {
 
     Ok(())
 }
+
+#[tokio::test]
+async fn news_multiple_slide_test() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (mut user, space_id) = random_user_with_random_space("news_png").await?;
+    let state_sync = user.start_sync();
+    state_sync.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    let space_id_str = space_id.to_string();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        let space_id = space_id_str.clone();
+        async move { client.space(space_id).await }
+    })
+    .await?;
+
+    let mut tmp_file = NamedTempFile::new()?;
+    tmp_file.as_file_mut().write_all(include_bytes!(
+        "./fixtures/PNG_transparency_demonstration_1.png"
+    ))?;
+
+    let space = user.space(space_id.to_string()).await?;
+    let mut draft = space.news_draft()?;
+    let image_draft = user.image_draft(
+        tmp_file.path().to_string_lossy().to_string(),
+        "image/png".to_string(),
+    );
+    let markdown_draft =
+        user.text_markdown_draft("This update is ***reallly important***".to_owned());
+
+    let plain_draft = user.text_plain_draft("Hello Updates!".to_owned());
+    // we add three slides
+    draft.add_slide(Box::new(image_draft)).await?;
+    draft.add_slide(Box::new(markdown_draft)).await?;
+    draft.add_slide(Box::new(plain_draft)).await?;
+    draft.send().await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let space_cl = space.clone();
+    Retry::spawn(retry_strategy, move || {
+        let inner_space = space_cl.clone();
+        async move {
+            if inner_space.latest_news_entries(1).await?.len() != 1 {
+                bail!("news not found");
+            } else {
+                Ok(())
+            }
+        }
+    })
+    .await?;
+
+    let slides = space.latest_news_entries(1).await?;
+    let final_entry = slides.first().expect("Item is there");
+    // We have exactly three slides
+    assert_eq!(3, final_entry.slides().len());
+    let first_slide = final_entry.get_slide(0).expect("We have image slide");
+    assert_eq!(first_slide.type_str(), "image");
+    let second_slide = final_entry
+        .get_slide(1)
+        .expect("We have markdown text slide");
+    assert_eq!(second_slide.type_str(), "text");
+    assert!(second_slide.has_formatted_text());
+    assert_eq!(
+        second_slide.text(),
+        "<p>This update is <em><strong>reallly important</strong></em></p>\n".to_owned()
+    );
+    let third_slide = final_entry.get_slide(2).expect("We have plain text slide");
+    assert_eq!(third_slide.type_str(), "text");
+    assert!(!third_slide.has_formatted_text());
+    assert_eq!(third_slide.text(), "Hello Updates!".to_owned());
+    Ok(())
+}

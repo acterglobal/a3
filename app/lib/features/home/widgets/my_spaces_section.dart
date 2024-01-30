@@ -3,7 +3,6 @@ import 'dart:core';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +34,7 @@ class MySpacesSection extends ConsumerWidget {
         spaces.isEmpty
             ? const _NoSpacesWidget()
             : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   ListView.builder(
                     shrinkWrap: true,
@@ -45,38 +44,35 @@ class MySpacesSection extends ConsumerWidget {
                       return SpaceCard(space: spaces[index]);
                     },
                   ),
-                  spacesLimit != spaces.length
-                      ? Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: DefaultButton(
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    child: spacesLimit != spaces.length
+                        ? OutlinedButton(
                             onPressed: () {
                               context.pushNamed(Routes.spaces.name);
                             },
-                            title: 'See all my ${spaces.length} spaces',
-                            isOutlined: true,
-                          ),
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.only(top: 10, left: 8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            child: Text('See all my ${spaces.length} spaces'),
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              DefaultButton(
+                              OutlinedButton(
                                 onPressed: () =>
                                     context.pushNamed(Routes.createSpace.name),
-                                title: 'Create Space',
-                                isOutlined: true,
+                                child: const Text('Create Space'),
                               ),
                               const SizedBox(height: 10),
-                              DefaultButton(
+                              ElevatedButton(
                                 onPressed: () =>
                                     context.pushNamed(Routes.joinSpace.name),
-                                title: 'Join Space',
-                                isOutlined: true,
+                                child: const Text('Join Space'),
                               ),
                             ],
                           ),
-                        ),
+                  ),
                 ],
               ),
       ],

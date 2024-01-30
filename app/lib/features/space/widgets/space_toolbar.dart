@@ -2,7 +2,6 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -110,14 +109,11 @@ class SpaceToolbar extends ConsumerWidget {
           'Are you sure you want to leave this space?',
         ),
         actions: <Widget>[
-          DefaultButton(
+          ElevatedButton(
             onPressed: () => context.pop(),
-            title: 'No, I stay',
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(color: Theme.of(context).colorScheme.success),
-            ),
+            child: const Text('No, I stay'),
           ),
-          DefaultButton(
+          ElevatedButton(
             onPressed: () async {
               final space = await ref.watch(spaceProvider(spaceId).future);
               await space.leave();
@@ -129,10 +125,7 @@ class SpaceToolbar extends ConsumerWidget {
               context.pop();
               context.goNamed(Routes.dashboard.name);
             },
-            title: 'Yes, Leave',
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            ),
+            child: const Text('Yes, Leave'),
           ),
         ],
       ),

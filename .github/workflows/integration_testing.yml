@@ -52,7 +52,7 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2023-04-10
+          toolchain: nightly
           override: true
 
       - uses: jlumbroso/free-disk-space@main
@@ -135,7 +135,7 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2023-04-10
+          toolchain: nightly
           override: true
 
       - uses: Swatinem/rust-cache@v1
@@ -146,7 +146,6 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
-          flutter-version: '3.13.1'
           channel: 'stable'
 
       - uses: actions/setup-python@v4
@@ -245,7 +244,7 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2023-04-10
+          toolchain: nightly
           override: true
 
       - uses: Swatinem/rust-cache@v1
@@ -298,7 +297,6 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
-          flutter-version: '3.13.1'
           channel: 'stable'
 
       - uses: actions/setup-python@v4
@@ -381,7 +379,7 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2023-04-10
+          toolchain: nightly
           override: true
 
       - uses: actions/setup-java@v2
@@ -400,7 +398,6 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
-          flutter-version: '3.13.1'
           channel: 'stable'
 
       - uses: actions/setup-python@v4

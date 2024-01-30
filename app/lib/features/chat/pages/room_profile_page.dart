@@ -3,7 +3,6 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -17,6 +16,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class RoomProfilePage extends ConsumerWidget {
   final String roomId;
@@ -46,12 +46,14 @@ class RoomProfilePage extends ConsumerWidget {
         );
       },
       error: (error, stackTrace) => Text('Error loading members count $error'),
-      loading: () => const CircularProgressIndicator(),
+      loading: () => const Skeletonizer(
+        child: Text(
+          '100 members',
+        ),
+      ),
     );
 
     return Scaffold(
-      backgroundColor:
-          Theme.of(context).colorScheme.onSecondary.withOpacity(0.5),
       extendBodyBehindAppBar: true,
       body: CustomScrollView(
         shrinkWrap: true,
@@ -105,7 +107,7 @@ class RoomProfilePage extends ConsumerWidget {
                       style: Theme.of(context).textTheme.titleSmall,
                     );
                   },
-                  loading: () => const CircularProgressIndicator(),
+                  loading: () => Skeletonizer(child: Text(roomId)),
                 ),
               ],
             ),
@@ -119,7 +121,7 @@ class RoomProfilePage extends ConsumerWidget {
                   defaultTextStyle: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
-              loading: () => const Text('loading...'),
+              loading: () => const Skeletonizer(child: Text('loading...')),
               error: (e, s) => Text('Error: $e'),
             ),
           ),
@@ -128,8 +130,6 @@ class RoomProfilePage extends ConsumerWidget {
               physics: const NeverScrollableScrollPhysics(),
               darkTheme: SettingsThemeData(
                 settingsListBackground: Colors.transparent,
-                settingsSectionBackground:
-                    Theme.of(context).colorScheme.onPrimary,
                 dividerColor: Colors.transparent,
                 leadingIconsColor: Theme.of(context).colorScheme.neutral6,
               ),
@@ -181,16 +181,17 @@ class RoomProfilePage extends ConsumerWidget {
                           style: tileTextTheme,
                         ),
                         leading: const Icon(Atlas.user_plus_thin, size: 18),
-                        trailing: const Icon(
+                        trailing: Icon(
                           Icons.chevron_right_outlined,
                           size: 18,
+                          color: Theme.of(context).colorScheme.onBackground,
                         ),
                       ),
                       error: (e, st) => SettingsTile(
                         title: Text('Error loading tile due to $e'),
                       ),
                       loading: () => SettingsTile(
-                        title: const Text('Loading'),
+                        title: const Skeletonizer(child: Text('Loading')),
                       ),
                     ),
                     SettingsTile(
@@ -205,7 +206,9 @@ class RoomProfilePage extends ConsumerWidget {
                             title: topMenu,
                             description: convo.when(
                               data: (data) => MemberList(convo: data),
-                              loading: () => const Text('loading...'),
+                              loading: () => const Skeletonizer(
+                                child: Text('loading...'),
+                              ),
                               error: (e, s) => Text('Error: $e'),
                             ),
                           ),
@@ -219,8 +222,11 @@ class RoomProfilePage extends ConsumerWidget {
                         Atlas.accounts_group_people_thin,
                         size: 18,
                       ),
-                      trailing:
-                          const Icon(Icons.chevron_right_outlined, size: 18),
+                      trailing: Icon(
+                        Icons.chevron_right_outlined,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
                     ),
                   ],
                 ),
@@ -245,19 +251,13 @@ class RoomProfilePage extends ConsumerWidget {
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                           actions: [
-                            DefaultButton(
+                            OutlinedButton(
                               onPressed: () =>
                                   Navigator.of(context, rootNavigator: true)
                                       .pop(),
-                              title: 'No',
-                              isOutlined: true,
-                              style: OutlinedButton.styleFrom(
-                                side: BorderSide(
-                                  color: Theme.of(context).colorScheme.success,
-                                ),
-                              ),
+                              child: const Text('No'),
                             ),
-                            DefaultButton(
+                            ElevatedButton(
                               onPressed: () async {
                                 Navigator.of(context, rootNavigator: true)
                                     .pop();
@@ -275,11 +275,7 @@ class RoomProfilePage extends ConsumerWidget {
                                   );
                                 }
                               },
-                              title: 'Yes',
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.badgeUrgent,
-                              ),
+                              child: const Text('Yes'),
                             ),
                           ],
                         ),

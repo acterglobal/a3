@@ -111,22 +111,25 @@ class SessionCard extends ConsumerWidget {
             ],
           ),
           actions: [
-            TextButton(
+            OutlinedButton(
               child: const Text('Cancel'),
               onPressed: () {
                 if (ctx.mounted) {
-                  Navigator.of(context).pop(false);
+                  // remove pop up
+                  Navigator.of(context, rootNavigator: true).pop();
                 }
               },
             ),
-            TextButton(
+            ElevatedButton(
               child: const Text('Ok'),
               onPressed: () {
                 if (passwordController.text.isEmpty) {
                   return;
                 }
+                //FIXME : Need to implement session logout feature here
                 if (ctx.mounted) {
-                  Navigator.of(context).pop(true);
+                  // remove pop up
+                  Navigator.of(context, rootNavigator: true).pop();
                 }
               },
             ),

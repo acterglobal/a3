@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/default_button.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/events_item.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +9,7 @@ import 'package:go_router/go_router.dart';
 
 class EventsCard extends ConsumerWidget {
   final String spaceId;
+
   const EventsCard({super.key, required this.spaceId});
 
   @override
@@ -51,13 +51,12 @@ class EventsCard extends ConsumerWidget {
                   eventsLimit != events.length
                       ? Padding(
                           padding: const EdgeInsets.only(top: 10),
-                          child: DefaultButton(
+                          child: OutlinedButton(
                             onPressed: () => context.pushNamed(
                               Routes.spaceEvents.name,
                               pathParameters: {'spaceId': spaceId},
                             ),
-                            title: 'See all my ${events.length} events',
-                            isOutlined: true,
+                            child: Text('See all my ${events.length} events'),
                           ),
                         )
                       : const SizedBox.shrink(),

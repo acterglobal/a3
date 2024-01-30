@@ -6,6 +6,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ConvoHierarchyCard extends ConsumerWidget {
   final SpaceHierarchyRoomInfo space;
@@ -114,9 +115,11 @@ class ConvoHierarchyCard extends ConsumerWidget {
         title: Text('Error loading: $roomId'),
         subtitle: Text('$error'),
       ),
-      loading: () => ListTile(
-        title: Text(roomId),
-        subtitle: const Text('loading'),
+      loading: () => Skeletonizer(
+        child: ListTile(
+          title: Text(roomId),
+          subtitle: const Text('loading'),
+        ),
       ),
     );
   }

@@ -53,23 +53,32 @@ pub async fn sanitize_user(
 
 pub async fn destroy_local_data(
     base_path: String,
+    media_cache_base_path: Option<String>,
     username: String,
     default_homeserver_name: String,
 ) -> Result<bool> {
     let (user_id, fallback) = sanitize_user(&username, &default_homeserver_name).await?;
-    platform::destroy_local_data(base_path, user_id.to_string()).await
+    platform::destroy_local_data(base_path, user_id.to_string(), media_cache_base_path).await
 }
 
 pub async fn make_client_config(
     base_path: String,
     username: &str,
+    media_cache_base_path: Option<String>,
     db_passphrase: Option<String>,
     default_homeserver_name: &str,
     default_homeserver_url: &str,
+    reset_if_existing: bool,
 ) -> Result<(ClientBuilder, OwnedUserId)> {
     let (user_id, fallback) = sanitize_user(username, default_homeserver_name).await?;
-    let mut builder =
-        platform::new_client_config(base_path, user_id.to_string(), db_passphrase, true).await?;
+    let mut builder = platform::new_client_config(
+        base_path,
+        user_id.to_string(),
+        media_cache_base_path,
+        db_passphrase,
+        reset_if_existing,
+    )
+    .await?;
 
     if let Some(proxy) = PROXY_URL.read().expect("Reading PROXY_URL failed").clone() {
         builder = builder.proxy(proxy);
@@ -85,6 +94,7 @@ pub async fn make_client_config(
 
 pub async fn guest_client(
     base_path: String,
+    media_cache_base_path: String,
     default_homeserver_name: String,
     default_homeserver_url: String,
     device_name: Option<String>,
@@ -93,6 +103,7 @@ pub async fn guest_client(
     let config = platform::new_client_config(
         base_path.clone(),
         default_homeserver_name,
+        Some(media_cache_base_path.clone()),
         Some(db_passphrase.clone()),
         true,
     )
@@ -124,6 +135,7 @@ pub async fn guest_client(
             let state = ClientStateBuilder::default()
                 .is_guest(true)
                 .db_passphrase(Some(db_passphrase))
+                .media_cache_base_path(Some(media_cache_base_path))
                 .build()?;
             let c = Client::new(client, state).await?;
             info!("Successfully created guest login: {:?}", response.user_id);
@@ -141,6 +153,7 @@ pub async fn login_with_token_under_config(
         homeurl,
         is_guest,
         db_passphrase,
+        media_cache_base_path,
     } = restore_token;
     let user_id = session.user_id.to_string();
     RUNTIME
@@ -160,6 +173,7 @@ pub async fn login_with_token_under_config(
             let state = ClientStateBuilder::default()
                 .is_guest(is_guest)
                 .db_passphrase(db_passphrase)
+                .media_cache_base_path(media_cache_base_path)
                 .build()?;
             let c = Client::new(client.clone(), state).await?;
             info!(
@@ -173,10 +187,13 @@ pub async fn login_with_token_under_config(
 
 pub async fn login_with_token(base_path: String, restore_token: String) -> Result<Client> {
     let token: RestoreToken = serde_json::from_str(&restore_token)?;
-    let config = platform::new_client_config(
+    let (config, user_id) = make_client_config(
         base_path,
-        token.session.user_id.to_string(),
+        token.session.user_id.as_str(),
+        token.media_cache_base_path.clone(),
         token.db_passphrase.clone(),
+        "",
+        "",
         false,
     )
     .await?;
@@ -187,6 +204,7 @@ async fn login_client(
     client: SdkClient,
     user_id: OwnedUserId,
     password: String,
+    media_cache_base_path: Option<String>,
     db_passphrase: Option<String>,
     device_name: Option<String>,
 ) -> Result<Client> {
@@ -200,6 +218,7 @@ async fn login_client(
     let state = ClientStateBuilder::default()
         .is_guest(false)
         .db_passphrase(db_passphrase)
+        .media_cache_base_path(media_cache_base_path)
         .build()?;
     info!(
         "Successfully logged in user {user_id}, device {:?}",
@@ -212,6 +231,7 @@ pub async fn login_new_client_under_config(
     config: ClientBuilder,
     user_id: OwnedUserId,
     password: String,
+    media_cache_base_path: Option<String>,
     db_passphrase: Option<String>,
     device_name: Option<String>,
 ) -> Result<Client> {
@@ -221,6 +241,7 @@ pub async fn login_new_client_under_config(
                 config.build().await?,
                 user_id,
                 password,
+                media_cache_base_path,
                 db_passphrase,
                 device_name,
             )
@@ -229,27 +250,9 @@ pub async fn login_new_client_under_config(
         .await?
 }
 
-pub async fn smart_login(
-    base_path: String,
-    username: String,
-    password: String,
-    default_homeserver_name: String,
-    default_homeserver_url: String,
-    device_name: Option<String>,
-) -> Result<Client> {
-    let (config, user_id) = make_client_config(
-        base_path,
-        &username,
-        None,
-        &default_homeserver_name,
-        &default_homeserver_url,
-    )
-    .await?;
-    login_new_client_under_config(config, user_id, password, None, device_name).await
-}
-
 pub async fn login_new_client(
     base_path: String,
+    media_cache_base_path: String,
     username: String,
     password: String,
     default_homeserver_name: String,
@@ -260,16 +263,27 @@ pub async fn login_new_client(
     let (config, user_id) = make_client_config(
         base_path,
         &username,
+        Some(media_cache_base_path.clone()),
         Some(db_passphrase.clone()),
         &default_homeserver_name,
         &default_homeserver_url,
+        true,
     )
     .await?;
-    login_new_client_under_config(config, user_id, password, Some(db_passphrase), device_name).await
+    login_new_client_under_config(
+        config,
+        user_id,
+        password,
+        Some(media_cache_base_path),
+        Some(db_passphrase),
+        device_name,
+    )
+    .await
 }
-
+#[allow(clippy::too_many_arguments)]
 pub async fn register(
     base_path: String,
+    media_cache_base_path: String,
     username: String,
     password: String,
     user_agent: String,
@@ -281,18 +295,30 @@ pub async fn register(
     let (config, user_id) = make_client_config(
         base_path,
         &username,
+        Some(media_cache_base_path.clone()),
         Some(db_passphrase.clone()),
         &default_homeserver_name,
         &default_homeserver_url,
+        true,
     )
     .await?;
-    register_under_config(config, user_id, password, Some(db_passphrase), user_agent).await
+    register_under_config(
+        config,
+        user_id,
+        password,
+        Some(media_cache_base_path),
+        Some(db_passphrase),
+        user_agent,
+    )
+    .await
 }
 
+#[allow(clippy::too_many_arguments)]
 pub async fn register_under_config(
     config: ClientBuilder,
     user_id: OwnedUserId,
     password: String,
+    media_cache_base_path: Option<String>,
     db_passphrase: Option<String>,
     user_agent: String,
 ) -> Result<Client> {
@@ -327,18 +353,29 @@ pub async fn register_under_config(
                 let state = ClientStateBuilder::default()
                     .is_guest(false)
                     .db_passphrase(db_passphrase)
+                    .media_cache_base_path(media_cache_base_path)
                     .build()?;
                 Client::new(client, state).await
             } else {
                 // we didn't receive the login details yet, do a full login attempt
-                login_client(client, user_id, password, db_passphrase, Some(user_agent)).await
+                login_client(
+                    client,
+                    user_id,
+                    password,
+                    media_cache_base_path,
+                    db_passphrase,
+                    Some(user_agent),
+                )
+                .await
             }
         })
         .await?
 }
 
+#[allow(clippy::too_many_arguments)]
 pub async fn register_with_token(
     base_path: String,
+    media_cache_base_path: String,
     username: String,
     password: String,
     registration_token: String,
@@ -350,9 +387,11 @@ pub async fn register_with_token(
     let (config, user_id) = make_client_config(
         base_path,
         &username,
+        Some(media_cache_base_path.clone()),
         Some(db_passphrase.clone()),
         &default_homeserver_name,
         &default_homeserver_url,
+        true,
     )
     .await?;
     register_with_token_under_config(
@@ -360,6 +399,7 @@ pub async fn register_with_token(
         user_id,
         password,
         Some(db_passphrase),
+        Some(media_cache_base_path),
         user_agent,
         registration_token,
     )
@@ -371,6 +411,7 @@ pub async fn register_with_token_under_config(
     user_id: OwnedUserId,
     password: String,
     db_passphrase: Option<String>,
+    media_cache_base_path: Option<String>,
     user_agent: String,
     registration_token: String,
 ) -> Result<Client> {
@@ -411,11 +452,20 @@ pub async fn register_with_token_under_config(
                 let state = ClientStateBuilder::default()
                     .is_guest(false)
                     .db_passphrase(db_passphrase)
+                    .media_cache_base_path(media_cache_base_path)
                     .build()?;
                 Client::new(client, state).await
             } else {
                 // we didn't receive the login details yet, do a full login attempt
-                login_client(client, user_id, password, db_passphrase, Some(user_agent)).await
+                login_client(
+                    client,
+                    user_id,
+                    password,
+                    media_cache_base_path,
+                    db_passphrase,
+                    Some(user_agent),
+                )
+                .await
             }
         })
         .await?

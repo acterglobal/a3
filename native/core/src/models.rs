@@ -97,7 +97,7 @@ pub async fn default_model_execute(
     let Some(belongs_to) = model.belongs_to() else {
         let event_id = model.event_id().to_string();
         trace!(?event_id, "saving simple model");
-        return store.save(model).await
+        return store.save(model).await;
     };
 
     trace!(event_id=?model.event_id(), ?belongs_to, "transitioning tree");
@@ -138,7 +138,7 @@ pub trait ActerModel: Debug {
         let Some(belongs_to) = self.belongs_to() else {
             let event_id = redaction_model.event_id();
             trace!(?event_id, "saving simple model");
-            return store.save(redaction_model.into()).await
+            return store.save(redaction_model.into()).await;
         };
         let model: AnyActerModel = redaction_model.into();
         trace!(event_id=?model.event_id(), ?belongs_to, "transitioning tree");

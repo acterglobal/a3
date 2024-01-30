@@ -10,7 +10,7 @@ impl TextMessageContent {
     }
 
     pub fn formatted(&self) -> Option<String> {
-        self.inner.formatted.as_ref().map(|f| f.body.clone())
+        self.inner.formatted.clone().map(|f| f.body)
     }
 }
 

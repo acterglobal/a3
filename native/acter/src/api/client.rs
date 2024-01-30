@@ -25,8 +25,8 @@ use matrix_sdk::{
     Client as SdkClient, LoopCtrl, RoomState, RumaApiError,
 };
 use ruma_common::{
-    device_id, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId,
-    OwnedServerName, OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
+    device_id, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedServerName,
+    OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
 };
 use ruma_events::room::MediaSource;
 use std::{
@@ -49,9 +49,7 @@ use tokio::{
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
 
-use crate::{
-    Account, Convo, Notification, OptionString, Room, Space, ThumbnailSize, UserProfile, RUNTIME,
-};
+use crate::{Account, Convo, Notification, OptionString, Room, Space, ThumbnailSize, RUNTIME};
 
 use super::{
     api::FfiBuffer, device::DeviceController, invitation::InvitationController,
@@ -74,6 +72,9 @@ pub struct ClientState {
 
     #[builder(default)]
     pub db_passphrase: Option<String>,
+
+    #[builder(default)]
+    pub media_cache_base_path: Option<String>,
 }
 
 #[derive(Clone, Debug)]
@@ -515,7 +516,7 @@ impl Client {
                 let Some(room) = self.core.client().get_room(r_id) else {
                     remove_from(&mut spaces, r_id);
                     remove_from_chat(&mut chats, r_id);
-                    continue
+                    continue;
                 };
 
                 if matches!(room.state(), RoomState::Left) {
@@ -627,10 +628,13 @@ impl Client {
             let room_handles = room_handles.clone();
             let notifications = notifications.clone();
 
+            // keep the sync timeout below the actual connection timeout to ensure we receive it
+            // back before the server timeout occured
+            let sync_settings = SyncSettings::new().timeout(Duration::from_secs(25));
             // fetch the events that received when offline
             client
                 .clone()
-                .sync_with_result_callback(SyncSettings::new(), |result| async {
+                .sync_with_result_callback(sync_settings, |result| async {
                     info!("received sync callback");
                     let client = client.clone();
                     let me = me.clone();
@@ -774,9 +778,13 @@ impl Client {
     pub async fn restore_token(&self) -> Result<String> {
         let session = self.session().context("Missing session")?;
         let homeurl = self.homeserver();
-        let (is_guest, db_passphrase) = {
+        let (is_guest, db_passphrase, media_cache_base_path) = {
             let state = self.state.try_read()?;
-            (state.is_guest, state.db_passphrase.clone())
+            (
+                state.is_guest,
+                state.db_passphrase.clone(),
+                state.media_cache_base_path.clone(),
+            )
         };
         let result = serde_json::to_string(&RestoreToken {
             session: CustomAuthSession {
@@ -787,6 +795,7 @@ impl Client {
             homeurl,
             is_guest,
             db_passphrase,
+            media_cache_base_path,
         })?;
         Ok(result)
     }
@@ -911,11 +920,7 @@ impl Client {
         self.executor().subscribe(key)
     }
 
-    pub async fn wait_for(
-        &self,
-        key: String,
-        timeout: Option<Box<Duration>>,
-    ) -> Result<AnyActerModel> {
+    pub async fn wait_for(&self, key: String, timeout: Option<u8>) -> Result<AnyActerModel> {
         let executor = self.core.executor().clone();
 
         RUNTIME
@@ -924,7 +929,7 @@ impl Client {
                 let Some(tm) = timeout else {
                     return Ok(waiter.await?);
                 };
-                Ok(time::timeout(*Box::leak(tm), waiter).await??)
+                Ok(time::timeout(Duration::from_secs(tm as u64), waiter).await??)
             })
             .await?
     }
@@ -932,7 +937,7 @@ impl Client {
     pub fn account(&self) -> Result<Account> {
         let account = self.core.client().account();
         let user_id = self.user_id()?;
-        Ok(Account::new(account, user_id))
+        Ok(Account::new(account, user_id, self.core.client().clone()))
     }
 
     pub fn device_id(&self) -> Result<OwnedDeviceId> {
@@ -941,15 +946,6 @@ impl Client {
             .device_id()
             .context("DeviceId not found")
             .map(|x| x.to_owned())
-    }
-
-    pub fn get_user_profile(&self) -> Result<UserProfile> {
-        let client = self.core.client();
-        let user_id = client
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
-        Ok(UserProfile::from_account(client.account(), user_id))
     }
 
     pub async fn verified_device(&self, dev_id: String) -> Result<bool> {

@@ -226,7 +226,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       String userId = activeMembers[i].userId().toString();
       final profile = activeMembers[i].getProfile();
       Map<String, String> record = {};
-      final userName = (await profile.getDisplayName()).text();
+      final userName = (profile.getDisplayName());
       record['display'] = userName ?? simplifyUserId(userId)!;
       record['link'] = userId;
       mentionRecords.add(record);

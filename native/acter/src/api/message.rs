@@ -48,7 +48,6 @@ use ruma_events::{
         },
         tombstone::{OriginalRoomTombstoneEvent, OriginalSyncRoomTombstoneEvent},
         topic::{OriginalRoomTopicEvent, OriginalSyncRoomTopicEvent},
-        ImageInfo, MediaSource,
     },
     space::{
         child::{OriginalSpaceChildEvent, OriginalSyncSpaceChildEvent},

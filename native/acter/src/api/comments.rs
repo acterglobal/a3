@@ -3,7 +3,6 @@ use acter_core::{
     models::{self, ActerModel, AnyActerModel},
 };
 use anyhow::{bail, Context, Result};
-use core::time::Duration;
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
 use ruma_common::{OwnedEventId, OwnedUserId};
@@ -15,15 +14,12 @@ use tokio_stream::{wrappers::BroadcastStream, Stream};
 use super::{client::Client, RUNTIME};
 
 impl Client {
-    pub async fn wait_for_comment(
-        &self,
-        key: String,
-        timeout: Option<Box<Duration>>,
-    ) -> Result<Comment> {
+    pub async fn wait_for_comment(&self, key: String, timeout: Option<u8>) -> Result<Comment> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Comment(comment) = me.wait_for(key.clone(), timeout).await? else {
+                let AnyActerModel::Comment(comment) = me.wait_for(key.clone(), timeout).await?
+                else {
                     bail!("{key} is not a comment");
                 };
                 let room = me
@@ -84,11 +80,7 @@ impl Comment {
     }
 
     pub fn content_formatted(&self) -> Option<String> {
-        self.inner
-            .content
-            .formatted
-            .as_ref()
-            .map(|f| f.body.clone())
+        self.inner.content.formatted.clone().map(|f| f.body)
     }
 }
 

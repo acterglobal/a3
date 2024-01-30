@@ -1,8 +1,9 @@
 import 'dart:io';
+
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/chat_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -24,6 +25,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class RoomPage extends ConsumerWidget {
   static const roomPageKey = Key('chat-room-page');
@@ -125,8 +127,6 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                   : null,
               flexibleSpace: FrostEffect(
                 child: Container(
-                  color:
-                      Theme.of(context).colorScheme.onPrimary.withOpacity(0.5),
                 ),
               ),
               title: GestureDetector(
@@ -157,7 +157,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                       error: (error, stackTrace) => Text(
                         'Error loading profile $error',
                       ),
-                      loading: () => const CircularProgressIndicator(),
+                      loading: () => const Skeletonizer(child: Text('loading')),
                     ),
                     const SizedBox(height: 5),
                     activeMembers.when(
@@ -171,7 +171,11 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                       skipLoadingOnReload: false,
                       error: (error, stackTrace) =>
                           Text('Error loading members count $error'),
-                      loading: () => const CircularProgressIndicator(),
+                      loading: () => Skeletonizer(
+                        child: Text(
+                          '100 ${AppLocalizations.of(context)!.members}',
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -201,7 +205,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
             SliverFillRemaining(
               child: Container(
                 decoration: const BoxDecoration(
-                  gradient: AppTheme.primaryGradient,
+                  gradient: primaryGradient,
                 ),
                 child: Chat(
                   keyboardDismissBehavior: Platform.isIOS

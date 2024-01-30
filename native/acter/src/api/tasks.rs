@@ -1,11 +1,10 @@
 use acter_core::{
     events::tasks::{self, Priority, TaskBuilder, TaskListBuilder},
-    models::{self, ActerModel, AnyActerModel, Color, TaskSelfAssign, TaskStats},
+    models::{self, ActerModel, AnyActerModel, Color, TaskStats},
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
 use chrono::DateTime;
-use core::time::Duration;
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
 use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
@@ -23,15 +22,12 @@ use crate::MsgContent;
 use super::{client::Client, spaces::Space, RUNTIME};
 
 impl Client {
-    pub async fn wait_for_task_list(
-        &self,
-        key: String,
-        timeout: Option<Box<Duration>>,
-    ) -> Result<TaskList> {
+    pub async fn task_list(&self, key: String, timeout: Option<u8>) -> Result<TaskList> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::TaskList(content) = me.wait_for(key.clone(), timeout).await? else {
+                let AnyActerModel::TaskList(content) = me.wait_for(key.clone(), timeout).await?
+                else {
                     bail!("{key} is not a task");
                 };
                 let room = me
@@ -48,7 +44,7 @@ impl Client {
             .await?
     }
 
-    pub async fn wait_for_task(&self, key: String, timeout: Option<Box<Duration>>) -> Result<Task> {
+    pub async fn wait_for_task(&self, key: String, timeout: Option<u8>) -> Result<Task> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
@@ -152,28 +148,6 @@ impl Client {
         self.executor()
             .subscribe(KEYS::TASKS::MY_OPEN_TASKS.to_owned())
     }
-
-    pub async fn task_list(&self, key: String) -> Result<TaskList> {
-        let client = self.clone();
-        RUNTIME
-            .spawn(async move {
-                let mdl = client.store().get(key.as_str()).await?;
-
-                let AnyActerModel::TaskList(content) = mdl else  {
-                    bail!("Not a Tasklist model: {key}")
-                };
-                let room = client
-                    .get_room(content.room_id())
-                    .context("Room not found for task_list item")?;
-
-                Ok(TaskList {
-                    client: client.clone(),
-                    room,
-                    content,
-                })
-            })
-            .await?
-    }
 }
 
 impl Space {
@@ -210,13 +184,12 @@ impl Space {
             .spawn(async move {
                 let mdl = client.store().get(key.as_str()).await?;
 
-                let AnyActerModel::TaskList(content) = mdl else  {
+                let AnyActerModel::TaskList(content) = mdl else {
                     bail!("Not a Tasklist model: {key}")
                 };
-                assert!(
-                    room_id == content.room_id(),
-                    "This task doesn't belong to this room"
-                );
+                if room_id != content.room_id() {
+                    bail!("This task doesn't belong to this room");
+                }
 
                 Ok(TaskList {
                     client: client.clone(),
@@ -645,7 +618,7 @@ impl Task {
             return false;
         }
         let Ok(user_id) = self.client.account().map(|a| a.user_id()) else {
-            return false
+            return false;
         };
         assignees.contains(&user_id)
     }

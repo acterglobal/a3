@@ -1,0 +1,1 @@
+- New Media Cache: the data is now cached separately from the state media encrypted on the file system. This allows to clear the cache of any media (e.g. Avatars or Files downloaded) without having to touch the state store.

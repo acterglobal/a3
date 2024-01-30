@@ -4,6 +4,7 @@ import 'package:acter/common/widgets/spaces/space_with_profile_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 typedef SubtitleFn = Widget? Function(Space);
 
@@ -141,9 +142,11 @@ class SpaceCard extends ConsumerWidget {
         title: Text('Error loading: $roomId'),
         subtitle: Text('$error'),
       ),
-      loading: () => ListTile(
-        title: Text(roomId),
-        subtitle: const Text('loading'),
+      loading: () => Skeletonizer(
+        child: ListTile(
+          title: Text(roomId),
+          subtitle: const Text('loading'),
+        ),
       ),
     );
   }
