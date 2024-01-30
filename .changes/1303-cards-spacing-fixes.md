@@ -1,0 +1,1 @@
+[fix] unnecesary spacing on cards in the spaces, related spaces, members and events sections have been fixed.

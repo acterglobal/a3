@@ -35,7 +35,7 @@ class EmptyState extends StatelessWidget {
           ),
           Text(
             title,
-            style: Theme.of(context).textTheme.titleSmall,
+            style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(
             height: 10,
@@ -43,7 +43,7 @@ class EmptyState extends StatelessWidget {
           Text(
             subtitle,
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodySmall,
           ),
           const SizedBox(
             height: 10,
