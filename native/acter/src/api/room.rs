@@ -1765,12 +1765,12 @@ impl Room {
                 if ev.sender() == my_id {
                     let permitted = member.can_redact_own();
                     if !permitted {
-                        bail!("No permissions to redact other's message in this room");
+                        bail!("No permissions to redact own message in this room");
                     }
                 } else {
                     let permitted = member.can_redact_other();
                     if !permitted {
-                        bail!("No permissions to redact own message in this room");
+                        bail!("No permissions to redact other's message in this room");
                     }
                 }
                 let response = room
