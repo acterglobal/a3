@@ -1,6 +1,7 @@
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 
@@ -113,7 +114,7 @@ class _HtmlEditorState extends State<HtmlEditor> {
 
     editorScrollController = EditorScrollController(
       editorState: editorState,
-      shrinkWrap: true,
+      shrinkWrap: false,
     );
   }
 
@@ -174,7 +175,7 @@ class _HtmlEditorState extends State<HtmlEditor> {
       }
     }
 
-    return isLargeScreen(context)
+    return desktopPlatforms.contains(defaultTargetPlatform)
         ? FloatingToolbar(
             items: [
               paragraphItem,
@@ -210,17 +211,33 @@ class _HtmlEditorState extends State<HtmlEditor> {
               ),
             ),
           )
-        : AppFlowyEditor(
-            editorStyle: customEditorStyle(false),
+        : MobileToolbarV2(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            iconColor: Theme.of(context).colorScheme.onPrimaryContainer,
             editorState: editorState,
-            autoFocus: widget.autoFocus,
-            header: widget.header,
-            footer: finalFooter,
+            toolbarItems: [
+              textDecorationMobileToolbarItemV2,
+              buildTextAndBackgroundColorMobileToolbarItem(),
+              headingMobileToolbarItem,
+              blocksMobileToolbarItem,
+              linkMobileToolbarItem,
+              codeMobileToolbarItem,
+              dividerMobileToolbarItem,
+            ],
+            child: AppFlowyEditor(
+              editable: widget.editable,
+              editorStyle: customEditorStyle(false),
+              editorScrollController: editorScrollController,
+              editorState: editorState,
+              autoFocus: widget.autoFocus,
+              header: widget.header,
+              footer: finalFooter,
+            ),
           );
   }
 
   EditorStyle customEditorStyle(bool isDesktop) {
-    return isLargeScreen(context)
+    return desktopPlatforms.contains(defaultTargetPlatform)
         ? EditorStyle.desktop(
             padding: widget.editorPadding,
             cursorColor: Theme.of(context).colorScheme.primary,
@@ -236,6 +253,7 @@ class _HtmlEditorState extends State<HtmlEditor> {
             textStyleConfiguration: TextStyleConfiguration(
               text: Theme.of(context).textTheme.bodySmall!,
             ),
+            mobileDragHandleBallSize: const Size(12, 12),
           );
   }
 }

@@ -103,71 +103,78 @@ class PinPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // ignore: unused_local_variable
     final pin = ref.watch(pinProvider(pinId));
-
     return Scaffold(
-      appBar: pin.when(
-        data: (data) => AppBar(
-          automaticallyImplyLeading: false,
-          toolbarHeight: 100,
-          centerTitle: false,
-          leading: IconButton(
-            onPressed: () => context.canPop()
-                ? context.pop()
-                : context.goNamed(Routes.pins.name),
-            icon: const Icon(
-              Icons.chevron_left,
-              size: 42,
-            ),
-          ),
-          title: Consumer(
-            builder: (context, ref, child) {
-              final membership =
-                  ref.watch(roomMembershipProvider(data.roomIdStr()));
-              final canEdit = membership.valueOrNull != null
-                  ? membership.requireValue!.canString('CanPostPin')
-                      ? true
-                      : false
-                  : false;
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  initialValue:
-                      pin.hasValue ? pin.value!.title() : 'Loading pin',
-                  readOnly: !canEdit,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    filled: false,
-                  ),
+      resizeToAvoidBottomInset: false,
+      body: CustomScrollView(
+        slivers: [
+          pin.when(
+            data: (data) => SliverAppBar(
+              automaticallyImplyLeading: false,
+              toolbarHeight: 100,
+              centerTitle: false,
+              leading: IconButton(
+                onPressed: () => context.canPop()
+                    ? context.pop()
+                    : context.goNamed(Routes.pins.name),
+                icon: const Icon(
+                  Icons.chevron_left,
+                  size: 42,
                 ),
-              );
-            },
+              ),
+              leadingWidth: 40,
+              title: Consumer(
+                builder: (context, ref, child) {
+                  final pinEditNotifier =
+                      ref.watch(pinEditStateProvider(data).notifier);
+                  final membership =
+                      ref.watch(roomMembershipProvider(data.roomIdStr()));
+                  final canEdit = membership.valueOrNull != null
+                      ? membership.requireValue!.canString('CanPostPin')
+                          ? true
+                          : false
+                      : false;
+                  return TextFormField(
+                    initialValue: data.title(),
+                    readOnly: !canEdit,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      filled: false,
+                    ),
+                    onChanged: (val) => pinEditNotifier.setTitle(val),
+                  );
+                },
+              ),
+              flexibleSpace: Container(
+                decoration: const BoxDecoration(
+                  gradient: primaryGradient,
+                ),
+              ),
+              actions: [
+                pin.maybeWhen(
+                  data: (pin) => buildActions(context, ref, pin),
+                  orElse: () => const SizedBox.shrink(),
+                ),
+              ],
+            ),
+            error: (err, st) => const SliverAppBar(),
+            loading: () => const SliverAppBar(),
           ),
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: primaryGradient,
+          SliverFillRemaining(
+            child: pin.when(
+              data: (pin) => PinItem(pin),
+              error: (error, stack) => Center(
+                child: Text('Loading failed: $error'),
+              ),
+              loading: () => const Center(
+                child: Text('Loading'),
+              ),
             ),
           ),
-          actions: [
-            pin.maybeWhen(
-              data: (pin) => buildActions(context, ref, pin),
-              orElse: () => const SizedBox.shrink(),
-            ),
-          ],
-        ),
-        error: (err, st) =>
-            const PreferredSize(preferredSize: Size.zero, child: SizedBox()),
-        loading: () =>
-            const PreferredSize(preferredSize: Size.zero, child: SizedBox()),
-      ),
-      body: pin.when(
-        data: (pin) => PinItem(pin),
-        error: (error, stack) => Center(
-          child: Text('Loading failed: $error'),
-        ),
-        loading: () => const Center(
-          child: Text('Loading'),
-        ),
+        ],
       ),
     );
   }

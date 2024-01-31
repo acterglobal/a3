@@ -2,6 +2,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +17,20 @@ class PinItem extends ConsumerStatefulWidget {
 }
 
 class _PinItemState extends ConsumerState<PinItem> {
-  final GlobalKey<FormFieldState> _formkey = GlobalKey<FormFieldState>();
+  late TextEditingController _linkController;
+  final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _linkController = TextEditingController(text: widget.pin.url() ?? '');
+  }
+
   @override
   Widget build(BuildContext context) {
+    final pinEdit = ref.watch(pinEditStateProvider(widget.pin));
+    final pinEditNotifier =
+        ref.watch(pinEditStateProvider(widget.pin).notifier);
     final membership =
         ref.watch(roomMembershipProvider(widget.pin.roomIdStr()));
     final canEdit = membership.valueOrNull != null
@@ -43,51 +55,61 @@ class _PinItemState extends ConsumerState<PinItem> {
 
     if (isLink) {
       content.add(
-        Container(
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          child: OutlinedButton.icon(
-            icon: const Icon(Atlas.link_chain_thin),
-            label: Form(
-              key: _formkey,
-              child: TextFormField(
-                initialValue: widget.pin.url() ?? '',
-                readOnly: !canEdit,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  filled: false,
-                ),
-                style: Theme.of(context).textTheme.bodyMedium,
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextFormField(
+            controller: _linkController,
+            readOnly: !canEdit,
+            style: Theme.of(context).textTheme.bodyMedium,
+            decoration: InputDecoration(
+              prefixIcon: IconButton(
+                onPressed: () async => await openLink(pinEdit.link, context),
+                icon: const Icon(Atlas.link_chain_thin),
+                iconSize: 18,
               ),
             ),
-            onPressed: () async => await openLink(widget.pin.url()!, context),
+            validator: (value) {
+              if (value != null) {
+                final uri = Uri.tryParse(value);
+                if (uri == null || !uri.isAbsolute) {
+                  return 'link is not valid';
+                }
+              }
+              return null;
+            },
           ),
         ),
       );
     }
     content.add(
       Expanded(
-        child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          height: double.infinity,
-          padding: const EdgeInsets.all(8),
-          child: HtmlEditor(
-            editable: canEdit,
-            autoFocus: autoFocus,
-            content: widget.pin.contentText(),
-            footer: const SizedBox(),
-            onCancel: () => {},
-            onSave: (plain, htmlBody) => {},
-          ),
+        child: HtmlEditor(
+          editable: canEdit,
+          autoFocus: autoFocus,
+          content: widget.pin.contentText(),
+          footer: !canEdit ? const SizedBox() : null,
+          onCancel: () {},
+          onSave: (plain, htmlBody) async {
+            if (_formkey.currentState!.validate()) {
+              pinEditNotifier.setLink(_linkController.text);
+              pinEditNotifier.setPlainText(plain);
+              pinEditNotifier.setHtml(htmlBody);
+              final res = await pinEditNotifier.onSave(context);
+              debugPrint('PIN EDITED: $res');
+            }
+          },
         ),
       ),
     );
 
     return Padding(
       padding: const EdgeInsets.all(15),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: content,
+      child: Form(
+        key: _formkey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: content,
+        ),
       ),
     );
   }
