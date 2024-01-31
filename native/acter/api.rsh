@@ -1055,7 +1055,8 @@ object Convo {
     fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
 
     /// redact any message (including text/image/file and reaction)
-    fn redact_message(event_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
+    /// sender_id refers to the user that sent original msg
+    fn redact_message(event_id: string, sender_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;

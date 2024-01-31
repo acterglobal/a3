@@ -1738,6 +1738,7 @@ impl Room {
     pub async fn redact_message(
         &self,
         event_id: String,
+        sender_id: String,
         reason: Option<String>,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
@@ -1753,16 +1754,15 @@ impl Room {
             .to_owned();
 
         let event_id = EventId::parse(event_id)?;
+        let sender_id = UserId::parse(sender_id)?;
 
         RUNTIME
             .spawn(async move {
-                let evt = room.event(&event_id).await?;
-                let ev = evt.event.deserialize()?;
                 let member = room
                     .get_member(&my_id)
                     .await?
                     .context("Unable to find me in room")?;
-                if ev.sender() == my_id {
+                if sender_id == my_id {
                     let permitted = member.can_redact_own();
                     if !permitted {
                         bail!("No permissions to redact own message in this room");
