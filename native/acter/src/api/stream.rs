@@ -6,10 +6,11 @@ use matrix_sdk::{
         AttachmentConfig, AttachmentInfo, BaseAudioInfo, BaseFileInfo, BaseImageInfo, BaseVideoInfo,
     },
     room::{Receipts, Room},
-    ruma::{api::client::receipt::create_receipt, assign, UInt},
+    ruma::{assign, UInt},
     Client as SdkClient, RoomState,
 };
 use matrix_sdk_ui::timeline::{BackPaginationStatus, PaginationOptions, Timeline};
+use ruma_client_api::receipt::create_receipt;
 use ruma_common::{EventId, OwnedEventId, OwnedTransactionId};
 use ruma_events::{
     receipt::ReceiptThread,

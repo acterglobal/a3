@@ -29,6 +29,7 @@ derive_builder = "0.13.0"
 enum_dispatch = "0.3.12"
 futures = "0.3.30"
 mime_guess = "2.0.4"
+ruma-client-api = { workspace = true }
 ruma-common = { workspace = true }
 ruma-events = { workspace = true }
 ruma-macros = { workspace = true }

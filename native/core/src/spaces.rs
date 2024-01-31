@@ -1,11 +1,6 @@
 use derive_builder::Builder;
-use matrix_sdk::{
-    room::Room,
-    ruma::{
-        api::client::room::{create_room, Visibility},
-        assign,
-    },
-};
+use matrix_sdk::{room::Room, ruma::assign};
+use ruma_client_api::room::{create_room, Visibility};
 use ruma_common::{
     room::RoomType, serde::Raw, MxcUri, OwnedRoomId, OwnedServerName, OwnedUserId, RoomId,
     ServerName, UserId,

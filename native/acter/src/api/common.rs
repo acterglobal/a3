@@ -3,8 +3,9 @@ use anyhow::{Context, Result};
 use core::time::Duration;
 use matrix_sdk::{
     media::{MediaFormat, MediaThumbnailSize},
-    ruma::{api::client::media::get_content_thumbnail, UInt},
+    ruma::UInt,
 };
+use ruma_client_api::media::get_content_thumbnail;
 use ruma_common::{MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri, OwnedUserId};
 use ruma_events::{
     location::{AssetContent, LocationContent},

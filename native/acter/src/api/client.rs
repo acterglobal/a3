@@ -13,16 +13,13 @@ use futures::{
 };
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
-    config::SyncSettings,
-    event_handler::EventHandlerHandle,
-    media::MediaRequest,
-    room::Room as SdkRoom,
-    ruma::api::client::{
-        error::{ErrorBody, ErrorKind},
-        push::get_notifications,
-        Error,
-    },
-    Client as SdkClient, LoopCtrl, RoomState, RumaApiError,
+    config::SyncSettings, event_handler::EventHandlerHandle, media::MediaRequest,
+    room::Room as SdkRoom, Client as SdkClient, LoopCtrl, RoomState, RumaApiError,
+};
+use ruma_client_api::{
+    error::{ErrorBody, ErrorKind},
+    push::get_notifications,
+    Error,
 };
 use ruma_common::{
     device_id, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedServerName,

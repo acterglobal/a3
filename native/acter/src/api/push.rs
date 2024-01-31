@@ -1,15 +1,12 @@
 use anyhow::{Context, Result};
-use matrix_sdk::ruma::{
-    api::client::push::{
-        get_pushers, set_pusher, EmailPusherData, Pusher as RumaPusher, PusherIds, PusherInit,
-        PusherKind,
-    },
-    assign,
-    push::HttpPusherData,
-};
+use matrix_sdk::ruma::{assign, push::HttpPusherData};
 use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
     NotificationProcessSetup,
+};
+use ruma_client_api::push::{
+    get_pushers, set_pusher, EmailPusherData, Pusher as RumaPusher, PusherIds, PusherInit,
+    PusherKind,
 };
 use ruma_common::{EventId, OwnedRoomId, RoomId};
 

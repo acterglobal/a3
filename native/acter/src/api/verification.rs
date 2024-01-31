@@ -10,12 +10,10 @@ use matrix_sdk::{
         VerificationRequestState,
     },
     event_handler::{Ctx, EventHandlerHandle},
-    ruma::{
-        api::client::uiaa::{AuthData, Password, UserIdentifier},
-        assign,
-    },
+    ruma::assign,
     Client as SdkClient,
 };
+use ruma_client_api::uiaa::{AuthData, Password, UserIdentifier};
 use ruma_common::{device_id, OwnedDeviceId, OwnedEventId, OwnedTransactionId, OwnedUserId};
 use ruma_events::{
     key::verification::{accept::AcceptMethod, start::StartMethod, VerificationMethod},
