@@ -1,5 +1,7 @@
 use derive_builder::Builder;
-use ruma_common::{event_id, room_id, user_id, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId};
+use ruma_common::{
+    event_id, room_id, user_id, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, UserId,
+};
 use serde::{Deserialize, Serialize};
 
 use super::EventMeta;
@@ -43,7 +45,7 @@ impl ActerModel for TestModel {
         &[super::Capability::Commentable]
     }
 
-    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
+    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
         self.indizes.clone()
     }
 

@@ -577,14 +577,17 @@ where
 mod tests {
     use super::*;
     use anyhow::Result;
-    use matrix_sdk_base::ruma::{events::room::MediaSource, OwnedMxcUri};
+    use matrix_sdk_base::{
+        media::MediaFormat,
+        ruma::{events::room::MediaSource, OwnedMxcUri},
+    };
     use matrix_sdk_sqlite::SqliteStateStore;
     use matrix_sdk_test::async_test;
 
     fn fake_mr(id: &str) -> MediaRequest {
         MediaRequest {
             source: MediaSource::Plain(OwnedMxcUri::from(id)),
-            format: matrix_sdk_base::media::MediaFormat::File,
+            format: MediaFormat::File,
         }
     }
 

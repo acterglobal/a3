@@ -51,7 +51,7 @@ class PinPage extends ConsumerWidget {
         );
       }
 
-      if (memb.canString('CanRedact') ||
+      if (memb.canString('CanRedactOwn') &&
           memb.userId().toString() == pin.sender().toString()) {
         final roomId = pin.roomIdStr();
         actions.addAll([

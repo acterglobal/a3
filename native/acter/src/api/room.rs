@@ -32,7 +32,8 @@ use matrix_sdk::{
 };
 use ruma_common::{
     room::RoomType, serde::Raw, space::SpaceRoomJoinRule, EventId, IdParseError, OwnedEventId,
-    OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedUserId, RoomId, ServerName, UserId,
+    OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedTransactionId, OwnedUserId, RoomId,
+    ServerName, UserId,
 };
 use ruma_events::{
     room::{
@@ -80,7 +81,8 @@ pub enum MemberPermission {
     CanBan,
     CanInvite,
     CanKick,
-    CanRedact,
+    CanRedactOwn,
+    CanRedactOther,
     CanTriggerRoomNotification,
     // state events
     CanUpgradeToActerSpace,
@@ -156,7 +158,8 @@ impl Member {
         let tester: PermissionTest = match permission {
             MemberPermission::CanBan => return self.member.can_ban(),
             MemberPermission::CanInvite => return self.member.can_invite(),
-            MemberPermission::CanRedact => return self.member.can_redact(),
+            MemberPermission::CanRedactOwn => return self.member.can_redact_own(),
+            MemberPermission::CanRedactOther => return self.member.can_redact_other(),
             MemberPermission::CanKick => return self.member.can_kick(),
             MemberPermission::CanTriggerRoomNotification => {
                 return self.member.can_trigger_room_notification()
@@ -1735,6 +1738,7 @@ impl Room {
     pub async fn redact_message(
         &self,
         event_id: String,
+        sender_id: String,
         reason: Option<String>,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
@@ -1750,6 +1754,7 @@ impl Room {
             .to_owned();
 
         let event_id = EventId::parse(event_id)?;
+        let sender_id = UserId::parse(sender_id)?;
 
         RUNTIME
             .spawn(async move {
@@ -1757,11 +1762,23 @@ impl Room {
                     .get_member(&my_id)
                     .await?
                     .context("Unable to find me in room")?;
-                if !member.can_redact() {
-                    bail!("No permissions to redact message in this room");
+                if sender_id == my_id {
+                    let permitted = member.can_redact_own();
+                    if !permitted {
+                        bail!("No permissions to redact own message in this room");
+                    }
+                } else {
+                    let permitted = member.can_redact_other();
+                    if !permitted {
+                        bail!("No permissions to redact other's message in this room");
+                    }
                 }
                 let response = room
-                    .redact(&event_id, reason.as_deref(), txn_id.map(Into::into))
+                    .redact(
+                        &event_id,
+                        reason.as_deref(),
+                        txn_id.map(OwnedTransactionId::from),
+                    )
                     .await?;
                 Ok(response.event_id)
             })

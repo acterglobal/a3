@@ -96,7 +96,7 @@ impl PublicSearchResult {
     }
 
     pub fn total_room_count_estimate(&self) -> Option<u64> {
-        self.resp.total_room_count_estimate.map(Into::into)
+        self.resp.total_room_count_estimate.map(u64::from)
     }
 
     pub fn chunks(&self) -> Vec<PublicSearchResultItem> {

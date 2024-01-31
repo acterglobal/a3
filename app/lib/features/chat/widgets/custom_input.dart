@@ -139,9 +139,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             widgetWidth: size.width,
             child: Container(
               decoration: BoxDecoration(
-                color: Theme.of(context)
-                    .colorScheme
-                    .primaryContainer,
+                color: Theme.of(context).colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Padding(
@@ -178,9 +176,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             widgetWidth: size.width,
             child: Container(
               decoration: BoxDecoration(
-                color: Theme.of(context)
-                    .colorScheme
-                    .primaryContainer,
+                color: Theme.of(context).colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Padding(
@@ -236,7 +232,10 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                 onPressed: () async {
                                   if (currentMessageId != null) {
                                     try {
-                                      redactRoomMessage(currentMessageId);
+                                      redactRoomMessage(
+                                        currentMessageId,
+                                        userId, // editor is me
+                                      );
                                       chatInputNotifier.emojiRowVisible(false);
                                       chatInputNotifier
                                           .setCurrentMessageId(null);
@@ -496,8 +495,8 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   }
 
   // delete message event
-  Future<void> redactRoomMessage(String eventId) async {
-    await widget.convo.redactMessage(eventId, '', null);
+  Future<void> redactRoomMessage(String eventId, String senderId) async {
+    await widget.convo.redactMessage(eventId, senderId, null, null);
   }
 
   // file selection

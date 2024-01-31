@@ -15426,6 +15426,9 @@ class Api {
             ffi.Int64,
             ffi.Uint64,
             ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
             ffi.Uint8,
             ffi.Int64,
             ffi.Uint64,
@@ -15438,6 +15441,9 @@ class Api {
 
   late final _convoRedactMessage = _convoRedactMessagePtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -33315,26 +33321,32 @@ class Convo {
   }
 
   /// redact any message (including text/image/file and reaction)
+  /// sender_id refers to the user that sent original msg
   Future<EventId> redactMessage(
     String eventId,
+    String senderId,
     String? reason,
     String? txnId,
   ) {
     final tmp1 = eventId;
-    final tmp5 = reason;
-    final tmp11 = txnId;
+    final tmp5 = senderId;
+    final tmp9 = reason;
+    final tmp15 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp4 = 0;
     var tmp6 = 0;
+    var tmp7 = 0;
     var tmp8 = 0;
-    var tmp9 = 0;
     var tmp10 = 0;
     var tmp12 = 0;
+    var tmp13 = 0;
     var tmp14 = 0;
-    var tmp15 = 0;
     var tmp16 = 0;
+    var tmp18 = 0;
+    var tmp19 = 0;
+    var tmp20 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -33344,54 +33356,65 @@ class Convo {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    if (tmp5 == null) {
-      tmp6 = 0;
-    } else {
-      tmp6 = 1;
-      final tmp7 = tmp5;
-      final tmp7_0 = utf8.encode(tmp7);
-      tmp9 = tmp7_0.length;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
-      final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
-      tmp8_1.setAll(0, tmp7_0);
-      tmp8 = tmp8_0.address;
-      tmp10 = tmp9;
-    }
-    if (tmp11 == null) {
-      tmp12 = 0;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    if (tmp9 == null) {
+      tmp10 = 0;
     } else {
-      tmp12 = 1;
-      final tmp13 = tmp11;
-      final tmp13_0 = utf8.encode(tmp13);
-      tmp15 = tmp13_0.length;
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
 
-      final ffi.Pointer<ffi.Uint8> tmp14_0 = _api.__allocate(tmp15 * 1, 1);
-      final Uint8List tmp14_1 = tmp14_0.asTypedList(tmp15);
-      tmp14_1.setAll(0, tmp13_0);
-      tmp14 = tmp14_0.address;
-      tmp16 = tmp15;
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
     }
-    final tmp17 = _api._convoRedactMessage(
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
+      final tmp17_0 = utf8.encode(tmp17);
+      tmp19 = tmp17_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp18_0 = _api.__allocate(tmp19 * 1, 1);
+      final Uint8List tmp18_1 = tmp18_0.asTypedList(tmp19);
+      tmp18_1.setAll(0, tmp17_0);
+      tmp18 = tmp18_0.address;
+      tmp20 = tmp19;
+    }
+    final tmp21 = _api._convoRedactMessage(
       tmp0,
       tmp2,
       tmp3,
       tmp4,
       tmp6,
+      tmp7,
       tmp8,
-      tmp9,
       tmp10,
       tmp12,
+      tmp13,
       tmp14,
-      tmp15,
       tmp16,
+      tmp18,
+      tmp19,
+      tmp20,
     );
-    final tmp19 = tmp17;
-    final ffi.Pointer<ffi.Void> tmp19_0 = ffi.Pointer.fromAddress(tmp19);
-    final tmp19_1 = _Box(_api, tmp19_0, "__Convo_redact_message_future_drop");
-    tmp19_1._finalizer = _api._registerFinalizer(tmp19_1);
-    final tmp18 = _nativeFuture(tmp19_1, _api.__convoRedactMessageFuturePoll);
-    return tmp18;
+    final tmp23 = tmp21;
+    final ffi.Pointer<ffi.Void> tmp23_0 = ffi.Pointer.fromAddress(tmp23);
+    final tmp23_1 = _Box(_api, tmp23_0, "__Convo_redact_message_future_drop");
+    tmp23_1._finalizer = _api._registerFinalizer(tmp23_1);
+    final tmp22 = _nativeFuture(tmp23_1, _api.__convoRedactMessageFuturePoll);
+    return tmp22;
   }
 
   /// update the power levels of specified member
@@ -44707,7 +44730,8 @@ enum MemberPermissionTag {
   CanBan,
   CanKick,
   CanInvite,
-  CanRedact,
+  CanRedactOwn,
+  CanRedactOther,
   CanTriggerRoomNotification,
   CanUpgradeToActerSpace,
   CanSetName,
@@ -44774,42 +44798,46 @@ class MemberPermission {
 
         break;
       case 11:
-        this._tag = MemberPermissionTag.CanRedact;
+        this._tag = MemberPermissionTag.CanRedactOwn;
 
         break;
       case 12:
-        this._tag = MemberPermissionTag.CanTriggerRoomNotification;
+        this._tag = MemberPermissionTag.CanRedactOther;
 
         break;
       case 13:
-        this._tag = MemberPermissionTag.CanUpgradeToActerSpace;
+        this._tag = MemberPermissionTag.CanTriggerRoomNotification;
 
         break;
       case 14:
-        this._tag = MemberPermissionTag.CanSetName;
+        this._tag = MemberPermissionTag.CanUpgradeToActerSpace;
 
         break;
       case 15:
-        this._tag = MemberPermissionTag.CanUpdateAvatar;
+        this._tag = MemberPermissionTag.CanSetName;
 
         break;
       case 16:
-        this._tag = MemberPermissionTag.CanSetTopic;
+        this._tag = MemberPermissionTag.CanUpdateAvatar;
 
         break;
       case 17:
-        this._tag = MemberPermissionTag.CanLinkSpaces;
+        this._tag = MemberPermissionTag.CanSetTopic;
 
         break;
       case 18:
-        this._tag = MemberPermissionTag.CanUpdatePowerLevels;
+        this._tag = MemberPermissionTag.CanLinkSpaces;
 
         break;
       case 19:
-        this._tag = MemberPermissionTag.CanSetParentSpace;
+        this._tag = MemberPermissionTag.CanUpdatePowerLevels;
 
         break;
       case 20:
+        this._tag = MemberPermissionTag.CanSetParentSpace;
+
+        break;
+      case 21:
         this._tag = MemberPermissionTag.CanChangeAppSettings;
 
         break;
