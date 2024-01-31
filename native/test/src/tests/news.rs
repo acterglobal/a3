@@ -1,3 +1,4 @@
+use crate::utils::{random_user_with_random_space, random_user_with_template};
 use anyhow::{bail, Result};
 use std::io::Write;
 use tempfile::NamedTempFile;
@@ -5,8 +6,6 @@ use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
 };
-
-use crate::utils::{random_user_with_random_space, random_user_with_template};
 
 const TMPL: &str = r#"
 version = "0.1"
@@ -338,10 +337,22 @@ async fn news_multiple_slide_test() -> Result<()> {
         user.text_markdown_draft("This update is ***reallly important***".to_owned());
 
     let plain_draft = user.text_plain_draft("Hello Updates!".to_owned());
+
+    let mut vid_file = NamedTempFile::new()?;
+    vid_file
+        .as_file_mut()
+        .write_all(include_bytes!("./fixtures/big_buck_bunny.mp4"))?;
+
+    let video_draft = user.video_draft(
+        vid_file.path().to_string_lossy().to_string(),
+        "video/mp4".to_string(),
+    );
+
     // we add three slides
     draft.add_slide(Box::new(image_draft)).await?;
     draft.add_slide(Box::new(markdown_draft)).await?;
     draft.add_slide(Box::new(plain_draft)).await?;
+    draft.add_slide(Box::new(video_draft)).await?;
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -360,8 +371,8 @@ async fn news_multiple_slide_test() -> Result<()> {
 
     let slides = space.latest_news_entries(1).await?;
     let final_entry = slides.first().expect("Item is there");
-    // We have exactly three slides
-    assert_eq!(3, final_entry.slides().len());
+    // We have exactly four slides
+    assert_eq!(4, final_entry.slides().len());
     let first_slide = final_entry.get_slide(0).expect("We have image slide");
     assert_eq!(first_slide.type_str(), "image");
     let second_slide = final_entry
@@ -377,5 +388,8 @@ async fn news_multiple_slide_test() -> Result<()> {
     assert_eq!(third_slide.type_str(), "text");
     assert!(!third_slide.has_formatted_text());
     assert_eq!(third_slide.text(), "Hello Updates!".to_owned());
+
+    let fourth_slide = final_entry.get_slide(3).expect("We have video slide");
+    assert_eq!(fourth_slide.type_str(), "video");
     Ok(())
 }

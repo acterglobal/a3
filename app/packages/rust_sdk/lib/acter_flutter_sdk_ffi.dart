@@ -12712,6 +12712,30 @@ class Api {
         int,
         int,
       )>();
+  late final _newsSlideDraftAddReferencePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__NewsSlideDraft_add_reference");
+
+  late final _newsSlideDraftAddReference =
+      _newsSlideDraftAddReferencePtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _newsSlideDraftUnsetReferencesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+          )>>("__NewsSlideDraft_unset_references");
+
+  late final _newsSlideDraftUnsetReferences =
+      _newsSlideDraftUnsetReferencesPtr.asFunction<
+          void Function(
+            int,
+          )>();
   late final _newsEntrySlidesCountPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
@@ -12831,6 +12855,16 @@ class Api {
             int,
             int,
           )>();
+  late final _newsEntryDraftSlidesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__NewsEntryDraft_slides");
+
+  late final _newsEntryDraftSlides = _newsEntryDraftSlidesPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _newsEntryDraftUnsetSlidesPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -25145,6 +25179,55 @@ class Api {
 
   late final _ffiListNewsSlideInsert =
       _ffiListNewsSlideInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListNewsSlideDraft createFfiListNewsSlideDraft() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListNewsSlideDraftCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListNewsSlideDraft");
+    return FfiListNewsSlideDraft._(this, list_box);
+  }
+
+  late final _ffiListNewsSlideDraftCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListNewsSlideDraftCreate");
+
+  late final _ffiListNewsSlideDraftCreate =
+      _ffiListNewsSlideDraftCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListNewsSlideDraftLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListNewsSlideDraftLen");
+
+  late final _ffiListNewsSlideDraftLen =
+      _ffiListNewsSlideDraftLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListNewsSlideDraftElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListNewsSlideDraftElementAt");
+
+  late final _ffiListNewsSlideDraftElementAt =
+      _ffiListNewsSlideDraftElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListNewsSlideDraftRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListNewsSlideDraftRemove");
+
+  late final _ffiListNewsSlideDraftRemove =
+      _ffiListNewsSlideDraftRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListNewsSlideDraftAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListNewsSlideDraftAdd");
+
+  late final _ffiListNewsSlideDraftAdd =
+      _ffiListNewsSlideDraftAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListNewsSlideDraftInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListNewsSlideDraftInsert");
+
+  late final _ffiListNewsSlideDraftInsert = _ffiListNewsSlideDraftInsertPtr
+      .asFunction<void Function(int, int, int)>();
   FfiListNotification createFfiListNotification() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListNotificationCreate());
@@ -27706,6 +27789,32 @@ class NewsSlideDraft {
 
   NewsSlideDraft._(this._api, this._box);
 
+  /// add reference for this slide draft
+  void addReference(
+    ObjRef reference,
+  ) {
+    final tmp1 = reference;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._newsSlideDraftAddReference(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// unset references for this slide draft
+  void unsetReferences() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._newsSlideDraftUnsetReferences(
+      tmp0,
+    );
+    return;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -27911,6 +28020,22 @@ class NewsEntryDraft {
       tmp4,
     );
     return;
+  }
+
+  /// get news slide set for this news entry draft
+  FfiListNewsSlideDraft slides() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntryDraftSlides(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListNewsSlideDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListNewsSlideDraft._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
   }
 
   /// clear slides
@@ -50788,6 +50913,67 @@ class FfiListNewsSlide extends Iterable<NewsSlide>
   /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, NewsSlide element) {
     _api._ffiListNewsSlideInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListNewsSlideDraft extends Iterable<NewsSlideDraft>
+    implements CustomIterable<NewsSlideDraft> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListNewsSlideDraft._(this._api, this._box);
+
+  @override
+  Iterator<NewsSlideDraft> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListNewsSlideDraftLen(_box.borrow());
+  }
+
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  NewsSlideDraft elementAt(int index) {
+    final address = _api._ffiListNewsSlideDraftElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return NewsSlideDraft._(_api, reference);
+  }
+
+  NewsSlideDraft operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  NewsSlideDraft remove(int index) {
+    final address = _api._ffiListNewsSlideDraftRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_NewsSlideDraft");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return NewsSlideDraft._(_api, reference);
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void add(NewsSlideDraft element) {
+    _api._ffiListNewsSlideDraftAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, NewsSlideDraft element) {
+    _api._ffiListNewsSlideDraftInsert(
+        _box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 
