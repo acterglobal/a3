@@ -1,3 +1,4 @@
+use ruma_common::exports::serde_json;
 use ruma_events::UnsignedRoomRedactionEvent;
 
 use crate::models::EventMeta;

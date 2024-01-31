@@ -22,8 +22,8 @@ use ruma_client_api::{
     Error,
 };
 use ruma_common::{
-    device_id, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedServerName,
-    OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
+    device_id, exports::serde_json, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
+    OwnedServerName, OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
 };
 use ruma_events::room::MediaSource;
 use std::{

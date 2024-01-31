@@ -48,7 +48,6 @@ ruma-common = { workspace = true, features = ["client"] }
 ruma-events = { workspace = true }
 sanitize-filename-reader-friendly = "2.2.1"
 serde = { version = "1", features = ["derive"] }
-serde_json = "1.0.111"
 strum = { workspace = true }
 tokio = "1.7"
 tokio-stream = "0.1.14"

@@ -85,7 +85,7 @@ impl<'de> Deserialize<'de> for Labels {
 #[cfg(test)]
 mod test {
     use super::Labels;
-    use serde_json; // 1.0.78
+    use ruma_common::exports::serde_json;
     #[test]
     fn smoketest() -> Result<(), serde_json::Error> {
         let labels = Labels {

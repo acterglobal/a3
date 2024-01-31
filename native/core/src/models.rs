@@ -551,8 +551,7 @@ impl TryFrom<&Raw<AnySyncTimelineEvent>> for AnyActerModel {
 mod tests {
     use super::*;
     use crate::Result;
-    use ruma_common::owned_event_id;
-    use serde_json;
+    use ruma_common::{exports::serde_json, owned_event_id};
     #[test]
     fn ensure_minimal_tasklist_parses() -> Result<()> {
         let json_raw = r#"{"type":"global.acter.dev.tasklist",

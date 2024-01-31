@@ -9,6 +9,7 @@ use ruma_client_api::{
     account::ThirdPartyIdRemovalStatus,
     uiaa::{AuthData, Password, UserIdentifier},
 };
+use ruma_common::exports::serde_json;
 use serde::Deserialize;
 use std::{collections::BTreeMap, ops::Deref};
 

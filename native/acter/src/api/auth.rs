@@ -10,7 +10,7 @@ use ruma_client_api::{
     account::register,
     uiaa::{AuthData, Dummy, Password, RegistrationToken},
 };
-use ruma_common::{OwnedUserId, UserId};
+use ruma_common::{exports::serde_json, OwnedUserId, UserId};
 use std::sync::RwLock;
 use tracing::{error, info};
 
@@ -184,7 +184,7 @@ pub async fn login_with_token_under_config(
 }
 
 pub async fn login_with_token(base_path: String, restore_token: String) -> Result<Client> {
-    let token: RestoreToken = serde_json::from_str(&restore_token)?;
+    let token = serde_json::from_str::<RestoreToken>(&restore_token)?;
     let (config, user_id) = make_client_config(
         base_path,
         token.session.user_id.as_str(),

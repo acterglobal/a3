@@ -3,6 +3,7 @@ use acter::api::{
     make_client_config,
 };
 use anyhow::Result;
+use ruma_common::exports::serde_json;
 use tempfile::TempDir;
 use tracing::warn;
 

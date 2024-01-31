@@ -8,7 +8,7 @@ use ruma_client_api::push::{
     get_pushers, set_pusher, EmailPusherData, Pusher as RumaPusher, PusherIds, PusherInit,
     PusherKind,
 };
-use ruma_common::{EventId, OwnedRoomId, RoomId};
+use ruma_common::{exports::serde_json, EventId, OwnedRoomId, RoomId};
 
 use super::{message::any_sync_event_to_message, Client};
 

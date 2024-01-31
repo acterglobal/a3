@@ -31,8 +31,8 @@ use matrix_sdk::{
 use matrix_sdk_ui::timeline::RoomExt;
 use ruma_client_api::state::send_state_event;
 use ruma_common::{
-    directory::RoomTypeFilter, serde::Raw, OwnedRoomAliasId, OwnedRoomId, RoomAliasId, RoomId,
-    RoomOrAliasId, ServerName,
+    directory::RoomTypeFilter, exports::serde_json, serde::Raw, OwnedRoomAliasId, OwnedRoomId,
+    RoomAliasId, RoomId, RoomOrAliasId, ServerName,
 };
 use ruma_events::{
     space::child::SpaceChildEventContent, AnyStateEventContent, MessageLikeEvent, StateEventType,

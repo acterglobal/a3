@@ -10,6 +10,7 @@ use matrix_sdk_base::{
     StateStoreDataValue, StoreError,
 };
 use matrix_sdk_store_encryption::StoreCipher;
+use ruma_common::exports::serde_json;
 use ruma_events::{
     presence::PresenceEvent,
     receipt::{Receipt, ReceiptThread, ReceiptType},

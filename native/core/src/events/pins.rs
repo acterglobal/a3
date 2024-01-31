@@ -203,7 +203,7 @@ impl PinUpdateEventContent {
 mod tests {
     use super::*;
     use crate::Result;
-    use serde_json;
+    use ruma_common::exports::serde_json;
     #[test]
     fn ensure_minimal_pin_parses() -> Result<()> {
         let json_raw = r#"{"type":"global.acter.dev.pin",

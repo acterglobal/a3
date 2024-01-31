@@ -1,6 +1,6 @@
 use dashmap::{mapref::one::RefMut, DashMap, DashSet};
 use matrix_sdk::Client;
-use ruma_common::{OwnedUserId, UserId};
+use ruma_common::{exports::serde_json, OwnedUserId, UserId};
 use std::sync::Arc;
 use tracing::{debug, instrument, trace, warn};
 

@@ -1,6 +1,5 @@
-use ruma_common::{serde::Raw, OwnedRoomAliasId};
+use ruma_common::{exports::serde_json, serde::Raw, OwnedRoomAliasId};
 use ruma_events::AnyInitialStateEvent;
-use serde_json::{json, value::to_raw_value};
 
 pub static PURPOSE_FIELD: &str = "m.room.purpose";
 pub static PURPOSE_FIELD_DEV: &str = "org.matrix.msc3088.room.purpose";
@@ -42,7 +41,7 @@ pub fn default_acter_space_states() -> Vec<Raw<AnyInitialStateEvent>> {
         .into_iter()
         .map(|a| serde_json::from_str::<Raw<AnyInitialStateEvent>>(a).expect("static don't fail"))
         .collect::<Vec<Raw<AnyInitialStateEvent>>>();
-    let r = to_raw_value(&json!({
+    let r = serde_json::value::to_raw_value(&serde_json::json!({
         "type": PURPOSE_FIELD_DEV,
         "state_key": PURPOSE_TEAM_VALUE,
         "content": {
@@ -67,7 +66,7 @@ pub fn initial_state_for_alias(
     main_alias: &OwnedRoomAliasId,
     alt_aliases: &Vec<OwnedRoomAliasId>,
 ) -> Raw<AnyInitialStateEvent> {
-    let r = to_raw_value(&json!({
+    let r = serde_json::value::to_raw_value(&serde_json::json!({
         "type": "m.room.canonical_alias",
         "state_key": "",
         "content": {

@@ -7,7 +7,7 @@ use anyhow::{bail, Context, Result};
 use chrono::DateTime;
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
-use ruma_common::{EventId, OwnedEventId, OwnedRoomId, OwnedUserId};
+use ruma_common::{exports::serde_json, EventId, OwnedEventId, OwnedRoomId, OwnedUserId};
 use ruma_events::room::message::TextMessageEventContent;
 use std::{
     collections::{hash_map::Entry, HashMap},
