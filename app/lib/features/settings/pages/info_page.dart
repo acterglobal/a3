@@ -1,4 +1,4 @@
-import 'package:acter/features/bug_report/providers/notifiers/bug_report_notifier.dart';
+import 'package:acter/features/bug_report/const.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -206,8 +206,13 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
     );
   }
 
-  Future<void> _displaySettingsEditor(BuildContext context, String logKey,
-      String currentValue, String title, String fieldName,) async {
+  Future<void> _displaySettingsEditor(
+    BuildContext context,
+    String logKey,
+    String currentValue,
+    String title,
+    String fieldName,
+  ) async {
     TextEditingController textFieldController =
         TextEditingController(text: currentValue);
     return showDialog(

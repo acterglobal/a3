@@ -2,20 +2,80 @@ import 'dart:io';
 
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/bug_report/models/bug_report.dart';
-import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
+import 'package:acter/features/bug_report/const.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:convert';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:path/path.dart';
+
+Future<String> report(
+  bool withLog,
+  String description,
+  String? screenshotPath,
+) async {
+  final sdk = await ActerSdk.instance;
+
+  final request = http.MultipartRequest('POST', Uri.parse(rageshakeUrl));
+  request.fields.addAll({
+    'text': description,
+    'user_agent': userAgent,
+    'app': appName, // should be same as one among github_project_mappings
+    'version': versionName,
+  });
+  if (withLog) {
+    String logFile = sdk.rotateLogFile();
+    if (logFile.isNotEmpty) {
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'log',
+          File(logFile).readAsBytesSync(),
+          filename: basename(logFile),
+          contentType: MediaType('text', 'plain'),
+        ),
+      );
+    }
+  }
+  if (screenshotPath != null) {
+    debugPrint('sending with screenshot');
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        'file',
+        File(screenshotPath).readAsBytesSync(),
+        filename: basename(screenshotPath),
+        contentType: MediaType('image', 'png'),
+      ),
+    );
+  }
+  debugPrint('sending $rageshakeUrl');
+  final resp = await request.send();
+  if (resp.statusCode == HttpStatus.ok) {
+    Map<String, dynamic> json = jsonDecode(await resp.stream.bytesToString());
+    if (screenshotPath != null) {
+      await File(screenshotPath).delete();
+    }
+    // example - https://github.com/bitfriend/acter-bugs/issues/9
+    return json['report_url'] ?? '';
+  } else {
+    String body = await resp.stream.bytesToString();
+    throw '${resp.statusCode}: $body';
+  }
+}
 
 class BugReportPage extends ConsumerStatefulWidget {
   static const titleField = Key('bug-report-title');
   static const includeScreenshot = Key('bug-report-include-screenshot');
+  static const screenshot = Key('bug-report-screenshot');
   static const includeLog = Key('bug-report-include-log');
   static const submitBtn = Key('bug-report-submit');
+  static const pageKey = Key('bug-report');
   final String? imagePath;
 
-  const BugReportPage({super.key, this.imagePath});
+  const BugReportPage({super.key = pageKey, this.imagePath});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _BugReportState();
@@ -24,21 +84,23 @@ class BugReportPage extends ConsumerStatefulWidget {
 class _BugReportState extends ConsumerState<BugReportPage> {
   final formKey = GlobalKey<FormState>();
   final titleController = TextEditingController();
+  bool withScreenshot = false;
+  bool withLogFile = false;
 
-  Future<bool> reportBug(BugReport report) async {
-    final reportNotifier = ref.read(bugReportProvider.notifier);
+  Future<bool> reportBug(BuildContext context) async {
     final loadingNotifier = ref.read(loadingProvider.notifier);
     try {
-      String reportUrl = await reportNotifier.report(
-        report.withScreenshot ? widget.imagePath : null,
+      String reportUrl = await report(
+        withLogFile,
+        titleController.text,
+        withScreenshot ? widget.imagePath : null,
       );
       String? issueId = getIssueId(reportUrl);
       loadingNotifier.update((state) => !state);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Reported the bug successfully! (#$issueId)')),
-        );
-      }
+      EasyLoading.showToast(
+        'Reported the bug successfully! (#$issueId)',
+        toastPosition: EasyLoadingToastPosition.bottom,
+      );
       return true;
     } catch (e) {
       loadingNotifier.update((state) => !state);
@@ -53,8 +115,6 @@ class _BugReportState extends ConsumerState<BugReportPage> {
 
   @override
   Widget build(BuildContext context) {
-    final bugReport = ref.watch(bugReportProvider);
-    final reportNotifier = ref.watch(bugReportProvider.notifier);
     final isLoading = ref.watch(loadingProvider);
     return ConstrainedBox(
       constraints: const BoxConstraints(minWidth: 350),
@@ -83,23 +143,28 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                 CheckboxListTile(
                   key: BugReportPage.includeLog,
                   title: const Text('Include current logs'),
-                  value: bugReport.withLog,
-                  onChanged: (bool? value) => reportNotifier.toggleLog(),
+                  value: withLogFile,
+                  onChanged: (bool? value) => setState(() {
+                    withLogFile = value ?? true;
+                  }),
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
                 const SizedBox(height: 10),
                 CheckboxListTile(
                   key: BugReportPage.includeScreenshot,
                   title: const Text('Include screenshot'),
-                  value: bugReport.withScreenshot,
-                  onChanged: (bool? value) => reportNotifier.toggleScreenshot(),
+                  value: withScreenshot,
+                  onChanged: (bool? value) => setState(() {
+                    withScreenshot = value ?? true;
+                  }),
                   controlAffinity: ListTileControlAffinity.leading,
                   enabled: widget.imagePath != null,
                 ),
                 const SizedBox(height: 10),
-                if (bugReport.withScreenshot)
+                if (withScreenshot)
                   Image.file(
                     File(widget.imagePath!),
+                    key: BugReportPage.screenshot,
                     width: MediaQuery.of(context).size.width * 0.8,
                     errorBuilder: (
                       BuildContext ctx,
@@ -109,7 +174,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                       return Text('Could not load image due to $error');
                     },
                   ),
-                if (bugReport.withScreenshot) const SizedBox(height: 10),
+                if (withScreenshot) const SizedBox(height: 10),
                 const Divider(endIndent: 10, indent: 10),
                 const SizedBox(height: 10),
                 isLoading
@@ -118,9 +183,10 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                         key: BugReportPage.submitBtn,
                         onPressed: () async {
                           if (formKey.currentState!.validate()) {
-                            reportNotifier.setDescription(titleController.text);
-                            if (await reportBug(bugReport)) {
-                              titleController.text = '';
+                            if (await reportBug(context)) {
+                              if (context.mounted && context.canPop()) {
+                                context.pop();
+                              }
                             }
                           }
                         },
