@@ -7,8 +7,6 @@ use matrix_sdk::{
 };
 use ruma_common::{MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri, OwnedUserId};
 use ruma_events::{
-    location::{AssetContent, LocationContent},
-    message::TextContentBlock,
     room::{
         message::{
             AudioInfo, AudioMessageEventContent, EmoteMessageEventContent, FileInfo,
@@ -124,10 +122,6 @@ pub enum MsgContent {
         body: String,
         geo_uri: String,
         info: Option<LocationInfo>,
-        asset: Option<AssetContent>,
-        location: Option<LocationContent>,
-        message: Option<TextContentBlock>,
-        ts: Option<MilliSecondsSinceUnixEpoch>,
     },
 }
 
@@ -188,10 +182,6 @@ impl From<&LocationMessageEventContent> for MsgContent {
             body: value.body.clone(),
             geo_uri: value.geo_uri.clone(),
             info: value.info.as_ref().map(|x| *x.clone()),
-            asset: value.asset.clone(),
-            location: value.location.clone(),
-            message: value.message.clone(),
-            ts: value.ts,
         }
     }
 }
@@ -244,10 +234,6 @@ impl From<&AttachmentContent> for MsgContent {
                 body: content.body.clone(),
                 geo_uri: content.geo_uri.clone(),
                 info: content.info.as_ref().map(|x| *x.clone()),
-                asset: content.asset.clone(),
-                location: content.location.clone(),
-                message: content.message.clone(),
-                ts: content.ts,
             },
         }
     }

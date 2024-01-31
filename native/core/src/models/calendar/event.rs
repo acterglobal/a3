@@ -38,7 +38,7 @@ impl CalendarEvent {
     }
 
     pub fn description(&self) -> Option<TextMessageContent> {
-        self.inner.description.clone().map(Into::into)
+        self.inner.description.clone().map(TextMessageContent::from)
     }
 
     pub fn room_id(&self) -> &RoomId {
@@ -73,7 +73,7 @@ impl CalendarEvent {
 }
 
 impl ActerModel for CalendarEvent {
-    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
+    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
         vec![
             format!("{}::{}", self.meta.room_id, CALENDAR_KEY),
             CALENDAR_KEY.to_string(),
@@ -137,7 +137,7 @@ pub struct CalendarEventUpdate {
 }
 
 impl ActerModel for CalendarEventUpdate {
-    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
+    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
         vec![format!("{:}::history", self.inner.calendar_event.event_id)]
     }
 

@@ -51,7 +51,7 @@ impl Pin {
 }
 
 impl super::ActerModel for Pin {
-    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
+    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
         vec![
             format!("{}::{}", self.meta.room_id, KEYS::PINS),
             KEYS::PINS.to_owned(),
@@ -111,7 +111,7 @@ pub struct PinUpdate {
 }
 
 impl super::ActerModel for PinUpdate {
-    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
+    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
         vec![format!("{:}::history", self.inner.pin.event_id)]
     }
 

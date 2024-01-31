@@ -30,7 +30,8 @@ class PinPage extends ConsumerWidget {
     final membership = ref.watch(roomMembershipProvider(spaceId));
     if (membership.valueOrNull != null) {
       final memb = membership.requireValue!;
-      if (memb.canString('CanRedact') ||
+      
+      if (memb.canString('CanRedactOwn') &&
           memb.userId().toString() == pin.sender().toString()) {
         final roomId = pin.roomIdStr();
         actions.addAll([

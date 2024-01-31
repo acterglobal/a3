@@ -189,7 +189,7 @@ class ActionBox extends ConsumerWidget {
       );
     }
 
-    if (!isAuthor || membership.canString('CanRedact')) {
+    if (isAuthor && membership.canString('CanRedactOwn')) {
       actions.add(
         TextButton.icon(
           onPressed: () => showAdaptiveDialog(
