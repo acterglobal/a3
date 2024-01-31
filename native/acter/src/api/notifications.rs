@@ -1,6 +1,6 @@
 use acter_core::spaces::is_acter_space;
 use anyhow::{Context, Result};
-use matrix_sdk::ruma::assign;
+use ruma::assign;
 use ruma_client_api::push::get_notifications;
 use ruma_common::OwnedRoomId;
 

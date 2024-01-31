@@ -10,7 +10,8 @@ use acter_core::events::{
     tasks::{TaskEventContent, TaskListEventContent},
 };
 use anyhow::{bail, Context, Result};
-use matrix_sdk::{deserialized_responses::SyncOrStrippedState, ruma::Int};
+use matrix_sdk::deserialized_responses::SyncOrStrippedState;
+use ruma::Int;
 use ruma_events::{
     room::power_levels::{RoomPowerLevels as RumaRoomPowerLevels, RoomPowerLevelsEventContent},
     StaticEventContent, SyncStateEvent, TimelineEventType,

@@ -3,9 +3,9 @@ use anyhow::{bail, Context, Result};
 use lazy_static::lazy_static;
 use matrix_sdk::{
     matrix_auth::{MatrixSession, MatrixSessionTokens},
-    ruma::assign,
     Client as SdkClient, ClientBuilder, SessionMeta,
 };
+use ruma::assign;
 use ruma_client_api::{
     account::register,
     uiaa::{AuthData, Dummy, Password, RegistrationToken},
