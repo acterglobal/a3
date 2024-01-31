@@ -7,7 +7,7 @@ use anyhow::{bail, Context, Result};
 use chrono::DateTime;
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
-use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
+use ruma_common::{EventId, OwnedEventId, OwnedRoomId, OwnedUserId};
 use ruma_events::room::message::TextMessageEventContent;
 use std::{
     collections::{hash_map::Entry, HashMap},
@@ -428,7 +428,7 @@ impl TaskList {
     }
 
     pub async fn task(&self, task_id: String) -> Result<Task> {
-        let event_id = ruma::EventId::parse(task_id)?;
+        let event_id = EventId::parse(task_id)?;
         self.tasks_with_filter(move |t| t.event_id() == event_id)
             .await?
             .into_iter()

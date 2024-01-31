@@ -1,5 +1,5 @@
 use derive_getters::Getters;
-use ruma_common::{EventId, OwnedEventId, OwnedUserId};
+use ruma_common::{EventId, OwnedEventId, OwnedUserId, UserId};
 use ruma_events::OriginalMessageLikeEvent;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Deref};
@@ -121,7 +121,7 @@ impl Rsvp {
 }
 
 impl super::ActerModel for Rsvp {
-    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
+    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
         self.belongs_to()
             .expect("we always have some as entries")
             .into_iter()
