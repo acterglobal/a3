@@ -14,11 +14,16 @@ class SearchPage extends ConsumerWidget {
         Routes? route,
         bool push = false,
         String? target,
+        Future<void> Function(BuildContext)? custom,
       }) async {
-        if (route == null) {
-          context.go(target!);
+        if (custom != null) {
+          await custom(context);
         } else {
-          context.goNamed(route.name);
+          if (route == null) {
+            context.go(target!);
+          } else {
+            context.goNamed(route.name);
+          }
         }
       },
       expand: true,

@@ -169,7 +169,7 @@ void bugReporterTests() {
     );
   });
 
-  acterTestWidget('Can report bug with screenshot', (t) async {
+  acterTestWidget('Can report bug with screenshot from rageshake', (t) async {
     if (rageshakeListUrl.isEmpty) {
       throw const Skip('Provide RAGESHAKE_LISTING_URL to run this test');
     }
@@ -179,7 +179,56 @@ void bugReporterTests() {
     await t.freshAccount();
     final HomeShellState home = t.tester.state(find.byKey(homeShellKey));
     // as if we shaked
-    home.handleBugReport();
+    openBugReport(home.context);
+
+    await page.should(findsOne);
+
+    // let's shake again and make sure this all still closes properly
+    openBugReport(home.context);
+    openBugReport(home.context);
+
+    final screenshot = find.byKey(BugReportPage.includeScreenshot);
+    await screenshot.tap();
+
+    // screenshot is shown
+    await find.byKey(BugReportPage.screenshot).should(findsOneWidget);
+
+    await t.fillForm({
+      BugReportPage.titleField: 'bug report with screenshot',
+    });
+
+    final btn = find.byKey(BugReportPage.submitBtn);
+    await btn.tap();
+    // disappears when it was submitted.
+    await page.should(findsNothing);
+
+    final latestReports = await latestReported();
+
+    // successfully submitted
+    assert(prevReports.length < latestReports.length);
+    // we expect to be thrown to the news screen and see our latest item first:
+
+    final reportedFiles = await inspectReport(latestReports.last);
+    assert(
+      reportedFiles.any((element) => element.startsWith('screenshot')),
+      'No screenshot founds in files: $reportedFiles',
+    );
+    assert(reportedFiles.length == 2,
+        'Not only details and screenshot were sent: $reportedFiles',);
+  });
+
+  acterTestWidget('Can report bug with screenshot from quickjump', (t) async {
+    if (rageshakeListUrl.isEmpty) {
+      throw const Skip('Provide RAGESHAKE_LISTING_URL to run this test');
+    }
+    final page = find.byKey(BugReportPage.pageKey);
+    final prevReports = await latestReported();
+    // totally clean
+    await t.freshAccount();
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      QuickJumpKeys.bugReport,
+    ]);
 
     await page.should(findsOne);
 
@@ -210,6 +259,6 @@ void bugReporterTests() {
       'No screenshot founds in files: $reportedFiles',
     );
     assert(reportedFiles.length == 2,
-        'Not only details and screenshot were sent: $reportedFiles');
+        'Not only details and screenshot were sent: $reportedFiles',);
   });
 }

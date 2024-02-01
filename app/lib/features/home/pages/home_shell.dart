@@ -21,6 +21,32 @@ import 'package:screenshot/screenshot.dart';
 import 'package:shake/shake.dart';
 
 const homeShellKey = Key('home-shell');
+ScreenshotController screenshotController = ScreenshotController();
+bool bugReportOpen = false;
+
+Future<void> openBugReport(BuildContext context) async {
+  if (bugReportOpen) {
+    return;
+  }
+  final cacheDir = await appCacheDir();
+  // rage shake disallows dot in filename
+  int timestamp = DateTime.now().timestamp;
+  final imagePath = await screenshotController.captureAndSave(
+    cacheDir,
+    fileName: 'screenshot_$timestamp.png',
+  );
+  if (context.mounted) {
+    bugReportOpen = true;
+    await context.pushNamed(
+      Routes.bugReport.name,
+      queryParameters: imagePath != null ? {'screenshot': imagePath} : {},
+    );
+    bugReportOpen = false;
+  } else {
+    // ignore: avoid_print
+    print('not mounted :(');
+  }
+}
 
 class HomeShell extends ConsumerStatefulWidget {
   final StatefulNavigationShell navigationShell;
@@ -32,7 +58,6 @@ class HomeShell extends ConsumerStatefulWidget {
 }
 
 class HomeShellState extends ConsumerState<HomeShell> {
-  ScreenshotController screenshotController = ScreenshotController();
   final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
   late ShakeDetector detector;
 
@@ -47,7 +72,7 @@ class HomeShellState extends ConsumerState<HomeShell> {
     if (await isRealPhone()) {
       detector = ShakeDetector.waitForStart(
         onPhoneShake: () {
-          handleBugReport();
+          openBugReport(context);
         },
       );
       detector.startListening();
@@ -238,23 +263,5 @@ class HomeShellState extends ConsumerState<HomeShell> {
         ),
       ),
     );
-  }
-
-  Future<void> handleBugReport() async {
-    final cacheDir = await appCacheDir();
-    // rage shake disallows dot in filename
-    int timestamp = DateTime.now().timestamp;
-    final imagePath = await screenshotController.captureAndSave(
-      cacheDir,
-      fileName: 'screenshot_$timestamp.png',
-    );
-    if (context.mounted) {
-      await context.pushNamed(
-        Routes.bugReport.name,
-        queryParameters: imagePath != null ? {'screenshot': imagePath} : {},
-      );
-    } else {
-      print("not mounted :(");
-    }
   }
 }
