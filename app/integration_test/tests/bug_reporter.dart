@@ -137,14 +137,14 @@ void bugReporterTests() {
     assert(title.controller!.text == '', "title field wasn't reset");
   });
 
-  acterTestWidget('Can report bug with logs', (t) async {
+  acterTestWidget('Can report bug with logs & userId', (t) async {
     if (rageshakeListUrl.isEmpty) {
       throw const Skip('Provide RAGESHAKE_LISTING_URL to run this test');
     }
     final prevReports = await latestReported();
     final page = find.byKey(BugReportPage.pageKey);
     // totally clean
-    await t.freshAccount();
+    final userId = await t.freshAccount();
     await t.navigateTo([
       MainNavKeys.quickJump,
       QuickJumpKeys.bugReport,
@@ -152,11 +152,15 @@ void bugReporterTests() {
 
     await page.should(findsOne);
     await t.fillForm({
-      BugReportPage.titleField: 'My first bug report',
+      BugReportPage.titleField: 'A bug report with log and ID',
     });
     // turn on the log
     final withLog = find.byKey(BugReportPage.includeLog);
     await withLog.tap();
+
+    // turn on the userId
+    final withUserId = find.byKey(BugReportPage.includeUserId);
+    await withUserId.tap();
 
     final btn = find.byKey(BugReportPage.submitBtn);
     await btn.tap();
@@ -171,17 +175,6 @@ void bugReporterTests() {
 
     await btn.should(findsNothing);
 
-    // ensure the title was reset.
-    await t.navigateTo([
-      MainNavKeys.quickJump,
-      QuickJumpKeys.bugReport,
-    ]);
-
-    await page.should(findsOne);
-    final title = find.byKey(BugReportPage.titleField).evaluate().first.widget
-        as TextFormField;
-    assert(title.controller!.text == '', "title field wasn't reset");
-
     final reportedFiles = await inspectReport(latestReports.last);
     assert(
       reportedFiles.any((element) => element.startsWith('details')),
@@ -195,6 +188,27 @@ void bugReporterTests() {
       reportedFiles.length == 2,
       'Not only details and log were sent: $reportedFiles',
     );
+    // ensure the details mean all is fine.
+    final reportDetails = await getReportDetails(latestReports.last);
+    assert(
+      reportDetails.contains('Number of logs: 1'),
+      'bad count of logs reported: $reportDetails',
+    );
+    assert(
+      reportDetails.contains('UserId: @$userId'),
+      'UserID ($userId) not reported: $reportDetails',
+    );
+
+    // ensure the title was reset.
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      QuickJumpKeys.bugReport,
+    ]);
+
+    await page.should(findsOne);
+    final title = find.byKey(BugReportPage.titleField).evaluate().first.widget
+        as TextFormField;
+    assert(title.controller!.text == '', "title field wasn't reset");
   });
 
   acterTestWidget('Can report bug with screenshot from rageshake', (t) async {

@@ -13,11 +13,12 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart';
 
-Future<String> report(
-  bool withLog,
-  String description,
+Future<String> report({
+  bool withLog = false,
+  bool withUserId = false,
+  required String description,
   String? screenshotPath,
-) async {
+}) async {
   final sdk = await ActerSdk.instance;
 
   final request = http.MultipartRequest('POST', Uri.parse(rageshakeUrl));
@@ -27,6 +28,12 @@ Future<String> report(
     'app': appName, // should be same as one among github_project_mappings
     'version': versionName,
   });
+  if (withUserId) {
+    final client = sdk.currentClient;
+    if (client != null) {
+      request.fields.addAll({'UserId': client.userId().toString()});
+    }
+  }
   if (withLog) {
     String logFile = sdk.rotateLogFile();
     if (logFile.isNotEmpty) {
@@ -71,6 +78,7 @@ class BugReportPage extends ConsumerStatefulWidget {
   static const includeScreenshot = Key('bug-report-include-screenshot');
   static const screenshot = Key('bug-report-screenshot');
   static const includeLog = Key('bug-report-include-log');
+  static const includeUserId = Key('bug-report-include-user-id');
   static const submitBtn = Key('bug-report-submit');
   static const pageKey = Key('bug-report');
   final String? imagePath;
@@ -86,15 +94,17 @@ class _BugReportState extends ConsumerState<BugReportPage> {
   final titleController = TextEditingController();
   bool withScreenshot = false;
   bool withLogFile = false;
+  bool withUserId = false;
 
   Future<bool> reportBug(BuildContext context) async {
     final loadingNotifier = ref.read(loadingProvider.notifier);
     try {
       loadingNotifier.update((state) => true);
       String reportUrl = await report(
-        withLogFile,
-        titleController.text,
-        withScreenshot ? widget.imagePath : null,
+        withLog: withLogFile,
+        withUserId: withUserId,
+        description: titleController.text,
+        screenshotPath: withScreenshot ? widget.imagePath : null,
       );
       String? issueId = getIssueId(reportUrl);
       loadingNotifier.update((state) => false);
@@ -143,6 +153,15 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                       : null,
                 ),
                 const SizedBox(height: 10),
+                CheckboxListTile(
+                  key: BugReportPage.includeUserId,
+                  title: const Text('Include my Matrix ID'),
+                  value: withUserId,
+                  onChanged: (bool? value) => setState(() {
+                    withUserId = value ?? true;
+                  }),
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
                 CheckboxListTile(
                   key: BugReportPage.includeLog,
                   title: const Text('Include current logs'),
