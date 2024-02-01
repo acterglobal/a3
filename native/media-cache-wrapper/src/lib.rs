@@ -4,21 +4,18 @@ use core::fmt::Debug;
 use matrix_sdk_base::{
     deserialized_responses::RawAnySyncOrStrippedState,
     media::{MediaRequest, UniqueKey},
-    ruma::{
-        events::{
-            presence::PresenceEvent,
-            receipt::{Receipt, ReceiptThread, ReceiptType},
-            AnyGlobalAccountDataEvent, AnyRoomAccountDataEvent, GlobalAccountDataEventType,
-            RoomAccountDataEventType, StateEventType,
-        },
-        serde::Raw,
-        EventId, MxcUri, OwnedEventId, OwnedUserId, RoomId, UserId,
-    },
     store::StoreEncryptionError,
     MinimalRoomMemberEvent, RoomInfo, RoomMemberships, StateChanges, StateStore, StateStoreDataKey,
     StateStoreDataValue, StoreError,
 };
 use matrix_sdk_store_encryption::StoreCipher;
+use ruma_common::{serde::Raw, EventId, MxcUri, OwnedEventId, OwnedUserId, RoomId, UserId};
+use ruma_events::{
+    presence::PresenceEvent,
+    receipt::{Receipt, ReceiptThread, ReceiptType},
+    AnyGlobalAccountDataEvent, AnyRoomAccountDataEvent, GlobalAccountDataEventType,
+    RoomAccountDataEventType, StateEventType,
+};
 use std::{
     collections::{BTreeMap, BTreeSet},
     fs,
@@ -577,12 +574,11 @@ where
 mod tests {
     use super::*;
     use anyhow::Result;
-    use matrix_sdk_base::{
-        media::MediaFormat,
-        ruma::{events::room::MediaSource, OwnedMxcUri},
-    };
+    use matrix_sdk_base::media::MediaFormat;
     use matrix_sdk_sqlite::SqliteStateStore;
     use matrix_sdk_test::async_test;
+    use ruma_common::OwnedMxcUri;
+    use ruma_events::room::MediaSource;
     use uuid::Uuid;
 
     fn fake_mr(id: &str) -> MediaRequest {

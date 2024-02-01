@@ -17,6 +17,7 @@ env_logger = "0.10.0"
 matrix-sdk = { workspace = true }
 matrix-sdk-base = { workspace = true }
 matrix-sdk-sqlite = { workspace = true }
+ruma-client-api = { workspace = true }
 ruma-common = { workspace = true }
 tokio = { version = "1", features = ["full", "time"] }
 tracing = { version = "0.1.40", features = ["log"] }

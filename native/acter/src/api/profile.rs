@@ -2,9 +2,9 @@ use anyhow::Result;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::RoomMember,
-    ruma::api::client::user_directory::search_users,
     Client, DisplayName, Room,
 };
+use ruma_client_api::user_directory::search_users;
 use ruma_common::OwnedUserId;
 use ruma_events::room::MediaSource;
 

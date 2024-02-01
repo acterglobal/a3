@@ -13,21 +13,19 @@ use futures::{
 };
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
-    config::SyncSettings,
-    deserialized_responses::RawAnySyncOrStrippedTimelineEvent,
-    event_handler::EventHandlerHandle,
-    media::MediaRequest,
-    room::Room as SdkRoom,
-    ruma::api::client::{
-        error::{ErrorBody, ErrorKind},
-        push::get_notifications,
-        Error,
-    },
+    config::SyncSettings, deserialized_responses::RawAnySyncOrStrippedTimelineEvent,
+    event_handler::EventHandlerHandle, media::MediaRequest, room::Room as SdkRoom,
     Client as SdkClient, LoopCtrl, RoomState, RumaApiError,
 };
+use ruma_client_api::{
+    error::{ErrorBody, ErrorKind},
+    push::get_notifications,
+    Error,
+};
 use ruma_common::{
-    device_id, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId,
-    OwnedRoomId, OwnedServerName, OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
+    device_id, IdParseError, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri,
+    OwnedRoomAliasId, OwnedRoomId, OwnedServerName, OwnedUserId, RoomAliasId, RoomId,
+    RoomOrAliasId, UserId,
 };
 use ruma_events::room::MediaSource;
 use std::{
@@ -416,7 +414,7 @@ impl Client {
         let server_names = server_names
             .into_iter()
             .map(OwnedServerName::try_from)
-            .collect::<Result<Vec<OwnedServerName>, ruma_common::IdParseError>>()?;
+            .collect::<Result<Vec<OwnedServerName>, IdParseError>>()?;
         let c = self.clone();
         RUNTIME
             .spawn(async move {
