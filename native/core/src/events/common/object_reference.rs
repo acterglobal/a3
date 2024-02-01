@@ -223,7 +223,10 @@ pub struct ObjRef {
 
 impl ObjRef {
     pub fn new(position: Option<Position>, reference: RefDetails) -> Self {
-        ObjRef { position, reference }
+        ObjRef {
+            position,
+            reference,
+        }
     }
 
     pub fn position_str(&self) -> Option<String> {
