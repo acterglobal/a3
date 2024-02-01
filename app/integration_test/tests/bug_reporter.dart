@@ -59,8 +59,26 @@ Future<List<String>> inspectReport(String reportName) async {
   }).toList();
 }
 
+Future<String> getReportDetails(String reportName) async {
+  debugPrint('fetching report $reportName');
+  final DateTime now = DateTime.now();
+  final DateFormat formatter = DateFormat('yyyy-MM-dd');
+  final String formatted = formatter.format(now);
+  final fullBaseUrl = '$rageshakeListUrl/$formatted/$reportName/details.log.gz';
+  final url = Uri.parse(fullBaseUrl);
+  debugPrint('Reading from $url');
+
+  var response = await http.get(url);
+  debugPrint('Response status: ${response.statusCode}');
+  if (response.statusCode == 404) {
+    throw 'report not found at $fullBaseUrl';
+  }
+
+  return response.body;
+}
+
 void bugReporterTests() {
-  acterTestWidget('Can report bug', (t) async {
+  acterTestWidget('Can report minimal bug', (t) async {
     if (rageshakeListUrl.isEmpty) {
       throw const Skip('Provide RAGESHAKE_LISTING_URL to run this test');
     }
@@ -86,6 +104,26 @@ void bugReporterTests() {
 
     // successfully submitted
     assert(prevReports.length < latestReports.length);
+    // let's inspect the report
+    final reportedFiles = await inspectReport(latestReports.last);
+    assert(
+      reportedFiles.any((element) => element.startsWith('details')),
+      'No app details founds in files: $reportedFiles',
+    );
+    assert(
+      reportedFiles.length == 1,
+      'Not only details were sent: $reportedFiles',
+    );
+    final reportDetails = await getReportDetails(latestReports.last);
+    // ensure the details mean all is fine.
+    assert(
+      reportDetails.contains('Number of logs: 0'),
+      'bad count of logs reported: $reportDetails',
+    );
+    assert(
+      !reportDetails.contains('UserId:'),
+      'UserID reported: $reportDetails',
+    );
 
     // ensure the title was reset.
     await t.navigateTo([
@@ -97,16 +135,6 @@ void bugReporterTests() {
     final title = find.byKey(BugReportPage.titleField).evaluate().first.widget
         as TextFormField;
     assert(title.controller!.text == '', "title field wasn't reset");
-
-    final reportedFiles = await inspectReport(latestReports.last);
-    assert(
-      reportedFiles.any((element) => element.startsWith('details')),
-      'No app details founds in files: $reportedFiles',
-    );
-    assert(
-      reportedFiles.length == 1,
-      'Not only details were sent: $reportedFiles',
-    );
   });
 
   acterTestWidget('Can report bug with logs', (t) async {
@@ -213,8 +241,10 @@ void bugReporterTests() {
       reportedFiles.any((element) => element.startsWith('screenshot')),
       'No screenshot founds in files: $reportedFiles',
     );
-    assert(reportedFiles.length == 2,
-        'Not only details and screenshot were sent: $reportedFiles',);
+    assert(
+      reportedFiles.length == 2,
+      'Not only details and screenshot were sent: $reportedFiles',
+    );
   });
 
   acterTestWidget('Can report bug with screenshot from quickjump', (t) async {
@@ -258,7 +288,9 @@ void bugReporterTests() {
       reportedFiles.any((element) => element.startsWith('screenshot')),
       'No screenshot founds in files: $reportedFiles',
     );
-    assert(reportedFiles.length == 2,
-        'Not only details and screenshot were sent: $reportedFiles',);
+    assert(
+      reportedFiles.length == 2,
+      'Not only details and screenshot were sent: $reportedFiles',
+    );
   });
 }
