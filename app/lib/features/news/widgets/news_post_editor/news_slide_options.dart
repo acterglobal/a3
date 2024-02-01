@@ -249,6 +249,11 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
       for (final slidePost in newsSlideList) {
         // If slide type is text
         if (slidePost.type == NewsSlideType.text && slidePost.text != null) {
+          if (slidePost.text!.isEmpty) {
+            EasyLoading.showError('Please add some text');
+            return;
+          }
+
           final textDraft = client.textMarkdownDraft(slidePost.text!);
           await draft.addSlide(textDraft);
         }
