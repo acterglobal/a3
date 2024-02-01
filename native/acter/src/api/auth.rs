@@ -14,6 +14,7 @@ use matrix_sdk::{
 use ruma_common::{OwnedUserId, UserId};
 use std::sync::RwLock;
 use tracing::{error, info};
+use uuid::Uuid;
 
 use super::{
     client::{Client, ClientStateBuilder},
@@ -99,7 +100,7 @@ pub async fn guest_client(
     default_homeserver_url: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    let db_passphrase = uuid::Uuid::new_v4().to_string();
+    let db_passphrase = Uuid::new_v4().to_string();
     let config = platform::new_client_config(
         base_path.clone(),
         default_homeserver_name,
@@ -259,7 +260,7 @@ pub async fn login_new_client(
     default_homeserver_url: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    let db_passphrase = uuid::Uuid::new_v4().to_string();
+    let db_passphrase = Uuid::new_v4().to_string();
     let (config, user_id) = make_client_config(
         base_path,
         &username,
@@ -291,7 +292,7 @@ pub async fn register(
     default_homeserver_name: String,
     default_homeserver_url: String,
 ) -> Result<Client> {
-    let db_passphrase = uuid::Uuid::new_v4().to_string();
+    let db_passphrase = Uuid::new_v4().to_string();
     let (config, user_id) = make_client_config(
         base_path,
         &username,
@@ -383,7 +384,7 @@ pub async fn register_with_token(
     default_homeserver_url: String,
     user_agent: String,
 ) -> Result<Client> {
-    let db_passphrase = uuid::Uuid::new_v4().to_string();
+    let db_passphrase = Uuid::new_v4().to_string();
     let (config, user_id) = make_client_config(
         base_path,
         &username,

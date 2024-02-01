@@ -583,6 +583,7 @@ mod tests {
     };
     use matrix_sdk_sqlite::SqliteStateStore;
     use matrix_sdk_test::async_test;
+    use uuid::Uuid;
 
     fn fake_mr(id: &str) -> MediaRequest {
         MediaRequest {
@@ -643,7 +644,7 @@ mod tests {
     async fn test_with_sqlite_store() -> Result<()> {
         let db_path = tempfile::tempdir()?;
         let cache_dir = tempfile::tempdir()?;
-        let passphrase = uuid::Uuid::new_v4().to_string();
+        let passphrase = Uuid::new_v4().to_string();
         let some_content = "this is some content";
         let my_item_id = "my_id";
         {

@@ -5,6 +5,7 @@ use acter::api::{
 use anyhow::Result;
 use tempfile::TempDir;
 use tracing::warn;
+use uuid::Uuid;
 
 use crate::utils::{default_user_password, login_test_user, random_user_with_random_space};
 
@@ -141,7 +142,7 @@ async fn kyra_can_restore_with_db_passphrase() -> Result<()> {
         .to_string();
     let tmp_dir = TempDir::new()?;
     let base_path = tmp_dir.path().to_string_lossy().to_string();
-    let db_passphrase = uuid::Uuid::new_v4().to_string();
+    let db_passphrase = Uuid::new_v4().to_string();
     let (config, user_id) = make_client_config(
         base_path,
         "@kyra",
