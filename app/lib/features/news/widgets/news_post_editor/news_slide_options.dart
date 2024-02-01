@@ -149,7 +149,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                               .deleteSlide(index);
                         },
                         child: Icon(
-                          Icons.remove_circle_outline,
+                          Icons.remove_circle_outlined,
                           color: Theme.of(context).colorScheme.error,
                         ),
                       ),

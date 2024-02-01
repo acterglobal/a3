@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
+import 'package:acter/features/news/widgets/news_item_slide/video_slide.dart';
 import 'package:acter/features/news/widgets/news_side_bar.dart';
 import 'package:acter/features/news/widgets/news_item_slide/image_slide.dart';
 import 'package:acter/features/news/widgets/news_item_slide/text_slide.dart';
@@ -56,10 +57,8 @@ class NewsItem extends ConsumerWidget {
                 );
 
               case 'video':
-                return const Expanded(
-                  child: Center(
-                    child: Text('video slides not yet supported'),
-                  ),
+                return VideoSlide(
+                  slide: slides[idx],
                 );
 
               case 'text':
@@ -124,17 +123,20 @@ class NewsItem extends ConsumerWidget {
             index: index,
           ),
         ),
-        Visibility(
-          visible: slides.length > 1,
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 50),
-              child: CarouselIndicator(
-                count: slides.length,
-                index: slideIndex,
-                width: 10,
-                height: 10,
+        Positioned.fill(
+          bottom: 50,
+          child: Visibility(
+            visible: slides.length > 1,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 50),
+                child: CarouselIndicator(
+                  count: slides.length,
+                  index: slideIndex,
+                  width: 10,
+                  height: 10,
+                ),
               ),
             ),
           ),
