@@ -21,14 +21,12 @@ use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     notification_settings::{IsEncrypted, IsOneToOne, RoomNotificationMode},
     room::{Room as SdkRoom, RoomMember},
-    ruma::{
-        api::client::{
-            room::report_content,
-            space::{get_hierarchy, SpaceHierarchyRoomsChunk},
-        },
-        assign, Int,
-    },
     RoomMemberships, RoomState,
+};
+use ruma::{assign, Int};
+use ruma_client_api::{
+    room::report_content,
+    space::{get_hierarchy, SpaceHierarchyRoomsChunk},
 };
 use ruma_common::{
     room::RoomType, serde::Raw, space::SpaceRoomJoinRule, EventId, IdParseError, OwnedEventId,

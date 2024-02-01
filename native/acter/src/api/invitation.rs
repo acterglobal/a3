@@ -3,9 +3,9 @@ use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStr
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     room::Room,
-    ruma::api::client::user_directory::search_users,
     Client as SdkClient, RoomMemberships, RoomState,
 };
+use ruma_client_api::user_directory::search_users;
 use ruma_common::{OwnedRoomId, OwnedUserId, RoomId};
 use ruma_events::room::member::{MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent};
 use std::time::{SystemTime, UNIX_EPOCH};
