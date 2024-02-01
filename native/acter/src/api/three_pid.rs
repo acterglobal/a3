@@ -2,15 +2,12 @@ use acter_core::events::three_pid::{ThreePidContent, ThreePidRecord};
 use anyhow::{bail, Context, Result};
 use matrix_sdk::{
     reqwest::{ClientBuilder, StatusCode},
-    ruma::{
-        api::client::{
-            account::ThirdPartyIdRemovalStatus,
-            uiaa::{AuthData, Password, UserIdentifier},
-        },
-        thirdparty::Medium,
-        uint, ClientSecret, SessionId,
-    },
     Account, Client as SdkClient,
+};
+use ruma::{thirdparty::Medium, uint, ClientSecret, SessionId};
+use ruma_client_api::{
+    account::ThirdPartyIdRemovalStatus,
+    uiaa::{AuthData, Password, UserIdentifier},
 };
 use serde::Deserialize;
 use std::{collections::BTreeMap, ops::Deref};

@@ -45,6 +45,10 @@ git = "https://github.com/ruma/ruma"
 rev = "684ffc789877355bd25269451b2356817c17cc3f"
 features = ["client-api-c", "compat-upload-signatures", "compat-user-id", "compat-arbitrary-length-ids", "unstable-msc3401"]
 
+[workspace.dependencies.ruma-client-api]
+git = "https://github.com/ruma/ruma"
+rev = "684ffc789877355bd25269451b2356817c17cc3f"
+
 [workspace.dependencies.ruma-common]
 git = "https://github.com/ruma/ruma"
 rev = "684ffc789877355bd25269451b2356817c17cc3f"

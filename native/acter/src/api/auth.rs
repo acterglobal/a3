@@ -1,26 +1,25 @@
 use acter_core::RestoreToken;
 use anyhow::{bail, Context, Result};
+use lazy_static::lazy_static;
 use matrix_sdk::{
     matrix_auth::{MatrixSession, MatrixSessionTokens},
-    ruma::{
-        api::client::{
-            account::register,
-            uiaa::{AuthData, Dummy, Password, RegistrationToken},
-        },
-        assign,
-    },
     Client as SdkClient, ClientBuilder, SessionMeta,
+};
+use ruma::assign;
+use ruma_client_api::{
+    account::register,
+    uiaa::{AuthData, Dummy, Password, RegistrationToken},
 };
 use ruma_common::{OwnedUserId, UserId};
 use std::sync::RwLock;
 use tracing::{error, info};
+use uuid::Uuid;
 
 use super::{
     client::{Client, ClientStateBuilder},
     RUNTIME,
 };
 use crate::platform;
-use lazy_static::lazy_static;
 
 lazy_static! {
     static ref PROXY_URL: RwLock<Option<String>> = RwLock::new(None);
@@ -99,7 +98,7 @@ pub async fn guest_client(
     default_homeserver_url: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    let db_passphrase = uuid::Uuid::new_v4().to_string();
+    let db_passphrase = Uuid::new_v4().to_string();
     let config = platform::new_client_config(
         base_path.clone(),
         default_homeserver_name,
@@ -259,7 +258,7 @@ pub async fn login_new_client(
     default_homeserver_url: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    let db_passphrase = uuid::Uuid::new_v4().to_string();
+    let db_passphrase = Uuid::new_v4().to_string();
     let (config, user_id) = make_client_config(
         base_path,
         &username,
@@ -291,7 +290,7 @@ pub async fn register(
     default_homeserver_name: String,
     default_homeserver_url: String,
 ) -> Result<Client> {
-    let db_passphrase = uuid::Uuid::new_v4().to_string();
+    let db_passphrase = Uuid::new_v4().to_string();
     let (config, user_id) = make_client_config(
         base_path,
         &username,
@@ -383,7 +382,7 @@ pub async fn register_with_token(
     default_homeserver_url: String,
     user_agent: String,
 ) -> Result<Client> {
-    let db_passphrase = uuid::Uuid::new_v4().to_string();
+    let db_passphrase = Uuid::new_v4().to_string();
     let (config, user_id) = make_client_config(
         base_path,
         &username,
