@@ -2,18 +2,13 @@ use acter_core::{statics::default_acter_convo_states, Error};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::{
-    executor::JoinHandle,
-    ruma::{
-        api::client::room::{create_room, Visibility},
-        assign,
-    },
-    RoomMemberships,
-};
+use matrix_sdk::{executor::JoinHandle, RoomMemberships};
 use matrix_sdk_ui::{
     timeline::{PaginationOptions, RoomExt},
     Timeline,
 };
+use ruma::assign;
+use ruma_client_api::room::{create_room, Visibility};
 use ruma_common::{
     serde::Raw, MxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedUserId, RoomAliasId, RoomId,
     RoomOrAliasId, ServerName, UserId,
@@ -243,7 +238,7 @@ impl Convo {
                 for member in room.members(RoomMemberships::ACTIVE).await? {
                     let user_id = member.user_id();
                     if let Some((event_id, receipt)) = room
-                        .user_receipt(ReceiptType::Read, ReceiptThread::Main, user_id)
+                        .load_user_receipt(ReceiptType::Read, ReceiptThread::Main, user_id)
                         .await?
                     {
                         let record = ReceiptRecord::new(
@@ -256,7 +251,7 @@ impl Convo {
                         records.push(record);
                     }
                     if let Some((event_id, receipt)) = room
-                        .user_receipt(ReceiptType::ReadPrivate, ReceiptThread::Main, user_id)
+                        .load_user_receipt(ReceiptType::ReadPrivate, ReceiptThread::Main, user_id)
                         .await?
                     {
                         let record = ReceiptRecord::new(

@@ -1,6 +1,6 @@
 use derive_builder::Builder;
 use derive_getters::Getters;
-use ruma_events::macros::EventContent;
+use ruma_macros::EventContent;
 use serde::{Deserialize, Serialize};
 
 use super::{BelongsTo, References, Update};

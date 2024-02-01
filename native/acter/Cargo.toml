@@ -10,14 +10,13 @@ license-file = "../../LICENSE.txt"
 
 [features]
 default = ["dart"]
-testing = [ ]
+testing = []
 cbindgen = []
 tracing = ["dep:tracing-subscriber", "dep:tracing-appender", "dep:tracing-log"]
 tracing-console = ["tracing", "dep:console-subscriber", "tokio/tracing"]
 dart = []
 uniffi = ["dep:uniffi", "dep:thiserror"]
 proxyman = ["dep:reqwest", "dep:openssl"]
-
 
 [build-dependencies]
 ffi-gen = { git = "https://github.com/acterglobal/ffi-gen" }
@@ -42,20 +41,19 @@ mime = "0.3.17"
 mime2ext = "0.1.52"
 mime_guess = "2.0.4"
 parse-env-filter = "0.1.0"
-ruma = { workspace = true, features = ["html", "unstable-unspecified", "unstable-msc3488", "compat-unset-avatar", "unstable-msc3245-v1-compat"] }
-ruma-common = { workspace = true, features = ["client"] }
+ruma = { workspace = true, features = ["html", "rand", "unstable-msc2448", "unstable-msc2965", "unstable-msc3930", "unstable-msc3245-v1-compat"] }
+ruma-client-api = { workspace = true }
+ruma-common = { workspace = true, features = ["client", "unstable-unspecified"] }
 ruma-events = { workspace = true }
 sanitize-filename-reader-friendly = "2.2.1"
 serde = { version = "1", features = ["derive"] }
-serde_json = "1.0.111"
+serde_json = "1"
 strum = { workspace = true }
 tokio = "1.7"
 tokio-stream = "0.1.14"
 tokio-retry = "0.3.0"
 tracing = { version = "0.1.40", default-features = false, features = ["log"] }
-url = "2.5.0"
 uuid = { version = "1.6.1", features = ["v4"] }
-
 
 # for markdown support.
 pulldown-cmark = { version = "0.9.3", default-features = false }
@@ -82,9 +80,6 @@ tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 path = "../core"
 features = ["templates", "client"]
 
-[dependencies.matrix-sdk-store-media-cache-wrapper]
-path = "../media-cache-wrapper"
-
 [dependencies.matrix-sdk]
 workspace = true
 features = [
@@ -98,6 +93,9 @@ features = [
 
 [dependencies.matrix-sdk-base]
 workspace = true
+
+[dependencies.matrix-sdk-store-media-cache-wrapper]
+path = "../media-cache-wrapper"
 
 #   ----   WASM
 [target.'cfg(target_arch = "wasm32")'.dependencies]

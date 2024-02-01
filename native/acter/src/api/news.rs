@@ -1,6 +1,6 @@
 use acter_core::{
     events::{
-        news::{self, NewsContent, NewsEntryBuilder, NewsSlideBuilder},
+        news::{self, FallbackNewsContent, NewsContent, NewsEntryBuilder, NewsSlideBuilder},
         Colorize, ObjRef,
     },
     models::{self, ActerModel, AnyActerModel},
@@ -138,6 +138,7 @@ impl Space {
                     });
                     count -= 1;
                 }
+
                 Ok(news)
             })
             .await?
@@ -165,41 +166,46 @@ impl NewsSlide {
 
     pub fn has_formatted_text(&self) -> bool {
         matches!(
-            self.inner.content(),
-            NewsContent::Text(TextMessageEventContent {
+            self.inner.content().text(),
+            Some(TextMessageEventContent {
                 formatted: Some(_),
                 ..
-            })
+            }),
         )
     }
 
     pub fn text(&self) -> String {
-        match self.inner.content() {
-            NewsContent::Image(ImageMessageEventContent { body, .. }) => body.clone(),
-            NewsContent::Audio(AudioMessageEventContent { body, .. }) => body.clone(),
-            NewsContent::Video(VideoMessageEventContent { body, .. }) => body.clone(),
-            NewsContent::File(FileMessageEventContent { body, .. }) => body.clone(),
-            NewsContent::Location(LocationMessageEventContent { body, .. }) => body.clone(),
-            NewsContent::Text(TextMessageEventContent {
-                formatted, body, ..
-            }) => {
-                if let Some(formatted) = formatted {
-                    formatted.body.clone()
-                } else {
-                    body.clone()
-                }
-            }
-        }
+        self.inner.content.text_str()
     }
 
     pub fn msg_content(&self) -> MsgContent {
         match &self.inner.content {
-            NewsContent::Text(content) => MsgContent::from(content),
-            NewsContent::Image(content) => MsgContent::from(content),
-            NewsContent::Audio(content) => MsgContent::from(content),
-            NewsContent::Video(content) => MsgContent::from(content),
-            NewsContent::File(content) => MsgContent::from(content),
-            NewsContent::Location(content) => MsgContent::from(content),
+            NewsContent::Image(content)
+            | NewsContent::Fallback(FallbackNewsContent::Image(content)) => {
+                MsgContent::from(content)
+            }
+            NewsContent::File(content)
+            | NewsContent::Fallback(FallbackNewsContent::File(content)) => {
+                MsgContent::from(content)
+            }
+            NewsContent::Location(content)
+            | NewsContent::Fallback(FallbackNewsContent::Location(content)) => {
+                MsgContent::from(content)
+            }
+
+            NewsContent::Audio(content)
+            | NewsContent::Fallback(FallbackNewsContent::Audio(content)) => {
+                MsgContent::from(content)
+            }
+
+            NewsContent::Video(content)
+            | NewsContent::Fallback(FallbackNewsContent::Video(content)) => {
+                MsgContent::from(content)
+            }
+            NewsContent::Text(content)
+            | NewsContent::Fallback(FallbackNewsContent::Text(content)) => {
+                MsgContent::from(content)
+            }
         }
     }
 
@@ -209,11 +215,14 @@ impl NewsSlide {
     ) -> Result<FfiBuffer<u8>> {
         // any variable in self can't be called directly in spawn
         match &self.inner.content {
-            NewsContent::Text(content) => {
+            NewsContent::Text(content)
+            | NewsContent::Fallback(FallbackNewsContent::Text(content)) => {
                 let buf = Vec::<u8>::new();
                 Ok(FfiBuffer::new(buf))
             }
-            NewsContent::Image(content) => match thumb_size {
+
+            NewsContent::Image(content)
+            | NewsContent::Fallback(FallbackNewsContent::Image(content)) => match thumb_size {
                 Some(thumb_size) => {
                     let source = content
                         .info
@@ -228,7 +237,9 @@ impl NewsSlide {
                         .await
                 }
             },
-            NewsContent::Audio(content) => {
+
+            NewsContent::Audio(content)
+            | NewsContent::Fallback(FallbackNewsContent::Audio(content)) => {
                 if thumb_size.is_some() {
                     warn!("DeveloperError: audio has not thumbnail");
                 }
@@ -236,7 +247,9 @@ impl NewsSlide {
                     .source_binary(content.source.clone(), None)
                     .await
             }
-            NewsContent::Video(content) => match thumb_size {
+
+            NewsContent::Video(content)
+            | NewsContent::Fallback(FallbackNewsContent::Video(content)) => match thumb_size {
                 Some(thumb_size) => {
                     let source = content
                         .info
@@ -251,7 +264,9 @@ impl NewsSlide {
                         .await
                 }
             },
-            NewsContent::File(content) => match thumb_size {
+
+            NewsContent::File(content)
+            | NewsContent::Fallback(FallbackNewsContent::File(content)) => match thumb_size {
                 Some(thumb_size) => {
                     let source = content
                         .info
@@ -266,7 +281,8 @@ impl NewsSlide {
                         .await
                 }
             },
-            NewsContent::Location(content) => {
+            NewsContent::Location(content)
+            | NewsContent::Fallback(FallbackNewsContent::Location(content)) => {
                 if thumb_size.is_none() {
                     warn!("DeveloperError: location has not file");
                 }
@@ -460,16 +476,16 @@ impl NewsEntryDraft {
         Ok(true)
     }
 
+    pub fn slides(&self) -> Vec<NewsSlideDraft> {
+        self.slides.clone()
+    }
+
     pub fn swap_slides(&mut self, from: u8, to: u8) -> Result<&mut Self> {
         if to > self.slides.len() as u8 {
             bail!("upper bound is exceeded")
         }
         self.slides.swap(from as usize, to as usize);
         Ok(self)
-    }
-
-    pub fn slides(&mut self) -> Vec<NewsSlideDraft> {
-        self.slides.clone()
     }
 
     pub fn unset_slides(&mut self) -> &mut Self {
@@ -499,7 +515,6 @@ impl NewsEntryDraft {
         let room = self.room.clone();
         trace!("send buildin");
         let content = self.content.build()?;
-
         trace!("off we go");
         RUNTIME
             .spawn(async move {
@@ -717,7 +732,7 @@ impl MsgContentDraft {
                 })
             }
             MsgContentDraft::Video { source, info } => {
-                let info = info.expect("image info needed");
+                let info = info.expect("video info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
