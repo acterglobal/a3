@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
@@ -15,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+
 class AddNews extends ConsumerStatefulWidget {
   const AddNews({super.key});
 
@@ -26,15 +26,11 @@ class _AddNewsState extends ConsumerState<AddNews> {
   //General variable declaration
   final textController = TextEditingController();
   NewsSlideItem? selectedNewsPost;
-  List<NewsSlideItem> newsPostList = <NewsSlideItem>[];
-  String? invitedSpaceId;
-  String? invitedChatId;
 
   //Build UI
   @override
   Widget build(BuildContext context) {
-    selectedNewsPost = ref.watch(currentNewsSlideProvider);
-    newsPostList = ref.watch(newSlideListProvider).getNewsSlideList();
+    selectedNewsPost = ref.watch(newsStateProvider).currentNewsSlide;
 
     return Scaffold(
       appBar: appBarUI(context),
@@ -58,9 +54,9 @@ class _AddNewsState extends ConsumerState<AddNews> {
           visible: selectedNewsPost?.type == NewsSlideType.text,
           child: IconButton(
             onPressed: () {
-              selectedNewsPost?.backgroundColor =
-                  Colors.primaries[Random().nextInt(Colors.primaries.length)];
-              setState(() {});
+              ref
+                  .read(newsStateProvider.notifier)
+                  .changeTextSlideBackgroundColor();
             },
             icon: const Icon(Atlas.color),
           ),
@@ -91,15 +87,17 @@ class _AddNewsState extends ConsumerState<AddNews> {
         return AlertDialog.adaptive(
           title: const Text('Add an action widget'),
           content: SelectActionItem(
-            onSpaceItemSelected: (spaceId) async {
+            onSpaceItemSelected: () async {
               Navigator.of(context, rootNavigator: true).pop();
-              invitedSpaceId = spaceId;
-              setState(() {});
+              await ref
+                  .read(newsStateProvider.notifier)
+                  .changeInvitedSpaceId(context);
             },
-            onChatItemSelected: (chatId) async {
+            onChatItemSelected: () async {
               Navigator.of(context, rootNavigator: true).pop();
-              invitedChatId = chatId;
-              setState(() {});
+              await ref
+                  .read(newsStateProvider.notifier)
+                  .changeInvitedChatId(context);
             },
           ),
         );
@@ -147,47 +145,64 @@ class _AddNewsState extends ConsumerState<AddNews> {
 
   //Show selected Action Buttons
   Widget selectedActionButtonsUI() {
+    final invitedSpaceId = ref.watch(newsStateProvider).invitedSpaceId;
+    final invitedChatId = ref.watch(newsStateProvider).invitedChatId;
+
     return Positioned(
       bottom: 10,
       left: 10,
       child: Row(
         children: [
           if (invitedSpaceId != null)
-            Column(
-              children: [
-                const Text('Space'),
-                SpaceChip(spaceId: invitedSpaceId),
-              ],
+            InkWell(
+              onTap: () async {
+                await ref
+                    .read(newsStateProvider.notifier)
+                    .changeInvitedSpaceId(context);
+              },
+              child: Column(
+                children: [
+                  const Text('Space'),
+                  SpaceChip(spaceId: invitedSpaceId),
+                ],
+              ),
             ),
           if (invitedSpaceId != null) const SizedBox(width: 10.0),
           if (invitedChatId != null)
-            Column(
-              children: [
-                const Text('Chat'),
-                chatChip(),
-              ],
+            InkWell(
+              onTap: () async {
+                await ref
+                    .read(newsStateProvider.notifier)
+                    .changeInvitedChatId(context);
+              },
+              child: Column(
+                children: [
+                  const Text('Chat'),
+                  chatChip(invitedChatId),
+                ],
+              ),
             ),
         ],
       ),
     );
   }
 
-  Widget chatChip() {
+  Widget chatChip(String invitedChatId) {
     return Chip(
       avatar: RoomAvatar(
-        roomId: invitedChatId!,
+        roomId: invitedChatId,
         avatarSize: 30,
         showParent: true,
       ),
-      label: ref.watch(chatProfileDataProviderById(invitedChatId!)).when(
+      label: ref.watch(chatProfileDataProviderById(invitedChatId)).when(
             data: (profile) => Text(
-              profile.displayName ?? invitedChatId!,
+              profile.displayName ?? invitedChatId,
               softWrap: true,
               textAlign: TextAlign.center,
             ),
             error: (err, stackTrace) {
               return Text(
-                invitedChatId!,
+                invitedChatId,
                 overflow: TextOverflow.clip,
               );
             },
@@ -235,7 +250,6 @@ class _AddNewsState extends ConsumerState<AddNews> {
     );
   }
 
-
   Widget slideTextPostUI(BuildContext context) {
     textController.text = selectedNewsPost!.text ?? '';
     return Container(
@@ -249,11 +263,9 @@ class _AddNewsState extends ConsumerState<AddNews> {
         minLines: 1,
         maxLines: 10,
         onChanged: (value) {
-          setState(() {
-            final index = newsPostList.indexOf(selectedNewsPost!);
-            selectedNewsPost!.text = value;
-            newsPostList[index] = selectedNewsPost!;
-          });
+          ref
+              .read(newsStateProvider.notifier)
+              .changeTextSlideValue(value);
         },
         decoration: InputDecoration(
           fillColor: Colors.transparent,

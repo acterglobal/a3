@@ -1,12 +1,12 @@
-import 'dart:typed_data';
-
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/features/news/model/keys.dart';
+import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_side_bar.dart';
+import 'package:acter/features/news/widgets/news_item_slide/image_slide.dart';
+import 'package:acter/features/news/widgets/news_item_slide/text_slide.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:carousel_indicator/carousel_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -26,6 +26,9 @@ class NewsItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final slideIndex = ref.watch(newsIndexProvider);
+    final roomId = news.roomId().toString();
+    final space = ref.watch(briefSpaceItemProvider(roomId));
     final slides = news.slides().toList();
     final bgColor = convertColor(
       news.colors()?.background(),
@@ -36,104 +39,112 @@ class NewsItem extends ConsumerWidget {
       Theme.of(context).colorScheme.onPrimary,
     );
 
-    return PageView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: slides.length,
-      itemBuilder: (context, idx) {
-        final slideType = slides[idx].typeStr();
-        final slideText = slides[idx].text();
-        switch (slideType) {
-          case 'image':
-            return RegularSlide(
-              news: news,
-              slideText: slideText,
-              index: index,
-              bgColor: bgColor,
-              fgColor: fgColor,
-              child: ImageSlide(slide: slides[idx]),
-            );
+    return Stack(
+      children: [
+        PageView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: slides.length,
+          onPageChanged: (page) {
+            ref.watch(newsIndexProvider.notifier).state = page;
+          },
+          itemBuilder: (context, idx) {
+            final slideType = slides[idx].typeStr();
+            switch (slideType) {
+              case 'image':
+                return ImageSlide(
+                  slide: slides[idx],
+                );
 
-          case 'video':
-            return RegularSlide(
-              news: news,
-              slideText: slideText,
-              index: index,
-              bgColor: bgColor,
-              fgColor: fgColor,
-              child: const Expanded(
-                child: Center(
-                  child: Text('video slides not yet supported'),
+              case 'video':
+                return const Expanded(
+                  child: Center(
+                    child: Text('video slides not yet supported'),
+                  ),
+                );
+
+              case 'text':
+                return TextSlide(
+                  slide: slides[idx],
+                  bgColor: bgColor,
+                  fgColor: fgColor,
+                );
+
+              default:
+                return Expanded(
+                  child: Center(
+                    child: Text('$slideType slides not yet supported'),
+                  ),
+                );
+            }
+          },
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 8, right: 80, bottom: 8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              InkWell(
+                onTap: () {
+                  context.pushNamed(
+                    Routes.space.name,
+                    pathParameters: {'spaceId': roomId},
+                  );
+                },
+                child: space.when(
+                  data: (space) =>
+                      Text(space!.spaceProfileData.displayName ?? roomId),
+                  error: (e, st) => Text('Error loading space: $e'),
+                  loading: () => Skeletonizer(
+                    child: Text(roomId),
+                  ),
                 ),
               ),
-            );
-
-          case 'text':
-            return Stack(
-              children: <Widget>[
-                Center(
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.only(left: 8, right: 80, bottom: 8),
-                    child: Card(
+              Text(
+                slides[slideIndex].text(),
+                softWrap: true,
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: fgColor,
+                  shadows: [
+                    Shadow(
                       color: bgColor,
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: slides[idx].hasFormattedText()
-                            ? RenderHtml(
-                                key: NewsUpdateKeys.textUpdateContent,
-                                text: slides[idx].text(),
-                                defaultTextStyle: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                      color: fgColor,
-                                    ),
-                              )
-                            : Text(
-                                key: NewsUpdateKeys.textUpdateContent,
-                                slides[idx].text(),
-                                softWrap: true,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                      color: fgColor,
-                                    ),
-                              ),
-                      ),
+                      offset: const Offset(1, 1),
+                      blurRadius: 0,
                     ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: NewsSideBar(
-                    news: news,
-                    index: index,
-                  ),
-                ),
-              ],
-            );
-
-          default:
-            return RegularSlide(
-              news: news,
-              slideText: slideText,
-              index: index,
-              bgColor: bgColor,
-              fgColor: fgColor,
-              child: Expanded(
-                child: Center(
-                  child: Text('$slideType slides not yet supported'),
+                  ],
                 ),
               ),
-            );
-        }
-      },
+            ],
+          ),
+        ),
+        Align(
+          alignment: Alignment.bottomRight,
+          child: NewsSideBar(
+            news: news,
+            index: index,
+          ),
+        ),
+        Visibility(
+          visible: slides.length > 1,
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 50),
+              child: CarouselIndicator(
+                count: slides.length,
+                index: slideIndex,
+                width: 10,
+                height: 10,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
 
-class RegularSlide extends ConsumerWidget {
+/*class RegularSlide extends ConsumerWidget {
   final NewsEntry news;
   final String slideText;
   final int index;
@@ -207,58 +218,4 @@ class RegularSlide extends ConsumerWidget {
       ],
     );
   }
-}
-
-class ImageSlide extends StatefulWidget {
-  final NewsSlide slide;
-
-  const ImageSlide({
-    super.key,
-    required this.slide,
-  });
-
-  @override
-  State<ImageSlide> createState() => _ImageSlideState();
-}
-
-class _ImageSlideState extends State<ImageSlide> {
-  late Future<FfiBufferUint8> newsImage;
-  late MsgContent? msgContent;
-
-  @override
-  void initState() {
-    super.initState();
-    getNewsImage();
-  }
-
-  Future<void> getNewsImage() async {
-    newsImage = widget.slide.sourceBinary(null);
-    msgContent = widget.slide.msgContent();
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<Uint8List>(
-      future: newsImage.then((value) => value.asTypedList()),
-      builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
-        if (snapshot.hasData) {
-          return Container(
-            foregroundDecoration: BoxDecoration(
-              image: DecorationImage(
-                fit: BoxFit.cover,
-                image: MemoryImage(
-                  Uint8List.fromList(snapshot.data!),
-                ),
-              ),
-            ),
-          );
-        } else {
-          return const Center(child: Text('Loading image'));
-        }
-      },
-    );
-  }
-}
+}*/

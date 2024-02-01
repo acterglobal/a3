@@ -6,3 +6,5 @@ final newsListProvider =
     AsyncNotifierProvider.autoDispose<AsyncNewsListNotifier, List<NewsEntry>>(
   () => AsyncNewsListNotifier(),
 );
+
+final newsIndexProvider = StateProvider.autoDispose<int>((ref) => 0);

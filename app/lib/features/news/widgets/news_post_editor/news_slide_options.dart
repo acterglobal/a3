@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
-import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
@@ -29,13 +29,14 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
 
   @override
   Widget build(BuildContext context) {
-    newsSlideList = ref.watch(newSlideListProvider).getNewsSlideList();
+    newsSlideList = ref.watch(newsStateProvider).newsSlideList;
     return newsSlideOptionsUI(context);
   }
 
   Widget newsSlideOptionsUI(BuildContext context) {
+    final newsPostSpaceId = ref.watch(newsStateProvider).newsPostSpaceId;
     return Visibility(
-      visible: ref.watch(currentNewsSlideProvider) != null,
+      visible: ref.read(newsStateProvider).currentNewsSlide != null,
       child: Container(
         color: Theme.of(context).colorScheme.primary,
         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
@@ -43,10 +44,33 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const SelectSpaceFormField(
-              canCheck: 'CanPostNews',
-              emptyText: 'Space',
-            ),
+            if (newsPostSpaceId != null)
+              InkWell(
+                onTap: () async {
+                  await ref
+                      .read(newsStateProvider.notifier)
+                      .changeNewsPostSpaceId(context);
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Space',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    SpaceChip(spaceId: newsPostSpaceId),
+                  ],
+                ),
+              )
+            else
+              OutlinedButton(
+                onPressed: () async {
+                  await ref
+                      .read(newsStateProvider.notifier)
+                      .changeNewsPostSpaceId(context);
+                },
+                child: const Text('Select Space'),
+              ),
             verticalDivider(context),
             Expanded(child: newsSlideListUI(context)),
             IconButton(
@@ -85,29 +109,52 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
                 final slidePost = newsSlideList[index];
-                return InkWell(
-                  onTap: () {
-                    ref.watch(currentNewsSlideProvider.notifier).state =
-                        slidePost;
-                  },
-                  onLongPress: () {
-                    ref.watch(newSlideListProvider).deleteSlide(index);
-                  },
-                  child: Container(
-                    width: 60,
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 10.0,
-                      horizontal: 5.0,
+                return Stack(
+                  fit: StackFit.passthrough,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        ref
+                            .read(newsStateProvider.notifier)
+                            .changeSelectedSlide(slidePost);
+                      },
+                      child: Container(
+                        width: 60,
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 10.0,
+                          horizontal: 5.0,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.background,
+                          borderRadius: BorderRadius.circular(5),
+                          border:
+                              ref.read(newsStateProvider).currentNewsSlide ==
+                                      slidePost
+                                  ? Border.all(color: Colors.white)
+                                  : null,
+                        ),
+                        child: getIconAsPerSlideType(
+                          slidePost.type,
+                          slidePost.mediaFile,
+                        ),
+                      ),
                     ),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.background,
-                      borderRadius: BorderRadius.circular(5),
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: InkWell(
+                        onTap: () {
+                          ref
+                              .read(newsStateProvider.notifier)
+                              .deleteSlide(index);
+                        },
+                        child: Icon(
+                          Icons.remove_circle_outline,
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
                     ),
-                    child: getIconAsPerSlideType(
-                      slidePost.type,
-                      slidePost.mediaFile,
-                    ),
-                  ),
+                  ],
                 );
               },
             ),
@@ -186,7 +233,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
 
   Future<void> sendNews(BuildContext context) async {
     final client = ref.read(clientProvider)!;
-    final spaceId = ref.read(selectedSpaceIdProvider);
+    final spaceId = ref.read(newsStateProvider).newsPostSpaceId;
 
     if (spaceId == null) {
       customMsgSnackbar(context, 'Please first select a space');
@@ -264,8 +311,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
       }
       // FIXME due to #718. well lets at least try forcing a refresh upon route.
       ref.invalidate(newsListProvider);
-      ref.invalidate(currentNewsSlideProvider);
-      ref.invalidate(newSlideListProvider);
+      ref.invalidate(newsStateProvider);
       // Navigate back to update screen.
       Navigator.of(context).pop();
     } catch (err) {

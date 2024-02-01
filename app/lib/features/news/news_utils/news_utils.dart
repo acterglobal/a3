@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -49,7 +48,7 @@ class NewsUtils {
       backgroundColor:
           Colors.primaries[Random().nextInt(Colors.primaries.length)],
     );
-    ref.watch(newSlideListProvider).addSlide(textSlide);
+    ref.watch(newsStateProvider.notifier).addSlide(textSlide);
   }
 
   //Add image slide
@@ -57,7 +56,7 @@ class NewsUtils {
     XFile? imageFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (imageFile != null) {
-      ref.watch(newSlideListProvider).addSlide(
+      ref.watch(newsStateProvider.notifier).addSlide(
             NewsSlideItem(
               type: NewsSlideType.image,
               mediaFile: imageFile,
@@ -71,7 +70,7 @@ class NewsUtils {
     XFile? videoFile =
         await ImagePicker().pickVideo(source: ImageSource.gallery);
     if (videoFile != null) {
-      ref.watch(newSlideListProvider).addSlide(
+      ref.watch(newsStateProvider.notifier).addSlide(
             NewsSlideItem(
               type: NewsSlideType.video,
               mediaFile: videoFile,

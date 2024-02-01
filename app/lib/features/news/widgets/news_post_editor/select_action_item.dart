@@ -1,11 +1,9 @@
-import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
-import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
 class SelectActionItem extends StatelessWidget {
-  final Function(String?) onSpaceItemSelected;
-  final Function(String?) onChatItemSelected;
+  final Function onSpaceItemSelected;
+  final Function onChatItemSelected;
 
   const SelectActionItem({
     super.key,
@@ -23,20 +21,14 @@ class SelectActionItem extends StatelessWidget {
           context: context,
           actionIcon: Atlas.connection,
           actionName: 'Invite to space',
-          onTap: () async {
-            final spaceId = await selectSpaceDrawer(context: context);
-            onSpaceItemSelected(spaceId);
-          },
+          onTap: () => onSpaceItemSelected(),
         ),
         const SizedBox(height: 20.0),
         actionItemUI(
           context: context,
           actionIcon: Atlas.message,
           actionName: 'Invite to chat',
-          onTap: () async {
-            final spaceId = await selectChatDrawer(context: context);
-            onChatItemSelected(spaceId);
-          },
+          onTap: () => onChatItemSelected(),
         ),
         const SizedBox(height: 20.0),
       ],
