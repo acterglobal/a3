@@ -696,6 +696,7 @@ impl Space {
         RefDetails::Link { title, uri }
     }
 
+    #[allow(clippy::boxed_local)]
     pub fn new_obj_ref(
         &self,
         position: Option<String>,
