@@ -312,6 +312,7 @@ impl NewsSlideDraft {
         let content = self.content.build()?;
         Ok(content)
     }
+
     #[allow(clippy::boxed_local)]
     pub fn add_reference(&mut self, reference: Box<ObjRef>) -> &Self {
         self.references.push(*reference);
