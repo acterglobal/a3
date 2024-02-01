@@ -13,7 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class NewsItem extends ConsumerWidget {
+class NewsItem extends ConsumerStatefulWidget {
   final Client client;
   final NewsEntry news;
   final int index;
@@ -26,17 +26,32 @@ class NewsItem extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final slideIndex = ref.watch(newsIndexProvider);
-    final roomId = news.roomId().toString();
+  ConsumerState<NewsItem> createState() => _NewsItemState();
+}
+
+class _NewsItemState extends ConsumerState<NewsItem> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        ref.invalidate(newsSlideIndexProvider);
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final roomId = widget.news.roomId().toString();
     final space = ref.watch(briefSpaceItemProvider(roomId));
-    final slides = news.slides().toList();
+    final slides = widget.news.slides().toList();
+    final slideIndex = ref.watch(newsSlideIndexProvider.notifier).state;
     final bgColor = convertColor(
-      news.colors()?.background(),
+      widget.news.colors()?.background(),
       Theme.of(context).colorScheme.background,
     );
     final fgColor = convertColor(
-      news.colors()?.color(),
+      widget.news.colors()?.color(),
       Theme.of(context).colorScheme.onPrimary,
     );
 
@@ -46,7 +61,8 @@ class NewsItem extends ConsumerWidget {
           scrollDirection: Axis.horizontal,
           itemCount: slides.length,
           onPageChanged: (page) {
-            ref.watch(newsIndexProvider.notifier).state = page;
+            ref.watch(newsSlideIndexProvider.notifier).state = page;
+            setState(() {});
           },
           itemBuilder: (context, idx) {
             final slideType = slides[idx].typeStr();
@@ -119,8 +135,8 @@ class NewsItem extends ConsumerWidget {
         Align(
           alignment: Alignment.bottomRight,
           child: NewsSideBar(
-            news: news,
-            index: index,
+            news: widget.news,
+            index: widget.index,
           ),
         ),
         Positioned.fill(

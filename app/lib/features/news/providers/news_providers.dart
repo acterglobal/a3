@@ -7,4 +7,4 @@ final newsListProvider =
   () => AsyncNewsListNotifier(),
 );
 
-final newsIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
+final newsSlideIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
