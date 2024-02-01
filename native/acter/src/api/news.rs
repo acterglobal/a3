@@ -1,7 +1,7 @@
 use acter_core::{
     events::{
         news::{self, FallbackNewsContent, NewsContent, NewsEntryBuilder, NewsSlideBuilder},
-        Colorize, ObjRef,
+        CalendarEventAction, Colorize, ObjRef, Position, RefDetails, TaskAction, TaskListAction,
     },
     models::{self, ActerModel, AnyActerModel},
     statics::KEYS,
@@ -9,7 +9,7 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
-use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
+use ruma_common::{EventId, OwnedEventId, OwnedRoomId, OwnedUserId, RoomId};
 use ruma_events::room::message::{
     AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
     LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
@@ -18,6 +18,7 @@ use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
     path::PathBuf,
+    str::FromStr,
 };
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
@@ -616,16 +617,98 @@ impl Space {
         })
     }
 
-    pub fn news_draft_with_builder(&self, content: NewsEntryBuilder) -> Result<NewsEntryDraft> {
-        if !self.is_joined() {
-            bail!("Unable to create news for spaces we are not part on");
-        }
-        Ok(NewsEntryDraft {
-            client: self.client.clone(),
-            room: self.inner.room.clone(),
-            content,
-            slides: vec![],
+    pub fn new_task_ref(
+        &self,
+        target_id: String,
+        room_id: Option<String>,
+        task_list: String,
+        action: String,
+    ) -> Result<RefDetails> {
+        let target_id = EventId::parse(target_id)?;
+        let room_id = room_id.and_then(|x| {
+            if let Ok(room_id) = RoomId::parse(x) {
+                Some(room_id)
+            } else {
+                None
+            }
+        });
+        let task_list = EventId::parse(task_list)?;
+        let Ok(action) = TaskAction::from_str(action.as_str()) else {
+            bail!("couldn't parse task action")
+        };
+        Ok(RefDetails::Task {
+            target_id,
+            room_id,
+            task_list,
+            action,
         })
+    }
+
+    pub fn new_task_list_ref(
+        &self,
+        target_id: String,
+        room_id: Option<String>,
+        action: String,
+    ) -> Result<RefDetails> {
+        let target_id = EventId::parse(target_id)?;
+        let room_id = room_id.and_then(|x| {
+            if let Ok(room_id) = RoomId::parse(x) {
+                Some(room_id)
+            } else {
+                None
+            }
+        });
+        let Ok(action) = TaskListAction::from_str(action.as_str()) else {
+            bail!("couldn't parse task list action")
+        };
+        Ok(RefDetails::TaskList {
+            target_id,
+            room_id,
+            action,
+        })
+    }
+
+    pub fn new_calendar_event_ref(
+        &self,
+        target_id: String,
+        room_id: Option<String>,
+        action: String,
+    ) -> Result<RefDetails> {
+        let target_id = EventId::parse(target_id)?;
+        let room_id = room_id.and_then(|x| {
+            if let Ok(room_id) = RoomId::parse(x) {
+                Some(room_id)
+            } else {
+                None
+            }
+        });
+        let Ok(action) = CalendarEventAction::from_str(action.as_str()) else {
+            bail!("couldn't parse calendar event action")
+        };
+        Ok(RefDetails::CalendarEvent {
+            target_id,
+            room_id,
+            action,
+        })
+    }
+
+    pub fn new_link_ref(&self, title: String, uri: String) -> RefDetails {
+        RefDetails::Link { title, uri }
+    }
+
+    pub fn new_obj_ref(
+        &self,
+        position: Option<String>,
+        reference: Box<RefDetails>,
+    ) -> Result<ObjRef> {
+        let position = position.and_then(|x| {
+            if let Ok(position) = Position::from_str(x.as_str()) {
+                Some(position)
+            } else {
+                None
+            }
+        });
+        Ok(ObjRef::new(position, *reference))
     }
 }
 

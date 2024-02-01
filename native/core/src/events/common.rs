@@ -7,7 +7,7 @@ mod object_reference;
 mod rendering;
 
 pub use labels::Labels;
-pub use object_reference::{ObjRef, RefDetails};
+pub use object_reference::{CalendarEventAction, ObjRef, RefDetails, TaskAction, TaskListAction};
 pub use rendering::{BrandIcon, Color, Colorize, Icon, Position};
 
 /// Default UTC DateTime Object
