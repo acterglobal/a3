@@ -255,7 +255,8 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           }
 
           final textDraft = client.textMarkdownDraft(slidePost.text!);
-          await draft.addSlide(textDraft);
+          final textSlideDraft = textDraft.intoNewsSlideDraft();
+          await draft.addSlide(textSlideDraft);
         }
 
         // If slide type is image
@@ -280,7 +281,8 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
               .size(bytes.length)
               .width(decodedImage.width)
               .height(decodedImage.height);
-          await draft.addSlide(imageDraft);
+          final imageSlideDraft = imageDraft.intoNewsSlideDraft();
+          await draft.addSlide(imageSlideDraft);
         }
 
         // If slide type is video
@@ -301,7 +303,8 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           Uint8List bytes = await file.readAsBytes();
           final videoDraft =
               client.videoDraft(file.path, mimeType).size(bytes.length);
-          await draft.addSlide(videoDraft);
+          final videoSlideDraft = videoDraft.intoNewsSlideDraft();
+          await draft.addSlide(videoSlideDraft);
         }
       }
       await draft.send();
