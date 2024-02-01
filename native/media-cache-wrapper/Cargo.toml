@@ -23,5 +23,5 @@ anyhow = "1.0.79"
 matrix-sdk-sqlite = { workspace = true }
 matrix-sdk-test = { workspace = true }
 tempfile = "3.9.0"
-tokio = "1"
+tokio = "1.35.1"
 uuid = { version = "1.6.1", features = ["v4"] }
