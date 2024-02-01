@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -15,6 +16,7 @@ import 'package:path/path.dart';
 
 Future<String> report({
   bool withLog = false,
+  bool withPrevLogFile = false,
   bool withUserId = false,
   required String description,
   String? screenshotPath,
@@ -42,6 +44,20 @@ Future<String> report({
           'log',
           File(logFile).readAsBytesSync(),
           filename: basename(logFile),
+          contentType: MediaType('text', 'plain'),
+        ),
+      );
+    }
+  }
+  if (withPrevLogFile) {
+    String? prevLogFile = sdk.previousLogPath;
+    if (prevLogFile != null) {
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'log',
+          File(prevLogFile).readAsBytesSync(),
+          filename:
+              '${basenameWithoutExtension(prevLogFile)}-${Random().nextInt(10000)}.log', // randomize to ensure the server doesn't overwrite any previous one...
           contentType: MediaType('text', 'plain'),
         ),
       );
@@ -78,6 +94,7 @@ class BugReportPage extends ConsumerStatefulWidget {
   static const includeScreenshot = Key('bug-report-include-screenshot');
   static const screenshot = Key('bug-report-screenshot');
   static const includeLog = Key('bug-report-include-log');
+  static const includePrevLog = Key('bug-report-include-prev-log');
   static const includeUserId = Key('bug-report-include-user-id');
   static const submitBtn = Key('bug-report-submit');
   static const pageKey = Key('bug-report');
@@ -94,6 +111,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
   final titleController = TextEditingController();
   bool withScreenshot = false;
   bool withLogFile = false;
+  bool withPrevLogFile = false;
   bool withUserId = false;
 
   Future<bool> reportBug(BuildContext context) async {
@@ -102,6 +120,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
       loadingNotifier.update((state) => true);
       String reportUrl = await report(
         withLog: withLogFile,
+        withPrevLogFile: withPrevLogFile,
         withUserId: withUserId,
         description: titleController.text,
         screenshotPath: withScreenshot ? widget.imagePath : null,
@@ -168,6 +187,15 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                   value: withLogFile,
                   onChanged: (bool? value) => setState(() {
                     withLogFile = value ?? true;
+                  }),
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+                CheckboxListTile(
+                  key: BugReportPage.includePrevLog,
+                  title: const Text('Include logs from previous run'),
+                  value: withPrevLogFile,
+                  onChanged: (bool? value) => setState(() {
+                    withPrevLogFile = value ?? true;
                   }),
                   controlAffinity: ListTileControlAffinity.leading,
                 ),

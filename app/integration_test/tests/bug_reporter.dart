@@ -307,4 +307,74 @@ void bugReporterTests() {
       'Not only details and screenshot were sent: $reportedFiles',
     );
   });
+
+  acterTestWidget('Can report bug with current & previous log', (t) async {
+    if (rageshakeListUrl.isEmpty) {
+      throw const Skip('Provide RAGESHAKE_LISTING_URL to run this test');
+    }
+    final prevReports = await latestReported();
+    final page = find.byKey(BugReportPage.pageKey);
+    // totally clean
+    await t.freshAccount();
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      QuickJumpKeys.bugReport,
+    ]);
+
+    await page.should(findsOne);
+    await t.fillForm({
+      BugReportPage.titleField: 'A bug report with previous & current log ',
+    });
+    // turn on the log
+    final withLog = find.byKey(BugReportPage.includeLog);
+    await withLog.tap();
+
+    // turn on the userId
+    final withPrevLog = find.byKey(BugReportPage.includePrevLog);
+    await withPrevLog.tap();
+
+    final btn = find.byKey(BugReportPage.submitBtn);
+    await btn.tap();
+    // disappears when submission was successful
+    await page.should(findsNothing);
+
+    final latestReports = await latestReported();
+
+    // successfully submitted
+    assert(prevReports.length < latestReports.length);
+    // we expect to be thrown to the news screen and see our latest item first:
+
+    await btn.should(findsNothing);
+
+    final reportedFiles = await inspectReport(latestReports.last);
+    assert(
+      reportedFiles.any((element) => element.startsWith('details')),
+      'No app details founds in files: $reportedFiles',
+    );
+    assert(
+      reportedFiles.where((element) => element.startsWith('app_')).length == 2,
+      'Expected 2 log files: $reportedFiles',
+    );
+    assert(
+      reportedFiles.length == 3,
+      'Not only details and log were sent: $reportedFiles',
+    );
+    // ensure the details mean all is fine.
+    final reportDetails = await getReportDetails(latestReports.last);
+    assert(
+      reportDetails.contains('Number of logs: 2'),
+      'bad count of logs reported: $reportDetails',
+    );
+
+    // ensure the title was reset.
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      QuickJumpKeys.bugReport,
+    ]);
+
+    await page.should(findsOne);
+    final title = find.byKey(BugReportPage.titleField).evaluate().first.widget
+        as TextFormField;
+    assert(title.controller!.text == '', "title field wasn't reset");
+  });
 }
