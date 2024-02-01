@@ -126,6 +126,10 @@ void bugReporterTests() {
     await t.fillForm({
       BugReportPage.titleField: 'My first bug report',
     });
+    // turn on the log
+    final withLog = find.byKey(BugReportPage.includeLog);
+    await withLog.tap();
+
     final btn = find.byKey(BugReportPage.submitBtn);
     await btn.tap();
     // disappears when submission was successful

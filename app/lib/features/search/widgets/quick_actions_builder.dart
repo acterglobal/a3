@@ -145,7 +145,9 @@ class QuickActionsBuilder extends ConsumerWidget {
               'Report bug',
               style: Theme.of(context).textTheme.labelMedium,
             ),
-            onPressed: () => navigateTo(route: Routes.bugReport, push: true),
+            onPressed: () async {
+              await navigateTo(route: Routes.bugReport, push: true);
+            },
           ),
         ].where((element) => element != null),
       ),

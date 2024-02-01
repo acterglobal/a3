@@ -90,23 +90,26 @@ class _BugReportState extends ConsumerState<BugReportPage> {
   Future<bool> reportBug(BuildContext context) async {
     final loadingNotifier = ref.read(loadingProvider.notifier);
     try {
+      loadingNotifier.update((state) => true);
       String reportUrl = await report(
         withLogFile,
         titleController.text,
         withScreenshot ? widget.imagePath : null,
       );
       String? issueId = getIssueId(reportUrl);
-      loadingNotifier.update((state) => !state);
+      loadingNotifier.update((state) => false);
       EasyLoading.showToast(
-        'Reported the bug successfully! (#$issueId)',
+        issueId != null
+            ? 'Reported the bug successfully! (#$issueId)'
+            : 'Thanks for reporting that bug!',
         toastPosition: EasyLoadingToastPosition.bottom,
       );
       return true;
     } catch (e) {
-      loadingNotifier.update((state) => !state);
+      loadingNotifier.update((state) => false);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Bug reporting failed: $e')),
+          SnackBar(content: Text('Bug reporting error: $e')),
         );
       }
       return false;

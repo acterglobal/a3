@@ -35,6 +35,8 @@ class SidebarWidget extends ConsumerWidget {
           // go to the initial location of the selected tab (by index)
           if (item.isSpaceTab) {
             context.go(item.location!);
+          } else if (item.pushToNavigate) {
+            context.push(item.location!);
           } else {
             navigationShell.goBranch(
               tabIndex,
