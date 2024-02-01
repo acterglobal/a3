@@ -4,6 +4,7 @@ import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -67,15 +68,16 @@ class NewsUtils {
 
   //Add video slide
   static Future<void> addVideoSlide(WidgetRef ref) async {
-    XFile? videoFile =
-        await ImagePicker().pickVideo(source: ImageSource.gallery);
-    if (videoFile != null) {
-      ref.watch(newsStateProvider.notifier).addSlide(
-            NewsSlideItem(
-              type: NewsSlideType.video,
-              mediaFile: videoFile,
-            ),
-          );
-    }
+    EasyLoading.showInfo('Coming soon');
+    // XFile? videoFile =
+    //     await ImagePicker().pickVideo(source: ImageSource.gallery);
+    // if (videoFile != null) {
+    //   ref.watch(newsStateProvider.notifier).addSlide(
+    //         NewsSlideItem(
+    //           type: NewsSlideType.video,
+    //           mediaFile: videoFile,
+    //         ),
+    //       );
+    // }
   }
 }

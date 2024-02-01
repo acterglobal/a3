@@ -11,6 +11,7 @@ import 'package:acter/features/news/widgets/news_post_editor/select_action_item.
 import 'package:acter/features/news/widgets/news_post_editor/news_slide_options.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -89,15 +90,17 @@ class _AddNewsState extends ConsumerState<AddNews> {
           content: SelectActionItem(
             onSpaceItemSelected: () async {
               Navigator.of(context, rootNavigator: true).pop();
-              await ref
-                  .read(newsStateProvider.notifier)
-                  .changeInvitedSpaceId(context);
+              EasyLoading.showInfo('Coming soon');
+              // await ref
+              //     .read(newsStateProvider.notifier)
+              //     .changeInvitedSpaceId(context);
             },
             onChatItemSelected: () async {
               Navigator.of(context, rootNavigator: true).pop();
-              await ref
-                  .read(newsStateProvider.notifier)
-                  .changeInvitedChatId(context);
+              EasyLoading.showInfo('Coming soon');
+              // await ref
+              //     .read(newsStateProvider.notifier)
+              //     .changeInvitedChatId(context);
             },
           ),
         );
@@ -263,9 +266,7 @@ class _AddNewsState extends ConsumerState<AddNews> {
         minLines: 1,
         maxLines: 10,
         onChanged: (value) {
-          ref
-              .read(newsStateProvider.notifier)
-              .changeTextSlideValue(value);
+          ref.read(newsStateProvider.notifier).changeTextSlideValue(value);
         },
         decoration: InputDecoration(
           fillColor: Colors.transparent,
