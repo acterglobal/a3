@@ -30,22 +30,13 @@ class NewsItem extends ConsumerStatefulWidget {
 }
 
 class _NewsItemState extends ConsumerState<NewsItem> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) {
-        ref.invalidate(newsSlideIndexProvider);
-      },
-    );
-  }
+  int currentSlideIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     final roomId = widget.news.roomId().toString();
     final space = ref.watch(briefSpaceItemProvider(roomId));
     final slides = widget.news.slides().toList();
-    final slideIndex = ref.watch(newsSlideIndexProvider.notifier).state;
     final bgColor = convertColor(
       widget.news.colors()?.background(),
       Theme.of(context).colorScheme.background,
@@ -61,7 +52,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
           scrollDirection: Axis.horizontal,
           itemCount: slides.length,
           onPageChanged: (page) {
-            ref.watch(newsSlideIndexProvider.notifier).state = page;
+            currentSlideIndex = page;
             setState(() {});
           },
           itemBuilder: (context, idx) {
@@ -116,7 +107,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
                 ),
               ),
               Text(
-                slides[slideIndex].text(),
+                slides[currentSlideIndex].text(),
                 softWrap: true,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: fgColor,
@@ -149,7 +140,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
                 padding: const EdgeInsets.only(bottom: 50),
                 child: CarouselIndicator(
                   count: slides.length,
-                  index: slideIndex,
+                  index: currentSlideIndex,
                   width: 10,
                   height: 10,
                 ),
@@ -161,79 +152,3 @@ class _NewsItemState extends ConsumerState<NewsItem> {
     );
   }
 }
-
-/*class RegularSlide extends ConsumerWidget {
-  final NewsEntry news;
-  final String slideText;
-  final int index;
-  final Color bgColor;
-  final Color fgColor;
-  final Widget child;
-
-  const RegularSlide({
-    super.key,
-    required this.news,
-    required this.index,
-    required this.slideText,
-    required this.bgColor,
-    required this.fgColor,
-    required this.child,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final roomId = news.roomId().toString();
-    final space = ref.watch(briefSpaceItemProvider(roomId));
-    return Stack(
-      children: [
-        child,
-        Padding(
-          padding: const EdgeInsets.only(left: 8, right: 80, bottom: 8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              InkWell(
-                onTap: () {
-                  context.pushNamed(
-                    Routes.space.name,
-                    pathParameters: {'spaceId': roomId},
-                  );
-                },
-                child: space.when(
-                  data: (space) =>
-                      Text(space!.spaceProfileData.displayName ?? roomId),
-                  error: (e, st) => Text('Error loading space: $e'),
-                  loading: () => Skeletonizer(
-                    child: Text(roomId),
-                  ),
-                ),
-              ),
-              Text(
-                slideText,
-                softWrap: true,
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  color: fgColor,
-                  shadows: [
-                    Shadow(
-                      color: bgColor,
-                      offset: const Offset(1, 1),
-                      blurRadius: 0,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        Align(
-          alignment: Alignment.bottomRight,
-          child: NewsSideBar(
-            news: news,
-            index: index,
-          ),
-        ),
-      ],
-    );
-  }
-}*/

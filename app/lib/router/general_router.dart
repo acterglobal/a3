@@ -9,7 +9,7 @@ import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/widgets/create_chat.dart';
 import 'package:acter/features/events/sheets/create_event_sheet.dart';
 import 'package:acter/features/events/sheets/edit_event_sheet.dart';
-import 'package:acter/features/news/pages/add_news.dart';
+import 'package:acter/features/news/pages/add_news_page.dart';
 import 'package:acter/features/onboarding/pages/intro_page.dart';
 import 'package:acter/features/onboarding/pages/intro_profile.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
@@ -344,7 +344,7 @@ List<RouteBase> makeGeneralRoutes() {
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: const AddNews(),
+          child: const AddNewsPage(),
         );
       },
     ),

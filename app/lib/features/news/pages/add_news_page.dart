@@ -16,14 +16,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-class AddNews extends ConsumerStatefulWidget {
-  const AddNews({super.key});
+class AddNewsPage extends ConsumerStatefulWidget {
+  const AddNewsPage({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _AddNewsState();
 }
 
-class _AddNewsState extends ConsumerState<AddNews> {
+class _AddNewsState extends ConsumerState<AddNewsPage> {
   //General variable declaration
   final textController = TextEditingController();
   NewsSlideItem? selectedNewsPost;
