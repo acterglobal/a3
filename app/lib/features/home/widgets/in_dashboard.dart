@@ -11,7 +11,7 @@ class InDashboard extends StatelessWidget {
   const InDashboard({super.key, required this.child});
 
   @override
-  Widget build(BuildContext buildContext) {
+  Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constrains) {
         if (constrains.maxWidth > 770) {
