@@ -336,12 +336,12 @@ object NewsEntry {
 
 object NewsEntryDraft {
     /// create news slide draft
-    fn add_slide(base_draft: MsgContentDraft) -> Future<Result<bool>>;
+    fn add_slide(base_draft: NewsSlideDraft) -> Future<Result<bool>>;
 
     /// change position of slides draft of this news entry
     fn swap_slides(from: u8, to:u8);
 
-    /// get news slide set for this news entry draft
+    /// get a copy of the news slide set for this news entry draft
     fn slides() -> Vec<NewsSlideDraft>;
 
     /// clear slides
@@ -357,7 +357,7 @@ object NewsEntryDraft {
 
 object NewsEntryUpdateBuilder {
     /// set the slides for this news entry
-    fn add_slide(base_draft: MsgContentDraft);
+    fn add_slide(draft: NewsSlideDraft) -> Future<Result<bool>>;
 
     /// reset slides for this news entry
     fn unset_slides();
@@ -903,6 +903,9 @@ object MsgContentDraft {
 
     /// available for only location
     fn geo_uri(value: string) -> MsgContentDraft;
+
+    // convert this into a NewsSlideDraft;
+    fn into_news_slide_draft() -> NewsSlideDraft;
 }
 
 /// Timeline with Room Events
