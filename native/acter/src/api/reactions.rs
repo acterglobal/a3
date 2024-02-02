@@ -7,7 +7,7 @@ use ruma_events::{reaction::ReactionEventContent, relation::Annotation, MessageL
 use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::trace;
+use tracing::{info, trace};
 
 use super::{client::Client, RUNTIME};
 
@@ -163,6 +163,7 @@ impl ReactionManager {
         RUNTIME
             .spawn(async move {
                 let entries = manager.reaction_entries().await?;
+                info!("my status: {:?}", entries.clone());
                 if let Some(entry) = entries.get(&my_id) {
                     return Ok(true);
                 }

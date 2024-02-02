@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class LikeButton extends StatefulWidget {
   final bool isLiked;
-  final String likeCount;
+  final int likeCount;
   final TextStyle style;
   final Color color;
   final int index;
@@ -125,6 +125,7 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
                 children: [
                   InkWell(
                     onTap: () {
+                      debugPrint('like click --------------------------------');
                       if (widget.onTap != null) {
                         widget.onTap!();
                       }
@@ -189,7 +190,7 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
             );
           },
         ),
-        Text(widget.likeCount, style: widget.style),
+        Text(widget.likeCount.toString(), style: widget.style),
       ],
     );
   }

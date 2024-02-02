@@ -645,6 +645,9 @@ object ReactionManager {
 
     /// redact the reaction
     fn redact_reaction(event_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
+
+    /// get informed about changes to this manager
+    fn subscribe_stream() -> Stream<()>;
 }
 
 object Reaction {

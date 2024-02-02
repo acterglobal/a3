@@ -58,21 +58,21 @@ class NewsSideBar extends ConsumerWidget {
           child: LikeButton(
             isLiked: isLikedByMe.valueOrNull ?? false,
             likeCount: reactions.valueOrNull != null
-                ? reactions.valueOrNull!.length.toString()
-                : '0',
+                ? reactions.valueOrNull!.length
+                : 0,
             style: style,
             color: fgColor,
             index: index,
             onTap: () async {
               final client = ref.read(alwaysClientProvider);
               final status = await news.myLikeStatus();
+              debugPrint('my like status: $status');
               final manager = await news.reactions();
               if (!status) {
                 final eventId = await manager.sendReaction(
                   news.eventId().toString(),
                   '\u{dd25}',
                 );
-
                 await client.waitForReaction(eventId.toString(), null);
               } else {
                 final reactions = await manager

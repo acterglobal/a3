@@ -11674,6 +11674,37 @@ class Api {
     return;
   }
 
+  void __reactionManagerSubscribeStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _reactionManagerSubscribeStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8;
+    if (tmp10 == 0) {
+      return null;
+    }
+    return;
+  }
+
   RoomMessageDiff? __timelineStreamMessagesStreamStreamPoll(
     int boxed,
     int postCobject,
@@ -14528,6 +14559,17 @@ class Api {
             int,
             int,
             int,
+            int,
+          )>();
+  late final _reactionManagerSubscribeStreamPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__ReactionManager_subscribe_stream");
+
+  late final _reactionManagerSubscribeStream =
+      _reactionManagerSubscribeStreamPtr.asFunction<
+          int Function(
             int,
           )>();
   late final _reactionEventIdStrPtr = _lookup<
@@ -25131,6 +25173,23 @@ class Api {
             int,
             int,
           )>();
+  late final _reactionManagerSubscribeStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ReactionManager_subscribe_stream_stream_poll");
+
+  late final _reactionManagerSubscribeStreamStreamPoll =
+      _reactionManagerSubscribeStreamStreamPollPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _timelineStreamMessagesStreamStreamPollPtr = _lookup<
       ffi.NativeFunction<
           _TimelineStreamMessagesStreamStreamPollReturn Function(
@@ -31155,6 +31214,23 @@ class ReactionManager {
     final tmp18 =
         _nativeFuture(tmp19_1, _api.__reactionManagerRedactReactionFuturePoll);
     return tmp18;
+  }
+
+  /// get informed about changes to this manager
+  Stream<void> subscribeStream() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._reactionManagerSubscribeStream(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__ReactionManager_subscribe_stream_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeStream(tmp3_1, _api.__reactionManagerSubscribeStreamStreamPoll);
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.

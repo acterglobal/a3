@@ -1,4 +1,5 @@
 import 'package:acter/features/news/providers/notifiers/news_list_notifier.dart';
+import 'package:acter/features/news/providers/notifiers/reaction_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show NewsEntry, ReactionManager, Reaction;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,11 +15,10 @@ final newsReactionsProvider = FutureProvider.autoDispose
   return manager;
 });
 
-final reactionEntriesProvider = FutureProvider.autoDispose
-    .family<List<Reaction>, NewsEntry>((ref, news) async {
-  final manager = await ref.watch(newsReactionsProvider(news).future);
-  return await manager.reactionEntries().then((ffiList) => ffiList.toList());
-});
+final reactionEntriesProvider = AsyncNotifierProvider.autoDispose
+    .family<AsyncNewsReactionsNotifier, List<Reaction>, NewsEntry>(
+  () => AsyncNewsReactionsNotifier(),
+);
 
 final myNewsReactionStatusProvider =
     FutureProvider.autoDispose.family<bool, NewsEntry>((ref, news) async {
