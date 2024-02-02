@@ -1,0 +1,3 @@
+- [new-general] : User experience enhancement on News Update
+- [new-general] : Now user can post news with multiple slides
+- [new-desktop] : Desktop have now support of adding news update
