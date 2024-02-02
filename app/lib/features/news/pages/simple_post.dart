@@ -54,73 +54,73 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
         const SizedBox(width: 10),
         ElevatedButton(
           key: NewsUpdateKeys.submitBtn,
-          onPressed: () async {
-            if (!_formKey.currentState!.validate()) {
-              return;
-            }
-            final client = ref.read(alwaysClientProvider);
-            final spaceId = ref.read(selectedSpaceIdProvider);
-            final file = ref.read(selectedImageProvider);
-            final caption = ref.read(textProvider);
-
-            String displayMsg =
-                file == null ? 'Posting image update' : 'Posting text update';
-            EasyLoading.show(status: displayMsg);
-            try {
-              final space = await ref.read(spaceProvider(spaceId!).future);
-              NewsEntryDraft draft = space.newsDraft();
-              if (file == null) {
-                final textDraft = client.textMarkdownDraft(caption.text);
-                await draft.addSlide(textDraft);
-              } else {
-                String? mimeType = file.mimeType ?? lookupMimeType(file.path);
-                if (mimeType == null) {
-                  EasyLoading.showError('Invalid media format');
-                  return;
-                }
-                if (!mimeType.startsWith('image/')) {
-                  EasyLoading.showError(
-                    'Posting of $mimeType not yet supported',
-                  );
-                  return;
-                }
-                Uint8List bytes = await file.readAsBytes();
-                final decodedImage = await decodeImageFromList(bytes);
-                final imageDraft = client
-                    .imageDraft(file.path, mimeType)
-                    .size(bytes.length)
-                    .width(decodedImage.width)
-                    .height(decodedImage.height);
-                await draft.addSlide(imageDraft);
-              }
-
-              await draft.send();
-
-              // reset fields
-              ref.read(textProvider.notifier).state.text = '';
-              ref.read(selectedImageProvider.notifier).state = null;
-              // close both
-              EasyLoading.dismiss();
-
-              // We are doing as expected, but the lints triggers.
-              // ignore: use_build_context_synchronously
-              if (!context.mounted) {
-                return;
-              }
-              // closing the sidebar.
-              Navigator.of(context, rootNavigator: true).pop();
-              // FIXME due to #718. well lets at least try forcing a refresh upon route.
-              ref.invalidate(newsListProvider);
-              // Move to home which shows the news.
-              context.goNamed(Routes.main.name);
-            } catch (err) {
-              EasyLoading.showError('$displayMsg failed: \n $err"');
-            }
-          },
+          onPressed: _handleCreateNews,
           child: const Text('Post Update'),
         ),
       ],
     );
+  }
+
+  Future<void> _handleCreateNews() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    final client = ref.read(alwaysClientProvider);
+    final spaceId = ref.read(selectedSpaceIdProvider);
+    final file = ref.read(selectedImageProvider);
+    final caption = ref.read(textProvider);
+
+    String displayMsg =
+        file == null ? 'Posting image update' : 'Posting text update';
+    EasyLoading.show(status: displayMsg);
+    try {
+      final space = await ref.read(spaceProvider(spaceId!).future);
+      NewsEntryDraft draft = space.newsDraft();
+      if (file == null) {
+        final textDraft = client.textMarkdownDraft(caption.text);
+        await draft.addSlide(textDraft);
+      } else {
+        String? mimeType = file.mimeType ?? lookupMimeType(file.path);
+        if (mimeType == null) {
+          EasyLoading.showError('Invalid media format');
+          return;
+        }
+        if (!mimeType.startsWith('image/')) {
+          EasyLoading.showError('Posting of $mimeType not yet supported');
+          return;
+        }
+        Uint8List bytes = await file.readAsBytes();
+        final decodedImage = await decodeImageFromList(bytes);
+        final imageDraft = client
+            .imageDraft(file.path, mimeType)
+            .size(bytes.length)
+            .width(decodedImage.width)
+            .height(decodedImage.height);
+        await draft.addSlide(imageDraft);
+      }
+
+      await draft.send();
+
+      // reset fields
+      ref.read(textProvider.notifier).state.text = '';
+      ref.read(selectedImageProvider.notifier).state = null;
+      // close both
+      EasyLoading.dismiss();
+
+      // We are doing as expected, but the lints triggers.
+      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
+      // closing the sidebar.
+      Navigator.of(context, rootNavigator: true).pop();
+      // FIXME due to #718. well lets at least try forcing a refresh upon route.
+      ref.invalidate(newsListProvider);
+      // Move to home which shows the news.
+      context.goNamed(Routes.main.name);
+    } catch (err) {
+      EasyLoading.showError('$displayMsg failed: \n $err"');
+    }
   }
 }
 
