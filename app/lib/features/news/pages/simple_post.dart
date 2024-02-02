@@ -58,18 +58,13 @@ class _SimpleNewsPostState extends ConsumerState<SimpleNewsPost> {
             if (!_formKey.currentState!.validate()) {
               return;
             }
-            final client = ref.read(clientProvider)!;
+            final client = ref.read(alwaysClientProvider);
             final spaceId = ref.read(selectedSpaceIdProvider);
             final file = ref.read(selectedImageProvider);
             final caption = ref.read(textProvider);
-            late String displayMsg;
 
-            if (file == null) {
-              displayMsg = 'Posting image update';
-            } else {
-              displayMsg = 'Posting text update';
-            }
-
+            String displayMsg =
+                file == null ? 'Posting image update' : 'Posting text update';
             EasyLoading.show(status: displayMsg);
             try {
               final space = await ref.read(spaceProvider(spaceId!).future);
