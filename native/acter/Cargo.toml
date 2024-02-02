@@ -21,7 +21,7 @@ proxyman = ["dep:reqwest", "dep:openssl"]
 [build-dependencies]
 ffi-gen = { git = "https://github.com/acterglobal/ffi-gen" }
 cbindgen = "0.26.0"
-uniffi = { git = "https://github.com/mozilla/uniffi-rs/", features = [ "build" ] }
+uniffi = { version = "0.26.1", features = [ "build" ] }
 
 [dependencies]
 anyhow = "1.0.79"
@@ -59,7 +59,7 @@ uuid = { version = "1.6.1", features = ["v4"] }
 pulldown-cmark = { version = "0.9.3", default-features = false }
 
 # for uniffi support
-uniffi = { git = "https://github.com/mozilla/uniffi-rs/", features = ["cli"], optional = true }
+uniffi = { version = "0.26.1", features = ["cli"], optional = true }
 thiserror = { version = "1.0.56", optional = true }
 
 # for proxyman support
