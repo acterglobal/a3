@@ -62,7 +62,7 @@ git = "https://github.com/ruma/ruma"
 rev = "684ffc789877355bd25269451b2356817c17cc3f"
 
 [workspace.dependencies]
-strum = { version = "0.25.0", features = ["derive"] }
+strum = { version = "0.26.1", features = ["derive"] }
 
 [profile.release]
 panic = "unwind"
