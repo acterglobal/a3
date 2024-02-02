@@ -1,5 +1,6 @@
 use anyhow::Result;
-use matrix_sdk::ruma::{api::client::directory::get_public_rooms_filtered, assign};
+use ruma::assign;
+use ruma_client_api::directory::get_public_rooms_filtered;
 use ruma_common::{
     directory::{Filter, PublicRoomJoinRule, PublicRoomsChunk, RoomNetwork, RoomTypeFilter},
     room::RoomType,
@@ -96,7 +97,7 @@ impl PublicSearchResult {
     }
 
     pub fn total_room_count_estimate(&self) -> Option<u64> {
-        self.resp.total_room_count_estimate.map(Into::into)
+        self.resp.total_room_count_estimate.map(u64::from)
     }
 
     pub fn chunks(&self) -> Vec<PublicSearchResultItem> {

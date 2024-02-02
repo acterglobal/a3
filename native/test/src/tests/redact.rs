@@ -69,6 +69,7 @@ async fn message_redaction() -> Result<()> {
     let redact_id = convo
         .redact_message(
             received.clone().to_string(),
+            user.user_id()?.to_string(),
             Some("redact-test".to_string()),
             None,
         )

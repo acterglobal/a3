@@ -302,7 +302,11 @@ object NewsSlide {
 }
 
 object NewsSlideDraft {
-    
+    /// add reference for this slide draft
+    fn add_reference(reference: ObjRef);
+
+    /// unset references for this slide draft
+    fn unset_references();
 }
 
 /// A news entry
@@ -345,6 +349,9 @@ object NewsEntryDraft {
 
     /// change position of slides draft of this news entry
     fn swap_slides(from: u8, to:u8);
+
+    /// get news slide set for this news entry draft
+    fn slides() -> Vec<NewsSlideDraft>;
 
     /// clear slides
     fn unset_slides();
@@ -1108,7 +1115,8 @@ object Convo {
     fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
 
     /// redact any message (including text/image/file and reaction)
-    fn redact_message(event_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
+    /// sender_id refers to the user that sent original msg
+    fn redact_message(event_id: string, sender_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
@@ -1837,7 +1845,8 @@ enum MemberPermission {
     CanBan,
     CanKick,
     CanInvite,
-    CanRedact,
+    CanRedactOwn,
+    CanRedactOther,
     CanTriggerRoomNotification,
     CanUpgradeToActerSpace,
     CanSetName,

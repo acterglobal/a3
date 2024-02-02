@@ -7,9 +7,10 @@ use acter_core::models::ActerModel;
 use anyhow::{bail, Context, Result};
 use clap::{crate_version, Parser, Subcommand};
 use futures::StreamExt;
-use matrix_sdk::{ruma::api::client::room::Visibility, HttpError};
+use matrix_sdk::HttpError;
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
-use matrix_sdk_sqlite::make_store_config;
+use matrix_sdk_sqlite::SqliteStateStore;
+use ruma_client_api::room::Visibility;
 use ruma_common::OwnedUserId;
 use std::collections::HashMap;
 use tracing::{error, info, trace};
@@ -103,7 +104,8 @@ impl<'a> Mock<'a> {
 
                 let store_config = if self.opts.persist {
                     let path = sanitize(".local", &username);
-                    make_store_config(&path, Some(&username)).await?
+                    let store = SqliteStateStore::open(&path, Some(&username)).await?;
+                    StoreConfig::new().state_store(store)
                 } else {
                     StoreConfig::new().state_store(MemoryStore::new())
                 };

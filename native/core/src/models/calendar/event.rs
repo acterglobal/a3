@@ -38,7 +38,7 @@ impl CalendarEvent {
     }
 
     pub fn description(&self) -> Option<TextMessageContent> {
-        self.inner.description.clone().map(Into::into)
+        self.inner.description.clone().map(TextMessageContent::from)
     }
 
     pub fn room_id(&self) -> &RoomId {

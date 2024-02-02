@@ -41,9 +41,9 @@ use matrix_sdk::{
     deserialized_responses::SyncOrStrippedState,
     event_handler::{Ctx, EventHandlerHandle},
     room::{Messages, MessagesOptions, Room as SdkRoom},
-    ruma::api::client::state::send_state_event,
 };
 use matrix_sdk_ui::timeline::RoomExt;
+use ruma_client_api::state::send_state_event;
 use ruma_common::{
     directory::RoomTypeFilter, exports, serde::Raw, OwnedRoomAliasId, OwnedRoomId, RoomAliasId,
     RoomId, RoomOrAliasId, ServerName,
