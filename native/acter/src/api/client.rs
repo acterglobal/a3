@@ -13,20 +13,19 @@ use futures::{
 };
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
-    config::SyncSettings,
-    event_handler::EventHandlerHandle,
-    media::MediaRequest,
-    room::Room as SdkRoom,
-    ruma::api::client::{
-        error::{ErrorBody, ErrorKind},
-        push::get_notifications,
-        Error,
-    },
+    config::SyncSettings, deserialized_responses::RawAnySyncOrStrippedTimelineEvent,
+    event_handler::EventHandlerHandle, media::MediaRequest, room::Room as SdkRoom,
     Client as SdkClient, LoopCtrl, RoomState, RumaApiError,
 };
+use ruma_client_api::{
+    error::{ErrorBody, ErrorKind},
+    push::get_notifications,
+    Error,
+};
 use ruma_common::{
-    device_id, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedServerName,
-    OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
+    device_id, IdParseError, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri,
+    OwnedRoomAliasId, OwnedRoomId, OwnedServerName, OwnedUserId, RoomAliasId, RoomId,
+    RoomOrAliasId, UserId,
 };
 use ruma_events::room::MediaSource;
 use std::{
@@ -287,11 +286,19 @@ impl Drop for SyncState {
 impl Client {
     fn refresh_history_on_start(
         &self,
+        first_sync_task: Mutable<Option<JoinHandle<Result<()>>>>,
         history: Mutable<HistoryLoadState>,
         room_handles: RoomHandlers,
-    ) -> JoinHandle<Result<()>> {
+    ) {
         let me = self.clone();
-        tokio::spawn(async move {
+        let first_sync_task_inner = first_sync_task.clone();
+        let mut first_sync_inner = first_sync_task.lock_mut();
+        if let Some(inner) = first_sync_inner.deref() {
+            // we drop the existing;
+            inner.abort();
+        }
+
+        *first_sync_inner = Some(tokio::spawn(async move {
             trace!(user_id=?me.user_id_ref(), "refreshing history");
             let mut spaces = me.spaces().await?;
             let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
@@ -327,8 +334,10 @@ impl Client {
                     .set_loading(space.room_id().to_owned(), false);
             }))
             .await;
+            // once done, let's reset the first_sync_task to clear it from memory
+            first_sync_task_inner.set(None);
             Ok(())
-        })
+        }));
     }
 
     async fn refresh_history_on_way(
@@ -405,7 +414,7 @@ impl Client {
         let server_names = server_names
             .into_iter()
             .map(OwnedServerName::try_from)
-            .collect::<Result<Vec<OwnedServerName>, ruma_common::IdParseError>>()?;
+            .collect::<Result<Vec<OwnedServerName>, IdParseError>>()?;
         let c = self.clone();
         RUNTIME
             .spawn(async move {
@@ -678,11 +687,11 @@ impl Client {
                             w.has_first_synced = true;
                         };
                         // background and keep the handle around.
-                        let history_first_sync = me.refresh_history_on_start(
+                        me.refresh_history_on_start(
+                            first_sync_task.clone(),
                             history_loading.clone(),
                             room_handles.clone(),
                         );
-                        first_sync_task.set(Some(history_first_sync)); // keep task in global variable to avoid too early free of temporary varible in release build
                     } else {
                         // see if we have new spaces to catch up upon
                         let mut new_spaces = Vec::new();
@@ -734,10 +743,21 @@ impl Client {
                             w.is_syncing = true;
                         }
                     }
-                    for ev in response.notifications.into_values() {
+                    for (room_id, ev) in response.notifications {
                         for item in ev {
-                            trace!("Sending notification");
-                            notifications.send(item);
+                            if let RawAnySyncOrStrippedTimelineEvent::Sync(evt) = item.event {
+                                trace!("Sending notification");
+                                let notif = get_notifications::v3::Notification::new(
+                                    item.actions.to_owned(),
+                                    evt,
+                                    false,
+                                    room_id.clone(),
+                                    MilliSecondsSinceUnixEpoch::now(),
+                                );
+                                notifications.send(notif);
+                            } else {
+                                warn!("This notification is not a sync event");
+                            }
                         }
                     }
 

@@ -100,7 +100,7 @@ impl Task {
 }
 
 impl ActerModel for Task {
-    fn indizes(&self, user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
+    fn indizes(&self, user_id: &UserId) -> Vec<String> {
         let tasks_key = KEYS::TASKS;
         let task_list_id_idx = format!("{}::{tasks_key}", self.inner.task_list_id.event_id);
         if self.is_assigned(user_id) {
@@ -172,7 +172,7 @@ pub struct TaskUpdate {
 }
 
 impl ActerModel for TaskUpdate {
-    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
+    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
         vec![format!("{:}::history", self.inner.task.event_id)]
     }
 
@@ -236,7 +236,7 @@ impl TaskSelfAssign {
 }
 
 impl ActerModel for TaskSelfAssign {
-    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
+    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
         vec![format!("{:}::history", self.inner.task.event_id)]
     }
 
@@ -291,7 +291,7 @@ impl TaskSelfUnassign {
 }
 
 impl ActerModel for TaskSelfUnassign {
-    fn indizes(&self, _user_id: &matrix_sdk::ruma::UserId) -> Vec<String> {
+    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
         vec![format!("{:}::history", self.inner.task.event_id)]
     }
 

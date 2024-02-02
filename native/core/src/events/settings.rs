@@ -1,5 +1,6 @@
 use derive_builder::Builder;
-use ruma_events::{macros::EventContent, EmptyStateKey};
+use ruma_events::EmptyStateKey;
+use ruma_macros::EventContent;
 use serde::{Deserialize, Serialize};
 
 pub static APP_SETTINGS_FIELD: &str = "global.acter.app_settings";

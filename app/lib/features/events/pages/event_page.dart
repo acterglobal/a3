@@ -49,7 +49,7 @@ class CalendarEventPage extends ConsumerWidget {
         );
       }
 
-      if (memb.canString('CanRedact') ||
+      if (memb.canString('CanRedactOwn') &&
           memb.userId().toString() == event.sender().toString()) {
         final roomId = event.roomIdStr();
         actions.addAll([
