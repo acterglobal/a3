@@ -1146,12 +1146,12 @@ class Api {
   Future<bool> destroyLocalData(
     String basePath,
     String? mediaCacheBasePath,
-    String userId,
+    String username,
     String defaultHomeserverName,
   ) {
     final tmp0 = basePath;
     final tmp4 = mediaCacheBasePath;
-    final tmp10 = userId;
+    final tmp10 = username;
     final tmp14 = defaultHomeserverName;
     var tmp1 = 0;
     var tmp2 = 0;

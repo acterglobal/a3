@@ -33,7 +33,7 @@ fn guest_client(base_path: string, media_cache_base_path: string, default_homese
 fn register_with_token(base_path: string, media_cache_base_path: string, username: string, password: string, registration_token: string, default_homeserver_name: string, default_homeserver_url: string, device_name: string) -> Future<Result<Client>>;
 
 /// destroy the local data of a session
-fn destroy_local_data(base_path: string, media_cache_base_path: Option<string>, userId: string, default_homeserver_name: string) -> Future<Result<bool>>;
+fn destroy_local_data(base_path: string, media_cache_base_path: Option<string>, username: string, default_homeserver_name: string) -> Future<Result<bool>>;
 
 fn duration_from_secs(secs: u64) -> EfkDuration;
 
