@@ -210,10 +210,10 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       final calendarEvent =
           await client.waitForCalendarEvent(eventId.toString(), null);
 
-      /// Event is created, set RSVP status to `Yes` by default for host.
+      /// Event is created, set RSVP status to `yes` by default for host.
       final rsvpManager = await calendarEvent.rsvpManager();
       final rsvpDraft = rsvpManager.rsvpDraft();
-      rsvpDraft.status('Yes');
+      rsvpDraft.status('yes');
       await rsvpDraft.send();
       debugPrint('Created Calendar Event: ${eventId.toString()}');
       EasyLoading.dismiss();

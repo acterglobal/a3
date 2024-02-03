@@ -103,7 +103,7 @@ impl Client {
                         let rsvp_manager = cal_event.rsvp_manager().await?;
                         let status = rsvp_manager.my_status().await?;
                         match status.as_str() {
-                            "Yes" | "Maybe" => {
+                            "yes" | "maybe" => {
                                 cal_events.push(cal_event);
                             }
                             _ => {}
@@ -145,7 +145,7 @@ impl Client {
                         let rsvp_manager = cal_event.rsvp_manager().await?;
                         let status = rsvp_manager.my_status().await?;
                         match status.as_str() {
-                            "Yes" | "Maybe" => {
+                            "yes" | "maybe" => {
                                 cal_events.push(cal_event);
                             }
                             _ => {}
@@ -303,7 +303,7 @@ impl RsvpManager {
                 if let Some(entry) = entries.get(&my_id) {
                     return Ok(entry.status.to_string());
                 }
-                Ok("Pending".to_string())
+                Ok("pending".to_string()) // lowercase
             })
             .await?
     }

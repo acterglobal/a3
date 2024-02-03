@@ -133,11 +133,11 @@ class CalendarEventPage extends ConsumerWidget {
     Set<RSVP> rsvp = <RSVP>{RSVP.Pending};
     myRsvpStatus.maybeWhen(
       data: (status) {
-        if (status == 'Yes') {
+        if (status == 'yes') {
           rsvp = <RSVP>{RSVP.Yes};
-        } else if (status == 'Maybe') {
+        } else if (status == 'maybe') {
           rsvp = <RSVP>{RSVP.Maybe};
-        } else if (status == 'No') {
+        } else if (status == 'no') {
           rsvp = <RSVP>{RSVP.No};
         } else {
           rsvp = <RSVP>{RSVP.Pending};
@@ -327,7 +327,7 @@ class CalendarEventPage extends ConsumerWidget {
                       onSelectionChanged: (Set<RSVP> rsvp) async {
                         await onRsvp(
                           context,
-                          rsvp.first.name,
+                          rsvp.first.name.toLowerCase(),
                           ref,
                         );
                         event = ref.refresh(calendarEventProvider(calendarId));

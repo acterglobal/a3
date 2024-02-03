@@ -8,7 +8,8 @@ use super::BelongsTo;
 
 /// RSVP status
 #[derive(Clone, Debug, Serialize, Deserialize, Display)]
-#[serde(tag = "type")]
+#[serde(rename_all = "lowercase", tag = "type")]
+#[strum(serialize_all = "lowercase")]
 pub enum RsvpStatus {
     Yes,
     Maybe,
@@ -20,9 +21,9 @@ impl FromStr for RsvpStatus {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "Yes" => Ok(RsvpStatus::Yes),
-            "No" => Ok(RsvpStatus::No),
-            "Maybe" => Ok(RsvpStatus::Maybe),
+            "yes" => Ok(RsvpStatus::Yes),
+            "no" => Ok(RsvpStatus::No),
+            "maybe" => Ok(RsvpStatus::Maybe),
             _ => Err(()),
         }
     }

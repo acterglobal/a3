@@ -29331,7 +29331,7 @@ class CalendarEvent {
     return tmp2;
   }
 
-  /// get my RSVP status, one of Yes/Maybe/No/Pending
+  /// get my RSVP status, one of yes/maybe/no/pending
   Future<String> myRsvpStatus() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -30152,7 +30152,7 @@ class RsvpManager {
     return tmp2;
   }
 
-  /// get Yes/Maybe/No/Pending for the user's own status
+  /// get yes/maybe/no/pending for the user's own status
   Future<String> myStatus() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -30167,7 +30167,7 @@ class RsvpManager {
     return tmp2;
   }
 
-  /// get the count of Yes/Maybe/No
+  /// get the count of yes/maybe/no
   Future<int> countAtStatus(
     String status,
   ) {
@@ -30201,7 +30201,7 @@ class RsvpManager {
     return tmp6;
   }
 
-  /// get the user-ids that have responded for Yes/Maybe/No
+  /// get the user-ids that have responded for yes/maybe/no
   Future<FfiListUserId> usersAtStatus(
     String status,
   ) {
