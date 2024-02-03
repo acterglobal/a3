@@ -444,7 +444,9 @@ async fn news_like_reaction_test() -> Result<()> {
         tmp_file.path().to_string_lossy().to_string(),
         "image/png".to_string(),
     );
-    draft.add_slide(Box::new(image_draft)).await?;
+    draft
+        .add_slide(Box::new(image_draft.into_news_slide_draft()))
+        .await?;
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -552,7 +554,9 @@ async fn news_unlike_reaction_test() -> Result<()> {
         tmp_file.path().to_string_lossy().to_string(),
         "image/png".to_string(),
     );
-    draft.add_slide(Box::new(image_draft)).await?;
+    draft
+        .add_slide(Box::new(image_draft.into_news_slide_draft()))
+        .await?;
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
