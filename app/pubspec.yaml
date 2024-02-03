@@ -48,6 +48,7 @@ dependencies:
   flutter_keyboard_visibility: ^6.0.0
   expandable_text: ^2.3.0
   cached_network_image: ^3.2.1
+  fc_native_video_thumbnail: ^0.7.0
   flutter_mentions:
     git:
       url: https://github.com/gtalha07/flutter_mentions.git
@@ -121,6 +122,7 @@ dependencies:
   media_kit_libs_linux: any
   video_player: ^2.8.1
   share_plus: ^7.2.1
+  carousel_indicator: ^1.0.6
 
 # FIXME keep until a new version has been published
 dependency_overrides:

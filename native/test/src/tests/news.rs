@@ -96,7 +96,9 @@ async fn news_smoketest() -> Result<()> {
 
     let mut draft = main_space.news_draft()?;
     let text_draft = user.text_plain_draft("This is text slide".to_string());
-    draft.add_slide(Box::new(text_draft)).await?;
+    draft
+        .add_slide(Box::new(text_draft.into_news_slide_draft()))
+        .await?;
     let event_id = draft.send().await?;
     print!("draft sent event id: {}", event_id);
 
@@ -124,7 +126,9 @@ async fn news_plain_text_test() -> Result<()> {
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
     let text_draft = user.text_plain_draft("This is a simple text".to_owned());
-    draft.add_slide(Box::new(text_draft)).await?;
+    draft
+        .add_slide(Box::new(text_draft.into_news_slide_draft()))
+        .await?;
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -172,7 +176,9 @@ async fn news_markdown_text_test() -> Result<()> {
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
     let text_draft = user.text_markdown_draft("## This is a simple text".to_owned());
-    draft.add_slide(Box::new(text_draft)).await?;
+    draft
+        .add_slide(Box::new(text_draft.into_news_slide_draft()))
+        .await?;
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -230,7 +236,9 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
         tmp_file.path().to_string_lossy().to_string(),
         "image/jpg".to_string(),
     );
-    draft.add_slide(Box::new(image_draft)).await?;
+    draft
+        .add_slide(Box::new(image_draft.into_news_slide_draft()))
+        .await?;
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -283,7 +291,9 @@ async fn news_png_image_with_text_test() -> Result<()> {
         tmp_file.path().to_string_lossy().to_string(),
         "image/png".to_string(),
     );
-    draft.add_slide(Box::new(image_draft)).await?;
+    draft
+        .add_slide(Box::new(image_draft.into_news_slide_draft()))
+        .await?;
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -353,10 +363,18 @@ async fn news_multiple_slide_test() -> Result<()> {
     );
 
     // we add three slides
-    draft.add_slide(Box::new(image_draft)).await?;
-    draft.add_slide(Box::new(markdown_draft)).await?;
-    draft.add_slide(Box::new(plain_draft)).await?;
-    draft.add_slide(Box::new(video_draft)).await?;
+    draft
+        .add_slide(Box::new(image_draft.into_news_slide_draft()))
+        .await?;
+    draft
+        .add_slide(Box::new(markdown_draft.into_news_slide_draft()))
+        .await?;
+    draft
+        .add_slide(Box::new(plain_draft.into_news_slide_draft()))
+        .await?;
+    draft
+        .add_slide(Box::new(video_draft.into_news_slide_draft()))
+        .await?;
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
