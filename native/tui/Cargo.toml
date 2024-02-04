@@ -20,7 +20,7 @@ mime = "0.3.17"
 tokio = { version = "1", features = ["full", "time"] }
 tracing = { version = "0.1.40", features = ["log"] }
 tui = "0.19.0"
-tui-logger = { git = "https://github.com/gin66/tui-logger" }
+tui-logger = "0.9.6"
 
 [dependencies.acter-core]
 path = "../core"

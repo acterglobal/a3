@@ -51,7 +51,6 @@ class _NewsWidgetState extends ConsumerState<NewsWidget>
         }
         return PageView.builder(
           itemCount: data.length,
-          onPageChanged: (int page) {},
           scrollDirection: Axis.vertical,
           itemBuilder: (context, index) => InkWell(
             onDoubleTap: () {

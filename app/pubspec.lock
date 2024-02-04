@@ -193,6 +193,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  carousel_indicator:
+    dependency: "direct main"
+    description:
+      name: carousel_indicator
+      sha256: "93019cfd05b40051663b92866d5037d98e7dffb005f6c8227c079d7e00ef152b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.6"
   characters:
     dependency: transitive
     description:
@@ -450,6 +458,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.1"
+  fc_native_video_thumbnail:
+    dependency: "direct main"
+    description:
+      name: fc_native_video_thumbnail
+      sha256: "56f5fd4cb9b928b410363f80b13aca5ae503137bfa0d8c250821ce33d28351a4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.0"
   ffi:
     dependency: transitive
     description:
