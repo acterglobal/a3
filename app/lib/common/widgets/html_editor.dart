@@ -211,27 +211,50 @@ class _HtmlEditorState extends State<HtmlEditor> {
               ),
             ),
           )
-        : MobileToolbarV2(
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            iconColor: Theme.of(context).colorScheme.onPrimaryContainer,
+        : MobileFloatingToolbar(
             editorState: editorState,
-            toolbarItems: [
-              textDecorationMobileToolbarItemV2,
-              buildTextAndBackgroundColorMobileToolbarItem(),
-              headingMobileToolbarItem,
-              blocksMobileToolbarItem,
-              linkMobileToolbarItem,
-              codeMobileToolbarItem,
-              dividerMobileToolbarItem,
-            ],
-            child: AppFlowyEditor(
-              editable: widget.editable,
-              editorStyle: customEditorStyle(false),
-              editorScrollController: editorScrollController,
+            editorScrollController: editorScrollController,
+            toolbarBuilder: (context, anchor, closeToolbar) {
+              return AdaptiveTextSelectionToolbar.editable(
+                clipboardStatus: ClipboardStatus.pasteable,
+                onCopy: () {
+                  copyCommand.execute(editorState);
+                  closeToolbar();
+                },
+                onCut: () => cutCommand.execute(editorState),
+                onPaste: () => pasteCommand.execute(editorState),
+                onSelectAll: () => selectAllCommand.execute(editorState),
+                onLiveTextInput: null,
+                onLookUp: null,
+                onSearchWeb: null,
+                onShare: null,
+                anchors: TextSelectionToolbarAnchors(
+                  primaryAnchor: anchor,
+                ),
+              );
+            },
+            child: MobileToolbarV2(
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              iconColor: Theme.of(context).colorScheme.onPrimaryContainer,
               editorState: editorState,
-              autoFocus: widget.autoFocus,
-              header: widget.header,
-              footer: finalFooter,
+              toolbarItems: [
+                textDecorationMobileToolbarItemV2,
+                buildTextAndBackgroundColorMobileToolbarItem(),
+                headingMobileToolbarItem,
+                blocksMobileToolbarItem,
+                linkMobileToolbarItem,
+                codeMobileToolbarItem,
+                dividerMobileToolbarItem,
+              ],
+              child: AppFlowyEditor(
+                editable: widget.editable,
+                editorStyle: customEditorStyle(false),
+                editorScrollController: editorScrollController,
+                editorState: editorState,
+                autoFocus: widget.autoFocus,
+                header: widget.header,
+                footer: finalFooter,
+              ),
             ),
           );
   }

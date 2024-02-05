@@ -113,14 +113,13 @@ class _PinListItemState extends ConsumerState<PinListItem> {
                       children: [
                         ConstrainedBox(
                           constraints: BoxConstraints(
-                            maxWidth: constraints.maxWidth * 0.5,
+                            maxWidth: constraints.maxWidth * 0.7,
                           ),
                           child: Visibility(
                             visible: pinContent.isNotEmpty,
                             child: Html(
-                              padding: const EdgeInsets.all(0),
                               data: pinContent,
-                              maxLines: widget.showSpace ? 2 : 1,
+                              maxLines: 1,
                               defaultTextStyle: Theme.of(context)
                                   .textTheme
                                   .bodySmall!

@@ -13,13 +13,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class PinPage extends ConsumerWidget {
+class PinPage extends ConsumerStatefulWidget {
   final String pinId;
   const PinPage({
     super.key,
     required this.pinId,
   });
 
+  @override
+  ConsumerState<PinPage> createState() => _PinPageConsumerState();
+}
+
+class _PinPageConsumerState extends ConsumerState<PinPage> {
+  final ScrollController controller = ScrollController();
   Widget buildActions(
     BuildContext context,
     WidgetRef ref,
@@ -30,7 +36,7 @@ class PinPage extends ConsumerWidget {
     final membership = ref.watch(roomMembershipProvider(spaceId));
     if (membership.valueOrNull != null) {
       final memb = membership.requireValue!;
-      
+
       if (memb.canString('CanRedactOwn') &&
           memb.userId().toString() == pin.sender().toString()) {
         final roomId = pin.roomIdStr();
@@ -70,7 +76,7 @@ class PinPage extends ConsumerWidget {
                 title: 'Report this Pin',
                 description:
                     'Report this content to your homeserver administrator. Please note that your administrator won\'t be able to read or view files in encrypted spaces.',
-                eventId: pinId,
+                eventId: widget.pinId,
                 roomId: pin.roomIdStr(),
                 senderId: pin.sender().toString(),
                 isSpace: true,
@@ -101,12 +107,13 @@ class PinPage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     // ignore: unused_local_variable
-    final pin = ref.watch(pinProvider(pinId));
+    final pin = ref.watch(pinProvider(widget.pinId));
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       body: CustomScrollView(
+        controller: controller,
         slivers: [
           pin.when(
             data: (data) => SliverAppBar(
@@ -164,9 +171,9 @@ class PinPage extends ConsumerWidget {
             error: (err, st) => const SliverAppBar(),
             loading: () => const SliverAppBar(),
           ),
-          SliverFillRemaining(
+          SliverToBoxAdapter(
             child: pin.when(
-              data: (pin) => PinItem(pin),
+              data: (pin) => PinItem(pin, controller),
               error: (error, stack) => Center(
                 child: Text('Loading failed: $error'),
               ),

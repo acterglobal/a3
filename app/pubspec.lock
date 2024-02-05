@@ -45,10 +45,10 @@ packages:
     dependency: "direct main"
     description:
       name: appflowy_editor
-      sha256: "44d9bd11f93deeec9ce5f719a8b8a1ae71b0ab3976d0d583ed72345107a0fb80"
+      sha256: caed24f2ff146f8e72d808eb846830cf89f3ed493ec2655c3c4393ce20a60d46
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.0"
+    version: "2.3.1"
   archive:
     dependency: transitive
     description:
@@ -1169,10 +1169,10 @@ packages:
     dependency: transitive
     description:
       name: markdown
-      sha256: acf35edccc0463a9d7384e437c015a3535772e09714cf60e07eeef3a15870dcd
+      sha256: "1b134d9f8ff2da15cb298efe6cd8b7d2a78958c1b00384ebcbdf13fe340a6c90"
       url: "https://pub.dev"
     source: hosted
-    version: "7.1.1"
+    version: "7.2.1"
   matcher:
     dependency: transitive
     description:

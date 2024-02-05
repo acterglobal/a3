@@ -10,7 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PinItem extends ConsumerStatefulWidget {
   final ActerPin pin;
-  const PinItem(this.pin, {super.key});
+  final ScrollController? controller;
+  const PinItem(this.pin, this.controller, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _PinItemState();
@@ -82,22 +83,26 @@ class _PinItemState extends ConsumerState<PinItem> {
       );
     }
     content.add(
-      Expanded(
-        child: HtmlEditor(
-          editable: canEdit,
-          autoFocus: autoFocus,
-          content: widget.pin.contentText(),
-          footer: !canEdit ? const SizedBox() : null,
-          onCancel: () {},
-          onSave: (plain, htmlBody) async {
-            if (_formkey.currentState!.validate()) {
-              pinEditNotifier.setLink(_linkController.text);
-              pinEditNotifier.setPlainText(plain);
-              pinEditNotifier.setHtml(htmlBody);
-              final res = await pinEditNotifier.onSave(context);
-              debugPrint('PIN EDITED: $res');
-            }
-          },
+      Flexible(
+        child: Container(
+          height: MediaQuery.of(context).size.height * 0.6,
+          constraints:
+              BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
+          child: HtmlEditor(
+            editable: canEdit,
+            autoFocus: autoFocus,
+            content: widget.pin.contentText(),
+            footer: !canEdit ? const SizedBox() : null,
+            onCancel: () {},
+            onSave: (plain, htmlBody) async {
+              if (_formkey.currentState!.validate()) {
+                pinEditNotifier.setLink(_linkController.text);
+                pinEditNotifier.setPlainText(plain);
+                pinEditNotifier.setHtml(htmlBody);
+                await pinEditNotifier.onSave(context);
+              }
+            },
+          ),
         ),
       ),
     );
@@ -108,6 +113,7 @@ class _PinItemState extends ConsumerState<PinItem> {
         key: _formkey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: content,
         ),
       ),
