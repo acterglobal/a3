@@ -143,10 +143,14 @@ class _PinListItemState extends ConsumerState<PinListItem> {
                             const Spacer(),
                             IconButton(
                               icon: acterPin.isLink()
-                                  ? const Icon(Icons.open_in_full_sharp,
-                                      size: 18)
-                                  : const Icon(Icons.chevron_right_sharp,
-                                      size: 18),
+                                  ? const Icon(
+                                      Icons.open_in_full_sharp,
+                                      size: 18,
+                                    )
+                                  : const Icon(
+                                      Icons.chevron_right_sharp,
+                                      size: 18,
+                                    ),
                               onPressed: openItem,
                             ),
                           ],
