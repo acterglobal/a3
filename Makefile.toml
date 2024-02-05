@@ -667,7 +667,6 @@ script = [
 ]
 
 [tasks.ui-test-manager]
-private = true
 # condition = { platforms = ["mac"], env_true = ["RELEASE"] }
 script_runner = "@duckscript"
 script = [
@@ -701,7 +700,9 @@ script = [
         --disable-service-auth-codes \
         --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib \
         --dart-define CONVENIENT_TEST_MANAGER_HOST=10.0.2.2 \
-        --dart-define DEFAULT_HOMESERVER_URL=http://10.0.2.2:8118/ \
+        --dart-define RAGESHAKE_URL=http://10.0.2.2:9110/api/submit \
+        --dart-define RAGESHAKE_LISTING_URL=http://10.0.2.2:9110/api/listing \
+        --dart-define DEFAULT_HOMESERVER_URL=http:/10.0.2.2:8118/ \
         --dart-define DEFAULT_HOMESERVER_NAME=localhost
     """
 ]
@@ -714,8 +715,10 @@ script = [
         --host-vmservice-port 9753 \
         --disable-service-auth-codes \
         --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib \
-        --dart-define CONVENIENT_TEST_MANAGER_HOST=10.0.2.2 \
-        --dart-define DEFAULT_HOMESERVER_URL=http:/10.0.2.2:8118/ \
+        --dart-define CONVENIENT_TEST_MANAGER_HOST=localhost \
+        --dart-define RAGESHAKE_URL=http://localhost:9110/api/submit \
+        --dart-define RAGESHAKE_LISTING_URL=http://localhost:9110/api/listing \
+        --dart-define DEFAULT_HOMESERVER_URL=http:/localhost:8118/ \
         --dart-define DEFAULT_HOMESERVER_NAME=localhost
     """
 ]

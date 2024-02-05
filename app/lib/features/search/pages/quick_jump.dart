@@ -18,18 +18,24 @@ class QuickjumpDialog extends ConsumerWidget {
             Routes? route,
             bool push = false,
             String? target,
+            Future<void> Function(BuildContext)? custom,
           }) async {
-            if (push) {
-              if (route == null) {
-                await context.push(target!);
-              } else {
-                await context.pushNamed(route.name);
-              }
+            if (custom != null) {
+              await custom(context);
             } else {
-              if (route == null) {
-                context.go(target!);
+              context.pop();
+              if (push) {
+                if (route == null) {
+                  await context.push(target!);
+                } else {
+                  await context.pushNamed(route.name);
+                }
               } else {
-                context.goNamed(route.name);
+                if (route == null) {
+                  context.go(target!);
+                } else {
+                  context.goNamed(route.name);
+                }
               }
             }
           },

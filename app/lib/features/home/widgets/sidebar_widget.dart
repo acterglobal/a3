@@ -1,6 +1,7 @@
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
+import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/providers/navigation.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -35,6 +36,8 @@ class SidebarWidget extends ConsumerWidget {
           // go to the initial location of the selected tab (by index)
           if (item.isSpaceTab) {
             context.go(item.location!);
+          } else if (item.pushToNavigate) {
+            context.push(item.location!);
           } else {
             navigationShell.goBranch(
               tabIndex,
@@ -76,7 +79,7 @@ class SidebarWidget extends ConsumerWidget {
             const Spacer(),
             const Divider(indent: 18, endIndent: 18),
             InkWell(
-              onTap: () => context.pushNamed(Routes.bugReport.name),
+              onTap: () => openBugReport(context),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Column(
