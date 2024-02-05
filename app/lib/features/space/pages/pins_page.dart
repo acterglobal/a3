@@ -101,7 +101,7 @@ class SpacePinsPage extends ConsumerWidget {
                 ),
                 itemBuilder: (context, index) {
                   final pin = pins[index];
-                  return PinListItem(pin: pin);
+                  return PinListItem(pinId: pin.eventIdStr());
                 },
               );
             },
