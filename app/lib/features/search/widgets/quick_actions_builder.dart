@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -13,6 +14,7 @@ class QuickActionsBuilder extends ConsumerWidget {
     Routes? route,
     bool push,
     String? target,
+    Future<void> Function(BuildContext)? custom,
   }) navigateTo;
 
   const QuickActionsBuilder({
@@ -135,6 +137,7 @@ class QuickActionsBuilder extends ConsumerWidget {
                 )
               : null,
           OutlinedButton.icon(
+            key: QuickJumpKeys.bugReport,
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.greenAccent,
               side: const BorderSide(width: 1, color: Colors.greenAccent),
@@ -144,7 +147,12 @@ class QuickActionsBuilder extends ConsumerWidget {
               'Report bug',
               style: Theme.of(context).textTheme.labelMedium,
             ),
-            onPressed: () => navigateTo(route: Routes.bugReport, push: true),
+            onPressed: () async {
+              await navigateTo(custom: (context) async {
+                if (context.canPop()) context.pop();
+                await openBugReport(context);
+              },);
+            },
           ),
         ].where((element) => element != null),
       ),

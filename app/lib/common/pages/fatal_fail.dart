@@ -1,4 +1,3 @@
-
 import 'package:acter/common/dialogs/nuke_confirmation.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -36,11 +35,17 @@ class FatalFailPage extends ConsumerWidget {
               alignment: MainAxisAlignment.center,
               children: [
                 OutlinedButton.icon(
-                  icon:  Icon(Atlas.bomb_thin,
-                    color: Theme.of(context).colorScheme.error,),
-                  label: Text('Nuke local data',
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),),
-                  onPressed: () => customMsgSnackbar(context, 'long press to activate'),
+                  icon: Icon(
+                    Atlas.bomb_thin,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                  label: Text(
+                    'Nuke local data',
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.error),
+                  ),
+                  onPressed: () =>
+                      customMsgSnackbar(context, 'long press to activate'),
                   onLongPress: () => nukeConfirmationDialog(context, ref),
                 ),
                 OutlinedButton.icon(
