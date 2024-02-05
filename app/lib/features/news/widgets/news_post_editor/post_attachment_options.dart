@@ -1,3 +1,4 @@
+import 'package:acter/features/news/model/keys.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
@@ -23,6 +24,7 @@ class PostAttachmentOptions extends StatelessWidget {
           title: Text('New Update'),
         ),
         ListTile(
+          key: NewsUpdateKeys.addTextSlide,
           onTap: () {
             Navigator.of(context).pop();
             if (onTapAddText != null) onTapAddText!();
@@ -31,6 +33,7 @@ class PostAttachmentOptions extends StatelessWidget {
           title: const Text('Add Text Slide'),
         ),
         ListTile(
+          key: NewsUpdateKeys.addImageSlide,
           onTap: () {
             Navigator.of(context).pop();
             if (onTapImage != null) onTapImage!();
@@ -39,6 +42,7 @@ class PostAttachmentOptions extends StatelessWidget {
           title: const Text('Select Picture'),
         ),
         ListTile(
+          key: NewsUpdateKeys.addVideoSlide,
           onTap: () {
             Navigator.of(context).pop();
             if (onTapVideo != null) onTapVideo!();

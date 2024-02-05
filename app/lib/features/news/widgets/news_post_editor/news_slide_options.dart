@@ -2,6 +2,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
@@ -46,6 +47,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           children: [
             if (newsPostSpaceId != null)
               InkWell(
+                key: NewsUpdateKeys.selectSpace,
                 onTap: () async {
                   await ref
                       .read(newsStateProvider.notifier)
@@ -64,6 +66,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
               )
             else
               OutlinedButton(
+                key: NewsUpdateKeys.selectSpace,
                 onPressed: () async {
                   await ref
                       .read(newsStateProvider.notifier)
@@ -74,6 +77,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
             verticalDivider(context),
             Expanded(child: newsSlideListUI(context)),
             IconButton(
+              key: NewsUpdateKeys.newsSubmitBtn,
               onPressed: () => sendNews(context),
               style: ButtonStyle(
                 backgroundColor: MaterialStatePropertyAll(

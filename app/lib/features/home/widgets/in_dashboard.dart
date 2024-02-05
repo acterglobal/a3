@@ -1,5 +1,6 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/widgets/news_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,7 @@ class InDashboard extends StatelessWidget {
                     const NewsWidget(),
                     Visibility(
                       child: IconButton(
+                        key: NewsUpdateKeys.addNewsUpdate,
                         onPressed: () =>
                             context.pushNamed(Routes.actionAddUpdate.name),
                         icon: Icon(

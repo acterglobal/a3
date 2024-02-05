@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:acter/features/news/model/keys.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
@@ -40,6 +41,7 @@ class _ImageSlideState extends State<ImageSlide> {
       builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
         if (snapshot.hasData) {
           return Container(
+            key: NewsUpdateKeys.imageUpdateContent,
             foregroundDecoration: BoxDecoration(
               image: DecorationImage(
                 fit: BoxFit.cover,

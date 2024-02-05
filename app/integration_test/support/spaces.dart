@@ -119,7 +119,7 @@ extension ActerSpace on ConvenientTest {
     await titleField.enterTextWithoutReplace(title);
 
     if (parentSpaceId != null) {
-      await selectSpace(parentSpaceId);
+      await selectSpace(parentSpaceId, SelectSpaceFormField.openKey);
     }
 
     if (onCreateForm != null) {
@@ -139,9 +139,9 @@ extension ActerSpace on ConvenientTest {
     return header.spaceId;
   }
 
-  Future<void> selectSpace(String spaceId) async {
+  Future<void> selectSpace(String spaceId, Key key) async {
     // open the drawer
-    final selectSpacesKey = find.byKey(SelectSpaceFormField.openKey);
+    final selectSpacesKey = find.byKey(key);
     await tester.ensureVisible(selectSpacesKey);
     await selectSpacesKey.tap();
 
