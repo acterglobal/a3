@@ -568,7 +568,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     ChatAttachmentType chatAttachmentType,
   ) async {
     final roomId = widget.convo.getRoomIdStr();
-    final client = ref.read(clientProvider)!;
+    final client = ref.read(alwaysClientProvider);
     final inputState = ref.read(chatInputProvider(roomId));
     final stream = widget.convo.timelineStream();
 
@@ -771,7 +771,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   // push messages in convo
   Future<void> handleSendPressed(String markdownMessage) async {
     final roomId = widget.convo.getRoomIdStr();
-    final client = ref.read(clientProvider)!;
+    final client = ref.read(alwaysClientProvider);
     final inputState = ref.read(chatInputProvider(roomId));
     // image or video is sent automatically
     // user will click "send" button explicitly for text only

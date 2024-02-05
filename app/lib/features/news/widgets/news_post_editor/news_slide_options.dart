@@ -232,7 +232,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
   }
 
   Future<void> sendNews(BuildContext context) async {
-    final client = ref.read(clientProvider)!;
+    final client = ref.read(alwaysClientProvider);
     final spaceId = ref.read(newsStateProvider).newsPostSpaceId;
 
     if (spaceId == null) {
