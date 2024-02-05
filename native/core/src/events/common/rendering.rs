@@ -1,3 +1,4 @@
+use crate::Result;
 pub use csscolorparser::Color;
 use derive_getters::Getters;
 use ruma_events::room::ImageInfo;
@@ -20,12 +21,45 @@ pub enum Position {
 }
 
 /// Customize the color scheme
-#[derive(Clone, Debug, Getters, Deserialize, Serialize)]
+#[derive(Clone, Debug, Getters, Deserialize, Serialize, Default)]
 pub struct Colorize {
     /// The foreground color to be used, as HEX
     color: Option<Color>,
     /// The background color to be used, as HEX
     background: Option<Color>,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct ColorizeBuilder {
+    colorize: Colorize,
+}
+
+impl ColorizeBuilder {
+    pub fn color_from_html(&mut self, color: String) -> Result<bool> {
+        let color = Color::from_html(color)?;
+        self.colorize.color = Some(color);
+        Ok(true)
+    }
+
+    pub fn background_from_html(&mut self, color: String) -> Result<bool> {
+        let color = Color::from_html(color)?;
+        self.colorize.background = Some(color);
+        Ok(true)
+    }
+
+    pub fn unset_color(&mut self) {
+        self.colorize.color = None;
+    }
+    pub fn unset_background(&mut self) {
+        self.colorize.background = None;
+    }
+    pub fn build(self) -> Option<Colorize> {
+        let ColorizeBuilder { colorize } = self;
+        if colorize.color.is_some() || colorize.background.is_some() {
+            return Some(colorize);
+        }
+        None
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

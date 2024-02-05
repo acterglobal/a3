@@ -42,6 +42,9 @@ fn parse_markdown(text: string) -> Option<string>;
 /// create size object to be used for thumbnail download
 fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize>;
 
+// create a new colorize builder
+fn new_colorize_builder(color: Option<string>, background: Option<string>) -> Result<ColorizeBuilder>;
+
 
 //  ########  ########  #### ##     ## #### ######## #### ##     ## ########  ######  
 //  ##     ## ##     ##  ##  ###   ###  ##     ##     ##  ##     ## ##       ##    ## 
@@ -99,6 +102,18 @@ object Colorize {
     fn color() -> Option<EfkColor>;
     /// Background color
     fn background() -> Option<EfkColor>;
+}
+
+/// A builder for Colorize. Allowing you to set (foreground) color and background
+object ColorizeBuilder {
+    /// parse html css-style string to set the color. see https://docs.rs/csscolorparser/latest/csscolorparser/struct.Color.html#method.from_html
+    fn color_from_html(color: string) -> Result<bool>;
+    /// unset the color
+    fn unset_color();
+    /// parse html css-style string to set the background color. see https://docs.rs/csscolorparser/latest/csscolorparser/struct.Color.html#method.from_html
+    fn background_from_html(color: string) -> Result<bool>;
+    /// unset the background color
+    fn unset_background();
 }
 
 object Tag {
@@ -293,6 +308,9 @@ object NewsSlide {
     /// the references linked in this slide
     fn references() -> Vec<ObjRef>;
 
+    /// The color setting
+    fn colors() -> Option<Colorize>;
+
     /// if this is a media, hand over the description
     fn msg_content() -> MsgContent;
     /// if this is a media, hand over the data
@@ -305,6 +323,9 @@ object NewsSlideDraft {
     /// add reference for this slide draft
     fn add_reference(reference: ObjRef);
 
+    /// set the color according to the colorize builder
+    fn color(color: ColorizeBuilder);
+
     /// unset references for this slide draft
     fn unset_references();
 }
@@ -316,8 +337,6 @@ object NewsEntry {
     fn get_slide(pos: u8) -> Option<NewsSlide>;
     /// get all slides of this news item
     fn slides() -> Vec<NewsSlide>;
-    /// The color setting
-    fn colors() -> Option<Colorize>;
 
     /// how many comments on this news entry
     fn comments_count() -> u32;
@@ -347,10 +366,6 @@ object NewsEntryDraft {
     /// clear slides
     fn unset_slides();
 
-    /// set the color for this news entry
-    fn colors(colors: Colorize);
-    fn unset_colors();
-
     /// create this news entry
     fn send() -> Future<Result<EventId>>;
 }
@@ -365,11 +380,6 @@ object NewsEntryUpdateBuilder {
 
     /// set position of slides for this news entry
     fn swap_slides(from: u8, to: u8);
-
-    /// set the color for this news entry
-    fn colors(colors: Colorize);
-    fn unset_colors();
-    fn unset_colors_update();
 
     /// update this news entry
     fn send() -> Future<Result<EventId>>;

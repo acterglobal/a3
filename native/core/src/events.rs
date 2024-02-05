@@ -10,8 +10,8 @@ pub mod tasks;
 pub mod three_pid;
 
 pub use common::{
-    BelongsTo, BrandIcon, Color, Colorize, Date, Icon, Labels, ObjRef, Position, RefDetails,
-    Reference, References, Update, UtcDateTime,
+    BelongsTo, BrandIcon, Color, Colorize, ColorizeBuilder, Date, Icon, Labels, ObjRef, Position,
+    RefDetails, Reference, References, Update, UtcDateTime,
 };
 use ruma_common::exports::{serde::de::Error as SerdeDeError, serde_json as smart_serde_json};
 use ruma_events::{EventTypeDeHelper, StaticEventContent};

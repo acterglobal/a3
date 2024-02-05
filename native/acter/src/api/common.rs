@@ -1,4 +1,4 @@
-use acter_core::events::attachments::AttachmentContent;
+use acter_core::events::{attachments::AttachmentContent, ColorizeBuilder};
 use anyhow::{Context, Result};
 use core::time::Duration;
 use matrix_sdk::media::{MediaFormat, MediaThumbnailSize};
@@ -552,4 +552,18 @@ impl From<Box<ThumbnailSize>> for MediaFormat {
 
 pub fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize> {
     ThumbnailSize::new(width, height)
+}
+
+pub fn new_colorize_builder(
+    color: Option<String>,
+    background: Option<String>,
+) -> Result<ColorizeBuilder> {
+    let mut builder = ColorizeBuilder::default();
+    if let Some(color) = color {
+        builder.color_from_html(color)?;
+    }
+    if let Some(background) = background {
+        builder.background_from_html(background)?;
+    }
+    Ok(builder)
 }

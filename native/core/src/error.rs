@@ -16,6 +16,9 @@ pub enum Error {
     #[error("Error De/serializing: {0}")]
     Serialization(#[from] serde_json::Error),
 
+    #[error("Error Parsing color: {0}")]
+    ColorParsing(#[from] csscolorparser::ParseColorError),
+
     #[error("Error with the matrix sdk Store")]
     Store(#[from] matrix_sdk::StoreError),
 

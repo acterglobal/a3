@@ -8,7 +8,7 @@ mod rendering;
 
 pub use labels::Labels;
 pub use object_reference::{ObjRef, RefDetails};
-pub use rendering::{BrandIcon, Color, Colorize, Icon, Position};
+pub use rendering::{BrandIcon, Color, Colorize, ColorizeBuilder, Icon, Position};
 
 /// Default UTC DateTime Object
 pub type UtcDateTime = DateTime<Utc>;

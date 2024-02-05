@@ -220,6 +220,15 @@ pub struct NewsSlide {
     #[builder(default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub references: Vec<ObjRef>,
+
+    /// You can define custom background and foreground colors
+    #[builder(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "deserialize_some"
+    )]
+    pub colors: Option<Colorize>,
 }
 
 /// The payload for our news creation event.
@@ -230,15 +239,6 @@ pub struct NewsEntryEventContent {
     /// A news entry may have one or more slides of news
     /// which are scrolled through horizontally
     slides: Vec<NewsSlide>,
-
-    /// You can define custom background and foreground colors
-    #[builder(default)]
-    #[serde(
-        default,
-        skip_serializing_if = "Option::is_none",
-        deserialize_with = "deserialize_some"
-    )]
-    colors: Option<Colorize>,
 }
 
 /// The payload for our news update event.
@@ -259,15 +259,6 @@ pub struct NewsEntryUpdateEventContent {
         deserialize_with = "deserialize_some"
     )]
     pub slides: Option<Vec<NewsSlide>>,
-
-    /// You can define custom background and foreground colors
-    #[builder(default)]
-    #[serde(
-        default,
-        skip_serializing_if = "Option::is_none",
-        deserialize_with = "deserialize_some"
-    )]
-    pub colors: Option<Option<Colorize>>,
 }
 
 impl NewsEntryUpdateEventContent {
@@ -275,10 +266,6 @@ impl NewsEntryUpdateEventContent {
         let mut updated = false;
         if let Some(slides) = &self.slides {
             task.slides = slides.clone();
-            updated = true;
-        }
-        if let Some(colors) = &self.colors {
-            task.colors = colors.clone();
             updated = true;
         }
         Ok(updated)
