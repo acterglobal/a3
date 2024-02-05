@@ -1,0 +1,4 @@
+- Pins:
+  - With the newly integrated Appflowy editor, pins content editing has got even more simpler. The editor allows markdown support along with html and nice UI buttons to save content.
+  - Pins search feature has been added now in Quick Jump Actions.
+  - Fixes and improvements on Pin Card UI.
