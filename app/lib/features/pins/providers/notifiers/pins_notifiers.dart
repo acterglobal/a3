@@ -1,5 +1,6 @@
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/pins/models/pin_edit_state/pin_edit_state.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -123,6 +124,9 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
       }
       await updateBuilder.send();
       final updatedPin = await pin.refresh();
+      // make sure we refresh the pin over list too.
+      ref.invalidate(pinsProvider);
+      ref.invalidate(spacePinsProvider);
       EasyLoading.dismiss();
       EasyLoading.showSuccess('Pin Updated Successfully');
       return updatedPin.eventIdStr();
