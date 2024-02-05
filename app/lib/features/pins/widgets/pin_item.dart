@@ -93,7 +93,6 @@ class _PinItemState extends ConsumerState<PinItem> {
             autoFocus: autoFocus,
             content: widget.pin.contentText(),
             footer: !canEdit ? const SizedBox() : null,
-            onCancel: () {},
             onSave: (plain, htmlBody) async {
               if (_formkey.currentState!.validate()) {
                 pinEditNotifier.setLink(_linkController.text);
