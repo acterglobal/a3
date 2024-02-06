@@ -234,6 +234,7 @@ class ActerSdk {
   }
 
   String? get previousLogPath => _previousLogPath;
+  ffi.Api get api => _api;
 
   Future<ffi.Client> getClientWithDeviceId(String deviceId) async {
     ffi.Client? client;
