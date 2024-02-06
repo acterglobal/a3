@@ -69,7 +69,7 @@ class PinsPage extends ConsumerWidget {
                 ),
                 itemBuilder: (context, index) {
                   final pin = pins[index];
-                  return PinListItem(
+                  return PinListItemById(
                     pinId: pin.eventIdStr(),
                     showSpace: true,
                   );
