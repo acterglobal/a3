@@ -253,9 +253,6 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
       NewsEntryDraft draft = space.newsDraft();
       for (final slidePost in newsSlideList) {
         final sdk = await ref.read(sdkProvider.future);
-        String slideBgColor =
-            'rgb(${slidePost.backgroundColor?.red}, ${slidePost.backgroundColor?.green}, ${slidePost.backgroundColor?.blue})';
-
         // If slide type is text
         if (slidePost.type == NewsSlideType.text && slidePost.text != null) {
           if (slidePost.text!.isEmpty) {
@@ -269,7 +266,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           textSlideDraft.color(
             sdk.api.newColorizeBuilder(
               null,
-              slideBgColor,
+              slidePost.backgroundColor?.value,
             ),
           );
           await draft.addSlide(textSlideDraft);
@@ -301,7 +298,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           imageSlideDraft.color(
             sdk.api.newColorizeBuilder(
               null,
-              slideBgColor,
+              slidePost.backgroundColor?.value,
             ),
           );
           await draft.addSlide(imageSlideDraft);
@@ -329,7 +326,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           videoSlideDraft.color(
             sdk.api.newColorizeBuilder(
               null,
-              slideBgColor,
+              slidePost.backgroundColor?.value,
             ),
           );
           await draft.addSlide(videoSlideDraft);

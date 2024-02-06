@@ -57,7 +57,7 @@ pub use uniffi_api::*;
 pub use account::Account;
 pub use acter_core::{
     events::{news::NewsContent, Colorize, ColorizeBuilder, ObjRef, RefDetails, UtcDateTime},
-    models::{ActerModel, Color as EfkColor, Tag, TextMessageContent},
+    models::{ActerModel, Tag, TextMessageContent},
 };
 pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use auth::{

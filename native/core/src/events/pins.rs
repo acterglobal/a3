@@ -62,7 +62,7 @@ impl PinDisplayInfoUpdate {
     pub fn apply(&self, info: &mut PinDisplayInfo) -> Result<bool> {
         let mut updated = false;
         if let Some(color) = &self.color {
-            info.color = color.clone();
+            info.color = *color;
             updated = true;
         }
         if let Some(icon) = &self.icon {
@@ -83,7 +83,7 @@ impl PinDisplayInfoUpdate {
 impl From<&PinDisplayInfoUpdate> for PinDisplayInfo {
     fn from(val: &PinDisplayInfoUpdate) -> Self {
         PinDisplayInfo {
-            color: val.color.clone().unwrap_or_default(),
+            color: val.color.unwrap_or_default(),
             icon: val.icon.clone().unwrap_or_default(),
             section: val.section.clone().unwrap_or_default(),
         }

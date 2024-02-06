@@ -43,7 +43,7 @@ fn parse_markdown(text: string) -> Option<string>;
 fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize>;
 
 // create a new colorize builder
-fn new_colorize_builder(color: Option<string>, background: Option<string>) -> Result<ColorizeBuilder>;
+fn new_colorize_builder(color: Option<u32>, background: Option<u32>) -> Result<ColorizeBuilder>;
 
 
 //  ########  ########  #### ##     ## #### ######## #### ##     ## ########  ######  
@@ -57,12 +57,6 @@ fn new_colorize_builder(color: Option<string>, background: Option<string>) -> Re
 
 /// Representing a time frame
 object EfkDuration {}
-
-/// Representing a color
-object EfkColor {
-    /// as rgba in u8
-    fn rgba_u8() -> (u8, u8, u8, u8);
-}
 
 object UtcDateTime {
     fn timestamp() -> i64;
@@ -99,32 +93,22 @@ object ObjRef {
 /// A foreground and background color setting
 object Colorize {
     /// Foreground or text color
-    fn color() -> Option<EfkColor>;
+    fn color() -> Option<u32>;
     /// Background color
-    fn background() -> Option<EfkColor>;
+    fn background() -> Option<u32>;
 }
 
 /// A builder for Colorize. Allowing you to set (foreground) color and background
 object ColorizeBuilder {
-    /// parse html css-style string to set the color. see https://docs.rs/csscolorparser/latest/csscolorparser/struct.Color.html#method.from_html
-    fn color_from_html(color: string) -> Result<bool>;
+    /// RGBA color representation as int for the foreground color 
+    fn color(color: u32);
     /// unset the color
     fn unset_color();
-    /// parse html css-style string to set the background color. see https://docs.rs/csscolorparser/latest/csscolorparser/struct.Color.html#method.from_html
-    fn background_from_html(color: string) -> Result<bool>;
+    /// RGBA color representation as int for the background color
+    fn background(color: u32);
     /// unset the background color
     fn unset_background();
 }
-
-object Tag {
-    /// the title of the tag
-    fn title() -> string;
-    /// dash-cased-ascii-version for usage in hashtags (no `#` at the front)
-    fn hash_tag() -> string;
-    /// if given, the specific color for this tag
-    fn color() -> Option<EfkColor>;
-}
-
 
 // enum LocationType {
 //    Physical,
@@ -139,8 +123,6 @@ object Tag {
 //    fn coordinates() -> Option<string>;
 //    fn uri() -> Option<string>;
 //}
-
-
 
 
 
@@ -430,7 +412,7 @@ object ActerPin {
     /// get the link content
     fn url() -> Option<string>;
     /// get the link color settings
-    fn color() -> Option<EfkColor>;
+    fn color() -> Option<u32>;
     /// The room this Pin belongs to
     //fn team() -> Room;
 
@@ -1238,7 +1220,7 @@ object Task {
     fn utc_start_rfc3339() -> Option<string>;
 
     /// Has this been colored in?
-    fn color() -> Option<EfkColor>;
+    fn color() -> Option<u32>;
 
     /// is this task already done?
     fn is_done() -> bool;
@@ -1290,7 +1272,7 @@ object TaskUpdateBuilder {
     fn unset_sort_order_update();
 
     /// set the color for this task list
-    fn color(color: EfkColor);
+    fn color(color: u32);
     fn unset_color();
     fn unset_color_update();
 
@@ -1351,7 +1333,7 @@ object TaskDraft {
     fn sort_order(sort_order: u32);
 
     /// set the color for this task
-    fn color(color: EfkColor);
+    fn color(color: u32);
     fn unset_color();
 
     /// set the due day for this task
@@ -1402,7 +1384,7 @@ object TaskList {
     fn sort_order() -> u32;
 
     /// Has this been colored in?
-    fn color() -> Option<EfkColor>;
+    fn color() -> Option<u32>;
 
     /// Does this have any special time zone
     fn time_zone() -> Option<string>;
@@ -1451,7 +1433,7 @@ object TaskListDraft {
     fn sort_order(sort_order: u32);
 
     /// set the color for this task list
-    fn color(color: EfkColor);
+    fn color(color: u32);
     fn unset_color();
 
     /// set the keywords for this task list
@@ -1479,7 +1461,7 @@ object TaskListUpdateBuilder {
     fn sort_order(sort_order: u32);
 
     /// set the color for this task list
-    fn color(color: EfkColor);
+    fn color(color: u32);
     fn unset_color();
     fn unset_color_update();
 

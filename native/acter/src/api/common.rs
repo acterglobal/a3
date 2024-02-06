@@ -555,15 +555,15 @@ pub fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize> {
 }
 
 pub fn new_colorize_builder(
-    color: Option<String>,
-    background: Option<String>,
+    color: Option<u32>,
+    background: Option<u32>,
 ) -> Result<ColorizeBuilder> {
     let mut builder = ColorizeBuilder::default();
     if let Some(color) = color {
-        builder.color_from_html(color)?;
+        builder.color(color);
     }
     if let Some(background) = background {
-        builder.background_from_html(background)?;
+        builder.background(background);
     }
     Ok(builder)
 }

@@ -68,17 +68,11 @@ String userAgent = '$appName/$versionName';
 RegExp logFileRegExp = RegExp('app_.*log');
 RegExp screenshotFileRegExp = RegExp('screenshot_.*png');
 
-Color convertColor(ffi.EfkColor? primary, Color fallback) {
+Color convertColor(int? primary, Color fallback) {
   if (primary == null) {
     return fallback;
   }
-  final data = primary.rgbaU8();
-  return Color.fromARGB(
-    data[3],
-    data[0],
-    data[1],
-    data[2],
-  );
+  return Color(primary);
 }
 
 Completer<SharedPreferences>? _sharedPrefCompl;

@@ -16,7 +16,6 @@ class NewsItem extends ConsumerStatefulWidget {
   final Client client;
   final NewsEntry news;
   final int index;
-
   const NewsItem({
     super.key,
     required this.client,
@@ -36,12 +35,13 @@ class _NewsItemState extends ConsumerState<NewsItem> {
     final roomId = widget.news.roomId().toString();
     final space = ref.watch(briefSpaceItemProvider(roomId));
     final slides = widget.news.slides().toList();
+    final color = slides[currentSlideIndex].colors();
     final bgColor = convertColor(
-      widget.news.getSlide(currentSlideIndex)?.colors()?.background(),
+      color?.background(),
       Theme.of(context).colorScheme.background,
     );
     final fgColor = convertColor(
-      widget.news.getSlide(currentSlideIndex)?.colors()?.color(),
+      color?.color(),
       Theme.of(context).colorScheme.onPrimary,
     );
 

@@ -173,10 +173,7 @@ async fn news_slide_color_test() -> Result<()> {
     let mut slide_draft = user
         .text_plain_draft("This is a simple text".to_owned())
         .into_news_slide_draft();
-    slide_draft.color(Box::new(new_colorize_builder(
-        None,
-        Some("rgb(255, 0, 255)".to_owned()),
-    )?));
+    slide_draft.color(Box::new(new_colorize_builder(None, Some(0xFF112233))?));
     draft.add_slide(Box::new(slide_draft)).await?;
     draft.send().await?;
 
@@ -204,11 +201,8 @@ async fn news_slide_color_test() -> Result<()> {
     );
     // the correct background color
     assert_eq!(
-        text_slide
-            .colors()
-            .map(|e| e.background().as_ref().map(|b| b.to_hex_string()))
-            .flatten(),
-        Some("#ff00ff".to_owned())
+        text_slide.colors().and_then(|e| e.background()),
+        Some(0xFF112233)
     );
 
     Ok(())

@@ -18,10 +18,6 @@ class TextSlide extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
-    print("Color bg : $bgColor");
-    print("Color fg : $fgColor");
-
     return Container(
       color: bgColor,
       alignment: Alignment.center,

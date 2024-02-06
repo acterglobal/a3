@@ -1,6 +1,9 @@
 use acter_core::{
-    events::tasks::{self, Priority, TaskBuilder, TaskListBuilder},
-    models::{self, ActerModel, AnyActerModel, Color, TaskStats},
+    events::{
+        tasks::{self, Priority, TaskBuilder, TaskListBuilder},
+        Color,
+    },
+    models::{self, ActerModel, AnyActerModel, TaskStats},
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
@@ -236,8 +239,8 @@ impl TaskListDraft {
         self
     }
 
-    pub fn color(&mut self, color: Box<Color>) -> &mut Self {
-        self.content.color(Some(Box::into_inner(color)));
+    pub fn color(&mut self, color: Color) -> &mut Self {
+        self.content.color(Some(color));
         self
     }
 
@@ -313,6 +316,10 @@ impl TaskList {
 
     pub fn sort_order(&self) -> u32 {
         self.content.sort_order
+    }
+
+    pub fn color(&self) -> Option<u32> {
+        self.content.color
     }
 
     pub fn event_id_str(&self) -> String {
@@ -521,6 +528,10 @@ impl Task {
         self.content.sort_order
     }
 
+    pub fn color(&self) -> Option<u32> {
+        self.content.color
+    }
+
     pub fn room_id_str(&self) -> String {
         self.content.room_id().to_string()
     }
@@ -716,8 +727,8 @@ impl TaskDraft {
         self
     }
 
-    pub fn color(&mut self, color: Box<Color>) -> &mut Self {
-        self.content.color(Some(Box::into_inner(color)));
+    pub fn color(&mut self, color: Color) -> &mut Self {
+        self.content.color(Some(color));
         self
     }
 
@@ -862,8 +873,8 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn color(&mut self, color: Box<Color>) -> &mut Self {
-        self.content.color(Some(Some(Box::into_inner(color))));
+    pub fn color(&mut self, color: u32) -> &mut Self {
+        self.content.color(Some(Some(color)));
         self
     }
 
@@ -1046,8 +1057,8 @@ impl TaskListUpdateBuilder {
         self
     }
 
-    pub fn color(&mut self, color: Box<Color>) -> &mut Self {
-        self.content.color(Some(Box::into_inner(color)));
+    pub fn color(&mut self, color: Color) -> &mut Self {
+        self.content.color(Some(color));
         self
     }
 

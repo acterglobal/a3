@@ -320,6 +320,7 @@ impl NewsSlideDraft {
             colorize_builder: ColorizeBuilder::default(),
         }
     }
+    #[allow(clippy::boxed_local)]
     pub fn color(&mut self, colors: Box<ColorizeBuilder>) {
         self.colorize_builder = *colors;
     }
