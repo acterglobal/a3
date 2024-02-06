@@ -75,3 +75,6 @@ default-features = false
 [dev-dependencies.matrix-sdk-base]
 workspace = true
 default-features = false
+
+[patch.crates-io]
+ahash = { git = "https://github.com/tkaitchuck/aHash.git", tag = "v0.8.0" }
