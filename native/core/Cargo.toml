@@ -23,7 +23,7 @@ async-recursion = "1"
 chrono = { version = "0.4", default-features = false, features = ["serde", "clock"] }
 chrono-tz = { version = "0.8", default-features = false, features = ["serde"] }
 csscolorparser = { version = "0.6.2", features = ["serde"] }
-dashmap = "5.4.0"
+dashmap = "5.5.3"
 derive-getters = "0.3.0"
 derive_builder = "0.13.0"
 enum_dispatch = "0.3.12"
