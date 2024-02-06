@@ -28,3 +28,6 @@ path = "../core"
 [dependencies.acter]
 path = "../acter"
 default-features = false
+
+[patch.crates-io]
+ahash = { git = "https://github.com/tkaitchuck/aHash.git", tag = "v0.8.0" }

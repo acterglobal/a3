@@ -118,6 +118,9 @@ openssl = { version = "*", optional = true, features = ["vendored"]}
 [target.'cfg(target_os = "ios")'.dependencies]
 oslog = { version = "0.2", features = ["logger"]}
 
+[patch.crates-io]
+ahash = { git = "https://github.com/tkaitchuck/aHash.git", tag = "v0.8.0" }
+
 [lib]
 name = "acter"
 crate-type = ["cdylib", "staticlib", "lib"]
