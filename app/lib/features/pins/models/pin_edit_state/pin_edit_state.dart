@@ -9,5 +9,6 @@ class PinEditState with _$PinEditState {
     required String link,
     @Default('') String plain,
     @Default(null) String? htmlBody,
+    @Default(false) bool editMode,
   }) = _PinEditState;
 }

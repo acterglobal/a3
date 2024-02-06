@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
@@ -32,13 +31,6 @@ class _PinItemState extends ConsumerState<PinItem> {
     final pinEdit = ref.watch(pinEditStateProvider(widget.pin));
     final pinEditNotifier =
         ref.watch(pinEditStateProvider(widget.pin).notifier);
-    final membership =
-        ref.watch(roomMembershipProvider(widget.pin.roomIdStr()));
-    final canEdit = membership.valueOrNull != null
-        ? membership.requireValue!.canString('CanPostPin')
-            ? true
-            : false
-        : false;
     final isLink = widget.pin.isLink();
     final spaceId = widget.pin.roomIdStr();
     final autoFocus = widget.pin.contentText() != null
@@ -60,7 +52,7 @@ class _PinItemState extends ConsumerState<PinItem> {
           padding: const EdgeInsets.all(8.0),
           child: TextFormField(
             controller: _linkController,
-            readOnly: !canEdit,
+            readOnly: !pinEdit.editMode,
             style: Theme.of(context).textTheme.bodyMedium,
             decoration: InputDecoration(
               prefixIcon: IconButton(
@@ -89,12 +81,14 @@ class _PinItemState extends ConsumerState<PinItem> {
           constraints:
               BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
           child: HtmlEditor(
-            editable: canEdit,
+            editable: pinEdit.editMode,
             autoFocus: autoFocus,
             content: widget.pin.contentText(),
-            footer: !canEdit ? const SizedBox() : null,
+            footer: !pinEdit.editMode ? const SizedBox() : null,
+            onCancel: () => pinEditNotifier.setEditMode(false),
             onSave: (plain, htmlBody) async {
               if (_formkey.currentState!.validate()) {
+                pinEditNotifier.setEditMode(false);
                 pinEditNotifier.setLink(_linkController.text);
                 pinEditNotifier.setPlainText(plain);
                 pinEditNotifier.setHtml(htmlBody);

@@ -158,7 +158,7 @@ class _PinListItemState extends ConsumerState<PinListItem> {
                         ),
                         const Spacer(),
                         IconButton(
-                          icon: widget.pin.isLink()
+                          icon: isLink
                               ? const Icon(
                                   Icons.open_in_full_sharp,
                                   size: 18,

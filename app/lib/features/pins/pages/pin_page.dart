@@ -12,6 +12,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class PinPage extends ConsumerStatefulWidget {
   final String pinId;
@@ -33,9 +34,26 @@ class _PinPageConsumerState extends ConsumerState<PinPage> {
   ) {
     final spaceId = pin.roomIdStr();
     List<PopupMenuEntry> actions = [];
+    final pinEditNotifier = ref.watch(pinEditStateProvider(pin).notifier);
     final membership = ref.watch(roomMembershipProvider(spaceId));
     if (membership.valueOrNull != null) {
       final memb = membership.requireValue!;
+      if (memb.canString('CanPostPin')) {
+        actions.add(
+          PopupMenuItem(
+            onTap: () => pinEditNotifier.setEditMode(true),
+            child: const Row(
+              children: <Widget>[
+                Icon(
+                  Atlas.pencil_box_thin,
+                ),
+                SizedBox(width: 10),
+                Text('Edit Pin'),
+              ],
+            ),
+          ),
+        );
+      }
 
       if (memb.canString('CanRedactOwn') &&
           memb.userId().toString() == pin.sender().toString()) {
@@ -132,18 +150,12 @@ class _PinPageConsumerState extends ConsumerState<PinPage> {
               leadingWidth: 40,
               title: Consumer(
                 builder: (context, ref, child) {
+                  final pinEdit = ref.watch(pinEditStateProvider(data));
                   final pinEditNotifier =
                       ref.watch(pinEditStateProvider(data).notifier);
-                  final membership =
-                      ref.watch(roomMembershipProvider(data.roomIdStr()));
-                  final canEdit = membership.valueOrNull != null
-                      ? membership.requireValue!.canString('CanPostPin')
-                          ? true
-                          : false
-                      : false;
                   return TextFormField(
                     initialValue: data.title(),
-                    readOnly: !canEdit,
+                    readOnly: !pinEdit.editMode,
                     style: Theme.of(context).textTheme.headlineMedium,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
@@ -168,8 +180,12 @@ class _PinPageConsumerState extends ConsumerState<PinPage> {
                 ),
               ],
             ),
-            error: (err, st) => const SliverAppBar(),
-            loading: () => const SliverAppBar(),
+            error: (err, st) => SliverAppBar(
+              title: Text('Error loading pin title: ${err.toString()}'),
+            ),
+            loading: () => const SliverAppBar(
+              title: Skeletonizer(child: Text('')),
+            ),
           ),
           SliverToBoxAdapter(
             child: pin.when(

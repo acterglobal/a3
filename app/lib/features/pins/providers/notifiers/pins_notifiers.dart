@@ -79,6 +79,7 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
           const PinEditState(
             title: '',
             link: '',
+            editMode: false,
           ),
         ) {
     _init();
@@ -110,6 +111,8 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
   void setPlainText(String text) => state = state.copyWith(plain: text);
 
   void setHtml(String? html) => state = state.copyWith(htmlBody: html);
+
+  void setEditMode(bool editMode) => state = state.copyWith(editMode: editMode);
 
   Future<String> onSave(BuildContext context) async {
     EasyLoading.show(status: 'Updating Pin');
