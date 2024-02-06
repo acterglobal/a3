@@ -31,4 +31,4 @@ default-features = false
 features = ["testing"]
 
 [patch.crates-io]
-ahash = { git = "https://github.com/tkaitchuck/aHash.git", tag = "v0.8.5" }
+ahash = { git = "https://github.com/tkaitchuck/aHash.git", tag = "v0.8.0" }
