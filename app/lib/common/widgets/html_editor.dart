@@ -159,9 +159,6 @@ class _HtmlEditorState extends State<HtmlEditor> {
                 htmlBody != plain ? htmlBody : null,
               );
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.success,
-            ),
             child: const Text('Save'),
           ),
         );
