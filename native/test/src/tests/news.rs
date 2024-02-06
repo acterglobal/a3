@@ -1,4 +1,5 @@
 use crate::utils::{random_user_with_random_space, random_user_with_template};
+use acter::new_colorize_builder;
 use anyhow::{bail, Result};
 use std::io::Write;
 use tempfile::NamedTempFile;
@@ -145,6 +146,70 @@ async fn news_plain_text_test() -> Result<()> {
     assert_eq!(text_slide.type_str(), "text");
     assert!(!text_slide.has_formatted_text());
     assert_eq!(text_slide.text(), "This is a simple text".to_owned());
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn news_slide_color_test() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (mut user, space_id) = random_user_with_random_space("news_plain").await?;
+    let state_sync = user.start_sync();
+    state_sync.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    let space_id_str = space_id.to_string();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        let space_id = space_id_str.clone();
+        async move { client.space(space_id).await }
+    })
+    .await?;
+
+    let space = user.space(space_id.to_string()).await?;
+    let mut draft = space.news_draft()?;
+    let mut slide_draft = user
+        .text_plain_draft("This is a simple text".to_owned())
+        .into_news_slide_draft();
+    slide_draft.color(Box::new(new_colorize_builder(
+        None,
+        Some("rgb(255, 0, 255)".to_owned()),
+    )?));
+    draft.add_slide(Box::new(slide_draft)).await?;
+    draft.send().await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let space_cl = space.clone();
+    Retry::spawn(retry_strategy, move || {
+        let inner_space = space_cl.clone();
+        async move {
+            if inner_space.latest_news_entries(1).await?.len() != 1 {
+                bail!("news not found");
+            } else {
+                Ok(())
+            }
+        }
+    })
+    .await?;
+
+    let slides = space.latest_news_entries(1).await?;
+    let final_entry = slides.first().expect("Item is there");
+    let text_slide = final_entry.get_slide(0).expect("we have a slide");
+    // no foreground color
+    assert_eq!(
+        text_slide.colors().map(|e| e.color().is_some()),
+        Some(false)
+    );
+    // the correct background color
+    assert_eq!(
+        text_slide
+            .colors()
+            .map(|e| e.background().as_ref().map(|b| b.to_hex_string()))
+            .flatten(),
+        Some("#ff00ff".to_owned())
+    );
 
     Ok(())
 }
