@@ -37,11 +37,11 @@ class _NewsItemState extends ConsumerState<NewsItem> {
     final space = ref.watch(briefSpaceItemProvider(roomId));
     final slides = widget.news.slides().toList();
     final bgColor = convertColor(
-      widget.news.colors()?.background(),
+      widget.news.getSlide(currentSlideIndex)?.colors()?.background(),
       Theme.of(context).colorScheme.background,
     );
     final fgColor = convertColor(
-      widget.news.colors()?.color(),
+      widget.news.getSlide(currentSlideIndex)?.colors()?.color(),
       Theme.of(context).colorScheme.onPrimary,
     );
 

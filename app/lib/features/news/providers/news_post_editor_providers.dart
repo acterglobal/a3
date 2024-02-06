@@ -22,6 +22,9 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
     selectedNewsSlide?.backgroundColor =
         Colors.primaries[Random().nextInt(Colors.primaries.length)];
+    print("Color : ${selectedNewsSlide?.backgroundColor?.red}");
+    print("Color : ${selectedNewsSlide?.backgroundColor?.green}");
+    print("Color : ${selectedNewsSlide?.backgroundColor?.blue}");
     state = state.copyWith(
       currentNewsSlide: selectedNewsSlide,
     );
