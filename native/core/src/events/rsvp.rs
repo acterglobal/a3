@@ -8,7 +8,8 @@ use super::BelongsTo;
 
 /// RSVP status
 #[derive(Clone, Debug, Serialize, Deserialize, Display)]
-#[serde(tag = "type")]
+#[serde(rename_all = "kebab-case", tag = "type")]
+#[strum(serialize_all = "kebab-case")]
 pub enum RsvpStatus {
     Yes,
     Maybe,

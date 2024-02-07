@@ -2283,7 +2283,7 @@ class Api {
     return tmp7;
   }
 
-  String? __calendarEventMyRsvpStatusFuturePoll(
+  OptionRsvpStatus? __calendarEventMyRsvpStatusFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2308,8 +2308,6 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -2325,23 +2323,10 @@ class Api {
       }
       throw tmp9_0;
     }
-    if (tmp14 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
-    List<int> tmp13_buf = [];
-    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp14; i++) {
-      int char = tmp13_precast.elementAt(i).value;
-      tmp13_buf.add(char);
-    }
-    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionRsvpStatus");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = OptionRsvpStatus._(this, tmp13_1);
     return tmp7;
   }
 
@@ -2487,7 +2472,7 @@ class Api {
     return tmp7;
   }
 
-  String? __rsvpManagerMyStatusFuturePoll(
+  OptionRsvpStatus? __rsvpManagerMyStatusFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2512,8 +2497,6 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -2529,23 +2512,10 @@ class Api {
       }
       throw tmp9_0;
     }
-    if (tmp14 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
-    List<int> tmp13_buf = [];
-    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp14; i++) {
-      int char = tmp13_precast.elementAt(i).value;
-      tmp13_buf.add(char);
-    }
-    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionRsvpStatus");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = OptionRsvpStatus._(this, tmp13_1);
     return tmp7;
   }
 
@@ -12364,6 +12334,16 @@ class Api {
 
   late final _optionBufferData = _optionBufferDataPtr.asFunction<
       _OptionBufferDataReturn Function(
+        int,
+      )>();
+  late final _optionRsvpStatusStatusPtr = _lookup<
+      ffi.NativeFunction<
+          _OptionRsvpStatusStatusReturn Function(
+            ffi.Int64,
+          )>>("__OptionRsvpStatus_status");
+
+  late final _optionRsvpStatusStatus = _optionRsvpStatusStatusPtr.asFunction<
+      _OptionRsvpStatusStatusReturn Function(
         int,
       )>();
   late final _userProfileUserIdPtr = _lookup<
@@ -26147,6 +26127,12 @@ class Api {
   late final _ffiListVerificationEmojiInsert =
       _ffiListVerificationEmojiInsertPtr
           .asFunction<void Function(int, int, int)>();
+  late final _destructureRsvpStatusPtr =
+      _lookup<ffi.NativeFunction<_EnumWrapper Function(ffi.IntPtr)>>(
+          "destructure_enum_RsvpStatus");
+
+  late final _destructureRsvpStatus =
+      _destructureRsvpStatusPtr.asFunction<_EnumWrapper Function(int)>();
   late final _destructureRelationTargetTypePtr =
       _lookup<ffi.NativeFunction<_EnumWrapper Function(ffi.IntPtr)>>(
           "destructure_enum_RelationTargetType");
@@ -26806,7 +26792,7 @@ class OptionBuffer {
 
   OptionBuffer._(this._api, this._box);
 
-  /// get text
+  /// get data
   FfiBufferUint8? data() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -26823,6 +26809,37 @@ class OptionBuffer {
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp5 = FfiBufferUint8._(_api, tmp4_1);
     final tmp2 = tmp5;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class OptionRsvpStatus {
+  final Api _api;
+  final _Box _box;
+
+  OptionRsvpStatus._(this._api, this._box);
+
+  /// get status
+  RsvpStatus? status() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._optionRsvpStatusStatus(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RsvpStatus");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RsvpStatus._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -29193,7 +29210,7 @@ class CalendarEvent {
   }
 
   /// get my RSVP status, one of Yes/Maybe/No/Pending
-  Future<String> myRsvpStatus() {
+  Future<OptionRsvpStatus> myRsvpStatus() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._calendarEventMyRsvpStatus(
@@ -30014,7 +30031,7 @@ class RsvpManager {
   }
 
   /// get Yes/Maybe/No/Pending for the user's own status
-  Future<String> myStatus() {
+  Future<OptionRsvpStatus> myStatus() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._rsvpManagerMyStatus(
@@ -44691,6 +44708,60 @@ class DeviceRecord {
   }
 }
 
+enum RsvpStatusTag {
+  Yes,
+  Maybe,
+  No,
+}
+
+class RsvpStatus {
+  final Api _api;
+  final _Box _box;
+
+  RsvpStatusTag? _tag;
+  Object? _inner;
+
+  void destructureSelf() {
+    final parts = this._api._destructureRsvpStatus(this._box.borrow());
+    switch (parts.tag) {
+      case 0:
+        this._tag = RsvpStatusTag.Yes;
+
+        break;
+      case 1:
+        this._tag = RsvpStatusTag.Maybe;
+
+        break;
+      case 2:
+        this._tag = RsvpStatusTag.No;
+
+        break;
+      default:
+        throw new StateError(
+            "Destructuring enum gave back an invalid tag: ${parts.tag}");
+    }
+  }
+
+  /// The tag of this enum object
+  RsvpStatusTag get tag {
+    if (_tag == null) {
+      destructureSelf();
+    }
+    return _tag!;
+  }
+
+  /// The data contained inside this enum object. You will need
+  /// to cast it to the correct type based on the value of tag
+  Object? get inner {
+    if (_inner == null) {
+      destructureSelf();
+    }
+    return _inner;
+  }
+
+  RsvpStatus._(this._api, this._box);
+}
+
 enum RelationTargetTypeTag {
   Unknown,
   ChatRoom,
@@ -45185,6 +45256,13 @@ class _OptionStringTextReturn extends ffi.Struct {
 }
 
 class _OptionBufferDataReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _OptionRsvpStatusStatusReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -47412,10 +47490,6 @@ class _CalendarEventMyRsvpStatusFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
 }
 
 class _CalendarEventUpdateBuilderSendFuturePollReturn extends ffi.Struct {
@@ -47476,10 +47550,6 @@ class _RsvpManagerMyStatusFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
 }
 
 class _RsvpManagerCountAtStatusFuturePollReturn extends ffi.Struct {

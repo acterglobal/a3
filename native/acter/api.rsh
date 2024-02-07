@@ -145,8 +145,13 @@ object OptionString {
 }
 
 object OptionBuffer {
-    /// get text
+    /// get data
     fn data() -> Option<buffer<u8>>;
+}
+
+object OptionRsvpStatus {
+    /// get status
+    fn status() -> Option<RsvpStatus>;
 }
 
 object UserProfile {
@@ -503,7 +508,7 @@ object CalendarEvent {
     /// get RSVP manager
     fn rsvp_manager() -> Future<Result<RsvpManager>>;
     /// get my RSVP status, one of Yes/Maybe/No/Pending
-    fn my_rsvp_status() -> Future<Result<string>>;
+    fn my_rsvp_status() -> Future<Result<OptionRsvpStatus>>;
 }
 
 object CalendarEventUpdateBuilder {
@@ -568,6 +573,12 @@ object CalendarEventDraft {
 
 
 
+enum RsvpStatus {
+    Yes,
+    Maybe,
+    No
+}
+
 object RsvpManager {
     /// whether manager has rsvp entries
     fn has_rsvp_entries() -> bool;
@@ -579,7 +590,7 @@ object RsvpManager {
     fn rsvp_entries() -> Future<Result<Vec<Rsvp>>>;
 
     /// get Yes/Maybe/No/Pending for the user's own status
-    fn my_status() -> Future<Result<string>>;
+    fn my_status() -> Future<Result<OptionRsvpStatus>>;
 
     /// get the count of Yes/Maybe/No
     fn count_at_status(status: string) -> Future<Result<u32>>;

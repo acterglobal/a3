@@ -74,7 +74,7 @@ pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
     duration_from_secs, new_thumb_size, DeviceRecord, MediaSource, MsgContent, OptionBuffer,
-    OptionString, ReactionRecord, ThumbnailInfo, ThumbnailSize,
+    OptionRsvpStatus, OptionString, ReactionRecord, ThumbnailInfo, ThumbnailSize,
 };
 pub use convo::{
     new_convo_settings_builder, Convo, ConvoDiff, CreateConvoSettings, CreateConvoSettingsBuilder,
@@ -93,7 +93,7 @@ pub use room::{
     new_join_rule_builder, JoinRuleBuilder, Member, MemberPermission, MembershipStatus, Room,
     SpaceHierarchyListResult, SpaceHierarchyRoomInfo, SpaceRelation, SpaceRelations,
 };
-pub use rsvp::{Rsvp, RsvpDraft, RsvpManager};
+pub use rsvp::{Rsvp, RsvpDraft, RsvpManager, RsvpStatus};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
 pub use settings::{
     ActerAppSettings, ActerAppSettingsBuilder, EventsSettings, NewsSettings, PinsSettings,

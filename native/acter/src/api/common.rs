@@ -1,4 +1,4 @@
-use acter_core::events::attachments::AttachmentContent;
+use acter_core::events::{attachments::AttachmentContent, rsvp::RsvpStatus};
 use anyhow::{Context, Result};
 use core::time::Duration;
 use matrix_sdk::media::{MediaFormat, MediaThumbnailSize};
@@ -50,6 +50,20 @@ impl OptionBuffer {
 
     pub fn data(&self) -> Option<FfiBuffer<u8>> {
         self.data.clone().map(FfiBuffer::new)
+    }
+}
+
+pub struct OptionRsvpStatus {
+    pub(crate) status: Option<RsvpStatus>,
+}
+
+impl OptionRsvpStatus {
+    pub(crate) fn new(status: Option<RsvpStatus>) -> Self {
+        OptionRsvpStatus { status }
+    }
+
+    pub fn status(&self) -> Option<RsvpStatus> {
+        self.status.clone()
     }
 }
 
