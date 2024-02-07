@@ -4,6 +4,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:html_unescape/html_unescape.dart';
 
 export 'package:appflowy_editor/appflowy_editor.dart' show EditorState;
 
@@ -52,7 +53,8 @@ extension ActerEditorStateHelpers on EditorState {
   String intoHtml({
     AppFlowyEditorHTMLCodec? codec,
   }) {
-    return (codec ?? defaultHtmlCodec).encode(document);
+    final docHTML = (codec ?? defaultHtmlCodec).encode(document);
+    return HtmlUnescape().convert(docHTML);
   }
 
   String intoMarkdown({
@@ -112,18 +114,20 @@ class _HtmlEditorState extends State<HtmlEditor> {
       editorState = EditorState.blank();
     }
 
-    editorScrollController = EditorScrollController(
-      editorState: editorState,
-      shrinkWrap: false,
-    );
+    editorScrollController = EditorScrollController(editorState: editorState);
   }
 
   @override
   void dispose() {
     editorScrollController.dispose();
     editorState.dispose();
-
     super.dispose();
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    editorScrollController = EditorScrollController(editorState: editorState);
   }
 
   @override
@@ -165,9 +169,12 @@ class _HtmlEditorState extends State<HtmlEditor> {
       }
 
       if (children.isNotEmpty) {
-        finalFooter = Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: children,
+        finalFooter = Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: children,
+          ),
         );
       }
     }
@@ -182,10 +189,7 @@ class _HtmlEditorState extends State<HtmlEditor> {
               bulletedListItem,
               numberedListItem,
               linkItem,
-              buildTextColorItem(),
               buildHighlightColorItem(),
-              ...textDirectionItems,
-              ...alignmentItems,
             ],
             textDirection: _textDirection,
             editorState: editorState,
@@ -194,18 +198,14 @@ class _HtmlEditorState extends State<HtmlEditor> {
               backgroundColor: Theme.of(context).colorScheme.neutral2,
               toolbarActiveColor: Theme.of(context).colorScheme.tertiary,
             ),
-            child: Directionality(
-              textDirection: _textDirection,
-              child: AppFlowyEditor(
-                editable: widget.editable,
-                shrinkWrap: true,
-                editorStyle: customEditorStyle(true),
-                editorScrollController: editorScrollController,
-                editorState: editorState,
-                autoFocus: widget.autoFocus,
-                header: widget.header,
-                footer: finalFooter,
-              ),
+            child: AppFlowyEditor(
+              editable: widget.editable,
+              editorStyle: customEditorStyle(true),
+              editorScrollController: editorScrollController,
+              editorState: editorState,
+              autoFocus: widget.autoFocus,
+              header: widget.header,
+              footer: finalFooter,
             ),
           )
         : MobileFloatingToolbar(
@@ -233,15 +233,21 @@ class _HtmlEditorState extends State<HtmlEditor> {
             child: MobileToolbarV2(
               backgroundColor: Theme.of(context).colorScheme.surface,
               iconColor: Theme.of(context).colorScheme.onPrimaryContainer,
+              tabBarSelectedBackgroundColor:
+                  Theme.of(context).colorScheme.secondary,
+              tabBarSelectedForegroundColor:
+                  Theme.of(context).colorScheme.onSecondary,
               editorState: editorState,
               toolbarItems: [
                 textDecorationMobileToolbarItemV2,
-                buildTextAndBackgroundColorMobileToolbarItem(),
+                buildTextAndBackgroundColorMobileToolbarItem(
+                  textColorOptions: [],
+                ),
                 headingMobileToolbarItem,
-                blocksMobileToolbarItem,
+                listMobileToolbarItem,
+                quoteMobileToolbarItem,
                 linkMobileToolbarItem,
                 codeMobileToolbarItem,
-                dividerMobileToolbarItem,
               ],
               child: AppFlowyEditor(
                 editable: widget.editable,

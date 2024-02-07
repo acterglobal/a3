@@ -33,14 +33,10 @@ class _PinItemState extends ConsumerState<PinItem> {
         ref.watch(pinEditStateProvider(widget.pin).notifier);
     final isLink = widget.pin.isLink();
     final spaceId = widget.pin.roomIdStr();
-    final autoFocus = widget.pin.contentText() != null
-        ? widget.pin.contentText()!.body().isEmpty
-            ? true
-            : false
-        : false;
 
     final List<Widget> content = [
       Container(
+        alignment: Alignment.topLeft,
         margin: const EdgeInsets.symmetric(vertical: 8),
         child: SpaceChip(spaceId: spaceId),
       ),
@@ -75,27 +71,31 @@ class _PinItemState extends ConsumerState<PinItem> {
       );
     }
     content.add(
-      Flexible(
-        child: Container(
-          height: MediaQuery.of(context).size.height * 0.6,
-          constraints:
-              BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
-          child: HtmlEditor(
-            editable: pinEdit.editMode,
-            autoFocus: autoFocus,
-            content: widget.pin.contentText(),
-            footer: !pinEdit.editMode ? const SizedBox() : null,
-            onCancel: () => pinEditNotifier.setEditMode(false),
-            onSave: (plain, htmlBody) async {
-              if (_formkey.currentState!.validate()) {
-                pinEditNotifier.setEditMode(false);
-                pinEditNotifier.setLink(_linkController.text);
-                pinEditNotifier.setPlainText(plain);
-                pinEditNotifier.setHtml(htmlBody);
-                await pinEditNotifier.onSave(context);
-              }
-            },
-          ),
+      Container(
+        height: MediaQuery.of(context).size.height * 0.6,
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        decoration: BoxDecoration(
+          color: pinEdit.editMode
+              ? Theme.of(context).colorScheme.primaryContainer
+              : null,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        constraints:
+            BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
+        child: HtmlEditor(
+          editable: pinEdit.editMode,
+          content: widget.pin.contentText(),
+          footer: pinEdit.editMode ? null : const SizedBox(),
+          onCancel: () => pinEditNotifier.setEditMode(false),
+          onSave: (plain, htmlBody) async {
+            if (_formkey.currentState!.validate()) {
+              pinEditNotifier.setEditMode(false);
+              pinEditNotifier.setLink(_linkController.text);
+              pinEditNotifier.setPlainText(plain);
+              pinEditNotifier.setHtml(htmlBody);
+              await pinEditNotifier.onSave(context);
+            }
+          },
         ),
       ),
     );
@@ -105,8 +105,6 @@ class _PinItemState extends ConsumerState<PinItem> {
       child: Form(
         key: _formkey,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
           children: content,
         ),
       ),

@@ -129,7 +129,6 @@ class _PinPageConsumerState extends ConsumerState<PinPage> {
     // ignore: unused_local_variable
     final pin = ref.watch(pinProvider(widget.pinId));
     return Scaffold(
-      resizeToAvoidBottomInset: true,
       body: CustomScrollView(
         controller: controller,
         slivers: [
@@ -157,10 +156,8 @@ class _PinPageConsumerState extends ConsumerState<PinPage> {
                     initialValue: data.title(),
                     readOnly: !pinEdit.editMode,
                     style: Theme.of(context).textTheme.headlineMedium,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
+                    decoration: InputDecoration(
+                      enabledBorder: pinEdit.editMode ? null : InputBorder.none,
                       focusedBorder: InputBorder.none,
                       filled: false,
                     ),
