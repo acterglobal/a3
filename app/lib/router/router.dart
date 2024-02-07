@@ -6,7 +6,6 @@ import 'package:acter/router/shell_routers/activities_shell_router.dart';
 import 'package:acter/router/shell_routers/chat_shell_router.dart';
 import 'package:acter/router/general_router.dart';
 import 'package:acter/router/shell_routers/home_shell_router.dart';
-import 'package:acter/router/shell_routers/quick_jump_shell_router.dart';
 import 'package:acter/router/shell_routers/search_shell_router.dart';
 import 'package:acter/router/shell_routers/update_shell_router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';

@@ -212,9 +212,7 @@ class QuickJump extends ConsumerWidget {
                   autofocus: true,
                   decoration: const InputDecoration(
                     border: InputBorder.none,
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white),
-                    ),
+                    focusedBorder: InputBorder.none,
                     prefixIcon: Icon(
                       Atlas.magnifying_glass_thin,
                       color: Colors.white,
