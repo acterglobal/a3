@@ -50,7 +50,7 @@ class _ImageSlideState extends State<ImageSlide> {
             key: NewsUpdateKeys.imageUpdateContent,
             foregroundDecoration: BoxDecoration(
               image: DecorationImage(
-                fit: BoxFit.fitWidth,
+                fit: BoxFit.contain,
                 image: MemoryImage(
                   Uint8List.fromList(snapshot.data!),
                 ),
