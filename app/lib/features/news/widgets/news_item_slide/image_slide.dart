@@ -6,10 +6,14 @@ import 'package:flutter/material.dart';
 
 class ImageSlide extends StatefulWidget {
   final NewsSlide slide;
+  final Color bgColor;
+  final Color fgColor;
 
   const ImageSlide({
     super.key,
     required this.slide,
+    required this.bgColor,
+    required this.fgColor,
   });
 
   @override
@@ -41,10 +45,12 @@ class _ImageSlideState extends State<ImageSlide> {
       builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
         if (snapshot.hasData) {
           return Container(
+            color: widget.bgColor,
+            alignment: Alignment.center,
             key: NewsUpdateKeys.imageUpdateContent,
             foregroundDecoration: BoxDecoration(
               image: DecorationImage(
-                fit: BoxFit.cover,
+                fit: BoxFit.fitWidth,
                 image: MemoryImage(
                   Uint8List.fromList(snapshot.data!),
                 ),

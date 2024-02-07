@@ -289,7 +289,7 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
       color: selectedNewsPost!.backgroundColor,
       child: Image.file(
         File(imageFile!.path),
-        fit: BoxFit.contain,
+        fit: BoxFit.fitWidth,
       ),
     );
   }
