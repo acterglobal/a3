@@ -30,7 +30,7 @@ jobs:
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: nightly-2024-01-23
           override: true
 
       #       ---- Install extra tools
