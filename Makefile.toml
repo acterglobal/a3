@@ -79,7 +79,7 @@ command = "cargo"
 args = ["check", "-p", "acter"]
 
 [tasks.check-ffi-release]
-condition = { env_true = ["RELEASE"]}
+condition = { env_true = ["RELEASE"] }
 command = "cargo"
 args = ["check", "--release", "-p", "acter"]
 
