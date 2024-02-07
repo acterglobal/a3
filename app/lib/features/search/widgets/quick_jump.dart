@@ -13,8 +13,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class QuickJump extends ConsumerWidget {
-  final Future<void> Function({Routes? route, bool push, String? target})
-      navigateTo;
+  final Future<void> Function({
+    Routes? route,
+    bool push,
+    String? target,
+    Future<void> Function(BuildContext)? custom,
+  }) navigateTo;
   final bool expand;
 
   const QuickJump({

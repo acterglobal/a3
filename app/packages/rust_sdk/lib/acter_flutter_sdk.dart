@@ -65,6 +65,8 @@ const versionName = String.fromEnvironment(
 const isDevBuild = versionName == 'DEV';
 
 String userAgent = '$appName/$versionName';
+RegExp logFileRegExp = RegExp('app_.*log');
+RegExp screenshotFileRegExp = RegExp('screenshot_.*png');
 
 Color convertColor(ffi.EfkColor? primary, Color fallback) {
   if (primary == null) {
@@ -196,6 +198,7 @@ const mOptions = MacOsOptions(
 
 class ActerSdk {
   late final ffi.Api _api;
+  late final String _previousLogPath;
   static String _sessionKey = defaultSessionKey;
   int _index = 0;
   static final List<ffi.Client> _clients = [];
@@ -229,6 +232,8 @@ class ActerSdk {
     _sessionKey = sessionKey;
     await storage.write(key: _sessionKey, value: json.encode([]));
   }
+
+  String? get previousLogPath => _previousLogPath;
 
   Future<ffi.Client> getClientWithDeviceId(String deviceId) async {
     ffi.Client? client;
@@ -418,6 +423,27 @@ class ActerSdk {
         ? ffi.Api(await _getAndroidDynLib('libacter.so'))
         : ffi.Api.load();
     String logPath = await appCacheDir();
+    FileSystemEntity? latestLogPath;
+
+    // clear screenshots, and logs (but keep the latest one)
+    await for (final entity
+        in Directory(logPath).list(recursive: false, followLinks: false)) {
+      if (screenshotFileRegExp.hasMatch(entity.path)) {
+        await entity.delete(); // remove old screenshots
+      }
+      if (logFileRegExp.hasMatch(entity.path)) {
+        if (latestLogPath == null) {
+          latestLogPath = entity;
+        } else {
+          if (latestLogPath.path.compareTo(entity.path) < 0) {
+            await latestLogPath.delete();
+            latestLogPath = entity;
+          } else {
+            await entity.delete();
+          }
+        }
+      }
+    }
 
     final logSettings = (await sharedPrefs()).getString(rustLogKey);
     try {
@@ -451,6 +477,10 @@ class ActerSdk {
       );
     }
     final instance = ActerSdk._(api);
+    if (latestLogPath != null) {
+      instance._previousLogPath = latestLogPath.absolute.path;
+      debugPrint('Prior log file: ${instance._previousLogPath}');
+    }
     return instance;
   }
 

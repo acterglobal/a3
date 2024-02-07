@@ -13,6 +13,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 // interface data providers
@@ -40,7 +41,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
   }
 
   // apply existing data to fields
-  void _editSpaceData() async {
+  Future<void> _editSpaceData() async {
     final space = ref.read(spaceProvider(widget.spaceId!)).requireValue;
     final profileData = await ref.read(spaceProfileDataProvider(space).future);
     final titleNotifier = ref.read(editTitleProvider.notifier);
@@ -51,11 +52,10 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     topicNotifier.update((state) => space.topic() ?? '');
 
     if (profileData.hasAvatar()) {
-      Directory appDocDirectory = await getApplicationDocumentsDirectory();
-      Directory('${appDocDirectory.path}/dir')
-          .create(recursive: true)
-          .then((Directory directory) {});
-      String filePath = '${appDocDirectory.path}/${widget.spaceId}.jpg';
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      final dirPath = p.join(appDocDir.path, 'dir');
+      await Directory(dirPath).create(recursive: true);
+      String filePath = p.join(appDocDir.path, '${widget.spaceId}.jpg');
       final imageFile = File(filePath);
       imageFile.writeAsBytes(profileData.avatar!.asTypedList());
       avatarNotifier.update((state) => imageFile.path);
