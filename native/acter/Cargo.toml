@@ -64,7 +64,7 @@ thiserror = { version = "1.0.56", optional = true }
 
 # for proxyman support
 # enable support for system native TLS certificates
-reqwest = { optional = true, version = "*", default-features = false, features = ["rustls-tls-native-roots"]}
+reqwest = { optional = true, version = "*", default-features = false, features = ["rustls-tls-native-roots"] }
 
 # for tracing support
 tracing-subscriber = { version = "0.3.1", optional = true, default-features = false, features = ["fmt", "std", "env-filter"] }
@@ -112,11 +112,11 @@ matrix-sdk-ui = { workspace = true }
 android_logger = "0.12"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 tracing-android = "0.2"
-openssl = { version = "*", optional = true, features = ["vendored"]}
+openssl = { version = "*", optional = true, features = ["vendored"] }
 
 #   ----   IOS/MACOS
 [target.'cfg(target_os = "ios")'.dependencies]
-oslog = { version = "0.2", features = ["logger"]}
+oslog = { version = "0.2", features = ["logger"] }
 
 [lib]
 name = "acter"
