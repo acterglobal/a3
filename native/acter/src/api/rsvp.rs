@@ -15,7 +15,7 @@ use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::{error, trace, warn};
 
-use super::{calendar_events::CalendarEvent, common::OptionRsvpStatus, client::Client, RUNTIME};
+use super::{calendar_events::CalendarEvent, client::Client, common::OptionRsvpStatus, RUNTIME};
 
 impl Client {
     pub async fn wait_for_rsvp(&self, key: String, timeout: Option<u8>) -> Result<Rsvp> {
