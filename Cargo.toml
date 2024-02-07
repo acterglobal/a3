@@ -64,6 +64,9 @@ rev = "684ffc789877355bd25269451b2356817c17cc3f"
 [workspace.dependencies]
 strum = { version = "0.26.1", features = ["derive"] }
 
+[patch.crates-io]
+curve25519-dalek = { git = "https://github.com/dalek-cryptography/curve25519-dalek.git" }
+
 [profile.release]
 panic = "unwind"
 opt-level = 2

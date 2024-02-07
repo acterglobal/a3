@@ -6742,3 +6742,8 @@ dependencies = [
  "quote 1.0.35",
  "syn 2.0.48",
 ]
+
+[[patch.unused]]
+name = "curve25519-dalek"
+version = "4.1.2"
+source = "git+https://github.com/dalek-cryptography/curve25519-dalek.git#4ac84dd0668b1d2e51654fcdffe4ae6a687bef00"
