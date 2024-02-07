@@ -21,9 +21,9 @@ impl FromStr for RsvpStatus {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "Yes" => Ok(RsvpStatus::Yes),
-            "No" => Ok(RsvpStatus::No),
-            "Maybe" => Ok(RsvpStatus::Maybe),
+            "yes" => Ok(RsvpStatus::Yes),
+            "no" => Ok(RsvpStatus::No),
+            "maybe" => Ok(RsvpStatus::Maybe),
             _ => Err(()),
         }
     }
