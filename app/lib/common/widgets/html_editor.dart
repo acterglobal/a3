@@ -68,6 +68,7 @@ class HtmlEditor extends StatefulWidget {
   final Widget? header;
   final Widget? footer;
   final bool autoFocus;
+  final bool editable;
   final EdgeInsets? editorPadding;
   final MsgContent? content;
   final Function(String, String?)? onSave;
@@ -78,6 +79,7 @@ class HtmlEditor extends StatefulWidget {
     this.onSave,
     this.onCancel,
     this.autoFocus = true,
+    this.editable = false,
     this.editorPadding = const EdgeInsets.all(10),
     this.header,
     this.footer,
@@ -160,9 +162,12 @@ class HtmlEditorState extends State<HtmlEditor> {
       }
 
       if (children.isNotEmpty) {
-        finalFooter = Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: children,
+        finalFooter = Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: children,
+          ),
         );
       }
     }
@@ -192,6 +197,7 @@ class HtmlEditorState extends State<HtmlEditor> {
             child: Directionality(
               textDirection: _textDirection,
               child: AppFlowyEditor(
+                editable: widget.editable,
                 editorStyle: customEditorStyle(true),
                 editorScrollController: editorScrollController,
                 editorState: editorState,
@@ -233,6 +239,7 @@ class HtmlEditorState extends State<HtmlEditor> {
                 );
               },
               child: AppFlowyEditor(
+                editable: widget.editable,
                 editorStyle: customEditorStyle(false),
                 editorState: editorState,
                 editorScrollController: editorScrollController,

@@ -12,6 +12,7 @@ final markdownProvider =
 });
 
 class MdEditorWithPreview extends ConsumerStatefulWidget {
+  final bool editable;
   final ValueChanged<String>? onChanged;
   final FormFieldValidator<String>? validator;
   final String hintText;
@@ -20,6 +21,7 @@ class MdEditorWithPreview extends ConsumerStatefulWidget {
 
   const MdEditorWithPreview({
     super.key,
+    this.editable = false,
     this.onChanged,
     this.validator,
     this.hintText = 'Description',
@@ -43,7 +45,7 @@ class _MdEditorWithPreviewState extends ConsumerState<MdEditorWithPreview> {
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Stack(
         children: [
-          _showPreview
+          _showPreview || !widget.editable
               ? FormField(
                   builder: (x) => Container(
                     constraints: const BoxConstraints(minHeight: 200),
@@ -76,6 +78,7 @@ class _MdEditorWithPreviewState extends ConsumerState<MdEditorWithPreview> {
                       .validator, // make sure we still have the validator in the tree
                 )
               : InputTextField(
+                  readOnly: !widget.editable,
                   controller: controller,
                   hintText: widget.hintText,
                   maxLines: 10,
@@ -93,7 +96,7 @@ class _MdEditorWithPreviewState extends ConsumerState<MdEditorWithPreview> {
               message: 'Toggle preview',
               child: IconButton(
                 onPressed: () => setState(() => _showPreview = !_showPreview),
-                icon: _showPreview
+                icon: _showPreview || !widget.editable
                     ? const Icon(Atlas.xmark_circle_thin)
                     : const Icon(Atlas.vision_thin),
               ),

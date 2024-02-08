@@ -1,6 +1,8 @@
 import 'dart:core';
 
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/pins/models/pin_edit_state/pin_edit_state.dart';
+import 'package:acter/features/pins/providers/notifiers/edit_state_notifier.dart';
 import 'package:acter/features/pins/providers/notifiers/pins_notifiers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,3 +34,8 @@ final pinnedLinksProvider = FutureProvider.autoDispose
   final pins = await ref.watch(spacePinsProvider(space).future);
   return pins.where((element) => element.isLink()).toList();
 });
+
+final pinEditProvider =
+    StateNotifierProvider.family<PinEditNotifier, PinEditState, ActerPin>(
+  (ref, pin) => PinEditNotifier(pin: pin, ref: ref),
+);
