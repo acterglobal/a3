@@ -106,7 +106,7 @@ class _ActerVideoPlayerState extends State<ActerVideoPlayer> {
 
   Widget playbackSpeedMenu() {
     return Align(
-      alignment: Alignment.topRight,
+      alignment: Alignment.topLeft,
       child: PopupMenuButton<double>(
         initialValue: _controller.value.playbackSpeed,
         tooltip: 'Playback speed',

@@ -13,6 +13,8 @@ class NewsSlideItem {
   Color? backgroundColor;
   Color? foregroundColor;
   XFile? mediaFile;
+  String? invitedSpaceId;
+  String? invitedChatId;
 
   NewsSlideItem({
     required this.type,
@@ -20,5 +22,7 @@ class NewsSlideItem {
     this.backgroundColor,
     this.foregroundColor,
     this.mediaFile,
+    this.invitedSpaceId,
+    this.invitedChatId,
   });
 }

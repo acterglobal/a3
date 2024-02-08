@@ -1,5 +1,6 @@
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
@@ -43,7 +44,7 @@ extension ActerUtil on ConvenientTest {
       await textField.enterTextWithoutReplace(entry.value);
     }
     if (selectSpaceId != null) {
-      await selectSpace(selectSpaceId);
+      await selectSpace(selectSpaceId, SelectSpaceFormField.openKey);
     }
     if (submitBtnKey != null) {
       final submit = find.byKey(submitBtnKey);

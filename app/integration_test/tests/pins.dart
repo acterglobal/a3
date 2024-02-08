@@ -1,4 +1,5 @@
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/pins/sheets/create_pin_sheet.dart';
 import 'package:acter/features/search/model/keys.dart';
@@ -29,7 +30,7 @@ extension ActerNews on ConvenientTest {
     await urlField.should(findsOneWidget);
     await urlField.enterTextWithoutReplace(url);
 
-    await selectSpace(spaceId);
+    await selectSpace(spaceId, SelectSpaceFormField.openKey);
 
     final submit = find.byKey(CreatePinSheet.submitBtn);
     await tester.ensureVisible(submit);

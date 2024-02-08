@@ -212,9 +212,13 @@ final bottomBarNavProvider =
       initialLocation: Routes.dashboard.route,
     ),
     BottomBarNavigationItem(
-      icon: const Icon(Atlas.megaphone_thin),
+      icon: const Icon(
+        key: MainNavKeys.updates,
+        Atlas.megaphone_thin,
+      ),
       activeIcon: const CustomSelectedIcon(
         icon: Icon(Atlas.megaphone_thin),
+        key: MainNavKeys.updates,
       ),
       label: 'Updates',
       initialLocation: Routes.updates.route,
