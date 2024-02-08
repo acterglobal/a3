@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 class VideoSlide extends StatefulWidget {
@@ -26,7 +27,8 @@ class _VideoSlideState extends State<VideoSlide> {
     final newsVideo = await widget.slide.sourceBinary(null);
     final videoName = widget.slide.text();
     final tempDir = await getTemporaryDirectory();
-    File file = File('${tempDir.path}/$videoName');
+    final filePath = p.join(tempDir.path, videoName);
+    File file = File(filePath);
     if (!(await file.exists())) {
       await file.create();
       file.writeAsBytesSync(newsVideo.asTypedList());
