@@ -133,7 +133,7 @@ class CalendarEventPage extends ConsumerWidget {
     Set<RsvpStatusTag?> rsvp = <RsvpStatusTag?>{null};
     myRsvpStatus.maybeWhen(
       data: (data) {
-        final status = data.status();
+        final status = data.inner();
         if (status != null) {
           switch (status.tag) {
             case RsvpStatusTag.Yes:

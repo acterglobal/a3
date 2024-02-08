@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
@@ -26,10 +27,11 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
       );
       try {
         //Get media path if already downloaded
-        final mediaPath = await _convo!.mediaPath(messageInfo.messageId, false);
-        if (mediaPath.text() != null) {
+        final result = await _convo!.mediaPath(messageInfo.messageId, false);
+        final mediaPath = result.inner();
+        if (mediaPath != null) {
           state = state.copyWith(
-            mediaFile: File(mediaPath.text()!),
+            mediaFile: File(mediaPath),
             mediaChatLoadingState: const MediaChatLoadingState.loaded(),
           );
         } else {
@@ -48,8 +50,9 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
       }
     } else {
       state = state.copyWith(
-        mediaChatLoadingState:
-            const MediaChatLoadingState.error('Unable to load convo'),
+        mediaChatLoadingState: const MediaChatLoadingState.error(
+          'Unable to load convo',
+        ),
       );
     }
   }
@@ -65,7 +68,7 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
         null,
         tempDir.path,
       );
-      String? mediaPath = result.text();
+      String? mediaPath = result.inner();
       if (mediaPath != null) {
         state = state.copyWith(
           mediaFile: File(mediaPath),

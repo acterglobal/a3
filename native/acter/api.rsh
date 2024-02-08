@@ -137,18 +137,18 @@ object ColorizeBuilder {
 
 
 object OptionString {
-    /// get text
-    fn text() -> Option<string>;
+    /// get inner data
+    fn inner() -> Option<string>;
 }
 
 object OptionBuffer {
-    /// get data
-    fn data() -> Option<buffer<u8>>;
+    /// get inner data
+    fn inner() -> Option<buffer<u8>>;
 }
 
 object OptionRsvpStatus {
-    /// get status
-    fn status() -> Option<RsvpStatus>;
+    /// get inner data
+    fn inner() -> Option<RsvpStatus>;
 }
 
 object UserProfile {
