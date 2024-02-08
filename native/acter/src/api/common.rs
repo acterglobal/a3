@@ -25,9 +25,12 @@ pub fn duration_from_secs(secs: u64) -> Duration {
     Duration::from_secs(secs)
 }
 
-pub struct FfiOption<T> (Option<T>);
+pub struct FfiOption<T>(Option<T>);
 
-impl<T> FfiOption<T> where T: Clone {
+impl<T> FfiOption<T>
+where
+    T: Clone,
+{
     pub(crate) fn new(inner: Option<T>) -> Self {
         FfiOption(inner)
     }
