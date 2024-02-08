@@ -84,7 +84,7 @@ class SettingsLabsPage extends ConsumerWidget {
                 SettingsTile.switchTile(
                   title: const Text('Pins'),
                   description: const Text(
-                    'Enable this to switch default pin markdown editor with Appflowy inline editor. Please note that editor is experimental and might not contain all features.',
+                    'Enable this to switch default pin markdown editor to Appflowy inline editor. Please note that editor is experimental and not all features are functional.',
                   ),
                   initialValue: ref
                       .watch(isActiveProvider(LabsFeature.showPinRichEditor)),

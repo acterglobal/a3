@@ -18,8 +18,8 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$PinEditState {
   String get title => throw _privateConstructorUsedError;
   String get link => throw _privateConstructorUsedError;
-  String get plain => throw _privateConstructorUsedError;
-  String? get markdown => throw _privateConstructorUsedError;
+  String get markdown => throw _privateConstructorUsedError;
+  String? get html => throw _privateConstructorUsedError;
   bool get editMode => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -36,8 +36,8 @@ abstract class $PinEditStateCopyWith<$Res> {
   $Res call(
       {String title,
       String link,
-      String plain,
-      String? markdown,
+      String markdown,
+      String? html,
       bool editMode});
 }
 
@@ -56,8 +56,8 @@ class _$PinEditStateCopyWithImpl<$Res, $Val extends PinEditState>
   $Res call({
     Object? title = null,
     Object? link = null,
-    Object? plain = null,
-    Object? markdown = freezed,
+    Object? markdown = null,
+    Object? html = freezed,
     Object? editMode = null,
   }) {
     return _then(_value.copyWith(
@@ -69,13 +69,13 @@ class _$PinEditStateCopyWithImpl<$Res, $Val extends PinEditState>
           ? _value.link
           : link // ignore: cast_nullable_to_non_nullable
               as String,
-      plain: null == plain
-          ? _value.plain
-          : plain // ignore: cast_nullable_to_non_nullable
-              as String,
-      markdown: freezed == markdown
+      markdown: null == markdown
           ? _value.markdown
           : markdown // ignore: cast_nullable_to_non_nullable
+              as String,
+      html: freezed == html
+          ? _value.html
+          : html // ignore: cast_nullable_to_non_nullable
               as String?,
       editMode: null == editMode
           ? _value.editMode
@@ -96,8 +96,8 @@ abstract class _$$PinEditStateImplCopyWith<$Res>
   $Res call(
       {String title,
       String link,
-      String plain,
-      String? markdown,
+      String markdown,
+      String? html,
       bool editMode});
 }
 
@@ -114,8 +114,8 @@ class __$$PinEditStateImplCopyWithImpl<$Res>
   $Res call({
     Object? title = null,
     Object? link = null,
-    Object? plain = null,
-    Object? markdown = freezed,
+    Object? markdown = null,
+    Object? html = freezed,
     Object? editMode = null,
   }) {
     return _then(_$PinEditStateImpl(
@@ -127,13 +127,13 @@ class __$$PinEditStateImplCopyWithImpl<$Res>
           ? _value.link
           : link // ignore: cast_nullable_to_non_nullable
               as String,
-      plain: null == plain
-          ? _value.plain
-          : plain // ignore: cast_nullable_to_non_nullable
-              as String,
-      markdown: freezed == markdown
+      markdown: null == markdown
           ? _value.markdown
           : markdown // ignore: cast_nullable_to_non_nullable
+              as String,
+      html: freezed == html
+          ? _value.html
+          : html // ignore: cast_nullable_to_non_nullable
               as String?,
       editMode: null == editMode
           ? _value.editMode
@@ -149,8 +149,8 @@ class _$PinEditStateImpl implements _PinEditState {
   const _$PinEditStateImpl(
       {required this.title,
       required this.link,
-      this.plain = '',
-      this.markdown = null,
+      this.markdown = '',
+      this.html = null,
       this.editMode = false});
 
   @override
@@ -159,17 +159,17 @@ class _$PinEditStateImpl implements _PinEditState {
   final String link;
   @override
   @JsonKey()
-  final String plain;
+  final String markdown;
   @override
   @JsonKey()
-  final String? markdown;
+  final String? html;
   @override
   @JsonKey()
   final bool editMode;
 
   @override
   String toString() {
-    return 'PinEditState(title: $title, link: $link, plain: $plain, markdown: $markdown, editMode: $editMode)';
+    return 'PinEditState(title: $title, link: $link, markdown: $markdown, html: $html, editMode: $editMode)';
   }
 
   @override
@@ -179,16 +179,16 @@ class _$PinEditStateImpl implements _PinEditState {
             other is _$PinEditStateImpl &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.link, link) || other.link == link) &&
-            (identical(other.plain, plain) || other.plain == plain) &&
             (identical(other.markdown, markdown) ||
                 other.markdown == markdown) &&
+            (identical(other.html, html) || other.html == html) &&
             (identical(other.editMode, editMode) ||
                 other.editMode == editMode));
   }
 
   @override
   int get hashCode =>
-      Object.hash(runtimeType, title, link, plain, markdown, editMode);
+      Object.hash(runtimeType, title, link, markdown, html, editMode);
 
   @JsonKey(ignore: true)
   @override
@@ -201,8 +201,8 @@ abstract class _PinEditState implements PinEditState {
   const factory _PinEditState(
       {required final String title,
       required final String link,
-      final String plain,
-      final String? markdown,
+      final String markdown,
+      final String? html,
       final bool editMode}) = _$PinEditStateImpl;
 
   @override
@@ -210,9 +210,9 @@ abstract class _PinEditState implements PinEditState {
   @override
   String get link;
   @override
-  String get plain;
+  String get markdown;
   @override
-  String? get markdown;
+  String? get html;
   @override
   bool get editMode;
   @override

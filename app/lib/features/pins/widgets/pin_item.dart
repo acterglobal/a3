@@ -32,17 +32,17 @@ class _PinItemState extends ConsumerState<PinItem> {
   void _buildPinContent() {
     final content = widget.pin.content();
     String? formattedBody;
-    String plainText = '';
+    String markdown = '';
     if (content != null) {
       if (content.formattedBody() != null) {
         formattedBody = content.formattedBody();
       } else {
-        plainText = content.body();
+        markdown = content.body();
       }
     }
     _linkController = TextEditingController(text: widget.pin.url() ?? '');
     _descriptionController =
-        TextEditingController(text: formattedBody ?? plainText);
+        TextEditingController(text: formattedBody ?? markdown);
   }
 
   @override
@@ -136,8 +136,8 @@ class _PinItemState extends ConsumerState<PinItem> {
                   if (_formkey.currentState!.validate()) {
                     pinEditNotifier.setEditMode(false);
                     pinEditNotifier.setLink(_linkController.text);
-                    pinEditNotifier.setPlainText(plain);
-                    pinEditNotifier.setMarkdown(htmlBody);
+                    pinEditNotifier.setMarkdown(plain);
+                    pinEditNotifier.setHtml(htmlBody);
                     await pinEditNotifier.onSave();
                   }
                 },

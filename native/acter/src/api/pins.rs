@@ -363,6 +363,12 @@ impl PinDraft {
         self
     }
 
+    pub fn content_html(&mut self, body: String, html_body: String) -> &mut Self {
+        self.content
+            .content(Some(TextMessageEventContent::html(body, html_body)));
+        self
+    }
+
     pub fn unset_content(&mut self) -> &mut Self {
         self.content.content(None);
         self
@@ -417,6 +423,12 @@ impl PinUpdateBuilder {
     pub fn content_markdown(&mut self, body: String) -> &mut Self {
         self.content
             .content(Some(Some(TextMessageEventContent::markdown(body))));
+        self
+    }
+
+    pub fn content_html(&mut self, body: String, html_body: String) -> &mut Self {
+        self.content
+            .content(Some(Some(TextMessageEventContent::html(body, html_body))));
         self
     }
 

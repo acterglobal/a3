@@ -392,6 +392,8 @@ object PinDraft {
     fn content_text(text: string);
     /// set the content of the pin through markdown
     fn content_markdown(text: string);
+    /// set the content of the pin through html
+    fn content_html(text: string, html: string);
     fn unset_content();
 
     /// set the url for this pin
@@ -454,6 +456,7 @@ object PinUpdateBuilder {
     /// set the content for this pin
     fn content_text(text: string);
     fn content_markdown(text: string);
+    fn content_html(text: string, html: string);
     fn unset_content();
     fn unset_content_update();
 

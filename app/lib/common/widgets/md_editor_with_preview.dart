@@ -21,7 +21,7 @@ class MdEditorWithPreview extends ConsumerStatefulWidget {
 
   const MdEditorWithPreview({
     super.key,
-    this.editable = false,
+    this.editable = true,
     this.onChanged,
     this.validator,
     this.hintText = 'Description',

@@ -14,20 +14,20 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
 
   void _init() {
     final content = pin.content();
-    String plainText = '';
+    String markdown = '';
     String? formattedBody;
     if (content != null) {
       if (content.formattedBody() != null) {
         formattedBody = content.formattedBody();
       } else {
-        plainText = content.body();
+        markdown = content.body();
       }
     }
     state = state.copyWith(
       title: pin.title(),
       link: pin.isLink() ? pin.url() ?? '' : '',
-      plain: plainText,
-      markdown: formattedBody,
+      markdown: formattedBody ?? markdown,
+      html: formattedBody,
     );
   }
 
@@ -35,9 +35,9 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
 
   void setLink(String link) => state = state.copyWith(link: link);
 
-  void setPlainText(String text) => state = state.copyWith(plain: text);
+  void setMarkdown(String text) => state = state.copyWith(markdown: text);
 
-  void setMarkdown(String? html) => state = state.copyWith(markdown: html);
+  void setHtml(String? html) => state = state.copyWith(html: html);
 
   void setEditMode(bool editMode) => state = state.copyWith(editMode: editMode);
 
@@ -58,13 +58,13 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
         }
       }
       final content = pin.content()!;
-      if (content.body() != state.plain) {
-        updateBuilder.contentText(state.plain);
+      if (content.body() != state.markdown) {
+        updateBuilder.contentMarkdown(state.markdown);
         hasChanges = true;
       }
 
-      if (content.formattedBody() != state.markdown && state.markdown != null) {
-        updateBuilder.contentMarkdown(state.markdown!);
+      if (state.html != null && content.formattedBody() != state.html) {
+        updateBuilder.contentHtml(state.markdown, state.html!);
         hasChanges = true;
       }
 
