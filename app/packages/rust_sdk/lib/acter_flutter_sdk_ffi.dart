@@ -29126,7 +29126,7 @@ class CalendarEvent {
     return tmp2;
   }
 
-  /// get my RSVP status, one of Yes/Maybe/No/Pending
+  /// get my RSVP status, one of Yes/Maybe/No or None
   Future<OptionRsvpStatus> myRsvpStatus() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -29947,7 +29947,7 @@ class RsvpManager {
     return tmp2;
   }
 
-  /// get Yes/Maybe/No/Pending for the user's own status
+  /// get Yes/Maybe/No or None for the user's own status
   Future<OptionRsvpStatus> myStatus() {
     var tmp0 = 0;
     tmp0 = _box.borrow();

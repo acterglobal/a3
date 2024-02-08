@@ -499,7 +499,7 @@ object CalendarEvent {
     fn update_builder() -> Result<CalendarEventUpdateBuilder>;
     /// get RSVP manager
     fn rsvp_manager() -> Future<Result<RsvpManager>>;
-    /// get my RSVP status, one of Yes/Maybe/No/Pending
+    /// get my RSVP status, one of Yes/Maybe/No or None
     fn my_rsvp_status() -> Future<Result<OptionRsvpStatus>>;
 }
 
@@ -581,7 +581,7 @@ object RsvpManager {
     /// get rsvp entries
     fn rsvp_entries() -> Future<Result<Vec<Rsvp>>>;
 
-    /// get Yes/Maybe/No/Pending for the user's own status
+    /// get Yes/Maybe/No or None for the user's own status
     fn my_status() -> Future<Result<OptionRsvpStatus>>;
 
     /// get the count of Yes/Maybe/No
