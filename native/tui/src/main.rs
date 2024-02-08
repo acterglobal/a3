@@ -63,7 +63,7 @@ async fn main() -> Result<()> {
             .unwrap();
 
         let dp = client.account().unwrap().display_name().await.unwrap();
-        let name = format!("{:?} ({username:})", dp.text());
+        let name = format!("{:?} ({username:})", dp.inner());
         sender.send(AppUpdate::SetUsername(name)).unwrap();
 
         let sync_stream = sync_state.first_synced_rx();

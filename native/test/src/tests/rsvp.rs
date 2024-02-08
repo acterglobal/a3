@@ -1,3 +1,4 @@
+use acter_core::events::rsvp::RsvpStatus;
 use anyhow::{bail, Result};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -65,7 +66,7 @@ async fn rsvp_last_status() -> Result<()> {
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_1_id = rsvp_manager
         .rsvp_draft()?
-        .status("Yes".to_string())
+        .status("yes".to_string())
         .send()
         .await?;
 
@@ -79,13 +80,13 @@ async fn rsvp_last_status() -> Result<()> {
 
     let entries = rsvp_manager.rsvp_entries().await?;
     assert_eq!(entries.len(), 1);
-    assert_eq!(entries[0].status(), "Yes");
+    assert_eq!(entries[0].status(), "yes");
 
     // send 2nd RSVP
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_2_id = rsvp_manager
         .rsvp_draft()?
-        .status("No".to_string())
+        .status("no".to_string())
         .send()
         .await?;
 
@@ -102,7 +103,7 @@ async fn rsvp_last_status() -> Result<()> {
     // user sent 2 rsvp responses, but only one entry will be kept
     let entries = rsvp_manager.rsvp_entries().await?;
     assert_eq!(entries.len(), 1);
-    assert_eq!(entries[0].status(), "No");
+    assert_eq!(entries[0].status(), "no");
 
     Ok(())
 }
@@ -137,7 +138,7 @@ async fn rsvp_my_status() -> Result<()> {
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_1_id = rsvp_manager
         .rsvp_draft()?
-        .status("Yes".to_string())
+        .status("yes".to_string())
         .send()
         .await?;
 
@@ -151,13 +152,13 @@ async fn rsvp_my_status() -> Result<()> {
 
     let entries = rsvp_manager.rsvp_entries().await?;
     assert_eq!(entries.len(), 1);
-    assert_eq!(entries[0].status(), "Yes");
+    assert_eq!(entries[0].status(), "yes");
 
     // send 2nd RSVP
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_2_id = rsvp_manager
         .rsvp_draft()?
-        .status("No".to_string())
+        .status("no".to_string())
         .send()
         .await?;
 
@@ -174,11 +175,11 @@ async fn rsvp_my_status() -> Result<()> {
     // user sent 2 rsvp responses, but only one entry will be kept
     let entries = rsvp_manager.rsvp_entries().await?;
     assert_eq!(entries.len(), 1);
-    assert_eq!(entries[0].status(), "No");
+    assert_eq!(entries[0].status(), "no");
 
     // get last RSVP
     let last_status = rsvp_manager.my_status().await?;
-    assert_eq!(last_status, "No");
+    assert_eq!(last_status.inner(), Some(RsvpStatus::No));
 
     Ok(())
 }
@@ -214,7 +215,7 @@ async fn rsvp_count_at_status() -> Result<()> {
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_1_id = rsvp_manager
         .rsvp_draft()?
-        .status("Yes".to_string())
+        .status("yes".to_string())
         .send()
         .await?;
 
@@ -228,13 +229,13 @@ async fn rsvp_count_at_status() -> Result<()> {
 
     let entries = rsvp_manager.rsvp_entries().await?;
     assert_eq!(entries.len(), 1);
-    assert_eq!(entries[0].status(), "Yes");
+    assert_eq!(entries[0].status(), "yes");
 
     // send 2nd RSVP
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_2_id = rsvp_manager
         .rsvp_draft()?
-        .status("No".to_string())
+        .status("no".to_string())
         .send()
         .await?;
 
@@ -251,10 +252,10 @@ async fn rsvp_count_at_status() -> Result<()> {
     // user sent 2 rsvp responses, but only one entry will be kept
     let entries = rsvp_manager.rsvp_entries().await?;
     assert_eq!(entries.len(), 1);
-    assert_eq!(entries[0].status(), "No");
+    assert_eq!(entries[0].status(), "no");
 
     // older rsvp would be ignored
-    let count = rsvp_manager.count_at_status("Yes".to_string()).await?;
+    let count = rsvp_manager.count_at_status("yes".to_string()).await?;
     assert_eq!(count, 0);
 
     Ok(())
@@ -291,7 +292,7 @@ async fn rsvp_users_at_status() -> Result<()> {
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_1_id = rsvp_manager
         .rsvp_draft()?
-        .status("Yes".to_string())
+        .status("yes".to_string())
         .send()
         .await?;
 
@@ -305,13 +306,13 @@ async fn rsvp_users_at_status() -> Result<()> {
 
     let entries = rsvp_manager.rsvp_entries().await?;
     assert_eq!(entries.len(), 1);
-    assert_eq!(entries[0].status(), "Yes");
+    assert_eq!(entries[0].status(), "yes");
 
     // send 2nd RSVP
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_2_id = rsvp_manager
         .rsvp_draft()?
-        .status("No".to_string())
+        .status("no".to_string())
         .send()
         .await?;
 
@@ -328,10 +329,10 @@ async fn rsvp_users_at_status() -> Result<()> {
     // user sent 2 rsvp responses, but only one entry will be kept
     let entries = rsvp_manager.rsvp_entries().await?;
     assert_eq!(entries.len(), 1);
-    assert_eq!(entries[0].status(), "No");
+    assert_eq!(entries[0].status(), "no");
 
     // get users at status
-    let users = rsvp_manager.users_at_status("Maybe".to_string()).await?;
+    let users = rsvp_manager.users_at_status("maybe".to_string()).await?;
     assert_eq!(users.len(), 0);
 
     Ok(())

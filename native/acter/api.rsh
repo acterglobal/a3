@@ -137,13 +137,18 @@ object ColorizeBuilder {
 
 
 object OptionString {
-    /// get text
-    fn text() -> Option<string>;
+    /// get inner data
+    fn inner() -> Option<string>;
 }
 
 object OptionBuffer {
-    /// get text
-    fn data() -> Option<buffer<u8>>;
+    /// get inner data
+    fn inner() -> Option<buffer<u8>>;
+}
+
+object OptionRsvpStatus {
+    /// get inner data
+    fn inner() -> Option<RsvpStatus>;
 }
 
 object UserProfile {
@@ -494,8 +499,8 @@ object CalendarEvent {
     fn update_builder() -> Result<CalendarEventUpdateBuilder>;
     /// get RSVP manager
     fn rsvp_manager() -> Future<Result<RsvpManager>>;
-    /// get my RSVP status, one of Yes/Maybe/No/Pending
-    fn my_rsvp_status() -> Future<Result<string>>;
+    /// get my RSVP status, one of Yes/Maybe/No or None
+    fn my_rsvp_status() -> Future<Result<OptionRsvpStatus>>;
 }
 
 object CalendarEventUpdateBuilder {
@@ -560,6 +565,12 @@ object CalendarEventDraft {
 
 
 
+enum RsvpStatus {
+    Yes,
+    Maybe,
+    No
+}
+
 object RsvpManager {
     /// whether manager has rsvp entries
     fn has_rsvp_entries() -> bool;
@@ -570,8 +581,8 @@ object RsvpManager {
     /// get rsvp entries
     fn rsvp_entries() -> Future<Result<Vec<Rsvp>>>;
 
-    /// get Yes/Maybe/No/Pending for the user's own status
-    fn my_status() -> Future<Result<string>>;
+    /// get Yes/Maybe/No or None for the user's own status
+    fn my_status() -> Future<Result<OptionRsvpStatus>>;
 
     /// get the count of Yes/Maybe/No
     fn count_at_status(status: string) -> Future<Result<u32>>;

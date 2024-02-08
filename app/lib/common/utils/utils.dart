@@ -264,15 +264,6 @@ enum LabsFeature {
       ];
 }
 
-// ignore: constant_identifier_names
-enum RSVP { Yes, Maybe, No, Pending }
-
-const List<(RSVP, String)> rsvpOptions = <(RSVP, String)>[
-  (RSVP.No, 'No'),
-  (RSVP.Maybe, 'Maybe'),
-  (RSVP.Yes, 'Yes'),
-];
-
 typedef ChatWithProfileData = ({Convo chat, ProfileData profile});
 typedef SpaceWithProfileData = ({Space space, ProfileData profile});
 typedef MemberInfo = ({String userId, String? roomId});

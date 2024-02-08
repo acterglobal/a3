@@ -17,22 +17,26 @@ class EventItem extends ConsumerWidget {
     final myRsvpStatus = ref.watch(myRsvpStatusProvider(eventId));
     return Card(
       child: ListTile(
-        title:
-            Text(event.title(), style: Theme.of(context).textTheme.bodyMedium),
+        title: Text(
+          event.title(),
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
         subtitle: Text(
           '${formatDt(event)} (${formatTime(event)})',
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         trailing: myRsvpStatus.when(
-          data: (status) {
+          data: (data) {
             return Chip(
-              label: Text(status),
+              label: Text(data.inner()?.tag.toString() ?? 'Pending'),
             );
           },
           error: (e, st) => Chip(
             label: Text('Error loading rsvp status: $e', softWrap: true),
           ),
-          loading: () => const Chip(label: Text('Loading rsvp status')),
+          loading: () => const Chip(
+            label: Text('Loading rsvp status'),
+          ),
         ),
         onTap: () => context.pushNamed(
           Routes.calendarEvent.name,

@@ -394,7 +394,7 @@ final spaceRelationsOverviewProvider = FutureProvider.autoDispose
 final spaceHierarchyProfileProvider = FutureProvider.autoDispose
     .family<ProfileData, SpaceHierarchyRoomInfo>((ref, space) async {
   final avatar = await space.getAvatar(null);
-  return ProfileData(space.name(), avatar.data());
+  return ProfileData(space.name(), avatar.inner());
 });
 
 final acterAppSettingsProvider = FutureProvider.autoDispose
