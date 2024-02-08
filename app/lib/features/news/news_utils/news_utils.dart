@@ -5,7 +5,6 @@ import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
@@ -14,8 +13,10 @@ import 'package:path_provider/path_provider.dart';
 class NewsUtils {
   static Future<File?> getThumbnailData(XFile videoFile) async {
     try {
+
       final tempDir = await getTemporaryDirectory();
-      final destPath = p.join(tempDir.path, videoFile.name);
+      final videoName = videoFile.name.split('.').first;
+      final destPath = p.join(tempDir.path, '$videoName.jpg');
       final destFile = File(destPath);
 
       if (await destFile.exists()) {
@@ -69,15 +70,14 @@ class NewsUtils {
 
   //Add video slide
   static Future<void> addVideoSlide(WidgetRef ref) async {
-    EasyLoading.showInfo('Coming soon');
-    // XFile? videoFile =
-    //     await ImagePicker().pickVideo(source: ImageSource.gallery);
-    // if (videoFile != null) {
-    //   final slide = NewsSlideItem(
-    //     type: NewsSlideType.video,
-    //     mediaFile: videoFile,
-    //   );
-    //   ref.read(newsStateProvider.notifier).addSlide(slide);
-    // }
+    XFile? videoFile =
+        await ImagePicker().pickVideo(source: ImageSource.gallery);
+    if (videoFile != null) {
+      final slide = NewsSlideItem(
+        type: NewsSlideType.video,
+        mediaFile: videoFile,
+      );
+      ref.read(newsStateProvider.notifier).addSlide(slide);
+    }
   }
 }

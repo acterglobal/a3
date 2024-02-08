@@ -39,15 +39,19 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
 
   Future<void> changeInvitedSpaceId(BuildContext context) async {
     final spaceId = await selectSpaceDrawer(context: context);
+    NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
+    selectedNewsSlide?.invitedSpaceId = spaceId;
     state = state.copyWith(
-      invitedSpaceId: spaceId,
+      currentNewsSlide: selectedNewsSlide,
     );
   }
 
   Future<void> changeInvitedChatId(BuildContext context) async {
     final chatId = await selectChatDrawer(context: context);
+    NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
+    selectedNewsSlide?.invitedChatId = chatId;
     state = state.copyWith(
-      invitedChatId: chatId,
+      currentNewsSlide: selectedNewsSlide,
     );
   }
 

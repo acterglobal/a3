@@ -1,4 +1,4 @@
-use acter_core::events::{attachments::AttachmentContent, rsvp::RsvpStatus};
+use acter_core::events::{attachments::AttachmentContent, rsvp::RsvpStatus, ColorizeBuilder};
 use anyhow::{Context, Result};
 use core::time::Duration;
 use matrix_sdk::media::{MediaFormat, MediaThumbnailSize};
@@ -566,4 +566,18 @@ impl From<Box<ThumbnailSize>> for MediaFormat {
 
 pub fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize> {
     ThumbnailSize::new(width, height)
+}
+
+pub fn new_colorize_builder(
+    color: Option<u32>,
+    background: Option<u32>,
+) -> Result<ColorizeBuilder> {
+    let mut builder = ColorizeBuilder::default();
+    if let Some(color) = color {
+        builder.color(color);
+    }
+    if let Some(background) = background {
+        builder.background(background);
+    }
+    Ok(builder)
 }

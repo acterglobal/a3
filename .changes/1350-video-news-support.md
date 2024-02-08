@@ -1,0 +1,1 @@
+- [new] : Video post is now supported on the news update

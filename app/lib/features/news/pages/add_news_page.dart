@@ -4,6 +4,7 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
@@ -11,7 +12,6 @@ import 'package:acter/features/news/widgets/news_post_editor/select_action_item.
 import 'package:acter/features/news/widgets/news_post_editor/news_slide_options.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -51,16 +51,13 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
           ? Colors.transparent
           : selectedNewsPost?.backgroundColor,
       actions: [
-        Visibility(
-          visible: selectedNewsPost?.type == NewsSlideType.text,
-          child: IconButton(
-            onPressed: () {
-              ref
-                  .read(newsStateProvider.notifier)
-                  .changeTextSlideBackgroundColor();
-            },
-            icon: const Icon(Atlas.color),
-          ),
+        IconButton(
+          onPressed: () {
+            ref
+                .read(newsStateProvider.notifier)
+                .changeTextSlideBackgroundColor();
+          },
+          icon: const Icon(Atlas.color),
         ),
       ],
     );
@@ -90,17 +87,15 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
           content: SelectActionItem(
             onSpaceItemSelected: () async {
               Navigator.of(context, rootNavigator: true).pop();
-              EasyLoading.showInfo('Coming soon');
-              // await ref
-              //     .read(newsStateProvider.notifier)
-              //     .changeInvitedSpaceId(context);
+              await ref
+                  .read(newsStateProvider.notifier)
+                  .changeInvitedSpaceId(context);
             },
             onChatItemSelected: () async {
               Navigator.of(context, rootNavigator: true).pop();
-              EasyLoading.showInfo('Coming soon');
-              // await ref
-              //     .read(newsStateProvider.notifier)
-              //     .changeInvitedChatId(context);
+              await ref
+                  .read(newsStateProvider.notifier)
+                  .changeInvitedChatId(context);
             },
           ),
         );
@@ -148,8 +143,8 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
 
   //Show selected Action Buttons
   Widget selectedActionButtonsUI() {
-    final invitedSpaceId = ref.watch(newsStateProvider).invitedSpaceId;
-    final invitedChatId = ref.watch(newsStateProvider).invitedChatId;
+    final invitedSpaceId = selectedNewsPost?.invitedSpaceId;
+    final invitedChatId = selectedNewsPost?.invitedChatId;
 
     return Positioned(
       bottom: 10,
@@ -235,16 +230,19 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
           ),
           const SizedBox(height: 40),
           OutlinedButton(
+            key: NewsUpdateKeys.addTextSlide,
             onPressed: () => NewsUtils.addTextSlide(ref),
             child: const Text('Add text slide'),
           ),
           const SizedBox(height: 20),
           OutlinedButton(
+            key: NewsUpdateKeys.addImageSlide,
             onPressed: () async => await NewsUtils.addImageSlide(ref),
             child: const Text('Add image slide'),
           ),
           const SizedBox(height: 20),
           OutlinedButton(
+            key: NewsUpdateKeys.addVideoSlide,
             onPressed: () async => await NewsUtils.addVideoSlide(ref),
             child: const Text('Add video slide'),
           ),
@@ -260,6 +258,7 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
       alignment: Alignment.center,
       color: selectedNewsPost!.backgroundColor,
       child: TextField(
+        key: NewsUpdateKeys.textSlideInputField,
         controller: textController,
         textAlign: TextAlign.center,
         textInputAction: TextInputAction.newline,
@@ -285,17 +284,25 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
 
   Widget slideImagePostUI(BuildContext context) {
     final imageFile = selectedNewsPost!.mediaFile;
-    return Image.file(
-      File(imageFile!.path),
-      fit: BoxFit.contain,
+    return Container(
+      alignment: Alignment.center,
+      color: selectedNewsPost!.backgroundColor,
+      child: Image.file(
+        File(imageFile!.path),
+        fit: BoxFit.contain,
+      ),
     );
   }
 
   Widget slideVideoPostUI(BuildContext context) {
     final videoFile = selectedNewsPost!.mediaFile!;
-    return ActerVideoPlayer(
-      key: Key(videoFile.name),
-      videoFile: File(videoFile.path),
+    return Container(
+      alignment: Alignment.center,
+      color: selectedNewsPost!.backgroundColor,
+      child: ActerVideoPlayer(
+        key: Key(videoFile.name),
+        videoFile: File(videoFile.path),
+      ),
     );
   }
 }

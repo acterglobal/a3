@@ -1,7 +1,9 @@
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
@@ -46,6 +48,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           children: [
             if (newsPostSpaceId != null)
               InkWell(
+                key: NewsUpdateKeys.selectSpace,
                 onTap: () async {
                   await ref
                       .read(newsStateProvider.notifier)
@@ -64,6 +67,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
               )
             else
               OutlinedButton(
+                key: NewsUpdateKeys.selectSpace,
                 onPressed: () async {
                   await ref
                       .read(newsStateProvider.notifier)
@@ -74,6 +78,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
             verticalDivider(context),
             Expanded(child: newsSlideListUI(context)),
             IconButton(
+              key: NewsUpdateKeys.newsSubmitBtn,
               onPressed: () => sendNews(context),
               style: ButtonStyle(
                 backgroundColor: MaterialStatePropertyAll(
@@ -247,6 +252,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
       final space = await ref.read(spaceProvider(spaceId).future);
       NewsEntryDraft draft = space.newsDraft();
       for (final slidePost in newsSlideList) {
+        final sdk = await ref.read(sdkProvider.future);
         // If slide type is text
         if (slidePost.type == NewsSlideType.text && slidePost.text != null) {
           if (slidePost.text!.isEmpty) {
@@ -256,6 +262,13 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
 
           final textDraft = client.textMarkdownDraft(slidePost.text!);
           final textSlideDraft = textDraft.intoNewsSlideDraft();
+
+          textSlideDraft.color(
+            sdk.api.newColorizeBuilder(
+              null,
+              slidePost.backgroundColor?.value,
+            ),
+          );
           await draft.addSlide(textSlideDraft);
         }
 
@@ -282,6 +295,12 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
               .width(decodedImage.width)
               .height(decodedImage.height);
           final imageSlideDraft = imageDraft.intoNewsSlideDraft();
+          imageSlideDraft.color(
+            sdk.api.newColorizeBuilder(
+              null,
+              slidePost.backgroundColor?.value,
+            ),
+          );
           await draft.addSlide(imageSlideDraft);
         }
 
@@ -304,6 +323,12 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           final videoDraft =
               client.videoDraft(file.path, mimeType).size(bytes.length);
           final videoSlideDraft = videoDraft.intoNewsSlideDraft();
+          videoSlideDraft.color(
+            sdk.api.newColorizeBuilder(
+              null,
+              slidePost.backgroundColor?.value,
+            ),
+          );
           await draft.addSlide(videoSlideDraft);
         }
       }

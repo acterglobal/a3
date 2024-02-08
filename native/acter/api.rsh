@@ -42,6 +42,9 @@ fn parse_markdown(text: string) -> Option<string>;
 /// create size object to be used for thumbnail download
 fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize>;
 
+// create a new colorize builder
+fn new_colorize_builder(color: Option<u32>, background: Option<u32>) -> Result<ColorizeBuilder>;
+
 
 //  ########  ########  #### ##     ## #### ######## #### ##     ## ########  ######  
 //  ##     ## ##     ##  ##  ###   ###  ##     ##     ##  ##     ## ##       ##    ## 
@@ -54,12 +57,6 @@ fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize>;
 
 /// Representing a time frame
 object EfkDuration {}
-
-/// Representing a color
-object EfkColor {
-    /// as rgba in u8
-    fn rgba_u8() -> (u8, u8, u8, u8);
-}
 
 object UtcDateTime {
     fn timestamp() -> i64;
@@ -96,20 +93,22 @@ object ObjRef {
 /// A foreground and background color setting
 object Colorize {
     /// Foreground or text color
-    fn color() -> Option<EfkColor>;
+    fn color() -> Option<u32>;
     /// Background color
-    fn background() -> Option<EfkColor>;
+    fn background() -> Option<u32>;
 }
 
-object Tag {
-    /// the title of the tag
-    fn title() -> string;
-    /// dash-cased-ascii-version for usage in hashtags (no `#` at the front)
-    fn hash_tag() -> string;
-    /// if given, the specific color for this tag
-    fn color() -> Option<EfkColor>;
+/// A builder for Colorize. Allowing you to set (foreground) color and background
+object ColorizeBuilder {
+    /// RGBA color representation as int for the foreground color 
+    fn color(color: u32);
+    /// unset the color
+    fn unset_color();
+    /// RGBA color representation as int for the background color
+    fn background(color: u32);
+    /// unset the background color
+    fn unset_background();
 }
-
 
 // enum LocationType {
 //    Physical,
@@ -124,8 +123,6 @@ object Tag {
 //    fn coordinates() -> Option<string>;
 //    fn uri() -> Option<string>;
 //}
-
-
 
 
 
@@ -298,6 +295,9 @@ object NewsSlide {
     /// the references linked in this slide
     fn references() -> Vec<ObjRef>;
 
+    /// The color setting
+    fn colors() -> Option<Colorize>;
+
     /// if this is a media, hand over the description
     fn msg_content() -> MsgContent;
     /// if this is a media, hand over the data
@@ -310,6 +310,9 @@ object NewsSlideDraft {
     /// add reference for this slide draft
     fn add_reference(reference: ObjRef);
 
+    /// set the color according to the colorize builder
+    fn color(color: ColorizeBuilder);
+
     /// unset references for this slide draft
     fn unset_references();
 }
@@ -321,8 +324,6 @@ object NewsEntry {
     fn get_slide(pos: u8) -> Option<NewsSlide>;
     /// get all slides of this news item
     fn slides() -> Vec<NewsSlide>;
-    /// The color setting
-    fn colors() -> Option<Colorize>;
 
     /// how many comments on this news entry
     fn comments_count() -> u32;
@@ -352,10 +353,6 @@ object NewsEntryDraft {
     /// clear slides
     fn unset_slides();
 
-    /// set the color for this news entry
-    fn colors(colors: Colorize);
-    fn unset_colors();
-
     /// create this news entry
     fn send() -> Future<Result<EventId>>;
 }
@@ -370,11 +367,6 @@ object NewsEntryUpdateBuilder {
 
     /// set position of slides for this news entry
     fn swap_slides(from: u8, to: u8);
-
-    /// set the color for this news entry
-    fn colors(colors: Colorize);
-    fn unset_colors();
-    fn unset_colors_update();
 
     /// update this news entry
     fn send() -> Future<Result<EventId>>;
@@ -425,7 +417,7 @@ object ActerPin {
     /// get the link content
     fn url() -> Option<string>;
     /// get the link color settings
-    fn color() -> Option<EfkColor>;
+    fn color() -> Option<u32>;
     /// The room this Pin belongs to
     //fn team() -> Room;
 
@@ -1239,7 +1231,7 @@ object Task {
     fn utc_start_rfc3339() -> Option<string>;
 
     /// Has this been colored in?
-    fn color() -> Option<EfkColor>;
+    fn color() -> Option<u32>;
 
     /// is this task already done?
     fn is_done() -> bool;
@@ -1291,7 +1283,7 @@ object TaskUpdateBuilder {
     fn unset_sort_order_update();
 
     /// set the color for this task list
-    fn color(color: EfkColor);
+    fn color(color: u32);
     fn unset_color();
     fn unset_color_update();
 
@@ -1352,7 +1344,7 @@ object TaskDraft {
     fn sort_order(sort_order: u32);
 
     /// set the color for this task
-    fn color(color: EfkColor);
+    fn color(color: u32);
     fn unset_color();
 
     /// set the due day for this task
@@ -1403,7 +1395,7 @@ object TaskList {
     fn sort_order() -> u32;
 
     /// Has this been colored in?
-    fn color() -> Option<EfkColor>;
+    fn color() -> Option<u32>;
 
     /// Does this have any special time zone
     fn time_zone() -> Option<string>;
@@ -1452,7 +1444,7 @@ object TaskListDraft {
     fn sort_order(sort_order: u32);
 
     /// set the color for this task list
-    fn color(color: EfkColor);
+    fn color(color: u32);
     fn unset_color();
 
     /// set the keywords for this task list
@@ -1480,7 +1472,7 @@ object TaskListUpdateBuilder {
     fn sort_order(sort_order: u32);
 
     /// set the color for this task list
-    fn color(color: EfkColor);
+    fn color(color: u32);
     fn unset_color();
     fn unset_color_update();
 

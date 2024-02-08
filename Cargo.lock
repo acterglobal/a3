@@ -102,7 +102,6 @@ dependencies = [
  "async-stream",
  "chrono",
  "chrono-tz",
- "csscolorparser",
  "dashmap",
  "derive-getters",
  "derive_builder",
@@ -1216,16 +1215,6 @@ dependencies = [
  "generic-array",
  "rand_core 0.6.4",
  "typenum",
-]
-
-[[package]]
-name = "csscolorparser"
-version = "0.6.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eb2a7d3066da2de787b7f032c736763eb7ae5d355f81a68bab2675a96008b0bf"
-dependencies = [
- "phf 0.11.2",
- "serde",
 ]
 
 [[package]]

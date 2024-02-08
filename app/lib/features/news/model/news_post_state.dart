@@ -9,7 +9,5 @@ class NewsPostState with _$NewsPostState {
     NewsSlideItem? currentNewsSlide,
     @Default([]) List<NewsSlideItem> newsSlideList,
     String? newsPostSpaceId,
-    String? invitedSpaceId,
-    String? invitedChatId,
   }) = _NewsPostState;
 }
