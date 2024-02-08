@@ -80,53 +80,49 @@ class NotificationsSettingsPage extends ConsumerWidget {
           elevation: 0.0,
           title: const Text('Notifications'),
         ),
-        body: Column(
-          children: [
-            SettingsList(
-              shrinkWrap: true,
-              sections: [
-                const SettingsSection(
-                  title: Text('Notifications'),
-                  tiles: [
-                    LabsNotificationsSettingsTile(title: 'Push to this device'),
-                  ],
-                ),
-                SettingsSection(
-                  title: const Text('Default Modes'),
-                  tiles: [
-                    _notifSection(
-                      context,
-                      ref,
-                      'Regular Space or Chat',
-                      false,
-                      false,
-                    ),
-                    _notifSection(
-                      context,
-                      ref,
-                      'Encrypted Space or Chat',
-                      true,
-                      false,
-                    ),
-                    _notifSection(
-                      context,
-                      ref,
-                      'One-on-one Space or Chat',
-                      false,
-                      true,
-                    ),
-                    _notifSection(
-                      context,
-                      ref,
-                      'Encrypted One-on-one Space or Chat',
-                      true,
-                      true,
-                    ),
-                  ],
-                ),
-                _pushTargets(context, ref),
+        body: SettingsList(
+          shrinkWrap: true,
+          sections: [
+            const SettingsSection(
+              title: Text('Notifications'),
+              tiles: [
+                LabsNotificationsSettingsTile(title: 'Push to this device'),
               ],
             ),
+            SettingsSection(
+              title: const Text('Default Modes'),
+              tiles: [
+                _notifSection(
+                  context,
+                  ref,
+                  'Regular Space or Chat',
+                  false,
+                  false,
+                ),
+                _notifSection(
+                  context,
+                  ref,
+                  'Encrypted Space or Chat',
+                  true,
+                  false,
+                ),
+                _notifSection(
+                  context,
+                  ref,
+                  'DM Chat',
+                  false,
+                  true,
+                ),
+                _notifSection(
+                  context,
+                  ref,
+                  'Encrypted DM Chat',
+                  true,
+                  true,
+                ),
+              ],
+            ),
+            _pushTargets(context, ref),
           ],
         ),
       ),
@@ -143,7 +139,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
     final curNotifStatus = ref
             .watch(
               currentNotificationModeProvider(
-                NotificationConfiguration(isEncrypted, isOneToOne),
+                (encrypted: isEncrypted, oneToOne: isOneToOne),
               ),
             )
             .valueOrNull ??
@@ -159,7 +155,6 @@ class NotificationsSettingsPage extends ConsumerWidget {
         initialValue: curNotifStatus,
         // Callback that sets the selected popup menu item.
         onSelected: (String newMode) async {
-          debugPrint('new value: $newMode');
           final client = ref.read(clientProvider);
           if (client == null) {
             // ignore: use_build_context_synchronously
@@ -168,18 +163,16 @@ class NotificationsSettingsPage extends ConsumerWidget {
           }
           EasyLoading.show();
           try {
-            await client.setDefaultNotificationMode(
-              isEncrypted,
-              isOneToOne,
-              newMode,
-            );
+            await ref
+                .read(notificationSettingsProvider)
+                .valueOrNull!
+                .setDefaultNotificationMode(
+                  isEncrypted,
+                  isOneToOne,
+                  newMode,
+                );
             EasyLoading.showSuccess(
               'Notification status submitted',
-            );
-            ref.invalidate(
-              currentNotificationModeProvider(
-                NotificationConfiguration(isEncrypted, isOneToOne),
-              ),
             );
           } catch (e) {
             EasyLoading.showError(

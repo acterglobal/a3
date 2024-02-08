@@ -1,20 +1,34 @@
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
-class NotificationConfiguration {
-  final bool encrypted;
-  final bool oneToOne;
-  const NotificationConfiguration(this.encrypted, this.oneToOne);
+typedef NotificationConfiguration = ({bool encrypted, bool oneToOne});
+
+class AsyncNotificationSettingNotifier
+    extends AutoDisposeAsyncNotifier<NotificationSettings> {
+  late Stream<void> _listener;
+
+  @override
+  Future<NotificationSettings> build() async {
+    final client = ref.watch(alwaysClientProvider);
+    final settings = await client.notificationSettings();
+    _listener = settings.changesStream(); // stay up to date
+    _listener.forEach((e) async {
+      state = AsyncValue.data(settings);
+    });
+    return settings;
+  }
 }
 
-final currentNotificationModeProvider =
-    FutureProvider.family<String, NotificationConfiguration>(
-        (ref, config) async {
-  final client = ref.watch(clientProvider);
-  if (client == null) {
-    throw 'No client';
-  }
-  return (await client.defaultNotificationMode(
+final notificationSettingsProvider = AsyncNotifierProvider.autoDispose<
+    AsyncNotificationSettingNotifier, NotificationSettings>(
+  () => AsyncNotificationSettingNotifier(),
+);
+
+final currentNotificationModeProvider = FutureProvider.autoDispose
+    .family<String, NotificationConfiguration>((ref, config) async {
+  final settings = await ref.watch(notificationSettingsProvider.future);
+  return (await settings.defaultNotificationMode(
     config.encrypted,
     config.oneToOne,
   ));
