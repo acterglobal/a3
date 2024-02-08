@@ -20,7 +20,7 @@ use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::warn;
 
-use super::{client::Client, spaces::Space, RUNTIME};
+use super::{client::Client, common::OptionRsvpStatus, spaces::Space, RUNTIME};
 
 impl Client {
     pub async fn wait_for_calendar_event(
@@ -230,11 +230,8 @@ impl CalendarEvent {
             .await?
     }
 
-    pub async fn my_rsvp_status(&self) -> Result<String> {
+    pub async fn my_rsvp_status(&self) -> Result<OptionRsvpStatus> {
         let me = self.clone();
-        let client = self.client.clone();
-        let event_id = self.inner.event_id().to_owned();
-        let my_id = self.client.user_id()?;
 
         RUNTIME
             .spawn(async move {

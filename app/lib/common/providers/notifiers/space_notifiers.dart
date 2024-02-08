@@ -21,7 +21,7 @@ class AsyncSpaceProfileDataNotifier
     final sdk = await ref.watch(sdkProvider.future);
     final size = sdk.newThumbSize(48, 48);
     final avatar = await profile.getAvatar(size);
-    return ProfileData(displayName.text(), avatar.data());
+    return ProfileData(displayName.inner(), avatar.inner());
   }
 
   @override
@@ -89,6 +89,7 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
 class SpaceListNotifier extends StateNotifier<List<Space>> {
   final Ref ref;
   final Client client;
+
   StreamSubscription<SpaceDiff>? subscription;
 
   SpaceListNotifier({

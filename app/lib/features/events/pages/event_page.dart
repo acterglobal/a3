@@ -128,19 +128,24 @@ class CalendarEventPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     AsyncValue<CalendarEvent> event =
         ref.watch(calendarEventProvider(calendarId));
-    AsyncValue<String> myRsvpStatus =
+    AsyncValue<OptionRsvpStatus> myRsvpStatus =
         ref.watch(myRsvpStatusProvider(calendarId));
-    Set<RSVP> rsvp = <RSVP>{RSVP.Pending};
+    Set<RsvpStatusTag?> rsvp = <RsvpStatusTag?>{null};
     myRsvpStatus.maybeWhen(
-      data: (status) {
-        if (status == 'Yes') {
-          rsvp = <RSVP>{RSVP.Yes};
-        } else if (status == 'Maybe') {
-          rsvp = <RSVP>{RSVP.Maybe};
-        } else if (status == 'No') {
-          rsvp = <RSVP>{RSVP.No};
-        } else {
-          rsvp = <RSVP>{RSVP.Pending};
+      data: (data) {
+        final status = data.inner();
+        if (status != null) {
+          switch (status.tag) {
+            case RsvpStatusTag.Yes:
+              rsvp = <RsvpStatusTag?>{RsvpStatusTag.Yes};
+              break;
+            case RsvpStatusTag.Maybe:
+              rsvp = <RsvpStatusTag?>{RsvpStatusTag.Maybe};
+              break;
+            case RsvpStatusTag.No:
+              rsvp = <RsvpStatusTag?>{RsvpStatusTag.No};
+              break;
+          }
         }
       },
       orElse: () => null,
@@ -319,26 +324,29 @@ class CalendarEventPage extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 15),
-                    SegmentedButton<RSVP>(
+                    SegmentedButton<RsvpStatusTag?>(
                       multiSelectionEnabled: false,
                       emptySelectionAllowed: false,
                       showSelectedIcon: false,
                       selected: rsvp,
-                      onSelectionChanged: (Set<RSVP> rsvp) async {
-                        await onRsvp(
-                          context,
-                          rsvp.first.name,
-                          ref,
-                        );
+                      onSelectionChanged: (Set<RsvpStatusTag?> rsvp) async {
+                        await onRsvp(context, rsvp.single!, ref);
                         event = ref.refresh(calendarEventProvider(calendarId));
                       },
-                      segments: rsvpOptions
-                          .map<ButtonSegment<RSVP>>(((RSVP, String) rsvp) {
-                        return ButtonSegment<RSVP>(
-                          value: rsvp.$1,
-                          label: Text(rsvp.$2),
-                        );
-                      }).toList(),
+                      segments: const [
+                        ButtonSegment<RsvpStatusTag>(
+                          value: RsvpStatusTag.Yes,
+                          label: Text('Yes'),
+                        ),
+                        ButtonSegment<RsvpStatusTag>(
+                          value: RsvpStatusTag.Maybe,
+                          label: Text('Maybe'),
+                        ),
+                        ButtonSegment<RsvpStatusTag>(
+                          value: RsvpStatusTag.No,
+                          label: Text('No'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -370,14 +378,14 @@ class CalendarEventPage extends ConsumerWidget {
 
   Future<void> onRsvp(
     BuildContext context,
-    String status,
+    RsvpStatusTag status,
     WidgetRef ref,
   ) async {
     EasyLoading.show(status: 'Updating RSVP', dismissOnTap: false);
     final event = await ref.read(calendarEventProvider(calendarId).future);
     final rsvpManager = await event.rsvpManager();
     final draft = rsvpManager.rsvpDraft();
-    draft.status(status);
+    draft.status(status.toString());
     final rsvpId = await draft.send();
     EasyLoading.dismiss();
     debugPrint('new rsvp id: $rsvpId');

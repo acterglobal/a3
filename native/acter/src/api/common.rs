@@ -1,4 +1,4 @@
-use acter_core::events::{attachments::AttachmentContent, ColorizeBuilder};
+use acter_core::events::{attachments::AttachmentContent, rsvp::RsvpStatus, ColorizeBuilder};
 use anyhow::{Context, Result};
 use core::time::Duration;
 use matrix_sdk::media::{MediaFormat, MediaThumbnailSize};
@@ -25,33 +25,24 @@ pub fn duration_from_secs(secs: u64) -> Duration {
     Duration::from_secs(secs)
 }
 
-pub struct OptionString {
-    text: Option<String>,
-}
+pub struct FfiOption<T>(Option<T>);
 
-impl OptionString {
-    pub(crate) fn new(text: Option<String>) -> Self {
-        OptionString { text }
+impl<T> FfiOption<T>
+where
+    T: Clone,
+{
+    pub(crate) fn new(inner: Option<T>) -> Self {
+        FfiOption(inner)
     }
 
-    pub fn text(&self) -> Option<String> {
-        self.text.clone()
+    pub fn inner(&self) -> Option<T> {
+        self.0.clone()
     }
 }
 
-pub struct OptionBuffer {
-    pub(crate) data: Option<Vec<u8>>,
-}
-
-impl OptionBuffer {
-    pub(crate) fn new(data: Option<Vec<u8>>) -> Self {
-        OptionBuffer { data }
-    }
-
-    pub fn data(&self) -> Option<FfiBuffer<u8>> {
-        self.data.clone().map(FfiBuffer::new)
-    }
-}
+pub type OptionString = FfiOption<String>;
+pub type OptionBuffer = FfiOption<Vec<u8>>;
+pub type OptionRsvpStatus = FfiOption<RsvpStatus>;
 
 pub struct MediaSource {
     inner: SdkMediaSource,
