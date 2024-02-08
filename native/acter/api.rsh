@@ -2246,6 +2246,7 @@ object Client {
 
     /// getting a notification item from the notification data;
     fn get_notification_item(room_id: string, event_id: string) -> Future<Result<NotificationItem>>;
+    
     /// get all upcoming events, whether I responded or not
     fn all_upcoming_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
 
@@ -2260,6 +2261,9 @@ object Client {
 
     /// super invites interface
     fn super_invites() -> SuperInvites;
+
+    /// allow to configure notification settings
+    fn notification_settings() -> Future<Result<NotificationSettings>>;
 
     /// the list of devices
     fn device_records(verified: bool) -> Future<Result<Vec<DeviceRecord>>>;
@@ -2284,7 +2288,19 @@ object Client {
 
     /// make draft to send location msg
     fn location_draft(body: string, source: string) -> MsgContentDraft;
+}
 
+object NotificationSettings {
+
+    /// get informed about changes to the notification settings
+    fn changes_stream() -> Stream<bool>;
+
+    /// default RoomNotificationMode for the selected features
+    fn default_notification_mode(is_encrypted: bool, is_one_on_one: bool) -> Future<Result<string>>;
+
+    /// set default RoomNotificationMode for this combination
+    fn set_default_notification_mode(is_encrypted: bool, is_one_on_one: bool, mode: string) -> Future<Result<bool>>;
+    
 }
 
 
