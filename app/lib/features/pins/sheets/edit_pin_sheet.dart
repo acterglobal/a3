@@ -1,10 +1,14 @@
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
+import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -27,6 +31,7 @@ class _EditPinSheetConsumerState extends ConsumerState<EditPinSheet> {
   final TextEditingController _textController = TextEditingController();
   final TextEditingController _urlController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  MsgContent? pinContent;
 
   @override
   void initState() {
@@ -39,10 +44,10 @@ class _EditPinSheetConsumerState extends ConsumerState<EditPinSheet> {
     final pin = await ref.read(
       pinProvider(widget.pinId).future,
     );
-    final pinContent = pin.content();
+    pinContent = pin.content();
     _titleController.text = pin.title();
     if (pinContent != null) {
-      _textController.text = pinContent.body();
+      _textController.text = pinContent!.body();
     } else {
       _textController.text = '';
     }
@@ -51,6 +56,8 @@ class _EditPinSheetConsumerState extends ConsumerState<EditPinSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = ref.watch(featuresProvider);
+    bool isActive(f) => provider.isActive(f);
     bool hasLinkOrText() {
       return _urlController.text.isNotEmpty || _textController.text.isNotEmpty;
     }
@@ -105,11 +112,27 @@ class _EditPinSheetConsumerState extends ConsumerState<EditPinSheet> {
                   ),
                   SizedBox(
                     height: 200,
-                    child: MdEditorWithPreview(
-                      validator: (value) =>
-                          hasLinkOrText() ? null : 'Text or URL must be given',
-                      controller: _textController,
-                    ),
+                    child: !isActive(LabsFeature.showPinRichEditor)
+                        ? MdEditorWithPreview(
+                            validator: (value) => hasLinkOrText()
+                                ? null
+                                : 'Text or URL must be given',
+                            controller: _textController,
+                          )
+                        : DecoratedBox(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.tertiary,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: HtmlEditor(
+                              content: pinContent,
+                              autoFocus: false,
+                              footer: const SizedBox(),
+                            ),
+                          ),
                   ),
                 ],
               ),
