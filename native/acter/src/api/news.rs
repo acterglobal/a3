@@ -1,7 +1,7 @@
 use acter_core::{
     events::{
         news::{self, FallbackNewsContent, NewsContent, NewsEntryBuilder, NewsSlideBuilder},
-        Colorize, ObjRef,
+        Colorize, ColorizeBuilder, ObjRef,
     },
     models::{self, ActerModel, AnyActerModel},
     statics::KEYS,
@@ -174,6 +174,10 @@ impl NewsSlide {
         )
     }
 
+    pub fn colors(&self) -> Option<Colorize> {
+        self.inner.colors.to_owned()
+    }
+
     pub fn text(&self) -> String {
         self.inner.content.text_str()
     }
@@ -305,6 +309,7 @@ impl NewsSlide {
 pub struct NewsSlideDraft {
     content: MsgContentDraft,
     references: Vec<ObjRef>,
+    colorize_builder: ColorizeBuilder,
 }
 
 impl NewsSlideDraft {
@@ -312,8 +317,14 @@ impl NewsSlideDraft {
         NewsSlideDraft {
             content,
             references: vec![],
+            colorize_builder: ColorizeBuilder::default(),
         }
     }
+    #[allow(clippy::boxed_local)]
+    pub fn color(&mut self, colors: Box<ColorizeBuilder>) {
+        self.colorize_builder = *colors;
+    }
+
     async fn build(self, client: &Client, room: &Room) -> Result<news::NewsSlide> {
         let content = match self.content {
             MsgContentDraft::TextPlain { body } => {
@@ -464,6 +475,7 @@ impl NewsSlideDraft {
         Ok(NewsSlideBuilder::default()
             .content(content)
             .references(self.references)
+            .colors(self.colorize_builder.build())
             .build()?)
     }
     #[allow(clippy::boxed_local)]
@@ -600,10 +612,6 @@ impl NewsEntry {
     pub fn event_id(&self) -> OwnedEventId {
         self.content.event_id().to_owned()
     }
-
-    pub fn colors(&self) -> Option<Colorize> {
-        self.content.colors().to_owned()
-    }
 }
 
 #[derive(Clone)]
@@ -634,16 +642,6 @@ impl NewsEntryDraft {
 
     pub fn unset_slides(&mut self) -> &mut Self {
         self.slides.clear();
-        self
-    }
-
-    pub fn colors(&mut self, colors: Box<Colorize>) -> &mut Self {
-        self.content.colors(Some(Box::into_inner(colors)));
-        self
-    }
-
-    pub fn unset_colors(&mut self) -> &mut Self {
-        self.content.colors(None);
         self
     }
 
@@ -717,21 +715,6 @@ impl NewsEntryUpdateBuilder {
 
     pub fn unset_slides_update(&mut self) -> &mut Self {
         self.content.slides(None);
-        self
-    }
-
-    pub fn colors(&mut self, colors: Box<Colorize>) -> &mut Self {
-        self.content.colors(Some(Some(Box::into_inner(colors))));
-        self
-    }
-
-    pub fn unset_colors(&mut self) -> &mut Self {
-        self.content.colors(Some(None));
-        self
-    }
-
-    pub fn unset_colors_update(&mut self) -> &mut Self {
-        self.content.colors(None::<Option<Colorize>>);
         self
     }
 

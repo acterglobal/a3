@@ -7,10 +7,14 @@ import 'package:path_provider/path_provider.dart';
 
 class VideoSlide extends StatefulWidget {
   final NewsSlide slide;
+  final Color bgColor;
+  final Color fgColor;
 
   const VideoSlide({
     super.key,
     required this.slide,
+    required this.bgColor,
+    required this.fgColor,
   });
 
   @override
@@ -32,18 +36,22 @@ class _VideoSlideState extends State<VideoSlide> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<File>(
-      future: getNewsVideo(),
-      builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
-        if (snapshot.hasData) {
-          return ActerVideoPlayer(
-            key: Key(snapshot.data!.path),
-            videoFile: snapshot.data!,
-          );
-        } else {
-          return const Center(child: Text('Loading video'));
-        }
-      },
+    return Container(
+      color: widget.bgColor,
+      alignment: Alignment.center,
+      child: FutureBuilder<File>(
+        future: getNewsVideo(),
+        builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
+          if (snapshot.hasData) {
+            return ActerVideoPlayer(
+              key: Key(snapshot.data!.path),
+              videoFile: snapshot.data!,
+            );
+          } else {
+            return const Center(child: Text('Loading video'));
+          }
+        },
+      ),
     );
   }
 }

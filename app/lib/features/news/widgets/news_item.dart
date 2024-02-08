@@ -36,12 +36,13 @@ class _NewsItemState extends ConsumerState<NewsItem> {
     final roomId = widget.news.roomId().toString();
     final space = ref.watch(briefSpaceItemProvider(roomId));
     final slides = widget.news.slides().toList();
+    final color = slides[currentSlideIndex].colors();
     final bgColor = convertColor(
-      widget.news.colors()?.background(),
+      color?.background(),
       Theme.of(context).colorScheme.background,
     );
     final fgColor = convertColor(
-      widget.news.colors()?.color(),
+      color?.color(),
       Theme.of(context).colorScheme.onPrimary,
     );
 
@@ -60,11 +61,15 @@ class _NewsItemState extends ConsumerState<NewsItem> {
               case 'image':
                 return ImageSlide(
                   slide: slides[idx],
+                  bgColor: bgColor,
+                  fgColor: fgColor,
                 );
 
               case 'video':
                 return VideoSlide(
                   slide: slides[idx],
+                  bgColor: bgColor,
+                  fgColor: fgColor,
                 );
 
               case 'text':
@@ -84,7 +89,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
           },
         ),
         Padding(
-          padding: const EdgeInsets.only(left: 8, right: 80, bottom: 8),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,20 +108,6 @@ class _NewsItemState extends ConsumerState<NewsItem> {
                   loading: () => Skeletonizer(
                     child: Text(roomId),
                   ),
-                ),
-              ),
-              Text(
-                slides[currentSlideIndex].text(),
-                softWrap: true,
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  color: fgColor,
-                  shadows: [
-                    Shadow(
-                      color: bgColor,
-                      offset: const Offset(1, 1),
-                      blurRadius: 0,
-                    ),
-                  ],
                 ),
               ),
             ],

@@ -1,9 +1,9 @@
 use acter_core::{
     events::{
         pins::{self, PinBuilder},
-        Icon,
+        Color, Icon,
     },
-    models::{self, ActerModel, AnyActerModel, Color},
+    models::{self, ActerModel, AnyActerModel},
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
@@ -232,8 +232,8 @@ impl Pin {
         self.content.url.clone()
     }
 
-    pub fn color(&self) -> Option<Color> {
-        self.content.display.as_ref().and_then(|t| t.color.clone())
+    pub fn color(&self) -> Option<u32> {
+        self.content.display.as_ref().and_then(|t| t.color)
     }
 
     pub fn icon(&self) -> Option<Icon> {

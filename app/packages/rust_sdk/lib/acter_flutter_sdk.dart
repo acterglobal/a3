@@ -68,18 +68,8 @@ String userAgent = '$appName/$versionName';
 RegExp logFileRegExp = RegExp('app_.*log');
 RegExp screenshotFileRegExp = RegExp('screenshot_.*png');
 
-Color convertColor(ffi.EfkColor? primary, Color fallback) {
-  if (primary == null) {
-    return fallback;
-  }
-  final data = primary.rgbaU8();
-  return Color.fromARGB(
-    data[3],
-    data[0],
-    data[1],
-    data[2],
-  );
-}
+Color convertColor(int? primary, Color fallback) =>
+    Color(primary ?? fallback.value);
 
 Completer<SharedPreferences>? _sharedPrefCompl;
 Completer<String>? _appDirCompl;
@@ -234,6 +224,8 @@ class ActerSdk {
   }
 
   String? get previousLogPath => _previousLogPath;
+
+  ffi.Api get api => _api;
 
   Future<ffi.Client> getClientWithDeviceId(String deviceId) async {
     ffi.Client? client;

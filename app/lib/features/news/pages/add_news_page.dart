@@ -51,17 +51,13 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
           ? Colors.transparent
           : selectedNewsPost?.backgroundColor,
       actions: [
-        Visibility(
-          visible: selectedNewsPost?.type == NewsSlideType.text,
-          child: IconButton(
-            key: NewsUpdateKeys.slideBackgroundColor,
-            onPressed: () {
-              ref
-                  .read(newsStateProvider.notifier)
-                  .changeTextSlideBackgroundColor();
-            },
-            icon: const Icon(Atlas.color),
-          ),
+        IconButton(
+          onPressed: () {
+            ref
+                .read(newsStateProvider.notifier)
+                .changeTextSlideBackgroundColor();
+          },
+          icon: const Icon(Atlas.color),
         ),
       ],
     );
@@ -288,17 +284,25 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
 
   Widget slideImagePostUI(BuildContext context) {
     final imageFile = selectedNewsPost!.mediaFile;
-    return Image.file(
-      File(imageFile!.path),
-      fit: BoxFit.contain,
+    return Container(
+      alignment: Alignment.center,
+      color: selectedNewsPost!.backgroundColor,
+      child: Image.file(
+        File(imageFile!.path),
+        fit: BoxFit.contain,
+      ),
     );
   }
 
   Widget slideVideoPostUI(BuildContext context) {
     final videoFile = selectedNewsPost!.mediaFile!;
-    return ActerVideoPlayer(
-      key: Key(videoFile.name),
-      videoFile: File(videoFile.path),
+    return Container(
+      alignment: Alignment.center,
+      color: selectedNewsPost!.backgroundColor,
+      child: ActerVideoPlayer(
+        key: Key(videoFile.name),
+        videoFile: File(videoFile.path),
+      ),
     );
   }
 }

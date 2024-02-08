@@ -1,4 +1,4 @@
-use super::Color;
+use crate::events::Color;
 
 #[derive(Clone)]
 pub struct Tag {
@@ -15,7 +15,7 @@ impl Tag {
         self.title.to_lowercase()
     }
 
-    pub fn color(&self) -> Option<Color> {
-        self.color.clone()
+    pub fn color(&self) -> Option<u32> {
+        self.color
     }
 }

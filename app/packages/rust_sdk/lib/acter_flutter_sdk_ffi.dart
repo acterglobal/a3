@@ -1330,6 +1330,60 @@ class Api {
     return tmp5;
   }
 
+  ColorizeBuilder newColorizeBuilder(
+    int? color,
+    int? background,
+  ) {
+    final tmp0 = color;
+    final tmp4 = background;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    if (tmp0 == null) {
+      tmp1 = 0;
+    } else {
+      tmp1 = 1;
+      final tmp2 = tmp0;
+      tmp3 = tmp2;
+    }
+    if (tmp4 == null) {
+      tmp5 = 0;
+    } else {
+      tmp5 = 1;
+      final tmp6 = tmp4;
+      tmp7 = tmp6;
+    }
+    final tmp8 = _newColorizeBuilder(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    final tmp12 = tmp8.arg2;
+    final tmp13 = tmp8.arg3;
+    final tmp14 = tmp8.arg4;
+    if (tmp10 == 0) {
+      debugAllocation("handle error", tmp11, tmp12);
+      final ffi.Pointer<ffi.Uint8> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+      final tmp10_0 =
+          utf8.decode(tmp11_0.asTypedList(tmp12), allowMalformed: true);
+      if (tmp12 > 0) {
+        final ffi.Pointer<ffi.Void> tmp11_0;
+        tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+        this.__deallocate(tmp11_0, tmp13, 1);
+      }
+      throw tmp10_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp14_0 = ffi.Pointer.fromAddress(tmp14);
+    final tmp14_1 = _Box(this, tmp14_0, "drop_box_ColorizeBuilder");
+    tmp14_1._finalizer = this._registerFinalizer(tmp14_1);
+    final tmp9 = ColorizeBuilder._(this, tmp14_1);
+    return tmp9;
+  }
+
   /// Rotate the logging file
   JoinRuleBuilder newJoinRuleBuilder() {
     final tmp0 = _newJoinRuleBuilder();
@@ -12136,6 +12190,22 @@ class Api {
         int,
         int,
       )>();
+  late final _newColorizeBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          _NewColorizeBuilderReturn Function(
+            ffi.Uint8,
+            ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
+          )>>("__new_colorize_builder");
+
+  late final _newColorizeBuilder = _newColorizeBuilderPtr.asFunction<
+      _NewColorizeBuilderReturn Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _newJoinRuleBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.Int64 Function()>>(
           "__new_join_rule_builder");
@@ -12154,16 +12224,6 @@ class Api {
 
   late final _newSpaceSettingsBuilder =
       _newSpaceSettingsBuilderPtr.asFunction<int Function()>();
-  late final _efkColorRgbaU8Ptr = _lookup<
-      ffi.NativeFunction<
-          _EfkColorRgbaU8Return Function(
-            ffi.Int64,
-          )>>("__EfkColor_rgba_u8");
-
-  late final _efkColorRgbaU8 = _efkColorRgbaU8Ptr.asFunction<
-      _EfkColorRgbaU8Return Function(
-        int,
-      )>();
   late final _utcDateTimeTimestampPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -12316,36 +12376,53 @@ class Api {
       _ColorizeBackgroundReturn Function(
         int,
       )>();
-  late final _tagTitlePtr = _lookup<
+  late final _colorizeBuilderColorPtr = _lookup<
       ffi.NativeFunction<
-          _TagTitleReturn Function(
+          ffi.Void Function(
             ffi.Int64,
-          )>>("__Tag_title");
+            ffi.Uint32,
+          )>>("__ColorizeBuilder_color");
 
-  late final _tagTitle = _tagTitlePtr.asFunction<
-      _TagTitleReturn Function(
+  late final _colorizeBuilderColor = _colorizeBuilderColorPtr.asFunction<
+      void Function(
+        int,
         int,
       )>();
-  late final _tagHashTagPtr = _lookup<
+  late final _colorizeBuilderUnsetColorPtr = _lookup<
       ffi.NativeFunction<
-          _TagHashTagReturn Function(
+          ffi.Void Function(
             ffi.Int64,
-          )>>("__Tag_hash_tag");
+          )>>("__ColorizeBuilder_unset_color");
 
-  late final _tagHashTag = _tagHashTagPtr.asFunction<
-      _TagHashTagReturn Function(
-        int,
-      )>();
-  late final _tagColorPtr = _lookup<
+  late final _colorizeBuilderUnsetColor =
+      _colorizeBuilderUnsetColorPtr.asFunction<
+          void Function(
+            int,
+          )>();
+  late final _colorizeBuilderBackgroundPtr = _lookup<
       ffi.NativeFunction<
-          _TagColorReturn Function(
+          ffi.Void Function(
             ffi.Int64,
-          )>>("__Tag_color");
+            ffi.Uint32,
+          )>>("__ColorizeBuilder_background");
 
-  late final _tagColor = _tagColorPtr.asFunction<
-      _TagColorReturn Function(
-        int,
-      )>();
+  late final _colorizeBuilderBackground =
+      _colorizeBuilderBackgroundPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _colorizeBuilderUnsetBackgroundPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+          )>>("__ColorizeBuilder_unset_background");
+
+  late final _colorizeBuilderUnsetBackground =
+      _colorizeBuilderUnsetBackgroundPtr.asFunction<
+          void Function(
+            int,
+          )>();
   late final _optionStringTextPtr = _lookup<
       ffi.NativeFunction<
           _OptionStringTextReturn Function(
@@ -12732,6 +12809,16 @@ class Api {
       int Function(
         int,
       )>();
+  late final _newsSlideColorsPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsSlideColorsReturn Function(
+            ffi.Int64,
+          )>>("__NewsSlide_colors");
+
+  late final _newsSlideColors = _newsSlideColorsPtr.asFunction<
+      _NewsSlideColorsReturn Function(
+        int,
+      )>();
   late final _newsSlideMsgContentPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -12769,6 +12856,18 @@ class Api {
             int,
             int,
           )>();
+  late final _newsSlideDraftColorPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__NewsSlideDraft_color");
+
+  late final _newsSlideDraftColor = _newsSlideDraftColorPtr.asFunction<
+      void Function(
+        int,
+        int,
+      )>();
   late final _newsSlideDraftUnsetReferencesPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -12810,16 +12909,6 @@ class Api {
 
   late final _newsEntrySlides = _newsEntrySlidesPtr.asFunction<
       int Function(
-        int,
-      )>();
-  late final _newsEntryColorsPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsEntryColorsReturn Function(
-            ffi.Int64,
-          )>>("__NewsEntry_colors");
-
-  late final _newsEntryColors = _newsEntryColorsPtr.asFunction<
-      _NewsEntryColorsReturn Function(
         int,
       )>();
   late final _newsEntryCommentsCountPtr = _lookup<
@@ -12920,29 +13009,6 @@ class Api {
           void Function(
             int,
           )>();
-  late final _newsEntryDraftColorsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__NewsEntryDraft_colors");
-
-  late final _newsEntryDraftColors = _newsEntryDraftColorsPtr.asFunction<
-      void Function(
-        int,
-        int,
-      )>();
-  late final _newsEntryDraftUnsetColorsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.Int64,
-          )>>("__NewsEntryDraft_unset_colors");
-
-  late final _newsEntryDraftUnsetColors =
-      _newsEntryDraftUnsetColorsPtr.asFunction<
-          void Function(
-            int,
-          )>();
   late final _newsEntryDraftSendPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -13001,41 +13067,6 @@ class Api {
           void Function(
             int,
             int,
-            int,
-          )>();
-  late final _newsEntryUpdateBuilderColorsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__NewsEntryUpdateBuilder_colors");
-
-  late final _newsEntryUpdateBuilderColors =
-      _newsEntryUpdateBuilderColorsPtr.asFunction<
-          void Function(
-            int,
-            int,
-          )>();
-  late final _newsEntryUpdateBuilderUnsetColorsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.Int64,
-          )>>("__NewsEntryUpdateBuilder_unset_colors");
-
-  late final _newsEntryUpdateBuilderUnsetColors =
-      _newsEntryUpdateBuilderUnsetColorsPtr.asFunction<
-          void Function(
-            int,
-          )>();
-  late final _newsEntryUpdateBuilderUnsetColorsUpdatePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.Int64,
-          )>>("__NewsEntryUpdateBuilder_unset_colors_update");
-
-  late final _newsEntryUpdateBuilderUnsetColorsUpdate =
-      _newsEntryUpdateBuilderUnsetColorsUpdatePtr.asFunction<
-          void Function(
             int,
           )>();
   late final _newsEntryUpdateBuilderSendPtr = _lookup<
@@ -16169,7 +16200,7 @@ class Api {
       ffi.NativeFunction<
           ffi.Void Function(
             ffi.Int64,
-            ffi.Int64,
+            ffi.Uint32,
           )>>("__TaskUpdateBuilder_color");
 
   late final _taskUpdateBuilderColor = _taskUpdateBuilderColorPtr.asFunction<
@@ -16549,7 +16580,7 @@ class Api {
       ffi.NativeFunction<
           ffi.Void Function(
             ffi.Int64,
-            ffi.Int64,
+            ffi.Uint32,
           )>>("__TaskDraft_color");
 
   late final _taskDraftColor = _taskDraftColorPtr.asFunction<
@@ -17016,7 +17047,7 @@ class Api {
       ffi.NativeFunction<
           ffi.Void Function(
             ffi.Int64,
-            ffi.Int64,
+            ffi.Uint32,
           )>>("__TaskListDraft_color");
 
   late final _taskListDraftColor = _taskListDraftColorPtr.asFunction<
@@ -17163,7 +17194,7 @@ class Api {
       ffi.NativeFunction<
           ffi.Void Function(
             ffi.Int64,
-            ffi.Int64,
+            ffi.Uint32,
           )>>("__TaskListUpdateBuilder_color");
 
   late final _taskListUpdateBuilderColor =
@@ -26180,42 +26211,6 @@ class EfkDuration {
   }
 }
 
-/// Representing a color
-class EfkColor {
-  final Api _api;
-  final _Box _box;
-
-  EfkColor._(this._api, this._box);
-
-  /// as rgba in u8
-  List<dynamic> rgbaU8() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._efkColorRgbaU8(
-      tmp0,
-    );
-    final tmp4 = tmp1.arg0;
-    final tmp6 = tmp1.arg1;
-    final tmp8 = tmp1.arg2;
-    final tmp10 = tmp1.arg3;
-    final tmp3 = tmp4;
-    final tmp5 = tmp6;
-    final tmp7 = tmp8;
-    final tmp9 = tmp10;
-    final List tmp2 = [];
-    tmp2.add(tmp3);
-    tmp2.add(tmp5);
-    tmp2.add(tmp7);
-    tmp2.add(tmp9);
-    return tmp2;
-  }
-
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
 class UtcDateTime {
   final Api _api;
   final _Box _box;
@@ -26620,7 +26615,7 @@ class Colorize {
   Colorize._(this._api, this._box);
 
   /// Foreground or text color
-  EfkColor? color() {
+  int? color() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._colorizeColor(
@@ -26631,15 +26626,12 @@ class Colorize {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = EfkColor._(_api, tmp4_1);
+    final tmp2 = tmp4;
     return tmp2;
   }
 
   /// Background color
-  EfkColor? background() {
+  int? background() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._colorizeBackground(
@@ -26650,10 +26642,7 @@ class Colorize {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = EfkColor._(_api, tmp4_1);
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -26663,89 +26652,63 @@ class Colorize {
   }
 }
 
-class Tag {
+/// A builder for Colorize. Allowing you to set (foreground) color and background
+class ColorizeBuilder {
   final Api _api;
   final _Box _box;
 
-  Tag._(this._api, this._box);
+  ColorizeBuilder._(this._api, this._box);
 
-  /// the title of the tag
-  String title() {
+  /// RGBA color representation as int for the foreground color
+  void color(
+    int color,
+  ) {
+    final tmp1 = color;
     var tmp0 = 0;
+    var tmp2 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._tagTitle(
+    tmp2 = tmp1;
+    _api._colorizeBuilderColor(
       tmp0,
+      tmp2,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
+    return;
   }
 
-  /// dash-cased-ascii-version for usage in hashtags (no `#` at the front)
-  String hashTag() {
+  /// unset the color
+  void unsetColor() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._tagHashTag(
+    _api._colorizeBuilderUnsetColor(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
+    return;
   }
 
-  /// if given, the specific color for this tag
-  EfkColor? color() {
+  /// RGBA color representation as int for the background color
+  void background(
+    int color,
+  ) {
+    final tmp1 = color;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._colorizeBuilderBackground(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// unset the background color
+  void unsetBackground() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._tagColor(
+    _api._colorizeBuilderUnsetBackground(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = EfkColor._(_api, tmp4_1);
-    return tmp2;
+    return;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -27807,6 +27770,25 @@ class NewsSlide {
     return tmp2;
   }
 
+  /// The color setting
+  Colorize? colors() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsSlideColors(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Colorize");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = Colorize._(_api, tmp4_1);
+    return tmp2;
+  }
+
   /// if this is a media, hand over the description
   MsgContent msgContent() {
     var tmp0 = 0;
@@ -27875,6 +27857,22 @@ class NewsSlideDraft {
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
     _api._newsSlideDraftAddReference(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// set the color according to the colorize builder
+  void color(
+    ColorizeBuilder color,
+  ) {
+    final tmp1 = color;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._newsSlideDraftColor(
       tmp0,
       tmp2,
     );
@@ -27953,25 +27951,6 @@ class NewsEntry {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp4 = FfiListNewsSlide._(_api, tmp3_1);
     final tmp2 = tmp4;
-    return tmp2;
-  }
-
-  /// The color setting
-  Colorize? colors() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._newsEntryColors(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Colorize");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = Colorize._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -28124,31 +28103,6 @@ class NewsEntryDraft {
     return;
   }
 
-  /// set the color for this news entry
-  void colors(
-    Colorize colors,
-  ) {
-    final tmp1 = colors;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    tmp0 = _box.borrow();
-    tmp2 = tmp1._box.move();
-    _api._newsEntryDraftColors(
-      tmp0,
-      tmp2,
-    );
-    return;
-  }
-
-  void unsetColors() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    _api._newsEntryDraftUnsetColors(
-      tmp0,
-    );
-    return;
-  }
-
   /// create this news entry
   Future<EventId> send() {
     var tmp0 = 0;
@@ -28235,40 +28189,6 @@ class NewsEntryUpdateBuilder {
       tmp0,
       tmp2,
       tmp4,
-    );
-    return;
-  }
-
-  /// set the color for this news entry
-  void colors(
-    Colorize colors,
-  ) {
-    final tmp1 = colors;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    tmp0 = _box.borrow();
-    tmp2 = tmp1._box.move();
-    _api._newsEntryUpdateBuilderColors(
-      tmp0,
-      tmp2,
-    );
-    return;
-  }
-
-  void unsetColors() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    _api._newsEntryUpdateBuilderUnsetColors(
-      tmp0,
-    );
-    return;
-  }
-
-  void unsetColorsUpdate() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    _api._newsEntryUpdateBuilderUnsetColorsUpdate(
-      tmp0,
     );
     return;
   }
@@ -28614,7 +28534,7 @@ class ActerPin {
   }
 
   /// get the link color settings
-  EfkColor? color() {
+  int? color() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._acterPinColor(
@@ -28625,10 +28545,7 @@ class ActerPin {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = EfkColor._(_api, tmp4_1);
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -34476,7 +34393,7 @@ class Task {
   }
 
   /// Has this been colored in?
-  EfkColor? color() {
+  int? color() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._taskColor(
@@ -34487,10 +34404,7 @@ class Task {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = EfkColor._(_api, tmp4_1);
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -34793,13 +34707,13 @@ class TaskUpdateBuilder {
 
   /// set the color for this task list
   void color(
-    EfkColor color,
+    int color,
   ) {
     final tmp1 = color;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
-    tmp2 = tmp1._box.move();
+    tmp2 = tmp1;
     _api._taskUpdateBuilderColor(
       tmp0,
       tmp2,
@@ -35297,13 +35211,13 @@ class TaskDraft {
 
   /// set the color for this task
   void color(
-    EfkColor color,
+    int color,
   ) {
     final tmp1 = color;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
-    tmp2 = tmp1._box.move();
+    tmp2 = tmp1;
     _api._taskDraftColor(
       tmp0,
       tmp2,
@@ -35762,7 +35676,7 @@ class TaskList {
   }
 
   /// Has this been colored in?
-  EfkColor? color() {
+  int? color() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._taskListColor(
@@ -35773,10 +35687,7 @@ class TaskList {
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = EfkColor._(_api, tmp4_1);
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -36151,13 +36062,13 @@ class TaskListDraft {
 
   /// set the color for this task list
   void color(
-    EfkColor color,
+    int color,
   ) {
     final tmp1 = color;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
-    tmp2 = tmp1._box.move();
+    tmp2 = tmp1;
     _api._taskListDraftColor(
       tmp0,
       tmp2,
@@ -36341,13 +36252,13 @@ class TaskListUpdateBuilder {
 
   /// set the color for this task list
   void color(
-    EfkColor color,
+    int color,
   ) {
     final tmp1 = color;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
-    tmp2 = tmp1._box.move();
+    tmp2 = tmp1;
     _api._taskListUpdateBuilderColor(
       tmp0,
       tmp2,
@@ -45021,15 +44932,17 @@ class _NewThumbSizeReturn extends ffi.Struct {
   external int arg4;
 }
 
-class _EfkColorRgbaU8Return extends ffi.Struct {
+class _NewColorizeBuilderReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint8()
+  @ffi.Int64()
   external int arg1;
-  @ffi.Uint8()
+  @ffi.Uint64()
   external int arg2;
-  @ffi.Uint8()
+  @ffi.Uint64()
   external int arg3;
+  @ffi.Int64()
+  external int arg4;
 }
 
 class _UtcDateTimeToRfc2822Return extends ffi.Struct {
@@ -45137,39 +45050,14 @@ class _ObjRefPositionStrReturn extends ffi.Struct {
 class _ColorizeColorReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Int64()
+  @ffi.Uint32()
   external int arg1;
 }
 
 class _ColorizeBackgroundReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _TagTitleReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
-class _TagHashTagReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
-class _TagColorReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
+  @ffi.Uint32()
   external int arg1;
 }
 
@@ -45367,14 +45255,14 @@ class _NewsSlideTextReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _NewsEntryGetSlideReturn extends ffi.Struct {
+class _NewsSlideColorsReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
 }
 
-class _NewsEntryColorsReturn extends ffi.Struct {
+class _NewsEntryGetSlideReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -45426,7 +45314,7 @@ class _ActerPinUrlReturn extends ffi.Struct {
 class _ActerPinColorReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Int64()
+  @ffi.Uint32()
   external int arg1;
 }
 
@@ -46168,7 +46056,7 @@ class _TaskUtcStartRfc3339Return extends ffi.Struct {
 class _TaskColorReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Int64()
+  @ffi.Uint32()
   external int arg1;
 }
 
@@ -46297,7 +46185,7 @@ class _TaskListRoleReturn extends ffi.Struct {
 class _TaskListColorReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Int64()
+  @ffi.Uint32()
   external int arg1;
 }
 
