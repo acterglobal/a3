@@ -7,7 +7,7 @@ use strum::Display;
 use super::BelongsTo;
 
 /// RSVP status
-#[derive(Clone, Debug, Serialize, Deserialize, Display)]
+#[derive(Clone, Debug, Serialize, Deserialize, Display, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case", tag = "type")]
 #[strum(serialize_all = "kebab-case")]
 pub enum RsvpStatus {
