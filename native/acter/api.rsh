@@ -1732,6 +1732,29 @@ object Space {
     /// create news draft
     fn news_draft() -> Result<NewsEntryDraft>;
 
+    /// create task reference
+    /// target_id: event id of target
+    /// task_list: event id of task list
+    /// action: link/embed/embed-subscribe/embed-accept-assignment/embed-mark-done
+    fn new_task_ref(target_id: string, room_id: Option<string>, task_list: string, action: string) -> Result<RefDetails>;
+
+    /// create task list reference
+    /// target_id: event id of target
+    /// action: link/embed/embed-subscribe
+    fn new_task_list_ref(target_id: string, room_id: Option<string>, action: string) -> Result<RefDetails>;
+
+    /// create calendar event reference
+    /// target_id: event id of target
+    /// action: link/embed/embed-rsvp
+    fn new_calendar_event_ref(target_id: string, room_id: Option<string>, action: string) -> Result<RefDetails>;
+
+    /// create link reference
+    fn new_link_ref(title: string, uri: string) -> RefDetails;
+
+    /// create object reference
+    /// position: top-left/top-middle/top-right/center-left/center-middle/center-right/bottom-left/bottom-middle/bottom-right
+    fn new_obj_ref(position: Option<string>, reference: RefDetails) -> Result<ObjRef>;
+
     /// the pins of this Space
     fn pins() -> Future<Result<Vec<ActerPin>>>;
 

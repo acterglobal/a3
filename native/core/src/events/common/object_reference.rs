@@ -1,6 +1,7 @@
 use derive_getters::Getters;
 use ruma_common::{OwnedEventId, OwnedRoomId};
 use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 use strum::Display;
 
 use super::Position;
@@ -15,6 +16,21 @@ pub enum TaskAction {
     EmbedSubscribe,
     EmbedAcceptAssignment,
     EmbedMarkDone,
+}
+
+impl FromStr for TaskAction {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "link" => Ok(TaskAction::Link),
+            "embed" => Ok(TaskAction::Embed),
+            "embed-subscribe" => Ok(TaskAction::EmbedSubscribe),
+            "embed-accept-assignment" => Ok(TaskAction::EmbedAcceptAssignment),
+            "embed-mark-done" => Ok(TaskAction::EmbedMarkDone),
+            _ => Err(()),
+        }
+    }
 }
 
 impl TaskAction {
@@ -39,6 +55,19 @@ impl TaskListAction {
     }
 }
 
+impl FromStr for TaskListAction {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "link" => Ok(TaskListAction::Link),
+            "embed" => Ok(TaskListAction::Embed),
+            "embed-subscribe" => Ok(TaskListAction::EmbedSubscribe),
+            _ => Err(()),
+        }
+    }
+}
+
 #[derive(Eq, PartialEq, Display, Clone, Debug, Deserialize, Serialize, Default)]
 #[serde(rename_all = "kebab-case")]
 #[strum(serialize_all = "kebab-case")]
@@ -52,6 +81,19 @@ pub enum CalendarEventAction {
 impl CalendarEventAction {
     fn is_default(&self) -> bool {
         matches!(self, CalendarEventAction::Link)
+    }
+}
+
+impl FromStr for CalendarEventAction {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "link" => Ok(CalendarEventAction::Link),
+            "embed" => Ok(CalendarEventAction::Embed),
+            "embed-rsvp" => Ok(CalendarEventAction::EmbedRsvp),
+            _ => Err(()),
+        }
     }
 }
 
@@ -180,6 +222,13 @@ pub struct ObjRef {
 }
 
 impl ObjRef {
+    pub fn new(position: Option<Position>, reference: RefDetails) -> Self {
+        ObjRef {
+            position,
+            reference,
+        }
+    }
+
     pub fn position_str(&self) -> Option<String> {
         self.position.as_ref().map(|p| p.to_string())
     }

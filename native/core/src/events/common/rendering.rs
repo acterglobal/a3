@@ -1,6 +1,7 @@
 use super::color::Color;
 use ruma_events::room::ImageInfo;
 use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 use strum::Display;
 
 #[derive(Clone, Debug, Display, Deserialize, Serialize, Default)]
@@ -17,6 +18,26 @@ pub enum Position {
     BottomMiddle,
     BottomRight,
 }
+
+impl FromStr for Position {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "top-left" => Ok(Position::TopLeft),
+            "top-middle" => Ok(Position::TopMiddle),
+            "top-right" => Ok(Position::TopRight),
+            "center-left" => Ok(Position::CenterLeft),
+            "center-middle" => Ok(Position::CenterMiddle),
+            "center-right" => Ok(Position::CenterRight),
+            "bottom-left" => Ok(Position::BottomLeft),
+            "bottom-middle" => Ok(Position::BottomMiddle),
+            "bottom-right" => Ok(Position::BottomRight),
+            _ => Err(()),
+        }
+    }
+}
+
 /// Customize the color scheme
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
 pub struct Colorize {
