@@ -1,5 +1,5 @@
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
@@ -122,6 +122,7 @@ class HtmlEditorState extends State<HtmlEditor> {
 
   @override
   Widget build(BuildContext context) {
+    final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
     Widget? finalFooter = widget.footer;
     if (finalFooter == null) {
       final List<Widget> children = [];
@@ -166,7 +167,7 @@ class HtmlEditorState extends State<HtmlEditor> {
       }
     }
 
-    return isLargeScreen(context)
+    return isDesktop
         ? FloatingToolbar(
             items: [
               paragraphItem,
@@ -244,7 +245,7 @@ class HtmlEditorState extends State<HtmlEditor> {
   }
 
   EditorStyle customEditorStyle(bool isDesktop) {
-    return isLargeScreen(context)
+    return isDesktop
         ? EditorStyle.desktop(
             padding: widget.editorPadding,
             cursorColor: Theme.of(context).colorScheme.primary,
