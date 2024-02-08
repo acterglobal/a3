@@ -39,8 +39,13 @@ class _EditPinSheetConsumerState extends ConsumerState<EditPinSheet> {
     final pin = await ref.read(
       pinProvider(widget.pinId).future,
     );
+    final pinContent = pin.content();
     _titleController.text = pin.title();
-    _textController.text = pin.contentText() ?? '';
+    if (pinContent != null) {
+      _textController.text = pinContent.body();
+    } else {
+      _textController.text = '';
+    }
     _urlController.text = pin.url() ?? '';
   }
 
@@ -139,6 +144,7 @@ class _EditPinSheetConsumerState extends ConsumerState<EditPinSheet> {
       final pin = await ref.read(
         pinProvider(widget.pinId).future,
       );
+      final pinContent = pin.content();
 
       final updateBuild = pin.updateBuilder();
       var hasChanges = false;
@@ -148,7 +154,7 @@ class _EditPinSheetConsumerState extends ConsumerState<EditPinSheet> {
         hasChanges = true;
       }
 
-      if (_textController.text != pin.contentText()) {
+      if (pinContent != null && _textController.text != pinContent.body()) {
         updateBuild.contentMarkdown(_textController.text);
         hasChanges = true;
       }

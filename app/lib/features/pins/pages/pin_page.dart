@@ -162,9 +162,9 @@ class PinPage extends ConsumerWidget {
               if (pin.hasFormattedText()) {
                 content.add(RenderHtml(text: pin.contentFormatted() ?? ''));
               } else {
-                final text = pin.contentText();
-                if (text != null) {
-                  content.add(Text(text));
+                final pinContent = pin.content();
+                if (pinContent != null) {
+                  content.add(Text(pinContent.body()));
                 }
               }
 
