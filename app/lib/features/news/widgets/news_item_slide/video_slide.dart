@@ -39,12 +39,13 @@ class _VideoSlideState extends State<VideoSlide> {
     return Container(
       color: widget.bgColor,
       alignment: Alignment.center,
-      child: FutureBuilder<Uint8List>(
-        future: newsVideo.then((value) => value.asTypedList()),
-        builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
+      child: FutureBuilder<File>(
+        future: getNewsVideo(),
+        builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
           if (snapshot.hasData) {
             return ActerVideoPlayer(
-              videoFile: File.fromRawPath(snapshot.data!),
+              key: Key(snapshot.data!.path),
+              videoFile: snapshot.data!,
             );
           } else {
             return const Center(child: Text('Loading video'));
