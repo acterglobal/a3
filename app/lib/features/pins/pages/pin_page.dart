@@ -2,7 +2,6 @@ import 'dart:core';
 
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
@@ -56,7 +55,7 @@ class PinPage extends ConsumerWidget {
             onTap: () => showAdaptiveDialog(
               context: context,
               builder: (context) => RedactContentWidget(
-                title: 'Remove this post',
+                title: 'Remove this pin',
                 eventId: pin.eventIdStr(),
                 onSuccess: () {
                   if (context.mounted) {
@@ -133,33 +132,31 @@ class PinPage extends ConsumerWidget {
               final pinEditNotifer =
                   ref.watch(pinEditProvider(acterPin).notifier);
               return SliverAppBar(
-                automaticallyImplyLeading: false,
                 centerTitle: false,
                 leadingWidth: 40,
                 toolbarHeight: 100,
                 flexibleSpace: Container(
                   decoration: const BoxDecoration(gradient: primaryGradient),
                 ),
-                leading: IconButton(
-                  onPressed: () => context.canPop()
-                      ? context.pop()
-                      : context.goNamed(Routes.pins.name),
-                  icon: const Icon(
-                    Icons.chevron_left,
-                    size: 42,
-                  ),
-                ),
-                title: TextFormField(
-                  initialValue: acterPin.title(),
-                  readOnly: !pinEdit.editMode,
-                  style: Theme.of(context).textTheme.titleLarge,
-                  decoration: InputDecoration(
-                    enabledBorder: pinEdit.editMode ? null : InputBorder.none,
-                    focusedBorder: pinEdit.editMode ? null : InputBorder.none,
-                    filled: false,
-                  ),
-                  onChanged: (val) => pinEditNotifer.setTitle(val),
-                ),
+                title: !pinEdit.editMode
+                    ? Text(
+                        acterPin.title(),
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      )
+                    : TextFormField(
+                        initialValue: acterPin.title(),
+                        readOnly: !pinEdit.editMode,
+                        style: Theme.of(context).textTheme.titleLarge,
+                        decoration: InputDecoration(
+                          enabledBorder:
+                              pinEdit.editMode ? null : InputBorder.none,
+                          focusedBorder:
+                              pinEdit.editMode ? null : InputBorder.none,
+                          filled: false,
+                        ),
+                        onChanged: (val) => pinEditNotifer.setTitle(val),
+                      ),
                 actions: [
                   buildActions(context, ref, acterPin),
                 ],

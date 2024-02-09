@@ -27,12 +27,7 @@ class AsyncPinNotifier
 
   Future<ActerPin> _getPin() async {
     final client = ref.watch(alwaysClientProvider);
-    try {
-      return await client.pin(arg);
-    } catch (e) {
-      return await client.waitForPin(arg, null);
-    }
-    // this might throw internally
+    return await client.waitForPin(arg, null);
   }
 
   @override
