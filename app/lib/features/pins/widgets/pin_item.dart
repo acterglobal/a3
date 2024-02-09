@@ -37,10 +37,8 @@ class _PinItemState extends ConsumerState<PinItem> {
     if (content != null) {
       if (content.formattedBody() != null) {
         formattedBody = content.formattedBody();
-        debugPrint('HTML:$formattedBody');
       } else {
         markdown = content.body();
-        debugPrint('MARKDOWN:$markdown');
       }
     }
     _linkController = TextEditingController(text: widget.pin.url() ?? '');
@@ -149,7 +147,9 @@ class _PinItemState extends ConsumerState<PinItem> {
                     pinEditNotifier.setEditMode(false);
                     pinEditNotifier.setLink(_linkController.text);
                     pinEditNotifier.setMarkdown(plain);
-                    pinEditNotifier.setHtml(htmlBody);
+                    if (htmlBody != null) {
+                      pinEditNotifier.setHtml(htmlBody);
+                    }
                     await pinEditNotifier.onSave();
                   }
                 },

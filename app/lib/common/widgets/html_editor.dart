@@ -14,6 +14,7 @@ AppFlowyEditorHTMLCodec defaultHtmlCodec = const AppFlowyEditorHTMLCodec(
     HTMLTodoListNodeParser(),
     HTMLQuoteNodeParser(),
     HTMLHeadingNodeParser(),
+    HtmlTableNodeParser(),
   ],
 );
 AppFlowyEditorMarkdownCodec defaultMarkdownCodec =
@@ -182,10 +183,7 @@ class HtmlEditorState extends State<HtmlEditor> {
               bulletedListItem,
               numberedListItem,
               linkItem,
-              buildTextColorItem(),
               buildHighlightColorItem(),
-              ...textDirectionItems,
-              ...alignmentItems,
             ],
             textDirection: _textDirection,
             editorState: editorState,
@@ -210,10 +208,13 @@ class HtmlEditorState extends State<HtmlEditor> {
         : MobileToolbarV2(
             toolbarItems: [
               textDecorationMobileToolbarItemV2,
-              buildTextAndBackgroundColorMobileToolbarItem(),
-              blocksMobileToolbarItem,
+              buildTextAndBackgroundColorMobileToolbarItem(
+                textColorOptions: [],
+              ),
+              headingMobileToolbarItem,
+              listMobileToolbarItem,
               linkMobileToolbarItem,
-              dividerMobileToolbarItem,
+              quoteMobileToolbarItem,
             ],
             editorState: editorState,
             child: MobileFloatingToolbar(
