@@ -14,11 +14,11 @@ use super::BelongsTo;
 #[serde(rename_all = "kebab-case", tag = "type")]
 #[strum(serialize_all = "kebab-case")]
 pub enum RsvpStatus {
-    #[serde(alias="Yes")]
+    #[serde(alias = "Yes")]
     Yes,
-    #[serde(alias="Maybe")]
+    #[serde(alias = "Maybe")]
     Maybe,
-    #[serde(alias="No")]
+    #[serde(alias = "No")]
     No,
 }
 
