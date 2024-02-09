@@ -7,12 +7,18 @@ use strum::Display;
 use super::BelongsTo;
 
 /// RSVP status
+// previously accepted only PascalCase
+// now accept will serialize to kebab-case but also deserialize the previously
+// posted PascalCase variants
 #[derive(Clone, Debug, Serialize, Deserialize, Display, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case", tag = "type")]
 #[strum(serialize_all = "kebab-case")]
 pub enum RsvpStatus {
+    #[serde(alias = "Yes")]
     Yes,
+    #[serde(alias = "Maybe")]
     Maybe,
+    #[serde(alias = "No")]
     No,
 }
 
