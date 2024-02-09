@@ -103,7 +103,7 @@ impl Client {
                         // fliter only events that i sent rsvp
                         let rsvp_manager = cal_event.rsvp_manager().await?;
                         let status = rsvp_manager.my_status().await?;
-                        match status.inner() {
+                        match status.status() {
                             Some(RsvpStatus::Yes) | Some(RsvpStatus::Maybe) => {
                                 cal_events.push(cal_event);
                             }
@@ -145,7 +145,7 @@ impl Client {
                         // fliter only events that i sent rsvp
                         let rsvp_manager = cal_event.rsvp_manager().await?;
                         let status = rsvp_manager.my_status().await?;
-                        match status.inner() {
+                        match status.status() {
                             Some(RsvpStatus::Yes) | Some(RsvpStatus::Maybe) => {
                                 cal_events.push(cal_event);
                             }

@@ -4,7 +4,6 @@ library;
 import 'dart:core';
 
 import 'package:acter/common/models/profile_data.dart';
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/room_notifiers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
@@ -12,6 +11,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 
 class RoomItem {
   final Member? membership;
@@ -47,7 +47,7 @@ final roomProfileDataProvider =
   final profile = room.getProfile();
   OptionString displayName = await profile.getDisplayName();
   final avatar = await profile.getAvatar(null);
-  return ProfileData(displayName.inner(), avatar.inner());
+  return ProfileData(displayName.text(), avatar.data());
 });
 
 /// Get the members invited of a given roomId the user knows about. Errors
@@ -247,5 +247,5 @@ final userProfileDataProvider =
   }
   final size = sdk.newThumbSize(48, 48);
   final avatar = await profile.getAvatar(size);
-  return ProfileData(displayName, avatar.inner());
+  return ProfileData(displayName, avatar.data());
 });
