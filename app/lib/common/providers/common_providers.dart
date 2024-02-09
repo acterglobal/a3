@@ -29,7 +29,7 @@ Future<ProfileData> getProfileData(Account account) async {
   // FIXME: how to get informed about updates!?!
   final displayName = await account.displayName();
   final avatar = await account.avatar(null);
-  return ProfileData(displayName.inner(), avatar.inner());
+  return ProfileData(displayName.text(), avatar.data());
 }
 
 final myUserIdStrProvider = StateProvider((ref) {

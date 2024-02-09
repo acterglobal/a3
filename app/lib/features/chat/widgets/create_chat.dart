@@ -443,7 +443,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
 // checks whether user DM already exists or needs created
   String? checkUserDMExists(String userId, WidgetRef ref) {
     final client = ref.watch(alwaysClientProvider);
-    final id = client.dmWithUser(userId).inner();
+    final id = client.dmWithUser(userId).text();
     if (id != null) return id;
     return null;
   }
