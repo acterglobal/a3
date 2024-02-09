@@ -1,12 +1,16 @@
+import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter/features/news/widgets/news_post_editor/post_attachment_options.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:cross_file_image/cross_file_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class NewsSlideOptions extends ConsumerStatefulWidget {
   const NewsSlideOptions({super.key});
@@ -29,7 +33,6 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
       visible: ref.read(newsStateProvider).currentNewsSlide != null,
       child: Container(
         color: Theme.of(context).colorScheme.primary,
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
         child: newsSlideListUI(context),
       ),
     );
@@ -37,10 +40,14 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
 
   Widget newsSlideListUI(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        parentSpaceSelector(),
+        verticalDivider(context),
         Expanded(
-          child: SizedBox(
+          child: Container(
             height: 80,
+            padding: const EdgeInsets.symmetric(horizontal: 6),
             child: ListView.builder(
               shrinkWrap: true,
               itemCount: newsSlideList.length,
@@ -103,6 +110,95 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           icon: const Icon(Icons.add),
         ),
       ],
+    );
+  }
+
+  Widget parentSpaceSelector() {
+    final newsPostSpaceId = ref.read(newsStateProvider).newsPostSpaceId;
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: (newsPostSpaceId != null)
+          ? InkWell(
+              key: NewsUpdateKeys.selectSpace,
+              onTap: () async {
+                await ref
+                    .read(newsStateProvider.notifier)
+                    .changeNewsPostSpaceId(context);
+              },
+              child: Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.topRight,
+                children: [
+                  spaceAvatar(newsPostSpaceId),
+                  Positioned(
+                    top: -5,
+                    right: -5,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        shape: BoxShape.circle,
+                      ),
+                      padding: const EdgeInsets.all(5),
+                      child: const Icon(
+                        Atlas.pencil_box,
+                        size: 12,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : OutlinedButton(
+              key: NewsUpdateKeys.selectSpace,
+              onPressed: () async {
+                await ref
+                    .read(newsStateProvider.notifier)
+                    .changeNewsPostSpaceId(context);
+              },
+              child: const Text('Select Space'),
+            ),
+    );
+  }
+
+  Widget verticalDivider(BuildContext context) {
+    return Container(
+      height: 50,
+      width: 2,
+      margin: const EdgeInsets.symmetric(horizontal: 10.0),
+      color: Theme.of(context).colorScheme.onPrimary,
+    );
+  }
+
+  Widget spaceAvatar(String spaceId) {
+    final profileData = ref.watch(spaceProfileDataForSpaceIdProvider(spaceId));
+    return profileData.when(
+      data: (space) => ActerAvatar(
+        mode: DisplayMode.Space,
+        avatarInfo: AvatarInfo(
+          uniqueId: spaceId,
+          displayName: space.profile.displayName,
+          avatar: space.profile.avatarMem,
+        ),
+        size: 42,
+      ),
+      error: (e, st) {
+        debugPrint('Error loading space: $e');
+        return ActerAvatar(
+          mode: DisplayMode.Space,
+          avatarInfo: AvatarInfo(
+            uniqueId: spaceId,
+            displayName: spaceId,
+          ),
+          size: 42,
+        );
+      },
+      loading: () => Skeletonizer(
+        child: ActerAvatar(
+          mode: DisplayMode.Space,
+          avatarInfo: AvatarInfo(uniqueId: spaceId),
+          size: 42,
+        ),
+      ),
     );
   }
 

@@ -124,47 +124,10 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
     return Column(
       children: [
         //News content UI
-        Expanded(
-          child: Stack(
-            alignment: Alignment.topCenter,
-            children: [
-              newsContentUI(),
-              parentSpaceSelector(),
-            ],
-          ),
-        ),
+        Expanded(child: newsContentUI()),
         //Slide options
         const NewsSlideOptions(),
       ],
-    );
-  }
-
-  Widget parentSpaceSelector() {
-    final newsPostSpaceId = ref.read(newsStateProvider).newsPostSpaceId;
-    return Visibility(
-      visible: selectedNewsPost != null,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        child: (newsPostSpaceId != null)
-            ? InkWell(
-                key: NewsUpdateKeys.selectSpace,
-                onTap: () async {
-                  await ref
-                      .read(newsStateProvider.notifier)
-                      .changeNewsPostSpaceId(context);
-                },
-                child: SpaceChip(spaceId: newsPostSpaceId),
-              )
-            : OutlinedButton(
-                key: NewsUpdateKeys.selectSpace,
-                onPressed: () async {
-                  await ref
-                      .read(newsStateProvider.notifier)
-                      .changeNewsPostSpaceId(context);
-                },
-                child: const Text('Select Space'),
-              ),
-      ),
     );
   }
 
