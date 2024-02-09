@@ -168,7 +168,7 @@ class _ChatBubble extends ConsumerWidget {
                           Container(
                             decoration: BoxDecoration(
                               color: isAuthor
-                                  ? Theme.of(context).colorScheme.onPrimary
+                                  ? Theme.of(context).colorScheme.primary
                                   : Theme.of(context)
                                       .colorScheme
                                       .neutral
