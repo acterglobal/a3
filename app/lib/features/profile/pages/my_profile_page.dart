@@ -289,7 +289,7 @@ class MyProfile extends ConsumerWidget {
                         child: Container(
                           margin: const EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.onPrimary,
+                            color: Theme.of(context).colorScheme.primary,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Column(

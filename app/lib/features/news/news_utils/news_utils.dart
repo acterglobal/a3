@@ -13,7 +13,6 @@ import 'package:path_provider/path_provider.dart';
 class NewsUtils {
   static Future<File?> getThumbnailData(XFile videoFile) async {
     try {
-
       final tempDir = await getTemporaryDirectory();
       final videoName = videoFile.name.split('.').first;
       final destPath = p.join(tempDir.path, '$videoName.jpg');
@@ -57,8 +56,9 @@ class NewsUtils {
 
   //Add image slide
   static Future<void> addImageSlide(WidgetRef ref) async {
-    XFile? imageFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    XFile? imageFile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+    );
     if (imageFile != null) {
       final slide = NewsSlideItem(
         type: NewsSlideType.image,
@@ -70,8 +70,9 @@ class NewsUtils {
 
   //Add video slide
   static Future<void> addVideoSlide(WidgetRef ref) async {
-    XFile? videoFile =
-        await ImagePicker().pickVideo(source: ImageSource.gallery);
+    XFile? videoFile = await ImagePicker().pickVideo(
+      source: ImageSource.gallery,
+    );
     if (videoFile != null) {
       final slide = NewsSlideItem(
         type: NewsSlideType.video,

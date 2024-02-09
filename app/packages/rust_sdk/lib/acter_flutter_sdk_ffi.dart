@@ -12579,34 +12579,34 @@ class Api {
           void Function(
             int,
           )>();
-  late final _optionStringInnerPtr = _lookup<
+  late final _optionStringTextPtr = _lookup<
       ffi.NativeFunction<
-          _OptionStringInnerReturn Function(
+          _OptionStringTextReturn Function(
             ffi.Int64,
-          )>>("__OptionString_inner");
+          )>>("__OptionString_text");
 
-  late final _optionStringInner = _optionStringInnerPtr.asFunction<
-      _OptionStringInnerReturn Function(
+  late final _optionStringText = _optionStringTextPtr.asFunction<
+      _OptionStringTextReturn Function(
         int,
       )>();
-  late final _optionBufferInnerPtr = _lookup<
+  late final _optionBufferDataPtr = _lookup<
       ffi.NativeFunction<
-          _OptionBufferInnerReturn Function(
+          _OptionBufferDataReturn Function(
             ffi.Int64,
-          )>>("__OptionBuffer_inner");
+          )>>("__OptionBuffer_data");
 
-  late final _optionBufferInner = _optionBufferInnerPtr.asFunction<
-      _OptionBufferInnerReturn Function(
+  late final _optionBufferData = _optionBufferDataPtr.asFunction<
+      _OptionBufferDataReturn Function(
         int,
       )>();
-  late final _optionRsvpStatusInnerPtr = _lookup<
+  late final _optionRsvpStatusStatusPtr = _lookup<
       ffi.NativeFunction<
-          _OptionRsvpStatusInnerReturn Function(
+          _OptionRsvpStatusStatusReturn Function(
             ffi.Int64,
-          )>>("__OptionRsvpStatus_inner");
+          )>>("__OptionRsvpStatus_status");
 
-  late final _optionRsvpStatusInner = _optionRsvpStatusInnerPtr.asFunction<
-      _OptionRsvpStatusInnerReturn Function(
+  late final _optionRsvpStatusStatus = _optionRsvpStatusStatusPtr.asFunction<
+      _OptionRsvpStatusStatusReturn Function(
         int,
       )>();
   late final _userProfileUserIdPtr = _lookup<
@@ -27067,11 +27067,11 @@ class OptionString {
 
   OptionString._(this._api, this._box);
 
-  /// get inner data
-  String? inner() {
+  /// get text
+  String? text() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._optionStringInner(
+    final tmp1 = _api._optionStringText(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -27113,11 +27113,11 @@ class OptionBuffer {
 
   OptionBuffer._(this._api, this._box);
 
-  /// get inner data
-  FfiBufferUint8? inner() {
+  /// get data
+  FfiBufferUint8? data() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._optionBufferInner(
+    final tmp1 = _api._optionBufferData(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -27145,11 +27145,11 @@ class OptionRsvpStatus {
 
   OptionRsvpStatus._(this._api, this._box);
 
-  /// get inner data
-  RsvpStatus? inner() {
+  /// get status
+  RsvpStatus? status() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._optionRsvpStatusInner(
+    final tmp1 = _api._optionRsvpStatusStatus(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -45678,7 +45678,7 @@ class _ColorizeBackgroundReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _OptionStringInnerReturn extends ffi.Struct {
+class _OptionStringTextReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -45689,14 +45689,14 @@ class _OptionStringInnerReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _OptionBufferInnerReturn extends ffi.Struct {
+class _OptionBufferDataReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
 }
 
-class _OptionRsvpStatusInnerReturn extends ffi.Struct {
+class _OptionRsvpStatusStatusReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

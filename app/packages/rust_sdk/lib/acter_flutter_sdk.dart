@@ -418,8 +418,11 @@ class ActerSdk {
     FileSystemEntity? latestLogPath;
 
     // clear screenshots, and logs (but keep the latest one)
-    await for (final entity
-        in Directory(logPath).list(recursive: false, followLinks: false)) {
+    final entities = Directory(logPath).list(
+      recursive: false,
+      followLinks: false,
+    );
+    await for (final entity in entities) {
       if (screenshotFileRegExp.hasMatch(entity.path)) {
         await entity.delete(); // remove old screenshots
       }

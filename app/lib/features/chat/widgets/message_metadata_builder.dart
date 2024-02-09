@@ -235,7 +235,7 @@ class _UserReceiptsWidget extends ConsumerWidget {
       QudsPopupMenuWidget(
         builder: (context) => Container(
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: Theme.of(context).colorScheme.primary,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(

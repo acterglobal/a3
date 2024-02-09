@@ -405,13 +405,13 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                       InkWell(
                         onTap: () => onSendButtonPressed(),
                         child: CircleAvatar(
-                          radius: 18,
+                          radius: 22,
                           backgroundColor:
                               Theme.of(context).colorScheme.primary,
                           child: Icon(
                             Icons.send,
                             size: 20,
-                            color: Theme.of(context).colorScheme.neutral2,
+                            color: Theme.of(context).colorScheme.onPrimary,
                           ),
                         ),
                       ),
@@ -913,7 +913,7 @@ class _TextInputWidget extends ConsumerWidget {
           textInputAction: TextInputAction.newline,
           enabled: chatInputState.allowEdit,
           onSubmitted: (value) => onSendButtonPressed(),
-          style: Theme.of(context).textTheme.titleSmall,
+          style: Theme.of(context).textTheme.bodyMedium,
           cursorColor: Theme.of(context).colorScheme.primary,
           maxLines: 6,
           minLines: 1,
