@@ -7,9 +7,9 @@ use strum::Display;
 use super::BelongsTo;
 
 /// RSVP status
-// previolusly accepted only camel-case
-// now accept not only serialization in kebab-case but also alias in camel-case
-// because a lot of RsvpStatus in camel-case were uploaded and if parsing under only kebab-case failed at RsvpStatus in camel-case
+// previously accepted only PascalCase
+// now accept will serialize to kebab-case but also deserialize the previously
+// posted PascalCase variants
 #[derive(Clone, Debug, Serialize, Deserialize, Display, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case", tag = "type")]
 #[strum(serialize_all = "kebab-case")]
