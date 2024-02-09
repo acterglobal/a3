@@ -18,7 +18,6 @@ class LoginPageKeys {
   static const usernameField = Key('login-username-txt');
   static const passwordField = Key('login-password-txt');
   static const nameField = Key('login-username-txt');
-  static const tokenField = Key('login-username-txt');
   static const snackbarSuccess = Key('login-snackbar-success');
   static const snackbarFailed = Key('login-snackbar-failed');
 }

@@ -72,13 +72,13 @@ class SuperInvitesPage extends ConsumerWidget {
                   : const SliverToBoxAdapter(
                       child: Center(
                         child:
-                            Text('You have not yet created any invite tokens'),
+                            Text('You have not yet created any invite codes'),
                       ),
                     ),
               error: (error, stack) {
                 return SliverToBoxAdapter(
                   child: Center(
-                    child: Text('Failed to load Invite tokens: $error'),
+                    child: Text('Failed to load invite codes: $error'),
                   ),
                 );
               },
