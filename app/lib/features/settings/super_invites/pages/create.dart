@@ -61,7 +61,7 @@ class _CreateSuperInviteTokenPageConsumerState
   @override
   Widget build(BuildContext context) {
     return SideSheet(
-      header: isEdit ? 'Edit Invite Token' : 'Create Invite Token',
+      header: isEdit ? 'Edit Invite Code' : 'Create Invite Code',
       addActions: true,
       body: Form(
         key: _formKey,
@@ -82,13 +82,13 @@ class _CreateSuperInviteTokenPageConsumerState
                       ),
                     )
                   : InputTextField(
-                      hintText: 'Token',
+                      hintText: 'Code',
                       key: CreateSuperInviteTokenPage.tokenFieldKey,
                       textInputType: TextInputType.text,
                       controller: _tokenController,
                       validator: (String? val) =>
                           (val != null && val.isNotEmpty && val.length < 6)
-                              ? 'Token must be at least 6 characters long'
+                              ? 'Code must be at least 6 characters long'
                               : null,
                     ),
               CheckboxFormField(
@@ -171,7 +171,7 @@ class _CreateSuperInviteTokenPageConsumerState
           itemCount: _roomIds.length,
         ),
       ],
-      confirmActionTitle: isEdit ? 'Save' : 'Create Token',
+      confirmActionTitle: isEdit ? 'Save' : 'Create Code',
       confirmActionKey: CreateSuperInviteTokenPage.submitBtn,
       confirmActionOnPressed: _submit,
       cancelActionTitle: 'Cancel',
@@ -181,7 +181,7 @@ class _CreateSuperInviteTokenPageConsumerState
   }
 
   Future<void> _submit() async {
-    EasyLoading.show(status: isEdit ? 'Saving token' : 'Creating Token');
+    EasyLoading.show(status: isEdit ? 'Saving code' : 'Creating code');
     try {
       final tokenTxt = _tokenController.text;
       if (tokenTxt.isNotEmpty) {
@@ -200,7 +200,7 @@ class _CreateSuperInviteTokenPageConsumerState
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
     } catch (err) {
       EasyLoading.showError(
-        isEdit ? 'Saving token failed $err' : 'Creating token failed $err',
+        isEdit ? 'Saving code failed $err' : 'Creating code failed $err',
         duration: const Duration(seconds: 3),
       );
     }
@@ -211,9 +211,9 @@ class _CreateSuperInviteTokenPageConsumerState
       context: context,
       builder: (BuildContext ctx) {
         return AlertDialog(
-          title: const Text('Delete token'),
+          title: const Text('Delete code'),
           content: const Text(
-            "Do you really want to irreversibly delete the token? It can't be used again after.",
+            "Do you really want to irreversibly delete the super invite code? It can't be used again after.",
           ),
           actions: <Widget>[
             Row(
@@ -263,7 +263,7 @@ class _CreateSuperInviteTokenPageConsumerState
       return;
     }
 
-    EasyLoading.show(status: 'Deleting Token');
+    EasyLoading.show(status: 'Deleting code');
     try {
       final tokenTxt = _tokenController.text;
       // all other changes happen on the object itself;
@@ -279,7 +279,7 @@ class _CreateSuperInviteTokenPageConsumerState
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
     } catch (err) {
       EasyLoading.showError(
-        'Deleting token failed $err',
+        'Deleting code failed $err',
         duration: const Duration(seconds: 3),
       );
     }
