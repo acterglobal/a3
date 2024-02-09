@@ -12,8 +12,11 @@ import 'package:skeletonizer/skeletonizer.dart';
 class PinListItemById extends ConsumerWidget {
   final String pinId;
   final bool showSpace;
-  const PinListItemById(
-      {required this.pinId, this.showSpace = false, super.key});
+  const PinListItemById({
+    required this.pinId,
+    this.showSpace = false,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -76,7 +79,7 @@ class _PinListItemState extends ConsumerState<PinListItem> {
       onLongPress: openItem,
       child: Card(
         child: ListTile(
-          key: Key(pin.eventIdStr()), // FIXME: causes crashes in ffigen
+          key: Key(pin.eventIdStr()),
           leading: Icon(isLink ? Atlas.link_chain_thin : Atlas.document_thin),
           title: Text(
             pin.title(),

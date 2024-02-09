@@ -87,25 +87,25 @@ class _$ChatListStateCopyWithImpl<$Res, $Val extends ChatListState>
 }
 
 /// @nodoc
-abstract class _$$ChatListStateInitialImplCopyWith<$Res> {
-  factory _$$ChatListStateInitialImplCopyWith(_$ChatListStateInitialImpl value,
-          $Res Function(_$ChatListStateInitialImpl) then) =
-      __$$ChatListStateInitialImplCopyWithImpl<$Res>;
+abstract class _$$_ChatListStateInitialCopyWith<$Res> {
+  factory _$$_ChatListStateInitialCopyWith(_$_ChatListStateInitial value,
+          $Res Function(_$_ChatListStateInitial) then) =
+      __$$_ChatListStateInitialCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$ChatListStateInitialImplCopyWithImpl<$Res>
-    extends _$ChatListStateCopyWithImpl<$Res, _$ChatListStateInitialImpl>
-    implements _$$ChatListStateInitialImplCopyWith<$Res> {
-  __$$ChatListStateInitialImplCopyWithImpl(_$ChatListStateInitialImpl _value,
-      $Res Function(_$ChatListStateInitialImpl) _then)
+class __$$_ChatListStateInitialCopyWithImpl<$Res>
+    extends _$ChatListStateCopyWithImpl<$Res, _$_ChatListStateInitial>
+    implements _$$_ChatListStateInitialCopyWith<$Res> {
+  __$$_ChatListStateInitialCopyWithImpl(_$_ChatListStateInitial _value,
+      $Res Function(_$_ChatListStateInitial) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$ChatListStateInitialImpl implements _ChatListStateInitial {
-  const _$ChatListStateInitialImpl();
+class _$_ChatListStateInitial implements _ChatListStateInitial {
+  const _$_ChatListStateInitial();
 
   @override
   String toString() {
@@ -113,10 +113,9 @@ class _$ChatListStateInitialImpl implements _ChatListStateInitial {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ChatListStateInitialImpl);
+        (other.runtimeType == runtimeType && other is _$_ChatListStateInitial);
   }
 
   @override
@@ -198,29 +197,29 @@ class _$ChatListStateInitialImpl implements _ChatListStateInitial {
 }
 
 abstract class _ChatListStateInitial implements ChatListState {
-  const factory _ChatListStateInitial() = _$ChatListStateInitialImpl;
+  const factory _ChatListStateInitial() = _$_ChatListStateInitial;
 }
 
 /// @nodoc
-abstract class _$$ChatListStateLoadingImplCopyWith<$Res> {
-  factory _$$ChatListStateLoadingImplCopyWith(_$ChatListStateLoadingImpl value,
-          $Res Function(_$ChatListStateLoadingImpl) then) =
-      __$$ChatListStateLoadingImplCopyWithImpl<$Res>;
+abstract class _$$_ChatListStateLoadingCopyWith<$Res> {
+  factory _$$_ChatListStateLoadingCopyWith(_$_ChatListStateLoading value,
+          $Res Function(_$_ChatListStateLoading) then) =
+      __$$_ChatListStateLoadingCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$ChatListStateLoadingImplCopyWithImpl<$Res>
-    extends _$ChatListStateCopyWithImpl<$Res, _$ChatListStateLoadingImpl>
-    implements _$$ChatListStateLoadingImplCopyWith<$Res> {
-  __$$ChatListStateLoadingImplCopyWithImpl(_$ChatListStateLoadingImpl _value,
-      $Res Function(_$ChatListStateLoadingImpl) _then)
+class __$$_ChatListStateLoadingCopyWithImpl<$Res>
+    extends _$ChatListStateCopyWithImpl<$Res, _$_ChatListStateLoading>
+    implements _$$_ChatListStateLoadingCopyWith<$Res> {
+  __$$_ChatListStateLoadingCopyWithImpl(_$_ChatListStateLoading _value,
+      $Res Function(_$_ChatListStateLoading) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$ChatListStateLoadingImpl implements _ChatListStateLoading {
-  const _$ChatListStateLoadingImpl();
+class _$_ChatListStateLoading implements _ChatListStateLoading {
+  const _$_ChatListStateLoading();
 
   @override
   String toString() {
@@ -228,10 +227,9 @@ class _$ChatListStateLoadingImpl implements _ChatListStateLoading {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ChatListStateLoadingImpl);
+        (other.runtimeType == runtimeType && other is _$_ChatListStateLoading);
   }
 
   @override
@@ -313,24 +311,24 @@ class _$ChatListStateLoadingImpl implements _ChatListStateLoading {
 }
 
 abstract class _ChatListStateLoading implements ChatListState {
-  const factory _ChatListStateLoading() = _$ChatListStateLoadingImpl;
+  const factory _ChatListStateLoading() = _$_ChatListStateLoading;
 }
 
 /// @nodoc
-abstract class _$$ChatListStateDataImplCopyWith<$Res> {
-  factory _$$ChatListStateDataImplCopyWith(_$ChatListStateDataImpl value,
-          $Res Function(_$ChatListStateDataImpl) then) =
-      __$$ChatListStateDataImplCopyWithImpl<$Res>;
+abstract class _$$_ChatListStateDataCopyWith<$Res> {
+  factory _$$_ChatListStateDataCopyWith(_$_ChatListStateData value,
+          $Res Function(_$_ChatListStateData) then) =
+      __$$_ChatListStateDataCopyWithImpl<$Res>;
   @useResult
   $Res call({List<Convo> chats});
 }
 
 /// @nodoc
-class __$$ChatListStateDataImplCopyWithImpl<$Res>
-    extends _$ChatListStateCopyWithImpl<$Res, _$ChatListStateDataImpl>
-    implements _$$ChatListStateDataImplCopyWith<$Res> {
-  __$$ChatListStateDataImplCopyWithImpl(_$ChatListStateDataImpl _value,
-      $Res Function(_$ChatListStateDataImpl) _then)
+class __$$_ChatListStateDataCopyWithImpl<$Res>
+    extends _$ChatListStateCopyWithImpl<$Res, _$_ChatListStateData>
+    implements _$$_ChatListStateDataCopyWith<$Res> {
+  __$$_ChatListStateDataCopyWithImpl(
+      _$_ChatListStateData _value, $Res Function(_$_ChatListStateData) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -338,7 +336,7 @@ class __$$ChatListStateDataImplCopyWithImpl<$Res>
   $Res call({
     Object? chats = null,
   }) {
-    return _then(_$ChatListStateDataImpl(
+    return _then(_$_ChatListStateData(
       chats: null == chats
           ? _value._chats
           : chats // ignore: cast_nullable_to_non_nullable
@@ -349,8 +347,8 @@ class __$$ChatListStateDataImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ChatListStateDataImpl implements _ChatListStateData {
-  const _$ChatListStateDataImpl({required final List<Convo> chats})
+class _$_ChatListStateData implements _ChatListStateData {
+  const _$_ChatListStateData({required final List<Convo> chats})
       : _chats = chats;
 
   final List<Convo> _chats;
@@ -367,10 +365,10 @@ class _$ChatListStateDataImpl implements _ChatListStateData {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ChatListStateDataImpl &&
+            other is _$_ChatListStateData &&
             const DeepCollectionEquality().equals(other._chats, _chats));
   }
 
@@ -381,8 +379,8 @@ class _$ChatListStateDataImpl implements _ChatListStateData {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ChatListStateDataImplCopyWith<_$ChatListStateDataImpl> get copyWith =>
-      __$$ChatListStateDataImplCopyWithImpl<_$ChatListStateDataImpl>(
+  _$$_ChatListStateDataCopyWith<_$_ChatListStateData> get copyWith =>
+      __$$_ChatListStateDataCopyWithImpl<_$_ChatListStateData>(
           this, _$identity);
 
   @override
@@ -462,29 +460,29 @@ class _$ChatListStateDataImpl implements _ChatListStateData {
 
 abstract class _ChatListStateData implements ChatListState {
   const factory _ChatListStateData({required final List<Convo> chats}) =
-      _$ChatListStateDataImpl;
+      _$_ChatListStateData;
 
   List<Convo> get chats;
   @JsonKey(ignore: true)
-  _$$ChatListStateDataImplCopyWith<_$ChatListStateDataImpl> get copyWith =>
+  _$$_ChatListStateDataCopyWith<_$_ChatListStateData> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$ChatListStateErrorImplCopyWith<$Res> {
-  factory _$$ChatListStateErrorImplCopyWith(_$ChatListStateErrorImpl value,
-          $Res Function(_$ChatListStateErrorImpl) then) =
-      __$$ChatListStateErrorImplCopyWithImpl<$Res>;
+abstract class _$$_ChatListStateErrorCopyWith<$Res> {
+  factory _$$_ChatListStateErrorCopyWith(_$_ChatListStateError value,
+          $Res Function(_$_ChatListStateError) then) =
+      __$$_ChatListStateErrorCopyWithImpl<$Res>;
   @useResult
   $Res call({String? error});
 }
 
 /// @nodoc
-class __$$ChatListStateErrorImplCopyWithImpl<$Res>
-    extends _$ChatListStateCopyWithImpl<$Res, _$ChatListStateErrorImpl>
-    implements _$$ChatListStateErrorImplCopyWith<$Res> {
-  __$$ChatListStateErrorImplCopyWithImpl(_$ChatListStateErrorImpl _value,
-      $Res Function(_$ChatListStateErrorImpl) _then)
+class __$$_ChatListStateErrorCopyWithImpl<$Res>
+    extends _$ChatListStateCopyWithImpl<$Res, _$_ChatListStateError>
+    implements _$$_ChatListStateErrorCopyWith<$Res> {
+  __$$_ChatListStateErrorCopyWithImpl(
+      _$_ChatListStateError _value, $Res Function(_$_ChatListStateError) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -492,7 +490,7 @@ class __$$ChatListStateErrorImplCopyWithImpl<$Res>
   $Res call({
     Object? error = freezed,
   }) {
-    return _then(_$ChatListStateErrorImpl(
+    return _then(_$_ChatListStateError(
       freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -503,8 +501,8 @@ class __$$ChatListStateErrorImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ChatListStateErrorImpl implements _ChatListStateError {
-  const _$ChatListStateErrorImpl([this.error]);
+class _$_ChatListStateError implements _ChatListStateError {
+  const _$_ChatListStateError([this.error]);
 
   @override
   final String? error;
@@ -515,10 +513,10 @@ class _$ChatListStateErrorImpl implements _ChatListStateError {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ChatListStateErrorImpl &&
+            other is _$_ChatListStateError &&
             (identical(other.error, error) || other.error == error));
   }
 
@@ -528,8 +526,8 @@ class _$ChatListStateErrorImpl implements _ChatListStateError {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ChatListStateErrorImplCopyWith<_$ChatListStateErrorImpl> get copyWith =>
-      __$$ChatListStateErrorImplCopyWithImpl<_$ChatListStateErrorImpl>(
+  _$$_ChatListStateErrorCopyWith<_$_ChatListStateError> get copyWith =>
+      __$$_ChatListStateErrorCopyWithImpl<_$_ChatListStateError>(
           this, _$identity);
 
   @override
@@ -609,10 +607,10 @@ class _$ChatListStateErrorImpl implements _ChatListStateError {
 
 abstract class _ChatListStateError implements ChatListState {
   const factory _ChatListStateError([final String? error]) =
-      _$ChatListStateErrorImpl;
+      _$_ChatListStateError;
 
   String? get error;
   @JsonKey(ignore: true)
-  _$$ChatListStateErrorImplCopyWith<_$ChatListStateErrorImpl> get copyWith =>
+  _$$_ChatListStateErrorCopyWith<_$_ChatListStateError> get copyWith =>
       throw _privateConstructorUsedError;
 }
