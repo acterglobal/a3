@@ -7,6 +7,7 @@ import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PinItem extends ConsumerStatefulWidget {
@@ -36,13 +37,16 @@ class _PinItemState extends ConsumerState<PinItem> {
     if (content != null) {
       if (content.formattedBody() != null) {
         formattedBody = content.formattedBody();
+        debugPrint('HTML:$formattedBody');
       } else {
         markdown = content.body();
+        debugPrint('MARKDOWN:$markdown');
       }
     }
     _linkController = TextEditingController(text: widget.pin.url() ?? '');
-    _descriptionController =
-        TextEditingController(text: formattedBody ?? markdown);
+    _descriptionController = TextEditingController(
+      text: formattedBody ?? markdown,
+    );
   }
 
   @override
@@ -90,32 +94,40 @@ class _PinItemState extends ConsumerState<PinItem> {
     }
     content.add(
       !isActive(LabsFeature.showPinRichEditor)
-          ? Column(
-              children: <Widget>[
-                MdEditorWithPreview(
-                  editable: pinEdit.editMode,
-                  controller: _descriptionController,
-                  onChanged: (value) => pinEditNotifier.setMarkdown(value),
-                ),
-                pinEdit.editMode
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          OutlinedButton(
-                            onPressed: () => pinEditNotifier.setEditMode(false),
-                            child: const Text('Cancel'),
-                          ),
-                          const SizedBox(width: 5),
-                          ElevatedButton(
-                            onPressed: () async =>
-                                await pinEditNotifier.onSave(),
-                            child: const Text('Save'),
-                          ),
-                        ],
-                      )
-                    : const SizedBox.shrink(),
-              ],
-            )
+          ? pinEdit.editMode
+              ? Column(
+                  children: <Widget>[
+                    MdEditorWithPreview(
+                      controller: _descriptionController,
+                    ),
+                    pinEdit.editMode
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              OutlinedButton(
+                                onPressed: () =>
+                                    pinEditNotifier.setEditMode(false),
+                                child: const Text('Cancel'),
+                              ),
+                              const SizedBox(width: 5),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  pinEditNotifier
+                                      .setMarkdown(_descriptionController.text);
+                                  await pinEditNotifier.onSave();
+                                },
+                                child: const Text('Save'),
+                              ),
+                            ],
+                          )
+                        : const SizedBox.shrink(),
+                  ],
+                )
+              : Html(
+                  data: _descriptionController.text,
+                  renderNewlines: true,
+                  padding: const EdgeInsets.all(8),
+                )
           : Container(
               height: MediaQuery.of(context).size.height * 0.6,
               margin: const EdgeInsets.symmetric(vertical: 8),
