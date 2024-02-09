@@ -11,6 +11,11 @@ import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PinItem extends ConsumerStatefulWidget {
+  static const linkFieldKey = Key('edit-pin-link-field');
+  static const descriptionFieldKey = Key('edit-pin-description-field');
+  static const markdownEditorKey = Key('edit-md-editor-field');
+  static const richTextEditorKey = Key('edit-rich-editor-field');
+  static const saveBtnKey = Key('pin-edit-save');
   final ActerPin pin;
   const PinItem(this.pin, {super.key});
 
@@ -69,6 +74,7 @@ class _PinItemState extends ConsumerState<PinItem> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: TextFormField(
+            key: PinItem.linkFieldKey,
             onTap: () async => !pinEdit.editMode
                 ? await openLink(pinEdit.link, context)
                 : null,
@@ -96,6 +102,7 @@ class _PinItemState extends ConsumerState<PinItem> {
               ? Column(
                   children: <Widget>[
                     MdEditorWithPreview(
+                      key: PinItem.markdownEditorKey,
                       controller: _descriptionController,
                     ),
                     pinEdit.editMode
@@ -109,6 +116,7 @@ class _PinItemState extends ConsumerState<PinItem> {
                               ),
                               const SizedBox(width: 5),
                               ElevatedButton(
+                                key: PinItem.saveBtnKey,
                                 onPressed: () async {
                                   pinEditNotifier
                                       .setMarkdown(_descriptionController.text);
@@ -122,6 +130,7 @@ class _PinItemState extends ConsumerState<PinItem> {
                   ],
                 )
               : Html(
+                  key: PinItem.descriptionFieldKey,
                   data: _descriptionController.text,
                   renderNewlines: true,
                   padding: const EdgeInsets.all(8),
@@ -138,6 +147,7 @@ class _PinItemState extends ConsumerState<PinItem> {
               constraints:
                   BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
               child: HtmlEditor(
+                key: PinItem.richTextEditorKey,
                 editable: pinEdit.editMode,
                 content: widget.pin.content(),
                 footer: pinEdit.editMode ? null : const SizedBox(),

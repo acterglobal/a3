@@ -14,11 +14,16 @@ import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class PinPage extends ConsumerWidget {
+  static const pinPageKey = Key('pin-page');
+  static const actionMenuKey = Key('pin-action-menu');
+  static const editBtnKey = Key('pin-edit-btn');
+  static const titleFieldKey = Key('edit-pin-title-field');
+
   final String pinId;
   const PinPage({
-    super.key,
+    Key key = pinPageKey,
     required this.pinId,
-  });
+  }) : super(key: key);
 
   Widget buildActions(
     BuildContext context,
@@ -34,6 +39,7 @@ class PinPage extends ConsumerWidget {
       if (memb.canString('CanPostPin')) {
         actions.add(
           PopupMenuItem(
+            key: PinPage.editBtnKey,
             onTap: () => pinEditNotifier.setEditMode(true),
             child: const Row(
               children: <Widget>[
@@ -114,6 +120,7 @@ class PinPage extends ConsumerWidget {
     }
 
     return PopupMenuButton(
+      key: PinPage.actionMenuKey,
       icon: const Icon(Atlas.dots_vertical_thin),
       itemBuilder: (ctx) => actions,
     );
@@ -145,6 +152,7 @@ class PinPage extends ConsumerWidget {
                         style: Theme.of(context).textTheme.titleLarge,
                       )
                     : TextFormField(
+                        key: PinPage.titleFieldKey,
                         initialValue: acterPin.title(),
                         readOnly: !pinEdit.editMode,
                         style: Theme.of(context).textTheme.titleLarge,

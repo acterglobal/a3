@@ -23,6 +23,7 @@ class PinListItemById extends ConsumerWidget {
     final pin = ref.watch(pinProvider(pinId));
     return pin.when(
       data: (acterPin) => PinListItem(
+        key: Key('pin-list-item-$pinId'),
         pin: acterPin,
         showSpace: showSpace,
       ),
