@@ -76,7 +76,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
         ? Container(
             width: size.width * 0.5,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: Theme.of(context).colorScheme.primary,
               borderRadius: BorderRadius.circular(12),
             ),
             child: PageView.builder(
