@@ -104,7 +104,6 @@ class _CreateTaskListSheetConsumerState
                   children: [
                     Expanded(
                       child: SizedBox(
-                        height: 52,
                         child: TextFormField(
                           key: CreateTaskListSheet.titleKey,
                           decoration: InputDecoration(
@@ -114,6 +113,7 @@ class _CreateTaskListSheetConsumerState
                               borderRadius: BorderRadius.circular(5),
                             ),
                           ),
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: _titleController,
                           validator: (value) =>
                               (value != null && value.isNotEmpty)
