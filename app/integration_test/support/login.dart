@@ -92,7 +92,7 @@ extension ActerLogin on ConvenientTest {
     await profileKey.should(findsOneWidget);
     await profileKey.tap();
 
-    final logoutKey = find.byKey(MyProfile.logoutKey);
+    final logoutKey = find.byKey(MyProfilePage.logoutKey);
     await logoutKey.should(findsOneWidget);
     await logoutKey.tap();
 

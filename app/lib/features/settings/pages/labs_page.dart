@@ -10,6 +10,7 @@ import 'package:settings_ui/settings_ui.dart';
 
 class SettingsLabsPage extends ConsumerWidget {
   static Key tasksLabSwitch = const Key('labs-tasks');
+  static Key pinsEditorLabSwitch = const Key('labs-pins-editor');
 
   const SettingsLabsPage({super.key});
 
@@ -82,15 +83,16 @@ class SettingsLabsPage extends ConsumerWidget {
               title: const Text('Rich Text Editor'),
               tiles: [
                 SettingsTile.switchTile(
+                  key: SettingsLabsPage.pinsEditorLabSwitch,
                   title: const Text('Pins'),
                   description: const Text(
                     'Enable this to switch default pin markdown editor to Appflowy inline editor. Please note that editor is experimental and not all features are functional.',
                   ),
-                  initialValue: ref
-                      .watch(isActiveProvider(LabsFeature.showPinRichEditor)),
+                  initialValue:
+                      ref.watch(isActiveProvider(LabsFeature.pinsEditor)),
                   onToggle: (newVal) => updateFeatureState(
                     ref,
-                    LabsFeature.showPinRichEditor,
+                    LabsFeature.pinsEditor,
                     newVal,
                   ),
                 ),

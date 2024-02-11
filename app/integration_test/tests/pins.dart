@@ -1,11 +1,13 @@
 import 'package:acter/common/utils/constants.dart';
-import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/pins/pages/pin_page.dart';
 import 'package:acter/features/pins/sheets/create_pin_sheet.dart';
 import 'package:acter/features/pins/widgets/pin_item.dart';
+import 'package:acter/features/profile/pages/my_profile_page.dart';
 import 'package:acter/features/search/model/keys.dart';
+import 'package:acter/features/settings/pages/labs_page.dart';
+import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,13 +24,14 @@ extension ActerNews on ConvenientTest {
       MainNavKeys.dashboardHome,
       MainNavKeys.dashboardHome,
       MainNavKeys.quickJump,
+      MainNavKeys.quickJump,
       QuickJumpKeys.pins,
     ]);
 
     final select = find.byKey(Key('pin-list-item-$pinId'));
     await tester.ensureVisible(select);
     await select.should(findsOneWidget);
-    await select.tap();
+    await select.longPress();
 
     if (appTab != null) {
       final selectedApp = find.byKey(appTab);
@@ -89,30 +92,64 @@ extension ActerNews on ConvenientTest {
     await linkField.should(findsOneWidget);
     await linkField.replaceText(url);
 
-    final hasMarkdownEditor = find.byKey(PinItem.markdownEditorKey).hasFound;
-    if (hasMarkdownEditor) {
-      final mdEditorKey = find.byKey(PinItem.markdownEditorKey);
-      mdEditorKey.replaceText(content);
+    final mdEditorKey = find.byKey(PinItem.markdownEditorKey);
+    await mdEditorKey.replaceText(content);
 
-      final saveBtnKey = find.byKey(PinItem.saveBtnKey);
-      saveBtnKey.should(findsOneWidget);
-      await tester.ensureVisible(saveBtnKey);
-      await saveBtnKey.tap();
-    } else {
-      final richTextEditorKey = find.byKey(PinItem.richTextEditorKey);
-      richTextEditorKey.should(findsOneWidget);
-      richTextEditorKey.replaceText(content);
-
-      final saveEditKey = find.byKey(HtmlEditor.saveEditKey);
-      saveEditKey.should(findsOneWidget);
-      await tester.ensureVisible(saveEditKey);
-      await saveEditKey.tap();
-    }
+    final saveBtnKey = find.byKey(PinItem.saveBtnKey);
+    await saveBtnKey.should(findsOneWidget);
+    await tester.ensureVisible(saveBtnKey);
+    await saveBtnKey.tap();
 
     final pinPage = find.byKey(PinPage.pinPageKey);
-    pinPage.should(findsOneWidget);
+    await pinPage.should(findsOneWidget);
     final page = pinPage.evaluate().first.widget as PinPage;
     return page.pinId;
+  }
+
+  Future<void> switchPinLabEditor() async {
+    final avatarKey = find.byKey(Keys.avatar);
+    await avatarKey.should(findsOneWidget);
+    await avatarKey.tap();
+
+    final settingsKey = find.byKey(MyProfilePage.settingsKey);
+    await settingsKey.should(findsOneWidget);
+    await settingsKey.tap();
+
+    final labsKey = find.byKey(SettingsMenu.labs);
+    await tester.ensureVisible(labsKey);
+    await labsKey.should(findsOneWidget);
+    await labsKey.tap();
+
+    final pinEditorKey = find.byKey(SettingsLabsPage.pinsEditorLabSwitch);
+    await tester.ensureVisible(pinEditorKey);
+    await pinEditorKey.should(findsOneWidget);
+    await pinEditorKey.tap();
+  }
+
+  Future<void> ensureLabRichEditorEnabled() async {
+    await find.byKey(PinPage.actionMenuKey).should(findsOneWidget);
+    final actionMenuKey = find.byKey(PinPage.actionMenuKey);
+    await actionMenuKey.tap();
+
+    await find.byKey(PinPage.editBtnKey).should(findsOneWidget);
+    final editBtnKey = find.byKey(PinPage.editBtnKey);
+    await editBtnKey.tap();
+
+    final richEditorKey = find.byKey(PinItem.richTextEditorKey);
+    await richEditorKey.should(findsOneWidget);
+  }
+
+  Future<void> ensureMdEditorEnabled() async {
+    await find.byKey(PinPage.actionMenuKey).should(findsOneWidget);
+    final actionMenuKey = find.byKey(PinPage.actionMenuKey);
+    await actionMenuKey.tap();
+
+    await find.byKey(PinPage.editBtnKey).should(findsOneWidget);
+    final editBtnKey = find.byKey(PinPage.editBtnKey);
+    await editBtnKey.tap();
+
+    final mdEditorKey = find.byKey(PinItem.markdownEditorKey);
+    await mdEditorKey.should(findsOneWidget);
   }
 }
 
@@ -150,6 +187,51 @@ void pinsTests() {
     await find.text('This is great').should(findsOneWidget);
   });
 
+  acterTestWidget(
+      'User sees pins rich content editor based on selection in Acter Labs',
+      (t) async {
+    final spaceId = await t.freshAccountWithSpace(
+      userDisplayName: 'Alex',
+      spaceDisplayName: 'Create Pin Example',
+    );
+    await t.createPin(
+      spaceId,
+      'Create Pin Example',
+      'This pin has Acter Global link',
+      'https://acter.global',
+    );
+
+    final pinPage = find.byKey(PinPage.pinPageKey);
+    await pinPage.should(findsOneWidget);
+    final page = pinPage.first.evaluate().first.widget as PinPage;
+    final pinId = page.pinId;
+
+    // keyboard showing still and obscuring main nav, do gesture do hide it
+    await t.tester.fling(pinPage, const Offset(0.0, -5.0), 50.0);
+    await t.pump(const Duration(seconds: 1));
+
+    // can see the main nav now
+    await t.navigateTo([
+      MainNavKeys.dashboardHome,
+      MainNavKeys.dashboardHome,
+    ]);
+
+    // enable rich text editor
+    await t.switchPinLabEditor();
+    // let's check whether pin rich editor is there
+    await t.gotoPin(pinId);
+    await t.ensureLabRichEditorEnabled();
+
+    await t.navigateTo([
+      MainNavKeys.dashboardHome,
+      MainNavKeys.dashboardHome,
+    ]);
+
+    // switch to default md editor again to ensure disabled
+    await t.switchPinLabEditor();
+    await t.gotoPin(pinId);
+    await t.ensureMdEditorEnabled();
+  });
   acterTestWidget(
       'Create Example Pin and Edit it with ensuring reflected changes are shown',
       (t) async {

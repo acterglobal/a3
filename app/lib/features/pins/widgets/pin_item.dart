@@ -97,7 +97,7 @@ class _PinItemState extends ConsumerState<PinItem> {
       );
     }
     content.add(
-      !isActive(LabsFeature.showPinRichEditor)
+      !isActive(LabsFeature.pinsEditor)
           ? pinEdit.editMode
               ? Column(
                   children: <Widget>[
