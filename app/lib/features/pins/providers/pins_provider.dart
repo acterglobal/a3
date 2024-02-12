@@ -35,7 +35,7 @@ final pinnedLinksProvider = FutureProvider.autoDispose
   return pins.where((element) => element.isLink()).toList();
 });
 
-final pinEditProvider =
-    StateNotifierProvider.family<PinEditNotifier, PinEditState, ActerPin>(
+final pinEditProvider = StateNotifierProvider.family
+    .autoDispose<PinEditNotifier, PinEditState, ActerPin>(
   (ref, pin) => PinEditNotifier(pin: pin, ref: ref),
 );

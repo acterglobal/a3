@@ -120,6 +120,7 @@ class _PinItemState extends ConsumerState<PinItem> {
                                 onPressed: () async {
                                   pinEditNotifier
                                       .setMarkdown(_descriptionController.text);
+                                  pinEditNotifier.setLink(_linkController.text);
                                   await pinEditNotifier.onSave();
                                 },
                                 child: const Text('Save'),

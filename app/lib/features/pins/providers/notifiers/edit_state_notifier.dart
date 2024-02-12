@@ -51,7 +51,7 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
         updateBuilder.title(state.title);
         hasChanges = true;
       }
-      if (pin.isLink() && pin.url() != null) {
+      if (pin.isLink()) {
         if (pin.url() != state.link) {
           updateBuilder.url(state.link);
           hasChanges = true;
