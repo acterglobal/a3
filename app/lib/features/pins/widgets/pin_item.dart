@@ -118,6 +118,7 @@ class _PinItemState extends ConsumerState<PinItem> {
                               ElevatedButton(
                                 key: PinItem.saveBtnKey,
                                 onPressed: () async {
+                                  pinEditNotifier.setEditMode(false);
                                   pinEditNotifier
                                       .setMarkdown(_descriptionController.text);
                                   pinEditNotifier.setLink(_linkController.text);
