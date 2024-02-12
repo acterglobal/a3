@@ -30,8 +30,8 @@ class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
             key: RedeemToken.redeemTokenField,
             decoration: const InputDecoration(
               icon: Icon(Atlas.plus_ticket_thin),
-              hintText: 'An invite token you want to redeem',
-              labelText: 'Token',
+              hintText: 'An invite code you want to redeem',
+              labelText: 'Invite Code',
             ),
             controller: _tokenController,
           ),
@@ -59,7 +59,7 @@ class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
       FocusManager.instance.primaryFocus?.unfocus();
     } catch (err) {
       EasyLoading.showError(
-        'Redeeming token failed $err',
+        'Redeeming failed $err',
         duration: const Duration(seconds: 3),
       );
     }
