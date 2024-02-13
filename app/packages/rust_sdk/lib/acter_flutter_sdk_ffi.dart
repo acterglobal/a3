@@ -10408,6 +10408,53 @@ class Api {
     return tmp7;
   }
 
+  NotificationSettings? __clientNotificationSettingsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientNotificationSettingsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_NotificationSettings");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = NotificationSettings._(this, tmp13_1);
+    return tmp7;
+  }
+
   FfiListDeviceRecord? __clientDeviceRecordsFuturePoll(
     int boxed,
     int postCobject,
@@ -10453,6 +10500,112 @@ class Api {
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp14 = FfiListDeviceRecord._(this, tmp13_1);
     final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  String? __notificationSettingsDefaultNotificationModeFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _notificationSettingsDefaultNotificationModeFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
+    return tmp7;
+  }
+
+  bool? __notificationSettingsSetDefaultNotificationModeFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _notificationSettingsSetDefaultNotificationModeFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
     return tmp7;
   }
 
@@ -12283,6 +12436,39 @@ class Api {
     return tmp9;
   }
 
+  bool? __notificationSettingsChangesStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _notificationSettingsChangesStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
   late final _initLoggingPtr = _lookup<
       ffi.NativeFunction<
           _InitLoggingReturn Function(
@@ -13130,34 +13316,34 @@ class Api {
       int Function(
         int,
       )>();
-  late final _optionStringInnerPtr = _lookup<
+  late final _optionStringTextPtr = _lookup<
       ffi.NativeFunction<
-          _OptionStringInnerReturn Function(
+          _OptionStringTextReturn Function(
             ffi.Int64,
-          )>>("__OptionString_inner");
+          )>>("__OptionString_text");
 
-  late final _optionStringInner = _optionStringInnerPtr.asFunction<
-      _OptionStringInnerReturn Function(
+  late final _optionStringText = _optionStringTextPtr.asFunction<
+      _OptionStringTextReturn Function(
         int,
       )>();
-  late final _optionBufferInnerPtr = _lookup<
+  late final _optionBufferDataPtr = _lookup<
       ffi.NativeFunction<
-          _OptionBufferInnerReturn Function(
+          _OptionBufferDataReturn Function(
             ffi.Int64,
-          )>>("__OptionBuffer_inner");
+          )>>("__OptionBuffer_data");
 
-  late final _optionBufferInner = _optionBufferInnerPtr.asFunction<
-      _OptionBufferInnerReturn Function(
+  late final _optionBufferData = _optionBufferDataPtr.asFunction<
+      _OptionBufferDataReturn Function(
         int,
       )>();
-  late final _optionRsvpStatusInnerPtr = _lookup<
+  late final _optionRsvpStatusStatusPtr = _lookup<
       ffi.NativeFunction<
-          _OptionRsvpStatusInnerReturn Function(
+          _OptionRsvpStatusStatusReturn Function(
             ffi.Int64,
-          )>>("__OptionRsvpStatus_inner");
+          )>>("__OptionRsvpStatus_status");
 
-  late final _optionRsvpStatusInner = _optionRsvpStatusInnerPtr.asFunction<
-      _OptionRsvpStatusInnerReturn Function(
+  late final _optionRsvpStatusStatus = _optionRsvpStatusStatusPtr.asFunction<
+      _OptionRsvpStatusStatusReturn Function(
         int,
       )>();
   late final _userProfileUserIdPtr = _lookup<
@@ -13845,6 +14031,28 @@ class Api {
         int,
         int,
       )>();
+  late final _pinDraftContentHtmlPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__PinDraft_content_html");
+
+  late final _pinDraftContentHtml = _pinDraftContentHtmlPtr.asFunction<
+      void Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _pinDraftUnsetContentPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -13901,14 +14109,14 @@ class Api {
       _ActerPinTitleReturn Function(
         int,
       )>();
-  late final _acterPinContentTextPtr = _lookup<
+  late final _acterPinContentPtr = _lookup<
       ffi.NativeFunction<
-          _ActerPinContentTextReturn Function(
+          _ActerPinContentReturn Function(
             ffi.Int64,
-          )>>("__ActerPin_content_text");
+          )>>("__ActerPin_content");
 
-  late final _acterPinContentText = _acterPinContentTextPtr.asFunction<
-      _ActerPinContentTextReturn Function(
+  late final _acterPinContent = _acterPinContentPtr.asFunction<
+      _ActerPinContentReturn Function(
         int,
       )>();
   late final _acterPinContentFormattedPtr = _lookup<
@@ -14099,6 +14307,29 @@ class Api {
   late final _pinUpdateBuilderContentMarkdown =
       _pinUpdateBuilderContentMarkdownPtr.asFunction<
           void Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _pinUpdateBuilderContentHtmlPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__PinUpdateBuilder_content_html");
+
+  late final _pinUpdateBuilderContentHtml =
+      _pinUpdateBuilderContentHtmlPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
             int,
             int,
             int,
@@ -21206,6 +21437,17 @@ class Api {
       int Function(
         int,
       )>();
+  late final _clientNotificationSettingsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Client_notification_settings");
+
+  late final _clientNotificationSettings =
+      _clientNotificationSettingsPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _clientDeviceRecordsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -21360,6 +21602,53 @@ class Api {
         int,
         int,
       )>();
+  late final _notificationSettingsChangesStreamPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__NotificationSettings_changes_stream");
+
+  late final _notificationSettingsChangesStream =
+      _notificationSettingsChangesStreamPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _notificationSettingsDefaultNotificationModePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint8,
+            ffi.Uint8,
+          )>>("__NotificationSettings_default_notification_mode");
+
+  late final _notificationSettingsDefaultNotificationMode =
+      _notificationSettingsDefaultNotificationModePtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _notificationSettingsSetDefaultNotificationModePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint8,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__NotificationSettings_set_default_notification_mode");
+
+  late final _notificationSettingsSetDefaultNotificationMode =
+      _notificationSettingsSetDefaultNotificationModePtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _invitationOriginServerTsPtr = _lookup<
       ffi.NativeFunction<
           _InvitationOriginServerTsReturn Function(
@@ -24738,6 +25027,21 @@ class Api {
             int,
             int,
           )>();
+  late final _clientNotificationSettingsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientNotificationSettingsFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_notification_settings_future_poll");
+
+  late final _clientNotificationSettingsFuturePoll =
+      _clientNotificationSettingsFuturePollPtr.asFunction<
+          _ClientNotificationSettingsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _clientDeviceRecordsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientDeviceRecordsFuturePollReturn Function(
@@ -24749,6 +25053,43 @@ class Api {
   late final _clientDeviceRecordsFuturePoll =
       _clientDeviceRecordsFuturePollPtr.asFunction<
           _ClientDeviceRecordsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _notificationSettingsDefaultNotificationModeFuturePollPtr =
+      _lookup<
+              ffi.NativeFunction<
+                  _NotificationSettingsDefaultNotificationModeFuturePollReturn
+                      Function(
+                    ffi.Int64,
+                    ffi.Int64,
+                    ffi.Int64,
+                  )>>(
+          "__NotificationSettings_default_notification_mode_future_poll");
+
+  late final _notificationSettingsDefaultNotificationModeFuturePoll =
+      _notificationSettingsDefaultNotificationModeFuturePollPtr.asFunction<
+          _NotificationSettingsDefaultNotificationModeFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _notificationSettingsSetDefaultNotificationModeFuturePollPtr =
+      _lookup<
+              ffi.NativeFunction<
+                  _NotificationSettingsSetDefaultNotificationModeFuturePollReturn
+                      Function(
+                    ffi.Int64,
+                    ffi.Int64,
+                    ffi.Int64,
+                  )>>(
+          "__NotificationSettings_set_default_notification_mode_future_poll");
+
+  late final _notificationSettingsSetDefaultNotificationModeFuturePoll =
+      _notificationSettingsSetDefaultNotificationModeFuturePollPtr.asFunction<
+          _NotificationSettingsSetDefaultNotificationModeFuturePollReturn
+              Function(
             int,
             int,
             int,
@@ -25459,6 +25800,23 @@ class Api {
   late final _clientNotificationsStreamStreamPoll =
       _clientNotificationsStreamStreamPollPtr.asFunction<
           _ClientNotificationsStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _notificationSettingsChangesStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationSettingsChangesStreamStreamPollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__NotificationSettings_changes_stream_stream_poll");
+
+  late final _notificationSettingsChangesStreamStreamPoll =
+      _notificationSettingsChangesStreamStreamPollPtr.asFunction<
+          _NotificationSettingsChangesStreamStreamPollReturn Function(
             int,
             int,
             int,
@@ -27739,11 +28097,11 @@ class OptionString {
 
   OptionString._(this._api, this._box);
 
-  /// get inner data
-  String? inner() {
+  /// get text
+  String? text() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._optionStringInner(
+    final tmp1 = _api._optionStringText(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -27785,11 +28143,11 @@ class OptionBuffer {
 
   OptionBuffer._(this._api, this._box);
 
-  /// get inner data
-  FfiBufferUint8? inner() {
+  /// get data
+  FfiBufferUint8? data() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._optionBufferInner(
+    final tmp1 = _api._optionBufferData(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -27817,11 +28175,11 @@ class OptionRsvpStatus {
 
   OptionRsvpStatus._(this._api, this._box);
 
-  /// get inner data
-  RsvpStatus? inner() {
+  /// get status
+  RsvpStatus? status() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._optionRsvpStatusInner(
+    final tmp1 = _api._optionRsvpStatusStatus(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -29351,6 +29709,49 @@ class PinDraft {
     return;
   }
 
+  /// set the content of the pin through html
+  void contentHtml(
+    String text,
+    String html,
+  ) {
+    final tmp1 = text;
+    final tmp5 = html;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    _api._pinDraftContentHtml(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    return;
+  }
+
   void unsetContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -29455,36 +29856,21 @@ class ActerPin {
   }
 
   /// get the content_text of the pin
-  String? contentText() {
+  MsgContent? content() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._acterPinContentText(
+    final tmp1 = _api._acterPinContent(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
     if (tmp3 == 0) {
       return null;
     }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MsgContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = MsgContent._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -29862,6 +30248,48 @@ class PinUpdateBuilder {
       tmp2,
       tmp3,
       tmp4,
+    );
+    return;
+  }
+
+  void contentHtml(
+    String text,
+    String html,
+  ) {
+    final tmp1 = text;
+    final tmp5 = html;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    _api._pinUpdateBuilderContentHtml(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
     );
     return;
   }
@@ -44005,6 +44433,23 @@ class Client {
     return tmp2;
   }
 
+  /// allow to configure notification settings
+  Future<NotificationSettings> notificationSettings() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientNotificationSettings(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Client_notification_settings_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__clientNotificationSettingsFuturePoll);
+    return tmp2;
+  }
+
   /// the list of devices
   Future<FfiListDeviceRecord> deviceRecords(
     bool verified,
@@ -44327,6 +44772,107 @@ class Client {
     final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgContentDraft");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
     final tmp10 = MsgContentDraft._(_api, tmp11_1);
+    return tmp10;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class NotificationSettings {
+  final Api _api;
+  final _Box _box;
+
+  NotificationSettings._(this._api, this._box);
+
+  /// get informed about changes to the notification settings
+  Stream<bool> changesStream() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationSettingsChangesStream(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__NotificationSettings_changes_stream_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(
+        tmp3_1, _api.__notificationSettingsChangesStreamStreamPoll);
+    return tmp2;
+  }
+
+  /// default RoomNotificationMode for the selected features
+  Future<String> defaultNotificationMode(
+    bool isEncrypted,
+    bool isOneOnOne,
+  ) {
+    final tmp1 = isEncrypted;
+    final tmp3 = isOneOnOne;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    tmp4 = tmp3 ? 1 : 0;
+    final tmp5 = _api._notificationSettingsDefaultNotificationMode(
+      tmp0,
+      tmp2,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0,
+        "__NotificationSettings_default_notification_mode_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(
+        tmp7_1, _api.__notificationSettingsDefaultNotificationModeFuturePoll);
+    return tmp6;
+  }
+
+  /// set default RoomNotificationMode for this combination
+  Future<bool> setDefaultNotificationMode(
+    bool isEncrypted,
+    bool isOneOnOne,
+    String mode,
+  ) {
+    final tmp1 = isEncrypted;
+    final tmp3 = isOneOnOne;
+    final tmp5 = mode;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    tmp4 = tmp3 ? 1 : 0;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._notificationSettingsSetDefaultNotificationMode(
+      tmp0,
+      tmp2,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0,
+        "__NotificationSettings_set_default_notification_mode_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(tmp11_1,
+        _api.__notificationSettingsSetDefaultNotificationModeFuturePoll);
     return tmp10;
   }
 
@@ -46227,7 +46773,7 @@ class _ColorizeBackgroundReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _OptionStringInnerReturn extends ffi.Struct {
+class _OptionStringTextReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -46238,14 +46784,14 @@ class _OptionStringInnerReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _OptionBufferInnerReturn extends ffi.Struct {
+class _OptionBufferDataReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
 }
 
-class _OptionRsvpStatusInnerReturn extends ffi.Struct {
+class _OptionRsvpStatusStatusReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -46451,15 +46997,11 @@ class _ActerPinTitleReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ActerPinContentTextReturn extends ffi.Struct {
+class _ActerPinContentReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
 }
 
 class _ActerPinContentFormattedReturn extends ffi.Struct {
@@ -50922,6 +51464,21 @@ class _ClientMyPastEventsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ClientNotificationSettingsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _ClientDeviceRecordsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -50934,6 +51491,42 @@ class _ClientDeviceRecordsFuturePollReturn extends ffi.Struct {
   @ffi.Uint64()
   external int arg4;
   @ffi.Int64()
+  external int arg5;
+}
+
+class _NotificationSettingsDefaultNotificationModeFuturePollReturn
+    extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
+}
+
+class _NotificationSettingsSetDefaultNotificationModeFuturePollReturn
+    extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
   external int arg5;
 }
 
@@ -51464,6 +52057,13 @@ class _ClientNotificationsStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
+  external int arg1;
+}
+
+class _NotificationSettingsChangesStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
   external int arg1;
 }
 

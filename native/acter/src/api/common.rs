@@ -29,24 +29,47 @@ pub fn duration_from_secs(secs: u64) -> Duration {
     Duration::from_secs(secs)
 }
 
-pub struct FfiOption<T>(Option<T>);
+pub struct OptionString {
+    text: Option<String>,
+}
 
-impl<T> FfiOption<T>
-where
-    T: Clone,
-{
-    pub(crate) fn new(inner: Option<T>) -> Self {
-        FfiOption(inner)
+impl OptionString {
+    pub(crate) fn new(text: Option<String>) -> Self {
+        OptionString { text }
     }
 
-    pub fn inner(&self) -> Option<T> {
-        self.0.clone()
+    pub fn text(&self) -> Option<String> {
+        self.text.clone()
     }
 }
 
-pub type OptionString = FfiOption<String>;
-pub type OptionBuffer = FfiOption<Vec<u8>>;
-pub type OptionRsvpStatus = FfiOption<RsvpStatus>;
+pub struct OptionBuffer {
+    pub(crate) data: Option<Vec<u8>>,
+}
+
+impl OptionBuffer {
+    pub(crate) fn new(data: Option<Vec<u8>>) -> Self {
+        OptionBuffer { data }
+    }
+
+    pub fn data(&self) -> Option<FfiBuffer<u8>> {
+        self.data.clone().map(FfiBuffer::new)
+    }
+}
+
+pub struct OptionRsvpStatus {
+    pub(crate) status: Option<RsvpStatus>,
+}
+
+impl OptionRsvpStatus {
+    pub(crate) fn new(status: Option<RsvpStatus>) -> Self {
+        OptionRsvpStatus { status }
+    }
+
+    pub fn status(&self) -> Option<RsvpStatus> {
+        self.status.clone()
+    }
+}
 
 pub struct MediaSource {
     inner: SdkMediaSource,

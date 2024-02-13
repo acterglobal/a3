@@ -10,7 +10,7 @@ final userAvatarProvider =
     FutureProvider.family<MemoryImage?, UserProfile>((ref, user) async {
   if (user.hasAvatar()) {
     try {
-      final data = (await user.getAvatar(null)).inner();
+      final data = (await user.getAvatar(null)).data();
       if (data != null) {
         return MemoryImage(data.asTypedList());
       }

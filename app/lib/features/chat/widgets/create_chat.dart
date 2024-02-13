@@ -76,7 +76,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
         ? Container(
             width: size.width * 0.5,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: Theme.of(context).colorScheme.primary,
               borderRadius: BorderRadius.circular(12),
             ),
             child: PageView.builder(
@@ -443,7 +443,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
 // checks whether user DM already exists or needs created
   String? checkUserDMExists(String userId, WidgetRef ref) {
     final client = ref.watch(alwaysClientProvider);
-    final id = client.dmWithUser(userId).inner();
+    final id = client.dmWithUser(userId).text();
     if (id != null) return id;
     return null;
   }

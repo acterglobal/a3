@@ -205,18 +205,18 @@ object RefDetailsBuilder {
 
 
 object OptionString {
-    /// get inner data
-    fn inner() -> Option<string>;
+    /// get text
+    fn text() -> Option<string>;
 }
 
 object OptionBuffer {
-    /// get inner data
-    fn inner() -> Option<buffer<u8>>;
+    /// get data
+    fn data() -> Option<buffer<u8>>;
 }
 
 object OptionRsvpStatus {
-    /// get inner data
-    fn inner() -> Option<RsvpStatus>;
+    /// get status
+    fn status() -> Option<RsvpStatus>;
 }
 
 object UserProfile {
@@ -460,6 +460,8 @@ object PinDraft {
     fn content_text(text: string);
     /// set the content of the pin through markdown
     fn content_markdown(text: string);
+    /// set the content of the pin through html
+    fn content_html(text: string, html: string);
     fn unset_content();
 
     /// set the url for this pin
@@ -475,7 +477,7 @@ object ActerPin {
     /// get the title of the pin
     fn title() -> string;
     /// get the content_text of the pin
-    fn content_text() -> Option<string>;
+    fn content() -> Option<MsgContent>;
     /// get the formatted content of the pin
     fn content_formatted() -> Option<string>;
     /// Whether the inner text is coming as formatted
@@ -522,6 +524,7 @@ object PinUpdateBuilder {
     /// set the content for this pin
     fn content_text(text: string);
     fn content_markdown(text: string);
+    fn content_html(text: string, html: string);
     fn unset_content();
     fn unset_content_update();
 
@@ -2325,6 +2328,7 @@ object Client {
 
     /// getting a notification item from the notification data;
     fn get_notification_item(room_id: string, event_id: string) -> Future<Result<NotificationItem>>;
+    
     /// get all upcoming events, whether I responded or not
     fn all_upcoming_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
 
@@ -2339,6 +2343,9 @@ object Client {
 
     /// super invites interface
     fn super_invites() -> SuperInvites;
+
+    /// allow to configure notification settings
+    fn notification_settings() -> Future<Result<NotificationSettings>>;
 
     /// the list of devices
     fn device_records(verified: bool) -> Future<Result<Vec<DeviceRecord>>>;
@@ -2363,7 +2370,19 @@ object Client {
 
     /// make draft to send location msg
     fn location_draft(body: string, source: string) -> MsgContentDraft;
+}
 
+object NotificationSettings {
+
+    /// get informed about changes to the notification settings
+    fn changes_stream() -> Stream<bool>;
+
+    /// default RoomNotificationMode for the selected features
+    fn default_notification_mode(is_encrypted: bool, is_one_on_one: bool) -> Future<Result<string>>;
+
+    /// set default RoomNotificationMode for this combination
+    fn set_default_notification_mode(is_encrypted: bool, is_one_on_one: bool, mode: string) -> Future<Result<bool>>;
+    
 }
 
 

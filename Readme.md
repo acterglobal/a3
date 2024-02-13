@@ -10,14 +10,15 @@ Your social organizing app build on [matrix](https://matrix.org): think WhatsApp
 <a href="ms-windows-store://pdp/?ProductId=9NZLTDVTN203">
 <img height="83" src="https://get.microsoft.com/images/en-us%20dark.svg" alt="Download Acter" />
 </a>
-<a href="https://docs.acter.global/user/getting-started/setting-up/#linux-flatpak">
-<img height="83" src="https://docs.acter.global/images/flatpak-badge-en.svg" alt="Install Acter on Linux via Flatpak" />
+<a href="https://dev.acter.global/user/getting-started/setting-up/#linux-flatpak">
+<img height="83" src="https://dev.acter.global/images/flatpak-badge-en.svg" alt="Install Acter on Linux via Flatpak" />
 </a>
 
 ## More info
 
 [![Homepage ](https://img.shields.io/badge/HOMEPAGE-gray?style=for-the-badge)](https://acter.global)
-[![Docs ](https://img.shields.io/badge/DOCS-blue?style=for-the-badge)](https://docs.acter.global)
+[![User Docs ](https://img.shields.io/badge/User_Docs-blue?style=for-the-badge)](https://docs.acter.global)
+[![Developer Docs ](https://img.shields.io/badge/Docs-blue?style=for-the-badge)](https://dev.acter.global)
 [![Matrix ](https://img.shields.io/badge/News-yellow?style=for-the-badge)](https://matrix.to/#/#news:acter.global)
 
 [![Nightly Build](https://img.shields.io/badge/Nightly_Build-available-gree?style=for-the-badge)](https://github.com/acterglobal/a3/tags)

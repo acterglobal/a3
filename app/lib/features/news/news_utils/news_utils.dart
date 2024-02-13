@@ -56,6 +56,7 @@ class NewsUtils {
 
   //Add image slide
   static Future<void> addImageSlide(WidgetRef ref) async {
+    final clr = Colors.primaries[Random().nextInt(Colors.primaries.length)];
     XFile? imageFile = await ImagePicker().pickImage(
       source: ImageSource.gallery,
     );
@@ -63,6 +64,7 @@ class NewsUtils {
       final slide = NewsSlideItem(
         type: NewsSlideType.image,
         mediaFile: imageFile,
+        backgroundColor: clr,
       );
       ref.read(newsStateProvider.notifier).addSlide(slide);
     }
@@ -70,6 +72,7 @@ class NewsUtils {
 
   //Add video slide
   static Future<void> addVideoSlide(WidgetRef ref) async {
+    final clr = Colors.primaries[Random().nextInt(Colors.primaries.length)];
     XFile? videoFile = await ImagePicker().pickVideo(
       source: ImageSource.gallery,
     );
@@ -77,6 +80,7 @@ class NewsUtils {
       final slide = NewsSlideItem(
         type: NewsSlideType.video,
         mediaFile: videoFile,
+        backgroundColor: clr,
       );
       ref.read(newsStateProvider.notifier).addSlide(slide);
     }

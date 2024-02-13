@@ -51,6 +51,7 @@ class PostAttachmentOptions extends StatelessWidget {
           title: const Text('Select Video'),
         ),
         ListTile(
+          key: NewsUpdateKeys.cancelButton,
           onTap: () => Navigator.of(context).pop(),
           contentPadding: const EdgeInsets.all(0),
           title: const Text('Cancel', textAlign: TextAlign.center),

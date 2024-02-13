@@ -43,7 +43,7 @@ final userAvatarProvider =
     FutureProvider.family<MemoryImage?, UserProfile>((ref, user) async {
   if (user.hasAvatar()) {
     try {
-      final data = (await user.getAvatar(null)).inner();
+      final data = (await user.getAvatar(null)).data();
       if (data != null) {
         return MemoryImage(data.asTypedList());
       }
@@ -80,7 +80,7 @@ final suggestedUsersProvider =
     FfiBufferUint8? avatar;
     if (user.hasAvatar()) {
       try {
-        avatar = (await user.getAvatar(null)).inner();
+        avatar = (await user.getAvatar(null)).data();
       } catch (e) {
         debugPrint('failure fetching avatar $e');
       }

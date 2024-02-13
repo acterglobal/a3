@@ -1,7 +1,7 @@
 # The URL the site will be built for
-base_url = "https://docs.acter.global"
+base_url = "https://dev.acter.global"
 
-title = "ActerDocs"
+title = "Acter Developer Docs"
 
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = true
@@ -24,20 +24,13 @@ highlight_code = true
 # Put all your custom variables here
 author = "Acter Developers"
 github = "https://github.com/acterglobal"
-twitter = "https://twitter.com/acterhq"
 email = "devs@acter.global"
 
 [[extra.menu.main]]
 name = "Users"
 section = "user"
-url = "/user/getting-started/setting-up/"
+url = "https://docs.acter.global/s/handbook/"
 weight = 10
-
-[[extra.menu.main]]
-name = "Admin"
-section = "admin"
-url = "/admin/space-admin/introduction/"
-weight = 12
 
 [[extra.menu.main]]
 name = "Nightly"

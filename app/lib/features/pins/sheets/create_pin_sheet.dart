@@ -13,6 +13,7 @@ import 'package:go_router/go_router.dart';
 class CreatePinSheet extends ConsumerStatefulWidget {
   final String? initialSelectedSpace;
   static const titleFieldKey = Key('create-pin-title-field');
+  static const contentFieldKey = Key('create-pin-content-field');
   static const urlFieldKey = Key('create-pin-url-field');
   static const submitBtn = Key('create-pin-submit');
 
@@ -98,6 +99,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                   SizedBox(
                     height: 200,
                     child: MdEditorWithPreview(
+                      key: CreatePinSheet.contentFieldKey,
                       validator: (value) =>
                           hasLinkOrText() ? null : 'Text or URL must be given',
                       controller: _textController,
