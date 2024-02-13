@@ -1,8 +1,9 @@
 use derive_getters::Getters;
-use ruma_common::{OwnedEventId, OwnedRoomId};
+use ruma_common::{EventId, OwnedEventId, OwnedRoomId, RoomId};
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use strum::Display;
+use tracing::error;
 
 use super::Position;
 
@@ -206,6 +207,336 @@ impl RefDetails {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct RefDetailsBuilder {
+    ref_details: RefDetails,
+}
+
+impl RefDetailsBuilder {
+    pub fn new_task_ref_builder(target_id: OwnedEventId, task_list: OwnedEventId) -> Self {
+        let ref_details = RefDetails::Task {
+            target_id,
+            room_id: None,
+            task_list,
+            action: TaskAction::default(),
+        };
+        RefDetailsBuilder { ref_details }
+    }
+
+    pub fn new_task_list_ref_builder(target_id: OwnedEventId) -> Self {
+        let ref_details = RefDetails::TaskList {
+            target_id,
+            room_id: None,
+            action: TaskListAction::default(),
+        };
+        RefDetailsBuilder { ref_details }
+    }
+
+    pub fn new_calendar_event_ref_builder(target_id: OwnedEventId) -> Self {
+        let ref_details = RefDetails::CalendarEvent {
+            target_id,
+            room_id: None,
+            action: CalendarEventAction::default(),
+        };
+        RefDetailsBuilder { ref_details }
+    }
+
+    pub fn new_link_ref_builder(title: String, uri: String) -> Self {
+        let ref_details = RefDetails::Link { title, uri };
+        RefDetailsBuilder { ref_details }
+    }
+
+    pub fn target_id(&mut self, target_id: String) -> &mut Self {
+        match self.ref_details.clone() {
+            RefDetails::Task {
+                room_id,
+                task_list,
+                action,
+                ..
+            } => {
+                if let Ok(target_id) = EventId::parse(target_id) {
+                    self.ref_details = RefDetails::Task {
+                        target_id,
+                        room_id,
+                        task_list,
+                        action,
+                    };
+                } else {
+                    error!("couldn't parse target_id for Task ref");
+                }
+            }
+            RefDetails::TaskList {
+                room_id, action, ..
+            } => {
+                if let Ok(target_id) = EventId::parse(target_id) {
+                    self.ref_details = RefDetails::TaskList {
+                        target_id,
+                        room_id,
+                        action,
+                    };
+                } else {
+                    error!("couldn't parse target_id for TaskList ref");
+                }
+            }
+            RefDetails::CalendarEvent {
+                room_id, action, ..
+            } => {
+                if let Ok(target_id) = EventId::parse(target_id) {
+                    self.ref_details = RefDetails::CalendarEvent {
+                        target_id,
+                        room_id,
+                        action,
+                    };
+                } else {
+                    error!("couldn't parse target_id for CalendarEvent ref");
+                }
+            }
+            _ => {
+                error!("target_id is available for only Task/TaskList/CalendarEvent ref");
+            }
+        }
+        self
+    }
+
+    pub fn room_id(&mut self, room_id: String) -> &mut Self {
+        match self.ref_details.clone() {
+            RefDetails::Task {
+                target_id,
+                task_list,
+                action,
+                ..
+            } => {
+                if let Ok(rid) = RoomId::parse(room_id) {
+                    self.ref_details = RefDetails::Task {
+                        target_id,
+                        room_id: Some(rid),
+                        task_list,
+                        action,
+                    };
+                } else {
+                    error!("couldn't parse room_id for Task ref");
+                }
+            }
+            RefDetails::TaskList {
+                target_id, action, ..
+            } => {
+                if let Ok(rid) = RoomId::parse(room_id) {
+                    self.ref_details = RefDetails::TaskList {
+                        target_id,
+                        room_id: Some(rid),
+                        action,
+                    };
+                } else {
+                    error!("couldn't parse room_id for TaskList ref");
+                }
+            }
+            RefDetails::CalendarEvent {
+                target_id, action, ..
+            } => {
+                if let Ok(rid) = RoomId::parse(room_id) {
+                    self.ref_details = RefDetails::CalendarEvent {
+                        target_id,
+                        room_id: Some(rid),
+                        action,
+                    };
+                } else {
+                    error!("couldn't parse room_id for CalendarEvent ref");
+                }
+            }
+            _ => {
+                error!("room_id is available for only Task/TaskList/CalendarEvent ref");
+            }
+        }
+        self
+    }
+
+    pub fn unset_room_id(&mut self) -> &mut Self {
+        match self.ref_details.clone() {
+            RefDetails::Task {
+                target_id,
+                task_list,
+                action,
+                ..
+            } => {
+                self.ref_details = RefDetails::Task {
+                    target_id,
+                    room_id: None,
+                    task_list,
+                    action,
+                };
+            }
+            RefDetails::TaskList {
+                target_id, action, ..
+            } => {
+                self.ref_details = RefDetails::TaskList {
+                    target_id,
+                    room_id: None,
+                    action,
+                };
+            }
+            RefDetails::CalendarEvent {
+                target_id, action, ..
+            } => {
+                self.ref_details = RefDetails::CalendarEvent {
+                    target_id,
+                    room_id: None,
+                    action,
+                };
+            }
+            _ => {
+                error!("room_id is available for only Task/TaskList/CalendarEvent ref");
+            }
+        }
+        self
+    }
+
+    pub fn task_list(&mut self, task_list: String) -> &mut Self {
+        match self.ref_details.clone() {
+            RefDetails::Task {
+                target_id,
+                room_id,
+                action,
+                ..
+            } => {
+                if let Ok(task_list) = EventId::parse(task_list) {
+                    self.ref_details = RefDetails::Task {
+                        target_id,
+                        room_id,
+                        task_list,
+                        action,
+                    };
+                } else {
+                    error!("task_list is available for only Task ref");
+                }
+            }
+            _ => {
+                error!("task_list is available for only Task ref");
+            }
+        }
+        self
+    }
+
+    pub fn action(&mut self, action: String) -> &mut Self {
+        match self.ref_details.clone() {
+            RefDetails::Task {
+                target_id,
+                room_id,
+                task_list,
+                ..
+            } => {
+                if let Ok(action) = TaskAction::from_str(&action) {
+                    self.ref_details = RefDetails::Task {
+                        target_id,
+                        room_id,
+                        task_list,
+                        action,
+                    };
+                } else {
+                    error!("couldn't parse action for Task ref");
+                };
+            }
+            RefDetails::TaskList {
+                target_id, room_id, ..
+            } => {
+                if let Ok(action) = TaskListAction::from_str(&action) {
+                    self.ref_details = RefDetails::TaskList {
+                        target_id,
+                        room_id,
+                        action,
+                    };
+                } else {
+                    error!("couldn't parse action for TaskList ref");
+                };
+            }
+            RefDetails::CalendarEvent {
+                target_id, room_id, ..
+            } => {
+                if let Ok(action) = CalendarEventAction::from_str(&action) {
+                    self.ref_details = RefDetails::CalendarEvent {
+                        target_id,
+                        room_id,
+                        action,
+                    };
+                } else {
+                    error!("couldn't parse action for CalendarEvent ref");
+                };
+            }
+            _ => {
+                error!("action is available for only Task/TaskList/CalendarEvent ref");
+            }
+        }
+        self
+    }
+
+    pub fn unset_action(&mut self) -> &mut Self {
+        match self.ref_details.clone() {
+            RefDetails::Task {
+                target_id,
+                room_id,
+                task_list,
+                ..
+            } => {
+                self.ref_details = RefDetails::Task {
+                    target_id,
+                    room_id,
+                    task_list,
+                    action: TaskAction::default(),
+                };
+            }
+            RefDetails::TaskList {
+                target_id, room_id, ..
+            } => {
+                self.ref_details = RefDetails::TaskList {
+                    target_id,
+                    room_id,
+                    action: TaskListAction::default(),
+                };
+            }
+            RefDetails::CalendarEvent {
+                target_id, room_id, ..
+            } => {
+                self.ref_details = RefDetails::CalendarEvent {
+                    target_id,
+                    room_id,
+                    action: CalendarEventAction::default(),
+                };
+            }
+            _ => {
+                error!("action is available for only Task/TaskList/CalendarEvent ref");
+            }
+        }
+        self
+    }
+
+    pub fn title(&mut self, title: String) -> &mut Self {
+        match self.ref_details.clone() {
+            RefDetails::Link { uri, .. } => {
+                self.ref_details = RefDetails::Link { title, uri };
+            }
+            _ => {
+                error!("title is available for only Link ref");
+            }
+        }
+        self
+    }
+
+    pub fn uri(&mut self, uri: String) -> &mut Self {
+        match self.ref_details.clone() {
+            RefDetails::Link { title, .. } => {
+                self.ref_details = RefDetails::Link { title, uri };
+            }
+            _ => {
+                error!("uri is available for only Link ref");
+            }
+        }
+        self
+    }
+
+    pub fn build(&self) -> RefDetails {
+        self.ref_details.clone()
+    }
+}
+
 /// An object reference is a link within the application
 /// to a specific object with an optional flag to explain
 /// how to embed said object. These may be interactive
@@ -231,5 +562,43 @@ impl ObjRef {
 
     pub fn position_str(&self) -> Option<String> {
         self.position.as_ref().map(|p| p.to_string())
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct ObjRefBuilder {
+    obj_ref: ObjRef,
+}
+
+impl ObjRefBuilder {
+    pub fn new(position: Option<Position>, reference: RefDetails) -> Self {
+        let obj_ref = ObjRef::new(position, reference);
+        ObjRefBuilder { obj_ref }
+    }
+
+    pub fn position(&mut self, position: String) -> &mut Self {
+        let ObjRef { reference, .. } = self.obj_ref.clone();
+        if let Ok(position) = Position::from_str(&position) {
+            self.obj_ref = ObjRef::new(Some(position), reference);
+        } else {
+            error!("couldn't parse position for ObjRef");
+        }
+        self
+    }
+
+    pub fn unset_position(&mut self) -> &mut Self {
+        let ObjRef { reference, .. } = self.obj_ref.clone();
+        self.obj_ref = ObjRef::new(None, reference);
+        self
+    }
+
+    pub fn reference(&mut self, reference: Box<RefDetails>) -> &mut Self {
+        let ObjRef { position, .. } = self.obj_ref.clone();
+        self.obj_ref = ObjRef::new(position, *reference);
+        self
+    }
+
+    pub fn build(&self) -> ObjRef {
+        self.obj_ref.clone()
     }
 }

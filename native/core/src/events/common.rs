@@ -9,7 +9,10 @@ mod rendering;
 
 pub use color::Color;
 pub use labels::Labels;
-pub use object_reference::{CalendarEventAction, ObjRef, RefDetails, TaskAction, TaskListAction};
+pub use object_reference::{
+    CalendarEventAction, ObjRef, ObjRefBuilder, RefDetails, RefDetailsBuilder, TaskAction,
+    TaskListAction,
+};
 pub use rendering::{BrandIcon, Colorize, ColorizeBuilder, Icon, Position};
 
 /// Default UTC DateTime Object

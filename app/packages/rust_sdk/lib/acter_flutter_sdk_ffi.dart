@@ -1330,6 +1330,7 @@ class Api {
     return tmp5;
   }
 
+  /// create a colorize builder
   ColorizeBuilder newColorizeBuilder(
     int? color,
     int? background,
@@ -1381,6 +1382,428 @@ class Api {
     final tmp14_1 = _Box(this, tmp14_0, "drop_box_ColorizeBuilder");
     tmp14_1._finalizer = this._registerFinalizer(tmp14_1);
     final tmp9 = ColorizeBuilder._(this, tmp14_1);
+    return tmp9;
+  }
+
+  /// create a task ref builder
+  /// target_id: event id of target
+  /// task_list: event id of task list
+  /// action: link/embed/embed-subscribe/embed-accept-assignment/embed-mark-done
+  RefDetailsBuilder newTaskRefBuilder(
+    String targetId,
+    String? roomId,
+    String taskList,
+    String? action,
+  ) {
+    final tmp0 = targetId;
+    final tmp4 = roomId;
+    final tmp10 = taskList;
+    final tmp14 = action;
+    var tmp1 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp9 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp13 = 0;
+    var tmp15 = 0;
+    var tmp17 = 0;
+    var tmp18 = 0;
+    var tmp19 = 0;
+    final tmp0_0 = utf8.encode(tmp0);
+    tmp2 = tmp0_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
+    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
+    tmp1_1.setAll(0, tmp0_0);
+    tmp1 = tmp1_0.address;
+    tmp3 = tmp2;
+    if (tmp4 == null) {
+      tmp5 = 0;
+    } else {
+      tmp5 = 1;
+      final tmp6 = tmp4;
+      final tmp6_0 = utf8.encode(tmp6);
+      tmp8 = tmp6_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp7_0 = this.__allocate(tmp8 * 1, 1);
+      final Uint8List tmp7_1 = tmp7_0.asTypedList(tmp8);
+      tmp7_1.setAll(0, tmp6_0);
+      tmp7 = tmp7_0.address;
+      tmp9 = tmp8;
+    }
+    final tmp10_0 = utf8.encode(tmp10);
+    tmp12 = tmp10_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp11_0 = this.__allocate(tmp12 * 1, 1);
+    final Uint8List tmp11_1 = tmp11_0.asTypedList(tmp12);
+    tmp11_1.setAll(0, tmp10_0);
+    tmp11 = tmp11_0.address;
+    tmp13 = tmp12;
+    if (tmp14 == null) {
+      tmp15 = 0;
+    } else {
+      tmp15 = 1;
+      final tmp16 = tmp14;
+      final tmp16_0 = utf8.encode(tmp16);
+      tmp18 = tmp16_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp17_0 = this.__allocate(tmp18 * 1, 1);
+      final Uint8List tmp17_1 = tmp17_0.asTypedList(tmp18);
+      tmp17_1.setAll(0, tmp16_0);
+      tmp17 = tmp17_0.address;
+      tmp19 = tmp18;
+    }
+    final tmp20 = _newTaskRefBuilder(
+      tmp1,
+      tmp2,
+      tmp3,
+      tmp5,
+      tmp7,
+      tmp8,
+      tmp9,
+      tmp11,
+      tmp12,
+      tmp13,
+      tmp15,
+      tmp17,
+      tmp18,
+      tmp19,
+    );
+    final tmp22 = tmp20.arg0;
+    final tmp23 = tmp20.arg1;
+    final tmp24 = tmp20.arg2;
+    final tmp25 = tmp20.arg3;
+    final tmp26 = tmp20.arg4;
+    if (tmp22 == 0) {
+      debugAllocation("handle error", tmp23, tmp24);
+      final ffi.Pointer<ffi.Uint8> tmp23_0 = ffi.Pointer.fromAddress(tmp23);
+      final tmp22_0 =
+          utf8.decode(tmp23_0.asTypedList(tmp24), allowMalformed: true);
+      if (tmp24 > 0) {
+        final ffi.Pointer<ffi.Void> tmp23_0;
+        tmp23_0 = ffi.Pointer.fromAddress(tmp23);
+        this.__deallocate(tmp23_0, tmp25, 1);
+      }
+      throw tmp22_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp26_0 = ffi.Pointer.fromAddress(tmp26);
+    final tmp26_1 = _Box(this, tmp26_0, "drop_box_RefDetailsBuilder");
+    tmp26_1._finalizer = this._registerFinalizer(tmp26_1);
+    final tmp21 = RefDetailsBuilder._(this, tmp26_1);
+    return tmp21;
+  }
+
+  /// create a task list ref builder
+  /// target_id: event id of target
+  /// action: link/embed/embed-subscribe
+  RefDetailsBuilder newTaskListRefBuilder(
+    String targetId,
+    String? roomId,
+    String? action,
+  ) {
+    final tmp0 = targetId;
+    final tmp4 = roomId;
+    final tmp10 = action;
+    var tmp1 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp9 = 0;
+    var tmp11 = 0;
+    var tmp13 = 0;
+    var tmp14 = 0;
+    var tmp15 = 0;
+    final tmp0_0 = utf8.encode(tmp0);
+    tmp2 = tmp0_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
+    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
+    tmp1_1.setAll(0, tmp0_0);
+    tmp1 = tmp1_0.address;
+    tmp3 = tmp2;
+    if (tmp4 == null) {
+      tmp5 = 0;
+    } else {
+      tmp5 = 1;
+      final tmp6 = tmp4;
+      final tmp6_0 = utf8.encode(tmp6);
+      tmp8 = tmp6_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp7_0 = this.__allocate(tmp8 * 1, 1);
+      final Uint8List tmp7_1 = tmp7_0.asTypedList(tmp8);
+      tmp7_1.setAll(0, tmp6_0);
+      tmp7 = tmp7_0.address;
+      tmp9 = tmp8;
+    }
+    if (tmp10 == null) {
+      tmp11 = 0;
+    } else {
+      tmp11 = 1;
+      final tmp12 = tmp10;
+      final tmp12_0 = utf8.encode(tmp12);
+      tmp14 = tmp12_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp13_0 = this.__allocate(tmp14 * 1, 1);
+      final Uint8List tmp13_1 = tmp13_0.asTypedList(tmp14);
+      tmp13_1.setAll(0, tmp12_0);
+      tmp13 = tmp13_0.address;
+      tmp15 = tmp14;
+    }
+    final tmp16 = _newTaskListRefBuilder(
+      tmp1,
+      tmp2,
+      tmp3,
+      tmp5,
+      tmp7,
+      tmp8,
+      tmp9,
+      tmp11,
+      tmp13,
+      tmp14,
+      tmp15,
+    );
+    final tmp18 = tmp16.arg0;
+    final tmp19 = tmp16.arg1;
+    final tmp20 = tmp16.arg2;
+    final tmp21 = tmp16.arg3;
+    final tmp22 = tmp16.arg4;
+    if (tmp18 == 0) {
+      debugAllocation("handle error", tmp19, tmp20);
+      final ffi.Pointer<ffi.Uint8> tmp19_0 = ffi.Pointer.fromAddress(tmp19);
+      final tmp18_0 =
+          utf8.decode(tmp19_0.asTypedList(tmp20), allowMalformed: true);
+      if (tmp20 > 0) {
+        final ffi.Pointer<ffi.Void> tmp19_0;
+        tmp19_0 = ffi.Pointer.fromAddress(tmp19);
+        this.__deallocate(tmp19_0, tmp21, 1);
+      }
+      throw tmp18_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp22_0 = ffi.Pointer.fromAddress(tmp22);
+    final tmp22_1 = _Box(this, tmp22_0, "drop_box_RefDetailsBuilder");
+    tmp22_1._finalizer = this._registerFinalizer(tmp22_1);
+    final tmp17 = RefDetailsBuilder._(this, tmp22_1);
+    return tmp17;
+  }
+
+  /// create a calendar event ref builder
+  /// target_id: event id of target
+  /// action: link/embed/embed-rsvp
+  RefDetailsBuilder newCalendarEventRefBuilder(
+    String targetId,
+    String? roomId,
+    String? action,
+  ) {
+    final tmp0 = targetId;
+    final tmp4 = roomId;
+    final tmp10 = action;
+    var tmp1 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp9 = 0;
+    var tmp11 = 0;
+    var tmp13 = 0;
+    var tmp14 = 0;
+    var tmp15 = 0;
+    final tmp0_0 = utf8.encode(tmp0);
+    tmp2 = tmp0_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
+    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
+    tmp1_1.setAll(0, tmp0_0);
+    tmp1 = tmp1_0.address;
+    tmp3 = tmp2;
+    if (tmp4 == null) {
+      tmp5 = 0;
+    } else {
+      tmp5 = 1;
+      final tmp6 = tmp4;
+      final tmp6_0 = utf8.encode(tmp6);
+      tmp8 = tmp6_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp7_0 = this.__allocate(tmp8 * 1, 1);
+      final Uint8List tmp7_1 = tmp7_0.asTypedList(tmp8);
+      tmp7_1.setAll(0, tmp6_0);
+      tmp7 = tmp7_0.address;
+      tmp9 = tmp8;
+    }
+    if (tmp10 == null) {
+      tmp11 = 0;
+    } else {
+      tmp11 = 1;
+      final tmp12 = tmp10;
+      final tmp12_0 = utf8.encode(tmp12);
+      tmp14 = tmp12_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp13_0 = this.__allocate(tmp14 * 1, 1);
+      final Uint8List tmp13_1 = tmp13_0.asTypedList(tmp14);
+      tmp13_1.setAll(0, tmp12_0);
+      tmp13 = tmp13_0.address;
+      tmp15 = tmp14;
+    }
+    final tmp16 = _newCalendarEventRefBuilder(
+      tmp1,
+      tmp2,
+      tmp3,
+      tmp5,
+      tmp7,
+      tmp8,
+      tmp9,
+      tmp11,
+      tmp13,
+      tmp14,
+      tmp15,
+    );
+    final tmp18 = tmp16.arg0;
+    final tmp19 = tmp16.arg1;
+    final tmp20 = tmp16.arg2;
+    final tmp21 = tmp16.arg3;
+    final tmp22 = tmp16.arg4;
+    if (tmp18 == 0) {
+      debugAllocation("handle error", tmp19, tmp20);
+      final ffi.Pointer<ffi.Uint8> tmp19_0 = ffi.Pointer.fromAddress(tmp19);
+      final tmp18_0 =
+          utf8.decode(tmp19_0.asTypedList(tmp20), allowMalformed: true);
+      if (tmp20 > 0) {
+        final ffi.Pointer<ffi.Void> tmp19_0;
+        tmp19_0 = ffi.Pointer.fromAddress(tmp19);
+        this.__deallocate(tmp19_0, tmp21, 1);
+      }
+      throw tmp18_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp22_0 = ffi.Pointer.fromAddress(tmp22);
+    final tmp22_1 = _Box(this, tmp22_0, "drop_box_RefDetailsBuilder");
+    tmp22_1._finalizer = this._registerFinalizer(tmp22_1);
+    final tmp17 = RefDetailsBuilder._(this, tmp22_1);
+    return tmp17;
+  }
+
+  /// create a link ref builder
+  RefDetailsBuilder newLinkRefBuilder(
+    String title,
+    String uri,
+  ) {
+    final tmp0 = title;
+    final tmp4 = uri;
+    var tmp1 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    final tmp0_0 = utf8.encode(tmp0);
+    tmp2 = tmp0_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
+    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
+    tmp1_1.setAll(0, tmp0_0);
+    tmp1 = tmp1_0.address;
+    tmp3 = tmp2;
+    final tmp4_0 = utf8.encode(tmp4);
+    tmp6 = tmp4_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
+    final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
+    tmp5_1.setAll(0, tmp4_0);
+    tmp5 = tmp5_0.address;
+    tmp7 = tmp6;
+    final tmp8 = _newLinkRefBuilder(
+      tmp1,
+      tmp2,
+      tmp3,
+      tmp5,
+      tmp6,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    final tmp12 = tmp8.arg2;
+    final tmp13 = tmp8.arg3;
+    final tmp14 = tmp8.arg4;
+    if (tmp10 == 0) {
+      debugAllocation("handle error", tmp11, tmp12);
+      final ffi.Pointer<ffi.Uint8> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+      final tmp10_0 =
+          utf8.decode(tmp11_0.asTypedList(tmp12), allowMalformed: true);
+      if (tmp12 > 0) {
+        final ffi.Pointer<ffi.Void> tmp11_0;
+        tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+        this.__deallocate(tmp11_0, tmp13, 1);
+      }
+      throw tmp10_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp14_0 = ffi.Pointer.fromAddress(tmp14);
+    final tmp14_1 = _Box(this, tmp14_0, "drop_box_RefDetailsBuilder");
+    tmp14_1._finalizer = this._registerFinalizer(tmp14_1);
+    final tmp9 = RefDetailsBuilder._(this, tmp14_1);
+    return tmp9;
+  }
+
+  /// create object reference
+  /// position: top-left/top-middle/top-right/center-left/center-middle/center-right/bottom-left/bottom-middle/bottom-right
+  ObjRefBuilder newObjRefBuilder(
+    String? position,
+    RefDetails reference,
+  ) {
+    final tmp0 = position;
+    final tmp6 = reference;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    if (tmp0 == null) {
+      tmp1 = 0;
+    } else {
+      tmp1 = 1;
+      final tmp2 = tmp0;
+      final tmp2_0 = utf8.encode(tmp2);
+      tmp4 = tmp2_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp3_0 = this.__allocate(tmp4 * 1, 1);
+      final Uint8List tmp3_1 = tmp3_0.asTypedList(tmp4);
+      tmp3_1.setAll(0, tmp2_0);
+      tmp3 = tmp3_0.address;
+      tmp5 = tmp4;
+    }
+    tmp7 = tmp6._box.move();
+    final tmp8 = _newObjRefBuilder(
+      tmp1,
+      tmp3,
+      tmp4,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    final tmp12 = tmp8.arg2;
+    final tmp13 = tmp8.arg3;
+    final tmp14 = tmp8.arg4;
+    if (tmp10 == 0) {
+      debugAllocation("handle error", tmp11, tmp12);
+      final ffi.Pointer<ffi.Uint8> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+      final tmp10_0 =
+          utf8.decode(tmp11_0.asTypedList(tmp12), allowMalformed: true);
+      if (tmp12 > 0) {
+        final ffi.Pointer<ffi.Void> tmp11_0;
+        tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+        this.__deallocate(tmp11_0, tmp13, 1);
+      }
+      throw tmp10_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp14_0 = ffi.Pointer.fromAddress(tmp14);
+    final tmp14_1 = _Box(this, tmp14_0, "drop_box_ObjRefBuilder");
+    tmp14_1._finalizer = this._registerFinalizer(tmp14_1);
+    final tmp9 = ObjRefBuilder._(this, tmp14_1);
     return tmp9;
   }
 
@@ -12176,6 +12599,141 @@ class Api {
         int,
         int,
       )>();
+  late final _newTaskRefBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          _NewTaskRefBuilderReturn Function(
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__new_task_ref_builder");
+
+  late final _newTaskRefBuilder = _newTaskRefBuilderPtr.asFunction<
+      _NewTaskRefBuilderReturn Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _newTaskListRefBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          _NewTaskListRefBuilderReturn Function(
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__new_task_list_ref_builder");
+
+  late final _newTaskListRefBuilder = _newTaskListRefBuilderPtr.asFunction<
+      _NewTaskListRefBuilderReturn Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _newCalendarEventRefBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          _NewCalendarEventRefBuilderReturn Function(
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__new_calendar_event_ref_builder");
+
+  late final _newCalendarEventRefBuilder =
+      _newCalendarEventRefBuilderPtr.asFunction<
+          _NewCalendarEventRefBuilderReturn Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _newLinkRefBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          _NewLinkRefBuilderReturn Function(
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__new_link_ref_builder");
+
+  late final _newLinkRefBuilder = _newLinkRefBuilderPtr.asFunction<
+      _NewLinkRefBuilderReturn Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _newObjRefBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          _NewObjRefBuilderReturn Function(
+            ffi.Uint8,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+          )>>("__new_obj_ref_builder");
+
+  late final _newObjRefBuilder = _newObjRefBuilderPtr.asFunction<
+      _NewObjRefBuilderReturn Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _newJoinRuleBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.Int64 Function()>>(
           "__new_join_rule_builder");
@@ -12326,6 +12884,55 @@ class Api {
       int Function(
         int,
       )>();
+  late final _objRefBuilderPositionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__ObjRefBuilder_position");
+
+  late final _objRefBuilderPosition = _objRefBuilderPositionPtr.asFunction<
+      void Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _objRefBuilderUnsetPositionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+          )>>("__ObjRefBuilder_unset_position");
+
+  late final _objRefBuilderUnsetPosition =
+      _objRefBuilderUnsetPositionPtr.asFunction<
+          void Function(
+            int,
+          )>();
+  late final _objRefBuilderReferencePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ObjRefBuilder_reference");
+
+  late final _objRefBuilderReference = _objRefBuilderReferencePtr.asFunction<
+      void Function(
+        int,
+        int,
+      )>();
+  late final _objRefBuilderBuildPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__ObjRefBuilder_build");
+
+  late final _objRefBuilderBuild = _objRefBuilderBuildPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _colorizeColorPtr = _lookup<
       ffi.NativeFunction<
           _ColorizeColorReturn Function(
@@ -12393,6 +13000,136 @@ class Api {
           void Function(
             int,
           )>();
+  late final _refDetailsBuilderTargetIdPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__RefDetailsBuilder_target_id");
+
+  late final _refDetailsBuilderTargetId =
+      _refDetailsBuilderTargetIdPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _refDetailsBuilderRoomIdPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__RefDetailsBuilder_room_id");
+
+  late final _refDetailsBuilderRoomId = _refDetailsBuilderRoomIdPtr.asFunction<
+      void Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _refDetailsBuilderUnsetRoomIdPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+          )>>("__RefDetailsBuilder_unset_room_id");
+
+  late final _refDetailsBuilderUnsetRoomId =
+      _refDetailsBuilderUnsetRoomIdPtr.asFunction<
+          void Function(
+            int,
+          )>();
+  late final _refDetailsBuilderTaskListPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__RefDetailsBuilder_task_list");
+
+  late final _refDetailsBuilderTaskList =
+      _refDetailsBuilderTaskListPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _refDetailsBuilderActionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__RefDetailsBuilder_action");
+
+  late final _refDetailsBuilderAction = _refDetailsBuilderActionPtr.asFunction<
+      void Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _refDetailsBuilderUnsetActionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+          )>>("__RefDetailsBuilder_unset_action");
+
+  late final _refDetailsBuilderUnsetAction =
+      _refDetailsBuilderUnsetActionPtr.asFunction<
+          void Function(
+            int,
+          )>();
+  late final _refDetailsBuilderTitlePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__RefDetailsBuilder_title");
+
+  late final _refDetailsBuilderTitle = _refDetailsBuilderTitlePtr.asFunction<
+      void Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _refDetailsBuilderUriPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__RefDetailsBuilder_uri");
+
+  late final _refDetailsBuilderUri = _refDetailsBuilderUriPtr.asFunction<
+      void Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _refDetailsBuilderBuildPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__RefDetailsBuilder_build");
+
+  late final _refDetailsBuilderBuild = _refDetailsBuilderBuildPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _optionStringInnerPtr = _lookup<
       ffi.NativeFunction<
           _OptionStringInnerReturn Function(
@@ -18294,145 +19031,6 @@ class Api {
 
   late final _spaceNewsDraft = _spaceNewsDraftPtr.asFunction<
       _SpaceNewsDraftReturn Function(
-        int,
-      )>();
-  late final _spaceNewTaskRefPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceNewTaskRefReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__Space_new_task_ref");
-
-  late final _spaceNewTaskRef = _spaceNewTaskRefPtr.asFunction<
-      _SpaceNewTaskRefReturn Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      )>();
-  late final _spaceNewTaskListRefPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceNewTaskListRefReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__Space_new_task_list_ref");
-
-  late final _spaceNewTaskListRef = _spaceNewTaskListRefPtr.asFunction<
-      _SpaceNewTaskListRefReturn Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      )>();
-  late final _spaceNewCalendarEventRefPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceNewCalendarEventRefReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__Space_new_calendar_event_ref");
-
-  late final _spaceNewCalendarEventRef =
-      _spaceNewCalendarEventRefPtr.asFunction<
-          _SpaceNewCalendarEventRefReturn Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _spaceNewLinkRefPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__Space_new_link_ref");
-
-  late final _spaceNewLinkRef = _spaceNewLinkRefPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      )>();
-  late final _spaceNewObjRefPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceNewObjRefReturn Function(
-            ffi.Int64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Int64,
-          )>>("__Space_new_obj_ref");
-
-  late final _spaceNewObjRef = _spaceNewObjRefPtr.asFunction<
-      _SpaceNewObjRefReturn Function(
-        int,
-        int,
-        int,
-        int,
-        int,
         int,
       )>();
   late final _spacePinsPtr = _lookup<
@@ -26732,6 +27330,87 @@ class ObjRef {
   }
 }
 
+/// A builder for ObjRef
+class ObjRefBuilder {
+  final Api _api;
+  final _Box _box;
+
+  ObjRefBuilder._(this._api, this._box);
+
+  /// set position of element
+  /// position: top-left/top-middle/top-right/center-left/center-middle/center-right/bottom-left/bottom-middle/bottom-right
+  void position(
+    String position,
+  ) {
+    final tmp1 = position;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._objRefBuilderPosition(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// empty position of element
+  void unsetPosition() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._objRefBuilderUnsetPosition(
+      tmp0,
+    );
+    return;
+  }
+
+  /// change ref details
+  void reference(
+    RefDetails reference,
+  ) {
+    final tmp1 = reference;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._objRefBuilderReference(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  ObjRef build() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._objRefBuilderBuild(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_ObjRef");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = ObjRef._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 /// A foreground and background color setting
 class Colorize {
   final Api _api;
@@ -26834,6 +27513,218 @@ class ColorizeBuilder {
       tmp0,
     );
     return;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+/// A builder for RefDetails
+class RefDetailsBuilder {
+  final Api _api;
+  final _Box _box;
+
+  RefDetailsBuilder._(this._api, this._box);
+
+  /// it is valid for Task/TaskList/CalendarEvent ref
+  /// target_id: event id of target
+  void targetId(
+    String targetId,
+  ) {
+    final tmp1 = targetId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._refDetailsBuilderTargetId(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// it is valid for Task/TaskList/CalendarEvent ref
+  void roomId(
+    String roomId,
+  ) {
+    final tmp1 = roomId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._refDetailsBuilderRoomId(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// unset the room id, it is optional field
+  void unsetRoomId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._refDetailsBuilderUnsetRoomId(
+      tmp0,
+    );
+    return;
+  }
+
+  /// it is valid for Task/TaskList/CalendarEvent ref
+  /// task_list: event id of task list
+  void taskList(
+    String taskList,
+  ) {
+    final tmp1 = taskList;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._refDetailsBuilderTaskList(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// it is valid for Task/TaskList/CalendarEvent ref
+  /// action is one of TaskAction/TaskListAction/CalendarEventAction
+  void action(
+    String action,
+  ) {
+    final tmp1 = action;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._refDetailsBuilderAction(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// unset the action, it is optional field
+  void unsetAction() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._refDetailsBuilderUnsetAction(
+      tmp0,
+    );
+    return;
+  }
+
+  /// it is valid for Link ref
+  void title(
+    String title,
+  ) {
+    final tmp1 = title;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._refDetailsBuilderTitle(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// it is valid for Link ref
+  void uri(
+    String uri,
+  ) {
+    final tmp1 = uri;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._refDetailsBuilderUri(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  RefDetails build() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._refDetailsBuilderBuild(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_RefDetails");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = RefDetails._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -38581,403 +39472,6 @@ class Space {
     return tmp2;
   }
 
-  /// create task reference
-  /// target_id: event id of target
-  /// task_list: event id of task list
-  /// action: link/embed/embed-subscribe/embed-accept-assignment/embed-mark-done
-  RefDetails newTaskRef(
-    String targetId,
-    String? roomId,
-    String taskList,
-    String action,
-  ) {
-    final tmp1 = targetId;
-    final tmp5 = roomId;
-    final tmp11 = taskList;
-    final tmp15 = action;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp8 = 0;
-    var tmp9 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
-    var tmp13 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp17 = 0;
-    var tmp18 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    if (tmp5 == null) {
-      tmp6 = 0;
-    } else {
-      tmp6 = 1;
-      final tmp7 = tmp5;
-      final tmp7_0 = utf8.encode(tmp7);
-      tmp9 = tmp7_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
-      final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
-      tmp8_1.setAll(0, tmp7_0);
-      tmp8 = tmp8_0.address;
-      tmp10 = tmp9;
-    }
-    final tmp11_0 = utf8.encode(tmp11);
-    tmp13 = tmp11_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-    final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-    tmp12_1.setAll(0, tmp11_0);
-    tmp12 = tmp12_0.address;
-    tmp14 = tmp13;
-    final tmp15_0 = utf8.encode(tmp15);
-    tmp17 = tmp15_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
-    final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
-    tmp16_1.setAll(0, tmp15_0);
-    tmp16 = tmp16_0.address;
-    tmp18 = tmp17;
-    final tmp19 = _api._spaceNewTaskRef(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp8,
-      tmp9,
-      tmp10,
-      tmp12,
-      tmp13,
-      tmp14,
-      tmp16,
-      tmp17,
-      tmp18,
-    );
-    final tmp21 = tmp19.arg0;
-    final tmp22 = tmp19.arg1;
-    final tmp23 = tmp19.arg2;
-    final tmp24 = tmp19.arg3;
-    final tmp25 = tmp19.arg4;
-    if (tmp21 == 0) {
-      debugAllocation("handle error", tmp22, tmp23);
-      final ffi.Pointer<ffi.Uint8> tmp22_0 = ffi.Pointer.fromAddress(tmp22);
-      final tmp21_0 =
-          utf8.decode(tmp22_0.asTypedList(tmp23), allowMalformed: true);
-      if (tmp23 > 0) {
-        final ffi.Pointer<ffi.Void> tmp22_0;
-        tmp22_0 = ffi.Pointer.fromAddress(tmp22);
-        _api.__deallocate(tmp22_0, tmp24, 1);
-      }
-      throw tmp21_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp25_0 = ffi.Pointer.fromAddress(tmp25);
-    final tmp25_1 = _Box(_api, tmp25_0, "drop_box_RefDetails");
-    tmp25_1._finalizer = _api._registerFinalizer(tmp25_1);
-    final tmp20 = RefDetails._(_api, tmp25_1);
-    return tmp20;
-  }
-
-  /// create task list reference
-  /// target_id: event id of target
-  /// action: link/embed/embed-subscribe
-  RefDetails newTaskListRef(
-    String targetId,
-    String? roomId,
-    String action,
-  ) {
-    final tmp1 = targetId;
-    final tmp5 = roomId;
-    final tmp11 = action;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp8 = 0;
-    var tmp9 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
-    var tmp13 = 0;
-    var tmp14 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    if (tmp5 == null) {
-      tmp6 = 0;
-    } else {
-      tmp6 = 1;
-      final tmp7 = tmp5;
-      final tmp7_0 = utf8.encode(tmp7);
-      tmp9 = tmp7_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
-      final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
-      tmp8_1.setAll(0, tmp7_0);
-      tmp8 = tmp8_0.address;
-      tmp10 = tmp9;
-    }
-    final tmp11_0 = utf8.encode(tmp11);
-    tmp13 = tmp11_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-    final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-    tmp12_1.setAll(0, tmp11_0);
-    tmp12 = tmp12_0.address;
-    tmp14 = tmp13;
-    final tmp15 = _api._spaceNewTaskListRef(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp8,
-      tmp9,
-      tmp10,
-      tmp12,
-      tmp13,
-      tmp14,
-    );
-    final tmp17 = tmp15.arg0;
-    final tmp18 = tmp15.arg1;
-    final tmp19 = tmp15.arg2;
-    final tmp20 = tmp15.arg3;
-    final tmp21 = tmp15.arg4;
-    if (tmp17 == 0) {
-      debugAllocation("handle error", tmp18, tmp19);
-      final ffi.Pointer<ffi.Uint8> tmp18_0 = ffi.Pointer.fromAddress(tmp18);
-      final tmp17_0 =
-          utf8.decode(tmp18_0.asTypedList(tmp19), allowMalformed: true);
-      if (tmp19 > 0) {
-        final ffi.Pointer<ffi.Void> tmp18_0;
-        tmp18_0 = ffi.Pointer.fromAddress(tmp18);
-        _api.__deallocate(tmp18_0, tmp20, 1);
-      }
-      throw tmp17_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
-    final tmp21_1 = _Box(_api, tmp21_0, "drop_box_RefDetails");
-    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
-    final tmp16 = RefDetails._(_api, tmp21_1);
-    return tmp16;
-  }
-
-  /// create calendar event reference
-  /// target_id: event id of target
-  /// action: link/embed/embed-rsvp
-  RefDetails newCalendarEventRef(
-    String targetId,
-    String? roomId,
-    String action,
-  ) {
-    final tmp1 = targetId;
-    final tmp5 = roomId;
-    final tmp11 = action;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp8 = 0;
-    var tmp9 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
-    var tmp13 = 0;
-    var tmp14 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    if (tmp5 == null) {
-      tmp6 = 0;
-    } else {
-      tmp6 = 1;
-      final tmp7 = tmp5;
-      final tmp7_0 = utf8.encode(tmp7);
-      tmp9 = tmp7_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
-      final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
-      tmp8_1.setAll(0, tmp7_0);
-      tmp8 = tmp8_0.address;
-      tmp10 = tmp9;
-    }
-    final tmp11_0 = utf8.encode(tmp11);
-    tmp13 = tmp11_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
-    final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
-    tmp12_1.setAll(0, tmp11_0);
-    tmp12 = tmp12_0.address;
-    tmp14 = tmp13;
-    final tmp15 = _api._spaceNewCalendarEventRef(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp8,
-      tmp9,
-      tmp10,
-      tmp12,
-      tmp13,
-      tmp14,
-    );
-    final tmp17 = tmp15.arg0;
-    final tmp18 = tmp15.arg1;
-    final tmp19 = tmp15.arg2;
-    final tmp20 = tmp15.arg3;
-    final tmp21 = tmp15.arg4;
-    if (tmp17 == 0) {
-      debugAllocation("handle error", tmp18, tmp19);
-      final ffi.Pointer<ffi.Uint8> tmp18_0 = ffi.Pointer.fromAddress(tmp18);
-      final tmp17_0 =
-          utf8.decode(tmp18_0.asTypedList(tmp19), allowMalformed: true);
-      if (tmp19 > 0) {
-        final ffi.Pointer<ffi.Void> tmp18_0;
-        tmp18_0 = ffi.Pointer.fromAddress(tmp18);
-        _api.__deallocate(tmp18_0, tmp20, 1);
-      }
-      throw tmp17_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
-    final tmp21_1 = _Box(_api, tmp21_0, "drop_box_RefDetails");
-    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
-    final tmp16 = RefDetails._(_api, tmp21_1);
-    return tmp16;
-  }
-
-  /// create link reference
-  RefDetails newLinkRef(
-    String title,
-    String uri,
-  ) {
-    final tmp1 = title;
-    final tmp5 = uri;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    final tmp9 = _api._spaceNewLinkRef(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
-    );
-    final tmp11 = tmp9;
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_RefDetails");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp10 = RefDetails._(_api, tmp11_1);
-    return tmp10;
-  }
-
-  /// create object reference
-  /// position: top-left/top-middle/top-right/center-left/center-middle/center-right/bottom-left/bottom-middle/bottom-right
-  ObjRef newObjRef(
-    String? position,
-    RefDetails reference,
-  ) {
-    final tmp1 = position;
-    final tmp7 = reference;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp4 = 0;
-    var tmp5 = 0;
-    var tmp6 = 0;
-    var tmp8 = 0;
-    tmp0 = _box.borrow();
-    if (tmp1 == null) {
-      tmp2 = 0;
-    } else {
-      tmp2 = 1;
-      final tmp3 = tmp1;
-      final tmp3_0 = utf8.encode(tmp3);
-      tmp5 = tmp3_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
-      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
-      tmp4_1.setAll(0, tmp3_0);
-      tmp4 = tmp4_0.address;
-      tmp6 = tmp5;
-    }
-    tmp8 = tmp7._box.move();
-    final tmp9 = _api._spaceNewObjRef(
-      tmp0,
-      tmp2,
-      tmp4,
-      tmp5,
-      tmp6,
-      tmp8,
-    );
-    final tmp11 = tmp9.arg0;
-    final tmp12 = tmp9.arg1;
-    final tmp13 = tmp9.arg2;
-    final tmp14 = tmp9.arg3;
-    final tmp15 = tmp9.arg4;
-    if (tmp11 == 0) {
-      debugAllocation("handle error", tmp12, tmp13);
-      final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
-      final tmp11_0 =
-          utf8.decode(tmp12_0.asTypedList(tmp13), allowMalformed: true);
-      if (tmp13 > 0) {
-        final ffi.Pointer<ffi.Void> tmp12_0;
-        tmp12_0 = ffi.Pointer.fromAddress(tmp12);
-        _api.__deallocate(tmp12_0, tmp14, 1);
-      }
-      throw tmp11_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
-    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_ObjRef");
-    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
-    final tmp10 = ObjRef._(_api, tmp15_1);
-    return tmp10;
-  }
-
   /// the pins of this Space
   Future<FfiListActerPin> pins() {
     var tmp0 = 0;
@@ -45552,6 +46046,71 @@ class _NewColorizeBuilderReturn extends ffi.Struct {
   external int arg4;
 }
 
+class _NewTaskRefBuilderReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
+class _NewTaskListRefBuilderReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
+class _NewCalendarEventRefBuilderReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
+class _NewLinkRefBuilderReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
+class _NewObjRefBuilderReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
 class _UtcDateTimeToRfc2822Return extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -47109,58 +47668,6 @@ class _SpaceCalendarEventDraftReturn extends ffi.Struct {
 }
 
 class _SpaceNewsDraftReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Int64()
-  external int arg4;
-}
-
-class _SpaceNewTaskRefReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Int64()
-  external int arg4;
-}
-
-class _SpaceNewTaskListRefReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Int64()
-  external int arg4;
-}
-
-class _SpaceNewCalendarEventRefReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Int64()
-  external int arg4;
-}
-
-class _SpaceNewObjRefReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

@@ -1,8 +1,7 @@
 use acter_core::{
     events::{
         news::{self, FallbackNewsContent, NewsContent, NewsEntryBuilder, NewsSlideBuilder},
-        CalendarEventAction, Colorize, ColorizeBuilder, ObjRef, Position, RefDetails, TaskAction,
-        TaskListAction,
+        Colorize, ColorizeBuilder, ObjRef,
     },
     models::{self, ActerModel, AnyActerModel},
     statics::KEYS,
@@ -19,7 +18,6 @@ use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
     path::PathBuf,
-    str::FromStr,
 };
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
@@ -745,101 +743,6 @@ impl Space {
             content: Default::default(),
             slides: vec![],
         })
-    }
-
-    pub fn new_task_ref(
-        &self,
-        target_id: String,
-        room_id: Option<String>,
-        task_list: String,
-        action: String,
-    ) -> Result<RefDetails> {
-        let target_id = EventId::parse(target_id)?;
-        let room_id = room_id.and_then(|x| {
-            if let Ok(room_id) = RoomId::parse(x) {
-                Some(room_id)
-            } else {
-                None
-            }
-        });
-        let task_list = EventId::parse(task_list)?;
-        let Ok(action) = TaskAction::from_str(action.as_str()) else {
-            bail!("couldn't parse task action")
-        };
-        Ok(RefDetails::Task {
-            target_id,
-            room_id,
-            task_list,
-            action,
-        })
-    }
-
-    pub fn new_task_list_ref(
-        &self,
-        target_id: String,
-        room_id: Option<String>,
-        action: String,
-    ) -> Result<RefDetails> {
-        let target_id = EventId::parse(target_id)?;
-        let room_id = room_id.and_then(|x| {
-            if let Ok(room_id) = RoomId::parse(x) {
-                Some(room_id)
-            } else {
-                None
-            }
-        });
-        let Ok(action) = TaskListAction::from_str(action.as_str()) else {
-            bail!("couldn't parse task list action")
-        };
-        Ok(RefDetails::TaskList {
-            target_id,
-            room_id,
-            action,
-        })
-    }
-
-    pub fn new_calendar_event_ref(
-        &self,
-        target_id: String,
-        room_id: Option<String>,
-        action: String,
-    ) -> Result<RefDetails> {
-        let target_id = EventId::parse(target_id)?;
-        let room_id = room_id.and_then(|x| {
-            if let Ok(room_id) = RoomId::parse(x) {
-                Some(room_id)
-            } else {
-                None
-            }
-        });
-        let Ok(action) = CalendarEventAction::from_str(action.as_str()) else {
-            bail!("couldn't parse calendar event action")
-        };
-        Ok(RefDetails::CalendarEvent {
-            target_id,
-            room_id,
-            action,
-        })
-    }
-
-    pub fn new_link_ref(&self, title: String, uri: String) -> RefDetails {
-        RefDetails::Link { title, uri }
-    }
-
-    #[allow(clippy::boxed_local)]
-    pub fn new_obj_ref(
-        &self,
-        position: Option<String>,
-        reference: Box<RefDetails>,
-    ) -> Result<ObjRef> {
-        let position = position.and_then(|x| {
-            if let Ok(position) = Position::from_str(x.as_str()) {
-                Some(position)
-            } else {
-                None
-            }
-        });
-        Ok(ObjRef::new(position, *reference))
     }
 }
 

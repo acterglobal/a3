@@ -73,9 +73,11 @@ impl ColorizeBuilder {
     pub fn unset_color(&mut self) {
         self.colorize.color = None;
     }
+
     pub fn unset_background(&mut self) {
         self.colorize.background = None;
     }
+
     pub fn build(self) -> Option<Colorize> {
         let ColorizeBuilder { colorize } = self;
         if colorize.color.is_some() || colorize.background.is_some() {

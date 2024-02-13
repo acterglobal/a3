@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 
 class EventItem extends ConsumerWidget {
   final CalendarEvent event;
+
   const EventItem({super.key, required this.event});
 
   @override
@@ -28,7 +29,7 @@ class EventItem extends ConsumerWidget {
         trailing: myRsvpStatus.when(
           data: (data) {
             return Chip(
-              label: Text(data.inner()?.tag.toString() ?? 'Pending'),
+              label: Text(data.inner()?.toString() ?? 'Pending'),
             );
           },
           error: (e, st) => Chip(
