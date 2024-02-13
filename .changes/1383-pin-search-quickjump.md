@@ -1,0 +1,3 @@
+- Pins:
+  - Pins can now be searched via quick jump screen.
+  - On mobile platforms, opening search field causes quick-add buttons to be not visible. This has been fixed and now will able to be scrolled.
