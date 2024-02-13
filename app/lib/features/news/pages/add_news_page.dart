@@ -67,6 +67,7 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
                 icon: const Icon(Atlas.plus_circle),
               ),
               IconButton(
+                key: NewsUpdateKeys.slideBackgroundColor,
                 onPressed: () {
                   ref
                       .read(newsStateProvider.notifier)

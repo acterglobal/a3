@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:acter/common/widgets/acter_video_player.dart';
+import 'package:acter/features/news/model/keys.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
@@ -39,6 +40,7 @@ class _VideoSlideState extends State<VideoSlide> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      key: NewsUpdateKeys.videoNewsContent,
       color: widget.bgColor,
       alignment: Alignment.center,
       child: FutureBuilder<File>(

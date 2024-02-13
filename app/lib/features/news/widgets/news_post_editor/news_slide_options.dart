@@ -58,6 +58,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                   fit: StackFit.passthrough,
                   children: [
                     InkWell(
+                      key: Key('slide-${slidePost.type.name}-$index'),
                       onTap: () {
                         ref
                             .read(newsStateProvider.notifier)
@@ -88,6 +89,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                       top: 0,
                       right: 0,
                       child: InkWell(
+                        key: Key('remove-slide-${slidePost.type.name}-$index'),
                         onTap: () {
                           ref
                               .read(newsStateProvider.notifier)
@@ -106,6 +108,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           ),
         ),
         IconButton(
+          key: NewsUpdateKeys.addNewsSlide,
           onPressed: () => showPostAttachmentOptions(context),
           icon: const Icon(Icons.add),
         ),
