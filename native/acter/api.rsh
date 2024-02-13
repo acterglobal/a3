@@ -392,6 +392,8 @@ object PinDraft {
     fn content_text(text: string);
     /// set the content of the pin through markdown
     fn content_markdown(text: string);
+    /// set the content of the pin through html
+    fn content_html(text: string, html: string);
     fn unset_content();
 
     /// set the url for this pin
@@ -407,7 +409,7 @@ object ActerPin {
     /// get the title of the pin
     fn title() -> string;
     /// get the content_text of the pin
-    fn content_text() -> Option<string>;
+    fn content() -> Option<MsgContent>;
     /// get the formatted content of the pin
     fn content_formatted() -> Option<string>;
     /// Whether the inner text is coming as formatted
@@ -454,6 +456,7 @@ object PinUpdateBuilder {
     /// set the content for this pin
     fn content_text(text: string);
     fn content_markdown(text: string);
+    fn content_html(text: string, html: string);
     fn unset_content();
     fn unset_content_update();
 

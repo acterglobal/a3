@@ -13294,6 +13294,28 @@ class Api {
         int,
         int,
       )>();
+  late final _pinDraftContentHtmlPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__PinDraft_content_html");
+
+  late final _pinDraftContentHtml = _pinDraftContentHtmlPtr.asFunction<
+      void Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _pinDraftUnsetContentPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -13350,14 +13372,14 @@ class Api {
       _ActerPinTitleReturn Function(
         int,
       )>();
-  late final _acterPinContentTextPtr = _lookup<
+  late final _acterPinContentPtr = _lookup<
       ffi.NativeFunction<
-          _ActerPinContentTextReturn Function(
+          _ActerPinContentReturn Function(
             ffi.Int64,
-          )>>("__ActerPin_content_text");
+          )>>("__ActerPin_content");
 
-  late final _acterPinContentText = _acterPinContentTextPtr.asFunction<
-      _ActerPinContentTextReturn Function(
+  late final _acterPinContent = _acterPinContentPtr.asFunction<
+      _ActerPinContentReturn Function(
         int,
       )>();
   late final _acterPinContentFormattedPtr = _lookup<
@@ -13548,6 +13570,29 @@ class Api {
   late final _pinUpdateBuilderContentMarkdown =
       _pinUpdateBuilderContentMarkdownPtr.asFunction<
           void Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _pinUpdateBuilderContentHtmlPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__PinUpdateBuilder_content_html");
+
+  late final _pinUpdateBuilderContentHtml =
+      _pinUpdateBuilderContentHtmlPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
             int,
             int,
             int,
@@ -28634,6 +28679,49 @@ class PinDraft {
     return;
   }
 
+  /// set the content of the pin through html
+  void contentHtml(
+    String text,
+    String html,
+  ) {
+    final tmp1 = text;
+    final tmp5 = html;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    _api._pinDraftContentHtml(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    return;
+  }
+
   void unsetContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -28738,36 +28826,21 @@ class ActerPin {
   }
 
   /// get the content_text of the pin
-  String? contentText() {
+  MsgContent? content() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._acterPinContentText(
+    final tmp1 = _api._acterPinContent(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
     if (tmp3 == 0) {
       return null;
     }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MsgContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = MsgContent._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -29145,6 +29218,48 @@ class PinUpdateBuilder {
       tmp2,
       tmp3,
       tmp4,
+    );
+    return;
+  }
+
+  void contentHtml(
+    String text,
+    String html,
+  ) {
+    final tmp1 = text;
+    final tmp5 = html;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    _api._pinUpdateBuilderContentHtml(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
     );
     return;
   }
@@ -45787,15 +45902,11 @@ class _ActerPinTitleReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ActerPinContentTextReturn extends ffi.Struct {
+class _ActerPinContentReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
 }
 
 class _ActerPinContentFormattedReturn extends ffi.Struct {
