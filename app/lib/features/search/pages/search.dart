@@ -9,24 +9,34 @@ class SearchPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return QuickJump(
-      navigateTo: ({
-        Routes? route,
-        bool push = false,
-        String? target,
-        Future<void> Function(BuildContext)? custom,
-      }) async {
-        if (custom != null) {
-          await custom(context);
-        } else {
-          if (route == null) {
-            context.go(target!);
+    return Scaffold(
+      body: QuickJump(
+        navigateTo: ({
+          Routes? route,
+          bool push = false,
+          String? target,
+          Future<void> Function(BuildContext)? custom,
+        }) async {
+          if (custom != null) {
+            await custom(context);
           } else {
-            context.goNamed(route.name);
+            if (push) {
+              if (route == null) {
+                context.push(target!);
+              } else {
+                context.pushNamed(route.name);
+              }
+            } else {
+              if (route == null) {
+                context.go(target!);
+              } else {
+                context.goNamed(route.name);
+              }
+            }
           }
-        }
-      },
-      expand: true,
+        },
+        expand: true,
+      ),
     );
   }
 }
