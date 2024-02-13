@@ -18,7 +18,7 @@ import '../support/super_invites.dart';
 import '../support/util.dart';
 
 extension ActerNews on ConvenientTest {
-  Future<void> gotoPin(String pinId, {Key? appTab}) async {
+  Future<void> goToPin(String pinId, {Key? appTab}) async {
     await find.byKey(Keys.mainNav).should(findsOneWidget);
     await navigateTo([
       MainNavKeys.dashboardHome,
@@ -219,7 +219,7 @@ void pinsTests() {
     // enable rich text editor
     await t.switchPinLabEditor();
     // let's check whether pin rich editor is there
-    await t.gotoPin(pinId);
+    await t.goToPin(pinId);
     await t.ensureLabRichEditorEnabled();
 
     await t.navigateTo([
@@ -229,7 +229,7 @@ void pinsTests() {
 
     // switch to default md editor again to ensure disabled
     await t.switchPinLabEditor();
-    await t.gotoPin(pinId);
+    await t.goToPin(pinId);
     await t.ensureMdEditorEnabled();
   });
   acterTestWidget(
@@ -255,7 +255,7 @@ void pinsTests() {
     );
 
     // lets re-route to this edited pin to see if changes reflected
-    await t.gotoPin(pinId);
+    await t.goToPin(pinId);
 
     await find.text('Acter Global website').should(findsOneWidget);
     await find.text('Check out our website').should(findsOneWidget);
