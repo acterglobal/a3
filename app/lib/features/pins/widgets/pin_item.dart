@@ -34,7 +34,7 @@ class _PinItemState extends ConsumerState<PinItem> {
     _buildPinContent();
   }
 
-  /// only for default markdown editor
+  // pin content builder (default md-editor)
   void _buildPinContent() {
     final content = widget.pin.content();
     String? formattedBody;
@@ -57,117 +57,6 @@ class _PinItemState extends ConsumerState<PinItem> {
     final pin = widget.pin;
     final spaceId = pin.roomIdStr();
     final isLink = pin.isLink();
-    final pinEdit = ref.watch(pinEditProvider(pin));
-    final pinEditNotifier = ref.watch(pinEditProvider(pin).notifier);
-    final labFeature = ref.watch(featuresProvider);
-    bool isActive(f) => labFeature.isActive(f);
-    final List<Widget> content = [
-      Container(
-        alignment: Alignment.topLeft,
-        margin: const EdgeInsets.all(8),
-        child: SpaceChip(spaceId: spaceId),
-      ),
-    ];
-
-    if (isLink) {
-      content.add(
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: TextFormField(
-            key: PinItem.linkFieldKey,
-            onTap: () async => !pinEdit.editMode
-                ? await openLink(pinEdit.link, context)
-                : null,
-            controller: _linkController,
-            readOnly: !pinEdit.editMode,
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Atlas.link_chain_thin, size: 18),
-            ),
-            validator: (value) {
-              if (value != null) {
-                final uri = Uri.tryParse(value);
-                if (uri == null || !uri.isAbsolute) {
-                  return 'link is not valid';
-                }
-              }
-              return null;
-            },
-          ),
-        ),
-      );
-    }
-    content.add(
-      !isActive(LabsFeature.pinsEditor)
-          ? pinEdit.editMode
-              ? Column(
-                  children: <Widget>[
-                    MdEditorWithPreview(
-                      key: PinItem.markdownEditorKey,
-                      controller: _descriptionController,
-                    ),
-                    pinEdit.editMode
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                              OutlinedButton(
-                                onPressed: () =>
-                                    pinEditNotifier.setEditMode(false),
-                                child: const Text('Cancel'),
-                              ),
-                              const SizedBox(width: 5),
-                              ElevatedButton(
-                                key: PinItem.saveBtnKey,
-                                onPressed: () async {
-                                  pinEditNotifier.setEditMode(false);
-                                  pinEditNotifier
-                                      .setMarkdown(_descriptionController.text);
-                                  pinEditNotifier.setLink(_linkController.text);
-                                  await pinEditNotifier.onSave();
-                                },
-                                child: const Text('Save'),
-                              ),
-                            ],
-                          )
-                        : const SizedBox.shrink(),
-                  ],
-                )
-              : Html(
-                  key: PinItem.descriptionFieldKey,
-                  data: _descriptionController.text,
-                  renderNewlines: true,
-                  padding: const EdgeInsets.all(8),
-                )
-          : Container(
-              height: MediaQuery.of(context).size.height * 0.6,
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              decoration: BoxDecoration(
-                color: pinEdit.editMode
-                    ? Theme.of(context).colorScheme.primaryContainer
-                    : null,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              constraints:
-                  BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
-              child: HtmlEditor(
-                key: PinItem.richTextEditorKey,
-                editable: pinEdit.editMode,
-                content: widget.pin.content(),
-                footer: pinEdit.editMode ? null : const SizedBox(),
-                onCancel: () => pinEditNotifier.setEditMode(false),
-                onSave: (plain, htmlBody) async {
-                  if (_formkey.currentState!.validate()) {
-                    pinEditNotifier.setEditMode(false);
-                    pinEditNotifier.setLink(_linkController.text);
-                    pinEditNotifier.setMarkdown(plain);
-                    if (htmlBody != null) {
-                      pinEditNotifier.setHtml(htmlBody);
-                    }
-                    await pinEditNotifier.onSave();
-                  }
-                },
-              ),
-            ),
-    );
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -176,9 +65,126 @@ class _PinItemState extends ConsumerState<PinItem> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: content,
+          children: <Widget>[
+            Container(
+              alignment: Alignment.topLeft,
+              margin: const EdgeInsets.all(8),
+              child: SpaceChip(spaceId: spaceId),
+            ),
+            if (isLink) _buildPinLink(),
+            _buildPinDescription(),
+          ],
         ),
       ),
     );
+  }
+
+  // pin link widget
+  Widget _buildPinLink() {
+    final pinEdit = ref.watch(pinEditProvider(widget.pin));
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        key: PinItem.linkFieldKey,
+        onTap: () async =>
+            !pinEdit.editMode ? await openLink(pinEdit.link, context) : null,
+        controller: _linkController,
+        readOnly: !pinEdit.editMode,
+        decoration: const InputDecoration(
+          prefixIcon: Icon(Atlas.link_chain_thin, size: 18),
+        ),
+        validator: (value) {
+          if (value != null) {
+            final uri = Uri.tryParse(value);
+            if (uri == null || !uri.isAbsolute) {
+              return 'link is not valid';
+            }
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  // pin content widget
+  Widget _buildPinDescription() {
+    final pinEdit = ref.watch(pinEditProvider(widget.pin));
+    final pinEditNotifier = ref.watch(pinEditProvider(widget.pin).notifier);
+    final labFeature = ref.watch(featuresProvider);
+    bool isActive(f) => labFeature.isActive(f);
+
+    if (!isActive(LabsFeature.pinsEditor)) {
+      return Visibility(
+        visible: pinEdit.editMode,
+        replacement: Html(
+          key: PinItem.descriptionFieldKey,
+          data: _descriptionController.text,
+          renderNewlines: true,
+          padding: const EdgeInsets.all(8),
+        ),
+        child: Column(
+          children: <Widget>[
+            MdEditorWithPreview(
+              key: PinItem.markdownEditorKey,
+              controller: _descriptionController,
+            ),
+            Visibility(
+              visible: pinEdit.editMode,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  OutlinedButton(
+                    onPressed: () => pinEditNotifier.setEditMode(false),
+                    child: const Text('Cancel'),
+                  ),
+                  const SizedBox(width: 5),
+                  ElevatedButton(
+                    key: PinItem.saveBtnKey,
+                    onPressed: () async {
+                      pinEditNotifier.setEditMode(false);
+                      pinEditNotifier.setMarkdown(_descriptionController.text);
+                      pinEditNotifier.setLink(_linkController.text);
+                      await pinEditNotifier.onSave();
+                    },
+                    child: const Text('Save'),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Container(
+        height: MediaQuery.of(context).size.height * 0.6,
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        decoration: BoxDecoration(
+          color: pinEdit.editMode
+              ? Theme.of(context).colorScheme.primaryContainer
+              : null,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        constraints:
+            BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
+        child: HtmlEditor(
+          key: PinItem.richTextEditorKey,
+          editable: pinEdit.editMode,
+          content: widget.pin.content(),
+          footer: pinEdit.editMode ? null : const SizedBox(),
+          onCancel: () => pinEditNotifier.setEditMode(false),
+          onSave: (plain, htmlBody) async {
+            if (_formkey.currentState!.validate()) {
+              pinEditNotifier.setEditMode(false);
+              pinEditNotifier.setLink(_linkController.text);
+              pinEditNotifier.setMarkdown(plain);
+              if (htmlBody != null) {
+                pinEditNotifier.setHtml(htmlBody);
+              }
+              await pinEditNotifier.onSave();
+            }
+          },
+        ),
+      );
+    }
   }
 }
