@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/search/model/search_term_delegate.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/features/search/providers/search.dart';
@@ -6,12 +7,14 @@ import 'package:acter/features/search/providers/search.dart';
 const fallbackSidebarIdx = 1;
 const fallbackBottomBarIdx = 0;
 
-class SpaceDetails {
-  final String navigationTarget;
+class SpaceDetails extends SearchTermDelegate {
   final ActerAvatar icon;
-  final String name;
 
-  const SpaceDetails._(this.icon, this.name, this.navigationTarget);
+  const SpaceDetails(
+    String name,
+    String navigationTargetId, {
+    required this.icon,
+  }) : super(name: name, navigationTargetId: navigationTargetId);
 }
 
 final AutoDisposeFutureProvider<List<SpaceDetails>> spacesFoundProvider =
@@ -29,8 +32,10 @@ final AutoDisposeFutureProvider<List<SpaceDetails>> spacesFoundProvider =
       }
     }
     finalSpaces.add(
-      SpaceDetails._(
-        ActerAvatar(
+      SpaceDetails(
+        info.displayName ?? roomId,
+        roomId,
+        icon: ActerAvatar(
           mode: DisplayMode.Space,
           avatarInfo: AvatarInfo(
             uniqueId: roomId,
@@ -38,8 +43,6 @@ final AutoDisposeFutureProvider<List<SpaceDetails>> spacesFoundProvider =
             avatar: info.getAvatarImage(),
           ),
         ),
-        info.displayName ?? roomId,
-        '/$roomId',
       ),
     );
   }
