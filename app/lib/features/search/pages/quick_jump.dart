@@ -21,6 +21,7 @@ class QuickjumpDialog extends ConsumerWidget {
             Future<void> Function(BuildContext)? custom,
           }) async {
             if (custom != null) {
+              context.pop();
               custom(context);
             } else {
               context.pop();
