@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+const Map<String, String> empty = {};
+
 class SearchPage extends ConsumerWidget {
   const SearchPage({super.key});
 
@@ -11,27 +13,35 @@ class SearchPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: QuickJump(
-        navigateTo: ({
-          Routes? route,
-          bool push = false,
-          String? target,
-          Future<void> Function(BuildContext)? custom,
+        navigateTo: (
+          Routes route, {
+          Future<bool> Function(BuildContext)? prepare,
+          bool? push = false,
+          Map<String, String>? pathParameters,
+          Map<String, String>? queryParameters,
+          Object? extra,
         }) async {
-          if (custom != null) {
-            await custom(context);
-          } else {
-            if (push) {
-              if (route == null) {
-                context.push(target!);
-              } else {
-                context.pushNamed(route.name);
-              }
+          if (prepare != null) {
+            if (await prepare(context)) {
+              // true means we should stop processing
+              return;
+            }
+          }
+          if (context.mounted) {
+            if (push ?? false) {
+              await context.pushNamed(
+                route.name,
+                pathParameters: pathParameters ?? empty,
+                queryParameters: queryParameters ?? empty,
+                extra: extra,
+              );
             } else {
-              if (route == null) {
-                context.go(target!);
-              } else {
-                context.goNamed(route.name);
-              }
+              context.goNamed(
+                route.name,
+                pathParameters: pathParameters ?? empty,
+                queryParameters: queryParameters ?? empty,
+                extra: extra,
+              );
             }
           }
         },

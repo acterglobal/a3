@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+const Map<String, String> empty = {};
+
 class QuickjumpDialog extends ConsumerWidget {
   const QuickjumpDialog({super.key});
 
@@ -14,29 +16,36 @@ class QuickjumpDialog extends ConsumerWidget {
       child: Scaffold(
         appBar: AppBar(title: const Text('jump to')),
         body: QuickJump(
-          navigateTo: ({
-            Routes? route,
-            bool push = false,
-            String? target,
-            Future<void> Function(BuildContext)? custom,
+          navigateTo: (
+            Routes route, {
+            Future<bool> Function(BuildContext)? prepare,
+            bool? push = false,
+            Map<String, String>? pathParameters,
+            Map<String, String>? queryParameters,
+            Object? extra,
           }) async {
-            if (custom != null) {
+            if (prepare != null) {
+              if (await prepare(context)) {
+                // true means we should stop processing
+                return;
+              }
+            }
+            if (context.mounted) {
               context.pop();
-              custom(context);
-            } else {
-              context.pop();
-              if (push) {
-                if (route == null) {
-                  await context.push(target!);
-                } else {
-                  await context.pushNamed(route.name);
-                }
+              if (push ?? false) {
+                await context.pushNamed(
+                  route.name,
+                  pathParameters: pathParameters ?? empty,
+                  queryParameters: queryParameters ?? empty,
+                  extra: extra,
+                );
               } else {
-                if (route == null) {
-                  context.go(target!);
-                } else {
-                  context.goNamed(route.name);
-                }
+                context.goNamed(
+                  route.name,
+                  pathParameters: pathParameters ?? empty,
+                  queryParameters: queryParameters ?? empty,
+                  extra: extra,
+                );
               }
             }
           },

@@ -1,16 +1,11 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/search/model/util.dart';
 import 'package:acter/features/search/providers/pins.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class PinsBuilder extends ConsumerWidget {
-  final Future<void> Function({
-    Routes? route,
-    bool push,
-    String? target,
-    Future<void> Function(BuildContext)? custom,
-  }) navigateTo;
+  final NavigateTo navigateTo;
 
   const PinsBuilder({
     super.key,
@@ -42,10 +37,9 @@ class PinsBuilder extends ConsumerWidget {
                     ),
                   ),
                   onTap: () async => await navigateTo(
-                    custom: (context) async => await context.pushNamed(
-                      Routes.pin.name,
-                      pathParameters: {'pinId': e.navigationTargetId},
-                    ),
+                    Routes.pin,
+                    pathParameters: {'pinId': e.navigationTargetId},
+                    push: true,
                   ),
                 ),
               )

@@ -1,16 +1,11 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/search/model/util.dart';
 import 'package:acter/features/search/providers/spaces.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class SpacesBuilder extends ConsumerWidget {
-  final Future<void> Function({
-    Routes? route,
-    bool push,
-    String? target,
-    Future<void> Function(BuildContext)? custom,
-  }) navigateTo;
+  final NavigateTo navigateTo;
 
   const SpacesBuilder({
     super.key,
@@ -42,10 +37,8 @@ class SpacesBuilder extends ConsumerWidget {
                     ),
                   ),
                   onTap: () async => await navigateTo(
-                    custom: (context) async => context.pushNamed(
-                      Routes.space.name,
-                      pathParameters: {'spaceId': e.navigationTargetId},
-                    ),
+                    Routes.space,
+                    pathParameters: {'spaceId': e.navigationTargetId},
                   ),
                 ),
               )

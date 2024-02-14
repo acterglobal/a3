@@ -1,10 +1,9 @@
-import 'dart:async';
-
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/icons/tasks_icon.dart';
 import 'package:acter/features/search/model/keys.dart';
+import 'package:acter/features/search/model/util.dart';
 import 'package:acter/features/search/providers/search.dart';
 import 'package:acter/features/search/widgets/pins_builder.dart';
 import 'package:acter/features/search/widgets/quick_actions_builder.dart';
@@ -15,12 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class QuickJump extends ConsumerWidget {
-  final Future<void> Function({
-    Routes? route,
-    bool push,
-    String? target,
-    Future<void> Function(BuildContext)? custom,
-  }) navigateTo;
+  final NavigateTo navigateTo;
   final bool expand;
 
   const QuickJump({
@@ -55,7 +49,7 @@ class QuickJump extends ConsumerWidget {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () => navigateTo(route: Routes.myProfile),
+              onPressed: () => navigateTo(Routes.myProfile),
             ),
             IconButton(
               key: QuickJumpKeys.settings,
@@ -72,7 +66,7 @@ class QuickJump extends ConsumerWidget {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () => navigateTo(route: Routes.settings),
+              onPressed: () => navigateTo(Routes.settings),
             ),
             isActive(LabsFeature.pins)
                 ? IconButton(
@@ -85,7 +79,7 @@ class QuickJump extends ConsumerWidget {
                             .withOpacity(0.12),
                       ),
                     ),
-                    onPressed: () => navigateTo(route: Routes.pins),
+                    onPressed: () => navigateTo(Routes.pins),
                     icon: const Padding(
                       padding: EdgeInsets.all(5),
                       child: Icon(Atlas.pin_thin, size: 24),
@@ -102,7 +96,7 @@ class QuickJump extends ConsumerWidget {
                             .withOpacity(0.12),
                       ),
                     ),
-                    onPressed: () => navigateTo(route: Routes.calendarEvents),
+                    onPressed: () => navigateTo(Routes.calendarEvents),
                     icon: const Padding(
                       padding: EdgeInsets.all(5),
                       child: Icon(Atlas.calendar_dots_thin, size: 24),
@@ -120,7 +114,7 @@ class QuickJump extends ConsumerWidget {
                             .withOpacity(0.12),
                       ),
                     ),
-                    onPressed: () => navigateTo(route: Routes.tasks),
+                    onPressed: () => navigateTo(Routes.tasks),
 
                     // this is slightly differently sized and padded to look the same as the others
                     icon: const TasksIcon(),
@@ -133,7 +127,7 @@ class QuickJump extends ConsumerWidget {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () => navigateTo(route: Routes.chat),
+              onPressed: () => navigateTo(Routes.chat),
               icon: const Padding(
                 padding: EdgeInsets.all(5),
                 child: Icon(
@@ -149,7 +143,7 @@ class QuickJump extends ConsumerWidget {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () => navigateTo(route: Routes.activities),
+              onPressed: () => navigateTo(Routes.activities),
               icon: const Padding(
                 padding: EdgeInsets.all(5),
                 child: Icon(Atlas.audio_wave_thin, size: 24),
