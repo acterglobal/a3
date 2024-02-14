@@ -19,8 +19,9 @@ class PinPage extends ConsumerWidget {
   static const titleFieldKey = Key('edit-pin-title-field');
 
   final String pinId;
+  // ignore: use_key_in_widget_constructors
   const PinPage({
-    super.key,
+    Key key = pinPageKey,
     required this.pinId,
   });
 
@@ -52,6 +53,7 @@ class PinPage extends ConsumerWidget {
           ),
         );
       }
+
       if (memb.canString('CanRedactOwn') &&
           memb.userId().toString() == pin.sender().toString()) {
         final roomId = pin.roomIdStr();
@@ -74,32 +76,29 @@ class PinPage extends ConsumerWidget {
             ),
           ),
         );
-      }
-    } else {
-      actions.add(
-        PopupMenuItem<String>(
-          onTap: () => showReportDialog(context, pin),
-          child: Row(
-            children: <Widget>[
-              Icon(
-                Atlas.warning_thin,
-                color: Theme.of(context).colorScheme.error,
-              ),
-              const SizedBox(width: 10),
-              const Text('Report Pin'),
-            ],
+      } else {
+        actions.add(
+          PopupMenuItem<String>(
+            onTap: () => showReportDialog(context, pin),
+            child: Row(
+              children: <Widget>[
+                Icon(
+                  Atlas.warning_thin,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+                const SizedBox(width: 10),
+                const Text('Report Pin'),
+              ],
+            ),
           ),
-        ),
-      );
+        );
+      }
     }
 
-    return Visibility(
-      visible: actions.isNotEmpty,
-      child: PopupMenuButton<String>(
-        key: PinPage.actionMenuKey,
-        icon: const Icon(Atlas.dots_vertical_thin),
-        itemBuilder: (ctx) => actions,
-      ),
+    return PopupMenuButton<String>(
+      key: PinPage.actionMenuKey,
+      icon: const Icon(Atlas.dots_vertical_thin),
+      itemBuilder: (ctx) => actions,
     );
   }
 
@@ -115,7 +114,7 @@ class PinPage extends ConsumerWidget {
         title: 'Remove this pin',
         eventId: pin.eventIdStr(),
         onSuccess: () {
-          if (context.mounted) {
+          if (context.mounted && context.canPop()) {
             context.pop();
           }
         },
@@ -151,9 +150,6 @@ class PinPage extends ConsumerWidget {
         slivers: <Widget>[
           pin.when(
             data: (acterPin) {
-              final pinEdit = ref.watch(pinEditProvider(acterPin));
-              final pinEditNotifer =
-                  ref.watch(pinEditProvider(acterPin).notifier);
               return SliverAppBar(
                 centerTitle: false,
                 leadingWidth: 40,
@@ -161,26 +157,7 @@ class PinPage extends ConsumerWidget {
                 flexibleSpace: Container(
                   decoration: const BoxDecoration(gradient: primaryGradient),
                 ),
-                title: Visibility(
-                  visible: !pinEdit.editMode,
-                  replacement: TextFormField(
-                    key: PinPage.titleFieldKey,
-                    initialValue: acterPin.title(),
-                    readOnly: !pinEdit.editMode,
-                    style: Theme.of(context).textTheme.titleLarge,
-                    decoration: InputDecoration(
-                      enabledBorder: pinEdit.editMode ? null : InputBorder.none,
-                      focusedBorder: pinEdit.editMode ? null : InputBorder.none,
-                      filled: false,
-                    ),
-                    onChanged: (val) => pinEditNotifer.setTitle(val),
-                  ),
-                  child: Text(
-                    acterPin.title(),
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ),
+                title: _buildTitle(context, ref, acterPin),
                 actions: [
                   _buildActionMenu(context, ref, acterPin),
                 ],
@@ -203,6 +180,26 @@ class PinPage extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // pin title builder
+  Widget _buildTitle(BuildContext context, WidgetRef ref, ActerPin pin) {
+    final pinEdit = ref.watch(pinEditProvider(pin));
+    final pinEditNotifer = ref.watch(pinEditProvider(pin).notifier);
+    return Visibility(
+      visible: !pinEdit.editMode,
+      replacement: TextFormField(
+        key: PinPage.titleFieldKey,
+        initialValue: pin.title(),
+        style: Theme.of(context).textTheme.titleLarge,
+        onChanged: (val) => pinEditNotifer.setTitle(val),
+      ),
+      child: Text(
+        pin.title(),
+        overflow: TextOverflow.ellipsis,
+        style: Theme.of(context).textTheme.titleLarge,
       ),
     );
   }

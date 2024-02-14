@@ -38,6 +38,7 @@ class PinsPage extends ConsumerWidget {
         gradient: primaryGradient,
       ),
       actions: [
+        // FIXME: only show with hasAnySpacesWithPermission check
         IconButton(
           icon: Icon(
             Atlas.plus_circle_thin,
