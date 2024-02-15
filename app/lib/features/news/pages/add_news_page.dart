@@ -28,14 +28,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mime/mime.dart';
 
+const addNewsKey = Key('add-news');
+
 class AddNewsPage extends ConsumerStatefulWidget {
-  const AddNewsPage({super.key});
+  const AddNewsPage({super.key = addNewsKey});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _AddNewsState();
+  ConsumerState<ConsumerStatefulWidget> createState() => AddNewsState();
 }
 
-class _AddNewsState extends ConsumerState<AddNewsPage> {
+class AddNewsState extends ConsumerState<AddNewsPage> {
   EditorState textEditorState = EditorState.blank();
   NewsSlideItem? selectedNewsPost;
 
@@ -48,12 +50,26 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
         final document = next.html != null
             ? ActerDocumentHelpers.fromHtml(next.html!)
             : ActerDocumentHelpers.fromMarkdown(next.text ?? '');
+        final autoFocus =
+            (next.html?.isEmpty ?? true) && (next.text?.isEmpty ?? true);
 
         setState(() {
-          debugPrint('New document applying: $next -> $document');
           selectedNewsPost = next;
           textEditorState = EditorState(document: document);
         });
+
+        if (autoFocus) {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            // we have switched to an empty text slide: auto focus the editor
+            textEditorState.updateSelectionWithReason(
+              Selection.single(
+                path: [0],
+                startOffset: 0,
+              ),
+              reason: SelectionUpdateReason.uiEvent,
+            );
+          });
+        }
       } else {
         setState(() => selectedNewsPost = next);
       }
@@ -297,7 +313,7 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
         key: NewsUpdateKeys.textSlideInputField,
         editorState: textEditorState,
         editable: true,
-        autoFocus: true,
+        autoFocus: false, // we manage the auto focus manually
         shrinkWrap: true,
         onChanged: (body, html) {
           ref.read(newsStateProvider.notifier).changeTextSlideValue(body, html);

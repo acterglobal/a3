@@ -2,13 +2,14 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
+import 'package:acter/features/news/pages/add_news_page.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter/features/search/model/keys.dart';
+import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import '../support/appflowy_editor.dart';
 import '../support/setup.dart';
 import '../support/spaces.dart';
 import '../support/util.dart';
@@ -22,6 +23,12 @@ extension ActerNews on ConvenientTest {
     ]);
   }
 
+  Future<EditorState> _getNewsTextEditorState() async {
+    final addNewsFinder = find.byKey(addNewsKey);
+    await addNewsFinder.should(findsOneWidget);
+    return (tester.firstState(addNewsFinder) as AddNewsState).textEditorState;
+  }
+
   Future<void> toggleBackgroundColor() async {
     final slideBackgroundColorKey =
         find.byKey(NewsUpdateKeys.slideBackgroundColor);
@@ -31,11 +38,15 @@ extension ActerNews on ConvenientTest {
     await slideBackgroundColorKey.tap();
   }
 
-  Future<void> addTextSlide(String text) async {
+  Future<EditorState> addTextSlide(String text) async {
     final addTextSlideKey = find.byKey(NewsUpdateKeys.addTextSlide);
     await addTextSlideKey.should(findsOneWidget);
     await addTextSlideKey.tap();
-    await enterIntoAppflowyEditor(NewsUpdateKeys.textSlideInputField, text);
+    final editorState = await _getNewsTextEditorState();
+    assert(editorState.editable, 'Not editable');
+    assert(editorState.selection != null, 'No selection');
+    await editorState.insertTextAtPosition(text);
+    return editorState;
   }
 
   Future<void> submitNews(String? spaceId) async {
@@ -56,7 +67,8 @@ extension ActerNews on ConvenientTest {
     final context = tester.element(addImageSlideKey);
     final ref = ProviderScope.containerOf(context);
     final imageFile = await convertAssetImageToXFile(
-        filepath ?? 'assets/images/update_onboard.png',);
+      filepath ?? 'assets/images/update_onboard.png',
+    );
     final slide = NewsSlideItem(
       type: NewsSlideType.image,
       mediaFile: imageFile,
@@ -102,7 +114,7 @@ extension ActerNews on ConvenientTest {
 }
 
 void updateTests() {
-  acterTestWidget('Single Text News Update', (t) async {
+  acterTestWidget('Single Plain-Text News Update', (t) async {
     final spaceId = await t.freshAccountWithSpace();
     const text = 'Welcome to the show';
 
@@ -115,6 +127,45 @@ void updateTests() {
     final textUpdateContent = find.byKey(NewsUpdateKeys.textUpdateContent);
     await textUpdateContent.should(findsOneWidget);
     await find.text(text).should(findsWidgets);
+  });
+
+  acterTestWidget('Multi-Slide Html-Text News Update', (t) async {
+    final spaceId = await t.freshAccountWithSpace();
+    const text = 'This is our big update';
+
+    await t.openCreateNews();
+    final editorState = await t.addTextSlide(text);
+
+    await editorState.insertNewLine();
+    await editorState.insertTextAtCurrentSelection(
+      'This is a second line of text with some ',
+    );
+    final lastSelectable = editorState.getLastSelectable()!;
+    final transaction = editorState.transaction;
+    transaction.insertText(
+      lastSelectable.$1,
+      40,
+      'bold text',
+      attributes: {'bold': true},
+    );
+    await editorState.apply(transaction);
+
+    await t.openAddSlide();
+    await t.addTextSlide('this is slide b');
+
+    // ensure the editor has properly reset
+    await find.text(text).should(findsNothing);
+
+    await t.submitNews(spaceId);
+
+    // we expect to be thrown to the news screen and see our latest item first:
+    final textUpdateContent = find.byKey(NewsUpdateKeys.textUpdateContent);
+    await textUpdateContent.should(findsOneWidget);
+    await find.text(text).should(findsOneWidget);
+    await find
+        .text('This is a second line of text with some bold text')
+        .should(findsOneWidget);
+    // FIXME: actually check the `bold text` is bold.... how to do that?
   });
 
   acterTestWidget('Single Image News Update', (t) async {
@@ -167,7 +218,8 @@ void updateTests() {
     await t.submitNews(null); // text is empty, so this will fail
 
     await t.trigger(
-        const Key('remove-slide-text-0'),); // will remove the empty slide
+      const Key('remove-slide-text-0'),
+    ); // will remove the empty slide
 
     // Getting image slide in list
     await t.trigger(const Key('slide-image-0'));

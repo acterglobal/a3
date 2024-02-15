@@ -120,12 +120,22 @@ class HtmlEditorState extends State<HtmlEditor> {
   @override
   void initState() {
     super.initState();
-    updateEditorState();
+    updateEditorState(widget.editorState ?? EditorState.blank());
   }
 
-  void updateEditorState() {
+  void updateEditorState(EditorState newEditorState) {
     setState(() {
-      editorState = widget.editorState ?? EditorState.blank();
+      editorState = newEditorState;
+
+      if (widget.editable && widget.autoFocus) {
+        editorState.updateSelectionWithReason(
+          Selection.single(
+            path: [0],
+            startOffset: 0,
+          ),
+          reason: SelectionUpdateReason.uiEvent,
+        );
+      }
 
       editorScrollController = EditorScrollController(
         editorState: editorState,
@@ -143,10 +153,10 @@ class HtmlEditorState extends State<HtmlEditor> {
 
   @override
   void didUpdateWidget(covariant HtmlEditor oldWidget) {
-    if (oldWidget.editorState != widget.editorState) {
-      updateEditorState();
-    }
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.editorState != widget.editorState) {
+      updateEditorState(widget.editorState ?? EditorState.blank());
+    }
   }
 
   @override
