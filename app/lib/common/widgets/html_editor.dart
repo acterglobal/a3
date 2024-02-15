@@ -4,8 +4,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 
-export 'package:appflowy_editor/appflowy_editor.dart' show EditorState;
-
 AppFlowyEditorHTMLCodec defaultHtmlCodec = const AppFlowyEditorHTMLCodec(
   encodeParsers: [
     HTMLTextNodeParser(),

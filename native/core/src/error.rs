@@ -40,6 +40,9 @@ pub enum Error {
     #[error("Failed to parse {model_type}: {msg}")]
     FailedToParse { model_type: String, msg: String },
 
+    #[error("Id Parse Error: {0}")]
+    IdParseError(#[from] ruma_common::IdParseError),
+
     #[error("Model {meta:?} ({model_type}): {reason:?}")]
     ModelRedacted {
         model_type: String,

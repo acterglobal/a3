@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:core';
 import 'dart:convert';
+import 'dart:core';
 import 'dart:developer' as developer;
 import 'dart:ffi';
 import 'dart:io';
@@ -665,5 +665,54 @@ class ActerSdk {
 
   ffi.ThumbnailSize newThumbSize(int width, int height) {
     return _api.newThumbSize(width, height);
+  }
+
+  // create a task ref builder
+  // target_id: event id of target
+  // task_list: event id of task list
+  // action: link/embed/embed-subscribe/embed-accept-assignment/embed-mark-done
+  ffi.RefDetailsBuilder newTaskRefBuilder(
+    String targetId,
+    String? roomId,
+    String taskList,
+    String? action,
+  ) {
+    return _api.newTaskRefBuilder(targetId, roomId, taskList, action);
+  }
+
+  // create a task list ref builder
+  // target_id: event id of target
+  // action: link/embed/embed-subscribe
+  ffi.RefDetailsBuilder newTaskListRefBuilder(
+    String targetId,
+    String? roomId,
+    String? action,
+  ) {
+    return _api.newTaskListRefBuilder(targetId, roomId, action);
+  }
+
+  // create a calendar event ref builder
+  // target_id: event id of target
+  // action: link/embed/embed-rsvp
+  ffi.RefDetailsBuilder newCalendarEventRefBuilder(
+    String targetId,
+    String? roomId,
+    String? action,
+  ) {
+    return _api.newCalendarEventRefBuilder(targetId, roomId, action);
+  }
+
+  // create a link ref builder
+  ffi.RefDetailsBuilder newLinkRefBuilder(String title, String uri) {
+    return _api.newLinkRefBuilder(title, uri);
+  }
+
+  // create object reference
+  // position: top-left/top-middle/top-right/center-left/center-middle/center-right/bottom-left/bottom-middle/bottom-right
+  ffi.ObjRefBuilder newObjRefBuilder(
+    String? position,
+    ffi.RefDetails reference,
+  ) {
+    return _api.newObjRefBuilder(position, reference);
   }
 }

@@ -42,8 +42,31 @@ fn parse_markdown(text: string) -> Option<string>;
 /// create size object to be used for thumbnail download
 fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize>;
 
-// create a new colorize builder
+/// create a colorize builder
 fn new_colorize_builder(color: Option<u32>, background: Option<u32>) -> Result<ColorizeBuilder>;
+
+/// create a task ref builder
+/// target_id: event id of target
+/// task_list: event id of task list
+/// action: link/embed/embed-subscribe/embed-accept-assignment/embed-mark-done
+fn new_task_ref_builder(target_id: string, room_id: Option<string>, task_list: string, action: Option<string>) -> Result<RefDetailsBuilder>;
+
+/// create a task list ref builder
+/// target_id: event id of target
+/// action: link/embed/embed-subscribe
+fn new_task_list_ref_builder(target_id: string, room_id: Option<string>, action: Option<string>) -> Result<RefDetailsBuilder>;
+
+/// create a calendar event ref builder
+/// target_id: event id of target
+/// action: link/embed/embed-rsvp
+fn new_calendar_event_ref_builder(target_id: string, room_id: Option<string>, action: Option<string>) -> Result<RefDetailsBuilder>;
+
+/// create a link ref builder
+fn new_link_ref_builder(title: string, uri: string) -> Result<RefDetailsBuilder>;
+
+/// create object reference
+/// position: top-left/top-middle/top-right/center-left/center-middle/center-right/bottom-left/bottom-middle/bottom-right
+fn new_obj_ref_builder(position: Option<string>, reference: RefDetails) -> Result<ObjRefBuilder>;
 
 
 //  ########  ########  #### ##     ## #### ######## #### ##     ## ########  ######  
@@ -90,6 +113,20 @@ object ObjRef {
     fn reference() -> RefDetails;
 }
 
+/// A builder for ObjRef
+object ObjRefBuilder {
+    /// set position of element
+    /// position: top-left/top-middle/top-right/center-left/center-middle/center-right/bottom-left/bottom-middle/bottom-right
+    fn position(position: string);
+    /// empty position of element
+    fn unset_position();
+
+    /// change ref details
+    fn reference(reference: RefDetails);
+
+    fn build() -> ObjRef;
+}
+
 /// A foreground and background color setting
 object Colorize {
     /// Foreground or text color
@@ -100,14 +137,45 @@ object Colorize {
 
 /// A builder for Colorize. Allowing you to set (foreground) color and background
 object ColorizeBuilder {
-    /// RGBA color representation as int for the foreground color 
+    /// RGBA color representation as int for the foreground color
     fn color(color: u32);
     /// unset the color
     fn unset_color();
+
     /// RGBA color representation as int for the background color
     fn background(color: u32);
     /// unset the background color
     fn unset_background();
+}
+
+/// A builder for RefDetails
+object RefDetailsBuilder {
+    /// it is valid for Task/TaskList/CalendarEvent ref
+    /// target_id: event id of target
+    fn target_id(target_id: string);
+
+    /// it is valid for Task/TaskList/CalendarEvent ref
+    fn room_id(room_id: string);
+    /// unset the room id, it is optional field
+    fn unset_room_id();
+
+    /// it is valid for Task/TaskList/CalendarEvent ref
+    /// task_list: event id of task list
+    fn task_list(task_list: string);
+
+    /// it is valid for Task/TaskList/CalendarEvent ref
+    /// action is one of TaskAction/TaskListAction/CalendarEventAction
+    fn action(action: string);
+    /// unset the action, it is optional field
+    fn unset_action();
+
+    /// it is valid for Link ref
+    fn title(title: string);
+
+    /// it is valid for Link ref
+    fn uri(uri: string);
+
+    fn build() -> RefDetails;
 }
 
 // enum LocationType {
@@ -122,7 +190,7 @@ object ColorizeBuilder {
 //    fn description() -> Option<TextMessageContent>;
 //    fn coordinates() -> Option<string>;
 //    fn uri() -> Option<string>;
-//}
+// }
 
 
 

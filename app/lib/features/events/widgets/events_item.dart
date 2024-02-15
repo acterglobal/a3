@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 
 class EventItem extends ConsumerWidget {
   final CalendarEvent event;
+
   const EventItem({super.key, required this.event});
 
   @override
