@@ -646,12 +646,10 @@ pub fn new_obj_ref_builder(
     position: Option<String>,
     reference: Box<RefDetails>,
 ) -> Result<ObjRefBuilder> {
-    let position = position.and_then(|x| {
-        if let Ok(position) = Position::from_str(x.as_str()) {
-            Some(position)
-        } else {
-            None
-        }
-    });
-    Ok(ObjRefBuilder::new(position, *reference))
+    if let Some(p) = position {
+        let p = Position::from_str(&p)?;
+        Ok(ObjRefBuilder::new(Some(p), *reference))
+    } else {
+        Ok(ObjRefBuilder::new(None, *reference))
+    }
 }

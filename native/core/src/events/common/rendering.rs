@@ -20,7 +20,7 @@ pub enum Position {
 }
 
 impl FromStr for Position {
-    type Err = ();
+    type Err = crate::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -33,7 +33,10 @@ impl FromStr for Position {
             "bottom-left" => Ok(Position::BottomLeft),
             "bottom-middle" => Ok(Position::BottomMiddle),
             "bottom-right" => Ok(Position::BottomRight),
-            _ => Err(()),
+            _ => Err(crate::Error::FailedToParse {
+                model_type: "Position".to_owned(),
+                msg: "couldn't parse Position".to_owned(),
+            }),
         }
     }
 }
