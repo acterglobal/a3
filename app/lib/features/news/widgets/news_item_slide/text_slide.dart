@@ -19,6 +19,7 @@ class TextSlide extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
+      padding: const EdgeInsets.all(20),
       color: bgColor,
       alignment: Alignment.center,
       child: slide.hasFormattedText()
