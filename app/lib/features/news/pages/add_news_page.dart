@@ -18,7 +18,6 @@ import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_post_editor/select_action_item.dart';
 import 'package:acter/features/news/widgets/news_post_editor/news_slide_options.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -345,9 +344,9 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
       for (final slidePost in newsSlideList) {
         final sdk = await ref.read(sdkProvider.future);
         // If slide type is text
-        if (slidePost.type == NewsSlideType.text && slidePost.text != null) {
-          if (slidePost.text!.isEmpty) {
-            EasyLoading.showError('Please add some text');
+        if (slidePost.type == NewsSlideType.text) {
+          if (slidePost.text == null || slidePost.text!.trim().isEmpty) {
+            EasyLoading.showError('Your text slides must contains some text');
             return;
           }
           final textDraft = slidePost.html != null
