@@ -6,8 +6,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 
-export 'package:appflowy_editor/appflowy_editor.dart' show EditorState;
-
 AppFlowyEditorHTMLCodec defaultHtmlCodec = const AppFlowyEditorHTMLCodec(
   encodeParsers: [
     HTMLTextNodeParser(),
@@ -70,12 +68,15 @@ class HtmlEditor extends StatefulWidget {
   static const saveEditKey = Key('html-editor-save');
   static const cancelEditKey = Key('html-editor-cancel');
 
+  final Alignment alignment;
   final Widget? header;
   final Widget? footer;
   final bool autoFocus;
   final bool editable;
+  final bool shrinkWrap;
   final EdgeInsets? editorPadding;
   final MsgContent? content;
+  final TextStyleConfiguration? textStyleConfiguration;
   final String? initialHtml;
   final String? initialMarkdown;
   final ExportCallback? onSave;
@@ -83,14 +84,17 @@ class HtmlEditor extends StatefulWidget {
   final Function()? onCancel;
   const HtmlEditor({
     super.key,
+    this.alignment = Alignment.topLeft,
     this.content,
     this.initialHtml,
     this.initialMarkdown,
     this.onSave,
     this.onChanged,
     this.onCancel,
+    this.textStyleConfiguration,
     this.autoFocus = true,
     this.editable = false,
+    this.shrinkWrap = false,
     this.editorPadding = const EdgeInsets.all(10),
     this.header,
     this.footer,
@@ -130,7 +134,10 @@ class HtmlEditorState extends State<HtmlEditor> {
       editorState = EditorState.blank();
     }
 
-    editorScrollController = EditorScrollController(editorState: editorState);
+    editorScrollController = EditorScrollController(
+      editorState: editorState,
+      shrinkWrap: widget.shrinkWrap,
+    );
 
     if (widget.onChanged != null) {
       _changeListener = editorState.transactionStream.listen((event) {
@@ -156,141 +163,160 @@ class HtmlEditorState extends State<HtmlEditor> {
   @override
   Widget build(BuildContext context) {
     final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
-    Widget? finalFooter = widget.footer;
-    if (finalFooter == null) {
-      final List<Widget> children = [];
-
-      if (widget.onCancel != null) {
-        children.add(
-          OutlinedButton(
-            key: HtmlEditor.cancelEditKey,
-            onPressed: widget.onCancel,
-            child: const Text('Cancel'),
-          ),
-        );
-      }
-      children.add(
-        const SizedBox(
-          width: 10,
-        ),
-      );
-      if (widget.onSave != null) {
-        children.add(
-          ElevatedButton(
-            key: HtmlEditor.saveEditKey,
-            onPressed: () => _triggerExport(widget.onSave!),
-            child: const Text('Save'),
-          ),
-        );
-      }
-
-      if (children.isNotEmpty) {
-        finalFooter = Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: children,
-          ),
-        );
-      }
-    }
-
-    return isDesktop
-        ? FloatingToolbar(
-            items: [
-              paragraphItem,
-              ...headingItems,
-              ...markdownFormatItems,
-              quoteItem,
-              bulletedListItem,
-              numberedListItem,
-              linkItem,
-              buildHighlightColorItem(),
-            ],
-            textDirection: _textDirection,
-            editorState: editorState,
-            editorScrollController: editorScrollController,
-            style: FloatingToolbarStyle(
-              backgroundColor: Theme.of(context).colorScheme.neutral2,
-              toolbarActiveColor: Theme.of(context).colorScheme.tertiary,
-            ),
-            child: Directionality(
-              textDirection: _textDirection,
-              child: AppFlowyEditor(
-                editable: widget.editable,
-                editorStyle: customEditorStyle(true),
-                editorScrollController: editorScrollController,
-                editorState: editorState,
-                autoFocus: widget.autoFocus,
-                header: widget.header,
-                footer: finalFooter,
-              ),
-            ),
-          )
-        : MobileToolbarV2(
-            toolbarItems: [
-              textDecorationMobileToolbarItemV2,
-              buildTextAndBackgroundColorMobileToolbarItem(
-                textColorOptions: [],
-              ),
-              headingMobileToolbarItem,
-              listMobileToolbarItem,
-              linkMobileToolbarItem,
-              quoteMobileToolbarItem,
-            ],
-            editorState: editorState,
-            child: MobileFloatingToolbar(
-              editorScrollController: editorScrollController,
-              editorState: editorState,
-              toolbarBuilder: (context, anchor, closeToolbar) {
-                return AdaptiveTextSelectionToolbar.editable(
-                  clipboardStatus: ClipboardStatus.pasteable,
-                  onCopy: () {
-                    copyCommand.execute(editorState);
-                    closeToolbar();
-                  },
-                  onCut: () => cutCommand.execute(editorState),
-                  onPaste: () => pasteCommand.execute(editorState),
-                  onSelectAll: () => selectAllCommand.execute(editorState),
-                  onLiveTextInput: null,
-                  onLookUp: null,
-                  onSearchWeb: null,
-                  onShare: null,
-                  anchors: TextSelectionToolbarAnchors(
-                    primaryAnchor: anchor,
-                  ),
-                );
-              },
-              child: AppFlowyEditor(
-                editable: widget.editable,
-                editorStyle: customEditorStyle(false),
-                editorState: editorState,
-                editorScrollController: editorScrollController,
-                autoFocus: widget.autoFocus,
-                header: widget.header,
-                footer: finalFooter,
-              ),
-            ),
-          );
+    return isDesktop ? desktopEditor() : mobileEditor();
   }
 
-  EditorStyle customEditorStyle(bool isDesktop) {
-    return isDesktop
-        ? EditorStyle.desktop(
-            padding: widget.editorPadding,
-            cursorColor: Theme.of(context).colorScheme.primary,
-            selectionColor: Theme.of(context).colorScheme.neutral,
-            textStyleConfiguration: TextStyleConfiguration(
-              text: Theme.of(context).textTheme.bodySmall!,
-            ),
-          )
-        : EditorStyle.mobile(
-            padding: widget.editorPadding,
-            cursorColor: Theme.of(context).colorScheme.primary,
-            selectionColor: Theme.of(context).colorScheme.neutral,
-            textStyleConfiguration: TextStyleConfiguration(
-              text: Theme.of(context).textTheme.bodySmall!,
+  Widget? generateFooter() {
+    if (widget.footer != null) {
+      return widget.footer;
+    }
+    final List<Widget> children = [];
+
+    if (widget.onCancel != null) {
+      children.add(
+        OutlinedButton(
+          key: HtmlEditor.cancelEditKey,
+          onPressed: widget.onCancel,
+          child: const Text('Cancel'),
+        ),
+      );
+    }
+    children.add(
+      const SizedBox(
+        width: 10,
+      ),
+    );
+    if (widget.onSave != null) {
+      children.add(
+        ElevatedButton(
+          key: HtmlEditor.saveEditKey,
+          onPressed: () => _triggerExport(widget.onSave!),
+          child: const Text('Save'),
+        ),
+      );
+    }
+
+    if (children.isNotEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: children,
+        ),
+      );
+    }
+    return null;
+  }
+
+  Widget desktopEditor() {
+    return FloatingToolbar(
+      items: [
+        paragraphItem,
+        ...headingItems,
+        ...markdownFormatItems,
+        quoteItem,
+        bulletedListItem,
+        numberedListItem,
+        linkItem,
+        buildHighlightColorItem(),
+      ],
+      textDirection: _textDirection,
+      editorState: editorState,
+      editorScrollController: editorScrollController,
+      style: FloatingToolbarStyle(
+        backgroundColor: Theme.of(context).colorScheme.neutral2,
+        toolbarActiveColor: Theme.of(context).colorScheme.tertiary,
+      ),
+      child: Directionality(
+        textDirection: _textDirection,
+        child: AppFlowyEditor(
+          // widget pass through
+          editable: widget.editable,
+          shrinkWrap: widget.shrinkWrap,
+          autoFocus: widget.autoFocus,
+          header: widget.header,
+          // local states
+          editorScrollController: editorScrollController,
+          editorState: editorState,
+          editorStyle: desktopEditorStyle(),
+          footer: generateFooter(),
+        ),
+      ),
+    );
+  }
+
+  Widget mobileEditor() {
+    return MobileToolbarV2(
+      toolbarItems: [
+        textDecorationMobileToolbarItemV2,
+        buildTextAndBackgroundColorMobileToolbarItem(
+          textColorOptions: [],
+        ),
+        headingMobileToolbarItem,
+        listMobileToolbarItem,
+        linkMobileToolbarItem,
+        quoteMobileToolbarItem,
+      ],
+      editorState: editorState,
+      child: MobileFloatingToolbar(
+        editorScrollController: editorScrollController,
+        editorState: editorState,
+        toolbarBuilder: (context, anchor, closeToolbar) {
+          return AdaptiveTextSelectionToolbar.editable(
+            clipboardStatus: ClipboardStatus.pasteable,
+            onCopy: () {
+              copyCommand.execute(editorState);
+              closeToolbar();
+            },
+            onCut: () => cutCommand.execute(editorState),
+            onPaste: () => pasteCommand.execute(editorState),
+            onSelectAll: () => selectAllCommand.execute(editorState),
+            onLiveTextInput: null,
+            onLookUp: null,
+            onSearchWeb: null,
+            onShare: null,
+            anchors: TextSelectionToolbarAnchors(
+              primaryAnchor: anchor,
             ),
           );
+        },
+        child: AppFlowyEditor(
+          // widget pass through
+          editable: widget.editable,
+          shrinkWrap: widget.shrinkWrap,
+          autoFocus: widget.autoFocus,
+          header: widget.header,
+          // local states
+          editorState: editorState,
+          editorScrollController: editorScrollController,
+          editorStyle: mobileEditorStyle(),
+          footer: generateFooter(),
+        ),
+      ),
+    );
+  }
+
+  EditorStyle desktopEditorStyle() {
+    return EditorStyle.desktop(
+      padding: widget.editorPadding,
+      cursorColor: Theme.of(context).colorScheme.primary,
+      selectionColor: Theme.of(context).colorScheme.neutral,
+      textStyleConfiguration: widget.textStyleConfiguration ??
+          TextStyleConfiguration(
+            text: Theme.of(context).textTheme.bodySmall!,
+          ),
+    );
+  }
+
+  EditorStyle mobileEditorStyle() {
+    return EditorStyle.mobile(
+      padding: widget.editorPadding,
+      cursorColor: Theme.of(context).colorScheme.primary,
+      selectionColor: Theme.of(context).colorScheme.neutral,
+      textStyleConfiguration: widget.textStyleConfiguration ??
+          TextStyleConfiguration(
+            text: Theme.of(context).textTheme.bodySmall!,
+          ),
+    );
   }
 }

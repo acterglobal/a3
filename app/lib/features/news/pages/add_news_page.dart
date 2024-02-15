@@ -18,6 +18,7 @@ import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_post_editor/select_action_item.dart';
 import 'package:acter/features/news/widgets/news_post_editor/news_slide_options.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -270,14 +271,17 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
 
   Widget slideTextPostUI(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+      padding: const EdgeInsets.all(5.0),
       alignment: Alignment.center,
       color: selectedNewsPost!.backgroundColor,
       child: HtmlEditor(
+        alignment: Alignment.center,
         key: NewsUpdateKeys.textSlideInputField,
         initialHtml: selectedNewsPost!.html,
         initialMarkdown: selectedNewsPost!.text,
         editable: true,
+        autoFocus: true,
+        shrinkWrap: true,
         // minLines: 1,
         // maxLines: 10,
         onChanged: (body, html) {

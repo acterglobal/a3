@@ -21,8 +21,9 @@ class TextSlide extends ConsumerWidget {
     final slideContent = slide.msgContent();
     final formattedText = slideContent.formattedBody();
     return Container(
-      color: bgColor,
+      padding: const EdgeInsets.all(5.0),
       alignment: Alignment.center,
+      color: bgColor,
       child: formattedText != null
           ? RenderHtml(
               key: NewsUpdateKeys.textUpdateContent,
