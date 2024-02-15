@@ -20755,6 +20755,28 @@ class Api {
         int,
         int,
       )>();
+  late final _clientTextHtmlDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Client_text_html_draft");
+
+  late final _clientTextHtmlDraft = _clientTextHtmlDraftPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _clientImageDraftPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -43503,6 +43525,54 @@ class Client {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = MsgContentDraft._(_api, tmp7_1);
     return tmp6;
+  }
+
+  /// make draft to send html marked up msg
+  MsgContentDraft textHtmlDraft(
+    String html,
+    String plain,
+  ) {
+    final tmp1 = html;
+    final tmp5 = plain;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._clientTextHtmlDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgContentDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = MsgContentDraft._(_api, tmp11_1);
+    return tmp10;
   }
 
   /// make draft to send image msg

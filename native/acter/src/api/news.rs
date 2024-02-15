@@ -335,6 +335,10 @@ impl NewsSlideDraft {
                 let text_content = TextMessageEventContent::markdown(body);
                 NewsContent::Text(text_content)
             }
+            MsgContentDraft::TextHtml { html, plain } => {
+                let text_content = TextMessageEventContent::html(plain, html);
+                NewsContent::Text(text_content)
+            }
             MsgContentDraft::Image { source, info } => {
                 let info = info.expect("image info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");

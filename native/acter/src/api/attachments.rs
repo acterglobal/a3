@@ -294,8 +294,9 @@ impl MsgContentDraft {
         room: Room,
     ) -> Result<Option<AttachmentContent>> {
         match self {
-            MsgContentDraft::TextPlain { .. } => Ok(None),
-            MsgContentDraft::TextMarkdown { .. } => Ok(None),
+            MsgContentDraft::TextPlain { .. }
+            | MsgContentDraft::TextMarkdown { .. }
+            | MsgContentDraft::TextHtml { .. } => Ok(None),
             MsgContentDraft::Image { source, info } => {
                 let info = info.expect("image info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");

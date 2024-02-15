@@ -2288,6 +2288,9 @@ object Client {
     /// make draft to send text markdown msg
     fn text_markdown_draft(body: string) -> MsgContentDraft;
 
+    /// make draft to send html marked up msg
+    fn text_html_draft(html: string, plain: string) -> MsgContentDraft;
+
     /// make draft to send image msg
     fn image_draft(source: string, mimetype: string) -> MsgContentDraft;
 
