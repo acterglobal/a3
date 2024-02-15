@@ -281,22 +281,9 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
         editable: true,
         autoFocus: true,
         shrinkWrap: true,
-        // minLines: 1,
-        // maxLines: 10,
         onChanged: (body, html) {
           ref.read(newsStateProvider.notifier).changeTextSlideValue(body, html);
         },
-        // decoration: InputDecoration(
-        //   fillColor: Colors.transparent,
-        //   hintText: 'Type a text',
-        //   hintStyle: Theme.of(context)
-        //       .textTheme
-        //       .titleMedium!
-        //       .copyWith(color: Colors.white.withOpacity(0.5)),
-        //   border: InputBorder.none,
-        //   enabledBorder: InputBorder.none,
-        //   focusedBorder: InputBorder.none,
-        // ),
       ),
     );
   }
