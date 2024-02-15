@@ -56,7 +56,10 @@ pub use uniffi_api::*;
 
 pub use account::Account;
 pub use acter_core::{
-    events::{news::NewsContent, Colorize, ColorizeBuilder, ObjRef, RefDetails, UtcDateTime},
+    events::{
+        news::NewsContent, Colorize, ColorizeBuilder, ObjRef, ObjRefBuilder, RefDetails,
+        RefDetailsBuilder, UtcDateTime,
+    },
     models::{ActerModel, Tag, TextMessageContent},
 };
 pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
@@ -73,9 +76,10 @@ pub use calendar_events::{CalendarEvent, CalendarEventDraft, CalendarEventUpdate
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
-    duration_from_secs, new_colorize_builder, new_thumb_size, DeviceRecord, MediaSource,
-    MsgContent, OptionBuffer, OptionRsvpStatus, OptionString, ReactionRecord, ThumbnailInfo,
-    ThumbnailSize,
+    duration_from_secs, new_calendar_event_ref_builder, new_colorize_builder, new_link_ref_builder,
+    new_obj_ref_builder, new_task_list_ref_builder, new_task_ref_builder, new_thumb_size,
+    DeviceRecord, MediaSource, MsgContent, OptionBuffer, OptionRsvpStatus, OptionString,
+    ReactionRecord, ThumbnailInfo, ThumbnailSize,
 };
 pub use convo::{
     new_convo_settings_builder, Convo, ConvoDiff, CreateConvoSettings, CreateConvoSettingsBuilder,

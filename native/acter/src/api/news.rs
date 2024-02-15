@@ -9,7 +9,7 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
-use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
+use ruma_common::{EventId, OwnedEventId, OwnedRoomId, OwnedUserId, RoomId};
 use ruma_events::room::message::{
     AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
     LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
@@ -472,6 +472,7 @@ impl NewsSlideDraft {
             .colors(self.colorize_builder.build())
             .build()?)
     }
+
     #[allow(clippy::boxed_local)]
     pub fn add_reference(&mut self, reference: Box<ObjRef>) -> &Self {
         self.references.push(*reference);
@@ -739,18 +740,6 @@ impl Space {
             client: self.client.clone(),
             room: self.inner.room.clone(),
             content: Default::default(),
-            slides: vec![],
-        })
-    }
-
-    pub fn news_draft_with_builder(&self, content: NewsEntryBuilder) -> Result<NewsEntryDraft> {
-        if !self.is_joined() {
-            bail!("Unable to create news for spaces we are not part on");
-        }
-        Ok(NewsEntryDraft {
-            client: self.client.clone(),
-            room: self.inner.room.clone(),
-            content,
             slides: vec![],
         })
     }

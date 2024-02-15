@@ -56,12 +56,8 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
   }
 
   void changeTextSlideValue(String body, String? html) {
-    NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-    selectedNewsSlide?.text = body;
-    selectedNewsSlide?.html = html;
-    state = state.copyWith(
-      currentNewsSlide: selectedNewsSlide,
-    );
+    state.currentNewsSlide?.text = body;
+    state.currentNewsSlide?.html = html;
   }
 
   void changeSelectedSlide(NewsSlideItem newsSlideModel) {
