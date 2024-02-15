@@ -30,7 +30,7 @@ impl FromStr for TaskAction {
             "embed-mark-done" => Ok(TaskAction::EmbedMarkDone),
             _ => Err(crate::Error::FailedToParse {
                 model_type: "TaskAction".to_owned(),
-                msg: "couldn't parse TaskAction".to_owned(),
+                msg: format!("{s} is not a valid TaskAction"),
             }),
         }
     }
@@ -68,7 +68,7 @@ impl FromStr for TaskListAction {
             "embed-subscribe" => Ok(TaskListAction::EmbedSubscribe),
             _ => Err(crate::Error::FailedToParse {
                 model_type: "TaskListAction".to_owned(),
-                msg: "couldn't parse TaskListAction".to_owned(),
+                msg: format!("{s} is not a valid TaskListAction"),
             }),
         }
     }
@@ -100,7 +100,7 @@ impl FromStr for CalendarEventAction {
             "embed-rsvp" => Ok(CalendarEventAction::EmbedRsvp),
             _ => Err(crate::Error::FailedToParse {
                 model_type: "CalendarEventAction".to_owned(),
-                msg: "couldn't parse CalendarEventAction".to_owned(),
+                msg: format!("{s} is not a valid CalendarEventAction"),
             }),
         }
     }

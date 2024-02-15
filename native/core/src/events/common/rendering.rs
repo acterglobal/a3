@@ -35,7 +35,7 @@ impl FromStr for Position {
             "bottom-right" => Ok(Position::BottomRight),
             _ => Err(crate::Error::FailedToParse {
                 model_type: "Position".to_owned(),
-                msg: "couldn't parse Position".to_owned(),
+                msg: format!("{s} is not a valid Position"),
             }),
         }
     }
