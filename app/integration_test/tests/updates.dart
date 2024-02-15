@@ -5,6 +5,7 @@ import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
+import 'package:acter/features/search/model/keys.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,17 +14,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
 import '../support/setup.dart';
 import '../support/spaces.dart';
+import '../support/util.dart';
 
 extension ActerNews on ConvenientTest {
-  Future<void> createTextNews(String spaceId, String text) async {
-    await find.byKey(Keys.mainNav).should(findsOneWidget);
-    final updatesKey = find.byKey(MainNavKeys.updates);
-    await updatesKey.should(findsOneWidget);
-    await updatesKey.tap();
+  Future<void> openCreateNews() async {
+    await navigateTo([
+      Keys.mainNav,
+      MainNavKeys.quickJump,
+      QuickJumpKeys.createUpdateAction,
+    ]);
+  }
 
-    final newsCreateUpdatesKey = find.byKey(NewsUpdateKeys.addNewsUpdate);
-    await newsCreateUpdatesKey.should(findsOneWidget);
-    await newsCreateUpdatesKey.tap();
+  Future<void> createTextNews(String spaceId, String text) async {
+    await openCreateNews();
 
     final addTextSlideKey = find.byKey(NewsUpdateKeys.addTextSlide);
     await addTextSlideKey.should(findsOneWidget);
@@ -48,14 +51,7 @@ extension ActerNews on ConvenientTest {
   }
 
   Future<void> createImageNews(String spaceId) async {
-    await find.byKey(Keys.mainNav).should(findsOneWidget);
-    final updatesKey = find.byKey(MainNavKeys.updates);
-    await updatesKey.should(findsOneWidget);
-    await updatesKey.tap();
-
-    final newsCreateUpdatesKey = find.byKey(NewsUpdateKeys.addNewsUpdate);
-    await newsCreateUpdatesKey.should(findsOneWidget);
-    await newsCreateUpdatesKey.tap();
+    await openCreateNews();
 
     final addImageSlideKey = find.byKey(NewsUpdateKeys.addImageSlide);
     await addImageSlideKey.should(findsOneWidget);
@@ -86,14 +82,7 @@ extension ActerNews on ConvenientTest {
   }
 
   Future<void> createVideoNews(String spaceId) async {
-    await find.byKey(Keys.mainNav).should(findsOneWidget);
-    final updatesKey = find.byKey(MainNavKeys.updates);
-    await updatesKey.should(findsOneWidget);
-    await updatesKey.tap();
-
-    final newsCreateUpdatesKey = find.byKey(NewsUpdateKeys.addNewsUpdate);
-    await newsCreateUpdatesKey.should(findsOneWidget);
-    await newsCreateUpdatesKey.tap();
+    await openCreateNews();
 
     final addVideoSlideKey = find.byKey(NewsUpdateKeys.addVideoSlide);
     await addVideoSlideKey.should(findsOneWidget);
@@ -123,14 +112,7 @@ extension ActerNews on ConvenientTest {
   }
 
   Future<void> createMultipleNews(String spaceId, String text) async {
-    await find.byKey(Keys.mainNav).should(findsOneWidget);
-    final updatesKey = find.byKey(MainNavKeys.updates);
-    await updatesKey.should(findsOneWidget);
-    await updatesKey.tap();
-
-    final newsCreateUpdatesKey = find.byKey(NewsUpdateKeys.addNewsUpdate);
-    await newsCreateUpdatesKey.should(findsOneWidget);
-    await newsCreateUpdatesKey.tap();
+    await openCreateNews();
 
     // Adding text slide
     final addTextSlideKey = find.byKey(NewsUpdateKeys.addTextSlide);

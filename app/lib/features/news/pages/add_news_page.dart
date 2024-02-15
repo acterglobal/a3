@@ -4,6 +4,7 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -435,6 +436,7 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
       ref.invalidate(newsStateProvider);
       // Navigate back to update screen.
       Navigator.of(context).pop();
+      context.pushNamed(Routes.main.name); // go to the home / main updates
     } catch (err) {
       EasyLoading.showError('$displayMsg failed: \n $err');
     }
