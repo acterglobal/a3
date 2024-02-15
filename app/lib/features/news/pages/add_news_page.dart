@@ -18,6 +18,7 @@ import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_post_editor/select_action_item.dart';
 import 'package:acter/features/news/widgets/news_post_editor/news_slide_options.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -35,13 +36,28 @@ class AddNewsPage extends ConsumerStatefulWidget {
 }
 
 class _AddNewsState extends ConsumerState<AddNewsPage> {
+  EditorState textEditorState = EditorState.blank();
   NewsSlideItem? selectedNewsPost;
 
   //Build UI
   @override
   Widget build(BuildContext context) {
-    selectedNewsPost = ref.watch(newsStateProvider).currentNewsSlide;
+    ref.listen(newsStateProvider.select((i) => i.currentNewsSlide),
+        (prev, next) async {
+      if (next != null && next.type == NewsSlideType.text) {
+        final document = next.html != null
+            ? ActerDocumentHelpers.fromHtml(next.html!)
+            : ActerDocumentHelpers.fromMarkdown(next.text ?? '');
 
+        setState(() {
+          debugPrint('New document applying: $next -> $document');
+          selectedNewsPost = next;
+          textEditorState = EditorState(document: document);
+        });
+      } else {
+        setState(() => selectedNewsPost = next);
+      }
+    });
     return Scaffold(
       appBar: appBarUI(context),
       body: bodyUI(context),
@@ -269,15 +285,17 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
   }
 
   Widget slideTextPostUI(BuildContext context) {
+    final backgroundColor = ref.watch(
+      newsStateProvider.select((i) => i.currentNewsSlide?.backgroundColor),
+    );
     return Container(
       padding: const EdgeInsets.all(5.0),
       alignment: Alignment.center,
-      color: selectedNewsPost!.backgroundColor,
+      color: backgroundColor,
       child: HtmlEditor(
         alignment: Alignment.center,
         key: NewsUpdateKeys.textSlideInputField,
-        initialHtml: selectedNewsPost!.html,
-        initialMarkdown: selectedNewsPost!.text,
+        editorState: textEditorState,
         editable: true,
         autoFocus: true,
         shrinkWrap: true,

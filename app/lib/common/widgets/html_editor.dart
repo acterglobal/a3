@@ -33,22 +33,6 @@ AppFlowyEditorMarkdownCodec defaultMarkdownCodec =
 );
 
 extension ActerEditorStateHelpers on EditorState {
-  static EditorState fromHtml(
-    String content, {
-    AppFlowyEditorHTMLCodec? codec,
-  }) {
-    return EditorState(document: (codec ?? defaultHtmlCodec).decode(content));
-  }
-
-  static EditorState fromMarkdown(
-    String content, {
-    AppFlowyEditorMarkdownCodec? codec,
-  }) {
-    return EditorState(
-      document: (codec ?? defaultMarkdownCodec).decode(content),
-    );
-  }
-
   String intoHtml({
     AppFlowyEditorHTMLCodec? codec,
   }) {
@@ -59,6 +43,31 @@ extension ActerEditorStateHelpers on EditorState {
     AppFlowyEditorMarkdownCodec? codec,
   }) {
     return (codec ?? defaultMarkdownCodec).encode(document);
+  }
+}
+
+extension ActerDocumentHelpers on Document {
+  static Document fromHtml(
+    String content, {
+    AppFlowyEditorHTMLCodec? codec,
+  }) {
+    return (codec ?? defaultHtmlCodec).decode(content);
+  }
+
+  static Document fromMarkdown(
+    String content, {
+    AppFlowyEditorMarkdownCodec? codec,
+  }) {
+    return (codec ?? defaultMarkdownCodec).decode(content);
+  }
+
+  static Document fromMsgContent(MsgContent msgContent) {
+    final formattedBody = msgContent.formattedBody();
+    if (formattedBody != null) {
+      return ActerDocumentHelpers.fromHtml(formattedBody);
+    } else {
+      return ActerDocumentHelpers.fromMarkdown(msgContent.body());
+    }
   }
 }
 
@@ -74,20 +83,16 @@ class HtmlEditor extends StatefulWidget {
   final bool autoFocus;
   final bool editable;
   final bool shrinkWrap;
+  final EditorState? editorState;
   final EdgeInsets? editorPadding;
-  final MsgContent? content;
   final TextStyleConfiguration? textStyleConfiguration;
-  final String? initialHtml;
-  final String? initialMarkdown;
   final ExportCallback? onSave;
   final ExportCallback? onChanged;
   final Function()? onCancel;
   const HtmlEditor({
     super.key,
     this.alignment = Alignment.topLeft,
-    this.content,
-    this.initialHtml,
-    this.initialMarkdown,
+    this.editorState,
     this.onSave,
     this.onChanged,
     this.onCancel,
@@ -106,7 +111,7 @@ class HtmlEditor extends StatefulWidget {
 
 class HtmlEditorState extends State<HtmlEditor> {
   late EditorState editorState;
-  late final EditorScrollController editorScrollController;
+  late EditorScrollController editorScrollController;
   final TextDirection _textDirection = TextDirection.ltr;
   // we store this to the stream stays alive
   // ignore: unused_field
@@ -115,42 +120,38 @@ class HtmlEditorState extends State<HtmlEditor> {
   @override
   void initState() {
     super.initState();
+    updateEditorState();
+  }
 
-    final msgContent = widget.content;
+  void updateEditorState() {
+    setState(() {
+      editorState = widget.editorState ?? EditorState.blank();
 
-    if (msgContent != null) {
-      final formattedBody = msgContent.formattedBody();
-      if (formattedBody != null) {
-        editorState = ActerEditorStateHelpers.fromHtml(formattedBody);
-      } else {
-        editorState = ActerEditorStateHelpers.fromMarkdown(msgContent.body());
+      editorScrollController = EditorScrollController(
+        editorState: editorState,
+        shrinkWrap: widget.shrinkWrap,
+      );
+
+      _changeListener?.cancel();
+      if (widget.onChanged != null) {
+        _changeListener = editorState.transactionStream.listen((event) {
+          _triggerExport(widget.onChanged!);
+        });
       }
-    } else if (widget.initialHtml != null) {
-      editorState = ActerEditorStateHelpers.fromHtml(widget.initialHtml!);
-    } else if (widget.initialMarkdown != null) {
-      editorState =
-          ActerEditorStateHelpers.fromMarkdown(widget.initialMarkdown!);
-    } else {
-      editorState = EditorState.blank();
-    }
+    });
+  }
 
-    editorScrollController = EditorScrollController(
-      editorState: editorState,
-      shrinkWrap: widget.shrinkWrap,
-    );
-
-    if (widget.onChanged != null) {
-      _changeListener = editorState.transactionStream.listen((event) {
-        _triggerExport(widget.onChanged!);
-      });
+  @override
+  void didUpdateWidget(covariant HtmlEditor oldWidget) {
+    if (oldWidget.editorState != widget.editorState) {
+      updateEditorState();
     }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
   void dispose() {
     editorScrollController.dispose();
-    editorState.dispose();
-
     super.dispose();
   }
 
