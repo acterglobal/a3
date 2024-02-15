@@ -310,7 +310,6 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       alignment: Alignment.center,
       color: backgroundColor,
       child: HtmlEditor(
-        alignment: Alignment.center,
         key: NewsUpdateKeys.textSlideInputField,
         editorState: textEditorState,
         editable: true,

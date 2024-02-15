@@ -77,7 +77,6 @@ class HtmlEditor extends StatefulWidget {
   static const saveEditKey = Key('html-editor-save');
   static const cancelEditKey = Key('html-editor-cancel');
 
-  final Alignment alignment;
   final Widget? header;
   final Widget? footer;
   final bool autoFocus;
@@ -91,7 +90,6 @@ class HtmlEditor extends StatefulWidget {
   final Function()? onCancel;
   const HtmlEditor({
     super.key,
-    this.alignment = Alignment.topLeft,
     this.editorState,
     this.onSave,
     this.onChanged,
