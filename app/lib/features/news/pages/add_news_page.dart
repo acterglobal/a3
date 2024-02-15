@@ -6,6 +6,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
+import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
@@ -34,8 +35,6 @@ class AddNewsPage extends ConsumerStatefulWidget {
 }
 
 class _AddNewsState extends ConsumerState<AddNewsPage> {
-  //General variable declaration
-  final textController = TextEditingController();
   NewsSlideItem? selectedNewsPost;
 
   //Build UI
@@ -270,32 +269,31 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
   }
 
   Widget slideTextPostUI(BuildContext context) {
-    textController.text = selectedNewsPost!.text ?? '';
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5.0),
       alignment: Alignment.center,
       color: selectedNewsPost!.backgroundColor,
-      child: TextField(
+      child: HtmlEditor(
         key: NewsUpdateKeys.textSlideInputField,
-        controller: textController,
-        textAlign: TextAlign.center,
-        textInputAction: TextInputAction.newline,
-        minLines: 1,
-        maxLines: 10,
-        onChanged: (value) {
-          ref.read(newsStateProvider.notifier).changeTextSlideValue(value);
+        initialHtml: selectedNewsPost!.html,
+        initialMarkdown: selectedNewsPost!.text,
+        editable: true,
+        // minLines: 1,
+        // maxLines: 10,
+        onChanged: (body, html) {
+          ref.read(newsStateProvider.notifier).changeTextSlideValue(body, html);
         },
-        decoration: InputDecoration(
-          fillColor: Colors.transparent,
-          hintText: 'Type a text',
-          hintStyle: Theme.of(context)
-              .textTheme
-              .titleMedium!
-              .copyWith(color: Colors.white.withOpacity(0.5)),
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-        ),
+        // decoration: InputDecoration(
+        //   fillColor: Colors.transparent,
+        //   hintText: 'Type a text',
+        //   hintStyle: Theme.of(context)
+        //       .textTheme
+        //       .titleMedium!
+        //       .copyWith(color: Colors.white.withOpacity(0.5)),
+        //   border: InputBorder.none,
+        //   enabledBorder: InputBorder.none,
+        //   focusedBorder: InputBorder.none,
+        // ),
       ),
     );
   }
@@ -348,8 +346,9 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
             EasyLoading.showError('Please add some text');
             return;
           }
-
-          final textDraft = client.textMarkdownDraft(slidePost.text!);
+          final textDraft = slidePost.html != null
+              ? client.textHtmlDraft(slidePost.html!, slidePost.text!)
+              : client.textMarkdownDraft(slidePost.text!);
           final textSlideDraft = textDraft.intoNewsSlideDraft();
 
           textSlideDraft.color(

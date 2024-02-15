@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
+import '../support/appflowy_editor.dart';
 import '../support/setup.dart';
 import '../support/spaces.dart';
 import '../support/util.dart';
@@ -37,9 +38,7 @@ extension ActerNews on ConvenientTest {
     await slideBackgroundColorKey.should(findsOneWidget);
     await slideBackgroundColorKey.tap();
 
-    final updateSlideTextField = find.byKey(NewsUpdateKeys.textSlideInputField);
-    await updateSlideTextField.should(findsOneWidget);
-    await updateSlideTextField.enterTextWithoutReplace(text);
+    await enterIntoAppflowyEditor(NewsUpdateKeys.textSlideInputField, text);
 
     await slideBackgroundColorKey.tap();
 

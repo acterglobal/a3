@@ -12944,25 +12944,14 @@ class Api {
       _NewsSlideTypeStrReturn Function(
         int,
       )>();
-  late final _newsSlideHasFormattedTextPtr = _lookup<
+  late final _newsSlideUniqueIdPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint8 Function(
+          _NewsSlideUniqueIdReturn Function(
             ffi.Int64,
-          )>>("__NewsSlide_has_formatted_text");
+          )>>("__NewsSlide_unique_id");
 
-  late final _newsSlideHasFormattedText =
-      _newsSlideHasFormattedTextPtr.asFunction<
-          int Function(
-            int,
-          )>();
-  late final _newsSlideTextPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsSlideTextReturn Function(
-            ffi.Int64,
-          )>>("__NewsSlide_text");
-
-  late final _newsSlideText = _newsSlideTextPtr.asFunction<
-      _NewsSlideTextReturn Function(
+  late final _newsSlideUniqueId = _newsSlideUniqueIdPtr.asFunction<
+      _NewsSlideUniqueIdReturn Function(
         int,
       )>();
   late final _newsSlideReferencesPtr = _lookup<
@@ -28109,23 +28098,11 @@ class NewsSlide {
     return tmp2;
   }
 
-  /// whether this text-slide has a formatted html body
-  bool hasFormattedText() {
+  /// the unique, predictable ID for this slide
+  String uniqueId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._newsSlideHasFormattedText(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3 > 0;
-    return tmp2;
-  }
-
-  /// the textual content of this slide
-  String text() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._newsSlideText(
+    final tmp1 = _api._newsSlideUniqueId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -45940,7 +45917,7 @@ class _NewsSlideTypeStrReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _NewsSlideTextReturn extends ffi.Struct {
+class _NewsSlideUniqueIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -62,6 +64,8 @@ extension ActerEditorStateHelpers on EditorState {
   }
 }
 
+typedef ExportCallback = Function(String, String?);
+
 class HtmlEditor extends StatefulWidget {
   static const saveEditKey = Key('html-editor-save');
   static const cancelEditKey = Key('html-editor-cancel');
@@ -72,12 +76,18 @@ class HtmlEditor extends StatefulWidget {
   final bool editable;
   final EdgeInsets? editorPadding;
   final MsgContent? content;
-  final Function(String, String?)? onSave;
+  final String? initialHtml;
+  final String? initialMarkdown;
+  final ExportCallback? onSave;
+  final ExportCallback? onChanged;
   final Function()? onCancel;
   const HtmlEditor({
     super.key,
     this.content,
+    this.initialHtml,
+    this.initialMarkdown,
     this.onSave,
+    this.onChanged,
     this.onCancel,
     this.autoFocus = true,
     this.editable = false,
@@ -94,6 +104,9 @@ class HtmlEditorState extends State<HtmlEditor> {
   late EditorState editorState;
   late final EditorScrollController editorScrollController;
   final TextDirection _textDirection = TextDirection.ltr;
+  // we store this to the stream stays alive
+  // ignore: unused_field
+  StreamSubscription<(TransactionTime, Transaction)>? _changeListener;
 
   @override
   void initState() {
@@ -108,11 +121,22 @@ class HtmlEditorState extends State<HtmlEditor> {
       } else {
         editorState = ActerEditorStateHelpers.fromMarkdown(msgContent.body());
       }
+    } else if (widget.initialHtml != null) {
+      editorState = ActerEditorStateHelpers.fromHtml(widget.initialHtml!);
+    } else if (widget.initialMarkdown != null) {
+      editorState =
+          ActerEditorStateHelpers.fromMarkdown(widget.initialMarkdown!);
     } else {
       editorState = EditorState.blank();
     }
 
     editorScrollController = EditorScrollController(editorState: editorState);
+
+    if (widget.onChanged != null) {
+      _changeListener = editorState.transactionStream.listen((event) {
+        _triggerExport(widget.onChanged!);
+      });
+    }
   }
 
   @override
@@ -121,6 +145,12 @@ class HtmlEditorState extends State<HtmlEditor> {
     editorState.dispose();
 
     super.dispose();
+  }
+
+  void _triggerExport(ExportCallback exportFn) {
+    final plain = editorState.intoMarkdown();
+    final htmlBody = editorState.intoHtml();
+    exportFn(plain, htmlBody != plain ? htmlBody : null);
   }
 
   @override
@@ -144,19 +174,11 @@ class HtmlEditorState extends State<HtmlEditor> {
           width: 10,
         ),
       );
-      final onSave = widget.onSave;
-      if (onSave != null) {
+      if (widget.onSave != null) {
         children.add(
           ElevatedButton(
             key: HtmlEditor.saveEditKey,
-            onPressed: () {
-              final plain = editorState.intoMarkdown();
-              final htmlBody = editorState.intoHtml();
-              onSave(
-                plain,
-                htmlBody != plain ? htmlBody : null,
-              );
-            },
+            onPressed: () => _triggerExport(widget.onSave!),
             child: const Text('Save'),
           ),
         );

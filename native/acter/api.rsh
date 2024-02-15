@@ -288,10 +288,9 @@ object NewsSlide {
     /// the content of this slide
     fn type_str() -> string;
 
-    /// whether this text-slide has a formatted html body
-    fn has_formatted_text() -> bool;
-    /// the textual content of this slide
-    fn text() -> string;
+    /// the unique, predictable ID for this slide
+    fn unique_id() -> string;
+
     /// the references linked in this slide
     fn references() -> Vec<ObjRef>;
 
