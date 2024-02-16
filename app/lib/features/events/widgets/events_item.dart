@@ -29,7 +29,7 @@ class EventItem extends ConsumerWidget {
         trailing: myRsvpStatus.when(
           data: (data) {
             return Chip(
-              label: Text(data.status()?.tag.toString() ?? 'Pending'),
+              label: Text(data.statusStr(true) ?? 'Pending'),
             );
           },
           error: (e, st) => Chip(

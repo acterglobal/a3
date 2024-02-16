@@ -217,6 +217,9 @@ object OptionBuffer {
 object OptionRsvpStatus {
     /// get status
     fn status() -> Option<RsvpStatus>;
+
+    /// get status in string
+    fn status_str(pascal_case: bool) -> Option<string>;
 }
 
 object UserProfile {

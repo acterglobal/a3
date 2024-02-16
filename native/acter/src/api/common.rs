@@ -69,6 +69,29 @@ impl OptionRsvpStatus {
     pub fn status(&self) -> Option<RsvpStatus> {
         self.status.clone()
     }
+
+    pub fn status_str(&self, pascal_case: bool) -> Option<String> {
+        let status = self.status.clone();
+        if pascal_case {
+            if let Some(status) = status {
+                match status {
+                    RsvpStatus::Yes => {
+                        return Some("Yes".to_owned());
+                    }
+                    RsvpStatus::Maybe => {
+                        return Some("Maybe".to_owned());
+                    }
+                    RsvpStatus::No => {
+                        return Some("No".to_owned());
+                    }
+                }
+            }
+            None
+        } else {
+            // kebab-case
+            status.map(|x| x.to_string())
+        }
+    }
 }
 
 pub struct MediaSource {

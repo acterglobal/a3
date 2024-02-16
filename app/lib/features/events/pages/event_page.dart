@@ -133,19 +133,16 @@ class CalendarEventPage extends ConsumerWidget {
     Set<RsvpStatusTag?> rsvp = <RsvpStatusTag?>{null};
     myRsvpStatus.maybeWhen(
       data: (data) {
-        final status = data.status();
-        if (status != null) {
-          switch (status.tag) {
-            case RsvpStatusTag.Yes:
-              rsvp = <RsvpStatusTag?>{RsvpStatusTag.Yes};
-              break;
-            case RsvpStatusTag.Maybe:
-              rsvp = <RsvpStatusTag?>{RsvpStatusTag.Maybe};
-              break;
-            case RsvpStatusTag.No:
-              rsvp = <RsvpStatusTag?>{RsvpStatusTag.No};
-              break;
-          }
+        switch (data.statusStr(true)) {
+          case 'Yes':
+            rsvp = <RsvpStatusTag?>{RsvpStatusTag.Yes};
+            break;
+          case 'Maybe':
+            rsvp = <RsvpStatusTag?>{RsvpStatusTag.Maybe};
+            break;
+          case 'No':
+            rsvp = <RsvpStatusTag?>{RsvpStatusTag.No};
+            break;
         }
       },
       orElse: () => null,

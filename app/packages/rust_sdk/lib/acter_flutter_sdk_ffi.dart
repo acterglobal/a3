@@ -13346,6 +13346,19 @@ class Api {
       _OptionRsvpStatusStatusReturn Function(
         int,
       )>();
+  late final _optionRsvpStatusStatusStrPtr = _lookup<
+      ffi.NativeFunction<
+          _OptionRsvpStatusStatusStrReturn Function(
+            ffi.Int64,
+            ffi.Uint8,
+          )>>("__OptionRsvpStatus_status_str");
+
+  late final _optionRsvpStatusStatusStr =
+      _optionRsvpStatusStatusStrPtr.asFunction<
+          _OptionRsvpStatusStatusStrReturn Function(
+            int,
+            int,
+          )>();
   late final _userProfileUserIdPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -28192,6 +28205,46 @@ class OptionRsvpStatus {
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = RsvpStatus._(_api, tmp4_1);
     return tmp2;
+  }
+
+  /// get status in string
+  String? statusStr(
+    bool pascalCase,
+  ) {
+    final tmp1 = pascalCase;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    final tmp3 = _api._optionRsvpStatusStatusStr(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3.arg0;
+    final tmp6 = tmp3.arg1;
+    final tmp7 = tmp3.arg2;
+    final tmp8 = tmp3.arg3;
+    if (tmp5 == 0) {
+      return null;
+    }
+    if (tmp7 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp6_ptr = ffi.Pointer.fromAddress(tmp6);
+    List<int> tmp6_buf = [];
+    final tmp6_precast = tmp6_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp7; i++) {
+      int char = tmp6_precast.elementAt(i).value;
+      tmp6_buf.add(char);
+    }
+    final tmp4 = utf8.decode(tmp6_buf, allowMalformed: true);
+    if (tmp8 > 0) {
+      final ffi.Pointer<ffi.Void> tmp6_0;
+      tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+      _api.__deallocate(tmp6_0, tmp8 * 1, 1);
+    }
+    return tmp4;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -46796,6 +46849,17 @@ class _OptionRsvpStatusStatusReturn extends ffi.Struct {
   external int arg0;
   @ffi.Int64()
   external int arg1;
+}
+
+class _OptionRsvpStatusStatusStrReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
 }
 
 class _UserProfileGetDisplayNameReturn extends ffi.Struct {
