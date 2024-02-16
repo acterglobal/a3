@@ -41,7 +41,7 @@ class TaskInfo extends ConsumerWidget {
                       isDone
                           ? Atlas.check_circle_thin
                           : Icons.radio_button_off_outlined,
-                      size: 48,
+                      size: 28,
                     ),
                   ),
                   onTap: () async {
@@ -101,31 +101,32 @@ class TaskInfo extends ConsumerWidget {
       leading: const Icon(Atlas.business_man_thin),
       title: Wrap(
         children: [
-          ...assignees
-              .map(
-                (userId) => UserChip(
-                  visualDensity: VisualDensity.compact,
-                  roomId: roomId,
-                  memberId: userId,
-                  deleteIcon:
-                      const Icon(Atlas.xmark_circle_thin, key: selfUnassignKey),
-                  onDeleted: account.hasValue &&
-                          account.value!.userId().toString() == userId
-                      ? () async {
-                          await task.unassignSelf();
-                          EasyLoading.showToast(
-                            'assignment withdrawn',
-                            toastPosition: EasyLoadingToastPosition.bottom,
-                          );
-                        }
-                      : null,
-                ),
-              )
-              ,
+          ...assignees.map(
+            (userId) => UserChip(
+              visualDensity: VisualDensity.compact,
+              roomId: roomId,
+              memberId: userId,
+              deleteIcon: const Icon(
+                Atlas.xmark_circle_thin,
+                key: selfUnassignKey,
+                size: 20,
+              ),
+              onDeleted: account.hasValue &&
+                      account.value!.userId().toString() == userId
+                  ? () async {
+                      await task.unassignSelf();
+                      EasyLoading.showToast(
+                        'Assignment withdrawn',
+                        toastPosition: EasyLoadingToastPosition.bottom,
+                      );
+                    }
+                  : null,
+            ),
+          ),
           !task.isAssignedToMe()
               ? ActionChip(
                   key: selfAssignKey,
-                  label: const Text('volunteer'),
+                  label: const Text('Volunteer'),
                   onPressed: () async {
                     await task.assignSelf();
                     EasyLoading.showToast(
@@ -267,7 +268,10 @@ class _TaskBodyState extends State<TaskBody> {
                 OutlinedButton(
                   key: TaskBody.cancelEditKey,
                   onPressed: () => setState(() => editMode = false),
-                  child: const Text('cancel'),
+                  child: const Text('Cancel'),
+                ),
+                const SizedBox(
+                  width: 10,
                 ),
                 OutlinedButton(
                   key: TaskBody.saveEditKey,
@@ -297,7 +301,7 @@ class _TaskBodyState extends State<TaskBody> {
                       EasyLoading.showError('Failed to update notes: $e');
                     }
                   },
-                  child: const Text('save'),
+                  child: const Text('Save'),
                 ),
               ],
             ),
@@ -390,7 +394,7 @@ class TaskInfoSkeleton extends StatelessWidget {
               dense: true,
               leading: Icon(Atlas.calendar_date_thin),
               title: Chip(
-                label: Text('due date'),
+                label: Text('Due date'),
               ),
             ),
             const ListTile(

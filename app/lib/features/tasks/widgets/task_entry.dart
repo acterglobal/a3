@@ -64,84 +64,87 @@ class TaskEntry extends ConsumerWidget {
       ),
     );
 
-    return ListTile(
-      horizontalTitleGap: 0,
-      minVerticalPadding: 0,
-      contentPadding: const EdgeInsets.all(0),
-      visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
-      style: ListTileTheme.of(context)
-          .copyWith(
-            contentPadding: const EdgeInsets.all(0),
-            visualDensity: const VisualDensity(horizontal: 0, vertical: 0),
-            minVerticalPadding: 0,
-          )
-          .style,
-      leading: InkWell(
-        key: isDone ? doneKey() : notDoneKey(),
-        child: Padding(
-          padding: const EdgeInsets.only(right: 5),
-          child: Icon(
-            isDone ? Atlas.check_circle_thin : Icons.radio_button_off_outlined,
-          ),
-        ),
-        onTap: () async {
-          final updater = task.updateBuilder();
-          if (!isDone) {
-            updater.markDone();
-          } else {
-            updater.markUndone();
-          }
-          await updater.send();
-          if (onDone != null) {
-            onDone!();
-          }
-        },
-      ),
-      title: InkWell(
-        child: Wrap(
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            Text(
-              task.title(),
-              style: isDone
-                  ? Theme.of(context).textTheme.bodySmall!.copyWith(
-                        fontWeight: FontWeight.w100,
-                        color: AppTheme.brandColorScheme.neutral5,
-                      )
-                  : Theme.of(context).textTheme.bodyMedium!,
-            ),
-            const SizedBox(width: 12),
-            ...extraInfo,
-          ],
-        ),
-        onTap: () {
-          context.pushNamed(
-            Routes.task.name,
-            pathParameters: {
-              'taskId': task.eventIdStr(),
-              'taskListId': task.taskListIdStr(),
-            },
-          );
-        },
-      ),
-      subtitle: showBreadCrumb
-          ? Wrap(
-              children: [
-                RoomAvatarBuilder(
-                  roomId: task.roomIdStr(),
-                  avatarSize: 18,
-                ),
-                const TasksIcon(size: 18),
-                ref.watch(taskListProvider(task.taskListIdStr())).when(
-                      data: (tl) => Text(tl.name()),
-                      error: (e, s) => Text('Loading failed: $e'),
-                      loading: () => const Skeletonizer(
-                        child: Text('some default text'),
-                      ),
-                    ),
-              ],
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: ListTile(
+        horizontalTitleGap: 0,
+        minVerticalPadding: 0,
+        contentPadding: const EdgeInsets.all(0),
+        visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
+        style: ListTileTheme.of(context)
+            .copyWith(
+              contentPadding: const EdgeInsets.all(0),
+              visualDensity: const VisualDensity(horizontal: 0, vertical: 0),
+              minVerticalPadding: 0,
             )
-          : null,
+            .style,
+        leading: InkWell(
+          key: isDone ? doneKey() : notDoneKey(),
+          child: Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: Icon(
+              isDone ? Atlas.check_circle_thin : Icons.radio_button_off_outlined,
+            ),
+          ),
+          onTap: () async {
+            final updater = task.updateBuilder();
+            if (!isDone) {
+              updater.markDone();
+            } else {
+              updater.markUndone();
+            }
+            await updater.send();
+            if (onDone != null) {
+              onDone!();
+            }
+          },
+        ),
+        title: InkWell(
+          child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text(
+                task.title(),
+                style: isDone
+                    ? Theme.of(context).textTheme.bodySmall!.copyWith(
+                          fontWeight: FontWeight.w100,
+                          color: AppTheme.brandColorScheme.neutral5,
+                        )
+                    : Theme.of(context).textTheme.bodyMedium!,
+              ),
+              const SizedBox(width: 12),
+              ...extraInfo,
+            ],
+          ),
+          onTap: () {
+            context.pushNamed(
+              Routes.task.name,
+              pathParameters: {
+                'taskId': task.eventIdStr(),
+                'taskListId': task.taskListIdStr(),
+              },
+            );
+          },
+        ),
+        subtitle: showBreadCrumb
+            ? Wrap(
+                children: [
+                  RoomAvatarBuilder(
+                    roomId: task.roomIdStr(),
+                    avatarSize: 19,
+                  ),
+                  const TasksIcon(size: 19),
+                  ref.watch(taskListProvider(task.taskListIdStr())).when(
+                        data: (tl) => Text(tl.name()),
+                        error: (e, s) => Text('Loading failed: $e'),
+                        loading: () => const Skeletonizer(
+                          child: Text('some default text'),
+                        ),
+                      ),
+                ],
+              )
+            : null,
+      ),
     );
   }
 

@@ -1,10 +1,11 @@
-import 'dart:async';
-
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/icons/tasks_icon.dart';
 import 'package:acter/features/search/model/keys.dart';
+import 'package:acter/features/search/model/util.dart';
 import 'package:acter/features/search/providers/search.dart';
+import 'package:acter/features/search/widgets/pins_builder.dart';
 import 'package:acter/features/search/widgets/quick_actions_builder.dart';
 import 'package:acter/features/search/widgets/spaces_builder.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
@@ -13,12 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class QuickJump extends ConsumerWidget {
-  final Future<void> Function({
-    Routes? route,
-    bool push,
-    String? target,
-    Future<void> Function(BuildContext)? custom,
-  }) navigateTo;
+  final NavigateTo navigateTo;
   final bool expand;
 
   const QuickJump({
@@ -53,9 +49,7 @@ class QuickJump extends ConsumerWidget {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () {
-                navigateTo(route: Routes.myProfile);
-              },
+              onPressed: () => navigateTo(Routes.myProfile),
             ),
             IconButton(
               key: QuickJumpKeys.settings,
@@ -72,9 +66,7 @@ class QuickJump extends ConsumerWidget {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () {
-                navigateTo(route: Routes.settings);
-              },
+              onPressed: () => navigateTo(Routes.settings),
             ),
             isActive(LabsFeature.pins)
                 ? IconButton(
@@ -87,9 +79,7 @@ class QuickJump extends ConsumerWidget {
                             .withOpacity(0.12),
                       ),
                     ),
-                    onPressed: () {
-                      navigateTo(route: Routes.pins);
-                    },
+                    onPressed: () => navigateTo(Routes.pins),
                     icon: const Padding(
                       padding: EdgeInsets.all(5),
                       child: Icon(Atlas.pin_thin, size: 24),
@@ -106,9 +96,7 @@ class QuickJump extends ConsumerWidget {
                             .withOpacity(0.12),
                       ),
                     ),
-                    onPressed: () {
-                      navigateTo(route: Routes.calendarEvents);
-                    },
+                    onPressed: () => navigateTo(Routes.calendarEvents),
                     icon: const Padding(
                       padding: EdgeInsets.all(5),
                       child: Icon(Atlas.calendar_dots_thin, size: 24),
@@ -126,9 +114,8 @@ class QuickJump extends ConsumerWidget {
                             .withOpacity(0.12),
                       ),
                     ),
-                    onPressed: () {
-                      navigateTo(route: Routes.tasks);
-                    },
+                    onPressed: () => navigateTo(Routes.tasks),
+
                     // this is slightly differently sized and padded to look the same as the others
                     icon: const TasksIcon(),
                   )
@@ -140,9 +127,7 @@ class QuickJump extends ConsumerWidget {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () {
-                navigateTo(route: Routes.chat);
-              },
+              onPressed: () => navigateTo(Routes.chat),
               icon: const Padding(
                 padding: EdgeInsets.all(5),
                 child: Icon(
@@ -158,9 +143,7 @@ class QuickJump extends ConsumerWidget {
                       Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                 ),
               ),
-              onPressed: () {
-                navigateTo(route: Routes.activities);
-              },
+              onPressed: () => navigateTo(Routes.activities),
               icon: const Padding(
                 padding: EdgeInsets.all(5),
                 child: Icon(Atlas.audio_wave_thin, size: 24),
@@ -175,8 +158,12 @@ class QuickJump extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final searchValue = ref.watch(searchValueProvider);
+    final h = MediaQuery.of(context).size.height;
 
-    List<Widget> body = [SpacesBuilder(navigateTo: navigateTo)];
+    List<Widget> body = [
+      SpacesBuilder(navigateTo: navigateTo),
+      PinsBuilder(navigateTo: navigateTo),
+    ];
     if (searchValue.isEmpty) {
       body.add(
         const Divider(indent: 24, endIndent: 24),
@@ -193,30 +180,40 @@ class QuickJump extends ConsumerWidget {
     }
 
     return Scaffold(
-      body: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-            child: TextField(
-              autofocus: true,
-              decoration: const InputDecoration(
-                prefixIcon: Icon(
-                  Atlas.magnifying_glass_thin,
-                  color: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            height: h * 0.9,
+            constraints: BoxConstraints(maxHeight: h),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 15,
+                  ),
+                  child: TextField(
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Atlas.magnifying_glass_thin,
+                        color: Theme.of(context).colorScheme.neutral6,
+                        size: 18,
+                      ),
+                      hintText: 'jump to',
+                    ),
+                    onChanged: (String value) async {
+                      ref.read(searchValueProvider.notifier).state = value;
+                    },
+                  ),
                 ),
-                hintText: 'jump to',
-              ),
-              onChanged: (String value) async {
-                ref.read(searchValueProvider.notifier).state = value;
-              },
+                ...body,
+              ],
+              // ),
             ),
           ),
-          ...body,
-        ],
-        // ),
+        ),
       ),
     );
   }
