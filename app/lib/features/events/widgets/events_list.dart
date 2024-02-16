@@ -1,4 +1,5 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/events/widgets/event_list_skeleton_widget.dart';
 import 'package:acter/features/events/widgets/events_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show CalendarEvent;
@@ -52,7 +53,7 @@ class EventsList extends ConsumerWidget {
           ],
         );
       },
-      loading: () => const CircularProgressIndicator(),
+      loading: () => const EventListSkeleton(),
     );
   }
 }
