@@ -55,8 +55,9 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     );
   }
 
-  void changeTextSlideValue(String value) {
-    state.currentNewsSlide?.text = value;
+  void changeTextSlideValue(String body, String? html) {
+    state.currentNewsSlide?.text = body;
+    state.currentNewsSlide?.html = html;
   }
 
   void changeSelectedSlide(NewsSlideItem newsSlideModel) {

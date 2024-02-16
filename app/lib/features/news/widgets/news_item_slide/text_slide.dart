@@ -18,21 +18,23 @@ class TextSlide extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final slideContent = slide.msgContent();
+    final formattedText = slideContent.formattedBody();
     return Container(
       padding: const EdgeInsets.all(20),
       color: bgColor,
       alignment: Alignment.center,
-      child: slide.hasFormattedText()
+      child: formattedText != null
           ? RenderHtml(
               key: NewsUpdateKeys.textUpdateContent,
-              text: slide.text(),
+              text: formattedText,
               defaultTextStyle: Theme.of(context).textTheme.bodyLarge!.copyWith(
                     color: fgColor,
                   ),
             )
           : Text(
               key: NewsUpdateKeys.textUpdateContent,
-              slide.text(),
+              slideContent.body(),
               softWrap: true,
               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                     color: fgColor,
