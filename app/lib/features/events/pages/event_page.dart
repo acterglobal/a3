@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -170,9 +169,11 @@ class CalendarEventPage extends ConsumerWidget {
           ),
           event.when(
             data: (ev) {
-              String date = formatDt(ev);
+              String date = formatDate(ev);
+              final start = ev.utcStart().timestampMillis();
+              final end = ev.utcEnd().timestampMillis();
               String time =
-                  '${Jiffy.parseFromMillisecondsSinceEpoch(ev.utcStart().timestampMillis()).jm} - ${Jiffy.parseFromMillisecondsSinceEpoch(ev.utcEnd().timestampMillis()).jm}';
+                  '${Jiffy.parseFromMillisecondsSinceEpoch(start).jm} - ${Jiffy.parseFromMillisecondsSinceEpoch(end).jm}';
               String description = '';
               TextMessageContent? content = ev.description();
 
@@ -359,18 +360,6 @@ class CalendarEventPage extends ConsumerWidget {
         ],
       ),
     );
-  }
-
-  void onDelete(BuildContext context) {
-    customMsgSnackbar(context, 'Delete Event is not implemented yet');
-  }
-
-  void onInvite(BuildContext context) {
-    customMsgSnackbar(context, 'Invite to event is not available yet');
-  }
-
-  void onJoin(BuildContext context) {
-    customMsgSnackbar(context, 'Join event is not available yet');
   }
 
   Future<void> onRsvp(

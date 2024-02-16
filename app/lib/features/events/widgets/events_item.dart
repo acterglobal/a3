@@ -77,7 +77,7 @@ class EventItem extends ConsumerWidget {
 
   Widget _buildEventSubtitle(BuildContext context) {
     return Text(
-      '${formatDt(event)} (${formatTime(event)})',
+      '${formatDate(event)} (${formatTime(event)})',
       style: Theme.of(context).textTheme.labelMedium,
       maxLines: 2,
       overflow: TextOverflow.ellipsis,

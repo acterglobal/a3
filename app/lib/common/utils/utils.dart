@@ -63,7 +63,7 @@ List<DateTime> daysInRange(DateTime first, DateTime last) {
   );
 }
 
-String formatDt(CalendarEvent e) {
+String formatDate(CalendarEvent e) {
   final start = toDartDatetime(e.utcStart()).toLocal();
   final end = toDartDatetime(e.utcEnd()).toLocal();
   final startFmt = DateFormat.yMMMd().format(start);
@@ -75,11 +75,11 @@ String formatDt(CalendarEvent e) {
   }
 }
 
-String formatTime(CalendarEvent e) => '${Jiffy.parseFromDateTime(
-      toDartDatetime(e.utcStart()).toLocal(),
-    ).jm} - ${Jiffy.parseFromDateTime(
-      toDartDatetime(e.utcEnd()).toLocal(),
-    ).jm}';
+String formatTime(CalendarEvent e) {
+  final start = toDartDatetime(e.utcStart()).toLocal();
+  final end = toDartDatetime(e.utcEnd()).toLocal();
+  return '${Jiffy.parseFromDateTime(start).jm} - ${Jiffy.parseFromDateTime(end).jm}';
+}
 
 String getMonthFromDate(UtcDateTime utcDateTime) {
   final localDateTime = toDartDatetime(utcDateTime).toLocal();
