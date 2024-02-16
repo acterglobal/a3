@@ -2316,6 +2316,9 @@ object Client {
     /// listen to incoming notifications
     fn notifications_stream() -> Stream<Notification>;
 
+    /// install the default acter push rules for fallback
+    fn install_default_acter_push_rules() -> Future<Result<bool>>;
+
     /// list of pushers
     fn pushers() -> Future<Result<Vec<Pusher>>>;
 

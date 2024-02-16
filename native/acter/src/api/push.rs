@@ -290,7 +290,7 @@ impl Client {
             .await?
     }
 
-    pub async fn install_default_acter_push_rules(&self) -> Result<()> {
+    pub async fn install_default_acter_push_rules(&self) -> Result<bool> {
         let client = self.clone();
         RUNTIME
             .spawn(async move {
@@ -304,7 +304,7 @@ impl Client {
                         )
                         .await?;
                 }
-                Ok(())
+                Ok(true)
             })
             .await?
     }

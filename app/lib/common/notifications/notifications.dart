@@ -312,6 +312,7 @@ Future<bool> handleMessage(
   final deviceId = message.data!['device_id'] as String;
   final roomId = message.data!['room_id'] as String;
   final eventId = message.data!['event_id'] as String;
+  debugPrint('Received msg $roomId: $eventId');
   final payload =
       makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId);
   try {
@@ -363,6 +364,7 @@ Future<bool> handleMessage(
       }
     } catch (e) {
       // ignore this
+      debugPrint('lookup failed: $e');
     }
 
     _showNotification(title, body, roomId, payload);
@@ -425,6 +427,7 @@ Future<bool> setupPushNotifications(
   }
   if (pushServer.isEmpty) {
     // no server given. Ignoring
+    debugPrint('No push server configured. Skipping push notification setup.');
     return false;
   }
 
@@ -499,9 +502,14 @@ Future<bool> onToken(Client client, String token) async {
   );
 
   debugPrint(
-    ' ---- notification pusher sent: $appName ($appId) on $name ($token) to $pushServerUrl',
+    ' ---- notification pusher set: $appName ($appId) on $name ($token) to $pushServerUrl',
   );
 
+  await client.installDefaultActerPushRules();
+
+  debugPrint(
+    ' ---- default push rules submitted',
+  );
   return true;
 }
 
