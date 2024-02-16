@@ -306,7 +306,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       newsStateProvider.select((i) => i.currentNewsSlide?.backgroundColor),
     );
     return Container(
-      padding: const EdgeInsets.all(5.0),
+      padding: const EdgeInsets.all(20),
       alignment: Alignment.center,
       color: backgroundColor,
       child: HtmlEditor(
