@@ -309,15 +309,21 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       padding: const EdgeInsets.all(20),
       alignment: Alignment.center,
       color: backgroundColor,
-      child: HtmlEditor(
-        key: NewsUpdateKeys.textSlideInputField,
-        editorState: textEditorState,
-        editable: true,
-        autoFocus: false, // we manage the auto focus manually
-        shrinkWrap: true,
-        onChanged: (body, html) {
-          ref.read(newsStateProvider.notifier).changeTextSlideValue(body, html);
-        },
+      child: SingleChildScrollView(
+        child: IntrinsicHeight(
+          child: HtmlEditor(
+            key: NewsUpdateKeys.textSlideInputField,
+            editorState: textEditorState,
+            editable: true,
+            autoFocus: false, // we manage the auto focus manually
+            shrinkWrap: true,
+            onChanged: (body, html) {
+              ref
+                  .read(newsStateProvider.notifier)
+                  .changeTextSlideValue(body, html);
+            },
+          ),
+        ),
       ),
     );
   }
