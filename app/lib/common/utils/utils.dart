@@ -81,6 +81,18 @@ String formatTime(CalendarEvent e) => '${Jiffy.parseFromDateTime(
       toDartDatetime(e.utcEnd()).toLocal(),
     ).jm}';
 
+String getMonthFromDate(UtcDateTime utcDateTime) {
+  final localDateTime = toDartDatetime(utcDateTime).toLocal();
+  final month = DateFormat('MMM').format(localDateTime);
+  return month;
+}
+
+String getDayFromDate(UtcDateTime utcDateTime) {
+  final localDateTime = toDartDatetime(utcDateTime).toLocal();
+  final day = DateFormat('dd').format(localDateTime);
+  return day;
+}
+
 String jiffyTime(int timeInterval) {
   final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
   final now = Jiffy.now().startOf(Unit.day);

@@ -10,6 +10,7 @@ enum NewsSlideType {
 class NewsSlideItem {
   NewsSlideType type;
   String? text;
+  String? html;
   Color? backgroundColor;
   Color? foregroundColor;
   XFile? mediaFile;
@@ -19,6 +20,7 @@ class NewsSlideItem {
   NewsSlideItem({
     required this.type,
     this.text,
+    this.html,
     this.backgroundColor,
     this.foregroundColor,
     this.mediaFile,

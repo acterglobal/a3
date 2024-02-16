@@ -5,6 +5,7 @@ import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
+import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
@@ -155,6 +156,7 @@ class _PinItemState extends ConsumerState<PinItem> {
         ),
       );
     } else {
+      final content = widget.pin.content();
       return Container(
         height: MediaQuery.of(context).size.height * 0.6,
         margin: const EdgeInsets.symmetric(vertical: 8),
@@ -169,7 +171,10 @@ class _PinItemState extends ConsumerState<PinItem> {
         child: HtmlEditor(
           key: PinItem.richTextEditorKey,
           editable: pinEdit.editMode,
-          content: widget.pin.content(),
+          editorState: content != null
+              ? EditorState(
+                  document: ActerDocumentHelpers.fromMsgContent(content),)
+              : null,
           footer: pinEdit.editMode ? null : const SizedBox(),
           onCancel: () => pinEditNotifier.setEditMode(false),
           onSave: (plain, htmlBody) async {

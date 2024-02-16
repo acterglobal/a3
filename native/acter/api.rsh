@@ -359,10 +359,9 @@ object NewsSlide {
     /// the content of this slide
     fn type_str() -> string;
 
-    /// whether this text-slide has a formatted html body
-    fn has_formatted_text() -> bool;
-    /// the textual content of this slide
-    fn text() -> string;
+    /// the unique, predictable ID for this slide
+    fn unique_id() -> string;
+
     /// the references linked in this slide
     fn references() -> Vec<ObjRef>;
 
@@ -2358,6 +2357,9 @@ object Client {
 
     /// make draft to send text markdown msg
     fn text_markdown_draft(body: string) -> MsgContentDraft;
+
+    /// make draft to send html marked up msg
+    fn text_html_draft(html: string, plain: string) -> MsgContentDraft;
 
     /// make draft to send image msg
     fn image_draft(source: string, mimetype: string) -> MsgContentDraft;

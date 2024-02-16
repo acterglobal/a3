@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
@@ -29,8 +30,10 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
   }
 
   Widget newsSlideOptionsUI(BuildContext context) {
+    final keyboardVisibility = ref.watch(keyboardVisibleProvider);
     return Visibility(
-      visible: ref.read(newsStateProvider).currentNewsSlide != null,
+      visible: ref.read(newsStateProvider).currentNewsSlide != null &&
+          !(keyboardVisibility.value ?? false),
       child: Container(
         color: Theme.of(context).colorScheme.primary,
         child: newsSlideListUI(context),

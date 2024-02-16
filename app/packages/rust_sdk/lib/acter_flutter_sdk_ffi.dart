@@ -13694,25 +13694,14 @@ class Api {
       _NewsSlideTypeStrReturn Function(
         int,
       )>();
-  late final _newsSlideHasFormattedTextPtr = _lookup<
+  late final _newsSlideUniqueIdPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint8 Function(
+          _NewsSlideUniqueIdReturn Function(
             ffi.Int64,
-          )>>("__NewsSlide_has_formatted_text");
+          )>>("__NewsSlide_unique_id");
 
-  late final _newsSlideHasFormattedText =
-      _newsSlideHasFormattedTextPtr.asFunction<
-          int Function(
-            int,
-          )>();
-  late final _newsSlideTextPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsSlideTextReturn Function(
-            ffi.Int64,
-          )>>("__NewsSlide_text");
-
-  late final _newsSlideText = _newsSlideTextPtr.asFunction<
-      _NewsSlideTextReturn Function(
+  late final _newsSlideUniqueId = _newsSlideUniqueIdPtr.asFunction<
+      _NewsSlideUniqueIdReturn Function(
         int,
       )>();
   late final _newsSlideReferencesPtr = _lookup<
@@ -21505,6 +21494,28 @@ class Api {
         int,
         int,
       )>();
+  late final _clientTextHtmlDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__Client_text_html_draft");
+
+  late final _clientTextHtmlDraft = _clientTextHtmlDraftPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _clientImageDraftPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -29170,23 +29181,11 @@ class NewsSlide {
     return tmp2;
   }
 
-  /// whether this text-slide has a formatted html body
-  bool hasFormattedText() {
+  /// the unique, predictable ID for this slide
+  String uniqueId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._newsSlideHasFormattedText(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3 > 0;
-    return tmp2;
-  }
-
-  /// the textual content of this slide
-  String text() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._newsSlideText(
+    final tmp1 = _api._newsSlideUniqueId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -44588,6 +44587,54 @@ class Client {
     return tmp6;
   }
 
+  /// make draft to send html marked up msg
+  MsgContentDraft textHtmlDraft(
+    String html,
+    String plain,
+  ) {
+    final tmp1 = html;
+    final tmp5 = plain;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._clientTextHtmlDraft(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_MsgContentDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = MsgContentDraft._(_api, tmp11_1);
+    return tmp10;
+  }
+
   /// make draft to send image msg
   MsgContentDraft imageDraft(
     String source,
@@ -47029,7 +47076,7 @@ class _NewsSlideTypeStrReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _NewsSlideTextReturn extends ffi.Struct {
+class _NewsSlideUniqueIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
