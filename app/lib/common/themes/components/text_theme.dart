@@ -53,7 +53,7 @@ var textTheme = const TextTheme(
     decorationThickness: 0.8,
   ),
   labelMedium: TextStyle(
-    color: Colors.white,
+    color: Colors.white70,
     fontSize: 13,
     fontWeight: FontWeight.w300,
     decorationThickness: 0.8,

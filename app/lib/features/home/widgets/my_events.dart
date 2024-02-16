@@ -11,27 +11,28 @@ class MyEventsSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final upcoming = ref.watch(allUpcomingEventsProvider);
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            'Events',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const CalendarWidget(),
-          const SizedBox(height: 15),
-          Text(
-            'Upcoming',
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-          EventsList(
-            limit: limit,
-            events: upcoming,
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        const SizedBox(height: 15),
+        Text(
+          'Events',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: CalendarWidget(),
+        ),
+        const SizedBox(height: 15),
+        Text(
+          'Upcoming',
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        EventsList(
+          limit: limit,
+          events: upcoming,
+        ),
+      ],
     );
   }
 }
