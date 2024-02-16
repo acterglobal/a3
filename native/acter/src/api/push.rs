@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use acter_core::push::default_rules;
 use anyhow::{bail, Context, Result};
 use matrix_sdk::{
     notification_settings::{
@@ -21,6 +22,7 @@ use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
     NotificationProcessSetup,
 };
+use ruma_client_api::push::{get_pushrules_all, set_pushrule, RuleScope};
 use ruma_common::{EventId, OwnedRoomId, RoomId};
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 
@@ -284,6 +286,39 @@ impl Client {
                     .into_iter()
                     .map(|inner| Pusher::new(inner, client.clone()))
                     .collect())
+            })
+            .await?
+    }
+
+    pub async fn install_default_acter_push_rules(&self) -> Result<()> {
+        let client = self.clone();
+        RUNTIME
+            .spawn(async move {
+                for rule in default_rules() {
+                    let resp = client
+                        .core
+                        .client()
+                        .send(
+                            set_pushrule::v3::Request::new(RuleScope::Global, rule),
+                            None,
+                        )
+                        .await?;
+                }
+                Ok(())
+            })
+            .await?
+    }
+
+    pub async fn push_rules(&self) -> Result<ruma::push::Ruleset> {
+        let client = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let resp = client
+                    .core
+                    .client()
+                    .send(get_pushrules_all::v3::Request::new(), None)
+                    .await?;
+                Ok(resp.global)
             })
             .await?
     }
