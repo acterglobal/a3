@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["CLIENT_SUPPORTED_AUTH_METHODS"],"enum":["ClientCredentials","JwtSigningMethod"],"struct":["RequestWithClientCredentials"],"type":["JwtSigningFn"]};

@@ -1,0 +1,231 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Compares two standard library types for equality, that can’t be compared with `const_eq`."><title>const_eq_for in konst - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="konst" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../konst/index.html">konst</a><span class="version">0.3.6</span></h2></div><div class="sidebar-elems"></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../konst/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Macro <a href="index.html">konst</a>::<wbr><a class="macro" href="#">const_eq_for</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/konst/macros/const_eq_macros.rs.html#311-395">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><span class="macro">macro_rules! </span>const_eq_for {
+    (
+        slice;
+        <span class="macro-nonterminal">$left_slice</span>:expr,
+        <span class="macro-nonterminal">$right_slice</span>:expr
+        $(, $(<span class="macro-nonterminal">$comparison</span>:tt)* )<span class="question-mark">?
+    </span>) =&gt; { ... };
+    (
+        option;
+        <span class="macro-nonterminal">$left_opt</span>:expr,
+        <span class="macro-nonterminal">$right_opt</span>:expr
+        $(, $(<span class="macro-nonterminal">$comparison</span>:tt)* )<span class="question-mark">?
+    </span>) =&gt; { ... };
+    (
+        range;
+        <span class="macro-nonterminal">$left_range</span>:expr,
+        <span class="macro-nonterminal">$right_range</span>:expr
+        $(, $(<span class="macro-nonterminal">$comparison</span>:tt)* )<span class="question-mark">?
+    </span>) =&gt; { ... };
+    (
+        range_inclusive;
+        <span class="macro-nonterminal">$left_range</span>:expr,
+        <span class="macro-nonterminal">$right_range</span>:expr
+        $(, $(<span class="macro-nonterminal">$comparison</span>:tt)* )<span class="question-mark">?
+    </span>) =&gt; { ... };
+}</pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Compares two standard library types for equality,
+that can’t be compared with <a href="macro.const_eq.html"><code>const_eq</code></a>.</p>
+<p><span id = "types-section"></span></p>
+<h2 id="types"><a class="doc-anchor" href="#types">§</a>Types</h2>
+<p>This macro supports multiple types with different prefixes:</p>
+<ul>
+<li>
+<p><code>slice</code>: for comparing <code>&amp;[T]</code>. <a href="#compare_slices_structs">example</a></p>
+</li>
+<li>
+<p><code>option</code>: for comparing <code>Option&lt;T&gt;</code>. <a href="#compare_options">example</a></p>
+</li>
+<li>
+<p><code>range</code>: for comparing <code>Range&lt;T&gt;</code>. <a href="#compare_ranges">example</a></p>
+</li>
+<li>
+<p><code>range_inclusive</code>: for comparing <code>RangeInclusive&lt;T&gt;</code>.
+<a href="#compare_ranges_incluside">example</a></p>
+</li>
+</ul>
+<p><span id = "limitations-section"></span></p>
+<h2 id="limitations"><a class="doc-anchor" href="#limitations">§</a>Limitations</h2>
+<p>The arguments must be concrete types, and have a fully inferred type.
+eg: if you pass an integer literal it must have a suffix to indicate its type.</p>
+<p><span id = "arguments-section"></span></p>
+<h2 id="arguments"><a class="doc-anchor" href="#arguments">§</a>Arguments</h2>
+<p>The arguments take this form</p>
+<div class="example-wrap"><pre class="language-text"><code>const_eq_for!(type; left_value, right_value &lt;comparator&gt; )
+</code></pre></div><h4 id="comparator-argument"><a class="doc-anchor" href="#comparator-argument">§</a>Comparator argument</h4>
+<p>The <code>&lt;comparator&gt;</code> argument can be any of:</p>
+<ul>
+<li>
+<p><code> </code>(passing nothing): Compares the item using the <a href="macro.const_eq.html"><code>const_eq</code></a> macro.
+<a href="#compare_slices_structs">example</a></p>
+</li>
+<li>
+<p><code>, |item| &lt;expression&gt;</code>:
+Converts the item with <code>&lt;expression&gt;</code> to a type that can be compared using the
+<a href="macro.const_eq.html"><code>const_eq</code></a> macro.
+<a href="#compare_slices_fieldless_enums">example</a></p>
+</li>
+<li>
+<p><code>, |left_item, right_item| &lt;expression&gt;</code>:
+Compares the items  with <code>&lt;expression&gt;</code>, which must evaluate to a <code>bool</code>.
+<a href="#compare_options">example</a></p>
+</li>
+<li>
+<p><code>, path::to::function</code>:
+Compares the items using the passed function, which must evaluate to a <code>bool</code>.
+<a href="#compare_ranges_incluside">example</a></p>
+</li>
+</ul>
+<h2 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h2>
+<p><span id = "compare_slices_structs"></span></p>
+<h4 id="comparing-slices-of-structs"><a class="doc-anchor" href="#comparing-slices-of-structs">§</a>Comparing slices of structs</h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::{const_eq_for, eq_str};
+
+<span class="attr">#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+</span><span class="kw">pub struct </span>Location {
+    <span class="kw">pub </span>file: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
+    <span class="kw">pub </span>column: u32,
+    <span class="kw">pub </span>line: u32,
+}
+
+<span class="macro">konst::impl_cmp! </span>{
+    <span class="kw">impl </span>Location;
+     
+    <span class="kw">pub const fn </span>const_eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        eq_str(<span class="self">self</span>.file, other.file) &amp;&amp;
+        <span class="self">self</span>.column == other.column &amp;&amp;
+        <span class="self">self</span>.line == other.line
+    }
+}
+
+<span class="kw">const </span>HERE: <span class="kw-2">&amp;</span>[Location] = <span class="kw-2">&amp;</span>[<span class="macro">here!</span>(), <span class="macro">here!</span>(), <span class="macro">here!</span>(), <span class="macro">here!</span>()];
+
+<span class="kw">const </span>THERE: <span class="kw-2">&amp;</span>[Location] = <span class="kw-2">&amp;</span>[<span class="macro">here!</span>(), <span class="macro">here!</span>(), <span class="macro">here!</span>(), <span class="macro">here!</span>()];
+
+<span class="kw">const _</span>: () = {
+    <span class="macro">assert!</span>( <span class="macro">const_eq_for!</span>(slice; HERE, HERE));
+    <span class="macro">assert!</span>(!<span class="macro">const_eq_for!</span>(slice; HERE, THERE));
+    <span class="macro">assert!</span>( <span class="macro">const_eq_for!</span>(slice; THERE, THERE));
+};
+</code></pre></div>
+<p><span id = "compare_slices_fieldless_enums"></span></p>
+<h4 id="comparing-slices-of-field-less-enums"><a class="doc-anchor" href="#comparing-slices-of-field-less-enums">§</a>Comparing slices of field-less enums</h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[derive(Copy, Clone)]
+</span><span class="kw">enum </span>Direction {
+    Left,
+    Right,
+    Up,
+    Down,
+}
+
+<span class="kw">use </span>Direction::<span class="kw-2">*</span>;
+
+<span class="kw">const fn </span>eq_slice_direction(left: <span class="kw-2">&amp;</span>[Direction], right: <span class="kw-2">&amp;</span>[Direction]) -&gt; bool {
+    <span class="macro">konst::const_eq_for!</span>(slice; left, right, |<span class="kw-2">&amp;</span>x| x <span class="kw">as </span>u8)
+}
+
+<span class="kw">const </span>CHEAT_CODE: <span class="kw-2">&amp;</span>[Direction] = <span class="kw-2">&amp;</span>[Up, Up, Down, Down, Left, Right, Left, Right];
+
+<span class="kw">const </span>CLOCKWISE: <span class="kw-2">&amp;</span>[Direction] = <span class="kw-2">&amp;</span>[Up, Right, Down, Left];
+
+<span class="kw">const _</span>: () = {
+    <span class="macro">assert!</span>( eq_slice_direction(CHEAT_CODE, CHEAT_CODE));
+    <span class="macro">assert!</span>(!eq_slice_direction(CHEAT_CODE, CLOCKWISE));
+    <span class="macro">assert!</span>( eq_slice_direction(CLOCKWISE, CLOCKWISE));
+};
+</code></pre></div>
+<p><span id = "compare_options"></span></p>
+<h4 id="comparing-options"><a class="doc-anchor" href="#comparing-options">§</a>Comparing <code>Option</code>s</h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::const_eq_for;
+
+<span class="kw">const </span>SOME: <span class="prelude-ty">Option</span>&lt;(u32, u32)&gt; = <span class="prelude-val">Some</span>((<span class="number">3</span>, <span class="number">5</span>));
+<span class="kw">const </span>NONE: <span class="prelude-ty">Option</span>&lt;(u32, u32)&gt; = <span class="prelude-val">None</span>;
+
+<span class="kw">const fn </span>eq_opt_tuple(left: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;(u32, u32)&gt;, right: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;(u32, u32)&gt;) -&gt; bool {
+    <span class="macro">const_eq_for!</span>(option; left, right, |l, r| l.<span class="number">0 </span>== r.<span class="number">0 </span>&amp;&amp; l.<span class="number">1 </span>== r.<span class="number">1 </span>)
+}
+
+<span class="kw">const _</span>: () = {
+    <span class="macro">assert!</span>( eq_opt_tuple(<span class="kw-2">&amp;</span>SOME, <span class="kw-2">&amp;</span>SOME));
+    <span class="macro">assert!</span>(!eq_opt_tuple(<span class="kw-2">&amp;</span>SOME, <span class="kw-2">&amp;</span>NONE));
+    <span class="macro">assert!</span>( eq_opt_tuple(<span class="kw-2">&amp;</span>NONE, <span class="kw-2">&amp;</span>NONE));
+};
+</code></pre></div>
+<p><span id = "compare_ranges"></span></p>
+<h4 id="comparing-ranges"><a class="doc-anchor" href="#comparing-ranges">§</a>Comparing <code>Range</code>s</h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::{const_eq_for, impl_cmp};
+
+<span class="kw">use </span>std::ops::Range;
+
+<span class="attr">#[derive(Copy, Clone)]
+</span><span class="kw">pub enum </span>Month {
+    January,
+    February,
+    March,
+    April,
+    May,
+    June,
+    July,
+    August,
+    September,
+    October,
+    November,
+    December,
+}
+
+<span class="kw">use </span>Month::<span class="kw-2">*</span>;
+
+<span class="macro">konst::impl_cmp! </span>{
+    <span class="kw">impl </span>Month;
+     
+    <span class="kw">pub const fn </span>const_eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        <span class="kw-2">*</span><span class="self">self </span><span class="kw">as </span>u8 == <span class="kw-2">*</span>other <span class="kw">as </span>u8
+    }
+}
+
+<span class="kw">const </span>FOO: Range&lt;Month&gt; = January..April;
+<span class="kw">const </span>BAR: Range&lt;Month&gt; = October..December;
+
+<span class="kw">const _</span>: () = {
+    <span class="macro">assert!</span>( <span class="macro">const_eq_for!</span>(range; FOO, FOO));
+    <span class="macro">assert!</span>(!<span class="macro">const_eq_for!</span>(range; FOO, BAR));
+    <span class="macro">assert!</span>( <span class="macro">const_eq_for!</span>(range; BAR, BAR));
+};
+</code></pre></div>
+<p><span id = "compare_ranges_incluside"></span></p>
+<h4 id="comparing-rangeinclusives"><a class="doc-anchor" href="#comparing-rangeinclusives">§</a>Comparing <code>RangeInclusive</code>s</h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::{const_eq_for, impl_cmp};
+
+<span class="kw">use </span>std::ops::RangeInclusive;
+
+<span class="attr">#[derive(Copy, Clone)]
+</span><span class="kw">pub enum </span>WeekDay {
+    Monday,
+    Tuesday,
+    Wednesday,
+    Thursday,
+    Friday,
+    Saturday,
+    Sunday,
+}
+
+<span class="kw">use </span>WeekDay::<span class="kw-2">*</span>;
+
+<span class="macro">konst::impl_cmp! </span>{
+    <span class="kw">impl </span>WeekDay;
+     
+    <span class="kw">pub const fn </span>const_eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        <span class="kw-2">*</span><span class="self">self </span><span class="kw">as </span>u8 == <span class="kw-2">*</span>other <span class="kw">as </span>u8
+    }
+}
+
+<span class="kw">const </span>FOO: RangeInclusive&lt;WeekDay&gt; = Monday..=Thursday;
+<span class="kw">const </span>BAR: RangeInclusive&lt;WeekDay&gt; = Friday..=Sunday;
+
+<span class="kw">const _</span>: () = {
+    <span class="macro">assert!</span>( <span class="macro">const_eq_for!</span>(range_inclusive; FOO, FOO));
+    <span class="macro">assert!</span>(!<span class="macro">const_eq_for!</span>(range_inclusive; FOO, BAR, WeekDay::const_eq));
+    <span class="macro">assert!</span>( <span class="macro">const_eq_for!</span>(range_inclusive; BAR, BAR, WeekDay::const_eq));
+};
+</code></pre></div>
+</div></details></section></div></main></body></html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Item","ItemStr"],"fn":["display","from_fn","quoted","register","static_literal"],"struct":["Display","FromFn","QuotedFn","RegisterFn","Tokens"],"trait":["FormatInto","Register"]};

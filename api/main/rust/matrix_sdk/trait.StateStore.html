@@ -1,0 +1,666 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="An abstract state store trait that can be used to implement different stores for the SDK."><title>StateStore in matrix_sdk - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="matrix_sdk" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc trait"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../matrix_sdk/index.html">matrix_sdk</a><span class="version">0.7.1</span></h2></div><h2 class="location"><a href="#">StateStore</a></h2><div class="sidebar-elems"><section><h3><a href="#required-associated-types">Required Associated Types</a></h3><ul class="block"><li><a href="#associatedtype.Error">Error</a></li></ul><h3><a href="#required-methods">Required Methods</a></h3><ul class="block"><li><a href="#tymethod.add_media_content">add_media_content</a></li><li><a href="#tymethod.get_account_data_event">get_account_data_event</a></li><li><a href="#tymethod.get_custom_value">get_custom_value</a></li><li><a href="#tymethod.get_event_room_receipt_events">get_event_room_receipt_events</a></li><li><a href="#tymethod.get_invited_user_ids">get_invited_user_ids</a></li><li><a href="#tymethod.get_joined_user_ids">get_joined_user_ids</a></li><li><a href="#tymethod.get_kv_data">get_kv_data</a></li><li><a href="#tymethod.get_media_content">get_media_content</a></li><li><a href="#tymethod.get_presence_event">get_presence_event</a></li><li><a href="#tymethod.get_presence_events">get_presence_events</a></li><li><a href="#tymethod.get_profile">get_profile</a></li><li><a href="#tymethod.get_profiles">get_profiles</a></li><li><a href="#tymethod.get_room_account_data_event">get_room_account_data_event</a></li><li><a href="#tymethod.get_room_infos">get_room_infos</a></li><li><a href="#tymethod.get_state_event">get_state_event</a></li><li><a href="#tymethod.get_state_events">get_state_events</a></li><li><a href="#tymethod.get_state_events_for_keys">get_state_events_for_keys</a></li><li><a href="#tymethod.get_stripped_room_infos">get_stripped_room_infos</a></li><li><a href="#tymethod.get_user_ids">get_user_ids</a></li><li><a href="#tymethod.get_user_room_receipt_event">get_user_room_receipt_event</a></li><li><a href="#tymethod.get_users_with_display_name">get_users_with_display_name</a></li><li><a href="#tymethod.get_users_with_display_names">get_users_with_display_names</a></li><li><a href="#tymethod.remove_custom_value">remove_custom_value</a></li><li><a href="#tymethod.remove_kv_data">remove_kv_data</a></li><li><a href="#tymethod.remove_media_content">remove_media_content</a></li><li><a href="#tymethod.remove_media_content_for_uri">remove_media_content_for_uri</a></li><li><a href="#tymethod.remove_room">remove_room</a></li><li><a href="#tymethod.save_changes">save_changes</a></li><li><a href="#tymethod.set_custom_value">set_custom_value</a></li><li><a href="#tymethod.set_kv_data">set_kv_data</a></li></ul><h3><a href="#implementors">Implementors</a></h3></section><h2><a href="index.html">In crate matrix_sdk</a></h2></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../matrix_sdk/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Trait <a href="index.html">matrix_sdk</a>::<wbr><a class="trait" href="#">StateStore</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/matrix_sdk_base/store/traits.rs.html#49">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><code>pub trait StateStore: <a class="trait" href="trait.AsyncTraitDeps.html" title="trait matrix_sdk::AsyncTraitDeps">AsyncTraitDeps</a> {
+    type <a href="#associatedtype.Error" class="associatedtype">Error</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;<a class="enum" href="enum.StoreError.html" title="enum matrix_sdk::StoreError">StoreError</a>&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;<a class="struct" href="../serde_json/error/struct.Error.html" title="struct serde_json::error::Error">Error</a>&gt;;
+
+<details class="toggle type-contents-toggle"><summary class="hideme"><span>Show 30 methods</span></summary>    // Required methods
+    fn <a href="#tymethod.get_kv_data" class="fn">get_kv_data</a>&lt;'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        key: <a class="enum" href="../matrix_sdk_base/store/traits/enum.StateStoreDataKey.html" title="enum matrix_sdk_base::store::traits::StateStoreDataKey">StateStoreDataKey</a>&lt;'life1&gt;
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="enum" href="../matrix_sdk_base/store/traits/enum.StateStoreDataValue.html" title="enum matrix_sdk_base::store::traits::StateStoreDataValue">StateStoreDataValue</a>&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.set_kv_data" class="fn">set_kv_data</a>&lt;'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        key: <a class="enum" href="../matrix_sdk_base/store/traits/enum.StateStoreDataKey.html" title="enum matrix_sdk_base::store::traits::StateStoreDataKey">StateStoreDataKey</a>&lt;'life1&gt;,
+        value: <a class="enum" href="../matrix_sdk_base/store/traits/enum.StateStoreDataValue.html" title="enum matrix_sdk_base::store::traits::StateStoreDataValue">StateStoreDataValue</a>
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.remove_kv_data" class="fn">remove_kv_data</a>&lt;'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        key: <a class="enum" href="../matrix_sdk_base/store/traits/enum.StateStoreDataKey.html" title="enum matrix_sdk_base::store::traits::StateStoreDataKey">StateStoreDataKey</a>&lt;'life1&gt;
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.save_changes" class="fn">save_changes</a>&lt;'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        changes: &amp;'life1 <a class="struct" href="struct.StateChanges.html" title="struct matrix_sdk::StateChanges">StateChanges</a>
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.get_presence_event" class="fn">get_presence_event</a>&lt;'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        user_id: &amp;'life1 <a class="struct" href="ruma/struct.UserId.html" title="struct matrix_sdk::ruma::UserId">UserId</a>
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="../ruma_common/serde/raw/struct.Raw.html" title="struct ruma_common::serde::raw::Raw">Raw</a>&lt;<a class="struct" href="ruma/events/presence/struct.PresenceEvent.html" title="struct matrix_sdk::ruma::events::presence::PresenceEvent">PresenceEvent</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.get_presence_events" class="fn">get_presence_events</a>&lt;'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        user_ids: &amp;'life1 [<a class="struct" href="ruma/struct.OwnedUserId.html" title="struct matrix_sdk::ruma::OwnedUserId">OwnedUserId</a>]
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="../ruma_common/serde/raw/struct.Raw.html" title="struct ruma_common::serde::raw::Raw">Raw</a>&lt;<a class="struct" href="ruma/events/presence/struct.PresenceEvent.html" title="struct matrix_sdk::ruma::events::presence::PresenceEvent">PresenceEvent</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.get_state_event" class="fn">get_state_event</a>&lt;'life0, 'life1, 'life2, 'async_trait&gt;(
+        &amp;'life0 self,
+        room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+        event_type: <a class="enum" href="ruma/events/enum.StateEventType.html" title="enum matrix_sdk::ruma::events::StateEventType">StateEventType</a>,
+        state_key: &amp;'life2 <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="enum" href="deserialized_responses/enum.RawAnySyncOrStrippedState.html" title="enum matrix_sdk::deserialized_responses::RawAnySyncOrStrippedState">RawAnySyncOrStrippedState</a>&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             'life2: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.get_state_events" class="fn">get_state_events</a>&lt;'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+        event_type: <a class="enum" href="ruma/events/enum.StateEventType.html" title="enum matrix_sdk::ruma::events::StateEventType">StateEventType</a>
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="enum" href="deserialized_responses/enum.RawAnySyncOrStrippedState.html" title="enum matrix_sdk::deserialized_responses::RawAnySyncOrStrippedState">RawAnySyncOrStrippedState</a>&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.get_state_events_for_keys" class="fn">get_state_events_for_keys</a>&lt;'life0, 'life1, 'life2, 'life3, 'async_trait&gt;(
+        &amp;'life0 self,
+        room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+        event_type: <a class="enum" href="ruma/events/enum.StateEventType.html" title="enum matrix_sdk::ruma::events::StateEventType">StateEventType</a>,
+        state_keys: &amp;'life2 [&amp;'life3 <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>]
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="enum" href="deserialized_responses/enum.RawAnySyncOrStrippedState.html" title="enum matrix_sdk::deserialized_responses::RawAnySyncOrStrippedState">RawAnySyncOrStrippedState</a>&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             'life2: 'async_trait,
+             'life3: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.get_profile" class="fn">get_profile</a>&lt;'life0, 'life1, 'life2, 'async_trait&gt;(
+        &amp;'life0 self,
+        room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+        user_id: &amp;'life2 <a class="struct" href="ruma/struct.UserId.html" title="struct matrix_sdk::ruma::UserId">UserId</a>
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="enum" href="../matrix_sdk_base/utils/enum.MinimalStateEvent.html" title="enum matrix_sdk_base::utils::MinimalStateEvent">MinimalStateEvent</a>&lt;<a class="struct" href="ruma/events/room/member/struct.RoomMemberEventContent.html" title="struct matrix_sdk::ruma::events::room::member::RoomMemberEventContent">RoomMemberEventContent</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             'life2: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.get_profiles" class="fn">get_profiles</a>&lt;'a, 'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+        user_ids: &amp;'a [<a class="struct" href="ruma/struct.OwnedUserId.html" title="struct matrix_sdk::ruma::OwnedUserId">OwnedUserId</a>]
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html" title="struct alloc::collections::btree::map::BTreeMap">BTreeMap</a>&lt;&amp;'a <a class="struct" href="ruma/struct.UserId.html" title="struct matrix_sdk::ruma::UserId">UserId</a>, <a class="enum" href="../matrix_sdk_base/utils/enum.MinimalStateEvent.html" title="enum matrix_sdk_base::utils::MinimalStateEvent">MinimalStateEvent</a>&lt;<a class="struct" href="ruma/events/room/member/struct.RoomMemberEventContent.html" title="struct matrix_sdk::ruma::events::room::member::RoomMemberEventContent">RoomMemberEventContent</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'a: 'async_trait,
+             'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.get_user_ids" class="fn">get_user_ids</a>&lt;'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+        memberships: <a class="struct" href="struct.RoomMemberships.html" title="struct matrix_sdk::RoomMemberships">RoomMemberships</a>
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="ruma/struct.OwnedUserId.html" title="struct matrix_sdk::ruma::OwnedUserId">OwnedUserId</a>&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.get_invited_user_ids" class="fn">get_invited_user_ids</a>&lt;'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="ruma/struct.OwnedUserId.html" title="struct matrix_sdk::ruma::OwnedUserId">OwnedUserId</a>&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.get_joined_user_ids" class="fn">get_joined_user_ids</a>&lt;'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="ruma/struct.OwnedUserId.html" title="struct matrix_sdk::ruma::OwnedUserId">OwnedUserId</a>&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.get_room_infos" class="fn">get_room_infos</a>&lt;'life0, 'async_trait&gt;(
+        &amp;'life0 self
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="struct.RoomInfo.html" title="struct matrix_sdk::RoomInfo">RoomInfo</a>&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.get_stripped_room_infos" class="fn">get_stripped_room_infos</a>&lt;'life0, 'async_trait&gt;(
+        &amp;'life0 self
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="struct.RoomInfo.html" title="struct matrix_sdk::RoomInfo">RoomInfo</a>&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.get_users_with_display_name" class="fn">get_users_with_display_name</a>&lt;'life0, 'life1, 'life2, 'async_trait&gt;(
+        &amp;'life0 self,
+        room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+        display_name: &amp;'life2 <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/collections/btree/set/struct.BTreeSet.html" title="struct alloc::collections::btree::set::BTreeSet">BTreeSet</a>&lt;<a class="struct" href="ruma/struct.OwnedUserId.html" title="struct matrix_sdk::ruma::OwnedUserId">OwnedUserId</a>&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             'life2: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.get_users_with_display_names" class="fn">get_users_with_display_names</a>&lt;'a, 'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+        display_names: &amp;'a [<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>]
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html" title="struct alloc::collections::btree::map::BTreeMap">BTreeMap</a>&lt;&amp;'a <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>, <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/collections/btree/set/struct.BTreeSet.html" title="struct alloc::collections::btree::set::BTreeSet">BTreeSet</a>&lt;<a class="struct" href="ruma/struct.OwnedUserId.html" title="struct matrix_sdk::ruma::OwnedUserId">OwnedUserId</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'a: 'async_trait,
+             'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.get_account_data_event" class="fn">get_account_data_event</a>&lt;'life0, 'async_trait&gt;(
+        &amp;'life0 self,
+        event_type: <a class="enum" href="ruma/events/enum.GlobalAccountDataEventType.html" title="enum matrix_sdk::ruma::events::GlobalAccountDataEventType">GlobalAccountDataEventType</a>
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="../ruma_common/serde/raw/struct.Raw.html" title="struct ruma_common::serde::raw::Raw">Raw</a>&lt;<a class="enum" href="ruma/events/enum.AnyGlobalAccountDataEvent.html" title="enum matrix_sdk::ruma::events::AnyGlobalAccountDataEvent">AnyGlobalAccountDataEvent</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.get_room_account_data_event" class="fn">get_room_account_data_event</a>&lt;'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+        event_type: <a class="enum" href="ruma/events/enum.RoomAccountDataEventType.html" title="enum matrix_sdk::ruma::events::RoomAccountDataEventType">RoomAccountDataEventType</a>
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="../ruma_common/serde/raw/struct.Raw.html" title="struct ruma_common::serde::raw::Raw">Raw</a>&lt;<a class="enum" href="ruma/events/enum.AnyRoomAccountDataEvent.html" title="enum matrix_sdk::ruma::events::AnyRoomAccountDataEvent">AnyRoomAccountDataEvent</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.get_user_room_receipt_event" class="fn">get_user_room_receipt_event</a>&lt;'life0, 'life1, 'life2, 'async_trait&gt;(
+        &amp;'life0 self,
+        room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+        receipt_type: <a class="enum" href="ruma/events/receipt/enum.ReceiptType.html" title="enum matrix_sdk::ruma::events::receipt::ReceiptType">ReceiptType</a>,
+        thread: <a class="enum" href="ruma/events/receipt/enum.ReceiptThread.html" title="enum matrix_sdk::ruma::events::receipt::ReceiptThread">ReceiptThread</a>,
+        user_id: &amp;'life2 <a class="struct" href="ruma/struct.UserId.html" title="struct matrix_sdk::ruma::UserId">UserId</a>
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;(<a class="struct" href="ruma/struct.OwnedEventId.html" title="struct matrix_sdk::ruma::OwnedEventId">OwnedEventId</a>, <a class="struct" href="ruma/events/receipt/struct.Receipt.html" title="struct matrix_sdk::ruma::events::receipt::Receipt">Receipt</a>)&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             'life2: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.get_event_room_receipt_events" class="fn">get_event_room_receipt_events</a>&lt;'life0, 'life1, 'life2, 'async_trait&gt;(
+        &amp;'life0 self,
+        room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+        receipt_type: <a class="enum" href="ruma/events/receipt/enum.ReceiptType.html" title="enum matrix_sdk::ruma::events::receipt::ReceiptType">ReceiptType</a>,
+        thread: <a class="enum" href="ruma/events/receipt/enum.ReceiptThread.html" title="enum matrix_sdk::ruma::events::receipt::ReceiptThread">ReceiptThread</a>,
+        event_id: &amp;'life2 <a class="struct" href="ruma/struct.EventId.html" title="struct matrix_sdk::ruma::EventId">EventId</a>
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;(<a class="struct" href="ruma/struct.OwnedUserId.html" title="struct matrix_sdk::ruma::OwnedUserId">OwnedUserId</a>, <a class="struct" href="ruma/events/receipt/struct.Receipt.html" title="struct matrix_sdk::ruma::events::receipt::Receipt">Receipt</a>)&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             'life2: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.get_custom_value" class="fn">get_custom_value</a>&lt;'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        key: &amp;'life1 [<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>]
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.set_custom_value" class="fn">set_custom_value</a>&lt;'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        key: &amp;'life1 [<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>],
+        value: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.remove_custom_value" class="fn">remove_custom_value</a>&lt;'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        key: &amp;'life1 [<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>]
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.add_media_content" class="fn">add_media_content</a>&lt;'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        request: &amp;'life1 <a class="struct" href="media/struct.MediaRequest.html" title="struct matrix_sdk::media::MediaRequest">MediaRequest</a>,
+        content: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.get_media_content" class="fn">get_media_content</a>&lt;'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        request: &amp;'life1 <a class="struct" href="media/struct.MediaRequest.html" title="struct matrix_sdk::media::MediaRequest">MediaRequest</a>
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.remove_media_content" class="fn">remove_media_content</a>&lt;'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        request: &amp;'life1 <a class="struct" href="media/struct.MediaRequest.html" title="struct matrix_sdk::media::MediaRequest">MediaRequest</a>
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.remove_media_content_for_uri" class="fn">remove_media_content_for_uri</a>&lt;'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        uri: &amp;'life1 <a class="struct" href="ruma/struct.MxcUri.html" title="struct matrix_sdk::ruma::MxcUri">MxcUri</a>
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+<span class="item-spacer"></span>    fn <a href="#tymethod.remove_room" class="fn">remove_room</a>&lt;'life0, 'life1, 'async_trait&gt;(
+        &amp;'life0 self,
+        room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;
+       <span class="where">where 'life0: 'async_trait,
+             'life1: 'async_trait,
+             Self: 'async_trait</span>;
+</details>}</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>An abstract state store trait that can be used to implement different stores
+for the SDK.</p>
+</div></details><h2 id="required-associated-types" class="section-header">Required Associated Types<a href="#required-associated-types" class="anchor">§</a></h2><div class="methods"><details class="toggle" open><summary><section id="associatedtype.Error" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#51">source</a><h4 class="code-header">type <a href="#associatedtype.Error" class="associatedtype">Error</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;<a class="enum" href="enum.StoreError.html" title="enum matrix_sdk::StoreError">StoreError</a>&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;<a class="struct" href="../serde_json/error/struct.Error.html" title="struct serde_json::error::Error">Error</a>&gt;</h4></section></summary><div class="docblock"><p>The error type used by this state store.</p>
+</div></details></div><h2 id="required-methods" class="section-header">Required Methods<a href="#required-methods" class="anchor">§</a></h2><div class="methods"><details class="toggle method-toggle" open><summary><section id="tymethod.get_kv_data" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#58-61">source</a><h4 class="code-header">fn <a href="#tymethod.get_kv_data" class="fn">get_kv_data</a>&lt;'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    key: <a class="enum" href="../matrix_sdk_base/store/traits/enum.StateStoreDataKey.html" title="enum matrix_sdk_base::store::traits::StateStoreDataKey">StateStoreDataKey</a>&lt;'life1&gt;
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="enum" href="../matrix_sdk_base/store/traits/enum.StateStoreDataValue.html" title="enum matrix_sdk_base::store::traits::StateStoreDataValue">StateStoreDataValue</a>&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Get key-value data from the store.</p>
+<h5 id="arguments"><a class="doc-anchor" href="#arguments">§</a>Arguments</h5>
+<ul>
+<li><code>key</code> - The key to fetch data for.</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.set_kv_data" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#72-76">source</a><h4 class="code-header">fn <a href="#tymethod.set_kv_data" class="fn">set_kv_data</a>&lt;'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    key: <a class="enum" href="../matrix_sdk_base/store/traits/enum.StateStoreDataKey.html" title="enum matrix_sdk_base::store::traits::StateStoreDataKey">StateStoreDataKey</a>&lt;'life1&gt;,
+    value: <a class="enum" href="../matrix_sdk_base/store/traits/enum.StateStoreDataValue.html" title="enum matrix_sdk_base::store::traits::StateStoreDataValue">StateStoreDataValue</a>
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Put key-value data into the store.</p>
+<h5 id="arguments-1"><a class="doc-anchor" href="#arguments-1">§</a>Arguments</h5>
+<ul>
+<li>
+<p><code>key</code> - The key to identify the data in the store.</p>
+</li>
+<li>
+<p><code>value</code> - The data to insert.</p>
+</li>
+</ul>
+<p>Panics if the key and value variants do not match.</p>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.remove_kv_data" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#83">source</a><h4 class="code-header">fn <a href="#tymethod.remove_kv_data" class="fn">remove_kv_data</a>&lt;'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    key: <a class="enum" href="../matrix_sdk_base/store/traits/enum.StateStoreDataKey.html" title="enum matrix_sdk_base::store::traits::StateStoreDataKey">StateStoreDataKey</a>&lt;'life1&gt;
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Remove key-value data from the store.</p>
+<h5 id="arguments-2"><a class="doc-anchor" href="#arguments-2">§</a>Arguments</h5>
+<ul>
+<li><code>key</code> - The key to remove the data for.</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.save_changes" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#86">source</a><h4 class="code-header">fn <a href="#tymethod.save_changes" class="fn">save_changes</a>&lt;'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    changes: &amp;'life1 <a class="struct" href="struct.StateChanges.html" title="struct matrix_sdk::StateChanges">StateChanges</a>
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Save the set of state changes in the store.</p>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.get_presence_event" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#94-97">source</a><h4 class="code-header">fn <a href="#tymethod.get_presence_event" class="fn">get_presence_event</a>&lt;'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    user_id: &amp;'life1 <a class="struct" href="ruma/struct.UserId.html" title="struct matrix_sdk::ruma::UserId">UserId</a>
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="../ruma_common/serde/raw/struct.Raw.html" title="struct ruma_common::serde::raw::Raw">Raw</a>&lt;<a class="struct" href="ruma/events/presence/struct.PresenceEvent.html" title="struct matrix_sdk::ruma::events::presence::PresenceEvent">PresenceEvent</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Get the stored presence event for the given user.</p>
+<h5 id="arguments-3"><a class="doc-anchor" href="#arguments-3">§</a>Arguments</h5>
+<ul>
+<li><code>user_id</code> - The id of the user for which we wish to fetch the presence
+event for.</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.get_presence_events" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#104-107">source</a><h4 class="code-header">fn <a href="#tymethod.get_presence_events" class="fn">get_presence_events</a>&lt;'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    user_ids: &amp;'life1 [<a class="struct" href="ruma/struct.OwnedUserId.html" title="struct matrix_sdk::ruma::OwnedUserId">OwnedUserId</a>]
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="../ruma_common/serde/raw/struct.Raw.html" title="struct ruma_common::serde::raw::Raw">Raw</a>&lt;<a class="struct" href="ruma/events/presence/struct.PresenceEvent.html" title="struct matrix_sdk::ruma::events::presence::PresenceEvent">PresenceEvent</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Get the stored presence events for the given users.</p>
+<h5 id="arguments-4"><a class="doc-anchor" href="#arguments-4">§</a>Arguments</h5>
+<ul>
+<li><code>user_ids</code> - The IDs of the users to fetch the presence events for.</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.get_state_event" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#116-121">source</a><h4 class="code-header">fn <a href="#tymethod.get_state_event" class="fn">get_state_event</a>&lt;'life0, 'life1, 'life2, 'async_trait&gt;(
+    &amp;'life0 self,
+    room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+    event_type: <a class="enum" href="ruma/events/enum.StateEventType.html" title="enum matrix_sdk::ruma::events::StateEventType">StateEventType</a>,
+    state_key: &amp;'life2 <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="enum" href="deserialized_responses/enum.RawAnySyncOrStrippedState.html" title="enum matrix_sdk::deserialized_responses::RawAnySyncOrStrippedState">RawAnySyncOrStrippedState</a>&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    'life2: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Get a state event out of the state store.</p>
+<h5 id="arguments-5"><a class="doc-anchor" href="#arguments-5">§</a>Arguments</h5>
+<ul>
+<li>
+<p><code>room_id</code> - The id of the room the state event was received for.</p>
+</li>
+<li>
+<p><code>event_type</code> - The event type of the state event.</p>
+</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.get_state_events" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#130-134">source</a><h4 class="code-header">fn <a href="#tymethod.get_state_events" class="fn">get_state_events</a>&lt;'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+    event_type: <a class="enum" href="ruma/events/enum.StateEventType.html" title="enum matrix_sdk::ruma::events::StateEventType">StateEventType</a>
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="enum" href="deserialized_responses/enum.RawAnySyncOrStrippedState.html" title="enum matrix_sdk::deserialized_responses::RawAnySyncOrStrippedState">RawAnySyncOrStrippedState</a>&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Get a list of state events for a given room and <code>StateEventType</code>.</p>
+<h5 id="arguments-6"><a class="doc-anchor" href="#arguments-6">§</a>Arguments</h5>
+<ul>
+<li>
+<p><code>room_id</code> - The id of the room to find events for.</p>
+</li>
+<li>
+<p><code>event_type</code> - The event type.</p>
+</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.get_state_events_for_keys" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#146-151">source</a><h4 class="code-header">fn <a href="#tymethod.get_state_events_for_keys" class="fn">get_state_events_for_keys</a>&lt;'life0, 'life1, 'life2, 'life3, 'async_trait&gt;(
+    &amp;'life0 self,
+    room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+    event_type: <a class="enum" href="ruma/events/enum.StateEventType.html" title="enum matrix_sdk::ruma::events::StateEventType">StateEventType</a>,
+    state_keys: &amp;'life2 [&amp;'life3 <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>]
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="enum" href="deserialized_responses/enum.RawAnySyncOrStrippedState.html" title="enum matrix_sdk::deserialized_responses::RawAnySyncOrStrippedState">RawAnySyncOrStrippedState</a>&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    'life2: 'async_trait,
+    'life3: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Get a list of state events for a given room, <code>StateEventType</code>, and the
+given state keys.</p>
+<h5 id="arguments-7"><a class="doc-anchor" href="#arguments-7">§</a>Arguments</h5>
+<ul>
+<li>
+<p><code>room_id</code> - The id of the room to find events for.</p>
+</li>
+<li>
+<p><code>event_type</code> - The event type.</p>
+</li>
+<li>
+<p><code>state_keys</code> - The list of state keys to find.</p>
+</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.get_profile" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#160-164">source</a><h4 class="code-header">fn <a href="#tymethod.get_profile" class="fn">get_profile</a>&lt;'life0, 'life1, 'life2, 'async_trait&gt;(
+    &amp;'life0 self,
+    room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+    user_id: &amp;'life2 <a class="struct" href="ruma/struct.UserId.html" title="struct matrix_sdk::ruma::UserId">UserId</a>
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="enum" href="../matrix_sdk_base/utils/enum.MinimalStateEvent.html" title="enum matrix_sdk_base::utils::MinimalStateEvent">MinimalStateEvent</a>&lt;<a class="struct" href="ruma/events/room/member/struct.RoomMemberEventContent.html" title="struct matrix_sdk::ruma::events::room::member::RoomMemberEventContent">RoomMemberEventContent</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    'life2: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Get the current profile for the given user in the given room.</p>
+<h5 id="arguments-8"><a class="doc-anchor" href="#arguments-8">§</a>Arguments</h5>
+<ul>
+<li>
+<p><code>room_id</code> - The room id the profile is used in.</p>
+</li>
+<li>
+<p><code>user_id</code> - The id of the user the profile belongs to.</p>
+</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.get_profiles" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#173-177">source</a><h4 class="code-header">fn <a href="#tymethod.get_profiles" class="fn">get_profiles</a>&lt;'a, 'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+    user_ids: &amp;'a [<a class="struct" href="ruma/struct.OwnedUserId.html" title="struct matrix_sdk::ruma::OwnedUserId">OwnedUserId</a>]
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html" title="struct alloc::collections::btree::map::BTreeMap">BTreeMap</a>&lt;&amp;'a <a class="struct" href="ruma/struct.UserId.html" title="struct matrix_sdk::ruma::UserId">UserId</a>, <a class="enum" href="../matrix_sdk_base/utils/enum.MinimalStateEvent.html" title="enum matrix_sdk_base::utils::MinimalStateEvent">MinimalStateEvent</a>&lt;<a class="struct" href="ruma/events/room/member/struct.RoomMemberEventContent.html" title="struct matrix_sdk::ruma::events::room::member::RoomMemberEventContent">RoomMemberEventContent</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'a: 'async_trait,
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Get the current profiles for the given users in the given room.</p>
+<h5 id="arguments-9"><a class="doc-anchor" href="#arguments-9">§</a>Arguments</h5>
+<ul>
+<li>
+<p><code>room_id</code> - The ID of the room the profiles are used in.</p>
+</li>
+<li>
+<p><code>user_ids</code> - The IDs of the users the profiles belong to.</p>
+</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.get_user_ids" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#181-185">source</a><h4 class="code-header">fn <a href="#tymethod.get_user_ids" class="fn">get_user_ids</a>&lt;'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+    memberships: <a class="struct" href="struct.RoomMemberships.html" title="struct matrix_sdk::RoomMemberships">RoomMemberships</a>
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="ruma/struct.OwnedUserId.html" title="struct matrix_sdk::ruma::OwnedUserId">OwnedUserId</a>&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Get the user ids of members for a given room with the given memberships,
+for stripped and regular rooms alike.</p>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.get_invited_user_ids" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#190-191">source</a><h4 class="code-header">fn <a href="#tymethod.get_invited_user_ids" class="fn">get_invited_user_ids</a>&lt;'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="ruma/struct.OwnedUserId.html" title="struct matrix_sdk::ruma::OwnedUserId">OwnedUserId</a>&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Use get_user_ids with RoomMemberships::INVITE instead.</span></div></span><div class="docblock"><p>Get all the user ids of members that are in the invited state for a
+given room, for stripped and regular rooms alike.</p>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.get_joined_user_ids" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#196">source</a><h4 class="code-header">fn <a href="#tymethod.get_joined_user_ids" class="fn">get_joined_user_ids</a>&lt;'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="ruma/struct.OwnedUserId.html" title="struct matrix_sdk::ruma::OwnedUserId">OwnedUserId</a>&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Use get_user_ids with RoomMemberships::JOIN instead.</span></div></span><div class="docblock"><p>Get all the user ids of members that are in the joined state for a
+given room, for stripped and regular rooms alike.</p>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.get_room_infos" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#199">source</a><h4 class="code-header">fn <a href="#tymethod.get_room_infos" class="fn">get_room_infos</a>&lt;'life0, 'async_trait&gt;(
+    &amp;'life0 self
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="struct.RoomInfo.html" title="struct matrix_sdk::RoomInfo">RoomInfo</a>&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Get all the pure <code>RoomInfo</code>s the store knows about.</p>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.get_stripped_room_infos" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#203">source</a><h4 class="code-header">fn <a href="#tymethod.get_stripped_room_infos" class="fn">get_stripped_room_infos</a>&lt;'life0, 'async_trait&gt;(
+    &amp;'life0 self
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="struct.RoomInfo.html" title="struct matrix_sdk::RoomInfo">RoomInfo</a>&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><span class="item-info"><div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: Use get_room_infos instead and filter by RoomState</span></div></span><div class="docblock"><p>Get all the pure <code>RoomInfo</code>s the store knows about.</p>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.get_users_with_display_name" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#213-217">source</a><h4 class="code-header">fn <a href="#tymethod.get_users_with_display_name" class="fn">get_users_with_display_name</a>&lt;'life0, 'life1, 'life2, 'async_trait&gt;(
+    &amp;'life0 self,
+    room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+    display_name: &amp;'life2 <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/collections/btree/set/struct.BTreeSet.html" title="struct alloc::collections::btree::set::BTreeSet">BTreeSet</a>&lt;<a class="struct" href="ruma/struct.OwnedUserId.html" title="struct matrix_sdk::ruma::OwnedUserId">OwnedUserId</a>&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    'life2: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Get all the users that use the given display name in the given room.</p>
+<h5 id="arguments-10"><a class="doc-anchor" href="#arguments-10">§</a>Arguments</h5>
+<ul>
+<li>
+<p><code>room_id</code> - The id of the room for which the display name users should
+be fetched for.</p>
+</li>
+<li>
+<p><code>display_name</code> - The display name that the users use.</p>
+</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.get_users_with_display_names" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#226-230">source</a><h4 class="code-header">fn <a href="#tymethod.get_users_with_display_names" class="fn">get_users_with_display_names</a>&lt;'a, 'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+    display_names: &amp;'a [<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>]
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html" title="struct alloc::collections::btree::map::BTreeMap">BTreeMap</a>&lt;&amp;'a <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>, <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/collections/btree/set/struct.BTreeSet.html" title="struct alloc::collections::btree::set::BTreeSet">BTreeSet</a>&lt;<a class="struct" href="ruma/struct.OwnedUserId.html" title="struct matrix_sdk::ruma::OwnedUserId">OwnedUserId</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'a: 'async_trait,
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Get all the users that use the given display names in the given room.</p>
+<h5 id="arguments-11"><a class="doc-anchor" href="#arguments-11">§</a>Arguments</h5>
+<ul>
+<li>
+<p><code>room_id</code> - The ID of the room to fetch the display names for.</p>
+</li>
+<li>
+<p><code>display_names</code> - The display names that the users use.</p>
+</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.get_account_data_event" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#237-240">source</a><h4 class="code-header">fn <a href="#tymethod.get_account_data_event" class="fn">get_account_data_event</a>&lt;'life0, 'async_trait&gt;(
+    &amp;'life0 self,
+    event_type: <a class="enum" href="ruma/events/enum.GlobalAccountDataEventType.html" title="enum matrix_sdk::ruma::events::GlobalAccountDataEventType">GlobalAccountDataEventType</a>
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="../ruma_common/serde/raw/struct.Raw.html" title="struct ruma_common::serde::raw::Raw">Raw</a>&lt;<a class="enum" href="ruma/events/enum.AnyGlobalAccountDataEvent.html" title="enum matrix_sdk::ruma::events::AnyGlobalAccountDataEvent">AnyGlobalAccountDataEvent</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Get an event out of the account data store.</p>
+<h5 id="arguments-12"><a class="doc-anchor" href="#arguments-12">§</a>Arguments</h5>
+<ul>
+<li><code>event_type</code> - The event type of the account data event.</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.get_room_account_data_event" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#251-255">source</a><h4 class="code-header">fn <a href="#tymethod.get_room_account_data_event" class="fn">get_room_account_data_event</a>&lt;'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+    event_type: <a class="enum" href="ruma/events/enum.RoomAccountDataEventType.html" title="enum matrix_sdk::ruma::events::RoomAccountDataEventType">RoomAccountDataEventType</a>
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="../ruma_common/serde/raw/struct.Raw.html" title="struct ruma_common::serde::raw::Raw">Raw</a>&lt;<a class="enum" href="ruma/events/enum.AnyRoomAccountDataEvent.html" title="enum matrix_sdk::ruma::events::AnyRoomAccountDataEvent">AnyRoomAccountDataEvent</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Get an event out of the room account data store.</p>
+<h5 id="arguments-13"><a class="doc-anchor" href="#arguments-13">§</a>Arguments</h5>
+<ul>
+<li>
+<p><code>room_id</code> - The id of the room for which the room account data event
+should
+be fetched.</p>
+</li>
+<li>
+<p><code>event_type</code> - The event type of the room account data event.</p>
+</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.get_user_room_receipt_event" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#269-275">source</a><h4 class="code-header">fn <a href="#tymethod.get_user_room_receipt_event" class="fn">get_user_room_receipt_event</a>&lt;'life0, 'life1, 'life2, 'async_trait&gt;(
+    &amp;'life0 self,
+    room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+    receipt_type: <a class="enum" href="ruma/events/receipt/enum.ReceiptType.html" title="enum matrix_sdk::ruma::events::receipt::ReceiptType">ReceiptType</a>,
+    thread: <a class="enum" href="ruma/events/receipt/enum.ReceiptThread.html" title="enum matrix_sdk::ruma::events::receipt::ReceiptThread">ReceiptThread</a>,
+    user_id: &amp;'life2 <a class="struct" href="ruma/struct.UserId.html" title="struct matrix_sdk::ruma::UserId">UserId</a>
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;(<a class="struct" href="ruma/struct.OwnedEventId.html" title="struct matrix_sdk::ruma::OwnedEventId">OwnedEventId</a>, <a class="struct" href="ruma/events/receipt/struct.Receipt.html" title="struct matrix_sdk::ruma::events::receipt::Receipt">Receipt</a>)&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    'life2: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Get an event out of the user room receipt store.</p>
+<h5 id="arguments-14"><a class="doc-anchor" href="#arguments-14">§</a>Arguments</h5>
+<ul>
+<li>
+<p><code>room_id</code> - The id of the room for which the receipt should be
+fetched.</p>
+</li>
+<li>
+<p><code>receipt_type</code> - The type of the receipt.</p>
+</li>
+<li>
+<p><code>thread</code> - The thread containing this receipt.</p>
+</li>
+<li>
+<p><code>user_id</code> - The id of the user for who the receipt should be fetched.</p>
+</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.get_event_room_receipt_events" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#290-296">source</a><h4 class="code-header">fn <a href="#tymethod.get_event_room_receipt_events" class="fn">get_event_room_receipt_events</a>&lt;'life0, 'life1, 'life2, 'async_trait&gt;(
+    &amp;'life0 self,
+    room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>,
+    receipt_type: <a class="enum" href="ruma/events/receipt/enum.ReceiptType.html" title="enum matrix_sdk::ruma::events::receipt::ReceiptType">ReceiptType</a>,
+    thread: <a class="enum" href="ruma/events/receipt/enum.ReceiptThread.html" title="enum matrix_sdk::ruma::events::receipt::ReceiptThread">ReceiptThread</a>,
+    event_id: &amp;'life2 <a class="struct" href="ruma/struct.EventId.html" title="struct matrix_sdk::ruma::EventId">EventId</a>
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;(<a class="struct" href="ruma/struct.OwnedUserId.html" title="struct matrix_sdk::ruma::OwnedUserId">OwnedUserId</a>, <a class="struct" href="ruma/events/receipt/struct.Receipt.html" title="struct matrix_sdk::ruma::events::receipt::Receipt">Receipt</a>)&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    'life2: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Get events out of the event room receipt store.</p>
+<h5 id="arguments-15"><a class="doc-anchor" href="#arguments-15">§</a>Arguments</h5>
+<ul>
+<li>
+<p><code>room_id</code> - The id of the room for which the receipts should be
+fetched.</p>
+</li>
+<li>
+<p><code>receipt_type</code> - The type of the receipts.</p>
+</li>
+<li>
+<p><code>thread</code> - The thread containing this receipt.</p>
+</li>
+<li>
+<p><code>event_id</code> - The id of the event for which the receipts should be
+fetched.</p>
+</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.get_custom_value" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#303">source</a><h4 class="code-header">fn <a href="#tymethod.get_custom_value" class="fn">get_custom_value</a>&lt;'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    key: &amp;'life1 [<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>]
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Get arbitrary data from the custom store</p>
+<h5 id="arguments-16"><a class="doc-anchor" href="#arguments-16">§</a>Arguments</h5>
+<ul>
+<li><code>key</code> - The key to fetch data for</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.set_custom_value" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#312-316">source</a><h4 class="code-header">fn <a href="#tymethod.set_custom_value" class="fn">set_custom_value</a>&lt;'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    key: &amp;'life1 [<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>],
+    value: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Put arbitrary data into the custom store</p>
+<h5 id="arguments-17"><a class="doc-anchor" href="#arguments-17">§</a>Arguments</h5>
+<ul>
+<li>
+<p><code>key</code> - The key to insert data into</p>
+</li>
+<li>
+<p><code>value</code> - The value to insert</p>
+</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.remove_custom_value" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#323">source</a><h4 class="code-header">fn <a href="#tymethod.remove_custom_value" class="fn">remove_custom_value</a>&lt;'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    key: &amp;'life1 [<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>]
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Remove arbitrary data from the custom store and return it if existed</p>
+<h5 id="arguments-18"><a class="doc-anchor" href="#arguments-18">§</a>Arguments</h5>
+<ul>
+<li><code>key</code> - The key to remove data from</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.add_media_content" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#332-336">source</a><h4 class="code-header">fn <a href="#tymethod.add_media_content" class="fn">add_media_content</a>&lt;'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    request: &amp;'life1 <a class="struct" href="media/struct.MediaRequest.html" title="struct matrix_sdk::media::MediaRequest">MediaRequest</a>,
+    content: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Add a media file’s content in the media store.</p>
+<h5 id="arguments-19"><a class="doc-anchor" href="#arguments-19">§</a>Arguments</h5>
+<ul>
+<li>
+<p><code>request</code> - The <code>MediaRequest</code> of the file.</p>
+</li>
+<li>
+<p><code>content</code> - The content of the file.</p>
+</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.get_media_content" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#343-346">source</a><h4 class="code-header">fn <a href="#tymethod.get_media_content" class="fn">get_media_content</a>&lt;'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    request: &amp;'life1 <a class="struct" href="media/struct.MediaRequest.html" title="struct matrix_sdk::media::MediaRequest">MediaRequest</a>
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;&gt;, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Get a media file’s content out of the media store.</p>
+<h5 id="arguments-20"><a class="doc-anchor" href="#arguments-20">§</a>Arguments</h5>
+<ul>
+<li><code>request</code> - The <code>MediaRequest</code> of the file.</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.remove_media_content" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#353">source</a><h4 class="code-header">fn <a href="#tymethod.remove_media_content" class="fn">remove_media_content</a>&lt;'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    request: &amp;'life1 <a class="struct" href="media/struct.MediaRequest.html" title="struct matrix_sdk::media::MediaRequest">MediaRequest</a>
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Removes a media file’s content from the media store.</p>
+<h5 id="arguments-21"><a class="doc-anchor" href="#arguments-21">§</a>Arguments</h5>
+<ul>
+<li><code>request</code> - The <code>MediaRequest</code> of the file.</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.remove_media_content_for_uri" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#361">source</a><h4 class="code-header">fn <a href="#tymethod.remove_media_content_for_uri" class="fn">remove_media_content_for_uri</a>&lt;'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    uri: &amp;'life1 <a class="struct" href="ruma/struct.MxcUri.html" title="struct matrix_sdk::ruma::MxcUri">MxcUri</a>
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Removes all the media files’ content associated to an <code>MxcUri</code> from the
+media store.</p>
+<h5 id="arguments-22"><a class="doc-anchor" href="#arguments-22">§</a>Arguments</h5>
+<ul>
+<li><code>uri</code> - The <code>MxcUri</code> of the media files.</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.remove_room" class="method"><a class="src rightside" href="../src/matrix_sdk_base/store/traits.rs.html#368">source</a><h4 class="code-header">fn <a href="#tymethod.remove_room" class="fn">remove_room</a>&lt;'life0, 'life1, 'async_trait&gt;(
+    &amp;'life0 self,
+    room_id: &amp;'life1 <a class="struct" href="ruma/struct.RoomId.html" title="struct matrix_sdk::ruma::RoomId">RoomId</a>
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/nightly/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, Self::<a class="associatedtype" href="trait.StateStore.html#associatedtype.Error" title="type matrix_sdk::StateStore::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + 'async_trait&gt;&gt;<div class="where">where
+    'life0: 'async_trait,
+    'life1: 'async_trait,
+    Self: 'async_trait,</div></h4></section></summary><div class="docblock"><p>Removes a room and all elements associated from the state store.</p>
+<h5 id="arguments-23"><a class="doc-anchor" href="#arguments-23">§</a>Arguments</h5>
+<ul>
+<li><code>room_id</code> - The <code>RoomId</code> of the room to delete.</li>
+</ul>
+</div></details></div><h2 id="implementors" class="section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"><details class="toggle implementors-toggle"><summary><section id="impl-StateStore-for-MemoryStore" class="impl"><a class="src rightside" href="../src/matrix_sdk_base/store/memory_store.rs.html#158">source</a><a href="#impl-StateStore-for-MemoryStore" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="trait.StateStore.html" title="trait matrix_sdk::StateStore">StateStore</a> for <a class="struct" href="struct.MemoryStore.html" title="struct matrix_sdk::MemoryStore">MemoryStore</a></h3></section></summary><div class="impl-items"><section id="associatedtype.Error-1" class="associatedtype trait-impl"><a href="#associatedtype.Error-1" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.Error" class="associatedtype">Error</a> = <a class="enum" href="enum.StoreError.html" title="enum matrix_sdk::StoreError">StoreError</a></h4></section></div></details><details class="toggle implementors-toggle"><summary><section id="impl-StateStore-for-SqliteStateStore" class="impl"><a class="src rightside" href="../src/matrix_sdk_sqlite/state_store.rs.html#867">source</a><a href="#impl-StateStore-for-SqliteStateStore" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="trait.StateStore.html" title="trait matrix_sdk::StateStore">StateStore</a> for <a class="struct" href="struct.SqliteStateStore.html" title="struct matrix_sdk::SqliteStateStore">SqliteStateStore</a></h3></section></summary><div class="impl-items"><section id="associatedtype.Error-2" class="associatedtype trait-impl"><a href="#associatedtype.Error-2" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.Error" class="associatedtype">Error</a> = Error</h4></section></div></details></div><script src="../trait.impl/matrix_sdk_base/store/traits/trait.StateStore.js" data-ignore-extern-crates="matrix_sdk_sqlite,matrix_sdk_base" async></script></section></div></main></body></html>

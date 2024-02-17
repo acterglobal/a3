@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["RevocationInfoChoice"],"struct":["OtherRevocationInfoFormat"],"type":["RevocationInfoChoices"]};

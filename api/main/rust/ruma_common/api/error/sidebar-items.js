@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DeserializationError","FromHttpRequestError","FromHttpResponseError","HeaderDeserializationError","IntoHttpError","MatrixErrorBody"],"struct":["IncorrectArgumentCount","MatrixError","UnknownVersionError"]};

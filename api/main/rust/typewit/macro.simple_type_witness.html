@@ -1,0 +1,289 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Declares a type witness enum."><title>simple_type_witness in typewit - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="typewit" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../typewit/index.html">typewit</a><span class="version">1.7.0</span></h2></div><div class="sidebar-elems"></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../typewit/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Macro <a href="index.html">typewit</a>::<wbr><a class="macro" href="#">simple_type_witness</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/typewit/macros/simple_type_witness_macro.rs.html#331-351">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><span class="macro">macro_rules! </span>simple_type_witness {
+    (
+        $(<span class="attr">#[<span class="macro-nonterminal">$enum_meta</span>:meta]</span>)*
+        $(derive($(<span class="macro-nonterminal">$derive</span>:ident),* $(,)<span class="question-mark">?</span>))<span class="question-mark">?
+        </span>$(<span class="kw">pub </span>$(($(<span class="macro-nonterminal">$</span><span class="kw">pub</span>:<span class="macro-nonterminal">tt</span>)<span class="kw-2">*</span>))<span class="question-mark">?</span>)<span class="question-mark">? 
+        </span><span class="kw">enum </span><span class="macro-nonterminal">$</span><span class="kw">enum</span>:<span class="macro-nonterminal">ident </span>$(<span class="macro-nonterminal">$rem</span>:tt)*
+    ) =&gt; { ... };
+}</pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Declares a <a href="index.html#what-are-type-witnesses" title="mod typewit">type witness</a> enum.</p>
+<p>A <a href="index.html#what-are-type-witnesses" title="mod typewit">type witness</a> is an enum whose variants only have <a href="struct.TypeEq.html" title="struct typewit::TypeEq"><code>TypeEq</code></a> fields.
+Each variant requires the enum’s type parameter to be a specific type.</p>
+<p><a href="#examples"><strong>examples below</strong></a></p>
+<h2 id="generated-items"><a class="doc-anchor" href="#generated-items">§</a>Generated items</h2>
+<p>This macro always generates:</p>
+<ul>
+<li>
+<p>An enum with tuple variants, each of which has a single <a href="struct.TypeEq.html" title="struct typewit::TypeEq"><code>TypeEq</code></a> field.</p>
+</li>
+<li>
+<p>Impls of <a href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html" title="trait core::marker::Copy"><code>Copy</code></a> and <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone"><code>Clone</code></a> for the enum.</p>
+</li>
+<li>
+<p>An impl of <a href="trait.TypeWitnessTypeArg.html" title="trait typewit::TypeWitnessTypeArg"><code>TypeWitnessTypeArg</code></a> for the enum.</p>
+</li>
+<li>
+<p>An impl of <a href="trait.MakeTypeWitness.html" title="trait typewit::MakeTypeWitness"><code>MakeTypeWitness</code></a> for each variant of the enum.</p>
+</li>
+</ul>
+<p>Additional trait impls are generated when the <a href="#derive"><code>derive(...)</code></a> syntax is used.</p>
+<h4 id="derivation"><a class="doc-anchor" href="#derivation">§</a>Derivation</h4>
+<p>These impls are generated if you opt into them with the <a href="#derive"><code>derive(...)</code></a> syntax:</p>
+<ul>
+<li><code>Debug</code></li>
+<li><code>PartialEq</code></li>
+<li><code>Eq</code></li>
+<li><code>PartialOrd</code></li>
+<li><code>Ord</code></li>
+<li><code>Hash</code></li>
+</ul>
+<p>As opposed to <code>#[derive(...))]</code>-generated implementations,
+these impls don’t require type parameters to implement the derived trait.</p>
+<p>This macro always implements <code>Copy</code> and <code>Clone</code> for the declared type witness,
+<code>derive(Copy, Clone)</code> does nothing.</p>
+<h2 id="syntax"><a class="doc-anchor" href="#syntax">§</a>Syntax</h2>
+<p>This macro takes an enum-like syntax:</p>
+<div class="example-wrap"><pre class="language-text"><code>    $(#[$enum_meta:meta])*
+    $(derive($($derive:ident),* $(,)?)))?
+    $vis:vis enum $enum:ident $(&lt;$($generics:generics_param),* $(,)?&gt;)? 
+    $(where $($where:where_predicate),* $(,)? )?
+    {
+        $(
+            $(#[$variant_meta:meta])*
+            $variant:ident $(&lt;$($var_gen_args:generic_arg)*&gt;)?
+            // additional bounds for the MakeTypeWitness impl that constructs this variant.
+            $(where $($vari_where:where_predicate)*)?
+            // the type that this variant requires the 
+            // implicit `__Wit` type parameter to be.
+            = $witnessed_ty:ty
+        ),*
+        $(,)?
+    }
+</code></pre></div>
+<p><span id = "var_gen_args-param"></span> <code>&lt;$($var_gen_args:generic_arg)*&gt;</code>
+(optional parameter)<a href="#var_gen_args-example">(example usage)</a>: 
+this parameter overrides the generic arguments of the enum in its 
+<a href="trait.MakeTypeWitness.html" title="trait typewit::MakeTypeWitness"><code>MakeTypeWitness</code></a> implementation.</p>
+<p><span id = "derive"></span>
+<code>derive($($derive:ident),* $(,)?)</code>(optional parameter)<a href="#derive-example">(example)</a>:
+supports deriving the traits listed in the <a href="#derivation">derivation</a> section</p>
+<p><code>#[cfg(...)]</code> attributes on variants are copied to their respective 
+<a href="trait.MakeTypeWitness.html" title="trait typewit::MakeTypeWitness"><code>MakeTypeWitness</code></a> impls.</p>
+<p>Generic parameters support the <code>#[cfg(...)]</code> attribute, 
+no other attribute is supported.</p>
+<p>Defaults for generic parameters are only used 
+as the default value of <a href="#var_gen_args-param"><code>$var_gen_args</code></a>
+<a href="#var_gen_args-example">(example usage)</a> .</p>
+<details>
+<summary>
+<b>Soft-deprecated older syntax</b>
+</summary>
+<p>This macro originally required the following syntax,
+which is soft-deprecated, and will be supported for the rest of <code>&quot;1.*&quot;</code> versions.</p>
+<div class="example-wrap"><pre class="language-text"><code>    $(#[$enum_meta:meta])*
+    // Allows deriving some traits without the bounds that 
+    // standard derives add to type parameters.
+    $(derive($($derive:ident),* $(,)?)))?
+    $vis:vis enum $enum:ident $([$($generics:tt)*])? 
+    // The where clause of the enum
+    $(where[$($where:tt)*])?
+    {
+        $(
+            $(#[$variant_meta:meta])*
+            $variant:ident $([$($var_gen_args:tt)*])?
+            // additional bounds for the MakeTypeWitness impl that constructs this variant.
+            $(where[$($vari_where:tt)*])?
+            // the type this variant requires the implicit `__Wit` type parameter to be.
+            = $witnessed_ty:ty
+        ),*
+        $(,)?
+    }
+</code></pre></div></details>
+<h4 id="limitations"><a class="doc-anchor" href="#limitations">§</a>Limitations</h4>
+<p><span id = "const-parameter-limitation"></span>
+When used in Rust versions prior to 1.59.0,
+type witnesses declared with this macro cannot have const parameters,
+because this macro always adds a <code>__Wit</code> type parameter after all generic parameters,
+and those old versions don’t allow type parameters after const parameters.</p>
+<h2 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h2><h4 id="basic"><a class="doc-anchor" href="#basic">§</a>Basic</h4>
+<p>This example demonstrates a basic usage of this macro</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>typewit::MakeTypeWitness;
+ 
+<span class="macro">assert_eq!</span>(do_it(<span class="number">1</span>), <span class="number">1</span>);
+<span class="macro">assert_eq!</span>(do_it(<span class="number">2</span>), <span class="number">4</span>);
+<span class="macro">assert_eq!</span>(do_it(<span class="number">3</span>), <span class="number">9</span>);
+<span class="macro">assert_eq!</span>(do_it(<span class="string">"foo"</span>), <span class="number">3</span>);
+<span class="macro">assert_eq!</span>(do_it(<span class="string">"hello"</span>), <span class="number">5</span>);
+ 
+<span class="kw">const fn </span>do_it&lt;<span class="lifetime">'a</span>, T&gt;(arg: T) -&gt; usize 
+<span class="kw">where
+    </span>Witness&lt;<span class="lifetime">'a</span>, T&gt;: MakeTypeWitness,
+{
+    <span class="kw">match </span>MakeTypeWitness::MAKE {
+        <span class="comment">// `te` is a `TypeEq&lt;T, u8&gt;`, `te.to_right(arg)` goes from `T` to `u8.`
+        </span>Witness::U8(te) =&gt; (te.to_right(arg) <span class="kw">as </span>usize).pow(<span class="number">2</span>),
+
+        <span class="comment">// `te` is a `TypeEq&lt;T, &amp;'a str&gt;`, `te.to_right(arg)` goes from `T` to `&amp;'a str.`
+        </span>Witness::Str(te) =&gt; te.to_right(arg).len(),
+    }
+}
+ 
+<span class="macro">typewit::simple_type_witness! </span>{
+    <span class="comment">// Declares an `enum Witness&lt;'a, __Wit&gt;`,
+    // the `__Wit` type parameter is added after all generics.
+    </span><span class="kw">enum </span>Witness&lt;<span class="lifetime">'a</span>&gt; {
+        <span class="comment">// This variant requires `__Wit == u8`
+        </span>U8 = u8,
+        <span class="comment">// This variant requires `__Wit == &amp;'a str`
+        </span>Str = <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
+    }
+}</code></pre></div>
+<p>the above invocation of <code>simple_type_witness</code> effectively generates this code:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">enum </span>Witness&lt;<span class="lifetime">'a</span>, __Wit&gt; {
+    U8(typewit::TypeEq&lt;__Wit, u8&gt;),
+    Str(typewit::TypeEq&lt;__Wit, <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str&gt;),
+}
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, __Wit&gt; typewit::TypeWitnessTypeArg <span class="kw">for </span>Witness&lt;<span class="lifetime">'a</span>, __Wit&gt; {
+    <span class="kw">type </span>Arg = __Wit;
+}
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; typewit::MakeTypeWitness <span class="kw">for </span>Witness&lt;<span class="lifetime">'a</span>, u8&gt; {
+    <span class="kw">const </span>MAKE: <span class="self">Self </span>= <span class="self">Self</span>::U8(typewit::TypeEq::NEW);
+}
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; typewit::MakeTypeWitness <span class="kw">for </span>Witness&lt;<span class="lifetime">'a</span>, <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str&gt; {
+    <span class="kw">const </span>MAKE: <span class="self">Self </span>= <span class="self">Self</span>::Str(typewit::TypeEq::NEW);
+}</code></pre></div>
+<p>(consult the <a href="#generated-items">generated items</a> section for all the generated impls)</p>
+<h4 id="where-clauses"><a class="doc-anchor" href="#where-clauses">§</a>where clauses</h4>
+<p>This example demonstrates a variant with a where clause.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="macro">typewit::simple_type_witness! </span>{
+    <span class="comment">// Declares an `enum Witness&lt;'a, T, __Wit&gt;`,
+    // the `__Wit` type parameter is added after all generics.
+    </span><span class="attr">#[non_exhaustive]
+    </span><span class="kw">enum </span>Witness&lt;<span class="lifetime">'a</span>, T: <span class="lifetime">'a</span>&gt;
+    <span class="kw">where 
+        </span>T: <span class="lifetime">'a </span>+ Debug
+    {
+        <span class="comment">// This variant requires `__Wit == T`.
+        // The `MakeTypeWitness` impl for this variant also requires `T: Copy`.
+        </span><span class="attr">#[cfg(feature = <span class="string">"foo"</span>)]
+        </span>Value <span class="kw">where </span>T: Copy = T,
+
+        <span class="comment">// This variant requires `__Wit == &amp;'a T`
+        </span>Ref = <span class="kw-2">&amp;</span><span class="lifetime">'a </span>T,
+    }
+}</code></pre></div>
+<p>the above invocation of <code>simple_type_witness</code> effectively generates this code:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[non_exhaustive]
+</span><span class="kw">enum </span>Witness&lt;<span class="lifetime">'a</span>, T: <span class="lifetime">'a</span>, __Wit: <span class="question-mark">?</span>Sized&gt;
+<span class="kw">where
+    </span>T: <span class="lifetime">'a </span>+ Debug,
+{
+    <span class="attr">#[cfg(feature = <span class="string">"foo"</span>)]
+    </span>Value(typewit::TypeEq&lt;__Wit, T&gt;),
+ 
+    Ref(typewit::TypeEq&lt;__Wit, <span class="kw-2">&amp;</span><span class="lifetime">'a </span>T&gt;),
+}
+ 
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T: <span class="lifetime">'a</span>, __Wit: <span class="question-mark">?</span>Sized&gt; typewit::TypeWitnessTypeArg <span class="kw">for </span>Witness&lt;<span class="lifetime">'a</span>, T, __Wit&gt;
+<span class="kw">where
+    </span>T: <span class="lifetime">'a </span>+ Debug,
+{
+    <span class="kw">type </span>Arg = __Wit;
+}
+ 
+<span class="attr">#[cfg(feature = <span class="string">"foo"</span>)]
+</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T: <span class="lifetime">'a</span>&gt; typewit::MakeTypeWitness <span class="kw">for </span>Witness&lt;<span class="lifetime">'a</span>, T, T&gt;
+<span class="kw">where
+    </span>T: <span class="lifetime">'a </span>+ Debug + Copy,
+{
+    <span class="kw">const </span>MAKE: <span class="self">Self </span>= <span class="self">Self</span>::Value(typewit::TypeEq::NEW);
+}
+ 
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T: <span class="lifetime">'a</span>&gt; typewit::MakeTypeWitness <span class="kw">for </span>Witness&lt;<span class="lifetime">'a</span>, T, <span class="kw-2">&amp;</span><span class="lifetime">'a </span>T&gt;
+<span class="kw">where
+    </span>T: <span class="lifetime">'a </span>+ Debug,
+{
+    <span class="kw">const </span>MAKE: <span class="self">Self </span>= <span class="self">Self</span>::Ref(typewit::TypeEq::NEW);
+}</code></pre></div>
+<p>(consult the <a href="#generated-items">generated items</a> section for all the generated impls)</p>
+<p><span id = "var_gen_args-example"></span></p>
+<h4 id="var_gen_args-parameter"><a class="doc-anchor" href="#var_gen_args-parameter">§</a><code>$var_gen_args</code> parameter</h4>
+<p>This example shows what the <code>$var_gen_args</code> parameter does,
+as well as how generic parameter defaults relate to it.</p>
+<p>(<a href="#const-parameter-limitation">this example requires Rust 1.59.0</a>)</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="macro">typewit::simple_type_witness! </span>{
+    <span class="comment">// Declares an `enum Foo&lt;T, const N: usize, __Wit&gt;`,
+    // the `__Wit` type parameter is added after all generics.
+    //
+    // The defaults for generic parameters are only used 
+    // as the default value of the generic arguments of variants.
+    </span><span class="kw">enum </span>Foo&lt;T = i8, <span class="kw">const </span>N: usize = <span class="number">1234</span>&gt; {
+        <span class="comment">// This variant requires `__Wit == u64`.
+        // 
+        // The `&lt;(), 3&gt;` here
+        // replaces `impl&lt;T, const N: usize&gt; MakeTypeWitness for Foo&lt;T, N, u64&gt;`
+        // with     `impl                    MakeTypeWitness for Foo&lt;(), 3, u64&gt;`.
+        // Using `&lt;(), 3&gt;` allows the  `T` and `N` type parameters to be inferred
+        // when the `MakeTypeWitness` impl for `Foo&lt;_, _, u64&gt;` is used.
+        </span>U64&lt;(), <span class="number">3</span>&gt; = u64,
+        <span class="comment">// This variant requires `__Wit == bool`.
+        // 
+        // The `&lt;&gt;` here uses the defaults for the generic arguments to 
+        // replace `impl&lt;T, const N: usize&gt; MakeTypeWitness for Foo&lt;T, N, bool&gt;`
+        // with    `impl                    MakeTypeWitness for Foo&lt;i8, 1234, bool&gt;`.
+        </span>Bool&lt;&gt; = bool,
+        <span class="comment">// This variant requires `__Wit == [T; N]`.
+        </span>Array = [T; N],
+    }
+}</code></pre></div>
+<p>the above effectively expands to this:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">enum </span>Foo&lt;T, <span class="kw">const </span>N: usize, __Wit: <span class="question-mark">?</span>Sized&gt; {
+    U64(typewit::TypeEq&lt;__Wit, u64&gt;),
+    Bool(typewit::TypeEq&lt;__Wit, bool&gt;),
+    Array(typewit::TypeEq&lt;__Wit, [T; N]&gt;),
+}
+<span class="kw">impl</span>&lt;T, <span class="kw">const </span>N: usize, __Wit: <span class="question-mark">?</span>Sized&gt; typewit::TypeWitnessTypeArg <span class="kw">for </span>Foo&lt;T, N, __Wit&gt; {
+    <span class="kw">type </span>Arg = __Wit;
+}
+<span class="kw">impl </span>typewit::MakeTypeWitness <span class="kw">for </span>Foo&lt;(), <span class="number">3</span>, u64&gt; {
+    <span class="kw">const </span>MAKE: <span class="self">Self </span>= <span class="self">Self</span>::U64(typewit::TypeEq::NEW);
+}
+<span class="kw">impl </span>typewit::MakeTypeWitness <span class="kw">for </span>Foo&lt;i8, <span class="number">1234</span>, bool&gt; {
+    <span class="kw">const </span>MAKE: <span class="self">Self </span>= <span class="self">Self</span>::Bool(typewit::TypeEq::NEW);
+}
+<span class="kw">impl</span>&lt;T, <span class="kw">const </span>N: usize&gt; typewit::MakeTypeWitness <span class="kw">for </span>Foo&lt;T, N, [T; N]&gt; {
+    <span class="kw">const </span>MAKE: <span class="self">Self </span>= <span class="self">Self</span>::Array(typewit::TypeEq::NEW);
+}</code></pre></div>
+<p>(consult the <a href="#generated-items">generated items</a> section for all the generated impls)</p>
+<p><span id = "derive-example"></span></p>
+<h4 id="derives"><a class="doc-anchor" href="#derives">§</a>Derives</h4>
+<p>This example demonstrates derivation of all the supported traits 
+using the <code>derive(...)</code> syntax (as opposed to the <code>#[derive(...)]</code> attribute).</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>typewit::{MakeTypeWitness, TypeEq};
+ 
+<span class="kw">struct </span>NoImpls;
+
+<span class="macro">assert_eq!</span>(Witness::&lt;u8&gt;::MAKE, Witness::&lt;u8&gt;::MAKE);
+ 
+<span class="comment">// Witness doesn't require its type parameters to impl any traits in its derives.
+// The standard derives require that type parameters impl the derived trait,
+// so this comparison wouldn't work (because `NoImpls` doesn't impl `PartialEq`).
+</span><span class="macro">assert_eq!</span>(Witness::&lt;NoImpls&gt;::MAKE, Witness::NoImp(TypeEq::NEW));
+ 
+<span class="macro">typewit::simple_type_witness! </span>{
+    <span class="comment">// Declares an `enum Witness&lt;__Wit&gt;`,
+    // the `__Wit` type parameter is added after all generics.
+    </span>derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)
+    <span class="kw">enum </span>Witness {
+        U8 = u8,
+        NoImp = NoImpls,
+    }
+}</code></pre></div>
+</div></details></section></div></main></body></html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="This crate implements the PBKDF2 key derivation function as specified in RFC 2898."><title>pbkdf2 - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="pbkdf2" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-04d5337699b92874.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/RustCrypto/media/8f1a9894/logo.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button><a class="logo-container" href="../pbkdf2/index.html"><img src="https://raw.githubusercontent.com/RustCrypto/media/8f1a9894/logo.svg" alt=""></a></nav><nav class="sidebar"><div class="sidebar-crate"><a class="logo-container" href="../pbkdf2/index.html"><img src="https://raw.githubusercontent.com/RustCrypto/media/8f1a9894/logo.svg" alt="logo"></a><h2><a href="../pbkdf2/index.html">pbkdf2</a><span class="version">0.12.2</span></h2></div><div class="sidebar-elems"><ul class="block">
+            <li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#reexports">Re-exports</a></li><li><a href="#functions">Functions</a></li></ul></section></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../pbkdf2/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">pbkdf2</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/pbkdf2/lib.rs.html#1-282">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>This crate implements the PBKDF2 key derivation function as specified
+in <a href="https://tools.ietf.org/html/rfc2898">RFC 2898</a>.</p>
+<h2 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h2>
+<p>PBKDF2 is defined in terms of a keyed pseudo-random function (PRF). Most
+commonly HMAC is used as this PRF. In such cases you can use <a href="fn.pbkdf2_hmac.html" title="fn pbkdf2::pbkdf2_hmac"><code>pbkdf2_hmac</code></a>
+and <a href="fn.pbkdf2_hmac_array.html" title="fn pbkdf2::pbkdf2_hmac_array"><code>pbkdf2_hmac_array</code></a> functions. The former accepts a byte slice which
+gets filled with generated key, while the former returns an array with
+generated key of requested length.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hex_literal::hex;
+<span class="kw">use </span>pbkdf2::{pbkdf2_hmac, pbkdf2_hmac_array};
+<span class="kw">use </span>sha2::Sha256;
+
+<span class="kw">let </span>password = <span class="string">b"password"</span>;
+<span class="kw">let </span>salt = <span class="string">b"salt"</span>;
+<span class="comment">// number of iterations
+</span><span class="kw">let </span>n = <span class="number">600_000</span>;
+<span class="comment">// Expected value of generated key
+</span><span class="kw">let </span>expected = <span class="macro">hex!</span>(<span class="string">"669cfe52482116fda1aa2cbe409b2f56c8e45637"</span>);
+
+<span class="kw">let </span><span class="kw-2">mut </span>key1 = [<span class="number">0u8</span>; <span class="number">20</span>];
+pbkdf2_hmac::&lt;Sha256&gt;(password, salt, n, <span class="kw-2">&amp;mut </span>key1);
+<span class="macro">assert_eq!</span>(key1, expected);
+
+<span class="kw">let </span>key2 = pbkdf2_hmac_array::&lt;Sha256, <span class="number">20</span>&gt;(password, salt, n);
+<span class="macro">assert_eq!</span>(key2, expected);</code></pre></div>
+<p>If you want to use a different PRF, then you can use <a href="fn.pbkdf2.html" title="fn pbkdf2::pbkdf2"><code>pbkdf2</code></a>
+and <a href="fn.pbkdf2_array.html" title="fn pbkdf2::pbkdf2_array"><code>pbkdf2_array</code></a> functions.</p>
+<p>This crates also provides the high-level password-hashing API through
+the [<code>Pbkdf2</code>] struct and traits defined in the
+[<code>password-hash</code>][password_hash] crate.</p>
+<p>Add the following to your crate’s <code>Cargo.toml</code> to import it:</p>
+<div class="example-wrap"><pre class="language-toml"><code>[dependencies]
+pbkdf2 = { version = &quot;0.12&quot;, features = [&quot;simple&quot;] }
+rand_core = { version = &quot;0.6&quot;, features = [&quot;std&quot;] }
+</code></pre></div>
+<p>The following example demonstrates the high-level password hashing API:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>pbkdf2::{
+    password_hash::{
+        rand_core::OsRng,
+        PasswordHash, PasswordHasher, PasswordVerifier, SaltString
+    },
+    Pbkdf2
+};
+
+<span class="kw">let </span>password = <span class="string">b"hunter42"</span>; <span class="comment">// Bad password; don't actually use!
+</span><span class="kw">let </span>salt = SaltString::generate(<span class="kw-2">&amp;mut </span>OsRng);
+
+<span class="comment">// Hash password to PHC string ($pbkdf2-sha256$...)
+</span><span class="kw">let </span>password_hash = Pbkdf2.hash_password(password, <span class="kw-2">&amp;</span>salt)<span class="question-mark">?</span>.to_string();
+
+<span class="comment">// Verify password against PHC string
+</span><span class="kw">let </span>parsed_hash = PasswordHash::new(<span class="kw-2">&amp;</span>password_hash)<span class="question-mark">?</span>;
+<span class="macro">assert!</span>(Pbkdf2.verify_password(password, <span class="kw-2">&amp;</span>parsed_hash).is_ok());</code></pre></div>
+</div></details><h2 id="reexports" class="section-header">Re-exports<a href="#reexports" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name" id="reexport.hmac"><code>pub use <a class="mod" href="../hmac/index.html" title="mod hmac">hmac</a>;</code></div></li></ul><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="fn" href="fn.pbkdf2.html" title="fn pbkdf2::pbkdf2">pbkdf2</a></div><div class="desc docblock-short">Generic implementation of PBKDF2 algorithm which accepts an arbitrary keyed PRF.</div></li><li><div class="item-name"><a class="fn" href="fn.pbkdf2_array.html" title="fn pbkdf2::pbkdf2_array">pbkdf2_array</a></div><div class="desc docblock-short">A variant of the <a href="fn.pbkdf2.html" title="fn pbkdf2::pbkdf2"><code>pbkdf2</code></a> function which returns an array
+instead of filling an input slice.</div></li><li><div class="item-name"><a class="fn" href="fn.pbkdf2_hmac.html" title="fn pbkdf2::pbkdf2_hmac">pbkdf2_hmac</a></div><div class="desc docblock-short">A variant of the <a href="fn.pbkdf2.html" title="fn pbkdf2::pbkdf2"><code>pbkdf2</code></a> function which uses HMAC for PRF.
+It’s generic over (eager) hash functions.</div></li><li><div class="item-name"><a class="fn" href="fn.pbkdf2_hmac_array.html" title="fn pbkdf2::pbkdf2_hmac_array">pbkdf2_hmac_array</a></div><div class="desc docblock-short">A variant of the <a href="fn.pbkdf2_hmac.html" title="fn pbkdf2::pbkdf2_hmac"><code>pbkdf2_hmac</code></a> function which returns an array
+instead of filling an input slice.</div></li></ul></section></div></main></body></html>

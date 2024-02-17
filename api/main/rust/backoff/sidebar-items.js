@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Error"],"fn":["retry","retry_notify"],"mod":["backoff","default","exponential","future"],"struct":["SystemClock"],"trait":["Clock","Notify"],"type":["ExponentialBackoff","ExponentialBackoffBuilder"]};

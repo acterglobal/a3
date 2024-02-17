@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["default_key","key","secret"]};

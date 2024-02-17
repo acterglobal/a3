@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["get_login_token","get_login_types","login","login_fallback","logout","logout_all","refresh_token","sso_login","sso_login_with_provider"]};

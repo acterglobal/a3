@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the Api class from the acter library, for the Dart programming language.">
+  <title>Api class - acter library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">acter_flutter_sdk</a></li>
+    <li><a href="../acter/acter-library.html">acter_flutter_sdk_ffi.dart</a></li>
+    <li class="self-crumb">Api class</li>
+  </ol>
+  <div class="self-name">Api</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="acter&#47;acter-library-sidebar.html"
+      data-below-sidebar="acter&#47;Api-class-sidebar.html">
+      <div>
+<h1><span class="kind-class">Api</span> class 
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>Main entry point to library.</p>
+</section>
+
+
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+
+    <dl class="constructor-summary-list">
+        <dt id="Api" class="callable">
+          <span class="name"><a href="../acter/Api/Api.html">Api</a></span><span class="signature">(<span class="parameter" id="-param-dynamicLibrary"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-ffi/DynamicLibrary-class.html">DynamicLibrary</a></span> <span class="parameter-name">dynamicLibrary</span></span>)</span>
+        </dt>
+        <dd>
+          The symbols are looked up in <code>dynamicLibrary</code>.
+        </dd>
+        <dt id="Api.fromLookup" class="callable">
+          <span class="name"><a href="../acter/Api/Api.fromLookup.html">Api.fromLookup</a></span><span class="signature">(<span class="parameter" id="fromLookup-param-lookup"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-ffi/Pointer-class.html">Pointer</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> <span class="parameter-name">lookup</span>(<span class="parameter" id="param-symbolName"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">symbolName</span></span>)</span>)</span>
+        </dt>
+        <dd>
+          The symbols are looked up with <code>lookup</code>.
+        </dd>
+        <dt id="Api.load" class="callable">
+          <span class="name"><a href="../acter/Api/Api.load.html">Api.load</a></span><span class="signature">()</span>
+        </dt>
+        <dd>
+          The library is loaded based on platform conventions.
+            <div class="constructor-modifier features">factory</div>
+        </dd>
+        <dt id="Api.loadDynamic" class="callable">
+          <span class="name"><a href="../acter/Api/Api.loadDynamic.html">Api.loadDynamic</a></span><span class="signature">(<span class="parameter" id="loadDynamic-param-name"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)</span>
+        </dt>
+        <dd>
+          The library is dynamically loaded.
+            <div class="constructor-modifier features">factory</div>
+        </dd>
+        <dt id="Api.loadStatic" class="callable">
+          <span class="name"><a href="../acter/Api/Api.loadStatic.html">Api.loadStatic</a></span><span class="signature">()</span>
+        </dt>
+        <dd>
+          The library is loaded from the executable.
+            <div class="constructor-modifier features">factory</div>
+        </dd>
+    </dl>
+  </section>
+
+    <section class="summary offset-anchor inherited" id="instance-properties">
+      <h2>Properties</h2>
+
+      <dl class="properties">
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> 
+
+</dt>
+<dd class="inherited">
+  The hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Type-class.html">Type</a></span> 
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+      </dl>
+    </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="createFfiListActerPin" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListActerPin.html">createFfiListActerPin</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListActerPin-class.html">FfiListActerPin</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListAttachment" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListAttachment.html">createFfiListAttachment</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListAttachment-class.html">FfiListAttachment</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListCalendarEvent" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListCalendarEvent.html">createFfiListCalendarEvent</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListCalendarEvent-class.html">FfiListCalendarEvent</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListComment" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListComment.html">createFfiListComment</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListComment-class.html">FfiListComment</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListConvo" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListConvo.html">createFfiListConvo</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListConvo-class.html">FfiListConvo</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListDeviceRecord" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListDeviceRecord.html">createFfiListDeviceRecord</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListDeviceRecord-class.html">FfiListDeviceRecord</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListFfiString" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListFfiString.html">createFfiListFfiString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListFfiString-class.html">FfiListFfiString</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListInvitation" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListInvitation.html">createFfiListInvitation</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListInvitation-class.html">FfiListInvitation</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListMember" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListMember.html">createFfiListMember</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListMember-class.html">FfiListMember</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListNewsEntry" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListNewsEntry.html">createFfiListNewsEntry</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListNewsEntry-class.html">FfiListNewsEntry</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListNewsSlide" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListNewsSlide.html">createFfiListNewsSlide</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListNewsSlide-class.html">FfiListNewsSlide</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListNewsSlideDraft" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListNewsSlideDraft.html">createFfiListNewsSlideDraft</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListNewsSlideDraft-class.html">FfiListNewsSlideDraft</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListNotification" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListNotification.html">createFfiListNotification</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListNotification-class.html">FfiListNotification</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListObjRef" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListObjRef.html">createFfiListObjRef</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListObjRef-class.html">FfiListObjRef</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListPublicSearchResultItem" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListPublicSearchResultItem.html">createFfiListPublicSearchResultItem</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListPublicSearchResultItem-class.html">FfiListPublicSearchResultItem</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListPusher" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListPusher.html">createFfiListPusher</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListPusher-class.html">FfiListPusher</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListReactionRecord" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListReactionRecord.html">createFfiListReactionRecord</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListReactionRecord-class.html">FfiListReactionRecord</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListReceiptRecord" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListReceiptRecord.html">createFfiListReceiptRecord</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListReceiptRecord-class.html">FfiListReceiptRecord</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListRoomMessage" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListRoomMessage.html">createFfiListRoomMessage</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListRoomMessage-class.html">FfiListRoomMessage</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListRsvp" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListRsvp.html">createFfiListRsvp</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListRsvp-class.html">FfiListRsvp</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListSpace" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListSpace.html">createFfiListSpace</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListSpace-class.html">FfiListSpace</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListSpaceHierarchyRoomInfo" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListSpaceHierarchyRoomInfo.html">createFfiListSpaceHierarchyRoomInfo</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListSpaceHierarchyRoomInfo-class.html">FfiListSpaceHierarchyRoomInfo</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListSpaceRelation" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListSpaceRelation.html">createFfiListSpaceRelation</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListSpaceRelation-class.html">FfiListSpaceRelation</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListSuperInviteToken" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListSuperInviteToken.html">createFfiListSuperInviteToken</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListSuperInviteToken-class.html">FfiListSuperInviteToken</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListTask" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListTask.html">createFfiListTask</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListTask-class.html">FfiListTask</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListTaskList" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListTaskList.html">createFfiListTaskList</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListTaskList-class.html">FfiListTaskList</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListUserId" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListUserId.html">createFfiListUserId</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListUserId-class.html">FfiListUserId</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListUserProfile" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListUserProfile.html">createFfiListUserProfile</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListUserProfile-class.html">FfiListUserProfile</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="createFfiListVerificationEmoji" class="callable">
+  <span class="name"><a href="../acter/Api/createFfiListVerificationEmoji.html">createFfiListVerificationEmoji</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListVerificationEmoji-class.html">FfiListVerificationEmoji</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="destroyLocalData" class="callable">
+  <span class="name"><a href="../acter/Api/destroyLocalData.html">destroyLocalData</a></span><span class="signature">(<wbr><span class="parameter" id="destroyLocalData-param-basePath"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">basePath</span>, </span><span class="parameter" id="destroyLocalData-param-mediaCacheBasePath"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">mediaCacheBasePath</span>, </span><span class="parameter" id="destroyLocalData-param-userId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">userId</span>, </span><span class="parameter" id="destroyLocalData-param-defaultHomeserverName"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">defaultHomeserverName</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  destroy the local data of a session
+  
+
+</dd>
+
+        <dt id="durationFromSecs" class="callable">
+  <span class="name"><a href="../acter/Api/durationFromSecs.html">durationFromSecs</a></span><span class="signature">(<wbr><span class="parameter" id="durationFromSecs-param-secs"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">secs</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../acter/EfkDuration-class.html">EfkDuration</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="guestClient" class="callable">
+  <span class="name"><a href="../acter/Api/guestClient.html">guestClient</a></span><span class="signature">(<wbr><span class="parameter" id="guestClient-param-basePath"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">basePath</span>, </span><span class="parameter" id="guestClient-param-mediaCacheBasePath"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">mediaCacheBasePath</span>, </span><span class="parameter" id="guestClient-param-defaultHomeserverName"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">defaultHomeserverName</span>, </span><span class="parameter" id="guestClient-param-defaultHomeserverUrl"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">defaultHomeserverUrl</span>, </span><span class="parameter" id="guestClient-param-deviceName"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">deviceName</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/Client-class.html">Client</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Create an anonymous client connecting to the homeserver
+  
+
+</dd>
+
+        <dt id="initLogging" class="callable">
+  <span class="name"><a href="../acter/Api/initLogging.html">initLogging</a></span><span class="signature">(<wbr><span class="parameter" id="initLogging-param-logDir"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">logDir</span>, </span><span class="parameter" id="initLogging-param-filter"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">filter</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Initialize logging
+  
+
+</dd>
+
+        <dt id="loginNewClient" class="callable">
+  <span class="name"><a href="../acter/Api/loginNewClient.html">loginNewClient</a></span><span class="signature">(<wbr><span class="parameter" id="loginNewClient-param-basePath"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">basePath</span>, </span><span class="parameter" id="loginNewClient-param-mediaCacheBasePath"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">mediaCacheBasePath</span>, </span><span class="parameter" id="loginNewClient-param-username"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">username</span>, </span><span class="parameter" id="loginNewClient-param-password"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">password</span>, </span><span class="parameter" id="loginNewClient-param-defaultHomeserverName"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">defaultHomeserverName</span>, </span><span class="parameter" id="loginNewClient-param-defaultHomeserverUrl"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">defaultHomeserverUrl</span>, </span><span class="parameter" id="loginNewClient-param-deviceName"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">deviceName</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/Client-class.html">Client</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Create a new client for homeserver at url with storage at data_path
+  
+
+</dd>
+
+        <dt id="loginWithToken" class="callable">
+  <span class="name"><a href="../acter/Api/loginWithToken.html">loginWithToken</a></span><span class="signature">(<wbr><span class="parameter" id="loginWithToken-param-basePath"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">basePath</span>, </span><span class="parameter" id="loginWithToken-param-restoreToken"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">restoreToken</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/Client-class.html">Client</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Create a new client from the restore token
+  
+
+</dd>
+
+        <dt id="newCalendarEventRefBuilder" class="callable">
+  <span class="name"><a href="../acter/Api/newCalendarEventRefBuilder.html">newCalendarEventRefBuilder</a></span><span class="signature">(<wbr><span class="parameter" id="newCalendarEventRefBuilder-param-targetId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">targetId</span>, </span><span class="parameter" id="newCalendarEventRefBuilder-param-roomId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">roomId</span>, </span><span class="parameter" id="newCalendarEventRefBuilder-param-action"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">action</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../acter/RefDetailsBuilder-class.html">RefDetailsBuilder</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  create a calendar event ref builder
+target_id: event id of target
+action: link/embed/embed-rsvp
+  
+
+</dd>
+
+        <dt id="newColorizeBuilder" class="callable">
+  <span class="name"><a href="../acter/Api/newColorizeBuilder.html">newColorizeBuilder</a></span><span class="signature">(<wbr><span class="parameter" id="newColorizeBuilder-param-color"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">color</span>, </span><span class="parameter" id="newColorizeBuilder-param-background"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">background</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../acter/ColorizeBuilder-class.html">ColorizeBuilder</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  create a colorize builder
+  
+
+</dd>
+
+        <dt id="newConvoSettingsBuilder" class="callable">
+  <span class="name"><a href="../acter/Api/newConvoSettingsBuilder.html">newConvoSettingsBuilder</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/CreateConvoSettingsBuilder-class.html">CreateConvoSettingsBuilder</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  make convo settings builder
+  
+
+</dd>
+
+        <dt id="newJoinRuleBuilder" class="callable">
+  <span class="name"><a href="../acter/Api/newJoinRuleBuilder.html">newJoinRuleBuilder</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/JoinRuleBuilder-class.html">JoinRuleBuilder</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Rotate the logging file
+  
+
+</dd>
+
+        <dt id="newLinkRefBuilder" class="callable">
+  <span class="name"><a href="../acter/Api/newLinkRefBuilder.html">newLinkRefBuilder</a></span><span class="signature">(<wbr><span class="parameter" id="newLinkRefBuilder-param-title"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">title</span>, </span><span class="parameter" id="newLinkRefBuilder-param-uri"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">uri</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../acter/RefDetailsBuilder-class.html">RefDetailsBuilder</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  create a link ref builder
+  
+
+</dd>
+
+        <dt id="newObjRefBuilder" class="callable">
+  <span class="name"><a href="../acter/Api/newObjRefBuilder.html">newObjRefBuilder</a></span><span class="signature">(<wbr><span class="parameter" id="newObjRefBuilder-param-position"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">position</span>, </span><span class="parameter" id="newObjRefBuilder-param-reference"><span class="type-annotation"><a href="../acter/RefDetails-class.html">RefDetails</a></span> <span class="parameter-name">reference</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../acter/ObjRefBuilder-class.html">ObjRefBuilder</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  create object reference
+position: top-left/top-middle/top-right/center-left/center-middle/center-right/bottom-left/bottom-middle/bottom-right
+  
+
+</dd>
+
+        <dt id="newSpaceSettingsBuilder" class="callable">
+  <span class="name"><a href="../acter/Api/newSpaceSettingsBuilder.html">newSpaceSettingsBuilder</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/CreateSpaceSettingsBuilder-class.html">CreateSpaceSettingsBuilder</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  make space settings builder
+  
+
+</dd>
+
+        <dt id="newTaskListRefBuilder" class="callable">
+  <span class="name"><a href="../acter/Api/newTaskListRefBuilder.html">newTaskListRefBuilder</a></span><span class="signature">(<wbr><span class="parameter" id="newTaskListRefBuilder-param-targetId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">targetId</span>, </span><span class="parameter" id="newTaskListRefBuilder-param-roomId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">roomId</span>, </span><span class="parameter" id="newTaskListRefBuilder-param-action"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">action</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../acter/RefDetailsBuilder-class.html">RefDetailsBuilder</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  create a task list ref builder
+target_id: event id of target
+action: link/embed/embed-subscribe
+  
+
+</dd>
+
+        <dt id="newTaskRefBuilder" class="callable">
+  <span class="name"><a href="../acter/Api/newTaskRefBuilder.html">newTaskRefBuilder</a></span><span class="signature">(<wbr><span class="parameter" id="newTaskRefBuilder-param-targetId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">targetId</span>, </span><span class="parameter" id="newTaskRefBuilder-param-roomId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">roomId</span>, </span><span class="parameter" id="newTaskRefBuilder-param-taskList"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">taskList</span>, </span><span class="parameter" id="newTaskRefBuilder-param-action"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">action</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../acter/RefDetailsBuilder-class.html">RefDetailsBuilder</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  create a task ref builder
+target_id: event id of target
+task_list: event id of task list
+action: link/embed/embed-subscribe/embed-accept-assignment/embed-mark-done
+  
+
+</dd>
+
+        <dt id="newThumbSize" class="callable">
+  <span class="name"><a href="../acter/Api/newThumbSize.html">newThumbSize</a></span><span class="signature">(<wbr><span class="parameter" id="newThumbSize-param-width"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">width</span>, </span><span class="parameter" id="newThumbSize-param-height"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">height</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../acter/ThumbnailSize-class.html">ThumbnailSize</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  create size object to be used for thumbnail download
+  
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="parseMarkdown" class="callable">
+  <span class="name"><a href="../acter/Api/parseMarkdown.html">parseMarkdown</a></span><span class="signature">(<wbr><span class="parameter" id="parseMarkdown-param-text"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">text</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="registerWithToken" class="callable">
+  <span class="name"><a href="../acter/Api/registerWithToken.html">registerWithToken</a></span><span class="signature">(<wbr><span class="parameter" id="registerWithToken-param-basePath"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">basePath</span>, </span><span class="parameter" id="registerWithToken-param-mediaCacheBasePath"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">mediaCacheBasePath</span>, </span><span class="parameter" id="registerWithToken-param-username"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">username</span>, </span><span class="parameter" id="registerWithToken-param-password"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">password</span>, </span><span class="parameter" id="registerWithToken-param-registrationToken"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">registrationToken</span>, </span><span class="parameter" id="registerWithToken-param-defaultHomeserverName"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">defaultHomeserverName</span>, </span><span class="parameter" id="registerWithToken-param-defaultHomeserverUrl"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">defaultHomeserverUrl</span>, </span><span class="parameter" id="registerWithToken-param-deviceName"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">deviceName</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/Client-class.html">Client</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Create a new client from the registration token
+  
+
+</dd>
+
+        <dt id="rotateLogFile" class="callable">
+  <span class="name"><a href="../acter/Api/rotateLogFile.html">rotateLogFile</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Rotate the logging file
+  
+
+</dd>
+
+        <dt id="setProxy" class="callable">
+  <span class="name"><a href="../acter/Api/setProxy.html">setProxy</a></span><span class="signature">(<wbr><span class="parameter" id="setProxy-param-proxy"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">proxy</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Set the global proxy to the given string. Will only apply to client initialized after calling this.
+  
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="writeLog" class="callable">
+  <span class="name"><a href="../acter/Api/writeLog.html">writeLog</a></span><span class="signature">(<wbr><span class="parameter" id="writeLog-param-text"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">text</span>, </span><span class="parameter" id="writeLog-param-level"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">level</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Allow flutter to call logging on rust side
+  
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+    
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">acter_flutter_sdk</a></li>
+    <li><a href="../acter/acter-library.html">acter</a></li>
+    <li class="self-crumb">Api class</li>
+</ol>
+
+
+    <h5>acter library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    acter_flutter_sdk
+      0.0.1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

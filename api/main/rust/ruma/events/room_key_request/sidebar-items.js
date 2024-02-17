@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Action"],"struct":["RequestedKeyInfo","ToDeviceRoomKeyRequestEventContent"],"type":["ToDeviceRoomKeyRequestEvent"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["cancelable_future"],"macro":["map_mut","map_ref"],"mod":["signal","signal_map","signal_vec","tutorial"],"struct":["CancelableFuture","CancelableFutureHandle"]};

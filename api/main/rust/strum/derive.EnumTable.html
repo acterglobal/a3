@@ -1,0 +1,49 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Creates a new type that maps all the variants of an enum to another generic value."><title>EnumTable in strum - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="strum" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc derive"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../strum/index.html">strum</a><span class="version">0.26.1</span></h2></div><div class="sidebar-elems"></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../strum/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Derive Macro <a href="index.html">strum</a>::<wbr><a class="derive" href="#">EnumTable</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/strum_macros/lib.rs.html#558">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><code>#[derive(EnumTable)]
+{
+    <span class="comment">// Attributes available to this derive:</span>
+    #[strum]
+}
+</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Creates a new type that maps all the variants of an enum to another generic value.</p>
+<p>This macro only supports enums with unit type variants.A new type called <code>YourEnumTable&lt;T&gt;</code>. Essentially, it’s a wrapper
+<code>[T; YourEnum::Count]</code> where gets/sets are infallible. Some important caveats to note:</p>
+<ul>
+<li>
+<p>The size of <code>YourEnumTable&lt;T&gt;</code> increases with the number of variants, not the number of values because it’s always
+fully populated. This means it may not be a good choice for sparsely populated maps.</p>
+</li>
+<li>
+<p>Lookups are basically constant time since it’s functionally an array index.</p>
+</li>
+<li>
+<p>Your variants cannot have associated data. You can use <code>EnumDiscriminants</code> to generate an Enum with the same
+names to work around this.</p>
+</li>
+</ul>
+<h2 id="stability"><a class="doc-anchor" href="#stability">§</a>Stability</h2>
+<p>Several people expressed interest in a data structure like this and pushed the PR through to completion, but the api
+seems incomplete, and I reserve the right to deprecate it in the future if it becomes clear the design is flawed.</p>
+<h2 id="example"><a class="doc-anchor" href="#example">§</a>Example</h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>strum_macros::EnumTable;
+
+<span class="attr">#[derive(EnumTable)]
+</span><span class="kw">enum </span>Color {
+    Red,
+    Yellow,
+    Green,
+    Blue,
+}
+
+<span class="macro">assert_eq!</span>(ColorTable::default(), ColorTable::new(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>));
+<span class="macro">assert_eq!</span>(ColorTable::filled(<span class="number">2</span>), ColorTable::new(<span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>));
+<span class="macro">assert_eq!</span>(ColorTable::from_closure(|<span class="kw">_</span>| <span class="number">3</span>), ColorTable::new(<span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>));
+<span class="macro">assert_eq!</span>(ColorTable::default().transform(|<span class="kw">_</span>, val| val + <span class="number">2</span>), ColorTable::new(<span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>));
+
+<span class="kw">let </span><span class="kw-2">mut </span>complex_map = ColorTable::from_closure(|color| <span class="kw">match </span>color {
+    Color::Red =&gt; <span class="number">0</span>,
+    <span class="kw">_ </span>=&gt; <span class="number">3
+</span>});
+
+complex_map[Color::Green] = complex_map[Color::Red];
+<span class="macro">assert_eq!</span>(complex_map, ColorTable::new(<span class="number">0</span>, <span class="number">3</span>, <span class="number">0</span>, <span class="number">3</span>));</code></pre></div>
+</div></details></section></div></main></body></html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the build method from the SettingsMenu class, for the Dart programming language.">
+  <title>build method - SettingsMenu class - settings_menu library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">acter</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_settings_widgets_settings_menu/file-___home_runner_work_a3_a3_app_lib_features_settings_widgets_settings_menu-library.html">features&#47;settings&#47;widgets&#47;settings_menu.dart</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_settings_widgets_settings_menu/SettingsMenu-class.html">SettingsMenu</a></li>
+    <li class="self-crumb">build method</li>
+  </ol>
+  <div class="self-name">build</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="file-___home_runner_work_a3_a3_app_lib_features_settings_widgets_settings_menu&#47;SettingsMenu-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-method">build</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+  <div>
+    <ol class="annotation-list">
+        <li>@<a href="https://api.flutter.dev/flutter/dart-core/override-constant.html">override</a></li>
+    </ol>
+  </div>
+
+<span class="returntype">dynamic</span>
+<span class="name ">build</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="build-param-context"><span class="type-annotation">dynamic</span> <span class="parameter-name">context</span>, </span></li>
+<li><span class="parameter" id="build-param-ref"><span class="type-annotation">dynamic</span> <span class="parameter-name">ref</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">@override
+Widget build(BuildContext context, WidgetRef ref) {
+  final currentRoute = ref.watch(currentRoutingLocation);
+  final size = MediaQuery.of(context).size;
+  Color? colorSelected(Routes route) =&gt; currentRoute == route.route
+      ? AppTheme.brandColorScheme.secondary
+      : null;
+
+  TextStyle titleStylesSelected(Routes route) {
+    return TextStyle(
+      color: colorSelected(route),
+    );
+  }
+
+  final shouldGoNotNamed = isDesktop || size.width &gt; 770;
+
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(
+        &#39;Settings&#39;,
+        style: Theme.of(context).textTheme.titleLarge,
+      ),
+      centerTitle: false,
+    ),
+    body: SettingsList(
+      sections: [
+        SettingsSection(
+          title: const Text(&#39;Account&#39;),
+          tiles: &lt;SettingsTile&gt;[
+            SettingsTile.navigation(
+              title: Text(
+                &#39;Sessions&#39;,
+                style: titleStylesSelected(Routes.settingSessions),
+              ),
+              description: Text(
+                &#39;Your active device sessions&#39;,
+                style: titleStylesSelected(Routes.settingSessions),
+              ),
+              leading: Icon(
+                Atlas.key_monitor_thin,
+                color: colorSelected(Routes.settingSessions),
+              ),
+              onPressed: (context) {
+                shouldGoNotNamed
+                    ? context.goNamed(Routes.settingSessions.name)
+                    : context.pushNamed(Routes.settingSessions.name);
+              },
+            ),
+            SettingsTile.navigation(
+              title: Text(
+                &#39;Notifications&#39;,
+                style: titleStylesSelected(Routes.settingNotifications),
+              ),
+              description: Text(
+                &#39;Notifications settings and targets&#39;,
+                style: titleStylesSelected(Routes.settingNotifications),
+              ),
+              leading: Icon(
+                Atlas.bell_mobile_thin,
+                color: colorSelected(Routes.settingNotifications),
+              ),
+              onPressed: (context) {
+                shouldGoNotNamed
+                    ? context.goNamed(Routes.settingNotifications.name)
+                    : context.pushNamed(Routes.settingNotifications.name);
+              },
+            ),
+            SettingsTile.navigation(
+              title: Text(
+                &#39;Email Addresses&#39;,
+                style: titleStylesSelected(Routes.emailAddresses),
+              ),
+              description: Text(
+                &#39;Connected to your account&#39;,
+                style: titleStylesSelected(Routes.emailAddresses),
+              ),
+              leading: Icon(
+                Atlas.envelope_paper_email_thin,
+                color: colorSelected(Routes.emailAddresses),
+              ),
+              onPressed: (context) {
+                shouldGoNotNamed
+                    ? context.goNamed(Routes.emailAddresses.name)
+                    : context.pushNamed(Routes.emailAddresses.name);
+              },
+            ),
+            SettingsTile.navigation(
+              title: Text(
+                &#39;Blocked Users&#39;,
+                style: titleStylesSelected(Routes.blockedUsers),
+              ),
+              description: Text(
+                &#39;Users you blocked&#39;,
+                style: titleStylesSelected(Routes.blockedUsers),
+              ),
+              leading: Icon(
+                Atlas.users_thin,
+                color: colorSelected(Routes.blockedUsers),
+              ),
+              onPressed: (context) {
+                shouldGoNotNamed
+                    ? context.goNamed(Routes.blockedUsers.name)
+                    : context.pushNamed(Routes.blockedUsers.name);
+              },
+            ),
+          ],
+        ),
+        SettingsSection(
+          title: const Text(&#39;Community&#39;),
+          tiles: &lt;SettingsTile&gt;[
+            SettingsTile.navigation(
+              key: superInvitations,
+              enabled: ref.watch(hasSuperTokensAccess).valueOrNull == true,
+              title: Text(
+                &#39;Super Invitations&#39;,
+                style: titleStylesSelected(Routes.settingsSuperInvites),
+              ),
+              description: Text(
+                &#39;Manage your invitation tokens&#39;,
+                style: titleStylesSelected(Routes.settingsSuperInvites),
+              ),
+              leading: Icon(
+                Atlas.plus_envelope_thin,
+                color: colorSelected(Routes.settingsSuperInvites),
+              ),
+              onPressed: (context) {
+                shouldGoNotNamed
+                    ? context.goNamed(Routes.settingsSuperInvites.name)
+                    : context.pushNamed(Routes.settingsSuperInvites.name);
+              },
+            ),
+          ],
+        ),
+        SettingsSection(
+          title: const Text(&#39;Acter App&#39;),
+          tiles: &lt;SettingsTile&gt;[
+            SettingsTile.navigation(
+              key: labs,
+              title: Text(
+                &#39;Labs&#39;,
+                style: titleStylesSelected(Routes.settingsLabs),
+              ),
+              description: Text(
+                &#39;Experimental Acter features&#39;,
+                style: titleStylesSelected(Routes.settingsLabs),
+              ),
+              leading: Icon(
+                Atlas.lab_appliance_thin,
+                color: colorSelected(Routes.settingsLabs),
+              ),
+              onPressed: (context) {
+                shouldGoNotNamed
+                    ? context.goNamed(Routes.settingsLabs.name)
+                    : context.pushNamed(Routes.settingsLabs.name);
+              },
+            ),
+            SettingsTile(
+              title: Text(&#39;Info&#39;, style: titleStylesSelected(Routes.info)),
+              leading: Icon(
+                Atlas.info_circle_thin,
+                color: colorSelected(Routes.info),
+              ),
+              onPressed: (context) {
+                shouldGoNotNamed
+                    ? context.goNamed(Routes.info.name)
+                    : context.pushNamed(Routes.info.name);
+              },
+            ),
+          ],
+        ),
+        SettingsSection(
+          title: Text(
+            &#39;Danger Zone&#39;,
+            style: TextStyle(
+              color: AppTheme.brandColorScheme.error,
+            ),
+          ),
+          tiles: &lt;SettingsTile&gt;[
+            SettingsTile.navigation(
+              key: logoutAccount,
+              title: const Text(&#39;Logout&#39;),
+              description:
+                  const Text(&#39;Close this session, deleting local data&#39;),
+              leading: const Icon(Atlas.exit_thin),
+              onPressed: (context) {
+                logoutConfirmationDialog(context, ref);
+              },
+            ),
+            SettingsTile.navigation(
+              key: deactivateAccount,
+              title: Text(
+                &#39;Deactivate Account&#39;,
+                style: TextStyle(
+                  color: AppTheme.brandColorScheme.error,
+                  &#47;&#47;backgroundColor: AppTheme.brandColorScheme.onError,
+                ),
+              ),
+              description: Text(
+                &#39;Irreversibly deactivate this account&#39;,
+                style: TextStyle(
+                  color: AppTheme.brandColorScheme.error,
+                ),
+              ),
+              leading: Icon(
+                Atlas.trash_can_thin,
+                color: AppTheme.brandColorScheme.error,
+              ),
+              onPressed: (context) =&gt;
+                  deactivationConfirmationDialog(context, ref),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">acter</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_settings_widgets_settings_menu/file-___home_runner_work_a3_a3_app_lib_features_settings_widgets_settings_menu-library.html">settings_menu</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_settings_widgets_settings_menu/SettingsMenu-class.html">SettingsMenu</a></li>
+    <li class="self-crumb">build method</li>
+</ol>
+
+
+    <h5>SettingsMenu class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    acter
+      0.0.1+1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

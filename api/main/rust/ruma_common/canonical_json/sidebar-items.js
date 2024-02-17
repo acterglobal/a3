@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["CanonicalJsonError","CanonicalJsonValue","JsonType","RedactionError"],"fn":["redact","redact_content_in_place","redact_in_place","to_canonical_value","try_from_json_map"],"struct":["RedactedBecause"],"trait":["RedactionEvent"],"type":["CanonicalJsonObject"]};

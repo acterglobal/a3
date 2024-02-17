@@ -1,0 +1,568 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="This crate provides derive macro `Display` and `FromStr`. These macros use common helper attributes to specify the format."><title>parse_display - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="parse_display" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../parse_display/index.html">parse_display</a><span class="version">0.8.2</span></h2></div><div class="sidebar-elems"><ul class="block">
+            <li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#traits">Traits</a></li><li><a href="#derives">Derive Macros</a></li></ul></section></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../parse_display/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">parse_display</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/parse_display/lib.rs.html#2-766">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>This crate provides derive macro <code>Display</code> and <code>FromStr</code>.
+These macros use common helper attributes to specify the format.</p>
+<h3 id="install"><a class="doc-anchor" href="#install">§</a>Install</h3>
+<p>Add this to your Cargo.toml:</p>
+<div class="example-wrap"><pre class="language-toml"><code>[dependencies]
+parse-display = &quot;0.8.2&quot;
+</code></pre></div><h3 id="example"><a class="doc-anchor" href="#example">§</a>Example</h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::{Display, FromStr};
+
+<span class="attr">#[derive(Display, FromStr, PartialEq, Debug)]
+#[display(<span class="string">"{a}-{b}"</span>)]
+</span><span class="kw">struct </span>MyStruct {
+  a: u32,
+  b: u32,
+}
+<span class="macro">assert_eq!</span>(MyStruct { a:<span class="number">10</span>, b:<span class="number">20 </span>}.to_string(), <span class="string">"10-20"</span>);
+<span class="macro">assert_eq!</span>(<span class="string">"10-20"</span>.parse(), <span class="prelude-val">Ok</span>(MyStruct { a:<span class="number">10</span>, b:<span class="number">20 </span>}));
+
+
+<span class="attr">#[derive(Display, FromStr, PartialEq, Debug)]
+#[display(style = <span class="string">"snake_case"</span>)]
+</span><span class="kw">enum </span>MyEnum {
+  VarA,
+  VarB,
+}
+<span class="macro">assert_eq!</span>(MyEnum::VarA.to_string(), <span class="string">"var_a"</span>);
+<span class="macro">assert_eq!</span>(<span class="string">"var_a"</span>.parse(), <span class="prelude-val">Ok</span>(MyEnum::VarA));</code></pre></div>
+<h3 id="helper-attributes"><a class="doc-anchor" href="#helper-attributes">§</a>Helper attributes</h3>
+<p>Helper attributes can be written in the following positions.</p>
+<div><table><thead><tr><th>attribute</th><th>struct</th><th>enum</th><th>variant</th><th>field</th></tr></thead><tbody>
+<tr><td><a href="#display"><code>#[display(&quot;...&quot;)]</code></a></td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+<tr><td><a href="#displaystyle--"><code>#[display(style = &quot;...&quot;)]</code></a></td><td></td><td>✔</td><td>✔</td><td></td></tr>
+<tr><td><a href="#displaycrate--"><code>#[display(crate = ...)]</code></a></td><td>✔</td><td>✔</td><td></td><td></td></tr>
+<tr><td><a href="#displaybound"><code>#[display(bound(...))]</code></a></td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+<tr><td><a href="#from_strbound"><code>#[from_str(bound(...))]</code></a></td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+<tr><td><a href="#from_strregex--"><code>#[from_str(regex = &quot;...&quot;)]</code></a></td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+<tr><td><a href="#from_strnew--"><code>#[from_str(new = ...)]</code></a></td><td>✔</td><td></td><td>✔</td><td></td></tr>
+<tr><td><a href="#from_strignore"><code>#[from_str(ignore)]</code></a></td><td></td><td></td><td>✔</td><td></td></tr>
+<tr><td><a href="#from_strdefault"><code>#[from_str(default)]</code></a></td><td>✔</td><td></td><td></td><td>✔</td></tr>
+<tr><td><a href="#from_strdefault_fields"><code>#[from_str(default_fields(...))]</code></a></td><td>✔</td><td>✔</td><td>✔</td><td></td></tr>
+</tbody></table>
+</div>
+<p><code>#[derive(Display)]</code> use <code>#[display]</code>.
+<code>#[derive(FromStr)]</code> use both <code>#[display]</code> and <code>#[from_str]</code>.</p>
+<p><code>key = value</code> style parameter can be specified only once for each key.
+<code>key(value1, value2, ...)</code> style parameter can be specified multiple times.</p>
+<h3 id="display"><a class="doc-anchor" href="#display">§</a><code>#[display(&quot;...&quot;)]</code></h3>
+<p>Specifies the format using a syntax similar to <code>std::format!()</code>.
+However, unlike <code>std::format!()</code>, field name is specified in <code>{}</code>.</p>
+<h4 id="struct-format"><a class="doc-anchor" href="#struct-format">§</a>Struct format</h4>
+<p>By writing <code>#[display(&quot;..&quot;)]</code>, you can specify the format used by <code>Display</code> and <code>FromStr</code>.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::{Display, FromStr};
+
+<span class="attr">#[derive(Display, FromStr, PartialEq, Debug)]
+#[display(<span class="string">"{a}-{b}"</span>)]
+</span><span class="kw">struct </span>MyStruct {
+  a: u32,
+  b: u32,
+}
+<span class="macro">assert_eq!</span>(MyStruct { a:<span class="number">10</span>, b:<span class="number">20 </span>}.to_string(), <span class="string">"10-20"</span>);
+<span class="macro">assert_eq!</span>(<span class="string">"10-20"</span>.parse(), <span class="prelude-val">Ok</span>(MyStruct { a:<span class="number">10</span>, b:<span class="number">20 </span>}));
+
+<span class="attr">#[derive(Display, FromStr, PartialEq, Debug)]
+#[display(<span class="string">"{0}+{1}"</span>)]
+</span><span class="kw">struct </span>MyTuple(u32, u32);
+<span class="macro">assert_eq!</span>(MyTuple(<span class="number">10</span>, <span class="number">20</span>).to_string(), <span class="string">"10+20"</span>);
+<span class="macro">assert_eq!</span>(<span class="string">"10+20"</span>.parse(), <span class="prelude-val">Ok</span>(MyTuple(<span class="number">10</span>, <span class="number">20</span>)));</code></pre></div>
+<h4 id="newtype-pattern"><a class="doc-anchor" href="#newtype-pattern">§</a>Newtype pattern</h4>
+<p>If the struct has only one field, the format can be omitted.
+In this case, the only field is used.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::{Display, FromStr};
+
+<span class="attr">#[derive(Display, FromStr, PartialEq, Debug)]
+</span><span class="kw">struct </span>NewType(u32);
+<span class="macro">assert_eq!</span>(NewType(<span class="number">10</span>).to_string(), <span class="string">"10"</span>);
+<span class="macro">assert_eq!</span>(<span class="string">"10"</span>.parse(), <span class="prelude-val">Ok</span>(NewType(<span class="number">10</span>)));</code></pre></div>
+<h4 id="enum-format"><a class="doc-anchor" href="#enum-format">§</a>Enum format</h4>
+<p>In enum, you can specify the format for each variant.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::{Display, FromStr};
+
+<span class="attr">#[derive(Display, FromStr, PartialEq, Debug)]
+</span><span class="kw">enum </span>MyEnum {
+  <span class="attr">#[display(<span class="string">"aaa"</span>)]
+  </span>VarA,
+  <span class="attr">#[display(<span class="string">"bbb"</span>)]
+  </span>VarB,
+}
+<span class="macro">assert_eq!</span>(MyEnum::VarA.to_string(), <span class="string">"aaa"</span>);
+<span class="macro">assert_eq!</span>(MyEnum::VarB.to_string(), <span class="string">"bbb"</span>);
+<span class="macro">assert_eq!</span>(<span class="string">"aaa"</span>.parse(), <span class="prelude-val">Ok</span>(MyEnum::VarA));
+<span class="macro">assert_eq!</span>(<span class="string">"bbb"</span>.parse(), <span class="prelude-val">Ok</span>(MyEnum::VarB));</code></pre></div>
+<p>In enum format, <code>{}</code> means variant name.
+Variant name style (e.g. snake_case, camelCase, …) can be specified by <a href="#displaystyle--"><code>#[from_str(style = &quot;...&quot;)]</code></a>.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::{Display, FromStr};
+
+<span class="attr">#[derive(Display, FromStr, PartialEq, Debug)]
+</span><span class="kw">enum </span>MyEnum {
+  <span class="attr">#[display(<span class="string">"aaa-{}"</span>)]
+  </span>VarA,
+  <span class="attr">#[display(<span class="string">"bbb-{}"</span>)]
+  </span>VarB,
+}
+<span class="macro">assert_eq!</span>(MyEnum::VarA.to_string(), <span class="string">"aaa-VarA"</span>);
+<span class="macro">assert_eq!</span>(MyEnum::VarB.to_string(), <span class="string">"bbb-VarB"</span>);
+<span class="macro">assert_eq!</span>(<span class="string">"aaa-VarA"</span>.parse(), <span class="prelude-val">Ok</span>(MyEnum::VarA));
+<span class="macro">assert_eq!</span>(<span class="string">"bbb-VarB"</span>.parse(), <span class="prelude-val">Ok</span>(MyEnum::VarB));
+
+<span class="attr">#[derive(Display, FromStr, PartialEq, Debug)]
+#[display(style = <span class="string">"snake_case"</span>)]
+</span><span class="kw">enum </span>MyEnumSnake {
+  <span class="attr">#[display(<span class="string">"{}"</span>)]
+  </span>VarA,
+}
+<span class="macro">assert_eq!</span>(MyEnumSnake::VarA.to_string(), <span class="string">"var_a"</span>);
+<span class="macro">assert_eq!</span>(<span class="string">"var_a"</span>.parse(), <span class="prelude-val">Ok</span>(MyEnumSnake::VarA));</code></pre></div>
+<p>By writing a format on enum instead of variant, you can specify the format common to multiple variants.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::{Display, FromStr};
+
+<span class="attr">#[derive(Display, FromStr, PartialEq, Debug)]
+#[display(<span class="string">"xxx-{}"</span>)]
+</span><span class="kw">enum </span>MyEnum {
+  VarA,
+  VarB,
+}
+<span class="macro">assert_eq!</span>(MyEnum::VarA.to_string(), <span class="string">"xxx-VarA"</span>);
+<span class="macro">assert_eq!</span>(MyEnum::VarB.to_string(), <span class="string">"xxx-VarB"</span>);
+<span class="macro">assert_eq!</span>(<span class="string">"xxx-VarA"</span>.parse(), <span class="prelude-val">Ok</span>(MyEnum::VarA));
+<span class="macro">assert_eq!</span>(<span class="string">"xxx-VarB"</span>.parse(), <span class="prelude-val">Ok</span>(MyEnum::VarB));</code></pre></div>
+<h4 id="unit-variants"><a class="doc-anchor" href="#unit-variants">§</a>Unit variants</h4>
+<p>If all variants has no field, format can be omitted.
+In this case, variant name is used.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::{Display, FromStr};
+
+<span class="attr">#[derive(Display, FromStr, PartialEq, Debug)]
+</span><span class="kw">enum </span>MyEnum {
+  VarA,
+  VarB,
+}
+<span class="macro">assert_eq!</span>(MyEnum::VarA.to_string(), <span class="string">"VarA"</span>);
+<span class="macro">assert_eq!</span>(MyEnum::VarB.to_string(), <span class="string">"VarB"</span>);
+<span class="macro">assert_eq!</span>(<span class="string">"VarA"</span>.parse(), <span class="prelude-val">Ok</span>(MyEnum::VarA));
+<span class="macro">assert_eq!</span>(<span class="string">"VarB"</span>.parse(), <span class="prelude-val">Ok</span>(MyEnum::VarB));</code></pre></div>
+<h4 id="field-format"><a class="doc-anchor" href="#field-format">§</a>Field format</h4>
+<p>You can specify the format of the field.
+In field format, <code>{}</code> means the field itself.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::{Display, FromStr};
+
+<span class="attr">#[derive(Display, FromStr, PartialEq, Debug)]
+#[display(<span class="string">"{a}, {b}"</span>)]
+</span><span class="kw">struct </span>MyStruct {
+  <span class="attr">#[display(<span class="string">"a is {}"</span>)]
+  </span>a: u32,
+  <span class="attr">#[display(<span class="string">"b is {}"</span>)]
+  </span>b: u32,
+}
+<span class="macro">assert_eq!</span>(MyStruct { a:<span class="number">10</span>, b:<span class="number">20 </span>}.to_string(), <span class="string">"a is 10, b is 20"</span>);
+<span class="macro">assert_eq!</span>(<span class="string">"a is 10, b is 20"</span>.parse(), <span class="prelude-val">Ok</span>(MyStruct { a:<span class="number">10</span>, b:<span class="number">20 </span>}));
+
+<span class="attr">#[derive(Display, FromStr, PartialEq, Debug)]
+#[display(<span class="string">"{0}, {1}"</span>)]
+</span><span class="kw">struct </span>MyTuple(<span class="attr">#[display(<span class="string">"first is {}"</span>)] </span>u32, <span class="attr">#[display(<span class="string">"next is {}"</span>)] </span>u32);
+<span class="macro">assert_eq!</span>(MyTuple(<span class="number">10</span>, <span class="number">20</span>).to_string(), <span class="string">"first is 10, next is 20"</span>);
+<span class="macro">assert_eq!</span>(<span class="string">"first is 10, next is 20"</span>.parse(), <span class="prelude-val">Ok</span>(MyTuple(<span class="number">10</span>, <span class="number">20</span>)));
+
+<span class="attr">#[derive(Display, FromStr, PartialEq, Debug)]
+</span><span class="kw">enum </span>MyEnum {
+  <span class="attr">#[display(<span class="string">"this is A {0}"</span>)]
+  </span>VarA(<span class="attr">#[display(<span class="string">"___{}___"</span>)] </span>u32),
+}
+<span class="macro">assert_eq!</span>(MyEnum::VarA(<span class="number">10</span>).to_string(), <span class="string">"this is A ___10___"</span>);
+<span class="macro">assert_eq!</span>(<span class="string">"this is A ___10___"</span>.parse(), <span class="prelude-val">Ok</span>(MyEnum::VarA(<span class="number">10</span>)));</code></pre></div>
+<h4 id="display-field-chain"><a class="doc-anchor" href="#display-field-chain">§</a>Display field chain</h4>
+<p>You can use “field chain”, e.g. <code>{x.a}</code> .</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::{Display, FromStr};
+
+<span class="attr">#[derive(PartialEq, Debug, Default)]
+</span><span class="kw">struct </span>MyStruct {
+  a: u32,
+  b: u32,
+}
+
+<span class="attr">#[derive(FromStr, Display, PartialEq, Debug)]
+#[display(<span class="string">"{x.a}"</span>)]
+</span><span class="kw">struct </span>FieldChain {
+  <span class="attr">#[from_str(default)]
+  </span>x: MyStruct,
+}
+<span class="macro">assert_eq!</span>(FieldChain { x:MyStruct { a:<span class="number">10</span>, b:<span class="number">20 </span>} }.to_string(), <span class="string">"10"</span>);
+<span class="macro">assert_eq!</span>(<span class="string">"10"</span>.parse(), <span class="prelude-val">Ok</span>(FieldChain { x:MyStruct { a:<span class="number">10</span>, b:<span class="number">0 </span>} }));</code></pre></div>
+<p>When using “field chain”, you need to use <a href="#from_strdefault"><code>#[from_str(default)]</code></a> to implement <code>FromStr</code>.</p>
+<h4 id="format-parameter"><a class="doc-anchor" href="#format-parameter">§</a>Format parameter</h4>
+<p>Like <code>std::format!()</code>, format parameter can be specified.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::{Display, FromStr};
+
+<span class="attr">#[derive(Display, PartialEq, Debug)]
+#[display(<span class="string">"{a:&gt;04}"</span>)]
+</span><span class="kw">struct </span>WithFormatParameter {
+  a: u32,
+}
+<span class="macro">assert_eq!</span>(WithFormatParameter { a:<span class="number">5 </span>}.to_string(), <span class="string">"0005"</span>);</code></pre></div>
+<h3 id="displaystyle--"><a class="doc-anchor" href="#displaystyle--">§</a><code>#[display(style = &quot;...&quot;)]</code></h3>
+<p>By writing <code>#[display(style = &quot;...&quot;)]</code>, you can specify the variant name style.
+The following styles are available.</p>
+<ul>
+<li><code>none</code></li>
+<li><code>lowercase</code></li>
+<li><code>UPPERCASE</code></li>
+<li><code>snake_case</code></li>
+<li><code>SNAKE_CASE</code></li>
+<li><code>camelCase</code></li>
+<li><code>CamelCase</code></li>
+<li><code>kebab-case</code></li>
+<li><code>KEBAB-CASE</code></li>
+<li><code>Title Case</code></li>
+<li><code>Title case</code></li>
+<li><code>title case</code></li>
+<li><code>TITLE CASE</code></li>
+</ul>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::{Display, FromStr};
+
+<span class="attr">#[derive(Display, FromStr, PartialEq, Debug)]
+#[display(style = <span class="string">"snake_case"</span>)]
+</span><span class="kw">enum </span>MyEnum {
+  VarA,
+  VarB,
+}
+<span class="macro">assert_eq!</span>(MyEnum::VarA.to_string(), <span class="string">"var_a"</span>);
+<span class="macro">assert_eq!</span>(<span class="string">"var_a"</span>.parse(), <span class="prelude-val">Ok</span>(MyEnum::VarA));
+
+<span class="attr">#[derive(Display, FromStr, PartialEq, Debug)]
+</span><span class="kw">enum </span>StyleExample {
+  <span class="attr">#[display(style = <span class="string">"none"</span>)]
+  </span>VarA1,
+  <span class="attr">#[display(style = <span class="string">"none"</span>)]
+  </span>varA2,
+  <span class="attr">#[display(style = <span class="string">"lowercase"</span>)]
+  </span>VarB,
+  <span class="attr">#[display(style = <span class="string">"UPPERCASE"</span>)]
+  </span>VarC,
+  <span class="attr">#[display(style = <span class="string">"snake_case"</span>)]
+  </span>VarD,
+  <span class="attr">#[display(style = <span class="string">"SNAKE_CASE"</span>)]
+  </span>VarE,
+  <span class="attr">#[display(style = <span class="string">"camelCase"</span>)]
+  </span>VarF,
+  <span class="attr">#[display(style = <span class="string">"CamelCase"</span>)]
+  </span>VarG1,
+  <span class="attr">#[display(style = <span class="string">"CamelCase"</span>)]
+  </span>varG2,
+  <span class="attr">#[display(style = <span class="string">"kebab-case"</span>)]
+  </span>VarH,
+  <span class="attr">#[display(style = <span class="string">"KEBAB-CASE"</span>)]
+  </span>VarI,
+  <span class="attr">#[display(style = <span class="string">"Title Case"</span>)]
+  </span>VarJ,
+  <span class="attr">#[display(style = <span class="string">"Title case"</span>)]
+  </span>VarK,
+  <span class="attr">#[display(style = <span class="string">"title case"</span>)]
+  </span>VarL,
+  <span class="attr">#[display(style = <span class="string">"TITLE CASE"</span>)]
+  </span>VarM,
+}
+<span class="macro">assert_eq!</span>(StyleExample::VarA1.to_string(), <span class="string">"VarA1"</span>);
+<span class="macro">assert_eq!</span>(StyleExample::varA2.to_string(), <span class="string">"varA2"</span>);
+<span class="macro">assert_eq!</span>(StyleExample::VarB.to_string(), <span class="string">"varb"</span>);
+<span class="macro">assert_eq!</span>(StyleExample::VarC.to_string(), <span class="string">"VARC"</span>);
+<span class="macro">assert_eq!</span>(StyleExample::VarD.to_string(), <span class="string">"var_d"</span>);
+<span class="macro">assert_eq!</span>(StyleExample::VarE.to_string(), <span class="string">"VAR_E"</span>);
+<span class="macro">assert_eq!</span>(StyleExample::VarF.to_string(), <span class="string">"varF"</span>);
+<span class="macro">assert_eq!</span>(StyleExample::VarG1.to_string(), <span class="string">"VarG1"</span>);
+<span class="macro">assert_eq!</span>(StyleExample::varG2.to_string(), <span class="string">"VarG2"</span>);
+<span class="macro">assert_eq!</span>(StyleExample::VarH.to_string(), <span class="string">"var-h"</span>);
+<span class="macro">assert_eq!</span>(StyleExample::VarI.to_string(), <span class="string">"VAR-I"</span>);
+<span class="macro">assert_eq!</span>(StyleExample::VarJ.to_string(), <span class="string">"Var J"</span>);
+<span class="macro">assert_eq!</span>(StyleExample::VarK.to_string(), <span class="string">"Var k"</span>);
+<span class="macro">assert_eq!</span>(StyleExample::VarL.to_string(), <span class="string">"var l"</span>);
+<span class="macro">assert_eq!</span>(StyleExample::VarM.to_string(), <span class="string">"VAR M"</span>);</code></pre></div>
+<h3 id="displaycrate--"><a class="doc-anchor" href="#displaycrate--">§</a><code>#[display(crate = ...)]</code></h3>
+<p>Specify a path to the <code>parse-display</code> crate instance.</p>
+<p>Used when <code>::parse_display</code> is not an instance of <code>parse-display</code>, such as when a macro is re-exported or used from another macro.</p>
+<h3 id="displaybound"><a class="doc-anchor" href="#displaybound">§</a><code>#[display(bound(...))]</code></h3>
+<p>By default, the type of field used in the format is added to the trait bound.</p>
+<p>In Rust prior to 1.59, this behavior causes a compile error if you use fields of non public type in public struct.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#![deny(private_in_public)]
+</span><span class="kw">use </span>parse_display::Display;
+
+<span class="comment">// private type `Inner&lt;T&gt;` in public interface (error E0446)
+</span><span class="attr">#[derive(Display)]
+</span><span class="kw">pub struct </span>Outer&lt;T&gt;(Inner&lt;T&gt;);
+
+<span class="attr">#[derive(Display)]
+</span><span class="kw">struct </span>Inner&lt;T&gt;(T);</code></pre></div>
+<p>By writing <code>#[display(bound(...))]</code>, you can override the default behavior.</p>
+<h4 id="specify-trait-bound-type"><a class="doc-anchor" href="#specify-trait-bound-type">§</a>Specify trait bound type</h4>
+<p>By specifying the type, you can specify the type that need to implement <code>Display</code> and <code>FromStr</code>.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::{Display, FromStr};
+
+<span class="attr">#[derive(Display, FromStr, PartialEq, Debug)]
+#[display(bound(T))]
+</span><span class="kw">pub struct </span>Outer&lt;T&gt;(Inner&lt;T&gt;);
+
+<span class="attr">#[derive(Display, FromStr, PartialEq, Debug)]
+</span><span class="kw">struct </span>Inner&lt;T&gt;(T);
+
+<span class="macro">assert_eq!</span>(Outer(Inner(<span class="number">10</span>)).to_string(), <span class="string">"10"</span>);
+<span class="macro">assert_eq!</span>(<span class="string">"10"</span>.parse(), <span class="prelude-val">Ok</span>(Outer(Inner(<span class="number">10</span>))));</code></pre></div>
+<h4 id="specify-where-predicate"><a class="doc-anchor" href="#specify-where-predicate">§</a>Specify where predicate</h4>
+<p>You can also specify the where predicate.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::Display;
+
+<span class="attr">#[derive(Display)]
+#[display(bound(T : std::fmt::Debug))]
+</span><span class="kw">pub struct </span>Outer&lt;T&gt;(Inner&lt;T&gt;);
+
+<span class="attr">#[derive(Display)]
+#[display(<span class="string">"{0:?}"</span>)]
+</span><span class="kw">struct </span>Inner&lt;T&gt;(T);
+
+<span class="macro">assert_eq!</span>(Outer(Inner(<span class="number">10</span>)).to_string(), <span class="string">"10"</span>);</code></pre></div>
+<h4 id="no-trait-bounds"><a class="doc-anchor" href="#no-trait-bounds">§</a>No trait bounds</h4>
+<p>You can also remove all trait bounds.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::Display;
+
+<span class="attr">#[derive(Display)]
+#[display(bound())]
+</span><span class="kw">pub struct </span>Outer&lt;T&gt;(Inner&lt;T&gt;);
+
+<span class="attr">#[derive(Display)]
+#[display(<span class="string">"ABC"</span>)]
+</span><span class="kw">struct </span>Inner&lt;T&gt;(T);
+
+<span class="macro">assert_eq!</span>(Outer(Inner(<span class="number">10</span>)).to_string(), <span class="string">"ABC"</span>);</code></pre></div>
+<h4 id="default-trait-bounds"><a class="doc-anchor" href="#default-trait-bounds">§</a>Default trait bounds</h4>
+<p><code>..</code> means default (automatically generated) trait bounds.</p>
+<p>The following example specifies <code>T1</code> as a trait bound in addition to the default trait bound <code>T2</code>.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::Display;
+
+<span class="kw">pub struct </span>Inner&lt;T&gt;(T);
+
+<span class="attr">#[derive(Display)]
+#[display(<span class="string">"{0.0}, {1}"</span>, bound(T1, ..))]
+</span><span class="kw">pub struct </span>Outer&lt;T1, T2&gt;(Inner&lt;T1&gt;, T2);
+
+<span class="macro">assert_eq!</span>(Outer(Inner(<span class="number">10</span>), <span class="number">20</span>).to_string(), <span class="string">"10, 20"</span>);</code></pre></div>
+<h3 id="from_strbound"><a class="doc-anchor" href="#from_strbound">§</a><code>#[from_str(bound(...))]</code></h3>
+<p>You can use a different trait bound for <code>Display</code> and <code>FromStr</code> by specifying both <code>#[display(bound(...))]</code> and <code>#[from_str(bound(...))]</code>.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::<span class="kw-2">*</span>;
+<span class="kw">use </span>std::{fmt::Display, str::FromStr};
+
+<span class="attr">#[derive(Display, FromStr, PartialEq, Debug)]
+#[display(bound(<span class="string">"T : Display"</span>))]
+#[from_str(bound(<span class="string">"T : FromStr"</span>))]
+</span><span class="kw">pub struct </span>Outer&lt;T&gt;(Inner&lt;T&gt;);
+
+<span class="attr">#[derive(Display, FromStr, PartialEq, Debug)]
+</span><span class="kw">struct </span>Inner&lt;T&gt;(T);
+
+<span class="macro">assert_eq!</span>(Outer(Inner(<span class="number">10</span>)).to_string(), <span class="string">"10"</span>);
+<span class="macro">assert_eq!</span>(<span class="string">"10"</span>.parse(), <span class="prelude-val">Ok</span>(Outer(Inner(<span class="number">10</span>))));</code></pre></div>
+<h3 id="from_strregex--"><a class="doc-anchor" href="#from_strregex--">§</a><code>#[from_str(regex = &quot;...&quot;)]</code></h3>
+<p>Specify the format of the string to be input with <code>FromStr</code>.
+<code>#[display(&quot;...&quot;)]</code> is ignored, when this attribute is specified.</p>
+<h4 id="capture-name"><a class="doc-anchor" href="#capture-name">§</a>Capture name</h4>
+<p>The capture name corresponds to the field name.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::FromStr;
+
+<span class="attr">#[derive(FromStr, PartialEq, Debug)]
+#[from_str(regex = <span class="string">"(?&lt;a&gt;[0-9]+)__(?&lt;b&gt;[0-9]+)"</span>)]
+</span><span class="kw">struct </span>MyStruct {
+  a: u8,
+  b: u8,
+}
+
+<span class="macro">assert_eq!</span>(<span class="string">"10__20"</span>.parse(), <span class="prelude-val">Ok</span>(MyStruct { a:<span class="number">10</span>, b:<span class="number">20 </span>}));</code></pre></div>
+<h4 id="field-regex"><a class="doc-anchor" href="#field-regex">§</a>Field regex</h4>
+<p>Set <code>#[display(&quot;...&quot;)]</code> to struct and set <code>#[from_str(regex = &quot;...&quot;)]</code> to field, regex is used in the position where field name is specified in <code>#[display(&quot;...&quot;)]</code>.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::FromStr;
+
+<span class="attr">#[derive(FromStr, PartialEq, Debug)]
+#[display(<span class="string">"{a}__{b}"</span>)]
+</span><span class="kw">struct </span>MyStruct {
+  <span class="attr">#[from_str(regex = <span class="string">"[0-9]+"</span>)]
+  </span>a: u8,
+
+  <span class="attr">#[from_str(regex = <span class="string">"[0-9]+"</span>)]
+  </span>b: u8,
+}
+<span class="macro">assert_eq!</span>(<span class="string">"10__20"</span>.parse(), <span class="prelude-val">Ok</span>(MyStruct { a:<span class="number">10</span>, b:<span class="number">20 </span>}));</code></pre></div>
+<p>If <code>#[from_str(regex = &quot;...&quot;)]</code> is not set to field ,
+it operates in the same way as when <code>#[from_str(regex = &quot;(?s:.*?)&quot;)]</code> is set.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::FromStr;
+
+<span class="attr">#[derive(FromStr, PartialEq, Debug)]
+#[display(<span class="string">"{a}{b}"</span>)]
+</span><span class="kw">struct </span>MyStruct {
+  a: String,
+  b: String,
+}
+<span class="macro">assert_eq!</span>(<span class="string">"abcdef"</span>.parse(), <span class="prelude-val">Ok</span>(MyStruct { a:<span class="string">""</span>.into(), b:<span class="string">"abcdef"</span>.into() }));</code></pre></div>
+<h4 id="variant-name"><a class="doc-anchor" href="#variant-name">§</a>Variant name</h4>
+<p>In the regex specified for enum or variant, empty name capture means variant name.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::FromStr;
+
+<span class="attr">#[derive(FromStr, PartialEq, Debug)]
+#[from_str(regex = <span class="string">"___(?&lt;&gt;)___"</span>)]
+</span><span class="kw">enum </span>MyEnum {
+  VarA,
+
+  <span class="attr">#[from_str(regex = <span class="string">"xxx(?&lt;&gt;)xxx"</span>)]
+  </span>VarB,
+}
+<span class="macro">assert_eq!</span>(<span class="string">"___VarA___"</span>.parse(), <span class="prelude-val">Ok</span>(MyEnum::VarA));
+<span class="macro">assert_eq!</span>(<span class="string">"xxxVarBxxx"</span>.parse(), <span class="prelude-val">Ok</span>(MyEnum::VarB));</code></pre></div>
+<h4 id="regex-field-chain"><a class="doc-anchor" href="#regex-field-chain">§</a>Regex field chain</h4>
+<p>You can use “field chain” in regex.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::FromStr;
+
+<span class="attr">#[derive(PartialEq, Debug, Default)]
+</span><span class="kw">struct </span>MyStruct {
+  a: u32,
+}
+
+<span class="attr">#[derive(FromStr, PartialEq, Debug)]
+#[from_str(regex = <span class="string">"___(?&lt;x.a&gt;[0-9]+)"</span>)]
+</span><span class="kw">struct </span>FieldChain {
+  <span class="attr">#[from_str(default)]
+  </span>x: MyStruct,
+}
+<span class="macro">assert_eq!</span>(<span class="string">"___10"</span>.parse(), <span class="prelude-val">Ok</span>(FieldChain { x:MyStruct { a:<span class="number">10 </span>} }));</code></pre></div>
+<p>When using “field chain”, you need to use <a href="#from_strdefault"><code>#[from_str(default)]</code></a>.</p>
+<h3 id="from_strnew--"><a class="doc-anchor" href="#from_strnew--">§</a><code>#[from_str(new = ...)]</code></h3>
+<p>If <code>#[from_str(new = ...)]</code> is specified, the value will be initialized with the specified expression instead of the constructor.</p>
+<p>The expression must return a value that implement <a href="trait.IntoResult.html" title="trait parse_display::IntoResult"><code>IntoResult</code></a> (e.g. <code>Self</code>, <code>Option&lt;Self&gt;</code>, <code>Result&lt;Self, E&gt;</code>).</p>
+<p>In the expression, you can use a variable with the same name as the field name.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::FromStr;
+<span class="attr">#[derive(FromStr, Debug, PartialEq)]
+#[from_str(new = <span class="self">Self</span>::new(value))]
+</span><span class="kw">struct </span>MyNonZeroUSize {
+    value: usize,
+}
+
+<span class="kw">impl </span>MyNonZeroUSize {
+    <span class="kw">fn </span>new(value: usize) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">if </span>value == <span class="number">0 </span>{
+            <span class="prelude-val">None
+        </span>} <span class="kw">else </span>{
+            <span class="prelude-val">Some</span>(<span class="self">Self </span>{ value })
+        }
+    }
+}
+
+<span class="macro">assert_eq!</span>(<span class="string">"1"</span>.parse(), <span class="prelude-val">Ok</span>(MyNonZeroUSize { value: <span class="number">1 </span>}));
+<span class="macro">assert_eq!</span>(<span class="string">"0"</span>.parse::&lt;MyNonZeroUSize&gt;().is_err(), <span class="bool-val">true</span>);</code></pre></div>
+<p>In tuple struct, variables are named with a leading underscore and their index. (e.g. <code>_0</code>, <code>_1</code>).</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::FromStr;
+<span class="attr">#[derive(FromStr, Debug, PartialEq)]
+#[from_str(new = <span class="self">Self</span>::new(_0))]
+</span><span class="kw">struct </span>MyNonZeroUSize(usize);
+
+<span class="kw">impl </span>MyNonZeroUSize {
+    <span class="kw">fn </span>new(value: usize) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">if </span>value == <span class="number">0 </span>{
+            <span class="prelude-val">None
+        </span>} <span class="kw">else </span>{
+            <span class="prelude-val">Some</span>(<span class="self">Self</span>(value))
+        }
+    }
+}
+
+<span class="macro">assert_eq!</span>(<span class="string">"1"</span>.parse(), <span class="prelude-val">Ok</span>(MyNonZeroUSize(<span class="number">1</span>)));
+<span class="macro">assert_eq!</span>(<span class="string">"0"</span>.parse::&lt;MyNonZeroUSize&gt;().is_err(), <span class="bool-val">true</span>);</code></pre></div>
+<h3 id="from_strignore"><a class="doc-anchor" href="#from_strignore">§</a><code>#[from_str(ignore)]</code></h3>
+<p>Specifying this attribute for a variant will not generate <code>FromStr</code> implementation for that variant.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::FromStr;
+
+<span class="attr">#[derive(Debug, Eq, PartialEq)]
+</span><span class="kw">struct </span>CanNotFromStr;
+
+<span class="attr">#[derive(FromStr, Debug, Eq, PartialEq)]
+#[allow(dead_code)]
+</span><span class="kw">enum </span>HasIgnore {
+    <span class="attr">#[from_str(ignore)]
+    </span>A(CanNotFromStr),
+    <span class="attr">#[display(<span class="string">"{0}"</span>)]
+    </span>B(u32),
+}
+
+<span class="macro">assert_eq!</span>(<span class="string">"1"</span>.parse(), <span class="prelude-val">Ok</span>(HasIgnore::B(<span class="number">1</span>)));</code></pre></div>
+<h3 id="from_strdefault"><a class="doc-anchor" href="#from_strdefault">§</a><code>#[from_str(default)]</code></h3>
+<p>If this attribute is specified, the default value is used for fields not included in the input.</p>
+<p>If an attribute is specified for struct, the struct’s default value is used.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::FromStr;
+
+<span class="attr">#[derive(FromStr, PartialEq, Debug)]
+#[display(<span class="string">"{b}"</span>)]
+#[from_str(default)]
+</span><span class="kw">struct </span>MyStruct {
+  a: u32,
+  b: u32,
+}
+
+<span class="kw">impl </span>Default <span class="kw">for </span>MyStruct {
+  <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+    <span class="self">Self </span>{ a:<span class="number">99</span>, b:<span class="number">99 </span>}
+  }
+}
+<span class="macro">assert_eq!</span>(<span class="string">"10"</span>.parse(), <span class="prelude-val">Ok</span>(MyStruct { a:<span class="number">99</span>, b:<span class="number">10 </span>}));</code></pre></div>
+<p>If an attribute is specified for field, the field type’s default value is used.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::FromStr;
+
+<span class="attr">#[derive(FromStr, PartialEq, Debug)]
+#[display(<span class="string">"{b}"</span>)]
+</span><span class="kw">struct </span>MyStruct {
+  <span class="attr">#[from_str(default)]
+  </span>a: u32,
+  b: u32,
+}
+
+<span class="kw">impl </span>Default <span class="kw">for </span>MyStruct {
+  <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+    <span class="self">Self </span>{ a:<span class="number">99</span>, b:<span class="number">99 </span>}
+  }
+}
+<span class="macro">assert_eq!</span>(<span class="string">"10"</span>.parse(), <span class="prelude-val">Ok</span>(MyStruct { a:<span class="number">0</span>, b:<span class="number">10 </span>}));</code></pre></div>
+<h3 id="from_strdefault_fields"><a class="doc-anchor" href="#from_strdefault_fields">§</a><code>#[from_str(default_fields(...))]</code></h3>
+<p>You can use <code>#[from_str(default_fields(...))]</code> if you want to set default values for the same-named fields of multiple variants.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>parse_display::FromStr;
+
+<span class="attr">#[derive(FromStr, PartialEq, Debug)]
+#[display(<span class="string">"{}-{a}"</span>)]
+#[from_str(default_fields(<span class="string">"b"</span>, <span class="string">"c"</span>))]
+</span><span class="kw">enum </span>MyEnum {
+  VarA { a:u8, b:u8, c:u8 },
+  VarB { a:u8, b:u8, c:u8 },
+}
+
+<span class="macro">assert_eq!</span>(<span class="string">"VarA-10"</span>.parse(), <span class="prelude-val">Ok</span>(MyEnum::VarA { a:<span class="number">10</span>, b:<span class="number">0</span>, c:<span class="number">0 </span>}));
+<span class="macro">assert_eq!</span>(<span class="string">"VarB-10"</span>.parse(), <span class="prelude-val">Ok</span>(MyEnum::VarB { a:<span class="number">10</span>, b:<span class="number">0</span>, c:<span class="number">0 </span>}));</code></pre></div>
+</div></details><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="mod" href="helpers/index.html" title="mod parse_display::helpers">helpers</a></div></li></ul><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.ParseError.html" title="struct parse_display::ParseError">ParseError</a></div></li></ul><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="trait" href="trait.IntoResult.html" title="trait parse_display::IntoResult">IntoResult</a></div></li></ul><h2 id="derives" class="section-header">Derive Macros<a href="#derives" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="derive" href="derive.Display.html" title="derive parse_display::Display">Display</a></div></li><li><div class="item-name"><a class="derive" href="derive.FromStr.html" title="derive parse_display::FromStr">FromStr</a></div></li></ul></section></div></main></body></html>

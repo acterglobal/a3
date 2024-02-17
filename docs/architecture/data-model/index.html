@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="preload" as="font" href="https://dev.acter.global/fonts/vendor/jost/jost-v4-latin-regular.woff2" type="font/woff2" crossorigin>
+  <link rel="preload" as="font" href="https://dev.acter.global/fonts/vendor/jost/jost-v4-latin-700.woff2"  type="font/woff2" crossorigin>
+
+
+<link rel="stylesheet" href="https://dev.acter.global/main.css">
+
+
+
+  
+  
+    
+  
+
+  
+  
+    
+    
+  
+  
+  
+    
+  
+  
+  
+  
+    
+  
+  
+  
+
+
+  <meta name="robots" content="index, follow">
+  <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+
+
+	
+
+
+	
+
+<title>Acter Data Model | Acter Developer Docs</title>
+<meta name="description" content="">
+<link rel="canonical" href="https://dev.acter.global/docs/architecture/data-model/">
+
+
+
+
+
+
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BreadcrumbList",
+    
+      
+      
+        
+        
+        
+        
+        
+        
+        
+        
+          {
+            "@type": "ListItem",
+            "position":  1 ,
+            "name": "Home",
+            "item": "https://dev.acter.global/"
+          },
+          
+          
+          {
+            "@type": "ListItem",
+            "position":  2 ,
+            "name": "Docs",
+            "item": "https://dev.acter.global/docs/"
+          },
+        
+      
+        
+        
+        
+        
+        
+        
+        
+        
+          
+          
+          {
+            "@type": "ListItem",
+            "position":  3 ,
+            "name": "Architecture",
+            "item": "https://dev.acter.global/docs/architecture/"
+          },
+        
+      
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          
+          
+          {
+            "@type": "ListItem",
+            "position":  4 ,
+            "name": "Data Model",
+            "item": "https://dev.acter.global/docs/architecture/data-model/"
+          },
+        
+      
+    
+  }
+</script>
+
+
+
+
+
+
+  <meta name="theme-color" content="#fff">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://dev.acter.global/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://dev.acter.global/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://dev.acter.global/favicon-16x16.png">
+  
+    <link rel="manifest" href="https://dev.acter.global/site.webmanifest" crossorigin>
+  
+
+
+  
+
+</head>
+
+  
+
+<body class="docs single">
+  
+  
+  
+  
+  
+  
+<div class="header-bar fixed-top"></div>
+<header class="navbar fixed-top navbar-expand-md navbar-light">
+	<div class="container">
+		<input class="menu-btn order-0" type="checkbox" id="menu-btn">
+		<label class="menu-icon d-md-none" for="menu-btn"><span class="navicon"></span></label>
+		<a class="navbar-brand order-1 order-md-0 me-auto" href="https://dev.acter.global">Acter Developer Docs</a>
+		<button id="mode" class="btn btn-link order-2 order-md-4" type="button" aria-label="Toggle mode">
+			<span class="toggle-dark"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></span>
+			<span class="toggle-light"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-sun"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></span>
+		</button>
+		<ul class="navbar-nav fork-me order-3 order-md-5">
+			
+				
+					<li class="nav-item">
+						<a class="nav-link" href="https://github.com/acterglobal/a3"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg><span class="ms-2 visually-hidden">GitHub</span></a>
+					</li>
+				
+			
+		</ul>
+		<div class="collapse navbar-collapse order-4 order-md-1">
+			<ul class="navbar-nav main-nav me-auto order-5 order-md-2">
+				
+					
+				
+				
+				
+					
+						<li class="nav-item">
+							<a class="nav-link" href="https://dev.acter.global/https://docs.acter.global/s/handbook/">Users</a>
+						</li>
+					
+						<li class="nav-item">
+							<a class="nav-link" href="https://dev.acter.global/nightly/">Nightly</a>
+						</li>
+					
+						<li class="nav-item docs active">
+							<a class="nav-link" href="https://dev.acter.global/docs/getting-started/setup/">Dev</a>
+						</li>
+					
+						<li class="nav-item docs active">
+							<a class="nav-link" href="https://dev.acter.global/docs/dev/api-docs/">APIs</a>
+						</li>
+					
+				
+			</ul>
+			<div class="break order-6 d-md-none"></div>
+			
+				<form class="navbar-form flex-grow-1 order-7 order-md-3">
+					<input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+						aria-label="Search docs..." autocomplete="off">
+					<div id="suggestions" class="shadow bg-white rounded"></div>
+				</form>
+			
+		</div>
+	</div>
+</header>
+
+
+
+  
+<div class="wrap container" role="document">
+  <div class="content">
+    <div class="row flex-xl-nowrap">
+	  
+<div class="col-lg-5 col-xl-4 docs-sidebar">
+	<nav class="docs-links" aria-label="Main navigation">
+			
+			
+            <h2 class="h3">Developer Docs</h2>
+			
+			
+					
+					
+					
+							<h3>Getting Started</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/getting-started/setup/">Setting up</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/getting-started/troubleshooting/">Troubleshooting</a></li>
+							
+					</ul>
+					
+					
+					
+					
+							<h3>Architecture</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/architecture/repo-layout/">Project Layout</a></li>
+							                           
+									<li><a class="docs-link active" href="https://dev.acter.global/docs/architecture/data-model/">Acter Data Model</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/architecture/templates/">Templates</a></li>
+							
+					</ul>
+					
+					
+					
+					
+							<h3>Development</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/dev/localisations/">Localisation</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/dev/style-guide/">Style Guide</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/dev/testing/">Testing</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/dev/troubleshooting/">Troubleshooting</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/dev/api-docs/">API Docs</a></li>
+							
+					</ul>
+					
+					
+					
+					
+							<h3>Contributing</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/contributing/how-to-contribute/">How to Contribute</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/contributing/reviews/">Reviews process</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/contributing/code-of-conduct/">Code of Conduct</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/contributing/license/">License &amp; CLA</a></li>
+							
+					</ul>
+					
+					
+			
+	</nav>
+</div>
+
+	  
+  
+  <nav class="docs-toc d-none d-xl-block col-xl-3" aria-label="Secondary navigation">
+  	<div class="page-links">
+  			<h3>On this page</h3>
+  			<nav id="TableOfContents">
+  					<ul>
+  							
+  							<li><a href="https://dev.acter.global/docs/architecture/data-model/#linear-timeline">Linear timeline</a></li>
+  							
+  							
+  							<li><a href="https://dev.acter.global/docs/architecture/data-model/#permissive-data-merging">Permissive data merging</a></li>
+  							
+  							
+  							<li><a href="https://dev.acter.global/docs/architecture/data-model/#end-user-oriented">End user oriented</a></li>
+  							
+  							
+  							<li><a href="https://dev.acter.global/docs/architecture/data-model/#special-spaces">Special Spaces</a></li>
+  							
+  							
+  					</ul>
+  			</nav>
+  	</div>
+  </nav>
+  
+
+      <main class="docs-content col-lg-11 col-xl-9">
+        <h1>Acter Data Model</h1>
+        
+        <p>Built on <a href="https://matrix.org">Matrix</a> with end-to-end-encryption-based privacy on the forefront means Acter3 can't rely on any classic Relational- or Document-Database to manage the current state. Instead Acter builds upon the activity-stream nature of the matrix protocol by applying these events to a state machine upon models. Within this concept, an event may create a new Model or be applied to an existing model or both. Like task-event, which may create the task itself, but also alters the task-list it belongs to, or a comment event creating a comment related to a different object. Similarly, there are pure update events, which do not create models themselves but only transition the state of an existing model - like the TaskUpdate event for example.</p>
+<h2 id="linear-timeline">Linear timeline</h2>
+<p>For this system to work, updates must be applied in a linear fashion. Thus, when the application re-connects and finds new messages have been posted since it went offline, it must fetch these events from the last point it had until now and apply them in the order they have been sent.</p>
+<h2 id="permissive-data-merging">Permissive data merging</h2>
+<p>As the system is not CRDT conform, the order of events could matter. However, most &quot;transitions&quot; are pretty permissive in their nature, meaning that from a higher level perspective the order doesn't necessarily make much of a problem or is pretty easy to resolve or ignore. Take an update of a task for example, which two distinct entities have sent out as completed. While the applied order could matter internally, the last update wins and thus the history of the model shows two
+updates that checked the task off. But what matters eventually from the end-user perspective is that the item has been checked off.</p>
+<p>With this idea in mind, rather than using the regular <code>edit</code>-system matrix already uses for its chat messages, which replaces the entire content with a new content, Acter users distinct Update-Events, with only those fields included that are changed by that update. That unfortunately means that the server can not just calculate the latest version and sent that over the wire, but because the client needs to allow for more precise data-based internal control, wouldn't help much anyways.</p>
+<p>All data models however, are having this exact idea in mind: it should be okay - for most cases - if just the latest update wins and not too much inner relationship should be assumed to be happening within the same update (as the order of in-between events could render that useless). Be permissive even if that might mean seeing the same event checked off twice, is fine.</p>
+<h2 id="end-user-oriented">End user oriented</h2>
+<p>Our models and events are end-user oriented. That sometimes means we encapsulate more UI/UX information than other protocols might want to force on their implementations. We, however, mark everything as development until we have confirmed they work for the end-users in the way we expect them and to ensure consistency and avoid misinterpretation we thus encode all UI/UX information necessary, including what degree they have to be followed.</p>
+<p>Further more, the event model itself, too, leads from a autonomous-user approach. As an example, to add users to a room, they are only invited rather than hard-added. At the same time, we need to balance that not everything needs the user to first find out about it themselves but instead lead them to good choices to be made. This, too, is ingrained in the modeling of events, their relationship and who can sent them when.</p>
+<h2 id="special-spaces">Special Spaces</h2>
+<p>Because Acter needs to read the entire history upon joining to be able to calculate the accurate state of all models in the state machine client side, we do not mix the state machine data with linear chat messages, which reading from the newest backwards is just a fine support case. To signify that a space is of this special state machine, we've set its <code>purpose</code>-state as described in <a href="https://github.com/matrix-org/matrix-spec-proposals/blob/travis/msc/mutable-subtypes/proposals/3088-room-subtyping.md">MSC3088</a> to our special <a href="/api/main/rust/acter_core/statics/static.PURPOSE_TEAM_VALUE.html"><code>acter purpose value</code></a>. Only spaces with that purpose state will be read and assumed to be acter spaces with a state machine.</p>
+
+        
+        
+<div class="docs-navigation d-flex justify-content-between">
+  
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+          
+        
+      
+        
+        
+          
+        
+      
+        
+        
+          
+        
+      
+        
+        
+          
+            
+              
+              <a href="https:&#x2F;&#x2F;dev.acter.global&#x2F;docs&#x2F;getting-started&#x2F;troubleshooting&#x2F;">
+                <div class="card my-1">
+                  <div class="card-body py-2">
+                    &larr; Troubleshooting
+                  </div>
+                </div>
+              </a>
+            
+            
+            
+          
+        
+      
+    
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+      
+      
+        
+      
+    
+      
+      
+        
+          
+          
+          <a class="ms-auto" href="https:&#x2F;&#x2F;dev.acter.global&#x2F;docs&#x2F;dev&#x2F;localisations&#x2F;">
+            <div class="card my-1">
+              <div class="card-body py-2">
+                Localisation &rarr;
+              </div>
+            </div>
+          </a>
+          
+          
+          
+        
+      
+    
+      
+      
+        
+      
+    
+  
+</div>
+
+      </main>
+    </div>
+  </div>
+</div>
+
+
+  
+    
+<footer class="footer text-muted">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-8 order-last order-lg-first">
+				<ul class="list-inline">
+					
+						<li class="list-inline-item">Proudly build with <a href="https://www.getzola.org/">Zola</a> and <a href="https://github.com/aaranxu/adidoks">AdiDoks</a></li>
+					
+				</ul>
+			</div>
+			<div class="col-lg-8 order-first order-lg-last text-lg-end">
+				<ul class="list-inline">
+					
+						
+							<li class="list-inline-item"><a href="https://dev.acter.global/https://acter.global/">Website</a></li>
+						
+					
+				</ul>
+			</div>
+		</div>
+	</div>
+</footer>
+
+  
+
+  
+<script type="text/javascript" src="https://dev.acter.global/js/main.js" defer></script>
+
+  <script type="text/javascript" src="https://dev.acter.global/plugins/elasticlunr.min.js" defer></script>
+  <script type="text/javascript" src="https://dev.acter.global/search_index.en.js" defer></script>
+  <script type="text/javascript" src="https://dev.acter.global/js/search.js" defer></script>
+
+  
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Provides the behavior of an `Object` holding a struct."><title>StructObject in minijinja::value - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="minijinja" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc trait"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button><a class="logo-container" href="../../minijinja/index.html"><img src="https://github.com/mitsuhiko/minijinja/raw/main/artwork/logo-square.png" alt=""></a></nav><nav class="sidebar"><div class="sidebar-crate"><a class="logo-container" href="../../minijinja/index.html"><img src="https://github.com/mitsuhiko/minijinja/raw/main/artwork/logo-square.png" alt="logo"></a><h2><a href="../../minijinja/index.html">minijinja</a><span class="version">1.0.12</span></h2></div><h2 class="location"><a href="#">StructObject</a></h2><div class="sidebar-elems"><section><h3><a href="#required-methods">Required Methods</a></h3><ul class="block"><li><a href="#tymethod.get_field">get_field</a></li></ul><h3><a href="#provided-methods">Provided Methods</a></h3><ul class="block"><li><a href="#method.field_count">field_count</a></li><li><a href="#method.fields">fields</a></li><li><a href="#method.static_fields">static_fields</a></li></ul><h3><a href="#foreign-impls">Implementations on Foreign Types</a></h3><ul class="block"><li><a href="#impl-StructObject-for-%26T">&amp;&#x27;a T</a></li><li><a href="#impl-StructObject-for-Arc%3CT%3E">Arc&lt;T&gt;</a></li></ul><h3><a href="#implementors">Implementors</a></h3></section><h2><a href="index.html">In minijinja::value</a></h2></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../minijinja/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Trait <a href="../index.html">minijinja</a>::<wbr><a href="index.html">value</a>::<wbr><a class="trait" href="#">StructObject</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../../src/minijinja/value/object.rs.html#518-569">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><code>pub trait StructObject: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> {
+    // Required method
+    fn <a href="#tymethod.get_field" class="fn">get_field</a>(&amp;self, name: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="struct.Value.html" title="struct minijinja::value::Value">Value</a>&gt;;
+
+    // Provided methods
+    fn <a href="#method.static_fields" class="fn">static_fields</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;'static [&amp;'static <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>]&gt; { ... }
+<span class="item-spacer"></span>    fn <a href="#method.fields" class="fn">fields</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/sync/struct.Arc.html" title="struct alloc::sync::Arc">Arc</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>&gt;&gt; { ... }
+<span class="item-spacer"></span>    fn <a href="#method.field_count" class="fn">field_count</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> { ... }
+}</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Provides the behavior of an <a href="trait.Object.html" title="trait minijinja::value::Object"><code>Object</code></a> holding a struct.</p>
+<p>An basic object with the shape and behavior of a struct (that means a
+map with string keys) can be represented by this trait.</p>
+<h2 id="simplified-example"><a class="doc-anchor" href="#simplified-example">§</a>Simplified Example</h2>
+<p>For structs which do not need any special method behavior or methods, the
+<a href="struct.Value.html" title="struct minijinja::value::Value"><code>Value</code></a> type is capable of automatically constructing a wrapper <a href="trait.Object.html" title="trait minijinja::value::Object"><code>Object</code></a>
+by using <a href="struct.Value.html#method.from_struct_object" title="associated function minijinja::value::Value::from_struct_object"><code>Value::from_struct_object</code></a>.  In that case only <a href="trait.StructObject.html" title="trait minijinja::value::StructObject"><code>StructObject</code></a>
+needs to be implemented and the value will provide default implementations
+for stringification and debug printing.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>minijinja::value::{Value, StructObject};
+
+<span class="kw">struct </span>Point(f32, f32, f32);
+
+<span class="kw">impl </span>StructObject <span class="kw">for </span>Point {
+    <span class="kw">fn </span>get_field(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;Value&gt; {
+        <span class="kw">match </span>name {
+            <span class="string">"x" </span>=&gt; <span class="prelude-val">Some</span>(Value::from(<span class="self">self</span>.<span class="number">0</span>)),
+            <span class="string">"y" </span>=&gt; <span class="prelude-val">Some</span>(Value::from(<span class="self">self</span>.<span class="number">1</span>)),
+            <span class="string">"z" </span>=&gt; <span class="prelude-val">Some</span>(Value::from(<span class="self">self</span>.<span class="number">2</span>)),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+        }
+    }
+
+    <span class="kw">fn </span>static_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span>[<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str]&gt; {
+        <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>[<span class="string">"x"</span>, <span class="string">"y"</span>, <span class="string">"z"</span>][..])
+    }
+}
+
+<span class="kw">let </span>value = Value::from_struct_object(Point(<span class="number">1.0</span>, <span class="number">2.5</span>, <span class="number">3.0</span>));</code></pre></div>
+<h2 id="full-example"><a class="doc-anchor" href="#full-example">§</a>Full Example</h2>
+<p>The following example shows how to implement a dynamic object which
+represents a struct.  Note that in this case not only <a href="trait.Object.html" title="trait minijinja::value::Object"><code>Object</code></a> needs to be
+implemented, but also <a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html" title="derive core::fmt::macros::Debug"><code>Debug</code></a> and <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html" title="trait core::fmt::Display"><code>Display</code></a> no longer
+come for free.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fmt;
+<span class="kw">use </span>minijinja::value::{Value, Object, ObjectKind, StructObject};
+
+<span class="attr">#[derive(Debug, Clone)]
+</span><span class="kw">struct </span>Point(f32, f32, f32);
+
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>Point {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">"({}, {}, {})"</span>, <span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">1</span>, <span class="self">self</span>.<span class="number">2</span>)
+    }
+}
+
+<span class="kw">impl </span>Object <span class="kw">for </span>Point {
+    <span class="kw">fn </span>kind(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ObjectKind&lt;<span class="lifetime">'_</span>&gt; {
+        ObjectKind::Struct(<span class="self">self</span>)
+    }
+}
+
+<span class="kw">impl </span>StructObject <span class="kw">for </span>Point {
+    <span class="kw">fn </span>get_field(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;Value&gt; {
+        <span class="kw">match </span>name {
+            <span class="string">"x" </span>=&gt; <span class="prelude-val">Some</span>(Value::from(<span class="self">self</span>.<span class="number">0</span>)),
+            <span class="string">"y" </span>=&gt; <span class="prelude-val">Some</span>(Value::from(<span class="self">self</span>.<span class="number">1</span>)),
+            <span class="string">"z" </span>=&gt; <span class="prelude-val">Some</span>(Value::from(<span class="self">self</span>.<span class="number">2</span>)),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+        }
+    }
+
+    <span class="kw">fn </span>static_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span>[<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str]&gt; {
+        <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>[<span class="string">"x"</span>, <span class="string">"y"</span>, <span class="string">"z"</span>][..])
+    }
+}
+
+<span class="kw">let </span>value = Value::from_object(Point(<span class="number">1.0</span>, <span class="number">2.5</span>, <span class="number">3.0</span>));</code></pre></div>
+<h2 id="struct-as-context"><a class="doc-anchor" href="#struct-as-context">§</a>Struct As context</h2>
+<p>Structs can also be used as template rendering context.  This has a lot of
+benefits as it means that the serialization overhead can be largely to
+completely avoided.  This means that even if templates take hundreds of
+values, MiniJinja does not spend time eagerly converting them into values.</p>
+<p>Here is a very basic example of how a template can be rendered with a dynamic
+context.  Note that the implementation of <a href="trait.StructObject.html#method.fields"><code>fields</code></a> is optional
+for this to work.  It’s in fact not used by the engine during rendering but
+it is necessary for the <a href="../functions/fn.debug.html" title="fn minijinja::functions::debug"><code>debug()</code></a> function to be
+able to show which values exist in the context.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>minijinja::value::{Value, StructObject};
+
+<span class="kw">pub struct </span>DynamicContext {
+    magic: i32,
+}
+
+<span class="kw">impl </span>StructObject <span class="kw">for </span>DynamicContext {
+    <span class="kw">fn </span>get_field(<span class="kw-2">&amp;</span><span class="self">self</span>, field: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;Value&gt; {
+        <span class="kw">match </span>field {
+            <span class="string">"pid" </span>=&gt; <span class="prelude-val">Some</span>(Value::from(std::process::id())),
+            <span class="string">"env" </span>=&gt; <span class="prelude-val">Some</span>(Value::from_iter(std::env::vars())),
+            <span class="string">"magic" </span>=&gt; <span class="prelude-val">Some</span>(Value::from(<span class="self">self</span>.magic)),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+        }
+    }
+}
+
+<span class="kw">let </span>tmpl = env.template_from_str(<span class="string">"HOME={{ env.HOME }}; PID={{ pid }}; MAGIC={{ magic }}"</span>)<span class="question-mark">?</span>;
+<span class="kw">let </span>ctx = Value::from_struct_object(DynamicContext { magic: <span class="number">42 </span>});
+<span class="kw">let </span>rv = tmpl.render(ctx)<span class="question-mark">?</span>;</code></pre></div>
+<p>One thing of note here is that in the above example <code>env</code> would be re-created every
+time the template needs it.  A better implementation would cache the value after it
+was created first.</p>
+</div></details><h2 id="required-methods" class="section-header">Required Methods<a href="#required-methods" class="anchor">§</a></h2><div class="methods"><details class="toggle method-toggle" open><summary><section id="tymethod.get_field" class="method"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#532">source</a><h4 class="code-header">fn <a href="#tymethod.get_field" class="fn">get_field</a>(&amp;self, name: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="struct.Value.html" title="struct minijinja::value::Value">Value</a>&gt;</h4></section></summary><div class="docblock"><p>Invoked by the engine to get a field of a struct.</p>
+<p>Where possible it’s a good idea for this to align with the return value
+of <a href="trait.StructObject.html#method.fields"><code>fields</code></a> but it’s not necessary.</p>
+<p>If an field does not exist, <code>None</code> shall be returned.</p>
+<p>A note should be made here on side effects: unlike calling objects or
+calling methods on objects, accessing fields is not supposed to
+have side effects.  Neither does this API get access to the interpreter
+<a href="../struct.State.html" title="struct minijinja::State"><code>State</code></a> nor is there a channel to send out failures as only an option
+can be returned.  If you do plan on doing something in field access
+that is fallible, instead use a method call.</p>
+</div></details></div><h2 id="provided-methods" class="section-header">Provided Methods<a href="#provided-methods" class="anchor">§</a></h2><div class="methods"><details class="toggle method-toggle" open><summary><section id="method.static_fields" class="method"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#541-543">source</a><h4 class="code-header">fn <a href="#method.static_fields" class="fn">static_fields</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;'static [&amp;'static <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>]&gt;</h4></section></summary><div class="docblock"><p>If possible returns a static vector of field names.</p>
+<p>If fields cannot be statically determined, then this must return <code>None</code>
+and <a href="trait.StructObject.html#method.fields"><code>fields</code></a> should be implemented instead.  If however
+this method is implemented, then <a href="trait.StructObject.html#method.fields"><code>fields</code></a> should not be
+implemented as the default implementation dispatches to here, or it has
+to be implemented to match the output.</p>
+</div></details><details class="toggle method-toggle" open><summary><section id="method.fields" class="method"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#551-556">source</a><h4 class="code-header">fn <a href="#method.fields" class="fn">fields</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/sync/struct.Arc.html" title="struct alloc::sync::Arc">Arc</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>&gt;&gt;</h4></section></summary><div class="docblock"><p>Returns a vector of field names.</p>
+<p>This should be implemented if <a href="trait.StructObject.html#method.static_fields"><code>static_fields</code></a> cannot
+be implemented due to lifetime restrictions.  The default implementation
+converts the return value of <a href="trait.StructObject.html#method.static_fields"><code>static_fields</code></a> into
+a compatible format automatically.</p>
+</div></details><details class="toggle method-toggle" open><summary><section id="method.field_count" class="method"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#562-568">source</a><h4 class="code-header">fn <a href="#method.field_count" class="fn">field_count</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></h4></section></summary><div class="docblock"><p>Returns the number of fields.</p>
+<p>The default implementation uses <a href="trait.StructObject.html#method.fields"><code>fields</code></a> and
+<a href="trait.StructObject.html#method.static_fields"><code>static_fields</code></a> automatically.</p>
+</div></details></div><h2 id="foreign-impls" class="section-header">Implementations on Foreign Types<a href="#foreign-impls" class="anchor">§</a></h2><details class="toggle implementors-toggle"><summary><section id="impl-StructObject-for-%26T" class="impl"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#593-613">source</a><a href="#impl-StructObject-for-%26T" class="anchor">§</a><h3 class="code-header">impl&lt;'a, T: <a class="trait" href="trait.StructObject.html" title="trait minijinja::value::StructObject">StructObject</a> + ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>&gt; <a class="trait" href="trait.StructObject.html" title="trait minijinja::value::StructObject">StructObject</a> for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;'a T</a></h3></section></summary><div class="impl-items"><section id="method.get_field" class="method trait-impl"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#595-597">source</a><a href="#method.get_field" class="anchor">§</a><h4 class="code-header">fn <a href="#tymethod.get_field" class="fn">get_field</a>(&amp;self, name: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="struct.Value.html" title="struct minijinja::value::Value">Value</a>&gt;</h4></section><section id="method.static_fields-1" class="method trait-impl"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#600-602">source</a><a href="#method.static_fields-1" class="anchor">§</a><h4 class="code-header">fn <a href="#method.static_fields" class="fn">static_fields</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;'static [&amp;'static <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>]&gt;</h4></section><section id="method.fields-1" class="method trait-impl"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#605-607">source</a><a href="#method.fields-1" class="anchor">§</a><h4 class="code-header">fn <a href="#method.fields" class="fn">fields</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/sync/struct.Arc.html" title="struct alloc::sync::Arc">Arc</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>&gt;&gt;</h4></section><section id="method.field_count-1" class="method trait-impl"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#610-612">source</a><a href="#method.field_count-1" class="anchor">§</a><h4 class="code-header">fn <a href="#method.field_count" class="fn">field_count</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></h4></section></div></details><details class="toggle implementors-toggle"><summary><section id="impl-StructObject-for-Arc%3CT%3E" class="impl"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#571-591">source</a><a href="#impl-StructObject-for-Arc%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T: <a class="trait" href="trait.StructObject.html" title="trait minijinja::value::StructObject">StructObject</a>&gt; <a class="trait" href="trait.StructObject.html" title="trait minijinja::value::StructObject">StructObject</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/sync/struct.Arc.html" title="struct alloc::sync::Arc">Arc</a>&lt;T&gt;</h3></section></summary><div class="impl-items"><section id="method.get_field-1" class="method trait-impl"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#573-575">source</a><a href="#method.get_field-1" class="anchor">§</a><h4 class="code-header">fn <a href="#tymethod.get_field" class="fn">get_field</a>(&amp;self, name: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="struct.Value.html" title="struct minijinja::value::Value">Value</a>&gt;</h4></section><section id="method.static_fields-2" class="method trait-impl"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#578-580">source</a><a href="#method.static_fields-2" class="anchor">§</a><h4 class="code-header">fn <a href="#method.static_fields" class="fn">static_fields</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;'static [&amp;'static <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>]&gt;</h4></section><section id="method.fields-2" class="method trait-impl"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#583-585">source</a><a href="#method.fields-2" class="anchor">§</a><h4 class="code-header">fn <a href="#method.fields" class="fn">fields</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/sync/struct.Arc.html" title="struct alloc::sync::Arc">Arc</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>&gt;&gt;</h4></section><section id="method.field_count-2" class="method trait-impl"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#588-590">source</a><a href="#method.field_count-2" class="anchor">§</a><h4 class="code-header">fn <a href="#method.field_count" class="fn">field_count</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></h4></section></div></details><h2 id="implementors" class="section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"></div><script src="../../trait.impl/minijinja/value/object/trait.StructObject.js" data-ignore-extern-crates="alloc" async></script></section></div></main></body></html>

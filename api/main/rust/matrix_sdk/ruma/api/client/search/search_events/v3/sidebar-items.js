@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["GroupingKey","OrderBy","OwnedRoomIdOrUserId","SearchKeys"],"struct":["Categories","Criteria","EventContext","EventContextResult","Grouping","Groupings","Request","Response","ResultCategories","ResultGroup","ResultRoomEvents","SearchResult","UserProfile"]};

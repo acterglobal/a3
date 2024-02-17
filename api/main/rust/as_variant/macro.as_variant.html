@@ -1,0 +1,123 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Convert the given enum value to `Option`."><title>as_variant in as_variant - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="as_variant" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../as_variant/index.html">as_variant</a><span class="version">1.2.0</span></h2></div><div class="sidebar-elems"></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../as_variant/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Macro <a href="index.html">as_variant</a>::<wbr><a class="macro" href="#">as_variant</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/as_variant/lib.rs.html#138-157">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><span class="macro">macro_rules! </span>as_variant {
+    ( <span class="macro-nonterminal">$</span><span class="kw">enum</span>:<span class="macro-nonterminal">expr</span>, $( <span class="macro-nonterminal">$variants</span>:path )|* ) =&gt; { ... };
+    ( <span class="macro-nonterminal">$</span><span class="kw">enum</span>:<span class="macro-nonterminal">expr</span>, <span class="macro-nonterminal">$pattern</span>:pat $( <span class="kw">if </span><span class="macro-nonterminal">$guard</span>:expr )<span class="question-mark">? </span>=&gt; <span class="macro-nonterminal">$inner</span>:expr $(,)<span class="question-mark">? </span>) =&gt; { ... };
+    ( $( <span class="macro-nonterminal">$variants</span>:path )|* ) =&gt; { ... };
+    ( <span class="macro-nonterminal">$pattern</span>:pat $( <span class="kw">if </span><span class="macro-nonterminal">$guard</span>:expr )<span class="question-mark">? </span>=&gt; <span class="macro-nonterminal">$inner</span>:expr $(,)<span class="question-mark">? </span>) =&gt; { ... };
+}</pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Convert the given enum value to <code>Option</code>.</p>
+<p>There are two main syntactic forms to this macro:</p>
+<ol>
+<li>
+<p>Variants: Enum expression followed by a comma and then one or more <code>|</code>-separated newtype
+(one-element tuple) variants paths that should be converted to <code>Some(_)</code>. Any other variants
+of the enum will be converted to <code>None</code>.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">enum </span><span class="prelude-ty">Result</span>&lt;T, E&gt; {
+    <span class="prelude-val">Ok</span>(T),
+    <span class="prelude-val">Err</span>(E),
+}
+
+<span class="kw">impl</span>&lt;T, E&gt; <span class="prelude-ty">Result</span>&lt;T, E&gt; {
+    <span class="kw">pub fn </span>ok(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;T&gt; {
+        <span class="macro">as_variant!</span>(<span class="self">self</span>, <span class="self">Self</span>::Ok)
+    }
+}</code></pre></div>
+</li>
+<li>
+<p>Match arm: Enum expression followed by a comma, then a pattern matching one or more variants
+of that enum and possibly capturing variables, then a fat right arrow followed by an
+expression that will be put inside <code>Some(_)</code> if the pattern matches. If the pattern doesn’t
+match, <code>None</code> will be returned.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">enum </span>ListenConfig {
+    Ipv4 { addr: Ipv4Addr, port: u16 },
+    Ipv6 { addr: Ipv6Addr, port: u16 },
+    Unix { path: PathBuf },
+}
+
+<span class="kw">impl </span>ListenConfig {
+    <span class="kw">fn </span>port(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u16&gt; {
+        <span class="macro">as_variant!</span>(<span class="self">self</span>, <span class="self">Self</span>::Ipv4 { port, .. } | <span class="self">Self</span>::Ipv6 { port, .. } =&gt; <span class="kw-2">*</span>port)
+    }
+
+    <span class="kw">fn </span>privileged_port(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u16&gt; {
+        <span class="macro">as_variant!</span>(
+            <span class="self">self</span>,
+            <span class="comment">// using a guard after the pattern also works:    vvvvvvvvvvvvvvv
+            </span><span class="self">Self</span>::Ipv4 { port, .. } | <span class="self">Self</span>::Ipv6 { port, .. } <span class="kw">if </span><span class="kw-2">*</span>port &lt; <span class="number">1024 </span>=&gt; <span class="kw-2">*</span>port,
+        )
+    }
+}</code></pre></div>
+</li>
+</ol>
+<p>The enum expression at the start can also be left out, which causes that <code>as_variant!</code>
+invocation to expand to a closure that does the same thing. That is,
+<code>as_variant!(&lt;variants or match arm&gt;)</code> is the same as
+<code>|val| as_variant!(val, &lt;variants or match arm&gt;)</code>. This is especially useful for combinators,
+for example <a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.and_then" title="method core::option::Option::and_then"><code>Option::and_then</code></a> or <a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#method.filter_map" title="method core::iter::traits::iterator::Iterator::filter_map"><code>Iterator::filter_map</code></a>:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>optional_ip_addr = <span class="prelude-val">Some</span>(<span class="string">"127.0.0.1"</span>.parse::&lt;IpAddr&gt;().unwrap());
+<span class="kw">let </span>optional_ipv4_addr = optional_ip_addr.and_then(<span class="macro">as_variant!</span>(IpAddr::V4));</code></pre></div>
+<h2 id="more-examples"><a class="doc-anchor" href="#more-examples">§</a>More Examples</h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::ops::Deref;
+
+<span class="kw">use </span>as_variant::as_variant;
+
+<span class="kw">enum </span>Value {
+    Integer(i64),
+    String(String),
+    Array(Vec&lt;Value&gt;),
+}
+
+<span class="kw">impl </span>Value {
+    <span class="kw">pub fn </span>as_integer(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;i64&gt; {
+        <span class="macro">as_variant!</span>(<span class="self">self</span>, <span class="self">Self</span>::Integer).copied()
+    }
+
+    <span class="kw">pub fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt; {
+        <span class="macro">as_variant!</span>(<span class="self">self</span>, <span class="self">Self</span>::String).map(Deref::deref)
+    }
+
+    <span class="kw">pub fn </span>as_array(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>[Value]&gt; {
+        <span class="macro">as_variant!</span>(<span class="self">self</span>, <span class="self">Self</span>::Array).map(Deref::deref)
+    }
+
+    <span class="kw">pub fn </span>into_string(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
+        <span class="macro">as_variant!</span>(<span class="self">self</span>, <span class="self">Self</span>::String)
+    }
+
+    <span class="kw">pub fn </span>into_array(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Vec&lt;Value&gt;&gt; {
+        <span class="macro">as_variant!</span>(<span class="self">self</span>, <span class="self">Self</span>::Array)
+    }
+}</code></pre></div>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>as_variant::as_variant;
+
+<span class="kw">enum </span>Either3&lt;A, B, C&gt; {
+    A(A),
+    B(B),
+    C(C),
+}
+
+<span class="kw">impl</span>&lt;T, U&gt; Either3&lt;T, T, U&gt; {
+    <span class="kw">fn </span>as_a_or_b(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>T&gt; {
+        <span class="macro">as_variant!</span>(<span class="self">self</span>, <span class="self">Self</span>::A | <span class="self">Self</span>::B)
+    }
+
+    <span class="kw">fn </span>into_a_or_b(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;T&gt; {
+        <span class="macro">as_variant!</span>(<span class="self">self</span>, <span class="self">Self</span>::A | <span class="self">Self</span>::B)
+    }
+}
+
+<span class="kw">let </span>a: Either3&lt;<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw-2">&amp;</span>str&gt; = Either3::A(<span class="number">1</span>);
+<span class="macro">assert_eq!</span>(a.as_a_or_b(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">1</span>));
+<span class="macro">assert_eq!</span>(a.into_a_or_b(), <span class="prelude-val">Some</span>(<span class="number">1</span>));
+
+<span class="kw">let </span>b: Either3&lt;<span class="kw">_</span>, <span class="kw">_</span>, u8&gt; = Either3::B(<span class="string">"hello"</span>);
+<span class="macro">assert_eq!</span>(b.as_a_or_b(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="string">"hello"</span>));
+<span class="macro">assert_eq!</span>(b.into_a_or_b(), <span class="prelude-val">Some</span>(<span class="string">"hello"</span>));
+
+<span class="kw">let </span>c: Either3&lt;char, <span class="kw">_</span>, <span class="kw">_</span>&gt; = Either3::C(<span class="string">'c'</span>);
+<span class="macro">assert_eq!</span>(c.as_a_or_b(), <span class="prelude-val">None</span>);
+<span class="macro">assert_eq!</span>(c.into_a_or_b(), <span class="prelude-val">None</span>);</code></pre></div>
+</div></details></section></div></main></body></html>

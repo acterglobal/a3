@@ -1,0 +1,511 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Documents the syntax for templates."><title>minijinja::syntax - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="minijinja" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button><a class="logo-container" href="../../minijinja/index.html"><img src="https://github.com/mitsuhiko/minijinja/raw/main/artwork/logo-square.png" alt=""></a></nav><nav class="sidebar"><div class="sidebar-crate"><a class="logo-container" href="../../minijinja/index.html"><img src="https://github.com/mitsuhiko/minijinja/raw/main/artwork/logo-square.png" alt="logo"></a><h2><a href="../../minijinja/index.html">minijinja</a><span class="version">1.0.12</span></h2></div><h2 class="location"><a href="#">Module syntax</a></h2><div class="sidebar-elems"><h2><a href="../index.html">In crate minijinja</a></h2></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../minijinja/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../index.html">minijinja</a>::<wbr><a class="mod" href="#">syntax</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../../src/minijinja/syntax.rs.html#1-722">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Documents the syntax for templates.</p>
+<details><summary><strong style="cursor: pointer">Table of Contents</strong></summary>
+<ul>
+<li><a href="#synopsis">Synopsis</a></li>
+<li><a href="#trailing-newlines">Trailing Newlines</a></li>
+<li><a href="#expressions">Expressions</a>
+<ul>
+<li><a href="#literals">Literals</a></li>
+<li><a href="#math">Math</a></li>
+<li><a href="#comparisons">Comparisons</a></li>
+<li><a href="#logic">Logic</a></li>
+<li><a href="#other-operators">Other Operators</a></li>
+<li><a href="#if-expressions">If Expressions</a></li>
+</ul>
+</li>
+<li><a href="#tags">Tags</a>
+<ul>
+<li><a href="#-for-"><code>{% for %}</code></a></li>
+<li><a href="#-if-"><code>{% if %}</code></a></li>
+<li><a href="#-extends-"><code>{% extends %}</code></a></li>
+<li><a href="#-block-"><code>{% block %}</code></a></li>
+<li><a href="#-include-"><code>{% include %}</code></a></li>
+<li><a href="#-import-"><code>{% import %}</code></a></li>
+<li><a href="#-with-"><code>{% with %}</code></a></li>
+<li><a href="#-set-"><code>{% set %}</code></a></li>
+<li><a href="#-filter-"><code>{% filter %}</code></a></li>
+<li><a href="#-macro-"><code>{% macro %}</code></a></li>
+<li><a href="#-call-"><code>{% call %}</code></a></li>
+<li><a href="#-do-"><code>{% do %}</code></a></li>
+<li><a href="#-autoescape-"><code>{% autoescape %}</code></a></li>
+<li><a href="#-raw-"><code>{% raw %}</code></a></li>
+</ul>
+</li>
+<li><a href="#custom-delimiters">Custom Delimiters</a></li>
+</ul>
+</details>
+<h2 id="synopsis"><a class="doc-anchor" href="#synopsis">§</a>Synopsis</h2>
+<p>A MiniJinja template is simply a text file.  MiniJinja can generate any text-based
+format (HTML, XML, CSV, LaTeX, etc.).  A template doesn’t need to have a specific extension
+and in fact MiniJinja does not understand much about the file system.  However the default
+configuration for <a href="../struct.Environment.html#method.set_auto_escape_callback" title="method minijinja::Environment::set_auto_escape_callback">auto escaping</a> uses file
+extensions to configure the initial behavior.</p>
+<p>A template contains <a href="#expressions"><strong>expressions</strong></a>, which get replaced with values when a
+template is rendered; and <a href="#tags"><strong>tags</strong></a>, which control the logic of the template.  The
+template syntax is heavily inspired by Jinja2, Django and Python.</p>
+<p>This is a minimal template that illustrates a few basics:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>&lt;!doctype html&gt;
+&lt;title&gt;{% block title %}My Website{% endblock %}&lt;/title&gt;
+&lt;ul id=&quot;navigation&quot;&gt;
+{% for item in navigation %}
+    &lt;li&gt;&lt;a href=&quot;{{ item.href }}&quot;&gt;{{ item.caption }}&lt;/a&gt;&lt;/li&gt;
+{% endfor %}
+&lt;/ul&gt;
+
+&lt;h1&gt;My Webpage&lt;/h1&gt;
+{% block body %}{% endblock %}
+
+{# a comment #}
+</code></pre></div><h2 id="trailing-newlines"><a class="doc-anchor" href="#trailing-newlines">§</a>Trailing Newlines</h2>
+<p>MiniJinja, like Jinja2, will remove one trailing newline from the end of the file automatically
+on parsing.  This lets templates produce a consistent output no matter if the editor adds a
+trailing newline or not.  If one wants a trailing newline an extra newline can be added or the
+code rendering it adds it manually.</p>
+<h2 id="expressions"><a class="doc-anchor" href="#expressions">§</a>Expressions</h2>
+<p>MiniJinja allows basic expressions everywhere. These work largely as you expect from Jinja2.
+Even if you have not used Jinja2 you should feel comfortable with it.  To output the result
+of an expression wrap it in <code>{{ .. }}</code>.</p>
+<h3 id="literals"><a class="doc-anchor" href="#literals">§</a>Literals</h3>
+<p>The simplest form of expressions are literals. Literals are representations for
+objects such as strings and numbers. The following literals exist:</p>
+<ul>
+<li><code>&quot;Hello World&quot;</code>: Everything between two double or single quotes is a string. They are
+useful whenever you need a string in the template (e.g. as arguments to function calls
+and filters, or just to extend or include a template).</li>
+<li><code>42</code>: Integers are whole numbers without a decimal part.</li>
+<li><code>42.0</code>: Floating point numbers can be written using a <code>.</code> as a decimal mark.</li>
+<li><code>['list', 'of', 'objects']</code>: Everything between two brackets is a list. Lists are useful
+for storing sequential data to be iterated over.
+for compatibility with Jinja2 <code>('list', 'of', 'objects')</code> is also allowed.</li>
+<li><code>{'map': 'of', 'key': 'and', 'value': 'pairs'}</code>: A map is a structure that combines keys
+and values. Keys must be unique and always have exactly one value. Maps are rarely
+created in templates.</li>
+<li><code>true</code> / <code>false</code> / <code>none</code>: boolean values and the special <code>none</code> value which maps to the
+unit type in Rust.</li>
+</ul>
+<h3 id="math"><a class="doc-anchor" href="#math">§</a>Math</h3>
+<p>MiniJinja allows you to calculate with values.  The following operators are supported:</p>
+<ul>
+<li><code>+</code>: Adds two numbers up. <code>{{ 1 + 1 }}</code> is <code>2</code>.</li>
+<li><code>-</code>: Subtract the second number from the first one.  <code>{{ 3 - 2 }}</code> is <code>1</code>.</li>
+<li><code>/</code>: Divide two numbers. <code>{{ 1 / 2 }}</code> is <code>0.5</code>.  See note on divisions below.</li>
+<li><code>//</code>: Integer divide two numbers. <code>{{ 5 // 3 }}</code> is <code>1</code>.  See note on divisions below.</li>
+<li><code>%</code>: Calculate the remainder of an integer division.  <code>{{ 11 % 7 }}</code> is <code>4</code>.</li>
+<li><code>*</code>: Multiply the left operand with the right one.  <code>{{ 2 * 2 }}</code> would return <code>4</code>.</li>
+<li><code>**</code>: Raise the left operand to the power of the right operand.  <code>{{ 2**3 }}</code>
+would return <code>8</code>.</li>
+</ul>
+<p>Note on divisions: divisions in Jinja2 are flooring, divisions in MiniJinja
+are at present using euclidean division.  They are almost the same but not quite.</p>
+<h3 id="comparisons"><a class="doc-anchor" href="#comparisons">§</a>Comparisons</h3>
+<ul>
+<li><code>==</code>: Compares two objects for equality.</li>
+<li><code>!=</code>: Compares two objects for inequality.</li>
+<li><code>&gt;</code>: <code>true</code> if the left hand side is greater than the right hand side.</li>
+<li><code>&gt;=</code>: <code>true</code> if the left hand side is greater or equal to the right hand side.</li>
+<li><code>&lt;</code>:<code>true</code> if the left hand side is less than the right hand side.</li>
+<li><code>&lt;=</code>: <code>true</code> if the left hand side is less or equal to the right hand side.</li>
+</ul>
+<h3 id="logic"><a class="doc-anchor" href="#logic">§</a>Logic</h3>
+<p>For <code>if</code> statements it can be useful to combine multiple expressions:</p>
+<ul>
+<li><code>and</code>: Return true if the left and the right operand are true.</li>
+<li><code>or</code>: Return true if the left or the right operand are true.</li>
+<li><code>not</code>: negate a statement (see below).</li>
+<li><code>(expr)</code>: Parentheses group an expression.</li>
+</ul>
+<h3 id="other-operators"><a class="doc-anchor" href="#other-operators">§</a>Other Operators</h3>
+<p>The following operators are very useful but don’t fit into any of the other
+two categories:</p>
+<ul>
+<li><code>is</code>/<code>is not</code>: Performs a <a href="../tests/index.html" title="mod minijinja::tests">test</a>.</li>
+<li><code>in</code>/<code>not in</code>: Performs a containment check.</li>
+<li><code>|</code> (pipe, vertical bar): Applies a <a href="../filters/index.html" title="mod minijinja::filters">filter</a>.</li>
+<li><code>~</code> (tilde): Converts all operands into strings and concatenates them.
+<code>{{ &quot;Hello &quot; ~ name ~ &quot;!&quot; }}</code> would return (assuming <code>name</code> is set
+to <code>'John'</code>) <code>Hello John!</code>.</li>
+<li><code>()</code>: Call a callable: <code>{{ super() }}</code>.  Inside of the parentheses you
+can use positional arguments.  Additionally keyword arguments are supported
+which are treated like a dict syntax.  Eg: <code>foo(a=1, b=2)</code> is the same as
+<code>foo({&quot;a&quot;: 1, &quot;b&quot;: 2})</code>.</li>
+<li><code>.</code> / <code>[]</code>: Get an attribute of an object.  If an object does not have a specific
+attribute or item then <code>undefined</code> is returned.  Accessing a property of an already
+undefined value will result in an error.</li>
+<li><code>[start:stop]</code> / <code>[start:stop:step]</code>: slices a list or string.  All three expressions
+are optional (<code>start</code>, <code>stop</code>, <code>step</code>).  For instance <code>&quot;Hello World&quot;[:5]</code> will return
+just <code>&quot;Hello&quot;</code>.  Likewise <code>&quot;Hello&quot;[1:-1]</code> will return <code>&quot;ell&quot;</code>.  The step component can
+be used to change the step size.  <code>&quot;12345&quot;[::2]</code> will return <code>&quot;135&quot;</code>.</li>
+</ul>
+<h4 id="if-expressions"><a class="doc-anchor" href="#if-expressions">§</a>If Expressions</h4>
+<p>It is also possible to use inline <em>if</em> expressions. These are useful in some situations.
+For example, you can use this to extend from one template if a variable is defined,
+otherwise from the default layout template:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% extends layout_template if layout_template is defined else &#39;default.html&#39; %}
+</code></pre></div>
+<p>The <code>else</code> part is optional. If not provided, the else block implicitly evaluates
+into an undefined value:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{{ title|upper if title }}
+</code></pre></div><h2 id="tags"><a class="doc-anchor" href="#tags">§</a>Tags</h2>
+<p>Tags control logic in templates.  The following tags exist:</p>
+<h3 id="-for-"><a class="doc-anchor" href="#-for-">§</a><code>{% for %}</code></h3>
+<p>The for tag loops over each item in a sequence.  For example, to display a list
+of users provided in a variable called <code>users</code>:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>&lt;h1&gt;Members&lt;/h1&gt;
+&lt;ul&gt;
+{% for user in users %}
+  &lt;li&gt;{{ user.username }}&lt;/li&gt;
+{% endfor %}
+&lt;/ul&gt;
+</code></pre></div>
+<p>It’s also possible to unpack tuples while iterating:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>&lt;h1&gt;Members&lt;/h1&gt;
+&lt;ul&gt;
+{% for (key, value) in list_of_pairs %}
+  &lt;li&gt;{{ key }}: {{ value }}&lt;/li&gt;
+{% endfor %}
+&lt;/ul&gt;
+</code></pre></div>
+<p>Inside of the for block you can access some special variables:</p>
+<ul>
+<li><code>loop.index</code>: The current iteration of the loop. (1 indexed)</li>
+<li><code>loop.index0</code>: The current iteration of the loop. (0 indexed)</li>
+<li><code>loop.revindex</code>: The number of iterations from the end of the loop (1 indexed)</li>
+<li><code>loop.revindex0</code>: The number of iterations from the end of the loop (0 indexed)</li>
+<li><code>loop.first</code>: True if this is the first iteration.</li>
+<li><code>loop.last</code>: True if this is the last iteration.</li>
+<li><code>loop.length</code>: The number of items in the sequence.</li>
+<li><code>loop.cycle</code>: A helper function to cycle between a list of sequences. See the explanation below.</li>
+<li><code>loop.depth</code>: Indicates how deep in a recursive loop the rendering currently is. Starts at level 1</li>
+<li><code>loop.depth0</code>: Indicates how deep in a recursive loop the rendering currently is. Starts at level 0</li>
+<li><code>loop.previtem</code>: The item from the previous iteration of the loop. <code>Undefined</code> during the first iteration.</li>
+<li><code>loop.nextitem</code>: The item from the previous iteration of the loop. <code>Undefined</code> during the last iteration.</li>
+<li><code>loop.changed(...args)</code>: Returns true if the passed values have changed since the last time it was called with the same arguments.</li>
+<li><code>loop.cycle(...args)</code>: Returns a value from the passed sequence in a cycle.</li>
+</ul>
+<p>Within a for-loop, it’s possible to cycle among a list of strings/variables each time through
+the loop by using the special <code>loop.cycle</code> helper:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% for row in rows %}
+  &lt;li class=&quot;{{ loop.cycle(&#39;odd&#39;, &#39;even&#39;) }}&quot;&gt;{{ row }}&lt;/li&gt;
+{% endfor %}
+</code></pre></div>
+<p>A <code>loop.changed()</code> helper is also available which can be used to detect when
+a value changes between the last iteration and the current one.  The method
+takes one or more arguments that are all compared.</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% for entry in entries %}
+  {% if loop.changed(entry.category) %}
+    &lt;h2&gt;{{ entry.category }}&lt;/h2&gt;
+  {% endif %}
+  &lt;p&gt;{{ entry.message }}&lt;/p&gt;
+{% endfor %}
+</code></pre></div>
+<p>Unlike in Rust or Python, it’s not possible to break or continue in a loop. You can,
+however, filter the sequence during iteration, which allows you to skip items.  The
+following example skips all the users which are hidden:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% for user in users if not user.hidden %}
+  &lt;li&gt;{{ user.username }}&lt;/li&gt;
+{% endfor %}
+</code></pre></div>
+<p>If no iteration took place because the sequence was empty or the filtering
+removed all the items from the sequence, you can render a default block by
+using else:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>&lt;ul&gt;
+{% for user in users %}
+  &lt;li&gt;{{ user.username }}&lt;/li&gt;
+{% else %}
+  &lt;li&gt;&lt;em&gt;no users found&lt;/em&gt;&lt;/li&gt;
+{% endfor %}
+&lt;/ul&gt;
+</code></pre></div>
+<p>It is also possible to use loops recursively. This is useful if you are
+dealing with recursive data such as sitemaps. To use loops recursively, you
+basically have to add the <code>recursive</code> modifier to the loop definition and
+call the loop variable with the new iterable where you want to recurse.</p>
+<div class="example-wrap"><pre class="language-jinja"><code>&lt;ul class=&quot;menu&quot;&gt;
+{% for item in menu recursive %}
+  &lt;li&gt;&lt;a href=&quot;{{ item.href }}&quot;&gt;{{ item.title }}&lt;/a&gt;
+  {% if item.children %}
+    &lt;ul class=&quot;submenu&quot;&gt;{{ loop(item.children) }}&lt;/ul&gt;
+  {% endif %}&lt;/li&gt;
+{% endfor %}
+&lt;/ul&gt;
+</code></pre></div>
+<p><strong>Special note:</strong> the <code>previtem</code> and <code>nextitem</code> attributes are available by default
+but can be disabled by removing the <code>adjacent_loop_items</code> crate feature.  Removing
+these attributes can provide meaningful speedups for templates with a lot of loops.</p>
+<h3 id="-if-"><a class="doc-anchor" href="#-if-">§</a><code>{% if %}</code></h3>
+<p>The <code>if</code> statement is comparable with the Python if statement. In the simplest form,
+you can use it to test if a variable is defined, not empty and not false:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% if users %}
+  &lt;ul&gt;
+  {% for user in users %}
+    &lt;li&gt;{{ user.username }}&lt;/li&gt;
+  {% endfor %}
+  &lt;/ul&gt;
+{% endif %}
+</code></pre></div>
+<p>For multiple branches, <code>elif</code> and <code>else</code> can be used like in Python.  You can use more
+complex expressions there too:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% if kenny.sick %}
+  Kenny is sick.
+{% elif kenny.dead %}
+  You killed Kenny!  You bastard!!!
+{% else %}
+  Kenny looks okay --- so far
+{% endif %}
+</code></pre></div><h3 id="-extends-"><a class="doc-anchor" href="#-extends-">§</a><code>{% extends %}</code></h3>
+<p><strong>Feature:</strong> <code>multi_template</code> (included by default)</p>
+<p>The <code>extends</code> tag can be used to extend one template from another.  You can have multiple
+<code>extends</code> tags in a file, but only one of them may be executed at a time.  For more
+information see <a href="#-block-">block</a>.</p>
+<h3 id="-block-"><a class="doc-anchor" href="#-block-">§</a><code>{% block %}</code></h3>
+<p>Blocks are used for inheritance and act as both placeholders and replacements at the
+same time:</p>
+<p>The most powerful part of MiniJinja is template inheritance. Template inheritance allows
+you to build a base “skeleton” template that contains all the common elements of your
+site and defines <strong>blocks</strong> that child templates can override.</p>
+<p><strong>Base Template:</strong></p>
+<p>This template, which we’ll call <code>base.html</code>, defines a simple HTML skeleton
+document that you might use for a simple two-column page. It’s the job of
+“child” templates to fill the empty blocks with content:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>&lt;!doctype html&gt;
+{% block head %}
+&lt;title&gt;{% block title %}{% endblock %}&lt;/title&gt;
+{% endblock %}
+{% block body %}{% endblock %}
+</code></pre></div>
+<p><strong>Child Template:</strong></p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% extends &quot;base.html&quot; %}
+{% block title %}Index{% endblock %}
+{% block head %}
+  {{ super() }}
+  &lt;style type=&quot;text/css&quot;&gt;
+    .important { color: #336699; }
+  &lt;/style&gt;
+{% endblock %}
+{% block body %}
+  &lt;h1&gt;Index&lt;/h1&gt;
+  &lt;p class=&quot;important&quot;&gt;
+    Welcome to my awesome homepage.
+  &lt;/p&gt;
+{% endblock %}
+</code></pre></div>
+<p>The <code>{% extends %}</code> tag is the key here. It tells the template engine that
+this template “extends” another template.  When the template system evaluates
+this template, it first locates the parent.  The extends tag should be the
+first tag in the template.</p>
+<p>As you can see it’s also possible to render the contents of the parent block by calling
+<code>super()</code>. You can’t define multiple <code>{% block %}</code> tags with the same name in
+the same template. This limitation exists because a block tag works in “both”
+directions. That is, a block tag doesn’t just provide a placeholder to fill -
+it also defines the content that fills the placeholder in the parent. If
+there were two similarly-named <code>{% block %}</code> tags in a template, that
+template’s parent wouldn’t know which one of the blocks’ content to use.</p>
+<p>If you want to print a block multiple times, you can, however, use the
+special self variable and call the block with that name:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>&lt;title&gt;{% block title %}{% endblock %}&lt;/title&gt;
+&lt;h1&gt;{{ self.title() }}&lt;/h1&gt;
+{% block body %}{% endblock %}
+</code></pre></div>
+<p>MiniJinja allows you to put the name of the block after the end tag for better
+readability:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% block sidebar %}
+  {% block inner_sidebar %}
+    ...
+  {% endblock inner_sidebar %}
+{% endblock sidebar %}
+</code></pre></div>
+<p>However, the name after the <code>endblock</code> word must match the block name.</p>
+<h3 id="-include-"><a class="doc-anchor" href="#-include-">§</a><code>{% include %}</code></h3>
+<p><strong>Feature:</strong> <code>multi_template</code> (included by default)</p>
+<p>The <code>include</code> tag is useful to include a template and return the rendered contents of that file
+into the current namespace:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% include &#39;header.html&#39; %}
+  Body
+{% include &#39;footer.html&#39; %}
+</code></pre></div>
+<p>Optionally <code>ignore missing</code> can be added in which case non existing templates
+are silently ignored.</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% include &#39;customization.html&#39; ignore missing %}
+</code></pre></div>
+<p>You can also provide a list of templates that are checked for existence
+before inclusion. The first template that exists will be included. If <code>ignore missing</code> is set, it will fall back to rendering nothing if none of the
+templates exist, otherwise it will fail with an error.</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% include [&#39;page_detailed.html&#39;, &#39;page.html&#39;] %}
+{% include [&#39;special_sidebar.html&#39;, &#39;sidebar.html&#39;] ignore missing %}
+</code></pre></div>
+<p>Included templates have access to the variables of the active context.</p>
+<h3 id="-import-"><a class="doc-anchor" href="#-import-">§</a><code>{% import %}</code></h3>
+<p><strong>Feature:</strong> <code>multi_template</code> (included by default)</p>
+<p>MiniJinja supports the <code>{% import %}</code> and <code>{% from ... import ... %}</code>
+syntax.  With it variables or macros can be included from other templates:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% from &quot;my_template.html&quot; import my_macro, my_variable %}
+</code></pre></div>
+<p>Imports can also be aliased:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% from &quot;my_template.html&quot; import my_macro as other_name %}
+{{ other_name() }}
+</code></pre></div>
+<p>Full modules can be imported with <code>{% import ... as ... %}</code>:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% import &quot;my_template.html&quot; as helpers %}
+{{ helpers.my_macro() }}
+</code></pre></div>
+<p>Note that unlike Jinja2, exported modules do not contain any template code.  Only
+variables and macros that are defined can be imported.  Also imports unlike in Jinja2
+are not cached and they get access to the full template context.</p>
+<h3 id="-with-"><a class="doc-anchor" href="#-with-">§</a><code>{% with %}</code></h3>
+<p>The with statement makes it possible to create a new inner scope.  Variables set within
+this scope are not visible outside of the scope:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% with foo = 42 %}
+  {{ foo }}           foo is 42 here
+{% endwith %}
+foo is not visible here any longer
+</code></pre></div>
+<p>Multiple variables can be set at once and unpacking is supported:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% with a = 1, (b, c) = [2, 3] %}
+  {{ a }}, {{ b }}, {{ c }}  (outputs 1, 2, 3)
+{% endwith %}
+</code></pre></div><h3 id="-set-"><a class="doc-anchor" href="#-set-">§</a><code>{% set %}</code></h3>
+<p>The <code>set</code> statement can be used to assign to variables on the same scope.  This is
+similar to how <code>with</code> works but it won’t introduce a new scope.</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% set navigation = [(&#39;index.html&#39;, &#39;Index&#39;), (&#39;about.html&#39;, &#39;About&#39;)] %}
+</code></pre></div>
+<p>Please keep in mind that it is not possible to set variables inside a block
+and have them show up outside of it.  This also applies to loops.  The only
+exception to that rule are if statements which do not introduce a scope.</p>
+<p>It’s also possible to capture blocks of template code into a variable by using
+the <code>set</code> statement as a block.   In that case, instead of using an equals sign
+and a value, you just write the variable name and then everything until
+<code>{% endset %}</code> is captured.</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% set navigation %}
+&lt;li&gt;&lt;a href=&quot;/&quot;&gt;Index&lt;/a&gt;
+&lt;li&gt;&lt;a href=&quot;/downloads&quot;&gt;Downloads&lt;/a&gt;
+{% endset %}
+</code></pre></div>
+<p>The <code>navigation</code> variable then contains the navigation HTML source.</p>
+<p>This can also be combined with applying a filter:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% set title | upper %}Title of the page{% endset %}
+</code></pre></div><h3 id="-filter-"><a class="doc-anchor" href="#-filter-">§</a><code>{% filter %}</code></h3>
+<p>Filter sections allow you to apply regular <a href="../filters/index.html" title="mod minijinja::filters">filters</a> on a
+block of template data. Just wrap the code in the special filter block:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% filter upper %}
+  This text becomes uppercase
+{% endfilter %}
+</code></pre></div><h3 id="-macro-"><a class="doc-anchor" href="#-macro-">§</a><code>{% macro %}</code></h3>
+<p><strong>Feature:</strong> <code>macros</code> (included by default)</p>
+<p>MiniJinja has limited support for macros.  They allow you to write reusable
+template functions.  They are useful to put often used idioms into reusable
+functions so you don’t repeat yourself (“DRY”).</p>
+<p>Here’s a small example of a macro that renders a form element:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% macro input(name, value=&quot;&quot;, type=&quot;text&quot;) -%}
+&lt;input type=&quot;{{ type }}&quot; name=&quot;{{ name }}&quot; value=&quot;{{ value }}&quot;&gt;
+{%- endmacro %}
+</code></pre></div>
+<p>The macro can then be called like a function in the namespace:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>&lt;p&gt;{{ input(&#39;username&#39;) }}&lt;/p&gt;
+&lt;p&gt;{{ input(&#39;password&#39;, type=&#39;password&#39;) }}&lt;/p&gt;
+</code></pre></div>
+<p>The behavior of macros with regards to undefined variables is that they capture
+them at macro declaration time (eg: they use a closure).</p>
+<p>Macros can be imported via <code>{% import %}</code> or <code>{% from ... import %}</code>.</p>
+<p>Macros also accept a hidden <code>caller</code> keyword argument for the use with
+<code>{% call %}</code>.</p>
+<h3 id="-call-"><a class="doc-anchor" href="#-call-">§</a><code>{% call %}</code></h3>
+<p><strong>Feature:</strong> <code>macros</code> (included by default)</p>
+<p>This tag functions similar to a macro that is passed to another macro.  You can
+think of it as a way to declare an anonymous macro and pass it to another macro
+with the <code>caller</code> keyword argument.  The following example shows a macro that
+takes advantage of the call functionality and how it can be used:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% macro dialog(title) %}
+  &lt;div class=&quot;dialog&quot;&gt;
+    &lt;h3&gt;{{ title }}&lt;/h3&gt;
+    &lt;div class=&quot;contents&quot;&gt;{{ caller() }}&lt;/div&gt;
+  &lt;/div&gt;
+{% endmacro %}
+
+{% call dialog(title=&quot;Hello World&quot;) %}
+  This is the dialog body.
+{% endcall %}
+</code></pre></div><details><summary><strong style="cursor: pointer">Macro Alternative:</strong></summary>
+<p>The above example is more or less equivalent with the following:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% macro dialog(title) %}
+  &lt;div class=&quot;dialog&quot;&gt;
+    &lt;h3&gt;{{ title }}&lt;/h3&gt;
+    &lt;div class=&quot;contents&quot;&gt;{{ caller() }}&lt;/div&gt;
+  &lt;/div&gt;
+{% endmacro %}
+
+{% macro caller() %}
+  This is the dialog body.
+{% endmacro %}
+{{ dialog(title=&quot;Hello World&quot;, caller=caller) }}
+</code></pre></div></details>
+<p>It’s also possible to pass arguments back to the call block.  This makes it
+useful to build macros that behave like if statements or loops.  Arguments
+are placed surrounded in parentheses right after the <code>call</code> keyword and
+is followed by the macro to be called.</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% macro render_user_list(users) %}
+&lt;ul&gt;
+{% for user in users %}
+  &lt;li&gt;&lt;p&gt;{{ user.username }}&lt;/p&gt;{{ caller(user) }}&lt;/li&gt;
+{% endfor %}
+&lt;/ul&gt;
+{% endmacro %}
+
+{% call(user) render_user_list(list_of_user) %}
+&lt;dl&gt;
+  &lt;dt&gt;Name&lt;/dt&gt;
+  &lt;dd&gt;{{ user.name }}&lt;/dd&gt;
+  &lt;dt&gt;E-Mail&lt;/dt&gt;
+  &lt;dd&gt;{{ user.email }}&lt;/dd&gt;
+&lt;/dl&gt;
+{% endcall %}
+</code></pre></div><h3 id="-do-"><a class="doc-anchor" href="#-do-">§</a><code>{% do %}</code></h3>
+<p>The do tag has the same functionality as regular template tags (<code>{{ ... }}</code>);
+except it doesn’t output anything when called.</p>
+<p>This is useful if you have a function or macro that has a side-effect, and
+you don’t want to display output in the template. The following example
+shows a macro that uses the do functionality, and how it can be used:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% macro dialog(title) %}
+  Dialog is {{ title }}
+{% endmacro %}
+
+{% do dialog(title=&quot;Hello World&quot;) %} &lt;- does not output anything
+</code></pre></div>
+<p>The above example will not output anything when using the <code>do</code> tag.</p>
+<p>This tag exists for consistency with Jinja2 and can be useful if you have
+custom functionality in templates that uses side-effects.  For instance if
+you expose a function to templates that can be used to log warnings:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% for user in users %}
+  {% if user.deleted %}
+    {% log warn(&quot;Found unexpected deleted user in template&quot;) %}
+  {% endif %}
+  ...
+{% endfor %}
+</code></pre></div><h3 id="-autoescape-"><a class="doc-anchor" href="#-autoescape-">§</a><code>{% autoescape %}</code></h3>
+<p>If you want you can activate and deactivate the autoescaping from within
+the templates.</p>
+<p>Example:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% autoescape true %}
+  Autoescaping is active within this block
+{% endautoescape %}
+
+{% autoescape false %}
+  Autoescaping is inactive within this block
+{% endautoescape %}
+</code></pre></div>
+<p>After an <code>endautoescape</code> the behavior is reverted to what it was before.</p>
+<p>The exact auto escaping behavior is determined by the value of
+<a href="../enum.AutoEscape.html" title="enum minijinja::AutoEscape"><code>AutoEscape</code></a> set to the template.</p>
+<h3 id="-raw-"><a class="doc-anchor" href="#-raw-">§</a><code>{% raw %}</code></h3>
+<p>A raw block is a special construct that lets you ignore the embedded template
+syntax.  This is particularly useful if a segment of template code would
+otherwise require constant escaping with things like <code>{{ &quot;{{&quot; }}</code>:</p>
+<p>Example:</p>
+<div class="example-wrap"><pre class="language-jinja"><code>{% raw %}
+&lt;ul&gt;
+{% for item in seq %}
+    &lt;li&gt;{{ item }}&lt;/li&gt;
+{% endfor %}
+&lt;/ul&gt;
+{% endraw %}
+</code></pre></div></div></details></section></div></main></body></html>

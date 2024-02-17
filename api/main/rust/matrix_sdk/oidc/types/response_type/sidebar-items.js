@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ResponseTypeToken"],"struct":["InvalidResponseType","ResponseType"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Constraint","ConstraintDecision"],"struct":["ConstraintSet"],"trait":["Constrainable"]};

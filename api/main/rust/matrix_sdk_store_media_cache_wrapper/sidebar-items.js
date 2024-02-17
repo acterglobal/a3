@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["StoreCacheWrapperError"],"fn":["wrap_with_file_cache"],"struct":["FileCacheMediaStore","MediaStoreWrapper"]};

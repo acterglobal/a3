@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="preload" as="font" href="https://dev.acter.global/fonts/vendor/jost/jost-v4-latin-regular.woff2" type="font/woff2" crossorigin>
+  <link rel="preload" as="font" href="https://dev.acter.global/fonts/vendor/jost/jost-v4-latin-700.woff2"  type="font/woff2" crossorigin>
+
+
+<link rel="stylesheet" href="https://dev.acter.global/main.css">
+
+
+
+  
+  
+    
+  
+
+  
+  
+    
+    
+  
+  
+  
+    
+  
+  
+  
+  
+    
+  
+  
+  
+
+
+  <meta name="robots" content="index, follow">
+  <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+
+
+	
+
+
+	
+
+<title>Labs | Acter Developer Docs</title>
+<meta name="description" content="">
+<link rel="canonical" href="https://dev.acter.global/user/app/labs/">
+
+
+
+
+
+
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BreadcrumbList",
+    
+      
+      
+        
+        
+        
+        
+        
+        
+        
+        
+          {
+            "@type": "ListItem",
+            "position":  1 ,
+            "name": "Home",
+            "item": "https://dev.acter.global/"
+          },
+          
+          
+          {
+            "@type": "ListItem",
+            "position":  2 ,
+            "name": "User",
+            "item": "https://dev.acter.global/user/"
+          },
+        
+      
+        
+        
+        
+        
+        
+        
+        
+        
+          
+          
+          {
+            "@type": "ListItem",
+            "position":  3 ,
+            "name": "App",
+            "item": "https://dev.acter.global/user/app/"
+          },
+        
+      
+        
+        
+        
+        
+        
+        
+        
+        
+          
+          
+          {
+            "@type": "ListItem",
+            "position":  4 ,
+            "name": "Labs",
+            "item": "https://dev.acter.global/user/app/labs/"
+          },
+        
+      
+    
+  }
+</script>
+
+
+
+
+
+
+  <meta name="theme-color" content="#fff">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://dev.acter.global/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://dev.acter.global/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://dev.acter.global/favicon-16x16.png">
+  
+    <link rel="manifest" href="https://dev.acter.global/site.webmanifest" crossorigin>
+  
+
+
+  
+
+</head>
+
+  
+
+<body class="docs single">
+  
+  
+  
+  
+  
+  
+<div class="header-bar fixed-top"></div>
+<header class="navbar fixed-top navbar-expand-md navbar-light">
+	<div class="container">
+		<input class="menu-btn order-0" type="checkbox" id="menu-btn">
+		<label class="menu-icon d-md-none" for="menu-btn"><span class="navicon"></span></label>
+		<a class="navbar-brand order-1 order-md-0 me-auto" href="https://dev.acter.global">Acter Developer Docs</a>
+		<button id="mode" class="btn btn-link order-2 order-md-4" type="button" aria-label="Toggle mode">
+			<span class="toggle-dark"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></span>
+			<span class="toggle-light"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-sun"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></span>
+		</button>
+		<ul class="navbar-nav fork-me order-3 order-md-5">
+			
+				
+					<li class="nav-item">
+						<a class="nav-link" href="https://github.com/acterglobal/a3"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg><span class="ms-2 visually-hidden">GitHub</span></a>
+					</li>
+				
+			
+		</ul>
+		<div class="collapse navbar-collapse order-4 order-md-1">
+			<ul class="navbar-nav main-nav me-auto order-5 order-md-2">
+				
+					
+				
+				
+				
+					
+						<li class="nav-item user active">
+							<a class="nav-link" href="https://dev.acter.global/https://docs.acter.global/s/handbook/">Users</a>
+						</li>
+					
+						<li class="nav-item">
+							<a class="nav-link" href="https://dev.acter.global/nightly/">Nightly</a>
+						</li>
+					
+						<li class="nav-item">
+							<a class="nav-link" href="https://dev.acter.global/docs/getting-started/setup/">Dev</a>
+						</li>
+					
+						<li class="nav-item">
+							<a class="nav-link" href="https://dev.acter.global/docs/dev/api-docs/">APIs</a>
+						</li>
+					
+				
+			</ul>
+			<div class="break order-6 d-md-none"></div>
+			
+				<form class="navbar-form flex-grow-1 order-7 order-md-3">
+					<input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+						aria-label="Search docs..." autocomplete="off">
+					<div id="suggestions" class="shadow bg-white rounded"></div>
+				</form>
+			
+		</div>
+	</div>
+</header>
+
+
+
+  
+<div class="wrap container" role="document">
+  <div class="content">
+    <div class="row flex-xl-nowrap">
+	  
+<div class="col-lg-5 col-xl-4 docs-sidebar">
+	<nav class="docs-links" aria-label="Main navigation">
+			
+			
+            <h2 class="h3">User Docs</h2>
+			
+			
+					
+					
+					
+							<h3>Getting started</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/user/getting-started/setting-up/">Setting up</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/user/getting-started/cli/">Command Line Interface</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/user/getting-started/troubleshooting/">Troubleshooting</a></li>
+							
+					</ul>
+					
+					
+					
+					
+							<h3>App</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/user/app/security/">Security</a></li>
+							                           
+									<li><a class="docs-link active" href="https://dev.acter.global/user/app/labs/">Labs</a></li>
+							
+					</ul>
+					
+					
+			
+	</nav>
+</div>
+
+	  
+  
+
+      <main class="docs-content col-lg-11 col-xl-9">
+        <h1>Labs</h1>
+        
+        <h2 id="what-are-labs">What are &quot;Labs&quot;</h2>
+<p>Acter is a continuously evolving application, with frequent releases. While new features are being developed they are often made available to the wider audience as &quot;lab experiments&quot;. Depending their maturity lab experiments can either be activated or deactivated. Once features are stable they are moved out of the labs into their own feature section to configure it to your needs.</p>
+<p>Labs features are experimental and potentially immature ideas, features or concepts. We appreciate you wanting to check them out. Please provide feedback you have about these in the <a href="https://matrix.to/#/#feedback:acter.global">Feedback &amp; Bugs Group Chat</a>.</p>
+<h3 id="how-to-enable-labs">How to enable Labs</h3>
+<p>You can find the Labs under your <code>Settings</code> -&gt; <code>Labs</code>-Section. There you can enable and disable features that are still in heavy development. Please note that default-off labs are often times immature and could cause instability in the app. <strong>Caution</strong>: Only enable labs if you know what you are doing and are willing to take the risk associated (see below).</p>
+<h1 id="current-labs">Current Labs:</h1>
+<h2 id="push-notifications-for-mobile">Push Notifications for mobile</h2>
+<p><em>Risk</em>: low
+<em>Default</em>: off</p>
+<p>We now offer mobile Push Notifications for DMs and Group Chats for Android and iOS. Upon activating this feature you will receive push notifications to your Android or iOS device. Upon click on the notifications the App should bring you to the right (chat) screen. Note that</p>
+<ol>
+<li>you must activate this for every device you want to receive push notifications on</li>
+<li>it is only available to iOS and Android at the moment</li>
+<li>you must restart the app after activating for it to take effect</li>
+</ol>
+<h2 id="apps-events">Apps: Events</h2>
+<p><em>Risk</em>: low
+<em>Default</em>: on</p>
+<p>Calendar events are a default-on app feature in the process of bug-fixing and increased maturity. It allows you to create Events in Spaces, like meetings, calls or any other calendar-like object, that other space members can rsvp to.</p>
+<h2 id="apps-tasks">Apps: Tasks</h2>
+<p><em>Risk</em>: moderate
+<em>Default</em>: off</p>
+<p>This experimental feature allows you to create Task-List and associated Tasks per Space you can manage together. This is an early developer preview which still misses screens and is like to change in design and feature-expanse.</p>
+
+        
+        
+<div class="docs-navigation d-flex justify-content-between">
+  
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+          
+        
+      
+        
+        
+          
+            
+              
+              <a href="https:&#x2F;&#x2F;dev.acter.global&#x2F;user&#x2F;getting-started&#x2F;troubleshooting&#x2F;">
+                <div class="card my-1">
+                  <div class="card-body py-2">
+                    &larr; Troubleshooting
+                  </div>
+                </div>
+              </a>
+            
+            
+            
+          
+        
+      
+    
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+      
+      
+        
+      
+    
+  
+</div>
+
+      </main>
+    </div>
+  </div>
+</div>
+
+
+  
+    
+<footer class="footer text-muted">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-8 order-last order-lg-first">
+				<ul class="list-inline">
+					
+						<li class="list-inline-item">Proudly build with <a href="https://www.getzola.org/">Zola</a> and <a href="https://github.com/aaranxu/adidoks">AdiDoks</a></li>
+					
+				</ul>
+			</div>
+			<div class="col-lg-8 order-first order-lg-last text-lg-end">
+				<ul class="list-inline">
+					
+						
+							<li class="list-inline-item"><a href="https://dev.acter.global/https://acter.global/">Website</a></li>
+						
+					
+				</ul>
+			</div>
+		</div>
+	</div>
+</footer>
+
+  
+
+  
+<script type="text/javascript" src="https://dev.acter.global/js/main.js" defer></script>
+
+  <script type="text/javascript" src="https://dev.acter.global/plugins/elasticlunr.min.js" defer></script>
+  <script type="text/javascript" src="https://dev.acter.global/search_index.en.js" defer></script>
+  <script type="text/javascript" src="https://dev.acter.global/js/search.js" defer></script>
+
+  
+</body>
+</html>

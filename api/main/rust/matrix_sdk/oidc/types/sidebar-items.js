@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["client_credentials","errors","iana","oidc","pkce","prelude","registration","requests","response_type","scope","webfinger"],"type":["IdToken"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["HierarchySpaceChildEvent","PossiblyRedactedSpaceChildEventContent","RedactedSpaceChildEventContent","SpaceChildEventContent"],"type":["InitialSpaceChildEvent","OriginalSpaceChildEvent","OriginalSyncSpaceChildEvent","RedactedSpaceChildEvent","RedactedSyncSpaceChildEvent","SpaceChildEvent","StrippedSpaceChildEvent","SyncSpaceChildEvent"]};

@@ -1,0 +1,412 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Sliding Sync Client implementation of MSC3575 &amp; extensions"><title>matrix_sdk::sliding_sync - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="matrix_sdk" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../matrix_sdk/index.html">matrix_sdk</a><span class="version">0.7.1</span></h2></div><h2 class="location"><a href="#">Module sliding_sync</a></h2><div class="sidebar-elems"><section><ul class="block"><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#types">Type Aliases</a></li></ul></section><h2><a href="../index.html">In crate matrix_sdk</a></h2></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../matrix_sdk/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../index.html">matrix_sdk</a>::<wbr><a class="mod" href="#">sliding_sync</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../../src/matrix_sdk/sliding_sync/mod.rs.html#16-2554">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Sliding Sync Client implementation of <a href="https://github.com/matrix-org/matrix-spec-proposals/pull/3575">MSC3575</a> &amp; extensions</p>
+<p><a href="https://github.com/matrix-org/matrix-spec-proposals/pull/3575"><code>Sliding Sync</code></a> is the third generation synchronization mechanism of
+Matrix with a strong focus on bandwidth efficiency. This is made possible by
+allowing the client to filter the content very specifically in its request
+which, as a result, allows the server to reduce the data sent to the
+absolute necessary minimum needed. The API is modeled after common patterns
+and UI components end-user messenger clients typically offer. By allowing a
+tight coupling of what a client shows and synchronizing that state over
+the protocol to the server, the server always sends exactly the information
+necessary for the currently displayed subset for the user rather than
+filling the connection with data the user isn’t interested in right now.</p>
+<p>Sliding Sync is a live-protocol using <a href="#long-polling">long-polling</a> HTTP(S)
+connections to stay up to date. On the client side these updates are applied
+and propagated through an <a href="#reactive-api">asynchronous reactive API</a>.</p>
+<p>The protocol is split into three major sections for that: [lists][#lists],
+the <a href="#rooms">room details</a> and <a href="#extensions">extensions</a>, most notably the
+end-to-end-encryption and to-device extensions to enable full
+end-to-end-encryption support.</p>
+<h3 id="starting-up"><a class="doc-anchor" href="#starting-up">§</a>Starting up</h3>
+<p>To create a new Sliding Sync session, one must query an existing
+(authenticated) <code>Client</code> for a new <a href="struct.SlidingSyncBuilder.html" title="struct matrix_sdk::sliding_sync::SlidingSyncBuilder"><code>SlidingSyncBuilder</code></a> by calling
+<a href="../struct.Client.html#method.sliding_sync" title="method matrix_sdk::Client::sliding_sync"><code>Client::sliding_sync</code></a>. The
+<a href="struct.SlidingSyncBuilder.html" title="struct matrix_sdk::sliding_sync::SlidingSyncBuilder"><code>SlidingSyncBuilder</code></a> is the baseline configuration to create a
+<a href="struct.SlidingSync.html" title="struct matrix_sdk::sliding_sync::SlidingSync"><code>SlidingSync</code></a> session by calling <code>.build()</code> once everything is ready.
+Typically one configures the custom homeserver endpoint, although it’s
+automatically detected using the <code>.well-known</code> endpoint, if configured.</p>
+<p>At the time of writing, no Matrix server natively supports Sliding Sync;
+a sidecar called the <a href="https://github.com/matrix-org/sliding-sync">Sliding Sync Proxy</a> is needed. As that
+typically runs on a separate domain, it can be configured on the
+<a href="struct.SlidingSyncBuilder.html" title="struct matrix_sdk::sliding_sync::SlidingSyncBuilder"><code>SlidingSyncBuilder</code></a>.</p>
+<p>A unique identifier, less than 16 chars long, is required for each instance
+of Sliding Sync, and must be provided when getting a builder:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>sliding_sync_builder = client
+    .sliding_sync(<span class="string">"main-sync"</span>)<span class="question-mark">?
+    </span>.sliding_sync_proxy(Url::parse(<span class="string">"http://sliding-sync.example.org"</span>)<span class="question-mark">?</span>);
+</code></pre></div>
+<p>After the general configuration, one typically wants to add a list via the
+<a href="struct.SlidingSyncBuilder.html#method.add_list" title="method matrix_sdk::sliding_sync::SlidingSyncBuilder::add_list"><code>add_list</code></a> function.</p>
+<h3 id="lists"><a class="doc-anchor" href="#lists">§</a>Lists</h3>
+<p>A list defines a subset of matching rooms one wants to filter for, and be
+kept up about. The <a href="../ruma/api/client/sync/sync_events/v4/struct.SyncRequestListFilters.html" title="struct matrix_sdk::ruma::api::client::sync::sync_events::v4::SyncRequestListFilters"><code>v4::SyncRequestListFilters</code></a> allows for a granular
+specification of the exact rooms one wants the server to select and the way
+one wants them to be ordered before receiving. Secondly each list has a set
+of <code>ranges</code>: the subset of indexes of the entire list one is interested in
+and a unique name to be identified with.</p>
+<p>For example, a user might be part of thousands of rooms, but if the client
+app always starts by showing the most recent direct message conversations,
+loading all rooms is an inefficient approach. Instead with Sliding Sync one
+defines a list (e.g. named <code>&quot;main_list&quot;</code>) filtering for <code>is_dm</code>, ordered
+by recency and select to list the top 10 via <code>ranges: [ [0,9] ]</code> (indexes
+are <strong>inclusive</strong>) like so:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>ruma::{assign, api::client::sync::sync_events::v4};
+
+<span class="kw">let </span>list_builder = SlidingSyncList::builder(<span class="string">"main_list"</span>)
+    .sync_mode(SlidingSyncMode::new_selective().add_range(<span class="number">0</span>..=<span class="number">9</span>))
+    .filters(<span class="prelude-val">Some</span>(<span class="macro">assign!</span>(
+        v4::SyncRequestListFilters::default(), { is_dm: <span class="prelude-val">Some</span>(<span class="bool-val">true</span>)}
+    )))
+    .sort(<span class="macro">vec!</span>[<span class="string">"by_recency"</span>.to_owned()]);</code></pre></div>
+<p>Please refer to the <a href="https://github.com/matrix-org/matrix-spec-proposals/pull/3575">specification</a>, the <a href="https://docs.rs/ruma/latest/ruma/api/client/sync/sync_events/v4/index.html">Ruma types</a>,
+specifically <a href="https://docs.rs/ruma/latest/ruma/api/client/sync/sync_events/v4/struct.SyncRequestListFilters.html"><code>SyncRequestListFilter</code></a> and the
+<a href="struct.SlidingSyncListBuilder.html" title="struct matrix_sdk::sliding_sync::SlidingSyncListBuilder"><code>SlidingSyncListBuilder</code></a> for details on the filters, sort-order and
+range-options and data one requests to be sent. Once the list is fully
+configured, <code>build()</code> it and add the list to the sliding sync session
+by supplying it to <a href="struct.SlidingSyncBuilder.html#method.add_list" title="method matrix_sdk::sliding_sync::SlidingSyncBuilder::add_list"><code>add_list</code></a>.</p>
+<p>Lists are inherently stateful and all updates are applied on the shared
+list-object. Once a list has been added to <a href="struct.SlidingSync.html" title="struct matrix_sdk::sliding_sync::SlidingSync"><code>SlidingSync</code></a>, a cloned shared
+copy can be retrieved by calling <code>SlidingSync::list()</code>, providing the name
+of the list. Next to the configuration settings (like name and
+<code>timeline_limit</code>), the list provides the stateful
+<a href="struct.SlidingSyncList.html#method.maximum_number_of_rooms" title="method matrix_sdk::sliding_sync::SlidingSyncList::maximum_number_of_rooms"><code>maximum_number_of_rooms</code></a>,
+<a href="struct.SlidingSyncList.html#method.room_list" title="method matrix_sdk::sliding_sync::SlidingSyncList::room_list"><code>room_list</code></a> and
+<a href="struct.SlidingSyncList.html#method.state" title="method matrix_sdk::sliding_sync::SlidingSyncList::state"><code>state</code></a>:</p>
+<ul>
+<li><code>maximum_number_of_rooms</code> is the number of rooms <em>total</em> there were found
+matching the filters given.</li>
+<li><code>room_list</code> is a vector of <code>maximum_number_of_rooms</code> <a href="enum.RoomListEntry.html" title="enum matrix_sdk::sliding_sync::RoomListEntry"><code>RoomListEntry</code></a>’s
+at the current state. <code>RoomListEntry</code>’s only hold <code>the room_id</code> if given,
+the <a href="#rooms">Rooms API</a> holds the actual information about each room</li>
+<li><code>state</code> is a <a href="enum.SlidingSyncMode.html" title="enum matrix_sdk::sliding_sync::SlidingSyncMode"><code>SlidingSyncMode</code></a> signalling meta information about the
+list and its stateful data — whether this is the state loaded from local
+cache, whether the <a href="#helper-lists">full sync</a> is in progress or whether
+this is the current live information</li>
+</ul>
+<p>These are updated upon every update received from the server. One can query
+these for their current value at any time, or use the <a href="#reactive-api">Reactive API
+to subscribe to changes</a>.</p>
+<h4 id="helper-lists"><a class="doc-anchor" href="#helper-lists">§</a>Helper lists</h4>
+<p>By default lists run in the <a href="enum.SlidingSyncMode.html#variant.Selective" title="variant matrix_sdk::sliding_sync::SlidingSyncMode::Selective"><code>Selective</code> mode</a>.
+That means one sets the desired range(s) to see explicitly (as described
+above). Very often, one still wants to load up the entire room list in
+background though. For that, the client implementation offers to run lists
+in two additional full-sync-modes, which require additional configuration:</p>
+<ul>
+<li><a href="enum.SlidingSyncMode.html#variant.Paging" title="variant matrix_sdk::sliding_sync::SlidingSyncMode::Paging"><code>SlidingSyncMode::Paging</code></a>: Pages through the entire list of
+rooms one request at a time asking for the next <code>batch_size</code> number of
+rooms up to the end or <code>maximum_number_of_rooms_to_fetch</code> if configured</li>
+<li><a href="enum.SlidingSyncMode.html#variant.Growing" title="variant matrix_sdk::sliding_sync::SlidingSyncMode::Growing"><code>SlidingSyncMode::Growing</code></a>: Grows the window by <code>batch_size</code> on every
+request till all rooms or until <code>maximum_number_of_rooms_to_fetch</code> of rooms
+are in list.</li>
+</ul>
+<h3 id="rooms"><a class="doc-anchor" href="#rooms">§</a>Rooms</h3>
+<p>Next to the room list, the details for rooms are the next important aspect.
+Each <a href="#lists">list</a> only references the <a href="../ruma/struct.OwnedRoomId.html" title="struct matrix_sdk::ruma::OwnedRoomId"><code>OwnedRoomId</code></a>
+of the room at the given position. The details (<code>required_state</code>s and
+timeline items) requested by all lists are bundled, together with the common
+details (e.g. whether it is a <code>dm</code> or its calculated name) and made
+available on the Sliding Sync session struct as a <a href="#reactive-api">reactive</a>
+through <a href="struct.SlidingSync.html#method.get_all_rooms" title="method matrix_sdk::sliding_sync::SlidingSync::get_all_rooms"><code>.get_all_rooms</code></a>, <a href="struct.SlidingSync.html#method.get_room" title="method matrix_sdk::sliding_sync::SlidingSync::get_room"><code>get_room</code></a>
+and <a href="struct.SlidingSync.html#method.get_rooms" title="method matrix_sdk::sliding_sync::SlidingSync::get_rooms"><code>get_rooms</code></a> APIs.</p>
+<p>Notably, this map only knows about the rooms that have come down <a href="https://github.com/matrix-org/matrix-spec-proposals/pull/3575">Sliding
+Sync protocol</a> and if the given room isn’t in any active list range, it
+may be stale. Additionally to selecting the room data via the room lists,
+the <a href="https://github.com/matrix-org/matrix-spec-proposals/pull/3575">Sliding Sync protocol</a> allows to subscribe to specific rooms via
+the <a href="struct.SlidingSync.html#method.subscribe_to_room" title="method matrix_sdk::sliding_sync::SlidingSync::subscribe_to_room"><code>subscribe_to_room()</code></a>. Any room subscribed
+to will receive updates (with the given settings) regardless of whether they are
+visible in any list. The most common case for using this API is when the user
+enters a room - as we want to receive the incoming new messages regardless of
+whether the room is pushed out of the lists room list.</p>
+<h4 id="room-list-entries"><a class="doc-anchor" href="#room-list-entries">§</a>Room List Entries</h4>
+<p>As the room list of each list is a vec of the <code>maximum_number_of_rooms</code> len
+but a room may only know of a subset of entries for sure at any given time,
+these entries are wrapped in <a href="enum.RoomListEntry.html" title="enum matrix_sdk::sliding_sync::RoomListEntry"><code>RoomListEntry</code></a>. This type, in close
+proximity to the <a href="https://github.com/matrix-org/matrix-spec-proposals/pull/3575">specification</a>, can be either <code>Empty</code>, <code>Filled</code> or
+<code>Invalidated</code>, signaling the state of each entry position.</p>
+<ul>
+<li><code>Empty</code> we don’t know what sits here at this position in the list.</li>
+<li><code>Filled</code>: there is this <code>room_id</code> at this position.</li>
+<li><code>Invalidated</code> in that sense means that we <em>knew</em> what was here before, but
+can’t be sure anymore this is still accurate. This occurs when we move the
+sliding window (by changing the ranges) or when a room might drop out of
+the window we are looking at. For the sake of displaying, this is probably
+still fine to display to be at this position, but we can’t be sure
+anymore.</li>
+</ul>
+<p>Because <code>Invalidated</code> occurs whenever a room we knew about before drops out
+of focus, we aren’t updated about its changes anymore either, there could be
+duplicates rooms within invalidated rooms as well as in the union of
+invalidated and filled rooms. Keep that in mind, as most UI frameworks don’t
+like it when their list entries aren’t unique.</p>
+<p>When [restoring from cold cache][#caching] the room list also only
+propagated with <code>Invalidated</code> rooms. So if you want to be able to display
+data quickly, ensure you are able to render <code>Invalidated</code> entries.</p>
+<h4 id="unsubscribe"><a class="doc-anchor" href="#unsubscribe">§</a>Unsubscribe</h4>
+<p>Don’t forget to <a href="struct.SlidingSync.html#method.unsubscribe_from_room" title="method matrix_sdk::sliding_sync::SlidingSync::unsubscribe_from_room">unsubscribe</a> when the
+data isn’t needed to be updated anymore, e.g. when the user leaves the room, to
+reduce the bandwidth back down to what is really needed.</p>
+<h3 id="extensions"><a class="doc-anchor" href="#extensions">§</a>Extensions</h3>
+<p>Additionally to the room list and rooms with their state and latest
+messages Matrix knows of many other exchange information. All these are
+modeled as specific, optional extensions in the <a href="https://github.com/matrix-org/matrix-spec-proposals/pull/3575">sliding sync
+protocol</a>. This includes end-to-end-encryption, to-device-messages,
+typing- and presence-information and account-data, but can be extended by
+any implementation as they please. Handling of the data of the e2ee,
+to-device and typing-extensions takes place transparently within the SDK.</p>
+<p>By default <a href="struct.SlidingSync.html" title="struct matrix_sdk::sliding_sync::SlidingSync"><code>SlidingSync</code></a> doesn’t activate <em>any</em> extensions to save on
+bandwidth, but we generally recommend to use the <code>with_XXX_extensions</code> family
+of methods when building sliding sync to enable e2ee, to-device-messages and
+account-data-extensions.</p>
+<h3 id="timeline-events"><a class="doc-anchor" href="#timeline-events">§</a>Timeline events</h3>
+<p>Both the list configuration as well as the <a href="../ruma/api/client/sync/sync_events/v4/struct.RoomSubscription.html" title="struct matrix_sdk::ruma::api::client::sync::sync_events::v4::RoomSubscription">room subscription
+settings</a> allow to specify a <code>timeline_limit</code> to
+receive timeline events. If that is unset or set to 0, no events are sent by
+the server (which is the default), if multiple limits are found, the highest
+takes precedence. Any positive number indicates that on the first request a
+room should come into list, up to that count of messages are sent
+(depending how many the server has in cache). Following, whenever new events
+are found for the matching rooms, the server relays them to the client.</p>
+<p>All timeline events coming through Sliding Sync will be processed through
+the <a href="../../matrix_sdk_base/client/struct.BaseClient.html" title="struct matrix_sdk_base::client::BaseClient"><code>BaseClient</code></a> as in previous sync. This
+allows for transparent decryption as well trigger the <code>client_handlers</code>.</p>
+<p>The current and then following live events list can be queried via the
+<code>timeline</code> API from <code>matrix-sdk-ui</code>. This is prefilled with already received
+data.</p>
+<h4 id="timeline-trickling"><a class="doc-anchor" href="#timeline-trickling">§</a>Timeline trickling</h4>
+<p>To allow for a quick startup, client might want to request only a very low
+<code>timeline_limit</code> (maybe 1 or even 0) at first and update the count later on
+the list or room subscription (see <a href="#reactive-api">reactive api</a>), Since
+<code>0.99.0-rc1</code> the <a href="https://github.com/matrix-org/sliding-sync">sliding sync proxy</a> will then “paginate back” and
+resent the now larger number of events. All this is handled transparently.</p>
+<h3 id="long-polling"><a class="doc-anchor" href="#long-polling">§</a>Long Polling</h3>
+<p><a href="https://github.com/matrix-org/matrix-spec-proposals/pull/3575">Sliding Sync</a> is a long-polling API. That means that immediately after
+one has received data from the server, they re-open the network connection
+again and await for a new response. As there might not be happening much or
+a lot happening in short succession — from the client perspective we never
+know when new data is received.</p>
+<p>One principle of long-polling is, therefore, that it might also takes one
+or two requests before the changes one asked for to actually be applied
+and the results come back for that. Just assume that at the same time one
+adds a room subscription, a new message comes in. The server might reply
+with that message immediately and will only kick off the process of
+calculating the rooms details and respond with that in the next request one
+does after.</p>
+<p>This is modelled as a <a href="../../futures_core/stream/trait.Stream.html" title="trait futures_core::stream::Stream">async <code>Stream</code></a> in
+our API, that one basically wants to continue polling. Once one has made its
+setup ready and build its sliding sync sessions, one wants to acquire its
+<a href="struct.SlidingSync.html#method.sync" title="method matrix_sdk::sliding_sync::SlidingSync::sync"><code>.sync()</code></a> and continuously poll it.</p>
+<p>While the async stream API allows for streams to end (by returning <code>None</code>)
+Sliding Sync streams items <code>Result&lt;UpdateSummary, Error&gt;</code>. For every
+successful poll, all data is applied internally, through the base client and
+the <a href="#reactive-api">reactive structs</a> and an
+<a href="struct.UpdateSummary.html" title="struct matrix_sdk::sliding_sync::UpdateSummary"><code>Ok(UpdateSummary)</code></a> is yielded with the minimum
+information, which data has been refreshed <em>in this iteration</em>: names of
+lists and <code>room_id</code>s of rooms. Note that, the same way that a list isn’t
+reacting if only the room data has changed (but not its position in its
+list), the list won’t be mentioned here either, only the <code>room_id</code>. So be
+sure to look at both for all subscribed objects.</p>
+<p>In full, this typically looks like this:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>sliding_sync = client
+    .sliding_sync(<span class="string">"main-sync"</span>)<span class="question-mark">?
+    </span><span class="comment">// any lists you want are added here.
+    </span>.build()
+    .<span class="kw">await</span><span class="question-mark">?</span>;
+
+<span class="kw">let </span>stream = sliding_sync.sync();
+
+<span class="comment">// continuously poll for updates
+</span><span class="macro">pin_mut!</span>(stream);
+
+<span class="kw">loop </span>{
+    <span class="kw">let </span>update = <span class="kw">match </span>stream.next().<span class="kw">await </span>{
+        <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(u)) =&gt; {
+            <span class="macro">info!</span>(<span class="string">"Received an update. Summary: {u:?}"</span>);
+        }
+        <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(e)) =&gt; {
+            <span class="macro">error!</span>(<span class="string">"loop was stopped by client error processing: {e}"</span>);
+        }
+        <span class="prelude-val">None </span>=&gt; {
+            <span class="macro">error!</span>(<span class="string">"Streaming loop ended unexpectedly"</span>);
+            <span class="kw">break</span>;
+        }
+    };
+}
+</code></pre></div>
+<h4 id="quick-refreshing"><a class="doc-anchor" href="#quick-refreshing">§</a>Quick refreshing</h4>
+<p>A main purpose of <a href="https://github.com/matrix-org/matrix-spec-proposals/pull/3575">Sliding Sync</a> is to provide an API for snappy end
+user applications. Long-polling on the other side means that the client has
+to wait for the server to respond and that can take quite some time, before
+sending the next request with updates, for example an update in a list’s
+<code>range</code>.</p>
+<p>That is a bit unfortunate and leaks through the <code>stream</code> API as well. The
+client is waiting for a <code>stream.next().await</code> call before the next request
+is sent. The <a href="https://github.com/matrix-org/matrix-spec-proposals/pull/3575">specification</a> on long-polling also states, however, that
+if an new request is found coming in, the previous one shall be sent out. In
+practice that means one can just start a new stream and the old connection
+will return immediately — with a proper response though. One just needs to
+make sure to not call that stream any further. Additionally, as both
+requests are sent with the same positional argument, the server might
+respond with data, the client has already processed. This isn’t a problem,
+the <a href="struct.SlidingSync.html" title="struct matrix_sdk::sliding_sync::SlidingSync"><code>SlidingSync</code></a> will only process new data and skip the processing
+even across restarts.</p>
+<p>To support this, in practice, one can spawn a <code>Future</code> that runs
+<a href="struct.SlidingSync.html#method.sync" title="method matrix_sdk::sliding_sync::SlidingSync::sync"><code>SlidingSync::sync</code></a>. The spawned <code>Future</code> can be cancelled safely. If
+the client was waiting on a response, it’s cancelled without any issue. If
+a response was just received, it
+will be fully handled by <code>SlidingSync</code>. This <em>response is always
+handled</em> process isn’t blocking. The cancellation of the spawned <code>Future</code>
+will be as immediate as possible, and the response handling (if necessary)
+will be done in a “detached mode”. However, any further responses handling
+will have to wait. It is not possible for <code>SlidingSync</code> to handle responses
+concurrently.</p>
+<h3 id="reactive-api"><a class="doc-anchor" href="#reactive-api">§</a>Reactive API</h3>
+<p>As the main source of truth is the data coming from the server, all updates
+must be applied transparently throughout to the data layer. The simplest
+way to stay up to date on what objects have changed is by checking the
+<a href="%60UpdateSummary.lists%60"><code>lists</code></a> and <a href="%60UpdateSummary.rooms%60"><code>rooms</code></a> of
+each <a href="struct.UpdateSummary.html" title="struct matrix_sdk::sliding_sync::UpdateSummary"><code>UpdateSummary</code></a> given by each stream iteration and update the local
+copies accordingly. Because of where the loop sits in the stack, that can
+be a bit tedious though, so lists and rooms have an additional way of
+subscribing to updates via <a href="../../eyeball/index.html" title="mod eyeball"><code>eyeball</code></a>.</p>
+<p>The <code>Timeline</code> one can receive per room by calling <code>.timeline()</code> (from
+<code>matrix_sdk_ui::timeline::SlidingSyncRoomExt</code>) will be populated with the
+currently cached timeline events.</p>
+<h3 id="caching"><a class="doc-anchor" href="#caching">§</a>Caching</h3>
+<p>All room data, for filled but also <em>invalidated</em> rooms, including the entire
+timeline events as well as all list <code>room_lists</code> and
+<code>maximum_number_of_rooms</code> are held in memory (unless one <code>pop</code>s the list
+out).</p>
+<p>Sliding Sync instances are also cached on disk, and restored from disk at creation. This ensures
+that we keep track of important position markers, like the <code>since</code> tokens used in the sync
+requests.</p>
+<p>Caching for lists can be enabled independently, using the
+<a href="struct.SlidingSyncBuilder.html#method.add_cached_list" title="method matrix_sdk::sliding_sync::SlidingSyncBuilder::add_cached_list"><code>add_cached_list</code></a> method, assuming
+caching has been enabled before. In this case, during
+<code>.build()</code><a href="struct.SlidingSyncBuilder.html#method.build" title="method matrix_sdk::sliding_sync::SlidingSyncBuilder::build"><code>SlidingSyncBuilder::build</code></a> sliding sync will attempt to load their
+latest cached version from storage, as well as some overall information of
+Sliding Sync. If that succeeded the lists <code>state</code> has been set to
+<a href="enum.SlidingSyncListLoadingState.html#variant.Preloaded" title="variant matrix_sdk::sliding_sync::SlidingSyncListLoadingState::Preloaded"><code>Preloaded</code></a>. Only room data of rooms
+present in one of the lists is loaded from storage.</p>
+<p>Any extension data will not be loaded from the cache, if added after Sliding
+Sync has been built: some extension data (like the to-device-message position)
+are stored to storage, but only retrieved upon <code>build()</code> of the
+<code>SlidingSyncBuilder</code>. So if one only adds them later, they will not be reading
+the data from storage (to avoid inconsistencies) and might require more data to
+be sent in their first request than if they were loaded from a cold cache.</p>
+<p>When loading from storage <code>room_list</code> entries found are set to
+<code>Invalidated</code> — the initial setting here is communicated as a single
+<code>VecDiff::Replace</code> event through the <a href="#reactive-api">reactive API</a>.</p>
+<p>Only the latest 10 timeline items of each room are cached and they are reset
+whenever a new set of timeline items is received by the server.</p>
+<h3 id="bot-mode"><a class="doc-anchor" href="#bot-mode">§</a>Bot mode</h3>
+<p><em>Note</em>: This is not yet exposed via the API. See <a href="https://github.com/matrix-org/matrix-rust-sdk/issues/1475">#1475</a></p>
+<p>Sliding Sync is modeled for faster and more efficient user-facing client
+applications, but offers significant speed ups even for bot cases through
+its filtering mechanism. The sort-order and specific subsets, however, are
+usually not of interest for bots. For that use case the
+<a href="../ruma/api/client/sync/sync_events/v4/struct.SyncRequestList.html" title="struct matrix_sdk::ruma::api::client::sync::sync_events::v4::SyncRequestList"><code>v4::SyncRequestList</code></a> offers the
+<a href="../ruma/api/client/sync/sync_events/v4/struct.SyncRequestList.html#structfield.slow_get_all_rooms" title="field matrix_sdk::ruma::api::client::sync::sync_events::v4::SyncRequestList::slow_get_all_rooms"><code>slow_get_all_rooms</code></a> flag.</p>
+<p>Once switched on, this mode will not trigger any updates on “list
+movements”, ranges and sorting are ignored and all rooms matching the filter
+will be returned with the given room details settings. Depending on the data
+that is requested this will still be significantly faster as the response
+only returns the matching rooms and states as per settings.</p>
+<p>Think about a bot that only interacts in <code>is_dm = true</code> and doesn’t need
+room topic, room avatar and all the other state. It will be a lot faster to
+start up and retrieve only the data needed to actually run.</p>
+<h2 id="full-example"><a class="doc-anchor" href="#full-example">§</a>Full example</h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>matrix_sdk::{Client, sliding_sync::{SlidingSyncList, SlidingSyncMode}};
+<span class="kw">use </span>ruma::{assign, api::client::sync::sync_events::v4, events::StateEventType};
+<span class="kw">use </span>tracing::{warn, error, info, debug};
+<span class="kw">use </span>futures_util::{pin_mut, StreamExt};
+<span class="kw">use </span>url::Url;
+<span class="kw">use </span>std::future::ready;
+<span class="kw">let </span>full_sync_list_name = <span class="string">"full-sync"</span>.to_owned();
+<span class="kw">let </span>active_list_name = <span class="string">"active-list"</span>.to_owned();
+<span class="kw">let </span>sliding_sync_builder = client
+    .sliding_sync(<span class="string">"main-sync"</span>)<span class="question-mark">?
+    </span>.sliding_sync_proxy(Url::parse(<span class="string">"http://sliding-sync.example.org"</span>)<span class="question-mark">?</span>) <span class="comment">// our proxy server
+    </span>.with_account_data_extension(
+        <span class="macro">assign!</span>(v4::AccountDataConfig::default(), { enabled: <span class="prelude-val">Some</span>(<span class="bool-val">true</span>) }),
+    ) <span class="comment">// we enable the account-data extension
+    </span>.with_e2ee_extension(<span class="macro">assign!</span>(v4::E2EEConfig::default(), { enabled: <span class="prelude-val">Some</span>(<span class="bool-val">true</span>) })) <span class="comment">// and the e2ee extension
+    </span>.with_to_device_extension(
+        <span class="macro">assign!</span>(v4::ToDeviceConfig::default(), { enabled: <span class="prelude-val">Some</span>(<span class="bool-val">true</span>) }),
+    ); <span class="comment">// and the to-device extension
+
+</span><span class="kw">let </span>full_sync_list = SlidingSyncList::builder(<span class="kw-2">&amp;</span>full_sync_list_name)
+    .sync_mode(SlidingSyncMode::Growing { batch_size: <span class="number">50</span>, maximum_number_of_rooms_to_fetch: <span class="prelude-val">Some</span>(<span class="number">500</span>) }) <span class="comment">// sync up by growing the window
+    </span>.sort(<span class="macro">vec!</span>[<span class="string">"by_recency"</span>.to_owned()]) <span class="comment">// ordered by most recent
+    </span>.required_state(<span class="macro">vec!</span>[
+        (StateEventType::RoomEncryption, <span class="string">""</span>.to_owned())
+     ]); <span class="comment">// only want to know if the room is encrypted
+
+</span><span class="kw">let </span>active_list = SlidingSyncList::builder(<span class="kw-2">&amp;</span>active_list_name) <span class="comment">// the active window
+    </span>.sync_mode(SlidingSyncMode::new_selective().add_range(<span class="number">0</span>..=<span class="number">9</span>))  <span class="comment">// sync up the specific range only, first 10 items
+    </span>.sort(<span class="macro">vec!</span>[<span class="string">"by_recency"</span>.to_owned()]) <span class="comment">// last active
+    </span>.timeline_limit(<span class="number">5u32</span>) <span class="comment">// add the last 5 timeline items for room preview and faster timeline loading
+    </span>.required_state(<span class="macro">vec!</span>[ <span class="comment">// we want to know immediately:
+        </span>(StateEventType::RoomEncryption, <span class="string">""</span>.to_owned()), <span class="comment">// is it encrypted
+        </span>(StateEventType::RoomTopic, <span class="string">""</span>.to_owned()),      <span class="comment">// any topic if known
+        </span>(StateEventType::RoomAvatar, <span class="string">""</span>.to_owned()),     <span class="comment">// avatar if set
+     </span>]);
+
+<span class="kw">let </span>sliding_sync = sliding_sync_builder
+    .add_list(active_list)
+    .add_list(full_sync_list)
+    .build()
+    .<span class="kw">await</span><span class="question-mark">?</span>;
+
+<span class="comment">// subscribe to the list APIs for updates
+
+</span><span class="kw">let </span>((<span class="kw">_</span>, list_state_stream), list_count_stream, (<span class="kw">_</span>, list_stream)) = sliding_sync.on_list(<span class="kw-2">&amp;</span>active_list_name, |list| {
+    ready((list.state_stream(), list.maximum_number_of_rooms_stream(), list.room_list_stream()))
+}).<span class="kw">await</span>.unwrap();
+
+tokio::spawn(<span class="kw">async move </span>{
+    <span class="macro">pin_mut!</span>(list_state_stream);
+    <span class="kw">while let </span><span class="prelude-val">Some</span>(new_state) = list_state_stream.next().<span class="kw">await </span>{
+        <span class="macro">info!</span>(<span class="string">"active-list switched state to {new_state:?}"</span>);
+    }
+});
+
+tokio::spawn(<span class="kw">async move </span>{
+    <span class="macro">pin_mut!</span>(list_count_stream);
+    <span class="kw">while let </span><span class="prelude-val">Some</span>(new_count) = list_count_stream.next().<span class="kw">await </span>{
+        <span class="macro">info!</span>(<span class="string">"active-list new count: {new_count:?}"</span>);
+    }
+});
+
+tokio::spawn(<span class="kw">async move </span>{
+    <span class="macro">pin_mut!</span>(list_stream);
+    <span class="kw">while let </span><span class="prelude-val">Some</span>(v_diff) = list_stream.next().<span class="kw">await </span>{
+        <span class="macro">info!</span>(<span class="string">"active-list room list diff update: {v_diff:?}"</span>);
+    }
+});
+
+<span class="kw">let </span>stream = sliding_sync.sync();
+
+<span class="comment">// continuously poll for updates
+</span><span class="macro">pin_mut!</span>(stream);
+<span class="kw">loop </span>{
+    <span class="kw">let </span>update = <span class="kw">match </span>stream.next().<span class="kw">await </span>{
+        <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(u)) =&gt; {
+            <span class="macro">info!</span>(<span class="string">"Received an update. Summary: {u:?}"</span>);
+        },
+        <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(e)) =&gt; {
+             <span class="macro">error!</span>(<span class="string">"loop was stopped by client error processing: {e}"</span>);
+        }
+        <span class="prelude-val">None </span>=&gt; {
+            <span class="macro">error!</span>(<span class="string">"Streaming loop ended unexpectedly"</span>);
+            <span class="kw">break</span>;
+        }
+    };
+}
+</code></pre></div>
+</div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.SlidingSync.html" title="struct matrix_sdk::sliding_sync::SlidingSync">SlidingSync</a></div><div class="desc docblock-short">The Sliding Sync instance.</div></li><li><div class="item-name"><a class="struct" href="struct.SlidingSyncBuilder.html" title="struct matrix_sdk::sliding_sync::SlidingSyncBuilder">SlidingSyncBuilder</a></div><div class="desc docblock-short">Configuration for a Sliding Sync instance.</div></li><li><div class="item-name"><a class="struct" href="struct.SlidingSyncList.html" title="struct matrix_sdk::sliding_sync::SlidingSyncList">SlidingSyncList</a></div><div class="desc docblock-short">Holding a specific filtered list within the concept of sliding sync.</div></li><li><div class="item-name"><a class="struct" href="struct.SlidingSyncListBuilder.html" title="struct matrix_sdk::sliding_sync::SlidingSyncListBuilder">SlidingSyncListBuilder</a></div><div class="desc docblock-short">Builder for <a href="struct.SlidingSyncList.html" title="struct matrix_sdk::sliding_sync::SlidingSyncList"><code>SlidingSyncList</code></a>.</div></li><li><div class="item-name"><a class="struct" href="struct.SlidingSyncRoom.html" title="struct matrix_sdk::sliding_sync::SlidingSyncRoom">SlidingSyncRoom</a></div><div class="desc docblock-short">A Sliding Sync Room.</div></li><li><div class="item-name"><a class="struct" href="struct.SlidingSyncSelectiveModeBuilder.html" title="struct matrix_sdk::sliding_sync::SlidingSyncSelectiveModeBuilder">SlidingSyncSelectiveModeBuilder</a></div><div class="desc docblock-short">Builder for a new sliding sync list in selective mode.</div></li><li><div class="item-name"><a class="struct" href="struct.SlidingSyncWindowedModeBuilder.html" title="struct matrix_sdk::sliding_sync::SlidingSyncWindowedModeBuilder">SlidingSyncWindowedModeBuilder</a></div><div class="desc docblock-short">Builder for a new sliding sync list in growing/paging mode.</div></li><li><div class="item-name"><a class="struct" href="struct.UpdateSummary.html" title="struct matrix_sdk::sliding_sync::UpdateSummary">UpdateSummary</a></div><div class="desc docblock-short">A summary of the updates received after a sync (like in
+<a href="struct.SlidingSync.html#method.sync" title="method matrix_sdk::sliding_sync::SlidingSync::sync"><code>SlidingSync::sync</code></a>).</div></li></ul><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="enum" href="enum.Error.html" title="enum matrix_sdk::sliding_sync::Error">Error</a></div><div class="desc docblock-short">Internal representation of errors in Sliding Sync.</div></li><li><div class="item-name"><a class="enum" href="enum.RoomListEntry.html" title="enum matrix_sdk::sliding_sync::RoomListEntry">RoomListEntry</a></div><div class="desc docblock-short">Represent a room entry in the <a href="struct.SlidingSyncList.html" title="struct matrix_sdk::sliding_sync::SlidingSyncList"><code>SlidingSyncList</code></a>.</div></li><li><div class="item-name"><a class="enum" href="enum.SlidingSyncListLoadingState.html" title="enum matrix_sdk::sliding_sync::SlidingSyncListLoadingState">SlidingSyncListLoadingState</a></div><div class="desc docblock-short">The state the <a href="struct.SlidingSyncList.html" title="struct matrix_sdk::sliding_sync::SlidingSyncList"><code>SlidingSyncList</code></a> is in.</div></li><li><div class="item-name"><a class="enum" href="enum.SlidingSyncMode.html" title="enum matrix_sdk::sliding_sync::SlidingSyncMode">SlidingSyncMode</a></div><div class="desc docblock-short">How a <a href="struct.SlidingSyncList.html" title="struct matrix_sdk::sliding_sync::SlidingSyncList"><code>SlidingSyncList</code></a> fetches the data.</div></li><li><div class="item-name"><a class="enum" href="enum.SlidingSyncRoomState.html" title="enum matrix_sdk::sliding_sync::SlidingSyncRoomState">SlidingSyncRoomState</a></div><div class="desc docblock-short">The state of a <a href="struct.SlidingSyncRoom.html" title="struct matrix_sdk::sliding_sync::SlidingSyncRoom"><code>SlidingSyncRoom</code></a>.</div></li></ul><h2 id="types" class="section-header">Type Aliases<a href="#types" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="type" href="type.Bound.html" title="type matrix_sdk::sliding_sync::Bound">Bound</a></div><div class="desc docblock-short">The type used to express natural bounds (including but not limited to:
+ranges, timeline limit) in the Sliding Sync.</div></li><li><div class="item-name"><a class="type" href="type.Range.html" title="type matrix_sdk::sliding_sync::Range">Range</a></div><div class="desc docblock-short">One range of rooms in a response from Sliding Sync.</div></li><li><div class="item-name"><a class="type" href="type.Ranges.html" title="type matrix_sdk::sliding_sync::Ranges">Ranges</a></div><div class="desc docblock-short">Many ranges of rooms.</div></li></ul></section></div></main></body></html>

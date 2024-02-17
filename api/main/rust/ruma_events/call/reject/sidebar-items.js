@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["CallRejectEventContent","RedactedCallRejectEventContent"],"type":["CallRejectEvent","OriginalCallRejectEvent","OriginalSyncCallRejectEvent","RedactedCallRejectEvent","RedactedSyncCallRejectEvent","SyncCallRejectEvent"]};

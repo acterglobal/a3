@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["FnIdentity","GRef","GRefMut","Invoke"],"trait":["TypeFn"],"type":["CallFn"]};

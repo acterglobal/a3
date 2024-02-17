@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["PublicRoomJoinRule","RoomNetwork","RoomTypeFilter"],"struct":["Filter","PublicRoomsChunk","PublicRoomsChunkInit"]};

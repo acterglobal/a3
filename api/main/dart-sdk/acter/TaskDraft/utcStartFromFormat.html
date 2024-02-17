@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the utcStartFromFormat method from the TaskDraft class, for the Dart programming language.">
+  <title>utcStartFromFormat method - TaskDraft class - acter library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">acter_flutter_sdk</a></li>
+    <li><a href="../../acter/acter-library.html">acter_flutter_sdk_ffi.dart</a></li>
+    <li><a href="../../acter/TaskDraft-class.html">TaskDraft</a></li>
+    <li class="self-crumb">utcStartFromFormat method</li>
+  </ol>
+  <div class="self-name">utcStartFromFormat</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="acter&#47;TaskDraft-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-method">utcStartFromFormat</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+
+<span class="returntype">void</span>
+<span class="name ">utcStartFromFormat</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="utcStartFromFormat-param-utcStart"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">utcStart</span>, </span></li>
+<li><span class="parameter" id="utcStartFromFormat-param-format"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">format</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>set the utc_start for this task in custom format</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">void utcStartFromFormat(
+  String utcStart,
+  String format,
+) {
+  final tmp1 = utcStart;
+  final tmp5 = format;
+  var tmp0 = 0;
+  var tmp2 = 0;
+  var tmp3 = 0;
+  var tmp4 = 0;
+  var tmp6 = 0;
+  var tmp7 = 0;
+  var tmp8 = 0;
+  tmp0 = _box.borrow();
+  final tmp1_0 = utf8.encode(tmp1);
+  tmp3 = tmp1_0.length;
+
+  final ffi.Pointer&lt;ffi.Uint8&gt; tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+  final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+  tmp2_1.setAll(0, tmp1_0);
+  tmp2 = tmp2_0.address;
+  tmp4 = tmp3;
+  final tmp5_0 = utf8.encode(tmp5);
+  tmp7 = tmp5_0.length;
+
+  final ffi.Pointer&lt;ffi.Uint8&gt; tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+  final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+  tmp6_1.setAll(0, tmp5_0);
+  tmp6 = tmp6_0.address;
+  tmp8 = tmp7;
+  final tmp9 = _api._taskDraftUtcStartFromFormat(
+    tmp0,
+    tmp2,
+    tmp3,
+    tmp4,
+    tmp6,
+    tmp7,
+    tmp8,
+  );
+  final tmp11 = tmp9.arg0;
+  final tmp12 = tmp9.arg1;
+  final tmp13 = tmp9.arg2;
+  final tmp14 = tmp9.arg3;
+  if (tmp11 == 0) {
+    debugAllocation(&quot;handle error&quot;, tmp12, tmp13);
+    final ffi.Pointer&lt;ffi.Uint8&gt; tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+    final tmp11_0 =
+        utf8.decode(tmp12_0.asTypedList(tmp13), allowMalformed: true);
+    if (tmp13 &gt; 0) {
+      final ffi.Pointer&lt;ffi.Void&gt; tmp12_0;
+      tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+      _api.__deallocate(tmp12_0, tmp14, 1);
+    }
+    throw tmp11_0;
+  }
+  return;
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">acter_flutter_sdk</a></li>
+    <li><a href="../../acter/acter-library.html">acter</a></li>
+    <li><a href="../../acter/TaskDraft-class.html">TaskDraft</a></li>
+    <li class="self-crumb">utcStartFromFormat method</li>
+</ol>
+
+
+    <h5>TaskDraft class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    acter_flutter_sdk
+      0.0.1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

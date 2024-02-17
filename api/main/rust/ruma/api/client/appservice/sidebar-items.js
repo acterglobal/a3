@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["request_ping","set_room_visibility"]};

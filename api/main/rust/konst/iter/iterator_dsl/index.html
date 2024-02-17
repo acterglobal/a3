@@ -1,0 +1,138 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Documentation on the iterator DSL that some `konst::iter` macros support."><title>konst::iter::iterator_dsl - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="konst" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../konst/index.html">konst</a><span class="version">0.3.6</span></h2></div><h2 class="location"><a href="#">Module iterator_dsl</a></h2><div class="sidebar-elems"><h2><a href="../index.html">In konst::iter</a></h2></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../konst/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../../index.html">konst</a>::<wbr><a href="../index.html">iter</a>::<wbr><a class="mod" href="#">iterator_dsl</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../../../src/konst/iter/iterator_dsl.rs.html#1-199">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Documentation on the iterator DSL that some <code>konst::iter</code> macros support.</p>
+<p>The macros from this crate don’t directly invoke any of the method listed below,
+they expand to equivalent code, this allows the macros to work on stable.</p>
+<p>The <a href="../macro.collect_const.html" title="macro konst::iter::collect_const"><code>collect_const</code></a> macro is
+used in examples here purely for simplicity.</p>
+<h2 id="methods"><a class="doc-anchor" href="#methods">§</a>Methods</h2>
+<p>Every iterator method below behaves the same as in the <a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html" title="trait core::iter::traits::iterator::Iterator"><code>Iterator</code></a> trait,
+unless specified otherwise.</p>
+<p>The methods listed alphabetically:</p>
+<ul>
+<li><a href="#copied"><code>copied</code></a></li>
+<li><a href="#enumerate"><code>enumerate</code></a></li>
+<li><a href="#filter_map"><code>filter_map</code></a></li>
+<li><a href="#filter"><code>filter</code></a></li>
+<li><a href="#flat_map"><code>flat_map</code></a></li>
+<li><a href="#flatten"><code>flatten</code></a></li>
+<li><a href="#map"><code>map</code></a></li>
+<li><a href="#rev"><code>rev</code></a></li>
+<li><a href="#skip_while"><code>skip_while</code></a></li>
+<li><a href="#skip"><code>skip</code></a></li>
+<li><a href="#take_while"><code>take_while</code></a></li>
+<li><a href="#take"><code>take</code></a></li>
+<li><a href="#zip"><code>zip</code></a></li>
+</ul>
+<h4 id="zip"><a class="doc-anchor" href="#zip">§</a><code>zip</code></h4>
+<p>Limitation: the iterator DSL can’t be passed as an argument to this method.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::iter;
+
+<span class="kw">const </span>ARR: [(<span class="kw-2">&amp;</span>u8, usize); <span class="number">4</span>] =
+    <span class="macro">iter::collect_const!</span>((<span class="kw-2">&amp;</span>u8, usize) =&gt; <span class="kw-2">&amp;</span>[<span class="number">3u8</span>, <span class="number">5</span>, <span class="number">8</span>, <span class="number">13</span>],zip(<span class="number">100</span>..));
+
+<span class="macro">assert_eq!</span>(ARR, [(<span class="kw-2">&amp;</span><span class="number">3</span>, <span class="number">100</span>), (<span class="kw-2">&amp;</span><span class="number">5</span>, <span class="number">101</span>), (<span class="kw-2">&amp;</span><span class="number">8</span>, <span class="number">102</span>), (<span class="kw-2">&amp;</span><span class="number">13</span>, <span class="number">103</span>)]);</code></pre></div>
+<h4 id="enumerate"><a class="doc-anchor" href="#enumerate">§</a><code>enumerate</code></h4>
+<p><code>enumerate</code> always counts from <code>0</code>, regardless of whether the iterator is reversed.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::iter;
+
+<span class="kw">const </span>ARR: [(usize, <span class="kw-2">&amp;</span>u8); <span class="number">4</span>] =
+    <span class="macro">iter::collect_const!</span>((usize, <span class="kw-2">&amp;</span>u8) =&gt; <span class="kw-2">&amp;</span>[<span class="number">3u8</span>, <span class="number">5</span>, <span class="number">8</span>, <span class="number">13</span>],enumerate());
+
+<span class="macro">assert_eq!</span>(ARR, [(<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="number">3</span>), (<span class="number">1</span>, <span class="kw-2">&amp;</span><span class="number">5</span>), (<span class="number">2</span>, <span class="kw-2">&amp;</span><span class="number">8</span>), (<span class="number">3</span>, <span class="kw-2">&amp;</span><span class="number">13</span>)]);</code></pre></div>
+<h4 id="filter"><a class="doc-anchor" href="#filter">§</a><code>filter</code></h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::iter;
+
+<span class="kw">const </span>ARR: [<span class="kw-2">&amp;</span>u8; <span class="number">4</span>] = <span class="macro">iter::collect_const!</span>(<span class="kw-2">&amp;</span>u8 =&gt;
+    <span class="kw-2">&amp;</span>[<span class="number">3u8</span>, <span class="number">5</span>, <span class="number">8</span>, <span class="number">13</span>, <span class="number">21</span>],
+        filter(|e| !e.is_power_of_two()),
+);
+
+<span class="macro">assert_eq!</span>(ARR, [<span class="kw-2">&amp;</span><span class="number">3</span>, <span class="kw-2">&amp;</span><span class="number">5</span>, <span class="kw-2">&amp;</span><span class="number">13</span>, <span class="kw-2">&amp;</span><span class="number">21</span>]);</code></pre></div>
+<h4 id="map"><a class="doc-anchor" href="#map">§</a><code>map</code></h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::iter;
+
+<span class="kw">const </span>ARR: [usize; <span class="number">4</span>] = <span class="macro">iter::collect_const!</span>(usize =&gt; (<span class="number">1</span>..=<span class="number">4</span>),map(|e| e * <span class="number">3</span>));
+
+<span class="macro">assert_eq!</span>(ARR, [<span class="number">3</span>, <span class="number">6</span>, <span class="number">9</span>, <span class="number">12</span>]);</code></pre></div>
+<h4 id="filter_map"><a class="doc-anchor" href="#filter_map">§</a><code>filter_map</code></h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::iter;
+
+<span class="kw">use </span>std::num::NonZeroU8;
+
+<span class="kw">const </span>ARR: [NonZeroU8; <span class="number">4</span>] = <span class="macro">iter::collect_const!</span>(NonZeroU8 =&gt;
+    <span class="kw-2">&amp;</span>[<span class="number">3</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">5</span>, <span class="number">6</span>],
+        filter_map(|x| NonZeroU8::new(<span class="kw-2">*</span>x)),
+);
+
+<span class="macro">assert_eq!</span>(ARR, [<span class="number">3</span>, <span class="number">1</span>, <span class="number">5</span>, <span class="number">6</span>].map(|n| NonZeroU8::new(n).unwrap()));</code></pre></div>
+<h4 id="flat_map"><a class="doc-anchor" href="#flat_map">§</a><code>flat_map</code></h4>
+<p>Limitation: the iterator DSL can’t be passed as an argument to this method.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::iter;
+
+<span class="kw">const </span>ARR: [usize; <span class="number">9</span>] = <span class="macro">iter::collect_const!</span>(usize =&gt;
+    <span class="kw-2">&amp;</span>[<span class="number">3</span>, <span class="number">5</span>, <span class="number">8</span>],
+        flat_map(|x| {
+            <span class="kw">let </span>x10 = <span class="kw-2">*</span>x * <span class="number">10</span>;
+            x10..x10 + <span class="number">3
+        </span>}),
+);
+
+<span class="macro">assert_eq!</span>(ARR, [<span class="number">30</span>, <span class="number">31</span>, <span class="number">32</span>, <span class="number">50</span>, <span class="number">51</span>, <span class="number">52</span>, <span class="number">80</span>, <span class="number">81</span>, <span class="number">82</span>]);</code></pre></div>
+<h4 id="flatten"><a class="doc-anchor" href="#flatten">§</a><code>flatten</code></h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::iter;
+
+<span class="kw">const </span>ARR: [<span class="kw-2">&amp;</span>u8; <span class="number">4</span>] =
+    <span class="macro">iter::collect_const!</span>(<span class="kw-2">&amp;</span>u8 =&gt; <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>[<span class="number">3</span>, <span class="number">5</span>], <span class="kw-2">&amp;</span>[<span class="number">8</span>, <span class="number">13</span>]], flatten());
+
+<span class="macro">assert_eq!</span>(ARR, [<span class="kw-2">&amp;</span><span class="number">3</span>, <span class="kw-2">&amp;</span><span class="number">5</span>, <span class="kw-2">&amp;</span><span class="number">8</span>, <span class="kw-2">&amp;</span><span class="number">13</span>]);</code></pre></div>
+<h4 id="copied"><a class="doc-anchor" href="#copied">§</a><code>copied</code></h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::iter;
+
+<span class="kw">const </span>ARR: [u8; <span class="number">3</span>] = <span class="macro">iter::collect_const!</span>(u8 =&gt;
+    <span class="kw-2">&amp;</span>[<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>],
+        copied(),
+        filter(|n| <span class="kw-2">*</span>n % <span class="number">2 </span>== <span class="number">0</span>)
+);
+
+<span class="macro">assert_eq!</span>(ARR, [<span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>]);</code></pre></div>
+<h4 id="rev"><a class="doc-anchor" href="#rev">§</a><code>rev</code></h4>
+<p>Limitation: iterator-reversing methods can’t be called more than once in
+the same macro invocation.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::iter;
+
+<span class="kw">const </span>ARR: [<span class="kw-2">&amp;</span>u8; <span class="number">3</span>] = <span class="macro">iter::collect_const!</span>(<span class="kw-2">&amp;</span>u8 =&gt; <span class="kw-2">&amp;</span>[<span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>],rev());
+
+<span class="macro">assert_eq!</span>(ARR, [<span class="kw-2">&amp;</span><span class="number">5</span>, <span class="kw-2">&amp;</span><span class="number">3</span>, <span class="kw-2">&amp;</span><span class="number">2</span>]);</code></pre></div>
+<h4 id="take"><a class="doc-anchor" href="#take">§</a><code>take</code></h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::iter;
+
+<span class="kw">const </span>ARR: [usize; <span class="number">3</span>] = <span class="macro">iter::collect_const!</span>(usize =&gt; <span class="number">10</span>..,take(<span class="number">3</span>));
+
+<span class="macro">assert_eq!</span>(ARR, [<span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>]);</code></pre></div>
+<h4 id="take_while"><a class="doc-anchor" href="#take_while">§</a><code>take_while</code></h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::iter;
+
+<span class="kw">const </span>ARR: [<span class="kw-2">&amp;</span>u8; <span class="number">4</span>] = <span class="macro">iter::collect_const!</span>(<span class="kw-2">&amp;</span>u8 =&gt;
+    <span class="kw-2">&amp;</span>[<span class="number">3</span>, <span class="number">5</span>, <span class="number">8</span>, <span class="number">13</span>, <span class="number">21</span>, <span class="number">34</span>, <span class="number">55</span>],take_while(|elem| <span class="kw-2">**</span>elem &lt; <span class="number">20 </span>)
+);
+
+<span class="macro">assert_eq!</span>(ARR, [<span class="kw-2">&amp;</span><span class="number">3</span>, <span class="kw-2">&amp;</span><span class="number">5</span>, <span class="kw-2">&amp;</span><span class="number">8</span>, <span class="kw-2">&amp;</span><span class="number">13</span>]);</code></pre></div>
+<h4 id="skip"><a class="doc-anchor" href="#skip">§</a><code>skip</code></h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::iter;
+
+<span class="kw">const </span>ARR: [usize; <span class="number">3</span>] = <span class="macro">iter::collect_const!</span>(usize =&gt; <span class="number">10</span>..=<span class="number">15</span>,skip(<span class="number">3</span>));
+
+<span class="macro">assert_eq!</span>(ARR, [<span class="number">13</span>, <span class="number">14</span>, <span class="number">15</span>]);</code></pre></div>
+<h4 id="skip_while"><a class="doc-anchor" href="#skip_while">§</a><code>skip_while</code></h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::iter;
+
+<span class="kw">const </span>ARR: [<span class="kw-2">&amp;</span>u8; <span class="number">3</span>] = <span class="macro">iter::collect_const!</span>(<span class="kw-2">&amp;</span>u8 =&gt;
+    <span class="kw-2">&amp;</span>[<span class="number">3</span>, <span class="number">5</span>, <span class="number">8</span>, <span class="number">13</span>, <span class="number">21</span>, <span class="number">34</span>, <span class="number">55</span>],skip_while(|elem| <span class="kw-2">**</span>elem &lt; <span class="number">20 </span>)
+);
+
+<span class="macro">assert_eq!</span>(ARR, [<span class="kw-2">&amp;</span><span class="number">21</span>, <span class="kw-2">&amp;</span><span class="number">34</span>, <span class="kw-2">&amp;</span><span class="number">55</span>]);</code></pre></div>
+</div></details></section></div></main></body></html>

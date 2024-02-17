@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"attr":["cfg_vis","cfg_vis_fields"]};

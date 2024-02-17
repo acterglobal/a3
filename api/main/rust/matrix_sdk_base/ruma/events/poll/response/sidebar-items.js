@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["PollResponseEventContent","RedactedPollResponseEventContent","SelectionsContentBlock"],"type":["OriginalPollResponseEvent","OriginalSyncPollResponseEvent","PollResponseEvent","RedactedPollResponseEvent","RedactedSyncPollResponseEvent","SyncPollResponseEvent"]};

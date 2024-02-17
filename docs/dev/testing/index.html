@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="preload" as="font" href="https://dev.acter.global/fonts/vendor/jost/jost-v4-latin-regular.woff2" type="font/woff2" crossorigin>
+  <link rel="preload" as="font" href="https://dev.acter.global/fonts/vendor/jost/jost-v4-latin-700.woff2"  type="font/woff2" crossorigin>
+
+
+<link rel="stylesheet" href="https://dev.acter.global/main.css">
+
+
+
+  
+  
+    
+  
+
+  
+  
+    
+    
+  
+  
+  
+    
+  
+  
+  
+  
+    
+  
+  
+  
+
+
+  <meta name="robots" content="index, follow">
+  <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+
+
+	
+
+
+	
+
+<title>Testing | Acter Developer Docs</title>
+<meta name="description" content="">
+<link rel="canonical" href="https://dev.acter.global/docs/dev/testing/">
+
+
+
+
+
+
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BreadcrumbList",
+    
+      
+      
+        
+        
+        
+        
+        
+        
+        
+        
+          {
+            "@type": "ListItem",
+            "position":  1 ,
+            "name": "Home",
+            "item": "https://dev.acter.global/"
+          },
+          
+          
+          {
+            "@type": "ListItem",
+            "position":  2 ,
+            "name": "Docs",
+            "item": "https://dev.acter.global/docs/"
+          },
+        
+      
+        
+        
+        
+        
+        
+        
+        
+        
+          
+          
+          {
+            "@type": "ListItem",
+            "position":  3 ,
+            "name": "Dev",
+            "item": "https://dev.acter.global/docs/dev/"
+          },
+        
+      
+        
+        
+        
+        
+        
+        
+        
+        
+          
+          
+          {
+            "@type": "ListItem",
+            "position":  4 ,
+            "name": "Testing",
+            "item": "https://dev.acter.global/docs/dev/testing/"
+          },
+        
+      
+    
+  }
+</script>
+
+
+
+
+
+
+  <meta name="theme-color" content="#fff">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://dev.acter.global/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://dev.acter.global/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://dev.acter.global/favicon-16x16.png">
+  
+    <link rel="manifest" href="https://dev.acter.global/site.webmanifest" crossorigin>
+  
+
+
+  
+
+</head>
+
+  
+
+<body class="docs single">
+  
+  
+  
+  
+  
+  
+<div class="header-bar fixed-top"></div>
+<header class="navbar fixed-top navbar-expand-md navbar-light">
+	<div class="container">
+		<input class="menu-btn order-0" type="checkbox" id="menu-btn">
+		<label class="menu-icon d-md-none" for="menu-btn"><span class="navicon"></span></label>
+		<a class="navbar-brand order-1 order-md-0 me-auto" href="https://dev.acter.global">Acter Developer Docs</a>
+		<button id="mode" class="btn btn-link order-2 order-md-4" type="button" aria-label="Toggle mode">
+			<span class="toggle-dark"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></span>
+			<span class="toggle-light"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-sun"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></span>
+		</button>
+		<ul class="navbar-nav fork-me order-3 order-md-5">
+			
+				
+					<li class="nav-item">
+						<a class="nav-link" href="https://github.com/acterglobal/a3"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg><span class="ms-2 visually-hidden">GitHub</span></a>
+					</li>
+				
+			
+		</ul>
+		<div class="collapse navbar-collapse order-4 order-md-1">
+			<ul class="navbar-nav main-nav me-auto order-5 order-md-2">
+				
+					
+				
+				
+				
+					
+						<li class="nav-item">
+							<a class="nav-link" href="https://dev.acter.global/https://docs.acter.global/s/handbook/">Users</a>
+						</li>
+					
+						<li class="nav-item">
+							<a class="nav-link" href="https://dev.acter.global/nightly/">Nightly</a>
+						</li>
+					
+						<li class="nav-item docs active">
+							<a class="nav-link" href="https://dev.acter.global/docs/getting-started/setup/">Dev</a>
+						</li>
+					
+						<li class="nav-item docs active">
+							<a class="nav-link" href="https://dev.acter.global/docs/dev/api-docs/">APIs</a>
+						</li>
+					
+				
+			</ul>
+			<div class="break order-6 d-md-none"></div>
+			
+				<form class="navbar-form flex-grow-1 order-7 order-md-3">
+					<input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+						aria-label="Search docs..." autocomplete="off">
+					<div id="suggestions" class="shadow bg-white rounded"></div>
+				</form>
+			
+		</div>
+	</div>
+</header>
+
+
+
+  
+<div class="wrap container" role="document">
+  <div class="content">
+    <div class="row flex-xl-nowrap">
+	  
+<div class="col-lg-5 col-xl-4 docs-sidebar">
+	<nav class="docs-links" aria-label="Main navigation">
+			
+			
+            <h2 class="h3">Developer Docs</h2>
+			
+			
+					
+					
+					
+							<h3>Getting Started</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/getting-started/setup/">Setting up</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/getting-started/troubleshooting/">Troubleshooting</a></li>
+							
+					</ul>
+					
+					
+					
+					
+							<h3>Architecture</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/architecture/repo-layout/">Project Layout</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/architecture/data-model/">Acter Data Model</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/architecture/templates/">Templates</a></li>
+							
+					</ul>
+					
+					
+					
+					
+							<h3>Development</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/dev/localisations/">Localisation</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/dev/style-guide/">Style Guide</a></li>
+							                           
+									<li><a class="docs-link active" href="https://dev.acter.global/docs/dev/testing/">Testing</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/dev/troubleshooting/">Troubleshooting</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/dev/api-docs/">API Docs</a></li>
+							
+					</ul>
+					
+					
+					
+					
+							<h3>Contributing</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/contributing/how-to-contribute/">How to Contribute</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/contributing/reviews/">Reviews process</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/contributing/code-of-conduct/">Code of Conduct</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/contributing/license/">License &amp; CLA</a></li>
+							
+					</ul>
+					
+					
+			
+	</nav>
+</div>
+
+	  
+  
+  <nav class="docs-toc d-none d-xl-block col-xl-3" aria-label="Secondary navigation">
+  	<div class="page-links">
+  			<h3>On this page</h3>
+  			<nav id="TableOfContents">
+  					<ul>
+  							
+  							<li><a href="https://dev.acter.global/docs/dev/testing/#unit-tests">Unit Tests</a></li>
+  							
+  									<ul>
+  											
+  											<li><a href="https://dev.acter.global/docs/dev/testing/#rust">Rust</a></li>
+  											
+  									</ul>
+  							
+  							
+  							<li><a href="https://dev.acter.global/docs/dev/testing/#flutter-widget-tests">Flutter Widget tests</a></li>
+  							
+  							
+  							<li><a href="https://dev.acter.global/docs/dev/testing/#integration-tests">Integration Tests</a></li>
+  							
+  									<ul>
+  											
+  											<li><a href="https://dev.acter.global/docs/dev/testing/#infrastructure">Infrastructure</a></li>
+  											
+  											<li><a href="https://dev.acter.global/docs/dev/testing/#rust-integration-tests">Rust integration tests</a></li>
+  											
+  											<li><a href="https://dev.acter.global/docs/dev/testing/#flutter-ui-integration-tests">Flutter UI integration tests</a></li>
+  											
+  									</ul>
+  							
+  							
+  					</ul>
+  			</nav>
+  	</div>
+  </nav>
+  
+
+      <main class="docs-content col-lg-11 col-xl-9">
+        <h1>Testing</h1>
+        
+        <h2 id="unit-tests">Unit Tests</h2>
+<h3 id="rust">Rust</h3>
+<p>We are using <a href="https://doc.rust-lang.org/book/ch11-00-testing.html">regular unit tests as by the Rust Book</a>. You can run them with <code>cargo test</code> .</p>
+<p><em>Note</em>: For async unit test, we are using <code>tokio</code> so mark them with <code>#[tokio:test]</code> (rather than <code>#[test]</code>). Example:</p>
+<pre data-lang="rust" style="background-color:#2b303b;color:#c0c5ce;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#b48ead;">use </span><span>anyhow::Result;
+</span><span>
+</span><span>#[</span><span style="color:#bf616a;">tokio</span><span>::</span><span style="color:#bf616a;">test</span><span>]
+</span><span>async </span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">testing_my_feature</span><span>() -&gt; Result&lt;()&gt; {
+</span><span>    </span><span style="color:#65737e;">// ... test code
+</span><span>    Ok(())
+</span><span>}
+</span></code></pre>
+<h2 id="flutter-widget-tests">Flutter Widget tests</h2>
+<p><em>Note</em>: We currently don't have proper widget unit tests. So this is mainly here for when we do have them available.</p>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>cd app
+</span><span>flutter test
+</span></code></pre>
+<h2 id="integration-tests">Integration Tests</h2>
+<h3 id="infrastructure">Infrastructure</h3>
+<p>You need a fresh <a href="https://matrix-org.github.io/synapse/latest/"><code>synapse</code> matrix backend</a> with a specific configuration. We recommend to use the <code>test-server</code> setup we provide in <code>util/test_server</code>, that uses <code>docker-compose</code> on Linux (so you need <code>docker</code> and <code>docker-compose</code> on your linux) or puts that into a Vagrant virtual machine on all other platforms.</p>
+<h4 id="vagrant-virtual-machine-on-windows-mac">Vagrant Virtual Machine (on Windows &amp; Mac)</h4>
+<p>If you are not on a Linux machine, please <a href="https://developer.hashicorp.com/vagrant/install">install vagrant</a> and a corresponding provider (probably <a href="https://www.virtualbox.org/wiki/Downloads">VirtualBox</a>). Then simply run <code>cargo make test-server</code> from the repository root and it will provision the virtual machine and start the synapse matrix backend.</p>
+<p><strong>Alternatives</strong></p>
+<details>
+<summary><strong>Local docker-compose</strong></summary>
+Alternatively to using the vagrant you can also run the synapse matrix backend with the proper configuration on any Linux base system with docker and docker-compose available. Just `cd utils/test_server` and start the docker-compose in there via `docker-compose up`. Ensure the server is up and available at `http://localhost:8118`.
+</details>
+<details>
+<summary><strong>Using the shared testing servers</strong></summary>
+<p>If you are a team member with access to bitwarden, you can also use the staging and testing instances we have set up. They registered with a registration token to prevent unauthorized access, which are also prefixed to each password and thus need to be supplied for running the tests. Currently the following servers are available for testing with mock-data pre-installed, the registration tokens can be found in bitwarden under the same name.</p>
+<ul>
+<li><strong><code>m-1.acter.global</code></strong> (<code>export DEFAULT_HOMESERVER_URL=https://matrix.m-1.acter.global DEFAULT_HOMESERVER_NAME=m-1.acter.global</code>)</li>
+</ul>
+</details>
+<details>
+<summary><strong>Custom Synapse-Server</strong></summary>
+<p>If you can't or don't want to use the docker containers, you'll need a synapse matrix backend with the following settings included (in the <code>homeserver.yaml</code>):</p>
+<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#bf616a;">allow_guest_access</span><span>: </span><span style="color:#d08770;">true
+</span><span style="color:#bf616a;">enable_registration_without_verification</span><span>: </span><span style="color:#d08770;">true
+</span><span style="color:#bf616a;">enable_registration</span><span>: </span><span style="color:#d08770;">true
+</span><span style="color:#bf616a;">registration_shared_secret</span><span>: &quot;</span><span style="color:#a3be8c;">randomly_generated_string</span><span>&quot;
+</span><span>
+</span><span style="color:#bf616a;">rc_message</span><span>:
+</span><span>  </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>  </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>
+</span><span style="color:#bf616a;">rc_registration</span><span>:
+</span><span>  </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>  </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>
+</span><span style="color:#bf616a;">rc_login</span><span>:
+</span><span>  </span><span style="color:#bf616a;">address</span><span>:
+</span><span>    </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>    </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span></code></pre>
+<p>and an <code>admin</code> account with the username <code>admin</code> and passwort <code>admin</code> (which you can create with <code>register_new_matrix_user -u admin -p admin -a -c $HOMESERVER_CONFIG_PATH $HOMESERVER_URL</code>). To avoid the change of server URL under VMWare, you can use NAT mode not Bridged mode as network.</p>
+<p>Please change <code>bind_addresses</code> of <code>listeners</code> from <code>['::1', '127.0.0.1']</code> to <code>['0.0.0.0']</code> (in the <code>homeserver.yaml</code>), that means any address and allows remote connection (non-localhost).</p>
+<p>To avoid the change of server URL under VMWare, you can use NAT mode not Bridged mode as network.</p>
+</details>
+<details>
+<summary><strong>Ubuntu VM Guide under sqlite</strong></summary>
+<pre data-lang="shell" style="background-color:#2b303b;color:#c0c5ce;" class="language-shell "><code class="language-shell" data-lang="shell"><span>sudo apt update
+</span><span>sudo apt upgrade
+</span><span>
+</span><span>sudo apt install lsb-release wget apt-transport-https
+</span><span>
+</span><span>sudo wget -qO /usr/share/keyrings/matrix-org-archive-keyring.gpg https://packages.matrix.org/debian/matrix-org-archive-keyring.gpg
+</span><span>
+</span><span>sudo echo &quot;deb [signed-by=/usr/share/keyrings/matrix-org-archive-keyring.gpg] https://packages.matrix.org/debian/ $(lsb_release -cs) main&quot; | sudo tee /etc/apt/sources.list.d/matrix-org.list
+</span><span>
+</span><span>sudo apt update
+</span><span>sudo apt upgrade
+</span><span>sudo apt install matrix-synapse-py3
+</span></code></pre>
+<p>At the end of <code>sudo apt install matrix-synapse-py3</code>, you will get the following dialog.</p>
+<p><img src="https://dev.acter.global/docs/dev/testing/../../../static/images/ubuntu-servername.png" alt="Ubuntu ServerName" /></p>
+<p>Keep <code>localhost</code> in this dialog, that is domain applied to all users in <code>acter-test</code>.
+<code>server_name</code> in <code>/etc/matrix-synapse/homeserver.yaml</code> seems to not affect synapse config and the setting of this dialog during installation affects synapse config clearly.</p>
+<p>In <code>homeserver.yaml</code>, you have to change <code>bind_addresses: ['::1', '127.0.0.1']</code> to <code>bind_addresses: ['0.0.0.0']</code>.
+And append the following content to <code>homeserver.yaml</code>.</p>
+<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#bf616a;">allow_guest_access</span><span>: </span><span style="color:#d08770;">true
+</span><span style="color:#bf616a;">enable_registration_without_verification</span><span>: </span><span style="color:#d08770;">true
+</span><span style="color:#bf616a;">enable_registration</span><span>: </span><span style="color:#d08770;">true
+</span><span style="color:#bf616a;">registration_shared_secret</span><span>: &quot;</span><span style="color:#a3be8c;">2lyjkU7Ybp24rWR1TBJkut65RFcXZZA</span><span>&quot;
+</span><span>
+</span><span style="color:#bf616a;">rc_message</span><span>:
+</span><span>  </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>  </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>
+</span><span style="color:#bf616a;">rc_registration</span><span>:
+</span><span>  </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>  </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>
+</span><span style="color:#bf616a;">rc_login</span><span>:
+</span><span>  </span><span style="color:#bf616a;">address</span><span>:
+</span><span>    </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>    </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>  </span><span style="color:#bf616a;">account</span><span>:
+</span><span>    </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>    </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>  </span><span style="color:#bf616a;">failed_attempts</span><span>:
+</span><span>    </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>    </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>
+</span><span style="color:#bf616a;">rc_admin_redaction</span><span>:
+</span><span>  </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>  </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>
+</span><span style="color:#bf616a;">rc_joins</span><span>:
+</span><span>  </span><span style="color:#bf616a;">local</span><span>:
+</span><span>    </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>    </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>  </span><span style="color:#bf616a;">remote</span><span>:
+</span><span>    </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>    </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>
+</span><span style="color:#bf616a;">rc_3pid_validation</span><span>:
+</span><span>  </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>  </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>
+</span><span style="color:#bf616a;">rc_invites</span><span>:
+</span><span>  </span><span style="color:#bf616a;">per_room</span><span>:
+</span><span>    </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>    </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>  </span><span style="color:#bf616a;">per_user</span><span>:
+</span><span>    </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>    </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span></code></pre>
+<p>Update firewall. But it may not be necessary.</p>
+<pre data-lang="shell" style="background-color:#2b303b;color:#c0c5ce;" class="language-shell "><code class="language-shell" data-lang="shell"><span>sudo ufw allow 8008
+</span></code></pre>
+<p>Start synapse service.</p>
+<pre data-lang="shell" style="background-color:#2b303b;color:#c0c5ce;" class="language-shell "><code class="language-shell" data-lang="shell"><span>sudo systemctl enable matrix-synapse
+</span><span>sudo systemctl start matrix-synapse
+</span><span>sudo systemctl status matrix-synapse
+</span></code></pre>
+<p>You needn't to add <code>admin</code> user with <code>register_new_matrix_user</code>.</p>
+<h4 id="firewall">Firewall</h4>
+<p>If you are running synapse on a virtual or remote machine and API call is not working, you can update the firewall rules to allow access to the ports. To turn off the public profile of a server firewall on a <code>Ubuntu</code> linux, you can use <code>gufw</code> and disable it like so:</p>
+<p><img src="https://dev.acter.global/docs/dev/testing/../../../static/images/ubuntu-firewall.png" alt="Ubuntu Firewall" /></p>
+</details>
+<details>
+<summary><strong>Ubuntu VM Guide under postgresql</strong></summary>
+<pre data-lang="shell" style="background-color:#2b303b;color:#c0c5ce;" class="language-shell "><code class="language-shell" data-lang="shell"><span>sudo apt update
+</span><span>sudo apt upgrade
+</span><span>
+</span><span>sudo apt install lsb-release wget apt-transport-https
+</span><span>
+</span><span>sudo wget -qO /usr/share/keyrings/matrix-org-archive-keyring.gpg https://packages.matrix.org/debian/matrix-org-archive-keyring.gpg
+</span><span>
+</span><span>sudo echo &quot;deb [signed-by=/usr/share/keyrings/matrix-org-archive-keyring.gpg] https://packages.matrix.org/debian/ $(lsb_release -cs) main&quot; | sudo tee /etc/apt/sources.list.d/matrix-org.list
+</span><span>
+</span><span>sudo apt update
+</span><span>sudo apt upgrade
+</span><span>sudo apt install matrix-synapse-py3
+</span></code></pre>
+<p>At the end of <code>sudo apt install matrix-synapse-py3</code>, you will get the following dialog.</p>
+<p><img src="https://dev.acter.global/docs/dev/testing/../../../static/images/ubuntu-servername.png" alt="Ubuntu ServerName" /></p>
+<p>Keep <code>localhost</code> in this dialog, that is domain applied to all users in <code>acter-test</code>.
+<code>server_name</code> in <code>homeserver.yaml</code> seems to not affect synapse config and the setting of this dialog during installation affects synapse config clearly.</p>
+<p>In <code>homeserver.yaml</code>, you have to change <code>bind_addresses: ['::1', '127.0.0.1']</code> to <code>bind_addresses: ['0.0.0.0']</code>.
+And append the following content to <code>homeserver.yaml</code>.</p>
+<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#bf616a;">allow_guest_access</span><span>: </span><span style="color:#d08770;">true
+</span><span style="color:#bf616a;">enable_registration_without_verification</span><span>: </span><span style="color:#d08770;">true
+</span><span style="color:#bf616a;">enable_registration</span><span>: </span><span style="color:#d08770;">true
+</span><span style="color:#bf616a;">registration_shared_secret</span><span>: &quot;</span><span style="color:#a3be8c;">2lyjkU7Ybp24rWR1TBJkut65RFcXZZA</span><span>&quot;
+</span><span>
+</span><span style="color:#bf616a;">rc_message</span><span>:
+</span><span>  </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>  </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>
+</span><span style="color:#bf616a;">rc_registration</span><span>:
+</span><span>  </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>  </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>
+</span><span style="color:#bf616a;">rc_login</span><span>:
+</span><span>  </span><span style="color:#bf616a;">address</span><span>:
+</span><span>    </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>    </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>  </span><span style="color:#bf616a;">account</span><span>:
+</span><span>    </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>    </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>  </span><span style="color:#bf616a;">failed_attempts</span><span>:
+</span><span>    </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>    </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>
+</span><span style="color:#bf616a;">rc_admin_redaction</span><span>:
+</span><span>  </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>  </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>
+</span><span style="color:#bf616a;">rc_joins</span><span>:
+</span><span>  </span><span style="color:#bf616a;">local</span><span>:
+</span><span>    </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>    </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>  </span><span style="color:#bf616a;">remote</span><span>:
+</span><span>    </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>    </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>
+</span><span style="color:#bf616a;">rc_3pid_validation</span><span>:
+</span><span>  </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>  </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>
+</span><span style="color:#bf616a;">rc_invites</span><span>:
+</span><span>  </span><span style="color:#bf616a;">per_room</span><span>:
+</span><span>    </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>    </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span><span>  </span><span style="color:#bf616a;">per_user</span><span>:
+</span><span>    </span><span style="color:#bf616a;">per_second</span><span>: </span><span style="color:#d08770;">1000
+</span><span>    </span><span style="color:#bf616a;">burst_count</span><span>: </span><span style="color:#d08770;">1000
+</span></code></pre>
+<p>You need to install postgresql.</p>
+<pre data-lang="shell" style="background-color:#2b303b;color:#c0c5ce;" class="language-shell "><code class="language-shell" data-lang="shell"><span>sudo apt install postgresql postgresql-contrib
+</span><span>
+</span><span>sudo -i -u postgres
+</span><span>
+</span><span>psql
+</span><span>
+</span><span>CREATE USER &quot;synapseuser&quot; WITH PASSWORD &#39;Pass&#39;;
+</span><span>
+</span><span>CREATE DATABASE synapse ENCODING &#39;UTF8&#39; LC_COLLATE=&#39;C&#39; LC_CTYPE=&#39;C&#39; template=template0 OWNER &quot;synapseuser&quot;;
+</span></code></pre>
+<p>Add the following to <code>/etc/postgresql/pg_hba.conf</code>.</p>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>host    synapse     synapse_user    ::1/128     scram-sha-256
+</span></code></pre>
+<p>Restart postgresql.</p>
+<pre data-lang="shell" style="background-color:#2b303b;color:#c0c5ce;" class="language-shell "><code class="language-shell" data-lang="shell"><span>sudo systemctl restart postgresql.service
+</span></code></pre>
+<p>Install psycopg2.</p>
+<pre data-lang="shell" style="background-color:#2b303b;color:#c0c5ce;" class="language-shell "><code class="language-shell" data-lang="shell"><span>sudo apt install python3-psycopg2
+</span></code></pre>
+<p>Update the <code>database</code> section in <code>homeserver.yaml</code>.</p>
+<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#65737e;">#database:
+</span><span style="color:#65737e;">#  name: sqlite3
+</span><span style="color:#65737e;">#  args:
+</span><span style="color:#65737e;">#    database: /var/lib/matrix-synapse/homeserver.db
+</span><span style="color:#bf616a;">database</span><span>:
+</span><span>  </span><span style="color:#bf616a;">name</span><span>: </span><span style="color:#a3be8c;">psycopg2
+</span><span>  </span><span style="color:#bf616a;">args</span><span>:
+</span><span>    </span><span style="color:#bf616a;">user</span><span>: </span><span style="color:#a3be8c;">synapseuser
+</span><span>    </span><span style="color:#bf616a;">password</span><span>: </span><span style="color:#a3be8c;">Pass
+</span><span>    </span><span style="color:#bf616a;">database</span><span>: </span><span style="color:#a3be8c;">synapse
+</span><span>    </span><span style="color:#bf616a;">host</span><span>: </span><span style="color:#a3be8c;">localhost
+</span><span>    </span><span style="color:#bf616a;">cp_min</span><span>: </span><span style="color:#d08770;">5
+</span><span>    </span><span style="color:#bf616a;">cp_max</span><span>: </span><span style="color:#d08770;">10
+</span></code></pre>
+<p>Update firewall.</p>
+<pre data-lang="shell" style="background-color:#2b303b;color:#c0c5ce;" class="language-shell "><code class="language-shell" data-lang="shell"><span>sudo ufw allow 8008
+</span></code></pre>
+<p>Start synapse server</p>
+<pre data-lang="shell" style="background-color:#2b303b;color:#c0c5ce;" class="language-shell "><code class="language-shell" data-lang="shell"><span>sudo systemctl enable matrix-synapse
+</span><span>sudo systemctl start matrix-synapse
+</span><span>sudo systemctl status matrix-synapse
+</span></code></pre>
+<p>You needn't to add <code>admin</code> user with <code>register_new_matrix_user</code>.</p>
+<h4 id="firewall-1">Firewall</h4>
+<p>If you are running synapse on a virtual or remote machine and API call is not working, you can update the firewall rules to allow access to the ports. To turn off the public profile of a server firewall on a <code>Ubuntu</code> linux, you can use <code>gufw</code> and disable it like so:</p>
+<p><img src="https://dev.acter.global/docs/dev/testing/../../../static/images/ubuntu-firewall.png" alt="Ubuntu Firewall" /></p>
+</details>
+<h4 id="testing-the-server">Testing the server</h4>
+<p>Your server should now show the default &quot;welcome&quot; screen when you open the browser at <code>http://localhost:8118</code> (or any external address if you changed that).</p>
+<h4 id="mock-data">Mock data</h4>
+<p>The rust integration tests expect a certain set of <code>mock</code> data. You can easily get this set up by running</p>
+<p><code>cargo run -p acter-cli -- mock --homeserver-url $DEFAULT_HOMESERVER_URL --homeserver-name localhost</code></p>
+<p><strong>Reset docker</strong></p>
+<p>To start the docker-compose afresh:</p>
+<ol>
+<li>stop the service with <code>docker-compose stop</code></li>
+<li>remove the data at <code>rm -rf .local</code></li>
+<li>start the service with <code>docker-compose up -d</code></li>
+</ol>
+<p><strong>Reset database (in case of SQLite)</strong></p>
+<ol>
+<li>Stop service with <code>sudo systemctl stop matrix-synapse</code></li>
+<li>Delete this file <code>/var/lib/matrix-synapse/homeserver.db</code></li>
+<li>Start service with <code>sudo systemctl start matrix-synapse</code></li>
+<li>Run this command <code>cargo run -p acter-cli -- mock --homeserver-url $DEFAULT_HOMESERVER_URL --homeserver-name localhost</code></li>
+</ol>
+<p>Don't forget to rerun the <code>mock data</code> generation again.</p>
+<p><strong>Reset database (in case of PostgreSQL)</strong></p>
+<ol>
+<li>Stop service with <code>sudo systemctl stop matrix-synapse</code></li>
+<li>Delete and recreate the database</li>
+</ol>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>sudo su - postgres
+</span><span>psql
+</span><span>DROP DATABASE synapse;
+</span><span>CREATE DATABASE synapse ENCODING &#39;UTF8&#39; LC_COLLATE=&#39;C&#39; LC_CTYPE=&#39;C&#39; template=template0 OWNER &quot;synapseuser&quot;;
+</span><span>\q
+</span></code></pre>
+<ol start="3">
+<li>Start service with <code>sudo systemctl start matrix-synapse</code></li>
+<li>Run this command <code>cargo run -p acter-cli mock --homeserver-url http://192.168.142.130:8008 --homeserver-name ds9.acter.global</code></li>
+</ol>
+<p>This server name must be the same as one in <code>/etc/matrix-synapse/conf.d/server_name.yaml</code>.</p>
+<h3 id="rust-integration-tests">Rust integration tests</h3>
+<p>To run the rust integration tests, you need a fresh integration testing infrastructure (see above) available at <code>$DEFAULT_HOMESERVER_URL</code>. Assuming you are running the docker-compose setup, this would be <code>http://localhost:8118</code> (which is the fallback default, so you don't have to put it into your environment). Then you can run the integration test with:</p>
+<details><summary><strong>Custom Environment variable under Windows PowerShell</strong></summary>
+<p>You can set up environment variable for <code>cargo</code> as following (assuming the server is accessible at <code>10.0.0.1:8008</code> and log level is <code>info</code>):</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">$env:DEFAULT_HOMESERVER_URL</span><span>=&quot;</span><span style="color:#a3be8c;">http://10.0.0.1:8008</span><span>&quot;; </span><span style="color:#bf616a;">$env:RUST_LOG</span><span>=&quot;</span><span style="color:#a3be8c;">info</span><span>&quot;; </span><span style="color:#bf616a;">cargo</span><span> test</span><span style="color:#bf616a;"> -p</span><span> acter-test -- --nocapture
+</span></code></pre>
+</details>
+<details><summary><strong>Custom Environment variable under Linux Shell</strong></summary>
+<p>You can set up environment variable for <code>cargo</code> as following (assuming the server is available at <code>10.0.0.1:8008</code> and log level is <code>warn</code>):</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">DEFAULT_HOMESERVER_URL</span><span>=&quot;</span><span style="color:#a3be8c;">http://10.0.0.1:8008</span><span>&quot; </span><span style="color:#bf616a;">RUST_LOG</span><span>=&quot;</span><span style="color:#a3be8c;">warn</span><span>&quot; </span><span style="color:#bf616a;">cargo</span><span> test</span><span style="color:#bf616a;"> -p</span><span> acter-test -- --nocapture
+</span></code></pre>
+</details>
+<h3 id="flutter-ui-integration-tests">Flutter UI integration tests</h3>
+<p>We are using <code>convenient_tests</code> framework to build and run flutter integration tests. The default test target is an Android Emulator. You need the above mentioned backend setup</p>
+<h4 id="running-with-the-manager">Running with the Manager</h4>
+<p>You can easily run the test manager by preparing everything for the target you want to test on (e.g. start the android-emulator, build <code>cargo make android-dev</code>) and then start the test-server and test-manager app by running <code>cargo make ui-tester</code>. While leaving this open, in a second terminal start the app in ui test mode via <code>cargo make ui-test-app</code> (or <code>cargo make ui-test-app-android-emulator</code> for the android-emulator version). You can now reconnect from the manager UI and run the specific tests</p>
+<p><strong>Alternatives</strong></p>
+<details>
+<summary><strong>Running them manually without cargo-make</string></summary>
+<p><strong>Requirements</strong>:</p>
+<ul>
+<li>To run the rust integration tests, you need a fresh integration testing infrastructure (see above) available at <code>$DEFAULT_HOMESERVER_URL</code> with the <code>$DEFAULT_HOMESERVER_NAME</code> set.</li>
+<li>Have your test target ready: build the latest rust-sdk for it (e.g. <code>cargo make android-dev</code>), and have the emulator up and running</li>
+</ul>
+<p>To the run the tests from the interactive manager UI, you can start both the test-server and the manager by running <code>cargo make ui-tester</code> from the repo root (or manually run the <code>cd util/conv_test_man &amp;&amp; flutter run</code> (<code>-d linux</code> / <code>-d macos</code> / <code>-d windows</code> for whichever is your desktop host), then from the <code>app</code> folder run the integration test version of the app by running:</p>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>    flutter run integration_test/main_test.dart --host-vmservice-port 9753 --disable-service-auth-codes --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib --dart-define DEFAULT_HOMESERVER_URL=$DEFAULT_HOMESERVER_URL --dart-define DEFAULT_HOMESERVER_NAME=$DEFAULT_HOMESERVER_NAME
+</span></code></pre>
+<p>if you are running it with the Android emulator and have the server exposed on 8118 on your localhost, you need point the urls to <code>10.0.2.2</code> and also expose the <code>CONVENIENT_TEST_MANAGER_HOST</code>
+IP as follows:</p>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>    flutter run integration_test/main_test.dart --host-vmservice-port 9753 --disable-service-auth-codes --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib --dart-define CONVENIENT_TEST_MANAGER_HOST=10.0.2.2 --dart-define DEFAULT_HOMESERVER_URL=http:/10.0.2.2:8118/ --dart-define DEFAULT_HOMESERVER_NAME=localhost
+</span></code></pre>
+<p>Once the app is up and ready click &quot;reconnect&quot; in the manager and then you can select the tests you want to run.</p>
+</details>
+<details>
+<summary><strong>Running from the entire suite from cli</strong></summary>
+<p><strong>Requirements</strong>:</p>
+<ul>
+<li>To run the rust integration tests, you need a fresh integration testing infrastructure (see above) available at <code>$DEFAULT_HOMESERVER_URL</code> with the <code>$DEFAULT_HOMESERVER_NAME</code> set.</li>
+<li>Have your test target ready: build the latest rust-sdk for it (e.g. <code>cargo make android-dev</code>), and have the emulator up and running</li>
+</ul>
+<p>From the <code>app</code> folder run the integration test version of the app by running:</p>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>    flutter run integration_test/main_test.dart --host-vmservice-port 9753 --disable-service-auth-codes --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib --dart-define DEFAULT_HOMESERVER_URL=$DEFAULT_HOMESERVER_URL --dart-define DEFAULT_HOMESERVER_NAME=$DEFAULT_HOMESERVER_NAME
+</span></code></pre>
+<p>if you are running it with the Android emulator and have the server exposed on 8118 on your localhost, you need point the urls to <code>10.0.2.2</code> and also expose the <code>CONVENIENT_TEST_MANAGER_HOST</code> IP as follows:</p>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>    flutter run integration_test/main_test.dart --host-vmservice-port 9753 --disable-service-auth-codes --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib --dart-define CONVENIENT_TEST_MANAGER_HOST=10.0.2.2 --dart-define DEFAULT_HOMESERVER_URL=http:/10.0.2.2:8118/ --dart-define DEFAULT_HOMESERVER_NAME=localhost
+</span></code></pre>
+<p>Once ready, start the automatic full cli-runner by running (from <code>/app</code>):</p>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>dart run convenient_test_manager_dart --enable-report-saver
+</span></code></pre>
+<p>That will create a folder with the entire report in your <code>$TMPFOLDER/ConvenientTest/</code></p>
+</details>
+<p><strong>From Visual Studio Code</strong></p>
+<p>If you have the <a href="https://marketplace.visualstudio.com/items?itemName=Dart-Code.flutter">Flutter extension for vscode</a> you can also run the <code>Run Integration Tests (acter)</code> launch commend from within your VSCode to run the tests directly or use the <code>Run Local Integration Tests</code> on the specific test from within your editor. To <strong>debug</strong> an integration tests, use the <code>Debug Integration Tests (acter)</code> on the specific test from within the editor - which allows you to add breakpoints and debugging widgets as usual:</p>
+<p><img src="https://dev.acter.global/docs/dev/testing/../../../static/images/integration-tests-debug-vscode-example.png" alt="" /></p>
+
+        
+        
+<div class="docs-navigation d-flex justify-content-between">
+  
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+          
+        
+      
+        
+        
+          
+        
+      
+        
+        
+          
+            
+              
+              <a href="https:&#x2F;&#x2F;dev.acter.global&#x2F;docs&#x2F;architecture&#x2F;templates&#x2F;">
+                <div class="card my-1">
+                  <div class="card-body py-2">
+                    &larr; Templates
+                  </div>
+                </div>
+              </a>
+            
+            
+            
+          
+        
+      
+        
+        
+          
+        
+      
+    
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+      
+      
+        
+      
+    
+      
+      
+        
+      
+    
+      
+      
+        
+          
+          
+          <a class="ms-auto" href="https:&#x2F;&#x2F;dev.acter.global&#x2F;docs&#x2F;contributing&#x2F;how-to-contribute&#x2F;">
+            <div class="card my-1">
+              <div class="card-body py-2">
+                How to Contribute &rarr;
+              </div>
+            </div>
+          </a>
+          
+          
+          
+        
+      
+    
+  
+</div>
+
+      </main>
+    </div>
+  </div>
+</div>
+
+
+  
+    
+<footer class="footer text-muted">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-8 order-last order-lg-first">
+				<ul class="list-inline">
+					
+						<li class="list-inline-item">Proudly build with <a href="https://www.getzola.org/">Zola</a> and <a href="https://github.com/aaranxu/adidoks">AdiDoks</a></li>
+					
+				</ul>
+			</div>
+			<div class="col-lg-8 order-first order-lg-last text-lg-end">
+				<ul class="list-inline">
+					
+						
+							<li class="list-inline-item"><a href="https://dev.acter.global/https://acter.global/">Website</a></li>
+						
+					
+				</ul>
+			</div>
+		</div>
+	</div>
+</footer>
+
+  
+
+  
+<script type="text/javascript" src="https://dev.acter.global/js/main.js" defer></script>
+
+  <script type="text/javascript" src="https://dev.acter.global/plugins/elasticlunr.min.js" defer></script>
+  <script type="text/javascript" src="https://dev.acter.global/search_index.en.js" defer></script>
+  <script type="text/javascript" src="https://dev.acter.global/js/search.js" defer></script>
+
+  
+</body>
+</html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["hsalsa"],"struct":["SalsaCore","XSalsaCore"],"type":["Key","Nonce","Salsa12","Salsa20","Salsa8","XNonce","XSalsa12","XSalsa20","XSalsa8"]};

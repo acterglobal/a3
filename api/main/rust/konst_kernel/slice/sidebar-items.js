@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["slice_from","slice_range","slice_up_to"],"mod":["slice_for_konst"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["TASKS"],"static":["CALENDAR","NEWS","PINS"]};

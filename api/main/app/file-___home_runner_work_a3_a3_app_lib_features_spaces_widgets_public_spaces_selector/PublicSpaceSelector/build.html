@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the build method from the PublicSpaceSelector class, for the Dart programming language.">
+  <title>build method - PublicSpaceSelector class - public_spaces_selector library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">acter</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_spaces_widgets_public_spaces_selector/file-___home_runner_work_a3_a3_app_lib_features_spaces_widgets_public_spaces_selector-library.html">features&#47;spaces&#47;widgets&#47;public_spaces_selector.dart</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_spaces_widgets_public_spaces_selector/PublicSpaceSelector-class.html">PublicSpaceSelector</a></li>
+    <li class="self-crumb">build method</li>
+  </ol>
+  <div class="self-name">build</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="file-___home_runner_work_a3_a3_app_lib_features_spaces_widgets_public_spaces_selector&#47;PublicSpaceSelector-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-method">build</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+  <div>
+    <ol class="annotation-list">
+        <li>@<a href="https://api.flutter.dev/flutter/dart-core/override-constant.html">override</a></li>
+    </ol>
+  </div>
+
+<span class="returntype">dynamic</span>
+<span class="name ">build</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="build-param-context"><span class="type-annotation">dynamic</span> <span class="parameter-name">context</span>, </span></li>
+<li><span class="parameter" id="build-param-ref"><span class="type-annotation">dynamic</span> <span class="parameter-name">ref</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">@override
+Widget build(BuildContext context, WidgetRef ref) {
+  final searchTextCtrl = ref.watch(searchController);
+  final searchValueNotifier = ref.watch(searchValueProvider.notifier);
+  return CustomScrollView(
+    slivers: [
+      SliverAppBar(
+        title: title ?? const Text(&#39;Join space&#39;),
+      ),
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: searchTextCtrl,
+                  autofocus: autofocus,
+                  decoration: const InputDecoration(
+                    prefixIcon: Icon(
+                      Atlas.magnifying_glass_thin,
+                      color: Colors.white,
+                    ),
+                    labelText: &#39;search space&#39;,
+                  ),
+                  onChanged: (String value) {
+                    searchValueNotifier.state = value;
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 5),
+                child: Consumer(builder: serverTypeBuilder),
+              ),
+            ],
+          ),
+        ),
+      ),
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          child: Consumer(
+            builder: (context, ref, child) {
+              final searchVal = ref.watch(searchValueProvider);
+              if (onSelectedMatch != null &amp;&amp;
+                  searchVal != null &amp;&amp;
+                  searchVal.isNotEmpty) {
+                final aliased =
+                    RegExp(r&#39;https:&#47;&#47;matrix.to&#47;#&#47;(?&lt;alias&gt;#.+):(?&lt;server&gt;.+)&#39;)
+                        .firstMatch(searchVal);
+                if (canMatchAlias &amp;&amp; aliased != null) {
+                  final alias = aliased.namedGroup(&#39;alias&#39;)!;
+                  final server = aliased.namedGroup(&#39;server&#39;)!;
+                  return Card(
+                    child: ListTile(
+                      onTap: () =&gt;
+                          onSelectedMatch!(alias: alias, servers: [server]),
+                      title: Text(alias),
+                      subtitle: Text(&#39;on $server&#39;),
+                      trailing: OutlinedButton.icon(
+                        onPressed: () =&gt;
+                            onSelectedMatch!(alias: alias, servers: [server]),
+                        icon: const Icon(Atlas.entrance_thin),
+                        label: const Text(&#39;Try to join&#39;),
+                      ),
+                    ),
+                  );
+                }
+
+                final id = RegExp(
+                  r&#39;https:&#47;&#47;matrix.to&#47;#&#47;(?&lt;id&gt;![^?]+)(\?via=(?&lt;server_name&gt;[^&amp;]+))?(&amp;via=(?&lt;server_name2&gt;[^&amp;]+))?(&amp;via=(?&lt;server_name3&gt;[^&amp;]+))?&#39;,
+                ).firstMatch(searchVal);
+                if (canMatchId &amp;&amp; id != null) {
+                  final targetId = id.namedGroup(&#39;id&#39;)!;
+                  final List&lt;String&gt; servers = [
+                    id.namedGroup(&#39;server_name&#39;) ?? &#39;&#39;,
+                    id.namedGroup(&#39;server_name2&#39;) ?? &#39;&#39;,
+                    id.namedGroup(&#39;server_name3&#39;) ?? &#39;&#39;,
+                  ].where((e) =&gt; e.isNotEmpty).toList();
+                  return Card(
+                    child: ListTile(
+                      onTap: () =&gt; onSelectedMatch!(
+                        roomId: targetId,
+                        servers: servers,
+                      ),
+                      title: Text(targetId),
+                      subtitle: servers.isNotEmpty
+                          ? Text(&#39;via ${servers.join(&#39;, &#39;)}&#39;)
+                          : null,
+                      trailing: OutlinedButton.icon(
+                        onPressed: () =&gt; onSelectedMatch!(
+                          roomId: targetId,
+                          servers: servers,
+                        ),
+                        icon: const Icon(Atlas.entrance_thin),
+                        label: const Text(&#39;Try to join&#39;),
+                      ),
+                    ),
+                  );
+                }
+              }
+
+              return const SizedBox(height: 0);
+            },
+          ),
+        ),
+      ),
+      RiverPagedBuilder&lt;Next?, PublicSearchResultItem&gt;.autoDispose(
+        firstPageKey: const Next(isStart: true),
+        provider: publicSearchProvider,
+        itemBuilder: (context, item, index) =&gt; PublicSpaceItem(
+          space: item,
+          onSelected: (item, info) =&gt;
+              onSelected(item, ref.read(selectedServerProvider), info),
+        ),
+        pagedBuilder: (controller, builder) =&gt; PagedSliverList(
+          pagingController: controller,
+          builderDelegate: builder,
+        ),
+      ),
+    ],
+  );
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">acter</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_spaces_widgets_public_spaces_selector/file-___home_runner_work_a3_a3_app_lib_features_spaces_widgets_public_spaces_selector-library.html">public_spaces_selector</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_spaces_widgets_public_spaces_selector/PublicSpaceSelector-class.html">PublicSpaceSelector</a></li>
+    <li class="self-crumb">build method</li>
+</ol>
+
+
+    <h5>PublicSpaceSelector class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    acter
+      0.0.1+1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

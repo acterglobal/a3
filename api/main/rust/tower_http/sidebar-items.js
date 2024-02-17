@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["LatencyUnit"],"mod":["classify","cors","follow_redirect","map_request_body","services","set_header","timeout"],"trait":["ServiceBuilderExt"],"type":["BoxError"]};

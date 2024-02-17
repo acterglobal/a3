@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["RelationType"],"struct":["Annotation","BundledMessageLikeRelations","BundledReference","BundledStateRelations","BundledThread","InReplyTo","Reference","ReferenceChunk","Replacement","Thread"]};

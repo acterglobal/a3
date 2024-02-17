@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Error","Reference"],"fn":["from_read","from_slice"],"struct":["Deserializer","ReadReader","ReadRefReader"],"trait":["ReadSlice"]};

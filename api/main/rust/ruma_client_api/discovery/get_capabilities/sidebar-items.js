@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["RoomVersionStability"],"mod":["iter","v3"],"struct":["Capabilities","ChangePasswordCapability","RoomVersionsCapability","SetAvatarUrlCapability","SetDisplayNameCapability","ThirdPartyIdChangesCapability"]};

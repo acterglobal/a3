@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["SecretStorageEncryptionAlgorithm"],"struct":["PassPhrase","SecretStorageKeyEventContent","SecretStorageV1AesHmacSha2Properties"],"type":["SecretStorageKeyEvent"]};

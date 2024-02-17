@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ParentSpace","RoomMemberRole"],"mod":["futures"],"struct":["Invite","Messages","MessagesOptions","Receipts","ReportedContentScore","Room","RoomMember","TryFromReportedContentScoreError"]};

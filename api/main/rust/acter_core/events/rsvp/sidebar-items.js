@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["RsvpBuilderError","RsvpStatus"],"struct":["RedactedRsvpEventContent","RsvpBuilder","RsvpEventContent"],"type":["OriginalRsvpEvent","OriginalSyncRsvpEvent","RedactedRsvpEvent","RedactedSyncRsvpEvent","RsvpEvent","SyncRsvpEvent"]};

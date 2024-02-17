@@ -1,0 +1,156 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Build Status codecov License Docs"><title>matrix_pickle - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="matrix_pickle" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../matrix_pickle/index.html">matrix_pickle</a><span class="version">0.1.1</span></h2></div><div class="sidebar-elems"><ul class="block">
+            <li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#derives">Derive Macros</a></li></ul></section></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../matrix_pickle/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">matrix_pickle</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/matrix_pickle/lib.rs.html#15-135">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p><img src="https://img.shields.io/github/workflow/status/matrix-org/matrix-pickle/CI?style=flat-square" alt="Build Status" />
+<a href="https://codecov.io/gh/matrix-org/matrix-pickle"><img src="https://img.shields.io/codecov/c/github/matrix-org/matrix-pickle/main.svg?style=flat-square" alt="codecov" /></a>
+<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellowgreen.svg?style=flat-square" alt="License" /></a>
+<a href="https://docs.rs/matrix-pickle"><img src="https://img.shields.io/crates/v/matrix-pickle?color=blue&amp;label=docs&amp;style=flat-square" alt="Docs" /></a></p>
+<p>A simple binary encoding format used in the Matrix world.</p>
+<p>The <code>matrix-pickle</code> binary encoding format is used in the <a href="https://gitlab.matrix.org/matrix-org/olm/">libolm</a> and
+<a href="https://github.com/matrix-org/vodozemac/">vodozemac</a> cryptographic libraries.</p>
+<h2 id="how-to-use"><a class="doc-anchor" href="#how-to-use">§</a>How to use</h2>
+<p>The simplest way to use <code>matrix-pickle</code> is using the derive macros:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>anyhow::Result;
+<span class="kw">use </span>matrix_pickle::{Encode, Decode};
+
+<span class="kw">fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="attr">#[derive(Clone, Debug, Decode, Encode, PartialEq, Eq)]
+    </span><span class="kw">struct </span>MyStruct {
+        public_key: [u8; <span class="number">32</span>],
+        data: Vec&lt;u8&gt;,
+    }
+    
+    <span class="kw">let </span>data = MyStruct {
+        public_key: [<span class="number">5u8</span>; <span class="number">32</span>],
+        data: <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],
+    };
+    
+    <span class="kw">let </span>encoded = data.encode_to_vec()<span class="question-mark">?</span>;
+    <span class="kw">let </span>decoded = MyStruct::decode_from_slice(<span class="kw-2">&amp;</span>encoded)<span class="question-mark">?</span>;
+    
+    <span class="macro">assert_eq!</span>(data, decoded);
+
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+<h2 id="format-definition"><a class="doc-anchor" href="#format-definition">§</a>Format definition</h2>
+<p><code>matrix-pickle</code> encodes most values without any metadata, the bytes that are
+part of the struct in most cases get encoded verbatim.</p>
+<p>The table bellow defines how common types are encoded.</p>
+<div><table><thead><tr><th style="text-align: center">Type</th><th style="text-align: center">Example value</th><th style="text-align: center">Encoded value</th><th>Comment</th></tr></thead><tbody>
+<tr><td style="text-align: center"><code>u8</code></td><td style="text-align: center"><code>255</code></td><td style="text-align: center"><code>[FF]</code></td><td>Encoded verbatim</td></tr>
+<tr><td style="text-align: center"><code>bool</code></td><td style="text-align: center"><code>true</code></td><td style="text-align: center"><code>[01]</code></td><td>Converted to an <code>u8</code> before encoding</td></tr>
+<tr><td style="text-align: center"><code>[u8; N]</code></td><td style="text-align: center"><code>[1u8, 2u8]</code></td><td style="text-align: center"><code>[01, 02]</code></td><td>Encoded verbatim</td></tr>
+<tr><td style="text-align: center"><code>u32</code></td><td style="text-align: center"><code>16</code></td><td style="text-align: center"><code>[00, 00, 00, 10]</code></td><td>Encoded as a byte array in big endian form</td></tr>
+<tr><td style="text-align: center"><code>usize</code></td><td style="text-align: center"><code>32</code></td><td style="text-align: center"><code>[00, 00, 00, 20]</code></td><td>Converted to an <code>u32</code> before encoding</td></tr>
+<tr><td style="text-align: center"><code>&amp;[T]</code></td><td style="text-align: center"><code>&amp;[3u8, 4u8]</code></td><td style="text-align: center"><code>[00, 00, 00, 02, 03, 04]</code></td><td>The length gets encoded first, then each element</td></tr>
+</tbody></table>
+</div><h2 id="derive-support"><a class="doc-anchor" href="#derive-support">§</a>Derive support</h2>
+<p>The crate supports deriving <code>Encode</code> and <code>Decode</code> implementations for structs
+and enums as long as the types inside them implement <code>Encode</code> and <code>Decode</code> as
+well.</p>
+<h3 id="structs"><a class="doc-anchor" href="#structs">§</a>Structs</h3>
+<p>The derive support for structs simply encodes each field of a struct in the order
+they are defined, for example:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::io::Write;
+<span class="kw">use </span>matrix_pickle::{Encode, EncodeError};
+
+<span class="kw">struct </span>Foo {
+    first: [u8; <span class="number">32</span>],
+    second: Vec&lt;u8&gt;,
+}
+
+<span class="kw">impl </span>Encode <span class="kw">for </span>Foo {
+    <span class="kw">fn </span>encode(<span class="kw-2">&amp;</span><span class="self">self</span>, writer: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>Write) -&gt; <span class="prelude-ty">Result</span>&lt;usize, EncodeError&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>ret = <span class="number">0</span>;
+
+        <span class="comment">// Encode the first struct field.
+        </span>ret += <span class="self">self</span>.first.encode(writer)<span class="question-mark">?</span>;
+        <span class="comment">// Now encode the second struct field.
+        </span>ret += <span class="self">self</span>.second.encode(writer)<span class="question-mark">?</span>;
+
+        <span class="prelude-val">Ok</span>(ret)
+    }
+}</code></pre></div>
+<h3 id="enums"><a class="doc-anchor" href="#enums">§</a>Enums</h3>
+<p>Enums on the other hand first encode the number of the variant as an <code>u8</code>, then
+the value of the enum.</p>
+<p>Only enums with variants that contain a single associated data value are
+supported.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::io::Write;
+<span class="kw">use </span>matrix_pickle::{Encode, EncodeError};
+
+<span class="kw">enum </span>Bar {
+    First(u32),
+    Second(u32),
+}
+
+<span class="kw">impl </span>Encode <span class="kw">for </span>Bar {
+    <span class="kw">fn </span>encode(<span class="kw-2">&amp;</span><span class="self">self</span>, writer: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>Write) -&gt; <span class="prelude-ty">Result</span>&lt;usize, EncodeError&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>ret = <span class="number">0</span>;
+
+        <span class="kw">match </span><span class="self">self </span>{
+            Bar::First(value) =&gt; {
+                <span class="comment">// This is our first variant, encode a 0u8 first.
+                </span>ret += <span class="number">0u8</span>.encode(writer)<span class="question-mark">?</span>;
+                <span class="comment">// Now encode the associated value.
+                </span>ret += value.encode(writer)<span class="question-mark">?</span>;
+            },
+            Bar::Second(value) =&gt; {
+                <span class="comment">// This is our second variant, encode a 1u8 first.
+                </span>ret += <span class="number">1u8</span>.encode(writer)<span class="question-mark">?</span>;
+                <span class="comment">// Now encode the associated value.
+                </span>ret += value.encode(writer)<span class="question-mark">?</span>;
+            },
+        }
+
+        <span class="prelude-val">Ok</span>(ret)
+    }
+}</code></pre></div>
+<h3 id="encoding-and-decoding-secrets"><a class="doc-anchor" href="#encoding-and-decoding-secrets">§</a>Encoding and decoding secrets</h3>
+<p>For decoding values which are meant to be secret, make sure to box the array. We
+have a helper attribute that reminds you that values that are meant to be kept
+secret should be boxed.</p>
+<p>Simply annotate any struct field using the <code>#[secret]</code> attribute.</p>
+<p>If a value that is meant to be a secret is not boxed a compiler error will be
+thrown. For example, this snippet won’t compile.</p>
+
+<div class="example-wrap compile_fail"><a href="#" class="tooltip" title="This example deliberately fails to compile">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>matrix_pickle::{Encode, Decode};
+
+<span class="attr">#[derive(Encode, Decode)]
+</span><span class="kw">struct </span>Key {
+    <span class="attr">#[secret]
+    </span>private: [u8; <span class="number">32</span>],
+    public: [u8; <span class="number">32</span>],
+}</code></pre></div>
+<p>This example on the other hand compiles.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>matrix_pickle::{Encode, Decode};
+
+<span class="attr">#[derive(Encode, Decode)]
+</span><span class="kw">struct </span>Key {
+    <span class="attr">#[secret]
+    </span>private: Box&lt;[u8; <span class="number">32</span>]&gt;,
+    public: [u8; <span class="number">32</span>],
+}</code></pre></div>
+<h2 id="comparison-to-bincode"><a class="doc-anchor" href="#comparison-to-bincode">§</a>Comparison to bincode</h2>
+<p>The binary format is similar to what the <a href="https://github.com/bincode-org/bincode/">bincode</a> crate provides with the
+following config:</p>
+
+<div class="example-wrap compile_fail"><a href="#" class="tooltip" title="This example deliberately fails to compile">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">let </span>config = bincode::config::standard()
+    .with_big_endian()
+    .with_fixed_int_encoding()
+    .skip_fixed_array_length();</code></pre></div>
+<p>The two major differences to the format are:</p>
+<ul>
+<li><code>bincode</code> uses <code>u64</code> to encode slice lengths</li>
+<li><code>matrix-pickle</code> uses <code>u32</code> to encode slice lengths</li>
+</ul>
+<p>Other differences are:</p>
+<ul>
+<li>No support to configure the encoding format, if you need to tweak the
+format, use bincode.</li>
+<li>No unsafe code. Optimized for simplicity, not for pure performance</li>
+</ul>
+</div></details><h2 id="enums-1" class="section-header">Enums<a href="#enums-1" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="enum" href="enum.DecodeError.html" title="enum matrix_pickle::DecodeError">DecodeError</a></div><div class="desc docblock-short">Error type describing failure modes for libolm pickle decoding.</div></li><li><div class="item-name"><a class="enum" href="enum.EncodeError.html" title="enum matrix_pickle::EncodeError">EncodeError</a></div><div class="desc docblock-short">Error type describing failure modes for libolm pickle decoding.</div></li></ul><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="trait" href="trait.Decode.html" title="trait matrix_pickle::Decode">Decode</a></div><div class="desc docblock-short">A trait for decoding values that were encoded using the <code>matrix-pickle</code> binary format.</div></li><li><div class="item-name"><a class="trait" href="trait.Encode.html" title="trait matrix_pickle::Encode">Encode</a></div><div class="desc docblock-short">A trait for encoding values into the <code>matrix-pickle</code> binary format.</div></li></ul><h2 id="derives" class="section-header">Derive Macros<a href="#derives" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="derive" href="derive.Decode.html" title="derive matrix_pickle::Decode">Decode</a></div><div class="desc docblock-short">Derive an <code>Decode</code> implementation for a struct or enum.</div></li><li><div class="item-name"><a class="derive" href="derive.Encode.html" title="derive matrix_pickle::Encode">Encode</a></div><div class="desc docblock-short">Derive an <code>Encode</code> implementation for a struct or enum.</div></li></ul></section></div></main></body></html>

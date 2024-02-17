@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"ruma_html":[["impl <a class=\"trait\" href=\"markup5ever/serialize/trait.Serialize.html\" title=\"trait markup5ever::serialize::Serialize\">Serialize</a> for <a class=\"struct\" href=\"ruma_html/struct.Html.html\" title=\"struct ruma_html::Html\">Html</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

@@ -1,0 +1,116 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Macro to implement support for a custom language."><title>impl_lang in genco - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="genco" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../genco/index.html">genco</a><span class="version">0.17.8</span></h2></div><div class="sidebar-elems"></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../genco/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Macro <a href="index.html">genco</a>::<wbr><a class="macro" href="#">impl_lang</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/genco/macros.rs.html#110-191">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><span class="macro">macro_rules! </span>impl_lang {
+    (
+        $(<span class="attr">#[$(<span class="macro-nonterminal">$meta</span>:meta)<span class="kw-2">*</span>]</span>)*
+        <span class="macro-nonterminal">$vis</span>:vis <span class="macro-nonterminal">$lang</span>:ident {
+            $(<span class="macro-nonterminal">$lang_item</span>:tt)*
+        }
+
+        $(
+            <span class="macro-nonterminal">$ty</span>:ident {
+                $(<span class="macro-nonterminal">$ty_lang_item_item</span>:tt)*
+            }
+        )*
+    ) =&gt; { ... };
+}</pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Macro to implement support for a custom language.</p>
+<h2 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>genco::fmt;
+<span class="kw">use </span>std::fmt::Write <span class="kw">as _</span>;
+
+<span class="attr">#[derive(Default)]
+</span><span class="kw">struct </span>Config {
+}
+
+<span class="attr">#[derive(Default)]
+</span><span class="kw">struct </span>Format {
+}
+
+<span class="macro">genco::impl_lang! </span>{
+    MyLang {
+        <span class="kw">type </span>Config = Config;
+        <span class="kw">type </span>Item = Any;
+        <span class="kw">type </span>Format = Format;
+
+        <span class="kw">fn </span>write_quoted(out: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;, input: <span class="kw-2">&amp;</span>str) -&gt; fmt::Result {
+            genco::lang::c_family_write_quoted(out, input)
+        }
+
+        <span class="kw">fn </span>format_file(
+            tokens: <span class="kw-2">&amp;</span>Tokens&lt;MyLang&gt;,
+            out: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;,
+            config: <span class="kw-2">&amp;</span><span class="self">Self</span>::Config,
+        ) -&gt; fmt::Result {
+            <span class="kw">use </span>genco::quote_in;
+
+            <span class="kw">let </span><span class="kw-2">mut </span>header: Tokens&lt;MyLang&gt; = Tokens::new();
+            <span class="kw">let </span><span class="kw-2">mut </span>any_imports = <span class="bool-val">false</span>;
+
+            <span class="kw">for </span>import <span class="kw">in </span>tokens.walk_imports() {
+                any_imports = <span class="bool-val">true</span>;
+
+                <span class="kw">match </span>import {
+                    Any::Import(import) =&gt; {
+                        header.push();
+                        <span class="macro">quote_in!</span>(header =&gt; import $(import.<span class="number">0</span>));
+                    }
+                    Any::ImportDefault(import) =&gt; {
+                        header.push();
+                        <span class="macro">quote_in!</span>(header =&gt; import default $(import.<span class="number">0</span>));
+                    }
+                }
+            }
+
+            <span class="kw">if </span>any_imports {
+                <span class="comment">// Add a line as padding in case we have any imports.
+                </span>header.line();
+            }
+
+            <span class="kw">let </span>format = Format::default();
+            header.format(out, config, <span class="kw-2">&amp;</span>format)<span class="question-mark">?</span>;
+            tokens.format(out, config, <span class="kw-2">&amp;</span>format)<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(())
+        }
+    }
+
+    Import {
+        <span class="kw">fn </span>format(<span class="kw-2">&amp;</span><span class="self">self</span>, out: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;, config: <span class="kw-2">&amp;</span>Config, <span class="kw">_</span>: <span class="kw-2">&amp;</span>Format) -&gt; fmt::Result {
+            out.write_str(<span class="self">self</span>.<span class="number">0</span>)<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(())
+        }
+    }
+
+    ImportDefault {
+        <span class="kw">fn </span>format(<span class="kw-2">&amp;</span><span class="self">self</span>, out: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;, config: <span class="kw-2">&amp;</span>Config, <span class="kw">_</span>: <span class="kw-2">&amp;</span>Format) -&gt; fmt::Result {
+            <span class="macro">write!</span>(out, <span class="string">"default:{}"</span>, <span class="self">self</span>.<span class="number">0</span>)<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(())
+        }
+    }
+}
+
+<span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+</span><span class="kw">struct </span>Import(<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str);
+
+<span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+</span><span class="kw">struct </span>ImportDefault(<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str);
+
+<span class="kw">use </span>genco::{quote, Tokens};
+
+<span class="kw">let </span>a = Import(<span class="string">"first"</span>);
+<span class="kw">let </span>b = ImportDefault(<span class="string">"second"</span>);
+
+<span class="kw">let </span>t: Tokens&lt;MyLang&gt; = <span class="macro">quote! </span>{
+    <span class="macro-nonterminal">$a
+    $b
+</span>};
+
+<span class="macro">assert_eq! </span>{
+    <span class="macro">vec!</span>[
+        <span class="string">"import default second"</span>,
+        <span class="string">"import first"</span>,
+        <span class="string">""</span>,
+        <span class="string">"first"</span>,
+        <span class="string">"default:second"
+    </span>],
+    t.to_file_vec()<span class="question-mark">?
+</span>};</code></pre></div>
+</div></details></section></div></main></body></html>

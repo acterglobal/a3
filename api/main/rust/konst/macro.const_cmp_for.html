@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Compares two standard library types for ordering, that can’t be compared with `const_cmp`."><title>const_cmp_for in konst - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="konst" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../konst/index.html">konst</a><span class="version">0.3.6</span></h2></div><div class="sidebar-elems"></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../konst/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Macro <a href="index.html">konst</a>::<wbr><a class="macro" href="#">const_cmp_for</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/konst/macros/const_ord_macros.rs.html#151-199">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><span class="macro">macro_rules! </span>const_cmp_for {
+    (
+        slice;
+        <span class="macro-nonterminal">$left_slice</span>:expr,
+        <span class="macro-nonterminal">$right_slice</span>:expr
+        $(, $(<span class="macro-nonterminal">$comparison</span>:tt)* )<span class="question-mark">?
+    </span>) =&gt; { ... };
+    (
+        option;
+        <span class="macro-nonterminal">$left_opt</span>:expr,
+        <span class="macro-nonterminal">$right_opt</span>:expr
+        $(, $(<span class="macro-nonterminal">$comparison</span>:tt)* )<span class="question-mark">?
+    </span>) =&gt; { ... };
+}</pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Compares two standard library types for ordering,
+that can’t be compared with <a href="macro.const_cmp.html"><code>const_cmp</code></a>.</p>
+<p>This macro takes the same
+<a href="macro.const_eq_for.html#types-section">types</a> (except for range types),
+has the same  <a href="macro.const_eq_for.html#limitations-section">limitations</a>,
+and takes <a href="macro.const_eq_for.html#arguments-section">arguments of the same form</a>
+as the <a href="macro.const_eq_for.html" title="macro konst::const_eq_for"><code>const_eq_for</code></a> macro</p>
+<h2 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h2><h4 id="slices"><a class="doc-anchor" href="#slices">§</a>Slices</h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::{const_cmp, const_cmp_for, try_equal};
+
+<span class="kw">use </span>std::cmp::Ordering;
+
+<span class="kw">const fn </span>cmp_slice_pair(left: <span class="kw-2">&amp;</span>[(u32, u32)], right: <span class="kw-2">&amp;</span>[(u32, u32)]) -&gt; Ordering {
+    <span class="macro">const_cmp_for!</span>(slice; left, right, |l, r|{
+        <span class="macro">try_equal!</span>(<span class="macro">const_cmp!</span>(l.<span class="number">0</span>, r.<span class="number">0</span>));
+        <span class="macro">try_equal!</span>(<span class="macro">const_cmp!</span>(l.<span class="number">1</span>, r.<span class="number">1</span>))
+    })
+}
+
+<span class="kw">const _</span>: () = {
+    <span class="kw">let </span>foo = <span class="kw-2">&amp;</span>[(<span class="number">0</span>, <span class="number">1</span>), (<span class="number">1</span>, <span class="number">2</span>), (<span class="number">3</span>, <span class="number">4</span>), (<span class="number">5</span>, <span class="number">6</span>)];
+    <span class="kw">let </span>bar = <span class="kw-2">&amp;</span>[(<span class="number">0</span>, <span class="number">1</span>), (<span class="number">3</span>, <span class="number">4</span>), (<span class="number">5</span>, <span class="number">6</span>), (<span class="number">7</span>, <span class="number">8</span>)];
+
+    <span class="macro">assert!</span>(<span class="macro">matches!</span>(cmp_slice_pair(foo, foo), Ordering::Equal));
+    <span class="macro">assert!</span>(<span class="macro">matches!</span>(cmp_slice_pair(foo, bar), Ordering::Less));
+    <span class="macro">assert!</span>(<span class="macro">matches!</span>(cmp_slice_pair(bar, foo), Ordering::Greater));
+    <span class="macro">assert!</span>(<span class="macro">matches!</span>(cmp_slice_pair(bar, bar), Ordering::Equal));
+};</code></pre></div>
+<h4 id="options"><a class="doc-anchor" href="#options">§</a>Options</h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::{const_cmp, const_cmp_for, try_equal};
+
+<span class="kw">use </span>std::cmp::Ordering;
+
+<span class="attr">#[derive(Copy, Clone)]
+</span><span class="kw">enum </span>Shape {
+    Square,
+    Circle,
+    Line,
+}
+
+<span class="kw">const fn </span>cmp_opt_pair(left: <span class="prelude-ty">Option</span>&lt;Shape&gt;, right: <span class="prelude-ty">Option</span>&lt;Shape&gt;) -&gt; Ordering {
+    <span class="macro">const_cmp_for!</span>(option; left, right, |x| <span class="kw-2">*</span>x <span class="kw">as </span>u8 )
+}
+
+<span class="kw">const _</span>: () = {
+    <span class="kw">let </span>foo = <span class="prelude-val">Some</span>(Shape::Square);
+    <span class="kw">let </span>bar = <span class="prelude-val">Some</span>(Shape::Circle);
+    <span class="kw">let </span>baz = <span class="prelude-val">Some</span>(Shape::Line);
+
+    <span class="macro">assert!</span>(<span class="macro">matches!</span>(cmp_opt_pair(foo, foo), Ordering::Equal));
+    <span class="macro">assert!</span>(<span class="macro">matches!</span>(cmp_opt_pair(foo, bar), Ordering::Less));
+    <span class="macro">assert!</span>(<span class="macro">matches!</span>(cmp_opt_pair(foo, baz), Ordering::Less));
+
+    <span class="macro">assert!</span>(<span class="macro">matches!</span>(cmp_opt_pair(bar, foo), Ordering::Greater));
+    <span class="macro">assert!</span>(<span class="macro">matches!</span>(cmp_opt_pair(bar, bar), Ordering::Equal));
+    <span class="macro">assert!</span>(<span class="macro">matches!</span>(cmp_opt_pair(bar, baz), Ordering::Less));
+
+    <span class="macro">assert!</span>(<span class="macro">matches!</span>(cmp_opt_pair(baz, foo), Ordering::Greater));
+    <span class="macro">assert!</span>(<span class="macro">matches!</span>(cmp_opt_pair(baz, bar), Ordering::Greater));
+    <span class="macro">assert!</span>(<span class="macro">matches!</span>(cmp_opt_pair(baz, baz), Ordering::Equal));
+};
+</code></pre></div>
+</div></details></section></div></main></body></html>

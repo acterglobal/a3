@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["ImageInfo","RedactedRoomAvatarEventContent","RoomAvatarEventContent"],"type":["InitialRoomAvatarEvent","OriginalRoomAvatarEvent","OriginalSyncRoomAvatarEvent","PossiblyRedactedRoomAvatarEventContent","RedactedRoomAvatarEvent","RedactedSyncRoomAvatarEvent","RoomAvatarEvent","StrippedRoomAvatarEvent","SyncRoomAvatarEvent"]};

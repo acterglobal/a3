@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["fuzzy_indices","fuzzy_match"],"struct":["SkimMatcher","SkimMatcherV2","SkimScoreConfig"]};

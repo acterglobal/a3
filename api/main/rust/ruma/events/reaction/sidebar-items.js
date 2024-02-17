@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["ReactionEventContent","RedactedReactionEventContent"],"type":["OriginalReactionEvent","OriginalSyncReactionEvent","ReactionEvent","RedactedReactionEvent","RedactedSyncReactionEvent","SyncReactionEvent"]};

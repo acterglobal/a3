@@ -1,0 +1,54 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Cryptographic identities used in Matrix."><title>matrix_sdk::encryption::identities - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="matrix_sdk" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../matrix_sdk/index.html">matrix_sdk</a><span class="version">0.7.1</span></h2></div><h2 class="location"><a href="#">Module identities</a></h2><div class="sidebar-elems"><section><ul class="block"><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li></ul></section><h2><a href="../index.html">In matrix_sdk::encryption</a></h2></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../matrix_sdk/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../../index.html">matrix_sdk</a>::<wbr><a href="../index.html">encryption</a>::<wbr><a class="mod" href="#">identities</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../../../src/matrix_sdk/encryption/identities/mod.rs.html#15-117">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Cryptographic identities used in Matrix.</p>
+<p>There are two types of cryptographic identities in Matrix.</p>
+<ol>
+<li>
+<p>Devices, which are backed by <a href="https://spec.matrix.org/unstable/client-server-api/#device-keys">device keys</a>, they represent each
+individual log in by an E2EE capable Matrix client. We represent devices
+using the <a href="struct.Device.html" title="struct matrix_sdk::encryption::identities::Device"><code>Device</code></a> struct.</p>
+</li>
+<li>
+<p>User identities, which are backed by <a href="https://spec.matrix.org/unstable/client-server-api/#cross-signing">cross signing keys</a>. The user
+identity represent a unique E2EE capable identity of any given user. This
+identity is generally created and uploaded to the server by the first E2EE
+capable client the user logs in with. We represent user identities using the
+<a href="struct.UserIdentity.html" title="struct matrix_sdk::encryption::identities::UserIdentity"><code>UserIdentity</code></a> struct.</p>
+</li>
+</ol>
+<p>A <a href="struct.Device.html" title="struct matrix_sdk::encryption::identities::Device"><code>Device</code></a> or an <a href="struct.UserIdentity.html" title="struct matrix_sdk::encryption::identities::UserIdentity"><code>UserIdentity</code></a> can be used to inspect the public keys
+of the device/identity, or it can be used to initiate a interactive
+verification flow. They can also be manually marked as verified.</p>
+<h2 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h2>
+<p>Verifying a device is pretty straightforward:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>device =
+    client.encryption().get_device(alice, <span class="macro">device_id!</span>(<span class="string">"DEVICEID"</span>)).<span class="kw">await</span><span class="question-mark">?</span>;
+
+<span class="kw">if let </span><span class="prelude-val">Some</span>(device) = device {
+    <span class="comment">// Let's request the device to be verified.
+    </span><span class="kw">let </span>verification = device.request_verification().<span class="kw">await</span><span class="question-mark">?</span>;
+
+    <span class="comment">// Actually this is taking too long.
+    </span>verification.cancel().<span class="kw">await</span><span class="question-mark">?</span>;
+
+    <span class="comment">// Let's just mark it as verified.
+    </span>device.verify().<span class="kw">await</span><span class="question-mark">?</span>;
+}</code></pre></div>
+<p>Verifying a user identity works largely the same:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>user = client.encryption().get_user_identity(alice).<span class="kw">await</span><span class="question-mark">?</span>;
+
+<span class="kw">if let </span><span class="prelude-val">Some</span>(user) = user {
+    <span class="comment">// Let's request the user to be verified.
+    </span><span class="kw">let </span>verification = user.request_verification().<span class="kw">await</span><span class="question-mark">?</span>;
+
+    <span class="comment">// Actually this is taking too long.
+    </span>verification.cancel().<span class="kw">await</span><span class="question-mark">?</span>;
+
+    <span class="comment">// Let's just mark it as verified.
+    </span>user.verify().<span class="kw">await</span><span class="question-mark">?</span>;
+}</code></pre></div>
+</div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.Device.html" title="struct matrix_sdk::encryption::identities::Device">Device</a></div><div class="desc docblock-short">A device represents a E2EE capable client or device of an user.</div></li><li><div class="item-name"><a class="struct" href="struct.DeviceUpdates.html" title="struct matrix_sdk::encryption::identities::DeviceUpdates">DeviceUpdates</a></div><div class="desc docblock-short">Updates about <a href="struct.Device.html" title="struct matrix_sdk::encryption::identities::Device"><code>Device</code></a>s which got received over the <code>/keys/query</code>
+endpoint.</div></li><li><div class="item-name"><a class="struct" href="struct.IdentityUpdates.html" title="struct matrix_sdk::encryption::identities::IdentityUpdates">IdentityUpdates</a></div><div class="desc docblock-short">Updates about <a href="struct.UserIdentity.html" title="struct matrix_sdk::encryption::identities::UserIdentity"><code>UserIdentity</code></a>s which got received over the <code>/keys/query</code>
+endpoint.</div></li><li><div class="item-name"><a class="struct" href="struct.MasterPubkey.html" title="struct matrix_sdk::encryption::identities::MasterPubkey">MasterPubkey</a></div><div class="desc docblock-short">Wrapper for a cross signing key marking it as the master key.</div></li><li><div class="item-name"><a class="struct" href="struct.UserDevices.html" title="struct matrix_sdk::encryption::identities::UserDevices">UserDevices</a></div><div class="desc docblock-short">The collection of all the <a href="struct.Device.html" title="struct matrix_sdk::encryption::identities::Device"><code>Device</code></a>s a user has.</div></li><li><div class="item-name"><a class="struct" href="struct.UserIdentity.html" title="struct matrix_sdk::encryption::identities::UserIdentity">UserIdentity</a></div><div class="desc docblock-short">A struct representing a E2EE capable identity of a user.</div></li></ul><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="enum" href="enum.ManualVerifyError.html" title="enum matrix_sdk::encryption::identities::ManualVerifyError">ManualVerifyError</a></div><div class="desc docblock-short">Error for the manual verification step, when we manually sign users or
+devices.</div></li><li><div class="item-name"><a class="enum" href="enum.RequestVerificationError.html" title="enum matrix_sdk::encryption::identities::RequestVerificationError">RequestVerificationError</a></div><div class="desc docblock-short">Error when requesting a verification.</div></li></ul></section></div></main></body></html>

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the build method from the SpaceAppsSettingsPage class, for the Dart programming language.">
+  <title>build method - SpaceAppsSettingsPage class - apps_settings_page library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">acter</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_space_settings_pages_apps_settings_page/file-___home_runner_work_a3_a3_app_lib_features_space_settings_pages_apps_settings_page-library.html">features&#47;space&#47;settings&#47;pages&#47;apps_settings_page.dart</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_space_settings_pages_apps_settings_page/SpaceAppsSettingsPage-class.html">SpaceAppsSettingsPage</a></li>
+    <li class="self-crumb">build method</li>
+  </ol>
+  <div class="self-name">build</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="file-___home_runner_work_a3_a3_app_lib_features_space_settings_pages_apps_settings_page&#47;SpaceAppsSettingsPage-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-method">build</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+  <div>
+    <ol class="annotation-list">
+        <li>@<a href="https://api.flutter.dev/flutter/dart-core/override-constant.html">override</a></li>
+    </ol>
+  </div>
+
+<span class="returntype">dynamic</span>
+<span class="name ">build</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="build-param-context"><span class="type-annotation">dynamic</span> <span class="parameter-name">context</span>, </span></li>
+<li><span class="parameter" id="build-param-ref"><span class="type-annotation">dynamic</span> <span class="parameter-name">ref</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">@override
+Widget build(BuildContext context, WidgetRef ref) {
+  final spaceSettingsWatcher = ref.watch(spaceAppSettingsProvider(spaceId));
+  final provider = ref.watch(featuresProvider);
+  bool isActive(f) =&gt; provider.isActive(f);
+
+  return WithSidebar(
+    sidebar: SpaceSettingsMenu(
+      spaceId: spaceId,
+    ),
+    child: spaceSettingsWatcher.when(
+      data: (appSettingsAndMembership) {
+        final appSettings = appSettingsAndMembership.settings;
+        final powerLevels = appSettingsAndMembership.powerLevels;
+        final defaultPw = powerLevels.eventsDefault();
+        final usersDefaultPw = powerLevels.usersDefault();
+        final maxPowerLevel = powerLevels.maxPowerLevel();
+        String defaultDesc = &#39;default&#39;;
+        if (usersDefaultPw &gt;= defaultPw) {
+          defaultDesc = &#39;not set &#47; everyone&#39;;
+        } else {
+          defaultDesc = &#39;default [everyone has $usersDefaultPw]&#39;;
+        }
+        final space = appSettingsAndMembership.space;
+        final canEdit = appSettingsAndMembership.member != null
+            ? appSettingsAndMembership.member!
+                .canString(&#39;CanChangeAppSettings&#39;)
+            : false;
+
+        final news = appSettings.news();
+        final events = appSettings.events();
+        final pins = appSettings.pins();
+        final tasks = appSettings.tasks();
+
+        final moreSections = [];
+        final labActions = [];
+        if (news.active()) {
+          final currentPw = powerLevels.news();
+          final pwText = maxPowerLevel == 100
+              ? powerLevelName(currentPw)
+              : &#39;Custom ($currentPw)&#39;;
+          moreSections.add(
+            SettingsSection(
+              title: const Text(&#39;Updates&#39;),
+              tiles: [
+                SettingsTile(
+                  enabled: canEdit,
+                  title: const Text(&#39;Required PowerLevel&#39;),
+                  description: const Text(
+                    &#39;Minimum power level required to post news updates&#39;,
+                  ),
+                  trailing:
+                      currentPw != null ? Text(pwText) : Text(defaultDesc),
+                  onPressed: (context) async {
+                    final newPowerLevel = await showDialog&lt;int?&gt;(
+                      context: context,
+                      builder: (BuildContext context) =&gt; ChangePowerLevel(
+                        featureName: &#39;Updates&#39;,
+                        currentPowerLevelName: maxPowerLevel == 100
+                            ? powerLevelName(currentPw)
+                            : &#39;Custom&#39;,
+                        currentPowerLevel: currentPw,
+                      ),
+                    );
+                    if (newPowerLevel != currentPw) {
+                      await space.updateFeaturePowerLevels(
+                        powerLevels.newsKey(),
+                        newPowerLevel,
+                      );
+                      if (context.mounted) {
+                        customMsgSnackbar(
+                          context,
+                          &#39;Power level update for updates submitted&#39;,
+                        );
+                      }
+                    }
+                  },
+                ),
+                SettingsTile.switchTile(
+                  title: const Text(&#39;Comments on Updates&#39;),
+                  description: const Text(&#39;not yet supported&#39;),
+                  enabled: false,
+                  initialValue: false,
+                  onToggle: (newVal) {},
+                ),
+              ],
+            ),
+          );
+        }
+        if (pins.active()) {
+          final currentPw = powerLevels.pins();
+          final pwText = maxPowerLevel == 100
+              ? powerLevelName(currentPw)
+              : &#39;Custom ($currentPw)&#39;;
+          moreSections.add(
+            SettingsSection(
+              title: const Text(&#39;Pin&#39;),
+              tiles: [
+                SettingsTile(
+                  enabled: canEdit,
+                  title: const Text(&#39;Required PowerLevel&#39;),
+                  description: const Text(
+                    &#39;Minimum power level required to post and edit pins&#39;,
+                  ),
+                  trailing:
+                      currentPw != null ? Text(pwText) : Text(defaultDesc),
+                  onPressed: (context) async {
+                    final newPowerLevel = await showDialog&lt;int?&gt;(
+                      context: context,
+                      builder: (BuildContext context) =&gt; ChangePowerLevel(
+                        featureName: &#39;Pin&#39;,
+                        currentPowerLevelName: maxPowerLevel == 100
+                            ? powerLevelName(currentPw)
+                            : &#39;Custom&#39;,
+                        currentPowerLevel: currentPw,
+                      ),
+                    );
+                    if (newPowerLevel != currentPw) {
+                      await space.updateFeaturePowerLevels(
+                        powerLevels.pinsKey(),
+                        newPowerLevel,
+                      );
+                      if (context.mounted) {
+                        customMsgSnackbar(
+                          context,
+                          &#39;Power level update for Pins submitted&#39;,
+                        );
+                      }
+                    }
+                  },
+                ),
+                SettingsTile.switchTile(
+                  title: const Text(&#39;Comments on Pins&#39;),
+                  description: const Text(&#39;not yet supported&#39;),
+                  enabled: false,
+                  initialValue: false,
+                  onToggle: (newVal) {},
+                ),
+              ],
+            ),
+          );
+        }
+        if (events.active()) {
+          final currentPw = powerLevels.events();
+          final pwText = maxPowerLevel == 100
+              ? powerLevelName(currentPw)
+              : &#39;Custom ($currentPw)&#39;;
+          moreSections.add(
+            SettingsSection(
+              title: const Text(&#39;Calendar Events&#39;),
+              tiles: [
+                SettingsTile(
+                  enabled: canEdit,
+                  title: const Text(&#39;Admin PowerLevel&#39;),
+                  description: const Text(
+                    &#39;Minimum power level required to post calendar events&#39;,
+                  ),
+                  trailing:
+                      currentPw != null ? Text(pwText) : Text(defaultDesc),
+                  onPressed: (context) async {
+                    final newPowerLevel = await showDialog&lt;int?&gt;(
+                      context: context,
+                      builder: (BuildContext context) =&gt; ChangePowerLevel(
+                        featureName: &#39;Calendar Events&#39;,
+                        currentPowerLevelName: maxPowerLevel == 100
+                            ? powerLevelName(currentPw)
+                            : &#39;Custom&#39;,
+                        currentPowerLevel: currentPw,
+                      ),
+                    );
+                    if (newPowerLevel != currentPw) {
+                      await space.updateFeaturePowerLevels(
+                        powerLevels.eventsKey(),
+                        newPowerLevel,
+                      );
+                      if (context.mounted) {
+                        customMsgSnackbar(
+                          context,
+                          &#39;Power level update for calendar events submitted&#39;,
+                        );
+                      }
+                    }
+                  },
+                ),
+                SettingsTile(
+                  enabled: false,
+                  title: const Text(&#39;RSVP PowerLevel&#39;),
+                  description: const Text(
+                    &#39;Minimum power level to RSVP to calendar events&#39;,
+                  ),
+                  trailing: const Text(&#39;not yet implemented&#39;),
+                ),
+                SettingsTile.switchTile(
+                  title: const Text(&#39;Comments&#39;),
+                  description: const Text(&#39;not yet supported&#39;),
+                  enabled: false,
+                  initialValue: false,
+                  onToggle: (newVal) {},
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (isActive(LabsFeature.tasks)) {
+          labActions.add(
+            SettingsTile.switchTile(
+              title: const Text(&#39;Tasks&#39;),
+              key: tasksSwitch,
+              enabled: canEdit,
+              description: const Text(
+                &#39;ToDo-Lists &amp; Tasks&#39;,
+              ),
+              initialValue: tasks.active(),
+              onToggle: (newVal) async {
+                final updated = tasks.updater();
+                updated.active(newVal);
+                final builder = appSettings.updateBuilder();
+                builder.tasks(updated.build());
+                await space.updateAppSettings(builder);
+              },
+            ),
+          );
+          if (tasks.active()) {
+            final taskListCurrentPw = powerLevels.taskLists();
+            final tasksCurrentPw = powerLevels.tasks();
+            final pwTextTL = maxPowerLevel == 100
+                ? powerLevelName(taskListCurrentPw)
+                : &#39;Custom ($taskListCurrentPw)&#39;;
+            final pwTextT = maxPowerLevel == 100
+                ? powerLevelName(tasksCurrentPw)
+                : &#39;Custom ($tasksCurrentPw)&#39;;
+            moreSections.add(
+              SettingsSection(
+                title: const Text(&#39;Tasks&#39;),
+                tiles: [
+                  SettingsTile(
+                    enabled: canEdit,
+                    title: const Text(&#39;TaskList PowerLevel&#39;),
+                    description: const Text(
+                      &#39;Minimum power level required to create &amp; manage task lists&#39;,
+                    ),
+                    trailing: taskListCurrentPw != null
+                        ? Text(pwTextTL)
+                        : Text(defaultDesc),
+                    onPressed: (context) async {
+                      final newPowerLevel = await showDialog&lt;int?&gt;(
+                        context: context,
+                        builder: (BuildContext context) =&gt; ChangePowerLevel(
+                          featureName: &#39;Task Lists&#39;,
+                          currentPowerLevelName: maxPowerLevel == 100
+                              ? powerLevelName(taskListCurrentPw)
+                              : &#39;Custom&#39;,
+                          currentPowerLevel: taskListCurrentPw,
+                        ),
+                      );
+                      if (newPowerLevel != taskListCurrentPw) {
+                        await space.updateFeaturePowerLevels(
+                          powerLevels.taskListsKey(),
+                          newPowerLevel,
+                        );
+                        if (context.mounted) {
+                          customMsgSnackbar(
+                            context,
+                            &#39;Power level update for task lists submitted&#39;,
+                          );
+                        }
+                      }
+                    },
+                  ),
+                  SettingsTile(
+                    enabled: canEdit,
+                    title: const Text(&#39;Tasks PowerLevel&#39;),
+                    description: const Text(
+                      &#39;Minimum power level required to interact with tasks&#39;,
+                    ),
+                    trailing: tasksCurrentPw != null
+                        ? Text(pwTextT)
+                        : Text(defaultDesc),
+                    onPressed: (context) async {
+                      final newPowerLevel = await showDialog&lt;int?&gt;(
+                        context: context,
+                        builder: (BuildContext context) =&gt; ChangePowerLevel(
+                          featureName: &#39;Tasks&#39;,
+                          currentPowerLevelName: maxPowerLevel == 100
+                              ? powerLevelName(tasksCurrentPw)
+                              : &#39;Custom&#39;,
+                          currentPowerLevel: tasksCurrentPw,
+                        ),
+                      );
+                      if (newPowerLevel != tasksCurrentPw) {
+                        await space.updateFeaturePowerLevels(
+                          powerLevels.tasksKey(),
+                          newPowerLevel,
+                        );
+                        if (context.mounted) {
+                          customMsgSnackbar(
+                            context,
+                            &#39;Power level update for tasks submitted&#39;,
+                          );
+                        }
+                      }
+                    },
+                  ),
+                  SettingsTile.switchTile(
+                    title: const Text(&#39;Comments&#39;),
+                    description: const Text(&#39;not yet supported&#39;),
+                    enabled: false,
+                    initialValue: false,
+                    onToggle: (newVal) {},
+                  ),
+                ],
+              ),
+            );
+          }
+        }
+
+        return Scaffold(
+          appBar: AppBar(title: const Text(&#39;Apps Settings&#39;)),
+          body: SettingsList(
+            sections: [
+              SettingsSection(
+                title: const Text(&#39;Active Apps&#39;),
+                tiles: [
+                  SettingsTile.switchTile(
+                    title: const Text(&#39;Updates&#39;),
+                    enabled: canEdit,
+                    description: const Text(
+                      &#39;Post space-wide updates&#39;,
+                    ),
+                    initialValue: news.active(),
+                    onToggle: (newVal) async {
+                      final updated = news.updater();
+                      updated.active(newVal);
+                      final builder = appSettings.updateBuilder();
+                      builder.news(updated.build());
+                      await space.updateAppSettings(builder);
+                    },
+                  ),
+                  SettingsTile.switchTile(
+                    title: const Text(&#39;Pins&#39;),
+                    enabled: canEdit,
+                    description: const Text(
+                      &#39;Pin important information&#39;,
+                    ),
+                    initialValue: pins.active(),
+                    onToggle: (newVal) async {
+                      final updated = pins.updater();
+                      updated.active(newVal);
+                      final builder = appSettings.updateBuilder();
+                      builder.pins(updated.build());
+                      await space.updateAppSettings(builder);
+                    },
+                  ),
+                  SettingsTile.switchTile(
+                    title: const Text(&#39;Events Calendar&#39;),
+                    enabled: canEdit,
+                    description: const Text(
+                      &#39;Calender with Events&#39;,
+                    ),
+                    initialValue: events.active(),
+                    onToggle: (newVal) async {
+                      final updated = events.updater();
+                      updated.active(newVal);
+                      final builder = appSettings.updateBuilder();
+                      builder.events(updated.build());
+                      await space.updateAppSettings(builder);
+                    },
+                  ),
+                  ...labActions,
+                ],
+              ),
+              ...moreSections,
+            ],
+          ),
+        );
+      },
+      loading: () =&gt; const Center(child: Text(&#39;loading&#39;)),
+      error: (e, s) =&gt; Center(
+        child: Text(&#39;Error loading app settings: $e&#39;),
+      ),
+    ),
+  );
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">acter</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_space_settings_pages_apps_settings_page/file-___home_runner_work_a3_a3_app_lib_features_space_settings_pages_apps_settings_page-library.html">apps_settings_page</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_space_settings_pages_apps_settings_page/SpaceAppsSettingsPage-class.html">SpaceAppsSettingsPage</a></li>
+    <li class="self-crumb">build method</li>
+</ol>
+
+
+    <h5>SpaceAppsSettingsPage class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    acter
+      0.0.1+1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

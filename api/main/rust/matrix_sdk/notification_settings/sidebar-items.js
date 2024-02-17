@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["IsEncrypted","IsOneToOne","RoomNotificationMode"],"struct":["NotificationSettings"]};

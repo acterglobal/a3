@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the spaceRelationsOverviewProvider property from the space_providers library, for the Dart programming language.">
+  <title>spaceRelationsOverviewProvider property - space_providers library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">acter</a></li>
+    <li><a href="../file-___home_runner_work_a3_a3_app_lib_common_providers_space_providers/file-___home_runner_work_a3_a3_app_lib_common_providers_space_providers-library.html">common&#47;providers&#47;space_providers.dart</a></li>
+    <li class="self-crumb">spaceRelationsOverviewProvider property</li>
+  </ol>
+  <div class="self-name">spaceRelationsOverviewProvider</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="file-___home_runner_work_a3_a3_app_lib_common_providers_space_providers&#47;file-___home_runner_work_a3_a3_app_lib_common_providers_space_providers-library-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-top-level-property">spaceRelationsOverviewProvider</span> top-level property 
+ 
+</h1></div>
+
+        <section class="multi-line-signature">
+          
+          dynamic
+          <span class="name ">spaceRelationsOverviewProvider</span>
+          <div class="features"><span class="feature">final</span></div>
+
+        </section>
+        
+<section class="desc markdown">
+  <p>Get the SpaceRelationsOverview of related SpaceItem for the space. Errors if
+the space or any related space isn't found. Stays up  to date with underlying
+client data if a space was found.</p>
+</section>
+
+        
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">final spaceRelationsOverviewProvider = FutureProvider.autoDispose
+    .family&lt;SpaceRelationsOverview, String&gt;((ref, spaceId) async {
+  final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
+  if (relatedSpaces == null) {
+    throw &#39;Space not found&#39;;
+  }
+  final membership = await ref.watch(roomMembershipProvider(spaceId).future);
+  bool hasMoreSubspaces = false;
+  bool hasMoreChats = false;
+  final List&lt;Space&gt; knownSubspaces = [];
+  final List&lt;Space&gt; formerlyKnownSubspaces = [];
+  final List&lt;Convo&gt; knownChats = [];
+  final List&lt;Convo&gt; formerlyKnownChats = [];
+  List&lt;Space&gt; otherRelated = [];
+  for (final related in relatedSpaces.children()) {
+    String targetType = related.targetType();
+    final roomId = related.roomId().toString();
+    if (targetType == &#39;ChatRoom&#39;) {
+      try {
+        final chat = await ref.watch(chatProvider(roomId).future);
+        if (!chat.isJoined()) {
+          formerlyKnownChats.add(chat);
+          continue;
+        }
+        knownChats.add(chat);
+      } catch (e) {
+        hasMoreChats = true;
+      }
+    } else {
+      try {
+        final space = await ref.watch(spaceProvider(roomId).future);
+        if (!space.isJoined()) {
+          formerlyKnownSubspaces.add(space);
+          continue;
+        }
+        if (await space.isChildSpaceOf(spaceId)) {
+          knownSubspaces.add(space);
+        } else {
+          otherRelated.add(space);
+        }
+      } catch (e) {
+        hasMoreSubspaces = true;
+      }
+    }
+  }
+  List&lt;Space&gt; parents = [];
+
+  Space? mainParent;
+  final mainSpace = relatedSpaces.mainParent();
+  if (mainSpace != null) {
+    String targetType = mainSpace.targetType();
+    if (targetType != &#39;ChatRoom&#39;) {
+      final roomId = mainSpace.roomId().toString();
+      try {
+        final space = await ref.watch(spaceProvider(roomId).future);
+        if (space.isJoined()) {
+          mainParent = space;
+        }
+      } catch (e) {
+        debugPrint(&#39;Loading main Parent of $spaceId failed: $e&#39;);
+      }
+    }
+  }
+
+  for (final related in relatedSpaces.otherParents()) {
+    String targetType = related.targetType();
+    if (targetType != &#39;ChatRoom&#39;) {
+      final roomId = related.roomId().toString();
+      try {
+        final space = await ref.watch(spaceProvider(roomId).future);
+        if (space.isJoined()) {
+          parents.add(space);
+        }
+      } catch (e) {
+        debugPrint(&#39;Loading other Parents of $spaceId failed: $e&#39;);
+      }
+    }
+  }
+  return SpaceRelationsOverview(
+    rel: relatedSpaces,
+    membership: membership,
+    parents: parents,
+    knownChats: knownChats,
+    formerlyKnownChats: formerlyKnownChats,
+    knownSubspaces: knownSubspaces,
+    formerlyKnownSubspaces: formerlyKnownSubspaces,
+    otherRelations: otherRelated,
+    mainParent: mainParent,
+    hasMoreSubspaces: hasMoreSubspaces,
+    hasMoreChats: hasMoreChats,
+  );
+});</code></pre>
+</section>
+
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">acter</a></li>
+    <li><a href="../file-___home_runner_work_a3_a3_app_lib_common_providers_space_providers/file-___home_runner_work_a3_a3_app_lib_common_providers_space_providers-library.html">space_providers</a></li>
+    <li class="self-crumb">spaceRelationsOverviewProvider property</li>
+</ol>
+
+
+    <h5>space_providers library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-left-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    acter
+      0.0.1+1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["PossiblyRedactedRoomTombstoneEventContent","RedactedRoomTombstoneEventContent","RoomTombstoneEventContent"],"type":["InitialRoomTombstoneEvent","OriginalRoomTombstoneEvent","OriginalSyncRoomTombstoneEvent","RedactedRoomTombstoneEvent","RedactedSyncRoomTombstoneEvent","RoomTombstoneEvent","StrippedRoomTombstoneEvent","SyncRoomTombstoneEvent"]};

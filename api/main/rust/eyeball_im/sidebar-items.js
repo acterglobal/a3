@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["VectorDiff"],"struct":["ObservableVector","ObservableVectorEntries","ObservableVectorEntry","ObservableVectorTransaction","ObservableVectorTransactionEntries","ObservableVectorTransactionEntry","VectorSubscriber","VectorSubscriberBatchedStream","VectorSubscriberStream"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_APPLICATION_TYPE","DEFAULT_ENCRYPTION_ENC_ALGORITHM","DEFAULT_GRANT_TYPES","DEFAULT_RESPONSE_TYPES","DEFAULT_SIGNING_ALGORITHM","DEFAULT_TOKEN_AUTH_METHOD"],"enum":["ClientMetadataVerificationError"],"struct":["ClientMetadata","ClientRegistrationResponse","Localized","VerifiedClientMetadata"]};

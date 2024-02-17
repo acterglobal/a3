@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the build method from the MyTasksSection class, for the Dart programming language.">
+  <title>build method - MyTasksSection class - my_tasks library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">acter</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_home_widgets_my_tasks/file-___home_runner_work_a3_a3_app_lib_features_home_widgets_my_tasks-library.html">features&#47;home&#47;widgets&#47;my_tasks.dart</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_home_widgets_my_tasks/MyTasksSection-class.html">MyTasksSection</a></li>
+    <li class="self-crumb">build method</li>
+  </ol>
+  <div class="self-name">build</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="file-___home_runner_work_a3_a3_app_lib_features_home_widgets_my_tasks&#47;MyTasksSection-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-method">build</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+  <div>
+    <ol class="annotation-list">
+        <li>@<a href="https://api.flutter.dev/flutter/dart-core/override-constant.html">override</a></li>
+    </ol>
+  </div>
+
+<span class="returntype">dynamic</span>
+<span class="name ">build</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="build-param-context"><span class="type-annotation">dynamic</span> <span class="parameter-name">context</span>, </span></li>
+<li><span class="parameter" id="build-param-ref"><span class="type-annotation">dynamic</span> <span class="parameter-name">ref</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">@override
+Widget build(BuildContext context, WidgetRef ref) {
+  final tasks = ref.watch(myOpenTasksProvider);
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          &#39;My Tasks&#39;,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 10),
+        tasks.when(
+          data: (tasks) =&gt; tasks.isEmpty
+              ? Center(
+                  child: Column(
+                    children: [
+                      Text(
+                        &#39;Congrats!&#39;,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Icon(
+                          Atlas.check_circle_thin,
+                          size: 50.0,
+                          color: Theme.of(context).colorScheme.success,
+                        ),
+                      ),
+                      Text(
+                        &#39;you are done with all your tasks!&#39;,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: OutlinedButton(
+                          child: Text(
+                            &#39;see other open tasks&#39;,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          onPressed: () =&gt;
+                              context.pushNamed(Routes.tasks.name),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Column(
+                  children: tasks
+                      .map(
+                        (task) =&gt; TaskEntry(
+                          task: task,
+                          showBreadCrumb: true,
+                          onDone: () {
+                            EasyLoading.showToast(
+                              &#39;marked as done&#39;,
+                              toastPosition: EasyLoadingToastPosition.bottom,
+                            );
+                          },
+                        ),
+                      )
+                      .toList(),
+                ),
+          error: (error, stack) =&gt; Text(&#39;Loading tasks failed: $error&#39;),
+          loading: () =&gt; const Text(&#39;Loading&#39;),
+        ),
+      ],
+    ),
+  );
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">acter</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_home_widgets_my_tasks/file-___home_runner_work_a3_a3_app_lib_features_home_widgets_my_tasks-library.html">my_tasks</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_home_widgets_my_tasks/MyTasksSection-class.html">MyTasksSection</a></li>
+    <li class="self-crumb">build method</li>
+</ol>
+
+
+    <h5>MyTasksSection class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    acter
+      0.0.1+1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

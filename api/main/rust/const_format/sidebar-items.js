@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":["concatcp","formatcp","str_get","str_index","str_repeat","str_splice"],"struct":["SplicedStr"]};

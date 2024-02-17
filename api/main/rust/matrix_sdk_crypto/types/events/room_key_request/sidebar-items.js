@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Action","RequestedKeyInfo","SupportedKeyInfo"],"struct":["MegolmV1AesSha2Content","RoomKeyRequestContent","UnknownRoomKeyRequest"],"type":["RoomKeyRequestEvent"]};

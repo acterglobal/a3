@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DeviceKey","EventEncryptionAlgorithm","OneTimeKey","RoomKeyBackupInfo","Signature","SigningKey"],"mod":["events"],"struct":["CrossSigningKey","DeviceKeys","InvalidSignature","MasterPubkey","MegolmV1AuthData","SelfSigningPubkey","Signatures","SignedKey","SigningKeys","UnsignedDeviceInfo","UserSigningPubkey"]};

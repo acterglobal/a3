@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["create_alias","delete_alias","get_alias"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["ULID_LEN"],"enum":["DecodeError","EncodeError","MonotonicError"],"struct":["Generator","Ulid"]};

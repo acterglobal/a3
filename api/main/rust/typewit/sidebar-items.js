@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["type_eq"],"macro":["polymatch","simple_type_witness","type_fn"],"mod":["const_marker","type_fn"],"struct":["TypeEq","TypeNe"],"trait":["HasTypeWitness","Identity","MakeTypeWitness","TypeWitnessTypeArg"]};

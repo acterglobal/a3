@@ -1,0 +1,93 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Define flag value using the `enum` syntax. See below for details."><title>flags in flagset - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="flagset" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../flagset/index.html">flagset</a><span class="version">0.4.4</span></h2></div><div class="sidebar-elems"></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../flagset/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Macro <a href="index.html">flagset</a>::<wbr><a class="macro" href="#">flags</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/flagset/lib.rs.html#1203-1290">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><span class="macro">macro_rules! </span>flags {
+    () =&gt; { ... };
+    ($(<span class="attr">#[<span class="macro-nonterminal">$m</span>:meta]</span>)* <span class="macro-nonterminal">$p</span>:vis <span class="kw">enum </span><span class="macro-nonterminal">$n</span>:ident: <span class="macro-nonterminal">$t</span>:ty { $($(<span class="attr">#[<span class="macro-nonterminal">$a</span>:meta]</span>)* <span class="macro-nonterminal">$k</span>:ident),+ $(,)* } $(<span class="macro-nonterminal">$next</span>:tt)<span class="kw-2">*</span>) =&gt; { ... };
+    ($(<span class="attr">#[<span class="macro-nonterminal">$m</span>:meta]</span>)* <span class="macro-nonterminal">$p</span>:vis <span class="kw">enum </span><span class="macro-nonterminal">$n</span>:ident: <span class="macro-nonterminal">$t</span>:ty { $($(<span class="attr">#[<span class="macro-nonterminal">$a</span>:meta]</span>)<span class="kw-2">*</span><span class="macro-nonterminal">$k</span>:ident = <span class="macro-nonterminal">$v</span>:expr),* $(,)* } $(<span class="macro-nonterminal">$next</span>:tt)<span class="kw-2">*</span>) =&gt; { ... };
+}</pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Define flag value using the <code>enum</code> syntax. See below for details.</p>
+<p>Each enumeration value <strong>MUST</strong> have a specified value.</p>
+<p>The width of the bitfield <strong>MUST</strong> also be specified by its integer type.</p>
+<p>It is important to note that the size of the flag enumeration itself is
+unrelated to the size of the corresponding <code>FlagSet</code> instance.</p>
+<p>It is also worth noting that this macro automatically implements a variety
+of standard traits including:</p>
+<ul>
+<li>Copy</li>
+<li>Clone</li>
+<li>Debug</li>
+<li>PartialEq</li>
+<li>Eq</li>
+<li>From&lt;$enum&gt; for $integer</li>
+<li>Not</li>
+<li>BitAnd</li>
+<li>BitOr</li>
+<li>BitXor</li>
+<li>Sub</li>
+<li>Rem</li>
+</ul>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::mem::{align_of, size_of};
+<span class="kw">use </span>flagset::{FlagSet, flags};
+
+<span class="macro">flags! </span>{
+    <span class="kw">enum </span>FlagEmpty: u32 {}
+
+    <span class="kw">enum </span>Flag8: u8 {
+        Foo = <span class="number">0b001</span>,
+        Bar = <span class="number">0b010</span>,
+        Baz = <span class="number">0b100
+    </span>}
+
+    <span class="kw">pub enum </span>Flag16: u16 {
+        Foo,
+        Bar,
+        <span class="attr">#[deprecated]
+        </span>Baz,
+    }
+
+    <span class="attr">#[derive(PartialOrd, Ord)]
+    </span><span class="kw">enum </span>Flag32: u32 {
+        Foo = <span class="number">0b001</span>,
+        <span class="attr">#[deprecated]
+        </span>Bar = <span class="number">0b010</span>,
+        Baz = <span class="number">0b100
+    </span>}
+
+    <span class="attr">#[repr(u64)]
+    </span><span class="kw">enum </span>Flag64: u64 {
+        Foo = <span class="number">0b001</span>,
+        Bar = <span class="number">0b010</span>,
+        Baz = <span class="number">0b100
+    </span>}
+
+    <span class="attr">#[repr(u32)]
+    </span><span class="kw">enum </span>Flag128: u128 {
+        Foo = <span class="number">0b001</span>,
+        Bar = <span class="number">0b010</span>,
+        Baz = <span class="number">0b100
+    </span>}
+}
+
+<span class="macro">assert_eq!</span>(size_of::&lt;Flag8&gt;(), <span class="number">1</span>);
+<span class="macro">assert_eq!</span>(size_of::&lt;Flag16&gt;(), <span class="number">1</span>);
+<span class="macro">assert_eq!</span>(size_of::&lt;Flag32&gt;(), <span class="number">1</span>);
+<span class="macro">assert_eq!</span>(size_of::&lt;Flag64&gt;(), <span class="number">8</span>);
+<span class="macro">assert_eq!</span>(size_of::&lt;Flag128&gt;(), <span class="number">4</span>);
+
+<span class="macro">assert_eq!</span>(align_of::&lt;Flag8&gt;(), <span class="number">1</span>);
+<span class="macro">assert_eq!</span>(align_of::&lt;Flag16&gt;(), <span class="number">1</span>);
+<span class="macro">assert_eq!</span>(align_of::&lt;Flag32&gt;(), <span class="number">1</span>);
+<span class="macro">assert_eq!</span>(align_of::&lt;Flag64&gt;(), align_of::&lt;u64&gt;());
+<span class="macro">assert_eq!</span>(align_of::&lt;Flag128&gt;(), align_of::&lt;u32&gt;());
+
+<span class="macro">assert_eq!</span>(size_of::&lt;FlagSet&lt;Flag8&gt;&gt;(), size_of::&lt;u8&gt;());
+<span class="macro">assert_eq!</span>(size_of::&lt;FlagSet&lt;Flag16&gt;&gt;(), size_of::&lt;u16&gt;());
+<span class="macro">assert_eq!</span>(size_of::&lt;FlagSet&lt;Flag32&gt;&gt;(), size_of::&lt;u32&gt;());
+<span class="macro">assert_eq!</span>(size_of::&lt;FlagSet&lt;Flag64&gt;&gt;(), size_of::&lt;u64&gt;());
+<span class="macro">assert_eq!</span>(size_of::&lt;FlagSet&lt;Flag128&gt;&gt;(), size_of::&lt;u128&gt;());
+
+<span class="macro">assert_eq!</span>(align_of::&lt;FlagSet&lt;Flag8&gt;&gt;(), align_of::&lt;u8&gt;());
+<span class="macro">assert_eq!</span>(align_of::&lt;FlagSet&lt;Flag16&gt;&gt;(), align_of::&lt;u16&gt;());
+<span class="macro">assert_eq!</span>(align_of::&lt;FlagSet&lt;Flag32&gt;&gt;(), align_of::&lt;u32&gt;());
+<span class="macro">assert_eq!</span>(align_of::&lt;FlagSet&lt;Flag64&gt;&gt;(), align_of::&lt;u64&gt;());
+<span class="macro">assert_eq!</span>(align_of::&lt;FlagSet&lt;Flag128&gt;&gt;(), align_of::&lt;u128&gt;());</code></pre></div>
+</div></details></section></div></main></body></html>

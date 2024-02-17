@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["errors","iterators"],"struct":["Histogram"],"trait":["Counter"]};

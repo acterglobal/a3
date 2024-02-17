@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Recommendation"],"mod":["room","server","user"],"struct":["PolicyRuleEventContent","PossiblyRedactedPolicyRuleEventContent"]};

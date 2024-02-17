@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["LoginInfo"],"struct":["ApplicationService","DiscoveryInfo","HomeserverInfo","IdentityServerInfo","Password","Request","Response","Token"]};

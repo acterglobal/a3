@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["authorization_code","client_credentials","discovery","introspection","jose","refresh_token","registration","revocation","rp_initiated_logout","token","userinfo"]};

@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the Client class from the acter library, for the Dart programming language.">
+  <title>Client class - acter library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">acter_flutter_sdk</a></li>
+    <li><a href="../acter/acter-library.html">acter_flutter_sdk_ffi.dart</a></li>
+    <li class="self-crumb">Client class</li>
+  </ol>
+  <div class="self-name">Client</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="acter&#47;acter-library-sidebar.html"
+      data-below-sidebar="acter&#47;Client-class-sidebar.html">
+      <div>
+<h1><span class="kind-class">Client</span> class 
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>Main entry point for <code>acter</code>.</p>
+</section>
+
+
+
+    
+
+    <section class="summary offset-anchor inherited" id="instance-properties">
+      <h2>Properties</h2>
+
+      <dl class="properties">
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> 
+
+</dt>
+<dd class="inherited">
+  The hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Type-class.html">Type</a></span> 
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+      </dl>
+    </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="account" class="callable">
+  <span class="name"><a href="../acter/Client/account.html">account</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/Account-class.html">Account</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  return the account of the logged in user, if given
+  
+
+</dd>
+
+        <dt id="addEmailPusher" class="callable">
+  <span class="name"><a href="../acter/Client/addEmailPusher.html">addEmailPusher</a></span><span class="signature">(<wbr><span class="parameter" id="addEmailPusher-param-deviceName"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">deviceName</span>, </span><span class="parameter" id="addEmailPusher-param-appName"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">appName</span>, </span><span class="parameter" id="addEmailPusher-param-email"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">email</span>, </span><span class="parameter" id="addEmailPusher-param-lang"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">lang</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  add another http pusher to the notification system
+  
+
+</dd>
+
+        <dt id="addPusher" class="callable">
+  <span class="name"><a href="../acter/Client/addPusher.html">addPusher</a></span><span class="signature">(<wbr><span class="parameter" id="addPusher-param-appId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">appId</span>, </span><span class="parameter" id="addPusher-param-token"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">token</span>, </span><span class="parameter" id="addPusher-param-deviceName"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">deviceName</span>, </span><span class="parameter" id="addPusher-param-appName"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">appName</span>, </span><span class="parameter" id="addPusher-param-serverUrl"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">serverUrl</span>, </span><span class="parameter" id="addPusher-param-withIosDefault"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">withIosDefault</span>, </span><span class="parameter" id="addPusher-param-lang"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">lang</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  add another http pusher to the notification system
+  
+
+</dd>
+
+        <dt id="allUpcomingEvents" class="callable">
+  <span class="name"><a href="../acter/Client/allUpcomingEvents.html">allUpcomingEvents</a></span><span class="signature">(<wbr><span class="parameter" id="allUpcomingEvents-param-secsFromNow"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">secsFromNow</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/FfiListCalendarEvent-class.html">FfiListCalendarEvent</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  get all upcoming events, whether I responded or not
+  
+
+</dd>
+
+        <dt id="audioDraft" class="callable">
+  <span class="name"><a href="../acter/Client/audioDraft.html">audioDraft</a></span><span class="signature">(<wbr><span class="parameter" id="audioDraft-param-source"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">source</span>, </span><span class="parameter" id="audioDraft-param-mimetype"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">mimetype</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../acter/MsgContentDraft-class.html">MsgContentDraft</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  make draft to send audio msg
+  
+
+</dd>
+
+        <dt id="calendarEvent" class="callable">
+  <span class="name"><a href="../acter/Client/calendarEvent.html">calendarEvent</a></span><span class="signature">(<wbr><span class="parameter" id="calendarEvent-param-calendarId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">calendarId</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/CalendarEvent-class.html">CalendarEvent</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Get a specific Calendar Event for the client
+  
+
+</dd>
+
+        <dt id="calendarEvents" class="callable">
+  <span class="name"><a href="../acter/Client/calendarEvents.html">calendarEvents</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/FfiListCalendarEvent-class.html">FfiListCalendarEvent</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  get all calendar events
+  
+
+</dd>
+
+        <dt id="convo" class="callable">
+  <span class="name"><a href="../acter/Client/convo.html">convo</a></span><span class="signature">(<wbr><span class="parameter" id="convo-param-roomIdOrAlias"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">roomIdOrAlias</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/Convo-class.html">Convo</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  get convo room
+  
+
+</dd>
+
+        <dt id="convosStream" class="callable">
+  <span class="name"><a href="../acter/Client/convosStream.html">convosStream</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Stream-class.html">Stream</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/ConvoDiff-class.html">ConvoDiff</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Fires whenever the convo list changes (in order or number)
+fires immediately with the current state of convos
+  
+
+</dd>
+
+        <dt id="convoWithRetry" class="callable">
+  <span class="name"><a href="../acter/Client/convoWithRetry.html">convoWithRetry</a></span><span class="signature">(<wbr><span class="parameter" id="convoWithRetry-param-roomIdOrAlias"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">roomIdOrAlias</span>, </span><span class="parameter" id="convoWithRetry-param-retry"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">retry</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/Convo-class.html">Convo</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  get convo room of retry 250ms for retry times
+  
+
+</dd>
+
+        <dt id="createActerSpace" class="callable">
+  <span class="name"><a href="../acter/Client/createActerSpace.html">createActerSpace</a></span><span class="signature">(<wbr><span class="parameter" id="createActerSpace-param-settings"><span class="type-annotation"><a href="../acter/CreateSpaceSettings-class.html">CreateSpaceSettings</a></span> <span class="parameter-name">settings</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/RoomId-class.html">RoomId</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  create default space
+  
+
+</dd>
+
+        <dt id="createConvo" class="callable">
+  <span class="name"><a href="../acter/Client/createConvo.html">createConvo</a></span><span class="signature">(<wbr><span class="parameter" id="createConvo-param-settings"><span class="type-annotation"><a href="../acter/CreateConvoSettings-class.html">CreateConvoSettings</a></span> <span class="parameter-name">settings</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/RoomId-class.html">RoomId</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  create convo
+  
+
+</dd>
+
+        <dt id="deactivate" class="callable">
+  <span class="name"><a href="../acter/Client/deactivate.html">deactivate</a></span><span class="signature">(<wbr><span class="parameter" id="deactivate-param-password"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">password</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="deviceChangedEventRx" class="callable">
+  <span class="name"><a href="../acter/Client/deviceChangedEventRx.html">deviceChangedEventRx</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Stream-class.html">Stream</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/DeviceChangedEvent-class.html">DeviceChangedEvent</a></span>&gt;</span>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Return the event handler of device changed
+  
+
+</dd>
+
+        <dt id="deviceId" class="callable">
+  <span class="name"><a href="../acter/Client/deviceId.html">deviceId</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/DeviceId-class.html">DeviceId</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  The device_id of the client
+  
+
+</dd>
+
+        <dt id="deviceNewEventRx" class="callable">
+  <span class="name"><a href="../acter/Client/deviceNewEventRx.html">deviceNewEventRx</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Stream-class.html">Stream</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/DeviceNewEvent-class.html">DeviceNewEvent</a></span>&gt;</span>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Return the event handler of device new
+  
+
+</dd>
+
+        <dt id="deviceRecords" class="callable">
+  <span class="name"><a href="../acter/Client/deviceRecords.html">deviceRecords</a></span><span class="signature">(<wbr><span class="parameter" id="deviceRecords-param-verified"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">verified</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/FfiListDeviceRecord-class.html">FfiListDeviceRecord</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  the list of devices
+  
+
+</dd>
+
+        <dt id="dmWithUser" class="callable">
+  <span class="name"><a href="../acter/Client/dmWithUser.html">dmWithUser</a></span><span class="signature">(<wbr><span class="parameter" id="dmWithUser-param-userId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">userId</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../acter/OptionString-class.html">OptionString</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  get the room id of dm from user id
+  
+
+</dd>
+
+        <dt id="drop" class="callable">
+  <span class="name"><a href="../acter/Client/drop.html">drop</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Manually drops the object and unregisters the FinalizableHandle.
+  
+
+</dd>
+
+        <dt id="fileDraft" class="callable">
+  <span class="name"><a href="../acter/Client/fileDraft.html">fileDraft</a></span><span class="signature">(<wbr><span class="parameter" id="fileDraft-param-source"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">source</span>, </span><span class="parameter" id="fileDraft-param-mimetype"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">mimetype</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../acter/MsgContentDraft-class.html">MsgContentDraft</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  make draft to send file msg
+  
+
+</dd>
+
+        <dt id="getNotificationItem" class="callable">
+  <span class="name"><a href="../acter/Client/getNotificationItem.html">getNotificationItem</a></span><span class="signature">(<wbr><span class="parameter" id="getNotificationItem-param-roomId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">roomId</span>, </span><span class="parameter" id="getNotificationItem-param-eventId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">eventId</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/NotificationItem-class.html">NotificationItem</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  getting a notification item from the notification data;
+  
+
+</dd>
+
+        <dt id="hasConvo" class="callable">
+  <span class="name"><a href="../acter/Client/hasConvo.html">hasConvo</a></span><span class="signature">(<wbr><span class="parameter" id="hasConvo-param-roomId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">roomId</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  has convo room
+  
+
+</dd>
+
+        <dt id="hasFirstSynced" class="callable">
+  <span class="name"><a href="../acter/Client/hasFirstSynced.html">hasFirstSynced</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Whether the client has finished a first sync run
+  
+
+</dd>
+
+        <dt id="imageDraft" class="callable">
+  <span class="name"><a href="../acter/Client/imageDraft.html">imageDraft</a></span><span class="signature">(<wbr><span class="parameter" id="imageDraft-param-source"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">source</span>, </span><span class="parameter" id="imageDraft-param-mimetype"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">mimetype</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../acter/MsgContentDraft-class.html">MsgContentDraft</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  make draft to send image msg
+  
+
+</dd>
+
+        <dt id="invitationsRx" class="callable">
+  <span class="name"><a href="../acter/Client/invitationsRx.html">invitationsRx</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Stream-class.html">Stream</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/FfiListInvitation-class.html">FfiListInvitation</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Get the invitation event stream
+  
+
+</dd>
+
+        <dt id="isGuest" class="callable">
+  <span class="name"><a href="../acter/Client/isGuest.html">isGuest</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Whether the client is registered as a guest account
+  
+
+</dd>
+
+        <dt id="isSyncing" class="callable">
+  <span class="name"><a href="../acter/Client/isSyncing.html">isSyncing</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Whether the client is syncing
+  
+
+</dd>
+
+        <dt id="joinConvo" class="callable">
+  <span class="name"><a href="../acter/Client/joinConvo.html">joinConvo</a></span><span class="signature">(<wbr><span class="parameter" id="joinConvo-param-roomIdOrAlias"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">roomIdOrAlias</span>, </span><span class="parameter" id="joinConvo-param-serverName"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">serverName</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/Convo-class.html">Convo</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  attempt to join a room
+  
+
+</dd>
+
+        <dt id="joinSpace" class="callable">
+  <span class="name"><a href="../acter/Client/joinSpace.html">joinSpace</a></span><span class="signature">(<wbr><span class="parameter" id="joinSpace-param-roomIdOrAlias"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">roomIdOrAlias</span>, </span><span class="parameter" id="joinSpace-param-serverName"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">serverName</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/Space-class.html">Space</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  attempt to join a space
+  
+
+</dd>
+
+        <dt id="latestNewsEntries" class="callable">
+  <span class="name"><a href="../acter/Client/latestNewsEntries.html">latestNewsEntries</a></span><span class="signature">(<wbr><span class="parameter" id="latestNewsEntries-param-count"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">count</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/FfiListNewsEntry-class.html">FfiListNewsEntry</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Get the latest News for the client
+  
+
+</dd>
+
+        <dt id="listNotifications" class="callable">
+  <span class="name"><a href="../acter/Client/listNotifications.html">listNotifications</a></span><span class="signature">(<wbr><span class="parameter" id="listNotifications-param-since"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">since</span>, </span><span class="parameter" id="listNotifications-param-only"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">only</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/NotificationListResult-class.html">NotificationListResult</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  list the currently queued notifications
+  
+
+</dd>
+
+        <dt id="locationDraft" class="callable">
+  <span class="name"><a href="../acter/Client/locationDraft.html">locationDraft</a></span><span class="signature">(<wbr><span class="parameter" id="locationDraft-param-body"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">body</span>, </span><span class="parameter" id="locationDraft-param-source"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">source</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../acter/MsgContentDraft-class.html">MsgContentDraft</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  make draft to send location msg
+  
+
+</dd>
+
+        <dt id="loggedIn" class="callable">
+  <span class="name"><a href="../acter/Client/loggedIn.html">loggedIn</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Whether the client is logged in
+  
+
+</dd>
+
+        <dt id="logout" class="callable">
+  <span class="name"><a href="../acter/Client/logout.html">logout</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  log out this client
+  
+
+</dd>
+
+        <dt id="myOpenTasks" class="callable">
+  <span class="name"><a href="../acter/Client/myOpenTasks.html">myOpenTasks</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/FfiListTask-class.html">FfiListTask</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  the Tasks lists of this Space
+  
+
+</dd>
+
+        <dt id="myPastEvents" class="callable">
+  <span class="name"><a href="../acter/Client/myPastEvents.html">myPastEvents</a></span><span class="signature">(<wbr><span class="parameter" id="myPastEvents-param-secsFromNow"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">secsFromNow</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/FfiListCalendarEvent-class.html">FfiListCalendarEvent</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  get only past events that I responded as rsvp
+  
+
+</dd>
+
+        <dt id="myUpcomingEvents" class="callable">
+  <span class="name"><a href="../acter/Client/myUpcomingEvents.html">myUpcomingEvents</a></span><span class="signature">(<wbr><span class="parameter" id="myUpcomingEvents-param-secsFromNow"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">secsFromNow</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/FfiListCalendarEvent-class.html">FfiListCalendarEvent</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  get only upcoming events that I responded as rsvp
+  
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="notificationSettings" class="callable">
+  <span class="name"><a href="../acter/Client/notificationSettings.html">notificationSettings</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/NotificationSettings-class.html">NotificationSettings</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  allow to configure notification settings
+  
+
+</dd>
+
+        <dt id="notificationsStream" class="callable">
+  <span class="name"><a href="../acter/Client/notificationsStream.html">notificationsStream</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Stream-class.html">Stream</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/Notification-class.html">Notification</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  listen to incoming notifications
+  
+
+</dd>
+
+        <dt id="pin" class="callable">
+  <span class="name"><a href="../acter/Client/pin.html">pin</a></span><span class="signature">(<wbr><span class="parameter" id="pin-param-pinId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">pinId</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/ActerPin-class.html">ActerPin</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Get a specific Pin for the client
+  
+
+</dd>
+
+        <dt id="pinnedLinks" class="callable">
+  <span class="name"><a href="../acter/Client/pinnedLinks.html">pinnedLinks</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/FfiListActerPin-class.html">FfiListActerPin</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Get the Pinned Links for the client
+  
+
+</dd>
+
+        <dt id="pins" class="callable">
+  <span class="name"><a href="../acter/Client/pins.html">pins</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/FfiListActerPin-class.html">FfiListActerPin</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Get the Pins for the client
+  
+
+</dd>
+
+        <dt id="publicSpaces" class="callable">
+  <span class="name"><a href="../acter/Client/publicSpaces.html">publicSpaces</a></span><span class="signature">(<wbr><span class="parameter" id="publicSpaces-param-searchTerm"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">searchTerm</span>, </span><span class="parameter" id="publicSpaces-param-server"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">server</span>, </span><span class="parameter" id="publicSpaces-param-since"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">since</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/PublicSearchResult-class.html">PublicSearchResult</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  search the public directory for spaces
+  
+
+</dd>
+
+        <dt id="pushers" class="callable">
+  <span class="name"><a href="../acter/Client/pushers.html">pushers</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/FfiListPusher-class.html">FfiListPusher</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  list of pushers
+  
+
+</dd>
+
+        <dt id="receiptEventRx" class="callable">
+  <span class="name"><a href="../acter/Client/receiptEventRx.html">receiptEventRx</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Stream-class.html">Stream</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/ReceiptEvent-class.html">ReceiptEvent</a></span>&gt;</span>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Return the receipt event receiver
+  
+
+</dd>
+
+        <dt id="restoreToken" class="callable">
+  <span class="name"><a href="../acter/Client/restoreToken.html">restoreToken</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Get the restore token for this session
+  
+
+</dd>
+
+        <dt id="room" class="callable">
+  <span class="name"><a href="../acter/Client/room.html">room</a></span><span class="signature">(<wbr><span class="parameter" id="room-param-roomIdOrAlias"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">roomIdOrAlias</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/Room-class.html">Room</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Get the generic room that user belongs to
+  
+
+</dd>
+
+        <dt id="searchUsers" class="callable">
+  <span class="name"><a href="../acter/Client/searchUsers.html">searchUsers</a></span><span class="signature">(<wbr><span class="parameter" id="searchUsers-param-searchTerm"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">searchTerm</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/FfiListUserProfile-class.html">FfiListUserProfile</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  search the user directory
+  
+
+</dd>
+
+        <dt id="sessionManager" class="callable">
+  <span class="name"><a href="../acter/Client/sessionManager.html">sessionManager</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/SessionManager-class.html">SessionManager</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Get session manager that returns all/verified/unverified/inactive session list
+  
+
+</dd>
+
+        <dt id="space" class="callable">
+  <span class="name"><a href="../acter/Client/space.html">space</a></span><span class="signature">(<wbr><span class="parameter" id="space-param-roomIdOrAlias"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">roomIdOrAlias</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/Space-class.html">Space</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Get the space that user belongs to
+  
+
+</dd>
+
+        <dt id="spaces" class="callable">
+  <span class="name"><a href="../acter/Client/spaces.html">spaces</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/FfiListSpace-class.html">FfiListSpace</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  The spaces the user is part of
+  
+
+</dd>
+
+        <dt id="spacesStream" class="callable">
+  <span class="name"><a href="../acter/Client/spacesStream.html">spacesStream</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Stream-class.html">Stream</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/SpaceDiff-class.html">SpaceDiff</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Fires whenever the space list changes (in order or number)
+fires immediately with the current state of spaces
+  
+
+</dd>
+
+        <dt id="startSync" class="callable">
+  <span class="name"><a href="../acter/Client/startSync.html">startSync</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/SyncState-class.html">SyncState</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  start the sync
+  
+
+</dd>
+
+        <dt id="subscribeMyOpenTasksStream" class="callable">
+  <span class="name"><a href="../acter/Client/subscribeMyOpenTasksStream.html">subscribeMyOpenTasksStream</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Stream-class.html">Stream</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  listen to updates of the my_open_tasks list
+  
+
+</dd>
+
+        <dt id="subscribeStream" class="callable">
+  <span class="name"><a href="../acter/Client/subscribeStream.html">subscribeStream</a></span><span class="signature">(<wbr><span class="parameter" id="subscribeStream-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Stream-class.html">Stream</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  listen to updates to any model key
+  
+
+</dd>
+
+        <dt id="suggestedUsersToInvite" class="callable">
+  <span class="name"><a href="../acter/Client/suggestedUsersToInvite.html">suggestedUsersToInvite</a></span><span class="signature">(<wbr><span class="parameter" id="suggestedUsersToInvite-param-roomName"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">roomName</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/FfiListUserProfile-class.html">FfiListUserProfile</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  the users out of room
+  
+
+</dd>
+
+        <dt id="superInvites" class="callable">
+  <span class="name"><a href="../acter/Client/superInvites.html">superInvites</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/SuperInvites-class.html">SuperInvites</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  super invites interface
+  
+
+</dd>
+
+        <dt id="taskList" class="callable">
+  <span class="name"><a href="../acter/Client/taskList.html">taskList</a></span><span class="signature">(<wbr><span class="parameter" id="taskList-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="taskList-param-timeout"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">timeout</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/TaskList-class.html">TaskList</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Fetch the Tasklist or use its event_id to wait for it to come down the wire
+  
+
+</dd>
+
+        <dt id="taskLists" class="callable">
+  <span class="name"><a href="../acter/Client/taskLists.html">taskLists</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/FfiListTaskList-class.html">FfiListTaskList</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  the Tasks lists for the client
+  
+
+</dd>
+
+        <dt id="textHtmlDraft" class="callable">
+  <span class="name"><a href="../acter/Client/textHtmlDraft.html">textHtmlDraft</a></span><span class="signature">(<wbr><span class="parameter" id="textHtmlDraft-param-html"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">html</span>, </span><span class="parameter" id="textHtmlDraft-param-plain"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">plain</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../acter/MsgContentDraft-class.html">MsgContentDraft</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  make draft to send html marked up msg
+  
+
+</dd>
+
+        <dt id="textMarkdownDraft" class="callable">
+  <span class="name"><a href="../acter/Client/textMarkdownDraft.html">textMarkdownDraft</a></span><span class="signature">(<wbr><span class="parameter" id="textMarkdownDraft-param-body"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">body</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../acter/MsgContentDraft-class.html">MsgContentDraft</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  make draft to send text markdown msg
+  
+
+</dd>
+
+        <dt id="textPlainDraft" class="callable">
+  <span class="name"><a href="../acter/Client/textPlainDraft.html">textPlainDraft</a></span><span class="signature">(<wbr><span class="parameter" id="textPlainDraft-param-body"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">body</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../acter/MsgContentDraft-class.html">MsgContentDraft</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  make draft to send text plain msg
+  
+
+</dd>
+
+        <dt id="threePidManager" class="callable">
+  <span class="name"><a href="../acter/Client/threePidManager.html">threePidManager</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/ThreePidManager-class.html">ThreePidManager</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  get intermediate info of login (via email and phone) from account data
+  
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="typingEventRx" class="callable">
+  <span class="name"><a href="../acter/Client/typingEventRx.html">typingEventRx</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Stream-class.html">Stream</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/TypingEvent-class.html">TypingEvent</a></span>&gt;</span>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Return the typing event receiver
+  
+
+</dd>
+
+        <dt id="uploadMedia" class="callable">
+  <span class="name"><a href="../acter/Client/uploadMedia.html">uploadMedia</a></span><span class="signature">(<wbr><span class="parameter" id="uploadMedia-param-uri"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">uri</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/MxcUri-class.html">MxcUri</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  upload file and return remote url
+  
+
+</dd>
+
+        <dt id="userId" class="callable">
+  <span class="name"><a href="../acter/Client/userId.html">userId</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/UserId-class.html">UserId</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  The user_id of the client
+deprecated, please use account() instead.
+  
+
+</dd>
+
+        <dt id="verificationEventRx" class="callable">
+  <span class="name"><a href="../acter/Client/verificationEventRx.html">verificationEventRx</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Stream-class.html">Stream</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/VerificationEvent-class.html">VerificationEvent</a></span>&gt;</span>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Get the verification event receiver
+  
+
+</dd>
+
+        <dt id="verifiedDevice" class="callable">
+  <span class="name"><a href="../acter/Client/verifiedDevice.html">verifiedDevice</a></span><span class="signature">(<wbr><span class="parameter" id="verifiedDevice-param-devId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">devId</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Whether the user already verified the device
+  
+
+</dd>
+
+        <dt id="videoDraft" class="callable">
+  <span class="name"><a href="../acter/Client/videoDraft.html">videoDraft</a></span><span class="signature">(<wbr><span class="parameter" id="videoDraft-param-source"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">source</span>, </span><span class="parameter" id="videoDraft-param-mimetype"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">mimetype</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../acter/MsgContentDraft-class.html">MsgContentDraft</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  make draft to send video msg
+  
+
+</dd>
+
+        <dt id="waitForCalendarEvent" class="callable">
+  <span class="name"><a href="../acter/Client/waitForCalendarEvent.html">waitForCalendarEvent</a></span><span class="signature">(<wbr><span class="parameter" id="waitForCalendarEvent-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="waitForCalendarEvent-param-timeout"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">timeout</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/CalendarEvent-class.html">CalendarEvent</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Fetch the calendar event or use its event_id to wait for it to come down the wire
+  
+
+</dd>
+
+        <dt id="waitForComment" class="callable">
+  <span class="name"><a href="../acter/Client/waitForComment.html">waitForComment</a></span><span class="signature">(<wbr><span class="parameter" id="waitForComment-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="waitForComment-param-timeout"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">timeout</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/Comment-class.html">Comment</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Fetch the Comment or use its event_id to wait for it to come down the wire
+  
+
+</dd>
+
+        <dt id="waitForNews" class="callable">
+  <span class="name"><a href="../acter/Client/waitForNews.html">waitForNews</a></span><span class="signature">(<wbr><span class="parameter" id="waitForNews-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="waitForNews-param-timeout"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">timeout</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/NewsEntry-class.html">NewsEntry</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Fetch the NewsEntry or use its event_id to wait for it to come down the wire
+  
+
+</dd>
+
+        <dt id="waitForPin" class="callable">
+  <span class="name"><a href="../acter/Client/waitForPin.html">waitForPin</a></span><span class="signature">(<wbr><span class="parameter" id="waitForPin-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="waitForPin-param-timeout"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">timeout</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/ActerPin-class.html">ActerPin</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Fetch the ActerPin or use its event_id to wait for it to come down the wire
+  
+
+</dd>
+
+        <dt id="waitForRsvp" class="callable">
+  <span class="name"><a href="../acter/Client/waitForRsvp.html">waitForRsvp</a></span><span class="signature">(<wbr><span class="parameter" id="waitForRsvp-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="waitForRsvp-param-timeout"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">timeout</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/Rsvp-class.html">Rsvp</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Fetch the RSVP or use its event_id to wait for it to come down the wire
+  
+
+</dd>
+
+        <dt id="waitForTask" class="callable">
+  <span class="name"><a href="../acter/Client/waitForTask.html">waitForTask</a></span><span class="signature">(<wbr><span class="parameter" id="waitForTask-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="waitForTask-param-timeout"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">timeout</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/Task-class.html">Task</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Fetch the Task or use its event_id to wait for it to come down the wire
+  
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+    
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">acter_flutter_sdk</a></li>
+    <li><a href="../acter/acter-library.html">acter</a></li>
+    <li class="self-crumb">Client class</li>
+</ol>
+
+
+    <h5>acter library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    acter_flutter_sdk
+      0.0.1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

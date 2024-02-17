@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["AuthData","AuthType","UiaaResponse","UserIdentifier"],"mod":["get_uiaa_fallback_page"],"struct":["AuthFlow","Dummy","EmailIdentity","FallbackAcknowledgement","Msisdn","Password","ReCaptcha","RegistrationToken","ThirdpartyIdCredentials","UiaaInfo"]};

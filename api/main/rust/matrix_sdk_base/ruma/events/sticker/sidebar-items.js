@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["RedactedStickerEventContent","StickerEventContent"],"type":["OriginalStickerEvent","OriginalSyncStickerEvent","RedactedStickerEvent","RedactedSyncStickerEvent","StickerEvent","SyncStickerEvent"]};

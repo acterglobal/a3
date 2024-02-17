@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["TagName"],"struct":["InvalidUserTagName","TagEventContent","TagInfo","UserTagName"],"type":["TagEvent","Tags"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["get_relating_events","get_relating_events_with_rel_type","get_relating_events_with_rel_type_and_event_type"]};

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the Room class from the acter library, for the Dart programming language.">
+  <title>Room class - acter library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">acter_flutter_sdk</a></li>
+    <li><a href="../acter/acter-library.html">acter_flutter_sdk_ffi.dart</a></li>
+    <li class="self-crumb">Room class</li>
+  </ol>
+  <div class="self-name">Room</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="acter&#47;acter-library-sidebar.html"
+      data-below-sidebar="acter&#47;Room-class-sidebar.html">
+      <div>
+<h1><span class="kind-class">Room</span> class 
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>Generic Room Properties</p>
+</section>
+
+
+
+    
+
+    <section class="summary offset-anchor inherited" id="instance-properties">
+      <h2>Properties</h2>
+
+      <dl class="properties">
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> 
+
+</dt>
+<dd class="inherited">
+  The hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Type-class.html">Type</a></span> 
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+      </dl>
+    </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="activeMembers" class="callable">
+  <span class="name"><a href="../acter/Room/activeMembers.html">activeMembers</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/FfiListMember-class.html">FfiListMember</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  the members currently in the room
+  
+
+</dd>
+
+        <dt id="addParentRoom" class="callable">
+  <span class="name"><a href="../acter/Room/addParentRoom.html">addParentRoom</a></span><span class="signature">(<wbr><span class="parameter" id="addParentRoom-param-roomId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">roomId</span>, </span><span class="parameter" id="addParentRoom-param-canonical"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">canonical</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  add the following as a parent room and return event id of that event
+room can have multiple parents
+  
+
+</dd>
+
+        <dt id="defaultNotificationMode" class="callable">
+  <span class="name"><a href="../acter/Room/defaultNotificationMode.html">defaultNotificationMode</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  default RoomNotificationMode for this type of room
+  
+
+</dd>
+
+        <dt id="drop" class="callable">
+  <span class="name"><a href="../acter/Room/drop.html">drop</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Manually drops the object and unregisters the FinalizableHandle.
+  
+
+</dd>
+
+        <dt id="getMember" class="callable">
+  <span class="name"><a href="../acter/Room/getMember.html">getMember</a></span><span class="signature">(<wbr><span class="parameter" id="getMember-param-userId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">userId</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/Member-class.html">Member</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  get the room member by user id
+  
+
+</dd>
+
+        <dt id="getMyMembership" class="callable">
+  <span class="name"><a href="../acter/Room/getMyMembership.html">getMyMembership</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/Member-class.html">Member</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  the Membership of myself
+  
+
+</dd>
+
+        <dt id="getProfile" class="callable">
+  <span class="name"><a href="../acter/Room/getProfile.html">getProfile</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/RoomProfile-class.html">RoomProfile</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  get the room profile that contains avatar and display name
+  
+
+</dd>
+
+        <dt id="invitedMembers" class="callable">
+  <span class="name"><a href="../acter/Room/invitedMembers.html">invitedMembers</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/FfiListMember-class.html">FfiListMember</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  the members invited to this room
+  
+
+</dd>
+
+        <dt id="inviteUser" class="callable">
+  <span class="name"><a href="../acter/Room/inviteUser.html">inviteUser</a></span><span class="signature">(<wbr><span class="parameter" id="inviteUser-param-userId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">userId</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  invite the new user to this room
+  
+
+</dd>
+
+        <dt id="isJoined" class="callable">
+  <span class="name"><a href="../acter/Room/isJoined.html">isJoined</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  whether we are part of this room
+  
+
+</dd>
+
+        <dt id="isSpace" class="callable">
+  <span class="name"><a href="../acter/Room/isSpace.html">isSpace</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Whether this is a space (or, if this returns <code>false</code>, consider it a chat)
+  
+
+</dd>
+
+        <dt id="joinRuleStr" class="callable">
+  <span class="name"><a href="../acter/Room/joinRuleStr.html">joinRuleStr</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  the JoinRule as a String
+  
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="notificationMode" class="callable">
+  <span class="name"><a href="../acter/Room/notificationMode.html">notificationMode</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  RoomNotificationMode for this room
+  
+
+</dd>
+
+        <dt id="removeParentRoom" class="callable">
+  <span class="name"><a href="../acter/Room/removeParentRoom.html">removeParentRoom</a></span><span class="signature">(<wbr><span class="parameter" id="removeParentRoom-param-roomId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">roomId</span>, </span><span class="parameter" id="removeParentRoom-param-reason"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">reason</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  remove a parent room
+  
+
+</dd>
+
+        <dt id="restrictedRoomIdsStr" class="callable">
+  <span class="name"><a href="../acter/Room/restrictedRoomIdsStr.html">restrictedRoomIdsStr</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../acter/FfiListFfiString-class.html">FfiListFfiString</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  if set to restricted or restricted_knock the rooms this is restricted to
+  
+
+</dd>
+
+        <dt id="roomIdStr" class="callable">
+  <span class="name"><a href="../acter/Room/roomIdStr.html">roomIdStr</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  the RoomId as a String
+  
+
+</dd>
+
+        <dt id="setJoinRule" class="callable">
+  <span class="name"><a href="../acter/Room/setJoinRule.html">setJoinRule</a></span><span class="signature">(<wbr><span class="parameter" id="setJoinRule-param-joinRuleBuilder"><span class="type-annotation"><a href="../acter/JoinRuleBuilder-class.html">JoinRuleBuilder</a></span> <span class="parameter-name">joinRuleBuilder</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  set the join rule.
+  
+
+</dd>
+
+        <dt id="setNotificationMode" class="callable">
+  <span class="name"><a href="../acter/Room/setNotificationMode.html">setNotificationMode</a></span><span class="signature">(<wbr><span class="parameter" id="setNotificationMode-param-newMode"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">newMode</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  set the RoomNotificationMode
+  
+
+</dd>
+
+        <dt id="spaceRelations" class="callable">
+  <span class="name"><a href="../acter/Room/spaceRelations.html">spaceRelations</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../acter/SpaceRelations-class.html">SpaceRelations</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  get the room profile that contains avatar and display name
+  
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="unmute" class="callable">
+  <span class="name"><a href="../acter/Room/unmute.html">unmute</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Unset the <code>mute</code> for this room.
+  
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+    
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">acter_flutter_sdk</a></li>
+    <li><a href="../acter/acter-library.html">acter</a></li>
+    <li class="self-crumb">Room class</li>
+</ol>
+
+
+    <h5>acter library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    acter_flutter_sdk
+      0.0.1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

@@ -1,0 +1,122 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="OpenTelemetry Propagator interface"><title>opentelemetry::propagation - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="opentelemetry" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button><a class="logo-container" href="../../opentelemetry/index.html"><img src="https://raw.githubusercontent.com/open-telemetry/opentelemetry-rust/main/assets/logo.svg" alt=""></a></nav><nav class="sidebar"><div class="sidebar-crate"><a class="logo-container" href="../../opentelemetry/index.html"><img src="https://raw.githubusercontent.com/open-telemetry/opentelemetry-rust/main/assets/logo.svg" alt="logo"></a><h2><a href="../../opentelemetry/index.html">opentelemetry</a><span class="version">0.21.0</span></h2></div><h2 class="location"><a href="#">Module propagation</a></h2><div class="sidebar-elems"><section><ul class="block"><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li><li><a href="#traits">Traits</a></li></ul></section><h2><a href="../index.html">In crate opentelemetry</a></h2></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../opentelemetry/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../index.html">opentelemetry</a>::<wbr><a class="mod" href="#">propagation</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../../src/opentelemetry/propagation/mod.rs.html#1-232">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="opentelemetry-propagator-interface"><a class="doc-anchor" href="#opentelemetry-propagator-interface">§</a>OpenTelemetry Propagator interface</h2>
+<p>Propagators API consists of two main formats:</p>
+<ul>
+<li><code>BinaryFormat</code> is used to serialize and deserialize a value
+into a binary representation.</li>
+<li><code>TextMapFormat</code> is used to inject and extract a value as
+text into injectors and extractors that travel in-band across process boundaries.</li>
+</ul>
+<p>Deserializing must set <code>is_remote</code> to true on the returned
+<code>SpanContext</code>.</p>
+<h3 id="binary-format"><a class="doc-anchor" href="#binary-format">§</a>Binary Format</h3>
+<p><code>BinaryFormat</code> is a formatter to serialize and deserialize a value
+into a binary format.</p>
+<p><code>BinaryFormat</code> MUST expose the APIs that serializes values into bytes,
+and deserializes values from bytes.</p>
+<h4 id="tobytes"><a class="doc-anchor" href="#tobytes">§</a>ToBytes</h4>
+<p>Serializes the given value into the on-the-wire representation.</p>
+<p>Required arguments:</p>
+<ul>
+<li>the value to serialize, can be <code>SpanContext</code> or <code>DistributedContext</code>.</li>
+</ul>
+<p>Returns the on-the-wire byte representation of the value.</p>
+<h4 id="frombytes"><a class="doc-anchor" href="#frombytes">§</a>FromBytes</h4>
+<p>Creates a value from the given on-the-wire encoded representation.</p>
+<p>If the value could not be parsed, the underlying implementation
+SHOULD decide to return ether an empty value, an invalid value, or
+a valid value.</p>
+<p>Required arguments:</p>
+<ul>
+<li>on-the-wire byte representation of the value.</li>
+</ul>
+<p>Returns a value deserialized from bytes.</p>
+<h3 id="textmap-format"><a class="doc-anchor" href="#textmap-format">§</a>TextMap Format</h3>
+<p><code>TextMapFormat</code> is a formatter that injects and extracts a value
+as text into injectors and extractors that travel in-band across process boundaries.</p>
+<p>Encoding is expected to conform to the HTTP Header Field semantics.
+Values are often encoded as RPC/HTTP request headers.</p>
+<p>The carrier of propagated data on both the client (injector) and
+server (extractor) side is usually a http request. Propagation is
+usually implemented via library-specific request interceptors, where
+the client-side injects values and the server-side extracts them.</p>
+<p><code>TextMapFormat</code> MUST expose the APIs that injects values into injectors,
+and extracts values from extractors.</p>
+<h4 id="fields-1"><a class="doc-anchor" href="#fields-1">§</a>Fields</h4>
+<p>The propagation fields defined. If your injector is reused, you should
+delete the fields here before calling <code>inject</code>.</p>
+<p>For example, if the injector is a single-use or immutable request object,
+you don’t need to clear fields as they couldn’t have been set before.
+If it is a mutable, retryable object, successive calls should clear
+these fields first.</p>
+<p>The use cases of this are:</p>
+<ul>
+<li>allow pre-allocation of fields, especially in systems like gRPC
+Metadata</li>
+<li>allow a single-pass over an iterator</li>
+</ul>
+<p>Returns list of fields that will be used by this formatter.</p>
+<h4 id="inject"><a class="doc-anchor" href="#inject">§</a>Inject</h4>
+<p>Injects the value downstream. For example, as http headers.</p>
+<p>Required arguments:</p>
+<ul>
+<li>the <code>SpanContext</code> to be injected.</li>
+<li>the injector that holds propagation fields. For example, an outgoing
+message or http request.</li>
+<li>the <code>Setter</code> invoked for each propagation key to add or remove.</li>
+</ul>
+<h5 id="setter-argument"><a class="doc-anchor" href="#setter-argument">§</a>Setter argument</h5>
+<p>Setter is an argument in <code>Inject</code> that puts value into given field.</p>
+<p><code>Setter</code> allows a <code>TextMapFormat</code> to set propagated fields into a
+injector.</p>
+<p><code>Setter</code> MUST be stateless and allowed to be saved as a constant to
+avoid runtime allocations. One of the ways to implement it is <code>Setter</code>
+class with <code>Put</code> method as described below.</p>
+<h6 id="put"><a class="doc-anchor" href="#put">§</a>Put</h6>
+<p>Replaces a propagated field with the given value.</p>
+<p>Required arguments:</p>
+<ul>
+<li>the injector holds propagation fields. For example, an outgoing message
+or http request.</li>
+<li>the key of the field.</li>
+<li>the value of the field.</li>
+</ul>
+<p>The implementation SHOULD preserve casing (e.g. it should not transform
+<code>Content-Type</code> to <code>content-type</code>) if the used protocol is case insensitive,
+otherwise it MUST preserve casing.</p>
+<h4 id="extract"><a class="doc-anchor" href="#extract">§</a>Extract</h4>
+<p>Extracts the value from upstream. For example, as http headers.</p>
+<p>If the value could not be parsed, the underlying implementation will
+decide to return an object representing either an empty value, an invalid
+value, or a valid value.</p>
+<p>Required arguments:</p>
+<ul>
+<li>the extractor holds propagation fields. For example, an outgoing message
+or http request.</li>
+<li>the instance of <code>Getter</code> invoked for each propagation key to get.</li>
+</ul>
+<p>Returns the non-null extracted value.</p>
+<h5 id="getter-argument"><a class="doc-anchor" href="#getter-argument">§</a>Getter argument</h5>
+<p>Getter is an argument in <code>Extract</code> that get value from given field</p>
+<p><code>Getter</code> allows a <code>TextMapFormat</code> to read propagated fields from a
+extractor.</p>
+<p><code>Getter</code> MUST be stateless and allowed to be saved as a constant to avoid
+runtime allocations. One of the ways to implement it is <code>Getter</code> class
+with <code>Get</code> method as described below.</p>
+<h6 id="get"><a class="doc-anchor" href="#get">§</a>Get</h6>
+<p>The Get function MUST return the first value of the given propagation
+key or return <code>None</code> if the key doesn’t exist.</p>
+<p>Required arguments:</p>
+<ul>
+<li>the extractor of propagation fields, such as an HTTP request.</li>
+<li>the key of the field.</li>
+</ul>
+<p>The <code>get</code> function is responsible for handling case sensitivity. If
+the getter is intended to work with an HTTP request object, the getter
+MUST be case insensitive. To improve compatibility with other text-based
+protocols, text format implementations MUST ensure to always use the
+canonical casing for their attributes. NOTE: Canonical casing for HTTP
+headers is usually title case (e.g. <code>Content-Type</code> instead of <code>content-type</code>).</p>
+<h6 id="keys"><a class="doc-anchor" href="#keys">§</a>Keys</h6>
+<p>The Keys function returns a vector of the propagation keys.</p>
+</div></details><h2 id="reexports" class="section-header">Re-exports<a href="#reexports" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name" id="reexport.TextMapPropagator"><code>pub use text_map_propagator::<a class="trait" href="text_map_propagator/trait.TextMapPropagator.html" title="trait opentelemetry::propagation::text_map_propagator::TextMapPropagator">TextMapPropagator</a>;</code></div></li></ul><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="mod" href="text_map_propagator/index.html" title="mod opentelemetry::propagation::text_map_propagator">text_map_propagator</a></div><div class="desc docblock-short">Text Propagator</div></li></ul><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="trait" href="trait.Extractor.html" title="trait opentelemetry::propagation::Extractor">Extractor</a></div><div class="desc docblock-short">Extractor provides an interface for removing fields from an underlying struct like <code>HashMap</code></div></li><li><div class="item-name"><a class="trait" href="trait.Injector.html" title="trait opentelemetry::propagation::Injector">Injector</a></div><div class="desc docblock-short">Injector provides an interface for adding fields from an underlying struct like <code>HashMap</code></div></li></ul></section></div></main></body></html>

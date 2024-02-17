@@ -1,0 +1,40 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="An OpenID Connect client library for the Matrix specification."><title>mas_oidc_client - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="mas_oidc_client" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../mas_oidc_client/index.html">mas_oidc_client</a><span class="version">0.7.0</span></h2></div><div class="sidebar-elems"><ul class="block">
+            <li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#modules">Modules</a></li></ul></section></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../mas_oidc_client/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">mas_oidc_client</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/mas_oidc_client/lib.rs.html#15-81">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>An <a href="https://openid.net/connect/">OpenID Connect</a> client library for the <a href="https://matrix.org/">Matrix</a> specification.</p>
+<p>This is part of the <a href="https://github.com/matrix-org/matrix-authentication-service">Matrix Authentication Service</a> project.</p>
+<h2 id="scope"><a class="doc-anchor" href="#scope">§</a>Scope</h2>
+<p>The scope of this crate is to support OIDC features required by the
+Matrix specification according to <a href="https://github.com/matrix-org/matrix-spec-proposals/pull/3861">MSC3861</a> and its sub-proposals.</p>
+<p>As such, it is compatible with the OpenID Connect 1.0 specification, but
+also enforces Matrix-specific requirements or adds compatibility with new
+<a href="https://oauth.net/2/">OAuth 2.0</a> features.</p>
+<h2 id="openid-connect-and-oauth-20-features"><a class="doc-anchor" href="#openid-connect-and-oauth-20-features">§</a>OpenID Connect and OAuth 2.0 Features</h2>
+<ul>
+<li>Grant Types:
+<ul>
+<li><a href="https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth">Authorization Code</a></li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc6749#section-4.4">Client Credentials</a></li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc8628">Device Code</a> (TBD)</li>
+</ul>
+</li>
+<li><a href="https://openid.net/specs/openid-connect-core-1_0.html#UserInfo">User Info</a></li>
+<li>Token:
+<ul>
+<li><a href="https://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens">Refresh Token</a></li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc7662">Introspection</a></li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc7009">Revocation</a></li>
+</ul>
+</li>
+<li><a href="https://openid.net/specs/openid-connect-registration-1_0.html">Dynamic Client Registration</a></li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc7636">PKCE</a></li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc9126">Pushed Authorization Requests</a></li>
+</ul>
+<h2 id="matrix-features"><a class="doc-anchor" href="#matrix-features">§</a>Matrix features</h2>
+<ul>
+<li>Client registration</li>
+<li>Login</li>
+<li>Matrix API Scopes</li>
+<li>Logout</li>
+</ul>
+</div></details><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="mod" href="error/index.html" title="mod mas_oidc_client::error">error</a></div><div class="desc docblock-short">The error types used in this crate.</div></li><li><div class="item-name"><a class="mod" href="http_service/index.html" title="mod mas_oidc_client::http_service">http_service</a></div><div class="desc docblock-short">Reexports of traits to implement to provide a custom HTTP service for
+<code>Client</code>.</div></li><li><div class="item-name"><a class="mod" href="jose/index.html" title="mod mas_oidc_client::jose">jose</a></div></li><li><div class="item-name"><a class="mod" href="requests/index.html" title="mod mas_oidc_client::requests">requests</a></div><div class="desc docblock-short">Methods to interact with OpenID Connect and OAuth2.0 endpoints.</div></li><li><div class="item-name"><a class="mod" href="types/index.html" title="mod mas_oidc_client::types">types</a></div><div class="desc docblock-short">OAuth 2.0 and OpenID Connect types.</div></li></ul></section></div></main></body></html>

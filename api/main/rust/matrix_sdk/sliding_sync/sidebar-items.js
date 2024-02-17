@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Error","RoomListEntry","SlidingSyncListLoadingState","SlidingSyncMode","SlidingSyncRoomState"],"struct":["SlidingSync","SlidingSyncBuilder","SlidingSyncList","SlidingSyncListBuilder","SlidingSyncRoom","SlidingSyncSelectiveModeBuilder","SlidingSyncWindowedModeBuilder","UpdateSummary"],"type":["Bound","Range","Ranges"]};

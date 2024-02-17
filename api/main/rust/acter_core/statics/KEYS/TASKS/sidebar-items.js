@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"static":["MY_DONE_TASKS","MY_OPEN_TASKS","TASKS"]};

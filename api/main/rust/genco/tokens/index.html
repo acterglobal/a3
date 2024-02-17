@@ -1,0 +1,53 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Utilities for working with token streams."><title>genco::tokens - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="genco" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../genco/index.html">genco</a><span class="version">0.17.8</span></h2></div><h2 class="location"><a href="#">Module tokens</a></h2><div class="sidebar-elems"><section><ul class="block"><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li></ul></section><h2><a href="../index.html">In crate genco</a></h2></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../genco/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../index.html">genco</a>::<wbr><a class="mod" href="#">tokens</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../../src/genco/tokens/mod.rs.html#1-83">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Utilities for working with token streams.</p>
+<p>This is typically a module you will use if you intend to provide a manual
+implementation of <a href="trait.FormatInto.html" title="trait genco::tokens::FormatInto">FormatInto</a>.</p>
+<h2 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>genco::quote_in;
+<span class="kw">use </span>genco::tokens::{from_fn, ItemStr, FormatInto, static_literal};
+<span class="kw">use </span>genco::lang::Lang;
+
+<span class="doccomment">/// Format a block comment, starting with `/**`, and ending in `*/`.
+</span><span class="kw">pub fn </span>block_comment&lt;I, L&gt;(text: I) -&gt; <span class="kw">impl </span>FormatInto&lt;L&gt;
+<span class="kw">where
+    </span>I: IntoIterator,
+    I::Item: Into&lt;ItemStr&gt;,
+    L: Lang,
+{
+    from_fn(<span class="kw">move </span>|t| {
+        <span class="kw">let </span><span class="kw-2">mut </span>it = text.into_iter().peekable();
+
+        <span class="kw">if </span>it.peek().is_some() {
+            <span class="macro">quote_in! </span>{ <span class="kw-2">*</span>t =&gt;
+                $(static_literal(<span class="string">"/**"</span>))
+                $(<span class="kw">for </span>line <span class="kw">in </span>it join ($[<span class="string">'\r'</span>]) {
+                    $[<span class="string">' '</span>]* $(line.into())
+                })
+                $[<span class="string">' '</span>]$(static_literal(<span class="string">"*/"</span>))
+            }
+        }
+    })
+}
+
+<span class="kw">use </span>genco::prelude::<span class="kw-2">*</span>;
+
+<span class="kw">let </span>tokens: java::Tokens = <span class="macro">quote! </span>{
+    $(block_comment(<span class="kw-2">&amp;</span>[<span class="string">"This class is used for awesome stuff"</span>, <span class="string">"ok?"</span>]))
+    public <span class="kw">static </span>class Foo {
+    }
+};
+
+<span class="macro">assert_eq!</span>(
+    <span class="macro">vec!</span>[
+        <span class="string">"/**"</span>,
+        <span class="string">" * This class is used for awesome stuff"</span>,
+        <span class="string">" * ok?"</span>,
+        <span class="string">" */"</span>,
+        <span class="string">"public static class Foo {"</span>,
+        <span class="string">"}"
+    </span>],
+    tokens.to_vec()<span class="question-mark">?
+</span>);</code></pre></div>
+</div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.Display.html" title="struct genco::tokens::Display">Display</a></div><div class="desc docblock-short">Struct containing a type that implements <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html" title="trait core::fmt::Display">Display</a> and can be
+tokenized into a stream.</div></li><li><div class="item-name"><a class="struct" href="struct.FromFn.html" title="struct genco::tokens::FromFn">FromFn</a></div><div class="desc docblock-short">A captured function used for formatting tokens.</div></li><li><div class="item-name"><a class="struct" href="struct.QuotedFn.html" title="struct genco::tokens::QuotedFn">QuotedFn</a></div><div class="desc docblock-short">Struct containing a type that is quoted.</div></li><li><div class="item-name"><a class="struct" href="struct.RegisterFn.html" title="struct genco::tokens::RegisterFn">RegisterFn</a></div><div class="desc docblock-short">Struct containing a type only intended to be registered.</div></li><li><div class="item-name"><a class="struct" href="struct.Tokens.html" title="struct genco::tokens::Tokens">Tokens</a></div><div class="desc docblock-short">A stream of tokens.</div></li></ul><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="enum" href="enum.Item.html" title="enum genco::tokens::Item">Item</a></div><div class="desc docblock-short">A single item in a stream of tokens.</div></li><li><div class="item-name"><a class="enum" href="enum.ItemStr.html" title="enum genco::tokens::ItemStr">ItemStr</a></div><div class="desc docblock-short">A managed string that permits immutable borrowing.</div></li></ul><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="trait" href="trait.FormatInto.html" title="trait genco::tokens::FormatInto">FormatInto</a></div><div class="desc docblock-short">Trait for types that can be formatted in-place into a token stream.</div></li><li><div class="item-name"><a class="trait" href="trait.Register.html" title="trait genco::tokens::Register">Register</a></div><div class="desc docblock-short">Helper trait to convert something into a stream of registrations.</div></li></ul><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="fn" href="fn.display.html" title="fn genco::tokens::display">display</a></div><div class="desc docblock-short">Function to build a string literal.</div></li><li><div class="item-name"><a class="fn" href="fn.from_fn.html" title="fn genco::tokens::from_fn">from_fn</a></div><div class="desc docblock-short">Construct a <a href="trait.FormatInto.html" title="trait genco::tokens::FormatInto">FormatInto</a> implementation from a
+function.</div></li><li><div class="item-name"><a class="fn" href="fn.quoted.html" title="fn genco::tokens::quoted">quoted</a></div><div class="desc docblock-short">Function to provide string quoting.</div></li><li><div class="item-name"><a class="fn" href="fn.register.html" title="fn genco::tokens::register">register</a></div><div class="desc docblock-short">Function to provide item registration.</div></li><li><div class="item-name"><a class="fn" href="fn.static_literal.html" title="fn genco::tokens::static_literal">static_literal</a></div><div class="desc docblock-short">A formatter from a static literal.</div></li></ul></section></div></main></body></html>

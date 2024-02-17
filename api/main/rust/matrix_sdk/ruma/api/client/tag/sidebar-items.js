@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["create_tag","delete_tag","get_tags"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":["boxed_into_future","timer"],"mod":["debug","deserialized_responses","executor","failures_cache","ring_buffer","store_locks","timeout","tracing_timer"],"trait":["AsyncTraitDeps","SendOutsideWasm","SyncOutsideWasm"]};

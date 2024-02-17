@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["PreviousRoom","RoomCreateEventContent"],"type":["InitialRoomCreateEvent","OriginalRoomCreateEvent","OriginalSyncRoomCreateEvent","PossiblyRedactedRoomCreateEventContent","RedactedRoomCreateEvent","RedactedRoomCreateEventContent","RedactedSyncRoomCreateEvent","RoomCreateEvent","StrippedRoomCreateEvent","SyncRoomCreateEvent"]};

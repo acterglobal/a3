@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["AnyDecryptedOlmEvent"],"struct":["DecryptedOlmV1Event","OlmV1Keys","ToDeviceCustomEvent"],"type":["DecryptedDummyEvent","DecryptedForwardedRoomKeyEvent","DecryptedRoomKeyEvent","DecryptedSecretSendEvent"]};

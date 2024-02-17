@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":["impl_lang","quote","quote_fn","quote_in"],"mod":["fmt","lang","prelude","tokens"]};

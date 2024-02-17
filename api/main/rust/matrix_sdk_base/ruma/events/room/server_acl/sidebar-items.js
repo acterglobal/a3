@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["RedactedRoomServerAclEventContent","RoomServerAclEventContent"],"type":["InitialRoomServerAclEvent","OriginalRoomServerAclEvent","OriginalSyncRoomServerAclEvent","PossiblyRedactedRoomServerAclEventContent","RedactedRoomServerAclEvent","RedactedSyncRoomServerAclEvent","RoomServerAclEvent","StrippedRoomServerAclEvent","SyncRoomServerAclEvent"]};

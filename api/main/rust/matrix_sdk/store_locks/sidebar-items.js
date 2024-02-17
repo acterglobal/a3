@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["EXTEND_LEASE_EVERY_MS","LEASE_DURATION_MS","MAX_BACKOFF_MS"],"enum":["LockStoreError"],"struct":["CrossProcessStoreLock","CrossProcessStoreLockGuard"],"trait":["BackingStore"]};

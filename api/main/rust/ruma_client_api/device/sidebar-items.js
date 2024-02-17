@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["delete_device","delete_devices","get_device","get_devices","update_device"],"struct":["Device"]};

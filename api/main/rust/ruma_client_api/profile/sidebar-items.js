@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["get_avatar_url","get_display_name","get_profile","set_avatar_url","set_display_name"]};

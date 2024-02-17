@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["AuthenticateError","ErrorBody","ErrorKind"],"struct":["Error","StandardErrorBody"],"trait":["FromHttpResponseErrorExt"]};

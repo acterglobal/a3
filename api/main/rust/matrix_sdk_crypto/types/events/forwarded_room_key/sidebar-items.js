@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ForwardedRoomKeyContent"],"struct":["ForwardedMegolmV1AesSha2Content","ForwardedMegolmV2AesSha2Content","UnknownRoomKeyContent"],"type":["ForwardedRoomKeyEvent"]};

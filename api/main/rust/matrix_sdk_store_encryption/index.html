@@ -1,0 +1,71 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="A general purpose encryption scheme for key/value stores."><title>matrix_sdk_store_encryption - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="matrix_sdk_store_encryption" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../matrix_sdk_store_encryption/index.html">matrix_sdk_store_encryption</a><span class="version">0.7.0</span></h2></div><div class="sidebar-elems"><ul class="block">
+            <li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li></ul></section></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../matrix_sdk_store_encryption/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">matrix_sdk_store_encryption</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/matrix_sdk_store_encryption/lib.rs.html#16-851">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>A general purpose encryption scheme for key/value stores.</p>
+<h2 id="usage"><a class="doc-anchor" href="#usage">§</a>Usage</h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>matrix_sdk_store_encryption::StoreCipher;
+<span class="kw">use </span>serde_json::{json, value::Value};
+
+<span class="kw">fn </span>main() -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">let </span>store_cipher = StoreCipher::new()<span class="question-mark">?</span>;
+
+    <span class="comment">// Export the store cipher and persist it in your key/value store
+    </span><span class="kw">let </span>export = store_cipher.export(<span class="string">"secret-passphrase"</span>)<span class="question-mark">?</span>;
+
+    <span class="kw">let </span>value = <span class="macro">json!</span>({
+        <span class="string">"some"</span>: <span class="string">"data"</span>,
+    });
+
+    <span class="kw">let </span>encrypted = store_cipher.encrypt_value(<span class="kw-2">&amp;</span>value)<span class="question-mark">?</span>;
+    <span class="kw">let </span>decrypted: Value = store_cipher.decrypt_value(<span class="kw-2">&amp;</span>encrypted)<span class="question-mark">?</span>;
+
+    <span class="macro">assert_eq!</span>(value, decrypted);
+
+    <span class="kw">let </span>key = <span class="string">"bulbasaur"</span>;
+
+    <span class="comment">// Hash the key so people don't know which pokemon we have collected.
+    </span><span class="kw">let </span>hashed_key = store_cipher.hash_key(<span class="string">"list-of-pokemon"</span>, key.as_ref());
+    <span class="kw">let </span>another_table = store_cipher.hash_key(<span class="string">"my-starter"</span>, key.as_ref());
+    <span class="kw">let </span>same_key = store_cipher.hash_key(<span class="string">"my-starter"</span>, key.as_ref());
+
+    <span class="macro">assert_ne!</span>(key.as_ref(), hashed_key);
+    <span class="macro">assert_ne!</span>(hashed_key, another_table);
+    <span class="macro">assert_eq!</span>(another_table, same_key);
+
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+<h2 id="-security-warning-hazmat"><a class="doc-anchor" href="#-security-warning-hazmat">§</a>⚠️ Security Warning: Hazmat!</h2>
+<p>This crate only implements the low-level block cipher function, to be used
+<em>only</em> as a building block for higher-level constructions. It is NOT intended
+for direct use in applications.</p>
+<p>USE AT YOUR OWN RISK!</p>
+<h2 id="encryption-scheme"><a class="doc-anchor" href="#encryption-scheme">§</a>Encryption scheme</h2>
+<p>The central component of the encryption scheme is the <code>StoreCipher</code> type, used
+for both obfuscating keys and encrypting values of the key/value store.
+A <code>StoreCipher</code> object consists of two randomly-generated 32 byte secrets.</p>
+<p>The first secret is used to encrypt values. XChaCha20Poly1305 with a random
+nonce is used to encrypt each value. The nonce is saved with the ciphertext.</p>
+<p>The second secret is used as a seed to derive table-specific keys, used to key
+a keyed hash construction, which is in turn used to hash table data. Currently
+we use blake3 as the keyed hash construction.</p>
+<div class="example-wrap"><pre class="language-text"><code>                ┌───────────────────────────────────────┐
+                │             StoreCipher               │
+                │   Encryption key |    Hash key seed   │
+                │      [u8; 32]    |       [u8; 32]     │
+                └───────────────────────────────────────┘
+</code></pre></div>
+<p>The <code>StoreCipher</code> has some Matrix-specific assumptions built in, which ensure that
+the limits of the cryptographic primitives are not exceeded. If this crate is
+used for non-Matrix data, users need to ensure:</p>
+<ol>
+<li>That individual values are chunked, otherwise decryption might be susceptible
+to a DOS attack.</li>
+<li>The <code>StoreCipher</code> is periodically rotated/rekeyed.</li>
+</ol>
+<h2 id="wasm-support"><a class="doc-anchor" href="#wasm-support">§</a>WASM support</h2>
+<p>This crate relies on the <code>random</code> and <code>getrandom</code> crates which don’t support
+WASM automatically.</p>
+<p>Either turn the <code>js</code> feature on directly on this crate or depend on <code>getrandom</code>
+with the <code>js</code> feature turned on. More info can be found in the <a href="https://docs.rs/getrandom/latest/getrandom/index.html#webassembly-support"><code>getrandom</code>
+docs</a>.</p>
+</div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.EncryptedValue.html" title="struct matrix_sdk_store_encryption::EncryptedValue">EncryptedValue</a></div><div class="desc docblock-short">Encrypted value, ready for storage, as created by the
+<a href="struct.StoreCipher.html#method.encrypt_value_data" title="method matrix_sdk_store_encryption::StoreCipher::encrypt_value_data"><code>StoreCipher::encrypt_value_data()</code></a></div></li><li><div class="item-name"><a class="struct" href="struct.StoreCipher.html" title="struct matrix_sdk_store_encryption::StoreCipher">StoreCipher</a></div><div class="desc docblock-short">An encryption key that can be used to encrypt data for key/value stores.</div></li></ul><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="enum" href="enum.Error.html" title="enum matrix_sdk_store_encryption::Error">Error</a></div><div class="desc docblock-short">Error type for the <code>StoreCipher</code> operations.</div></li></ul></section></div></main></body></html>

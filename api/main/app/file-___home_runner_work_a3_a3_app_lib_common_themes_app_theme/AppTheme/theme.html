@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the theme property from the AppTheme class, for the Dart programming language.">
+  <title>theme property - AppTheme class - app_theme library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">acter</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_common_themes_app_theme/file-___home_runner_work_a3_a3_app_lib_common_themes_app_theme-library.html">common&#47;themes&#47;app_theme.dart</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_common_themes_app_theme/AppTheme-class.html">AppTheme</a></li>
+    <li class="self-crumb">theme property</li>
+  </ol>
+  <div class="self-name">theme</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="file-___home_runner_work_a3_a3_app_lib_common_themes_app_theme&#47;AppTheme-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-property">theme</span> property 
+</h1></div>
+
+
+        
+<section id="getter">
+
+<section class="multi-line-signature">
+  
+  <span class="returntype">dynamic</span>
+  <span class="name ">theme</span>
+  
+
+</section>
+
+
+
+
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">static ThemeData get theme {
+  return ThemeData(
+    fontFamily: &#39;Inter&#39;,
+    fontFamilyFallback: emojiFallbackFonts,
+    textTheme: const TextTheme(
+      headlineLarge: TextStyle(
+        color: Colors.white,
+        fontSize: 36,
+        fontWeight: FontWeight.bold,
+      ),
+      headlineMedium: TextStyle(
+        color: Colors.white,
+        fontSize: 30,
+        fontWeight: FontWeight.bold,
+      ),
+      headlineSmall: TextStyle(
+        color: Colors.white,
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+      ),
+      titleLarge: TextStyle(
+        color: Colors.white,
+        fontSize: 24,
+        fontWeight: FontWeight.w500,
+      ),
+      titleMedium: TextStyle(
+        color: Colors.white,
+        fontSize: 21,
+        fontWeight: FontWeight.w500,
+      ),
+      titleSmall: TextStyle(
+        color: Colors.white,
+        fontSize: 18,
+        fontWeight: FontWeight.w500,
+      ),
+      bodyLarge: TextStyle(
+        color: Colors.white,
+        fontSize: 18,
+        fontWeight: FontWeight.w400,
+      ),
+      bodyMedium: TextStyle(
+        color: Colors.white,
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+      ),
+      bodySmall: TextStyle(
+        color: Colors.white,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+      ),
+      labelLarge: TextStyle(
+        color: Colors.white,
+        fontSize: 14,
+        fontWeight: FontWeight.w300,
+        decorationThickness: 0.8,
+      ),
+      labelMedium: TextStyle(
+        color: Colors.white,
+        fontSize: 13,
+        fontWeight: FontWeight.w300,
+        decorationThickness: 0.8,
+      ),
+      labelSmall: TextStyle(
+        color: Colors.white,
+        fontSize: 12,
+        fontWeight: FontWeight.w300,
+      ),
+    ),
+    colorScheme: brandColorScheme,
+    useMaterial3: true,
+  ).copyWith(
+    scaffoldBackgroundColor: const Color(0x122334FF),
+    &#47;&#47; splashColor: Colors.transparent,
+    highlightColor: Colors.transparent,
+    hoverColor: Colors.transparent,
+    progressIndicatorTheme: const ProgressIndicatorThemeData(
+      color: Color(0xffFF8E00),
+      circularTrackColor: Colors.transparent,
+    ),
+    dividerColor: const Color(0xFFDDEDFC),
+    cardTheme: CardTheme(
+      color: brandColorScheme.secondaryContainer,
+      elevation: 0,
+      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+    ),
+    listTileTheme: const ListTileThemeData(
+      contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+    ),
+    dialogTheme: DialogTheme(
+      iconColor: const Color(0xFF67A24A),
+      backgroundColor: const Color(0xFF122D46),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        side: BorderSide.none,
+        borderRadius: BorderRadius.circular(6),
+      ),
+    ),
+    bottomSheetTheme: BottomSheetThemeData(
+      backgroundColor: brandColorScheme.neutral,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.all(18),
+        elevation: 0,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.all(18),
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+            color: brandColorScheme.secondary,
+            width: 0.5,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
+      ),
+    ),
+    dividerTheme: const DividerThemeData(
+      indent: 75,
+      endIndent: 15,
+      thickness: 0.5,
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.white),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(
+          color: Color(0xFF3AE3E0),
+        ),
+      ),
+      hintStyle: const TextStyle(
+        color: Color(0xFF898989),
+        fontWeight: FontWeight.w300,
+        fontSize: 14,
+      ),
+    ),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: brandColorScheme.navBarBackground,
+      unselectedLabelStyle: const TextStyle(
+        color: Colors.white,
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+      ),
+      selectedItemColor: Colors.white,
+      unselectedItemColor: Colors.white,
+      selectedLabelStyle: const TextStyle(
+        color: Colors.white,
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+        height: 1.5,
+      ),
+      selectedIconTheme: const IconThemeData(color: Colors.white, size: 18),
+      unselectedIconTheme: const IconThemeData(color: Colors.white, size: 18),
+      type: BottomNavigationBarType.fixed,
+      elevation: 0,
+    ),
+    navigationRailTheme: NavigationRailThemeData(
+      backgroundColor: brandColorScheme.navBarBackground,
+      indicatorColor: const Color(0xff1E4E7B),
+      unselectedLabelTextStyle: const TextStyle(
+        color: Colors.white,
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+      ),
+      selectedLabelTextStyle: const TextStyle(
+        color: Colors.white,
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+      ),
+      selectedIconTheme: const IconThemeData(color: Colors.white, size: 18),
+      unselectedIconTheme: const IconThemeData(color: Colors.white, size: 18),
+    ),
+  );
+}</code></pre>
+</section>
+
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">acter</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_common_themes_app_theme/file-___home_runner_work_a3_a3_app_lib_common_themes_app_theme-library.html">app_theme</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_common_themes_app_theme/AppTheme-class.html">AppTheme</a></li>
+    <li class="self-crumb">theme property</li>
+</ol>
+
+
+    <h5>AppTheme class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    acter
+      0.0.1+1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

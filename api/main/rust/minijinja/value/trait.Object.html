@@ -1,0 +1,108 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="A utility trait that represents a dynamic object."><title>Object in minijinja::value - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="minijinja" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc trait"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button><a class="logo-container" href="../../minijinja/index.html"><img src="https://github.com/mitsuhiko/minijinja/raw/main/artwork/logo-square.png" alt=""></a></nav><nav class="sidebar"><div class="sidebar-crate"><a class="logo-container" href="../../minijinja/index.html"><img src="https://github.com/mitsuhiko/minijinja/raw/main/artwork/logo-square.png" alt="logo"></a><h2><a href="../../minijinja/index.html">minijinja</a><span class="version">1.0.12</span></h2></div><h2 class="location"><a href="#">Object</a></h2><div class="sidebar-elems"><section><h3><a href="#provided-methods">Provided Methods</a></h3><ul class="block"><li><a href="#method.call">call</a></li><li><a href="#method.call_method">call_method</a></li><li><a href="#method.kind">kind</a></li></ul><h3><a href="#foreign-impls">Implementations on Foreign Types</a></h3><ul class="block"><li><a href="#impl-Object-for-Arc%3CT%3E">Arc&lt;T&gt;</a></li></ul><h3><a href="#implementations">Methods</a></h3><ul class="block method"><li><a href="#method.downcast_ref">downcast_ref</a></li><li><a href="#method.is">is</a></li></ul><h3><a href="#implementors">Implementors</a></h3></section><h2><a href="index.html">In minijinja::value</a></h2></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../minijinja/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Trait <a href="../index.html">minijinja</a>::<wbr><a href="index.html">value</a>::<wbr><a class="trait" href="#">Object</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../../src/minijinja/value/object.rs.html#34-77">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><code>pub trait Object: <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html" title="trait core::fmt::Display">Display</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html" title="trait core::any::Any">Any</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> {
+    // Provided methods
+    fn <a href="#method.kind" class="fn">kind</a>(&amp;self) -&gt; <a class="enum" href="enum.ObjectKind.html" title="enum minijinja::value::ObjectKind">ObjectKind</a>&lt;'_&gt; { ... }
+<span class="item-spacer"></span>    fn <a href="#method.call_method" class="fn">call_method</a>(
+        &amp;self,
+        state: &amp;<a class="struct" href="../struct.State.html" title="struct minijinja::State">State</a>&lt;'_, '_&gt;,
+        name: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>,
+        args: &amp;[<a class="struct" href="struct.Value.html" title="struct minijinja::value::Value">Value</a>]
+    ) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="struct.Value.html" title="struct minijinja::value::Value">Value</a>, <a class="struct" href="../struct.Error.html" title="struct minijinja::Error">Error</a>&gt; { ... }
+<span class="item-spacer"></span>    fn <a href="#method.call" class="fn">call</a>(
+        &amp;self,
+        state: &amp;<a class="struct" href="../struct.State.html" title="struct minijinja::State">State</a>&lt;'_, '_&gt;,
+        args: &amp;[<a class="struct" href="struct.Value.html" title="struct minijinja::value::Value">Value</a>]
+    ) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="struct.Value.html" title="struct minijinja::value::Value">Value</a>, <a class="struct" href="../struct.Error.html" title="struct minijinja::Error">Error</a>&gt; { ... }
+}</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>A utility trait that represents a dynamic object.</p>
+<p>The engine uses the <a href="struct.Value.html" title="struct minijinja::value::Value"><code>Value</code></a> type to represent values that the engine
+knows about.  Most of these values are primitives such as integers, strings
+or maps.  However it is also possible to expose custom types without
+undergoing a serialization step to the engine.  For this to work a type
+needs to implement the <a href="trait.Object.html" title="trait minijinja::value::Object"><code>Object</code></a> trait and be wrapped in a value with
+<a href="struct.Value.html#method.from_object" title="associated function minijinja::value::Value::from_object"><code>Value::from_object</code></a>. The ownership of
+the object will then move into the value type.
+The engine uses reference counted objects with interior mutability in the
+value type.  This means that all trait methods take <code>&amp;self</code> and types like
+<a href="https://doc.rust-lang.org/nightly/std/sync/mutex/struct.Mutex.html" title="struct std::sync::mutex::Mutex"><code>Mutex</code></a> need to be used to enable mutability.
+Objects need to implement <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html" title="trait core::fmt::Display"><code>Display</code></a> which is used by
+the engine to convert the object into a string if needed.  Additionally
+<a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug"><code>Debug</code></a> is required as well.</p>
+<p>The exact runtime characteristics of the object are influenced by the
+<a href="trait.Object.html#method.kind"><code>kind</code></a> of the object.  By default an object can just be
+stringified and methods can be called.</p>
+<p>For examples of how to implement objects refer to <a href="trait.SeqObject.html" title="trait minijinja::value::SeqObject"><code>SeqObject</code></a> and
+<a href="trait.StructObject.html" title="trait minijinja::value::StructObject"><code>StructObject</code></a>.</p>
+</div></details><h2 id="provided-methods" class="section-header">Provided Methods<a href="#provided-methods" class="anchor">§</a></h2><div class="methods"><details class="toggle method-toggle" open><summary><section id="method.kind" class="method"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#42-44">source</a><h4 class="code-header">fn <a href="#method.kind" class="fn">kind</a>(&amp;self) -&gt; <a class="enum" href="enum.ObjectKind.html" title="enum minijinja::value::ObjectKind">ObjectKind</a>&lt;'_&gt;</h4></section></summary><div class="docblock"><p>Describes the kind of an object.</p>
+<p>If not implemented behavior for an object is <a href="enum.ObjectKind.html#variant.Plain" title="variant minijinja::value::ObjectKind::Plain"><code>ObjectKind::Plain</code></a>
+which just means that it’s stringifyable and potentially can be
+called or has methods.</p>
+<p>For more information see <a href="enum.ObjectKind.html" title="enum minijinja::value::ObjectKind"><code>ObjectKind</code></a>.</p>
+</div></details><details class="toggle method-toggle" open><summary><section id="method.call_method" class="method"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#53-60">source</a><h4 class="code-header">fn <a href="#method.call_method" class="fn">call_method</a>(
+    &amp;self,
+    state: &amp;<a class="struct" href="../struct.State.html" title="struct minijinja::State">State</a>&lt;'_, '_&gt;,
+    name: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>,
+    args: &amp;[<a class="struct" href="struct.Value.html" title="struct minijinja::value::Value">Value</a>]
+) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="struct.Value.html" title="struct minijinja::value::Value">Value</a>, <a class="struct" href="../struct.Error.html" title="struct minijinja::Error">Error</a>&gt;</h4></section></summary><div class="docblock"><p>Called when the engine tries to call a method on the object.</p>
+<p>It’s the responsibility of the implementer to ensure that an
+error is generated if an invalid method is invoked.</p>
+<p>To convert the arguments into arguments use the
+<a href="fn.from_args.html" title="fn minijinja::value::from_args"><code>from_args</code></a> function.</p>
+</div></details><details class="toggle method-toggle" open><summary><section id="method.call" class="method"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#69-76">source</a><h4 class="code-header">fn <a href="#method.call" class="fn">call</a>(&amp;self, state: &amp;<a class="struct" href="../struct.State.html" title="struct minijinja::State">State</a>&lt;'_, '_&gt;, args: &amp;[<a class="struct" href="struct.Value.html" title="struct minijinja::value::Value">Value</a>]) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="struct.Value.html" title="struct minijinja::value::Value">Value</a>, <a class="struct" href="../struct.Error.html" title="struct minijinja::Error">Error</a>&gt;</h4></section></summary><div class="docblock"><p>Called when the object is invoked directly.</p>
+<p>The default implementation just generates an error that the object
+cannot be invoked.</p>
+<p>To convert the arguments into arguments use the
+<a href="fn.from_args.html" title="fn minijinja::value::from_args"><code>from_args</code></a> function.</p>
+</div></details></div><h2 id="implementations" class="section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-dyn+Object" class="impl"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#79-163">source</a><a href="#impl-dyn+Object" class="anchor">§</a><h3 class="code-header">impl dyn <a class="trait" href="trait.Object.html" title="trait minijinja::value::Object">Object</a></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.downcast_ref" class="method"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#137-152">source</a><h4 class="code-header">pub fn <a href="#method.downcast_ref" class="fn">downcast_ref</a>&lt;T: 'static&gt;(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>&gt;</h4></section></summary><div class="docblock"><p>Returns some reference to the boxed object if it is of type <code>T</code>, or None if it isn’t.</p>
+<p>This is basically the “reverse” of <a href="struct.Value.html#method.from_object" title="associated function minijinja::value::Value::from_object"><code>from_object</code></a>,
+<a href="struct.Value.html#method.from_seq_object" title="associated function minijinja::value::Value::from_seq_object"><code>from_seq_object</code></a> and <a href="struct.Value.html#method.from_struct_object" title="associated function minijinja::value::Value::from_struct_object"><code>from_struct_object</code></a>.</p>
+<p>Because this method works also for objects that only implement <a href="trait.StructObject.html" title="trait minijinja::value::StructObject"><code>StructObject</code></a>
+and <a href="trait.SeqObject.html" title="trait minijinja::value::SeqObject"><code>SeqObject</code></a> these methods do not actually use trait bounds that are
+restricted to <code>Object</code>.</p>
+<h5 id="example"><a class="doc-anchor" href="#example">§</a>Example</h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::fmt;
+
+<span class="attr">#[derive(Debug)]
+</span><span class="kw">struct </span>Thing {
+    id: usize,
+}
+
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>Thing {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+        fmt::Debug::fmt(<span class="self">self</span>, f)
+    }
+}
+
+<span class="kw">impl </span>Object <span class="kw">for </span>Thing {}
+
+<span class="kw">let </span>x_value = Value::from_object(Thing { id: <span class="number">42 </span>});
+<span class="kw">let </span>value_as_obj = x_value.as_object().unwrap();
+<span class="kw">let </span>thing = value_as_obj.downcast_ref::&lt;Thing&gt;().unwrap();
+<span class="macro">assert_eq!</span>(thing.id, <span class="number">42</span>);</code></pre></div>
+<p>It also works with <a href="trait.SeqObject.html" title="trait minijinja::value::SeqObject"><code>SeqObject</code></a> or <a href="trait.StructObject.html" title="trait minijinja::value::StructObject"><code>StructObject</code></a>:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>
+<span class="kw">struct </span>Thing {
+    id: usize,
+}
+
+<span class="kw">impl </span>SeqObject <span class="kw">for </span>Thing {
+    <span class="kw">fn </span>get_item(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: usize) -&gt; <span class="prelude-ty">Option</span>&lt;Value&gt; {
+        (idx &lt; <span class="number">3</span>).then(|| Value::from(idx))
+    }
+    <span class="kw">fn </span>item_count(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+        <span class="number">3
+    </span>}
+}
+
+<span class="kw">let </span>x_value = Value::from_seq_object(Thing { id: <span class="number">42 </span>});
+<span class="kw">let </span>value_as_obj = x_value.as_object().unwrap();
+<span class="kw">let </span>thing = value_as_obj.downcast_ref::&lt;Thing&gt;().unwrap();
+<span class="macro">assert_eq!</span>(thing.id, <span class="number">42</span>);</code></pre></div>
+</div></details><details class="toggle method-toggle" open><summary><section id="method.is" class="method"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#157-162">source</a><h4 class="code-header">pub fn <a href="#method.is" class="fn">is</a>&lt;T: 'static&gt;(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></h4></section></summary><div class="docblock"><p>Checks if the object is of a specific type.</p>
+<p>For details of this operation see <a href="#method.downcast_ref"><code>downcast_ref</code></a>.</p>
+</div></details></div></details></div><h2 id="foreign-impls" class="section-header">Implementations on Foreign Types<a href="#foreign-impls" class="anchor">§</a></h2><details class="toggle implementors-toggle"><summary><section id="impl-Object-for-Arc%3CT%3E" class="impl"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#165-180">source</a><a href="#impl-Object-for-Arc%3CT%3E" class="anchor">§</a><h3 class="code-header">impl&lt;T: <a class="trait" href="trait.Object.html" title="trait minijinja::value::Object">Object</a>&gt; <a class="trait" href="trait.Object.html" title="trait minijinja::value::Object">Object</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/sync/struct.Arc.html" title="struct alloc::sync::Arc">Arc</a>&lt;T&gt;</h3></section></summary><div class="impl-items"><section id="method.kind-1" class="method trait-impl"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#167-169">source</a><a href="#method.kind-1" class="anchor">§</a><h4 class="code-header">fn <a href="#method.kind" class="fn">kind</a>(&amp;self) -&gt; <a class="enum" href="enum.ObjectKind.html" title="enum minijinja::value::ObjectKind">ObjectKind</a>&lt;'_&gt;</h4></section><section id="method.call_method-1" class="method trait-impl"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#172-174">source</a><a href="#method.call_method-1" class="anchor">§</a><h4 class="code-header">fn <a href="#method.call_method" class="fn">call_method</a>(
+    &amp;self,
+    state: &amp;<a class="struct" href="../struct.State.html" title="struct minijinja::State">State</a>&lt;'_, '_&gt;,
+    name: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>,
+    args: &amp;[<a class="struct" href="struct.Value.html" title="struct minijinja::value::Value">Value</a>]
+) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="struct.Value.html" title="struct minijinja::value::Value">Value</a>, <a class="struct" href="../struct.Error.html" title="struct minijinja::Error">Error</a>&gt;</h4></section><section id="method.call-1" class="method trait-impl"><a class="src rightside" href="../../src/minijinja/value/object.rs.html#177-179">source</a><a href="#method.call-1" class="anchor">§</a><h4 class="code-header">fn <a href="#method.call" class="fn">call</a>(&amp;self, state: &amp;<a class="struct" href="../struct.State.html" title="struct minijinja::State">State</a>&lt;'_, '_&gt;, args: &amp;[<a class="struct" href="struct.Value.html" title="struct minijinja::value::Value">Value</a>]) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="struct.Value.html" title="struct minijinja::value::Value">Value</a>, <a class="struct" href="../struct.Error.html" title="struct minijinja::Error">Error</a>&gt;</h4></section></div></details><h2 id="implementors" class="section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"></div><script src="../../trait.impl/minijinja/value/object/trait.Object.js" data-ignore-extern-crates="alloc" async></script></section></div></main></body></html>

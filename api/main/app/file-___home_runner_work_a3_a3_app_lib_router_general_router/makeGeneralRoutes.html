@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the makeGeneralRoutes function from the general_router library, for the Dart programming language.">
+  <title>makeGeneralRoutes function - general_router library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">acter</a></li>
+    <li><a href="../file-___home_runner_work_a3_a3_app_lib_router_general_router/file-___home_runner_work_a3_a3_app_lib_router_general_router-library.html">router&#47;general_router.dart</a></li>
+    <li class="self-crumb">makeGeneralRoutes function</li>
+  </ol>
+  <div class="self-name">makeGeneralRoutes</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="file-___home_runner_work_a3_a3_app_lib_router_general_router&#47;file-___home_runner_work_a3_a3_app_lib_router_general_router-library-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-function">makeGeneralRoutes</span> function 
+ 
+</h1></div>
+
+    <section class="multi-line-signature">
+        
+
+<span class="returntype"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a></span>
+<span class="name ">makeGeneralRoutes</span>(<wbr>)
+
+        
+
+    </section>
+    
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">List&lt;RouteBase&gt; makeGeneralRoutes() {
+  return [
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.forward.name,
+      path: Routes.forward.route,
+      redirect: forwardRedirect,
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.intro.name,
+      path: Routes.intro.route,
+      builder: (context, state) =&gt; const IntroPage(),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.start.name,
+      path: Routes.start.route,
+      builder: (context, state) =&gt; const StartPage(),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.introProfile.name,
+      path: Routes.introProfile.route,
+      builder: (context, state) =&gt; const IntroProfile(),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.authLogin.name,
+      path: Routes.authLogin.route,
+      builder: (context, state) =&gt; const LoginPage(),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.authRegister.name,
+      path: Routes.authRegister.route,
+      builder: (context, state) =&gt; const RegisterPage(),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.bugReport.name,
+      path: Routes.bugReport.route,
+      pageBuilder: (context, state) =&gt; DialogPage(
+        builder: (BuildContext ctx) =&gt; BugReportPage(
+          imagePath: state.uri.queryParameters[&#39;screenshot&#39;],
+        ),
+      ),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.fatalFail.name,
+      path: Routes.fatalFail.route,
+      builder: (context, state) =&gt; FatalFailPage(
+        error: state.uri.queryParameters[&#39;error&#39;]!,
+        trace: state.uri.queryParameters[&#39;trace&#39;]!,
+      ),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.quickJump.name,
+      path: Routes.quickJump.route,
+      pageBuilder: (context, state) =&gt; DialogPage(
+        builder: (BuildContext ctx) =&gt; const QuickjumpDialog(),
+      ),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.actionAddPin.name,
+      path: Routes.actionAddPin.route,
+      pageBuilder: (context, state) {
+        return SideSheetPage(
+          key: state.pageKey,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween(
+                begin: const Offset(1, 0),
+                end: const Offset(0, 0),
+              ).animate(
+                animation,
+              ),
+              child: child,
+            );
+          },
+          child: CreatePinSheet(
+            initialSelectedSpace: state.uri.queryParameters[&#39;spaceId&#39;],
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.createEvent.name,
+      path: Routes.createEvent.route,
+      pageBuilder: (context, state) {
+        return SideSheetPage(
+          key: state.pageKey,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween(
+                begin: const Offset(1, 0),
+                end: const Offset(0, 0),
+              ).animate(
+                animation,
+              ),
+              child: child,
+            );
+          },
+          child: CreateEventSheet(
+            initialSelectedSpace: state.uri.queryParameters[&#39;spaceId&#39;],
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.editCalendarEvent.name,
+      path: Routes.editCalendarEvent.route,
+      pageBuilder: (context, state) {
+        return SideSheetPage(
+          key: state.pageKey,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween(
+                begin: const Offset(1, 0),
+                end: const Offset(0, 0),
+              ).animate(
+                animation,
+              ),
+              child: child,
+            );
+          },
+          child: EditEventSheet(calendarId: state.pathParameters[&#39;calendarId&#39;]),
+        );
+      },
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.actionAddTaskList.name,
+      path: Routes.actionAddTaskList.route,
+      pageBuilder: (context, state) {
+        return SideSheetPage(
+          key: state.pageKey,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween(
+                begin: const Offset(1, 0),
+                end: const Offset(0, 0),
+              ).animate(
+                animation,
+              ),
+              child: child,
+            );
+          },
+          child: CreateTaskListSheet(
+            initialSelectedSpace: state.uri.queryParameters[&#39;spaceId&#39;],
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.actionCreateSuperInvite.name,
+      path: Routes.actionCreateSuperInvite.route,
+      pageBuilder: (context, state) {
+        return SideSheetPage(
+          key: state.pageKey,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween(
+                begin: const Offset(1, 0),
+                end: const Offset(0, 0),
+              ).animate(
+                animation,
+              ),
+              child: child,
+            );
+          },
+          child: CreateSuperInviteTokenPage(
+            token: state.extra != null ? state.extra as SuperInviteToken : null,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.createSpace.name,
+      path: Routes.createSpace.route,
+      pageBuilder: (context, state) {
+        return SideSheetPage(
+          key: state.pageKey,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween(
+                begin: const Offset(1, 0),
+                end: const Offset(0, 0),
+              ).animate(
+                animation,
+              ),
+              child: child,
+            );
+          },
+          child: CreateSpacePage(
+            initialParentsSpaceId: state.uri.queryParameters[&#39;parentSpaceId&#39;],
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.linkChat.name,
+      path: Routes.linkChat.route,
+      pageBuilder: (context, state) {
+        return SideSheetPage(
+          key: state.pageKey,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween(
+                begin: const Offset(1, 0),
+                end: const Offset(0, 0),
+              ).animate(
+                animation,
+              ),
+              child: child,
+            );
+          },
+          child: LinkRoomPage(
+            parentSpaceId: state.pathParameters[&#39;spaceId&#39;]!,
+            pageTitle: &#39;Link as Space-chat&#39;,
+            childRoomType: ChildRoomType.chat,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.linkSubspace.name,
+      path: Routes.linkSubspace.route,
+      pageBuilder: (context, state) {
+        return SideSheetPage(
+          key: state.pageKey,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween(
+                begin: const Offset(1, 0),
+                end: const Offset(0, 0),
+              ).animate(
+                animation,
+              ),
+              child: child,
+            );
+          },
+          child: LinkRoomPage(
+            parentSpaceId: state.pathParameters[&#39;spaceId&#39;]!,
+            pageTitle: &#39;Link Sub-Space&#39;,
+            childRoomType: ChildRoomType.space,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.linkRecommended.name,
+      path: Routes.linkRecommended.route,
+      pageBuilder: (context, state) {
+        return SideSheetPage(
+          key: state.pageKey,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween(
+                begin: const Offset(1, 0),
+                end: const Offset(0, 0),
+              ).animate(
+                animation,
+              ),
+              child: child,
+            );
+          },
+          child: LinkRoomPage(
+            parentSpaceId: state.pathParameters[&#39;spaceId&#39;]!,
+            pageTitle: &#39;Link Recommended-Space&#39;,
+            childRoomType: ChildRoomType.recommendedSpace,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.actionAddUpdate.name,
+      path: Routes.actionAddUpdate.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const AddNewsPage(),
+        );
+      },
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.editSpace.name,
+      path: Routes.editSpace.route,
+      pageBuilder: (context, state) {
+        return SideSheetPage(
+          key: state.pageKey,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween(
+                begin: const Offset(1, 0),
+                end: const Offset(0, 0),
+              ).animate(
+                animation,
+              ),
+              child: child,
+            );
+          },
+          child: EditSpacePage(spaceId: state.uri.queryParameters[&#39;spaceId&#39;]),
+        );
+      },
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.spaceInvite.name,
+      path: Routes.spaceInvite.route,
+      pageBuilder: (context, state) =&gt; DialogPage(
+        builder: (BuildContext ctx) =&gt; InviteToRoomDialog(
+          roomId: state.pathParameters[&#39;spaceId&#39;]!,
+        ),
+      ),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.chatInvite.name,
+      path: Routes.chatInvite.route,
+      pageBuilder: (context, state) =&gt; DialogPage(
+        builder: (BuildContext ctx) =&gt; InviteToRoomDialog(
+          roomId: state.pathParameters[&#39;chatId&#39;]!,
+        ),
+      ),
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.createChat.name,
+      path: Routes.createChat.route,
+      pageBuilder: (context, state) {
+        return isLargeScreen(context)
+            ? DialogPage(
+                barrierDismissible: false,
+                builder: (context) =&gt; CreateChatPage(
+                  initialSelectedSpaceId: state.uri.queryParameters[&#39;spaceId&#39;],
+                  initialPage: state.extra as int?,
+                ),
+              )
+            : CustomTransitionPage(
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  var begin = const Offset(0.0, 1.0);
+                  var end = Offset.zero;
+                  var curve = Curves.easeInOut;
+                  var tween = Tween(begin: begin, end: end)
+                      .chain(CurveTween(curve: curve));
+                  var offsetAnimation = animation.drive(tween);
+                  return SlideTransition(
+                    position: offsetAnimation,
+                    child: child,
+                  );
+                },
+                child: CreateChatPage(
+                  initialSelectedSpaceId: state.uri.queryParameters[&#39;spaceId&#39;],
+                  initialPage: state.extra as int?,
+                ),
+              );
+      },
+    ),
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.main.name,
+      path: Routes.main.route,
+      redirect: (BuildContext context, GoRouterState state) async {
+        &#47;&#47; we first check if there is a client available for us to use
+        final authGuarded = await authGuardRedirect(context, state);
+        if (authGuarded != null) {
+          return authGuarded;
+        }
+        if (context.mounted &amp;&amp; isDesktop) {
+          return Routes.dashboard.route;
+        } else {
+          return Routes.updates.route;
+        }
+      },
+    ),
+  ];
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">acter</a></li>
+    <li><a href="../file-___home_runner_work_a3_a3_app_lib_router_general_router/file-___home_runner_work_a3_a3_app_lib_router_general_router-library.html">general_router</a></li>
+    <li class="self-crumb">makeGeneralRoutes function</li>
+</ol>
+
+
+    <h5>general_router library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-left-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    acter
+      0.0.1+1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

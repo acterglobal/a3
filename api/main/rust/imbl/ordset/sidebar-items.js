@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DiffItem"],"macro":["ordset"],"struct":["ConsumingIter","DiffIter","Iter","OrdSet","OrdSetPool","RangedIter"]};

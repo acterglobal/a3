@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Sampler"],"fn":["config"],"struct":["BatchConfig","BatchSpanProcessor","BatchSpanProcessorBuilder","Builder","Config","EvictedHashMap","EvictedQueue","RandomIdGenerator","SimpleSpanProcessor","Span","SpanLimits","Tracer","TracerProvider","XrayIdGenerator"],"trait":["IdGenerator","ShouldSample","SpanProcessor"]};

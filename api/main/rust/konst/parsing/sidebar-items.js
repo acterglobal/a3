@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ErrorKind","ParseDirection"],"struct":["ParseError","Parser","StdParser"],"trait":["HasParser"],"type":["ParseValueResult","ParserResult"]};

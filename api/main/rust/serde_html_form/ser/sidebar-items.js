@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["to_string"],"struct":["Error","MapSerializer","SeqSerializer","Serializer","StructSerializer","StructVariantSerializer","TupleSerializer","TupleStructSerializer","TupleVariantSerializer"]};

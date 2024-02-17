@@ -1,0 +1,175 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="`ExponentialBackoff` is a backoff implementation that increases the backoff period for each retry attempt using a randomization function that grows exponentially."><title>backoff - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="backoff" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../backoff/index.html">backoff</a><span class="version">0.4.0</span></h2></div><div class="sidebar-elems"><ul class="block">
+            <li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li><li><a href="#types">Type Aliases</a></li></ul></section></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../backoff/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">backoff</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/backoff/lib.rs.html#1-239">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p><code>ExponentialBackoff</code> is a backoff implementation that increases the backoff
+period for each retry attempt using a randomization function that grows exponentially.</p>
+<p><a href="backoff/trait.Backoff.html#tymethod.next_backoff"><code>next_backoff</code></a> is calculated using the following formula:</p>
+<div class="example-wrap"><pre class="language-text"><code>  randomized interval =
+      retry_interval * (random value in range [1 - randomization_factor, 1 + randomization_factor])
+</code></pre></div>
+<p>In other words <a href="backoff/trait.Backoff.html#tymethod.next_backoff"><code>next_backoff</code></a> will range between the randomization factor
+percentage below and above the retry interval.</p>
+<p>For example, given the following parameters:</p>
+<div class="example-wrap"><pre class="language-text"><code>retry_interval = 2
+randomization_factor = 0.5
+multiplier = 2
+</code></pre></div>
+<p>the actual backoff period used in the next retry attempt will range between 1 and 3 seconds,
+multiplied by the exponential, that is, between 2 and 6 seconds.</p>
+<p><strong>Note</strong>: <code>max_interval</code> caps the <code>retry_interval</code> and not the randomized interval.</p>
+<p>If the time elapsed since an <a href="type.ExponentialBackoff.html"><code>ExponentialBackoff</code></a> instance is created goes past the
+<code>max_elapsed_time</code>, then the method <a href="backoff/trait.Backoff.html#tymethod.next_backoff"><code>next_backoff</code></a> starts returning <code>None</code>.</p>
+<p>The elapsed time can be reset by calling <a href="backoff/trait.Backoff.html#tymethod.reset"><code>reset</code></a>.</p>
+<p>Example: Given the following default arguments, for 10 tries the sequence will be,
+and assuming we go over the <code>max_elapsed_time</code> on the 10th try:</p>
+<div><table><thead><tr><th>Request #</th><th><code>retry_interval</code> (seconds)</th><th>Randomized Interval (seconds)</th></tr></thead><tbody>
+<tr><td>1</td><td>0.5</td><td>[0.25,   0.75]</td></tr>
+<tr><td>2</td><td>0.75</td><td>[0.375,  1.125]</td></tr>
+<tr><td>3</td><td>1.125</td><td>[0.562,  1.687]</td></tr>
+<tr><td>4</td><td>1.687</td><td>[0.8435, 2.53]</td></tr>
+<tr><td>5</td><td>2.53</td><td>[1.265,  3.795]</td></tr>
+<tr><td>6</td><td>3.795</td><td>[1.897,  5.692]</td></tr>
+<tr><td>7</td><td>5.692</td><td>[2.846,  8.538]</td></tr>
+<tr><td>8</td><td>8.538</td><td>[4.269, 12.807]</td></tr>
+<tr><td>9</td><td>12.807</td><td>[6.403, 19.210]</td></tr>
+<tr><td>10</td><td>19.210</td><td>None</td></tr>
+</tbody></table>
+</div><h2 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h2><h3 id="permanent-errors"><a class="doc-anchor" href="#permanent-errors">§</a>Permanent errors</h3>
+<p>Permanent errors are not retried. You have to wrap your error value explicitly
+into <code>Error::Permanent</code>. You can use <code>Result</code>’s <code>map_err</code> method.</p>
+<p><code>examples/permanent_error.rs</code>:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>backoff::{Error, ExponentialBackoff};
+<span class="kw">use </span>reqwest::Url;
+
+<span class="kw">use </span>std::fmt::Display;
+<span class="kw">use </span>std::io::{<span class="self">self</span>, Read};
+
+<span class="kw">fn </span>new_io_err&lt;E: Display&gt;(err: E) -&gt; io::Error {
+    io::Error::new(io::ErrorKind::Other, err.to_string())
+}
+
+<span class="kw">fn </span>fetch_url(url: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&lt;io::Error&gt;&gt; {
+    <span class="kw">let </span>op = || {
+        <span class="macro">println!</span>(<span class="string">"Fetching {}"</span>, url);
+        <span class="kw">let </span>url = Url::parse(url)
+            .map_err(new_io_err)
+            <span class="comment">// Permanent errors need to be explicitly constructed.
+            </span>.map_err(Error::Permanent)<span class="question-mark">?</span>;
+
+        <span class="kw">let </span><span class="kw-2">mut </span>resp = reqwest::blocking::get(url)
+            <span class="comment">// Transient errors can be constructed with the ? operator
+            // or with the try! macro. No explicit conversion needed
+            // from E: Error to backoff::Error;
+            </span>.map_err(new_io_err)<span class="question-mark">?</span>;
+
+        <span class="kw">let </span><span class="kw-2">mut </span>content = String::new();
+        <span class="kw">let _ </span>= resp.read_to_string(<span class="kw-2">&amp;mut </span>content);
+        <span class="prelude-val">Ok</span>(content)
+    };
+
+    <span class="kw">let </span>backoff = ExponentialBackoff::default();
+    backoff::retry(backoff, op)
+}
+
+<span class="kw">fn </span>main() {
+    <span class="kw">match </span>fetch_url(<span class="string">"https::///wrong URL"</span>) {
+        <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="macro">println!</span>(<span class="string">"Successfully fetched"</span>),
+        <span class="prelude-val">Err</span>(err) =&gt; <span class="macro">panic!</span>(<span class="string">"Failed to fetch: {}"</span>, err),
+    }
+}</code></pre></div>
+<h3 id="transient-errors"><a class="doc-anchor" href="#transient-errors">§</a>Transient errors</h3>
+<p>Transient errors can be constructed by wrapping your error value into <code>Error::transient</code>.
+By using the ? operator or the <code>try!</code> macro, you always get transient errors.</p>
+<p>You can also construct transient errors that are retried after a given
+interval with <code>Error::retry_after()</code> - useful for 429 errors.</p>
+<p><code>examples/retry.rs</code>:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>backoff::{retry, Error, ExponentialBackoff};
+
+<span class="kw">use </span>std::io::Read;
+
+<span class="kw">fn </span>fetch_url(url: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&lt;reqwest::Error&gt;&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>op = || {
+        <span class="macro">println!</span>(<span class="string">"Fetching {}"</span>, url);
+        <span class="kw">let </span><span class="kw-2">mut </span>resp = reqwest::blocking::get(url)<span class="question-mark">?</span>;
+
+        <span class="kw">let </span><span class="kw-2">mut </span>content = String::new();
+        <span class="kw">let _ </span>= resp.read_to_string(<span class="kw-2">&amp;mut </span>content);
+        <span class="prelude-val">Ok</span>(content)
+    };
+
+    <span class="kw">let </span>backoff = ExponentialBackoff::default();
+    retry(backoff, op)
+}
+
+<span class="kw">fn </span>main() {
+    <span class="kw">match </span>fetch_url(<span class="string">"https://www.rust-lang.org"</span>) {
+        <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="macro">println!</span>(<span class="string">"Sucessfully fetched"</span>),
+        <span class="prelude-val">Err</span>(err) =&gt; <span class="macro">panic!</span>(<span class="string">"Failed to fetch: {}"</span>, err),
+    }
+}</code></pre></div>
+<p>Output with internet connection:</p>
+<div class="example-wrap"><pre class="language-text"><code>$ time cargo run --example retry
+   Compiling backoff v0.1.0 (file:///home/tibi/workspace/backoff)
+    Finished dev [unoptimized + debuginfo] target(s) in 1.54 secs
+     Running `target/debug/examples/retry`
+Fetching https://www.rust-lang.org
+Sucessfully fetched
+
+real    0m2.003s
+user    0m1.536s
+sys    0m0.184s
+</code></pre></div>
+<p>Output without internet connection</p>
+<div class="example-wrap"><pre class="language-text"><code>$ time cargo run --example retry
+    Finished dev [unoptimized + debuginfo] target(s) in 0.0 secs
+     Running `target/debug/examples/retry`
+Fetching https://www.rust-lang.org
+Fetching https://www.rust-lang.org
+Fetching https://www.rust-lang.org
+Fetching https://www.rust-lang.org
+^C
+
+real    0m2.826s
+user    0m0.008s
+sys    0m0.000s
+</code></pre></div><h4 id="async"><a class="doc-anchor" href="#async">§</a>Async</h4>
+<p>Please set either the <code>tokio</code> or <code>async-std</code> features in Cargo.toml to enable the async support of this library, i.e.:</p>
+<div class="example-wrap"><pre class="language-toml"><code>backoff = { version = &quot;x.y.z&quot;, features = [&quot;tokio&quot;] }
+</code></pre></div>
+<p>A <code>Future&lt;Output = Result&lt;T, backoff::Error&lt;E&gt;&gt;</code> can be easily retried:</p>
+<p><code>examples/async.rs</code>:</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code>
+<span class="kw">extern crate </span>tokio_1 <span class="kw">as </span>tokio;
+
+<span class="kw">use </span>backoff::ExponentialBackoff;
+
+<span class="kw">async fn </span>fetch_url(url: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;String, reqwest::Error&gt; {
+    backoff::future::retry(ExponentialBackoff::default(), || <span class="kw">async </span>{
+        <span class="macro">println!</span>(<span class="string">"Fetching {}"</span>, url);
+        <span class="prelude-val">Ok</span>(reqwest::get(url).<span class="kw">await</span><span class="question-mark">?</span>.text().<span class="kw">await</span><span class="question-mark">?</span>)
+    })
+    .<span class="kw">await
+</span>}
+
+<span class="attr">#[tokio::main]
+</span><span class="kw">async fn </span>main() {
+    <span class="kw">match </span>fetch_url(<span class="string">"https://www.rust-lang.org"</span>).<span class="kw">await </span>{
+        <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="macro">println!</span>(<span class="string">"Successfully fetched"</span>),
+        <span class="prelude-val">Err</span>(err) =&gt; <span class="macro">panic!</span>(<span class="string">"Failed to fetch: {}"</span>, err),
+    }
+}</code></pre></div>
+<h2 id="feature-flags"><a class="doc-anchor" href="#feature-flags">§</a>Feature flags</h2>
+<ul>
+<li><code>futures</code>: enables futures support,</li>
+<li><code>tokio</code>: enables support for the <a href="https://crates.io/crates/tokio">tokio</a> async runtime, implies <code>futures</code>,</li>
+<li><code>async-std</code>: enables support for the <a href="https://crates.io/crates/async-std">async-std</a> async runtime, implies <code>futures</code>,</li>
+<li><code>wasm-bindgen</code>: enabled support for <a href="https://crates.io/crates/wasm-bindgen">wasm-bindgen</a>.</li>
+</ul>
+</div></details><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="mod" href="backoff/index.html" title="mod backoff::backoff">backoff</a></div></li><li><div class="item-name"><a class="mod" href="default/index.html" title="mod backoff::default">default</a></div><div class="desc docblock-short">Constants for the exponential backoff policy.</div></li><li><div class="item-name"><a class="mod" href="exponential/index.html" title="mod backoff::exponential">exponential</a></div></li><li><div class="item-name"><a class="mod" href="future/index.html" title="mod backoff::future">future</a></div></li></ul><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.SystemClock.html" title="struct backoff::SystemClock">SystemClock</a></div><div class="desc docblock-short"><code>SystemClock</code> uses the system’s clock to get the current time.
+This Clock should be used for real use-cases.</div></li></ul><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="enum" href="enum.Error.html" title="enum backoff::Error">Error</a></div><div class="desc docblock-short">Error is the error value in an operation’s
+result.</div></li></ul><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="trait" href="trait.Clock.html" title="trait backoff::Clock">Clock</a></div><div class="desc docblock-short">Clock returns the current time.</div></li><li><div class="item-name"><a class="trait" href="trait.Notify.html" title="trait backoff::Notify">Notify</a></div><div class="desc docblock-short">Notify is called in <a href="trait.Operation.html#method.retry_notify"><code>retry_notify</code></a> in case of errors.</div></li></ul><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="fn" href="fn.retry.html" title="fn backoff::retry">retry</a></div><div class="desc docblock-short">Retries this operation according to the backoff policy.
+backoff is reset before it is used.</div></li><li><div class="item-name"><a class="fn" href="fn.retry_notify.html" title="fn backoff::retry_notify">retry_notify</a></div><div class="desc docblock-short">Retries this operation according to the backoff policy.
+Calls notify on failed attempts (in case of transient errors).
+backoff is reset before it is used.</div></li></ul><h2 id="types" class="section-header">Type Aliases<a href="#types" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="type" href="type.ExponentialBackoff.html" title="type backoff::ExponentialBackoff">ExponentialBackoff</a></div><div class="desc docblock-short">Exponential backoff policy with system’s clock.</div></li><li><div class="item-name"><a class="type" href="type.ExponentialBackoffBuilder.html" title="type backoff::ExponentialBackoffBuilder">ExponentialBackoffBuilder</a></div><div class="desc docblock-short">Builder for exponential backoff policy with system’s clock.</div></li></ul></section></div></main></body></html>

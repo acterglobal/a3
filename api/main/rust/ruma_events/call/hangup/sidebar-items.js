@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Reason"],"struct":["CallHangupEventContent","RedactedCallHangupEventContent"],"type":["CallHangupEvent","OriginalCallHangupEvent","OriginalSyncCallHangupEvent","RedactedCallHangupEvent","RedactedSyncCallHangupEvent","SyncCallHangupEvent"]};

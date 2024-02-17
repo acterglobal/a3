@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["default_acter_convo_states","default_acter_space_states","initial_state_for_alias"],"mod":["KEYS"],"static":["PURPOSE_FIELD","PURPOSE_FIELD_DEV","PURPOSE_TEAM_VALUE"]};

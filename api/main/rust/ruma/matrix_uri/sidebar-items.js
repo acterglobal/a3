@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["MatrixId","UriAction"],"struct":["MatrixToUri","MatrixUri"]};

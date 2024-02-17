@@ -1,0 +1,131 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Declares a type-level function (struct that implements `TypeFn`)"><title>type_fn in typewit - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="typewit" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../typewit/index.html">typewit</a><span class="version">1.7.0</span></h2></div><div class="sidebar-elems"></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../typewit/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Macro <a href="index.html">typewit</a>::<wbr><a class="macro" href="#">type_fn</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/typewit/macros/type_fn_macro.rs.html#142-177">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><span class="macro">macro_rules! </span>type_fn {
+    (
+        $(<span class="attr">#[<span class="macro-nonterminal">$attrs</span>:meta]</span>)*
+        <span class="macro-nonterminal">$vis</span>:vis <span class="kw">struct </span><span class="macro-nonterminal">$struct_name</span>:ident &lt; $(<span class="macro-nonterminal">$rem</span>:tt)*
+    ) =&gt; { ... };
+    (
+        $(<span class="attr">#[<span class="macro-nonterminal">$attrs</span>:meta]</span>)*
+        <span class="macro-nonterminal">$vis</span>:vis <span class="kw">struct </span><span class="macro-nonterminal">$struct_name</span>:ident
+        $(<span class="macro-nonterminal">$rem</span>:tt)*
+    ) =&gt; { ... };
+    ($(<span class="macro-nonterminal">$rem</span>:tt)<span class="kw-2">*</span>) =&gt; { ... };
+}</pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Declares a type-level function (struct that implements <a href="type_fn/trait.TypeFn.html" title="trait typewit::type_fn::TypeFn"><code>TypeFn</code></a>)</p>
+<p><a href="#examples"><strong>examples below</strong></a></p>
+<h2 id="syntax"><a class="doc-anchor" href="#syntax">§</a>Syntax</h2>
+<p>This section uses a <code>macro_rules!</code>-like syntax for 
+the parameters that <code>type_fn</code> takes</p>
+<div class="example-wrap"><pre class="language-text"><code>$(#[$attrs:meta])*
+$vis:vis struct $struct_name:ident $(&lt; $struct_generics:generic_params &gt;)?
+$( where $struct_where_predicates:where_predicates  )?;
+ 
+$(
+    $(#[$impl_attrs:meta])*
+    impl $(&lt;$fn_generics:generic_params&gt;)? $argument_type:ty =&gt; $return_type:ty
+    $( where $fn_where_predicates:where_predicates  )?
+);+
+ 
+$(;)?
+</code></pre></div>
+<p><code>:where_predicates</code> is a sequence of constraints.
+e.g: <code>T: Foo, 'a: 'b, U: 'b</code>.</p>
+<p><code>:generic_params</code> is a list of generic parameter declarations.
+e.g: <code>'a, T, #[cfg(feature = &quot;hi&quot;)] U, const N: usize</code>.</p>
+<p>Generic parameters support the <code>#[cfg(...)]</code> attribute, 
+no other attribute is supported.</p>
+<h2 id="generated-code"><a class="doc-anchor" href="#generated-code">§</a>Generated code</h2>
+<p>This macro generates:</p>
+<ul>
+<li>
+<p>The struct declaration passed to the macro</p>
+</li>
+<li>
+<p>A <code>NEW</code> associated constant for constructing the struct</p>
+</li>
+<li>
+<p>Impls of <a href="type_fn/trait.TypeFn.html" title="trait typewit::type_fn::TypeFn"><code>TypeFn</code></a> for the generated struct corresponding to 
+each <code>... =&gt; ...</code> argument.</p>
+</li>
+</ul>
+<p>If the struct has any lifetime or type parameters
+(even if disabled by <code>#[cfg(...)]</code> attributes), 
+it has a private field,
+and requires using its <code>NEW</code> associated constant to be instantiated.
+If it has no type or lifetime parameters, the struct is a unit struct.</p>
+<h2 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h2>
+<p>This macro is also demonstrated in <a href="struct.TypeEq.html#method.project" title="method typewit::TypeEq::project"><code>TypeEq::project</code></a>, <a href="struct.TypeEq.html#method.map" title="method typewit::TypeEq::map"><code>TypeEq::map</code></a>,
+and the <a href="index.html#example-uses-type-fn" title="mod typewit">Indexing polymorphism</a> root module example.</p>
+<h4 id="basic"><a class="doc-anchor" href="#basic">§</a>Basic</h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>typewit::CallFn;
+ 
+<span class="kw">let </span>item: CallFn&lt;FnIterItem, Vec&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str&gt;&gt; = <span class="string">"hello"</span>;
+<span class="kw">let _</span>: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str = item;
+<span class="macro">assert_eq!</span>(item, <span class="string">"hello"</span>);
+ 
+<span class="comment">// Declares `struct FnIterItem`,
+// a type-level function from `I` to `&lt;I as IntoIterator&gt;::Item`
+</span><span class="macro">typewit::type_fn!</span>{
+    <span class="kw">struct </span>FnIterItem;
+ 
+    <span class="kw">impl</span>&lt;I: IntoIterator&gt; I =&gt; I::Item
+}</code></pre></div>
+<h4 id="all-syntax"><a class="doc-anchor" href="#all-syntax">§</a>All syntax</h4>
+<p>Demonstrates all the syntax that this macro accepts and what it expands into:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="macro">typewit::type_fn! </span>{
+    <span class="doccomment">/// Hello
+    </span><span class="kw">pub struct </span>Foo&lt;<span class="lifetime">'a</span>, T: IntoIterator = Vec&lt;u8&gt;, <span class="attr">#[cfg(any())] </span><span class="kw">const </span>N: usize = <span class="number">3</span>&gt;
+    <span class="kw">where </span>T: Clone;
+     
+    <span class="doccomment">/// docs for impl
+    </span><span class="attr">#[cfg(all())]
+    </span><span class="kw">impl</span>&lt;<span class="lifetime">'b</span>: <span class="lifetime">'a</span>, U, <span class="attr">#[cfg(all())] </span><span class="kw">const </span>M: usize&gt; 
+        [<span class="kw-2">&amp;</span><span class="lifetime">'b </span>U; M] =&gt; ([<span class="kw-2">&amp;</span><span class="lifetime">'b </span>U; M], T::IntoIter)
+    <span class="kw">where 
+        </span>U: <span class="lifetime">'static</span>,
+        u32: From&lt;U&gt;;
+ 
+    <span class="doccomment">/// docs for another impl
+    </span><span class="kw">impl </span>() =&gt; T::Item
+}</code></pre></div>
+<p>the above macro invocation generates code equivalent to this:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>typewit::TypeFn;
+ 
+<span class="kw">use </span>core::marker::PhantomData;
+ 
+<span class="doccomment">/// Hello
+</span><span class="comment">// The `const N: usize = 3` param is removed by the `#[cfg(any()))]` attribute
+</span><span class="kw">pub struct </span>Foo&lt;<span class="lifetime">'a</span>, T: IntoIterator = Vec&lt;u8&gt;&gt;(
+    PhantomData&lt;(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>(), <span class="kw">fn</span>() -&gt; T)&gt;
+) <span class="kw">where </span>T: Clone;
+ 
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T: IntoIterator&gt; Foo&lt;<span class="lifetime">'a</span>, T&gt;
+<span class="kw">where
+    </span>T: Clone,
+{
+    <span class="kw">pub const </span>NEW: <span class="self">Self </span>= <span class="self">Self</span>(PhantomData);
+}
+ 
+<span class="doccomment">/// docs for impl
+</span><span class="attr">#[cfg(all())]
+</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, <span class="lifetime">'b</span>: <span class="lifetime">'a</span>, U, T: IntoIterator, <span class="attr">#[cfg(all())] </span><span class="kw">const </span>M: usize&gt; 
+    TypeFn&lt;[<span class="kw-2">&amp;</span><span class="lifetime">'b </span>U; M]&gt; 
+<span class="kw">for </span>Foo&lt;<span class="lifetime">'a</span>, T&gt;
+<span class="kw">where
+    </span>T: Clone,
+    U: <span class="lifetime">'static</span>,
+    u32: From&lt;U&gt;
+{
+    <span class="kw">type </span>Output = ([<span class="kw-2">&amp;</span><span class="lifetime">'b </span>U; M], T::IntoIter);
+}
+ 
+<span class="doccomment">/// docs for another impl
+</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T: IntoIterator&gt; TypeFn&lt;()&gt; <span class="kw">for </span>Foo&lt;<span class="lifetime">'a</span>, T&gt;
+<span class="kw">where
+    </span>T: Clone,
+{
+    <span class="kw">type </span>Output = T::Item;
+}
+ </code></pre></div>
+</div></details></section></div></main></body></html>

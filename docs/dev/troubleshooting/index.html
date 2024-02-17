@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="preload" as="font" href="https://dev.acter.global/fonts/vendor/jost/jost-v4-latin-regular.woff2" type="font/woff2" crossorigin>
+  <link rel="preload" as="font" href="https://dev.acter.global/fonts/vendor/jost/jost-v4-latin-700.woff2"  type="font/woff2" crossorigin>
+
+
+<link rel="stylesheet" href="https://dev.acter.global/main.css">
+
+
+
+  
+  
+    
+  
+
+  
+  
+    
+    
+  
+  
+  
+    
+  
+  
+  
+  
+    
+  
+  
+  
+
+
+  <meta name="robots" content="index, follow">
+  <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+
+
+	
+
+
+	
+
+<title>Troubleshooting | Acter Developer Docs</title>
+<meta name="description" content="">
+<link rel="canonical" href="https://dev.acter.global/docs/dev/troubleshooting/">
+
+
+
+
+
+
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BreadcrumbList",
+    
+      
+      
+        
+        
+        
+        
+        
+        
+        
+        
+          {
+            "@type": "ListItem",
+            "position":  1 ,
+            "name": "Home",
+            "item": "https://dev.acter.global/"
+          },
+          
+          
+          {
+            "@type": "ListItem",
+            "position":  2 ,
+            "name": "Docs",
+            "item": "https://dev.acter.global/docs/"
+          },
+        
+      
+        
+        
+        
+        
+        
+        
+        
+        
+          
+          
+          {
+            "@type": "ListItem",
+            "position":  3 ,
+            "name": "Dev",
+            "item": "https://dev.acter.global/docs/dev/"
+          },
+        
+      
+        
+        
+        
+        
+        
+        
+        
+        
+          
+          
+          {
+            "@type": "ListItem",
+            "position":  4 ,
+            "name": "Troubleshooting",
+            "item": "https://dev.acter.global/docs/dev/troubleshooting/"
+          },
+        
+      
+    
+  }
+</script>
+
+
+
+
+
+
+  <meta name="theme-color" content="#fff">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://dev.acter.global/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://dev.acter.global/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://dev.acter.global/favicon-16x16.png">
+  
+    <link rel="manifest" href="https://dev.acter.global/site.webmanifest" crossorigin>
+  
+
+
+  
+
+</head>
+
+  
+
+<body class="docs single">
+  
+  
+  
+  
+  
+  
+<div class="header-bar fixed-top"></div>
+<header class="navbar fixed-top navbar-expand-md navbar-light">
+	<div class="container">
+		<input class="menu-btn order-0" type="checkbox" id="menu-btn">
+		<label class="menu-icon d-md-none" for="menu-btn"><span class="navicon"></span></label>
+		<a class="navbar-brand order-1 order-md-0 me-auto" href="https://dev.acter.global">Acter Developer Docs</a>
+		<button id="mode" class="btn btn-link order-2 order-md-4" type="button" aria-label="Toggle mode">
+			<span class="toggle-dark"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></span>
+			<span class="toggle-light"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-sun"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></span>
+		</button>
+		<ul class="navbar-nav fork-me order-3 order-md-5">
+			
+				
+					<li class="nav-item">
+						<a class="nav-link" href="https://github.com/acterglobal/a3"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg><span class="ms-2 visually-hidden">GitHub</span></a>
+					</li>
+				
+			
+		</ul>
+		<div class="collapse navbar-collapse order-4 order-md-1">
+			<ul class="navbar-nav main-nav me-auto order-5 order-md-2">
+				
+					
+				
+				
+				
+					
+						<li class="nav-item">
+							<a class="nav-link" href="https://dev.acter.global/https://docs.acter.global/s/handbook/">Users</a>
+						</li>
+					
+						<li class="nav-item">
+							<a class="nav-link" href="https://dev.acter.global/nightly/">Nightly</a>
+						</li>
+					
+						<li class="nav-item docs active">
+							<a class="nav-link" href="https://dev.acter.global/docs/getting-started/setup/">Dev</a>
+						</li>
+					
+						<li class="nav-item docs active">
+							<a class="nav-link" href="https://dev.acter.global/docs/dev/api-docs/">APIs</a>
+						</li>
+					
+				
+			</ul>
+			<div class="break order-6 d-md-none"></div>
+			
+				<form class="navbar-form flex-grow-1 order-7 order-md-3">
+					<input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+						aria-label="Search docs..." autocomplete="off">
+					<div id="suggestions" class="shadow bg-white rounded"></div>
+				</form>
+			
+		</div>
+	</div>
+</header>
+
+
+
+  
+<div class="wrap container" role="document">
+  <div class="content">
+    <div class="row flex-xl-nowrap">
+	  
+<div class="col-lg-5 col-xl-4 docs-sidebar">
+	<nav class="docs-links" aria-label="Main navigation">
+			
+			
+            <h2 class="h3">Developer Docs</h2>
+			
+			
+					
+					
+					
+							<h3>Getting Started</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/getting-started/setup/">Setting up</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/getting-started/troubleshooting/">Troubleshooting</a></li>
+							
+					</ul>
+					
+					
+					
+					
+							<h3>Architecture</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/architecture/repo-layout/">Project Layout</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/architecture/data-model/">Acter Data Model</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/architecture/templates/">Templates</a></li>
+							
+					</ul>
+					
+					
+					
+					
+							<h3>Development</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/dev/localisations/">Localisation</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/dev/style-guide/">Style Guide</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/dev/testing/">Testing</a></li>
+							                           
+									<li><a class="docs-link active" href="https://dev.acter.global/docs/dev/troubleshooting/">Troubleshooting</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/dev/api-docs/">API Docs</a></li>
+							
+					</ul>
+					
+					
+					
+					
+							<h3>Contributing</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/contributing/how-to-contribute/">How to Contribute</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/contributing/reviews/">Reviews process</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/contributing/code-of-conduct/">Code of Conduct</a></li>
+							                           
+									<li><a class="docs-link" href="https://dev.acter.global/docs/contributing/license/">License &amp; CLA</a></li>
+							
+					</ul>
+					
+					
+			
+	</nav>
+</div>
+
+	  
+  
+  <nav class="docs-toc d-none d-xl-block col-xl-3" aria-label="Secondary navigation">
+  	<div class="page-links">
+  			<h3>On this page</h3>
+  			<nav id="TableOfContents">
+  					<ul>
+  							
+  							<li><a href="https://dev.acter.global/docs/dev/troubleshooting/#unhandled-exception-failed-to-read-or-write-to-the-crypto-store-the-account-in-the-store-doesn-t-match-the-account-in-the-constructor-expected-acter-global-guest-device-got-acter-global-guest-device">`Unhandled Exception: failed to read or write to the crypto store the account in the store doesn&#x27;t match the account in the constructor: expected ..:acter.global:guest_device, got ..:acter.global:guest_device</a></li>
+  							
+  							
+  							<li><a href="https://dev.acter.global/docs/dev/troubleshooting/#where-is-the-user-data-stored">Where is the user data stored?</a></li>
+  							
+  							
+  							<li><a href="https://dev.acter.global/docs/dev/troubleshooting/#execution-failed-for-task-app-processdebugmainmanifest">Execution failed for task &#x27;:app:processDebugMainManifest&#x27;.</a></li>
+  							
+  							
+  							<li><a href="https://dev.acter.global/docs/dev/troubleshooting/#doesn-t-build-on-linux-linker-failed">Doesn&#x27;t build on Linux: linker failed</a></li>
+  							
+  							
+  					</ul>
+  			</nav>
+  	</div>
+  </nav>
+  
+
+      <main class="docs-content col-lg-11 col-xl-9">
+        <h1>Troubleshooting</h1>
+        
+        <p>Common problem when developing Acter and their solutions.</p>
+<h2 id="unhandled-exception-failed-to-read-or-write-to-the-crypto-store-the-account-in-the-store-doesn-t-match-the-account-in-the-constructor-expected-acter-global-guest-device-got-acter-global-guest-device">`Unhandled Exception: failed to read or write to the crypto store the account in the store doesn't match the account in the constructor: expected ..:acter.global:guest_device, got ..:acter.global:guest_device</h2>
+<p>The App didn't successfully store the old token and when trying to start a fresh guest account, opening the crypto store failed. Until <a href="https://github.com/acterglobal/a3/issues/527">#527</a> is fixed, you need to:</p>
+<ol>
+<li>stop the app</li>
+<li>clear the <a href="https://dev.acter.global/docs/dev/troubleshooting/#where-is-the-user-data-stored">user data</a></li>
+<li>start the app again</li>
+</ol>
+<p>This should give you a fresh guest account login.</p>
+<h2 id="where-is-the-user-data-stored">Where is the user data stored?</h2>
+<p>We are using <a href="https://pub.dev/packages/path_provider"><code>path_provider</code>'s <code>getApplicationDirectory</code></a> to know where to store the user data. The exact folder the data is stored, is system dependent. These usually are:</p>
+<ul>
+<li>Linux: <code>~/.local/share/global.acter.app/</code> (e.g. <code>/home/ben/.local/share/global.acter.app/</code>)</li>
+<li>Windows: <code>$USERDIR\AppData\Roaming\global.acter\app</code> (e.g. <code>C:\Users\Ben\AppData\Roaming\global.acter\app</code>)</li>
+<li>MacOS: <code>$USER/Library/Containers/global.acter.app/</code> (e.g. <code>/Users/ben/Library/Containers/global.acter.app/</code>, notice that <em>Finder</em> doesn't see the <code>Library</code> folder, you need to use the terminal to get there)</li>
+</ul>
+<p>Just opening a terminal and doing <code>rm -rf $PATH</code> (where <code>$PATH</code> is the necessary path above), usually resets all locally stored data. <strong>Careful as this also removes all locally held crypto tokens</strong>.</p>
+<h2 id="execution-failed-for-task-app-processdebugmainmanifest">Execution failed for task ':app:processDebugMainManifest'.</h2>
+<blockquote>
+<p>Unable to make field private final java.lang.String java.io.File.path accessible: module java.base does not &quot;opens java.io&quot; to unnamed module @7fbe8ef</p>
+</blockquote>
+<p>If you happen to come across this exception while compiling Android build for application launch, the reason for that is with the flutter fetching the JDK path from Android Studio directory as a default option. This is reported to be occuring in latest <strong>Android Studio Flamingo (2022.2.1)</strong> in reference to the Flutter issue <a href="https://github.com/flutter/flutter/issues/106416">#106416</a>.</p>
+<p>As long as you have default <code>$JAVA_HOME</code> variable set up in environment variables, you can set up flutter path for finding JDK to be:</p>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>flutter config --android-studio-dir=/
+</span></code></pre>
+<p>This'll ensure the flutter to look for the second option of JDK path which is <code>$JAVA_HOME</code>. And can be confirmed with <code>flutter doctor --v</code> output.</p>
+<h2 id="doesn-t-build-on-linux-linker-failed">Doesn't build on Linux: linker failed</h2>
+<p>Run this with <code>--verbose</code>. If the specific method you are seeing is something along the lines of:</p>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>[   +5 ms] : &amp;&amp; /snap/flutter/current/usr/bin/clang++  -g  -B/snap/flutter/current/usr/lib/gcc/x86_64-linux-gnu/9
+</span><span>-B/snap/flutter/current/usr/lib/x86_64-linux-gnu -B/snap/flutter/current/lib/x86_64-linux-gnu -B/snap/flutter/current/usr/lib/
+</span><span>-L/snap/flutter/current/usr/lib/gcc/x86_64-linux-gnu/9 -L/snap/flutter/current/usr/lib/x86_64-linux-gnu -L/snap/flutter/current/lib/x86_64-linux-gnu
+</span><span>-L/snap/flutter/current/usr/lib/ -lblkid -lgcrypt -llzma -llz4 -lgpg-error -luuid -lpthread -ldl -lepoxy -lfontconfig CMakeFiles/acter.dir/main.cc.o
+</span><span>CMakeFiles/acter.dir/my_application.cc.o CMakeFiles/acter.dir/flutter/generated_plugin_registrant.cc.o  -o intermediates_do_not_run/acter
+</span><span>-Wl,-rpath,/DEV/acter/a3/app/build/linux/x64/debug/plugins/acter_flutter_sdk:/DEV/acter/a3/app/build/linux/x64/debug/plugins/emoji_picker_flutter:/DEV/ac
+</span><span>ter/a3/app/build/linux/x64/debug/plugins/file_selector_linux:/DEV/acter/a3/app/build/linux/x64/debug/plugins/flutter_secure_storage_linux:/DEV/acter/a3/a
+</span><span>pp/build/linux/x64/debug/plugins/url_launcher_linux:/DEV/acter/a3/app/linux/flutter/ephemeral:  plugins/acter_flutter_sdk/libacter_flutter_sdk_plugin.so
+</span><span>plugins/emoji_picker_flutter/libemoji_picker_flutter_plugin.so  plugins/file_selector_linux/libfile_selector_linux_plugin.so
+</span><span>plugins/flutter_secure_storage_linux/libflutter_secure_storage_linux_plugin.so  plugins/url_launcher_linux/liburl_launcher_linux_plugin.so
+</span><span>/DEV/acter/a3/app/linux/flutter/ephemeral/libflutter_linux_gtk.so  /snap/flutter/current/usr/lib/x86_64-linux-gnu/libgtk-3.so
+</span><span>/snap/flutter/current/usr/lib/x86_64-linux-gnu/libgdk-3.so  /snap/flutter/current/usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so
+</span><span>/snap/flutter/current/usr/lib/x86_64-linux-gnu/libpango-1.0.so  /snap/flutter/current/usr/lib/x86_64-linux-gnu/libharfbuzz.so
+</span><span>/snap/flutter/current/usr/lib/x86_64-linux-gnu/libatk-1.0.so  /snap/flutter/current/usr/lib/x86_64-linux-gnu/libcairo-gobject.so
+</span><span>/snap/flutter/current/usr/lib/x86_64-linux-gnu/libcairo.so  /snap/flutter/current/usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so
+</span><span>/snap/flutter/current/usr/lib/x86_64-linux-gnu/libgio-2.0.so  /snap/flutter/current/usr/lib/x86_64-linux-gnu/libgobject-2.0.so
+</span><span>/snap/flutter/current/usr/lib/x86_64-linux-gnu/libglib-2.0.so &amp;&amp; :
+</span><span>[        ] /snap/flutter/current/usr/bin/ld: /lib64/libcrypto.so.3: undefined reference to `pthread_setspecific@GLIBC_2.34&#39;
+</span><span>[        ] /snap/flutter/current/usr/bin/ld: /lib64/libtss2-esys.so.0: undefined reference to `dlopen@GLIBC_2.34&#39;
+</span><span>[        ] /snap/flutter/current/usr/bin/ld: /lib64/libcrypto.so.3: undefined reference to `pthread_rwlock_init@GLIBC_2.34&#39;
+</span><span>[        ] /snap/flutter/current/usr/bin/ld: /lib64/libcrypto.so.3: undefined reference to `pthread_rwlock_wrlock@GLIBC_2.34&#39;
+</span><span>[        ] /snap/flutter/current/usr/bin/ld: /lib64/libtss2-esys.so.0: undefined reference to `dlerror@GLIBC_2.34&#39;
+</span><span>[        ] /snap/flutter/current/usr/bin/ld: /lib64/libcrypto.so.3: undefined reference to `__isoc23_strtol@GLIBC_2.38&#39;
+</span><span>[        ] /snap/flutter/current/usr/bin/ld: /lib64/libcrypto.so.3: undefined reference to `pthread_getspecific@GLIBC_2.34&#39;
+</span><span>[        ] /snap/flutter/current/usr/bin/ld: /lib64/libsecret-1.so.0: undefined reference to `g_task_set_static_name&#39;
+</span><span>[        ] /snap/flutter/current/usr/bin/ld: /lib64/libtss2-esys.so.0: undefined reference to `dlclose@GLIBC_2.34&#39;
+</span><span>[        ] /snap/flutter/current/usr/bin/ld: /lib64/libcrypto.so.3: undefined reference to `pthread_rwlock_rdlock@GLIBC_2.34&#39;
+</span><span>[        ] /snap/flutter/current/usr/bin/ld: /lib64/libcrypto.so.3: undefined reference to `pthread_key_delete@GLIBC_2.34&#39;
+</span><span>[        ] /snap/flutter/current/usr/bin/ld: /lib64/libcrypto.so.3: undefined reference to `fstat@GLIBC_2.33&#39;
+</span><span>[        ] /snap/flutter/current/usr/bin/ld: /lib64/libcrypto.so.3: undefined reference to `stat@GLIBC_2.33&#39;
+</span><span>[        ] /snap/flutter/current/usr/bin/ld: /lib64/libcrypto.so.3: undefined reference to `pthread_once@GLIBC_2.34&#39;
+</span><span>[        ] /snap/flutter/current/usr/bin/ld: /lib64/libcrypto.so.3: undefined reference to `dladdr@GLIBC_2.34&#39;
+</span><span>[        ] /snap/flutter/current/usr/bin/ld: /lib64/libcrypto.so.3: undefined reference to `pthread_rwlock_destroy@GLIBC_2.34&#39;
+</span><span>[        ] /snap/flutter/current/usr/bin/ld: /lib64/libcrypto.so.3: undefined reference to `pthread_key_create@GLIBC_2.34&#39;
+</span><span>[        ] /snap/flutter/current/usr/bin/ld: /lib64/libcrypto.so.3: undefined reference to `pthread_rwlock_unlock@GLIBC_2.34&#39;
+</span><span>[        ] /snap/flutter/current/usr/bin/ld: /lib64/libtss2-esys.so.0: undefined reference to `dlsym@GLIBC_2.34&#39;
+</span><span>[        ] /snap/flutter/current/usr/bin/ld: /lib64/libsecret-1.so.0: undefined reference to `g_memdup2&#39;
+</span><span>[        ] clang: error: linker command failed with exit code 1 (use -v to see invocation)
+</span><span>[   +1 ms] ninja: build stopped: subcommand failed.
+</span><span>[  +10 ms] Building Linux application... (completed in 24,2s)
+</span><span>[        ] Exception: Build process failed
+</span><span>[   +3 ms] &quot;flutter run&quot; took 25.158ms.
+</span><span>[   +3 ms]
+</span><span>           #0      throwToolExit (package:flutter_tools/src/base/common.dart:10:3)
+</span><span>           #1      RunCommand.runCommand (package:flutter_tools/src/commands/run.dart:760:9)
+</span><span>           &lt;asynchronous suspension&gt;
+</span><span>           #2      FlutterCommand.run.&lt;anonymous closure&gt; (package:flutter_tools/src/runner/flutter_command.dart:1297:27)
+</span><span>           &lt;asynchronous suspension&gt;
+</span><span>           #3      AppContext.run.&lt;anonymous closure&gt; (package:flutter_tools/src/base/context.dart:150:19)
+</span><span>           &lt;asynchronous suspension&gt;
+</span><span>           #4      CommandRunner.runCommand (package:args/command_runner.dart:212:13)
+</span><span>           &lt;asynchronous suspension&gt;
+</span><span>           #5      FlutterCommandRunner.runCommand.&lt;anonymous closure&gt; (package:flutter_tools/src/runner/flutter_command_runner.dart:339:9)
+</span><span>           &lt;asynchronous suspension&gt;
+</span><span>           #6      AppContext.run.&lt;anonymous closure&gt; (package:flutter_tools/src/base/context.dart:150:19)
+</span><span>           &lt;asynchronous suspension&gt;
+</span><span>           #7      FlutterCommandRunner.runCommand (package:flutter_tools/src/runner/flutter_command_runner.dart:285:5)
+</span><span>           &lt;asynchronous suspension&gt;
+</span><span>           #8      run.&lt;anonymous closure&gt;.&lt;anonymous closure&gt; (package:flutter_tools/runner.dart:115:9)
+</span><span>           &lt;asynchronous suspension&gt;
+</span><span>           #9      AppContext.run.&lt;anonymous closure&gt; (package:flutter_tools/src/base/context.dart:150:19)
+</span><span>           &lt;asynchronous suspension&gt;
+</span><span>           #10     main (package:flutter_tools/executable.dart:90:3)
+</span><span>           &lt;asynchronous suspension&gt;
+</span><span>
+</span><span>
+</span><span>[ +106 ms] ensureAnalyticsSent: 101ms
+</span><span>[        ] Running 1 shutdown hook
+</span><span>[  +12 ms] Shutdown hooks complete
+</span><span>[        ] exiting with code 1
+</span></code></pre>
+<p>It is <a href="https://github.com/flutter/flutter/issues/64348">a known, unresolved issue of flutter in snap</a> when used <a href="https://github.com/mogol/flutter_secure_storage/issues/314">with <code>flutter_secure_storage</code></a>. Unfortunately at this point the only way to get around that is to use a non-snap-version of flutter. Try removing flutter from snap via</p>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>sudo snap remove flutter
+</span></code></pre>
+<p>And install it using the native system tools or <a href="https://docs.flutter.dev/get-started/install/linux#method-2-manual-installation">install flutter manually</a>.</p>
+
+        
+        
+<div class="docs-navigation d-flex justify-content-between">
+  
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+          
+        
+      
+        
+        
+          
+        
+      
+        
+        
+          
+            
+              
+              <a href="https:&#x2F;&#x2F;dev.acter.global&#x2F;docs&#x2F;architecture&#x2F;templates&#x2F;">
+                <div class="card my-1">
+                  <div class="card-body py-2">
+                    &larr; Templates
+                  </div>
+                </div>
+              </a>
+            
+            
+            
+          
+        
+      
+        
+        
+          
+        
+      
+    
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+      
+      
+        
+      
+    
+      
+      
+        
+      
+    
+      
+      
+        
+          
+          
+          <a class="ms-auto" href="https:&#x2F;&#x2F;dev.acter.global&#x2F;docs&#x2F;contributing&#x2F;how-to-contribute&#x2F;">
+            <div class="card my-1">
+              <div class="card-body py-2">
+                How to Contribute &rarr;
+              </div>
+            </div>
+          </a>
+          
+          
+          
+        
+      
+    
+  
+</div>
+
+      </main>
+    </div>
+  </div>
+</div>
+
+
+  
+    
+<footer class="footer text-muted">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-8 order-last order-lg-first">
+				<ul class="list-inline">
+					
+						<li class="list-inline-item">Proudly build with <a href="https://www.getzola.org/">Zola</a> and <a href="https://github.com/aaranxu/adidoks">AdiDoks</a></li>
+					
+				</ul>
+			</div>
+			<div class="col-lg-8 order-first order-lg-last text-lg-end">
+				<ul class="list-inline">
+					
+						
+							<li class="list-inline-item"><a href="https://dev.acter.global/https://acter.global/">Website</a></li>
+						
+					
+				</ul>
+			</div>
+		</div>
+	</div>
+</footer>
+
+  
+
+  
+<script type="text/javascript" src="https://dev.acter.global/js/main.js" defer></script>
+
+  <script type="text/javascript" src="https://dev.acter.global/plugins/elasticlunr.min.js" defer></script>
+  <script type="text/javascript" src="https://dev.acter.global/search_index.en.js" defer></script>
+  <script type="text/javascript" src="https://dev.acter.global/js/search.js" defer></script>
+
+  
+</body>
+</html>

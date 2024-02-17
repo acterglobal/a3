@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["CallSelectAnswerEventContent","RedactedCallSelectAnswerEventContent"],"type":["CallSelectAnswerEvent","OriginalCallSelectAnswerEvent","OriginalSyncCallSelectAnswerEvent","RedactedCallSelectAnswerEvent","RedactedSyncCallSelectAnswerEvent","SyncCallSelectAnswerEvent"]};

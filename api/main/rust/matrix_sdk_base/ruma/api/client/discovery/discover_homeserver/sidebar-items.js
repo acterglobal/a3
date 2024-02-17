@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["AuthenticationServerInfo","HomeserverInfo","IdentityServerInfo","Request","Response","SlidingSyncProxyInfo"]};

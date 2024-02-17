@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":["quote","quote_fn","quote_in"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ReceiptThread","ReceiptType"],"struct":["Receipt","ReceiptEventContent"],"type":["ReceiptEvent","Receipts","SyncReceiptEvent","UserReceipts"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["errors","oidc","pkce","prelude","registration","requests","response_type","scope","webfinger"]};

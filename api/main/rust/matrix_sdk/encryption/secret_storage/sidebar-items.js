@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DecryptionError","SecretStorageError"],"struct":["CreateStore","SecretStorage","SecretStore"],"type":["Result"]};

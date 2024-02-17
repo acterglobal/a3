@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["create_content","create_content_async","create_mxc_uri","get_content","get_content_as_filename","get_content_thumbnail","get_media_config","get_media_preview"]};

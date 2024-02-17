@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["access_token_with_authorization_code","build_authorization_url","build_par_authorization_url"],"struct":["AuthorizationRequestData","AuthorizationValidationData"]};

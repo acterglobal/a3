@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["IncomingResponse","OutgoingRequests","OutgoingVerificationRequest"],"struct":["KeysBackupRequest","KeysQueryRequest","OutgoingRequest","RoomMessageRequest","ToDeviceRequest","UploadSigningKeysRequest"]};

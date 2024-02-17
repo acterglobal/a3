@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["CallNegotiateEventContent","RedactedCallNegotiateEventContent"],"type":["CallNegotiateEvent","OriginalCallNegotiateEvent","OriginalSyncCallNegotiateEvent","RedactedCallNegotiateEvent","RedactedSyncCallNegotiateEvent","SyncCallNegotiateEvent"]};

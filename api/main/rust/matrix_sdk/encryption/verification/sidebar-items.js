@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["SasState","Verification","VerificationRequestState"],"fn":["format_emojis"],"struct":["AcceptSettings","AcceptedProtocols","CancelInfo","Emoji","EmojiShortAuthString","SasVerification","VerificationRequest"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["BatchedVectorSubscriber","EmptyLimitStream","Filter","FilterMap","Limit"],"trait":["VectorDiffContainer","VectorObserver","VectorObserverExt","VectorSubscriberExt"],"type":["VectorDiffContainerStreamElement","VectorDiffContainerStreamMappedItem"]};

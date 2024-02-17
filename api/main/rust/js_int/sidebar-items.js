@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MAX_SAFE_INT","MAX_SAFE_UINT","MIN_SAFE_INT"],"macro":["int","uint"],"struct":["Int","ParseIntError","TryFromIntError","UInt"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["CodeChallengeError"],"struct":["AuthorizationRequest","TokenRequest"],"trait":["CodeChallengeMethodExt"]};

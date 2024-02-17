@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["JID","JID_OBJECT"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["ban_user","forget_room","get_member_events","invite_user","join_room_by_id","join_room_by_id_or_alias","joined_members","joined_rooms","kick_user","leave_room","unban_user"],"struct":["Invite3pid","Invite3pidInit","ThirdPartySigned"]};

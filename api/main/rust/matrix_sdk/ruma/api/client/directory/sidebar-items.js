@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["get_public_rooms","get_public_rooms_filtered","get_room_visibility","set_room_visibility"]};

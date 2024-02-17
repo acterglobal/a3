@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Filter"],"struct":["Ephemeral","GlobalAccountData","InviteState","InvitedRoom","JoinedRoom","KnockState","KnockedRoom","LeftRoom","Presence","Request","Response","RoomAccountData","RoomSummary","Rooms","State","Timeline","ToDevice"]};

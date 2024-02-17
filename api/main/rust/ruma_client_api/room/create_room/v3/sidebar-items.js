@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["RoomPreset"],"struct":["CreationContent","Request","Response"]};

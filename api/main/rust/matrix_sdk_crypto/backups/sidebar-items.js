@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DecodeError","DecryptionError","SignatureState"],"struct":["BackupMachine","MegolmV1BackupKey","SignatureVerification"]};

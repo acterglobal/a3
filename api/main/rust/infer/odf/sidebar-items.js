@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["is_odp","is_ods","is_odt"]};

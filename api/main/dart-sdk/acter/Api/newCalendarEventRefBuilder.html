@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the newCalendarEventRefBuilder method from the Api class, for the Dart programming language.">
+  <title>newCalendarEventRefBuilder method - Api class - acter library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">acter_flutter_sdk</a></li>
+    <li><a href="../../acter/acter-library.html">acter_flutter_sdk_ffi.dart</a></li>
+    <li><a href="../../acter/Api-class.html">Api</a></li>
+    <li class="self-crumb">newCalendarEventRefBuilder method</li>
+  </ol>
+  <div class="self-name">newCalendarEventRefBuilder</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="acter&#47;Api-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-method">newCalendarEventRefBuilder</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+
+<span class="returntype"><a href="../../acter/RefDetailsBuilder-class.html">RefDetailsBuilder</a></span>
+<span class="name ">newCalendarEventRefBuilder</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="newCalendarEventRefBuilder-param-targetId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">targetId</span>, </span></li>
+<li><span class="parameter" id="newCalendarEventRefBuilder-param-roomId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">roomId</span>, </span></li>
+<li><span class="parameter" id="newCalendarEventRefBuilder-param-action"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">action</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>create a calendar event ref builder
+target_id: event id of target
+action: link/embed/embed-rsvp</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">RefDetailsBuilder newCalendarEventRefBuilder(
+  String targetId,
+  String? roomId,
+  String? action,
+) {
+  final tmp0 = targetId;
+  final tmp4 = roomId;
+  final tmp10 = action;
+  var tmp1 = 0;
+  var tmp2 = 0;
+  var tmp3 = 0;
+  var tmp5 = 0;
+  var tmp7 = 0;
+  var tmp8 = 0;
+  var tmp9 = 0;
+  var tmp11 = 0;
+  var tmp13 = 0;
+  var tmp14 = 0;
+  var tmp15 = 0;
+  final tmp0_0 = utf8.encode(tmp0);
+  tmp2 = tmp0_0.length;
+
+  final ffi.Pointer&lt;ffi.Uint8&gt; tmp1_0 = this.__allocate(tmp2 * 1, 1);
+  final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
+  tmp1_1.setAll(0, tmp0_0);
+  tmp1 = tmp1_0.address;
+  tmp3 = tmp2;
+  if (tmp4 == null) {
+    tmp5 = 0;
+  } else {
+    tmp5 = 1;
+    final tmp6 = tmp4;
+    final tmp6_0 = utf8.encode(tmp6);
+    tmp8 = tmp6_0.length;
+
+    final ffi.Pointer&lt;ffi.Uint8&gt; tmp7_0 = this.__allocate(tmp8 * 1, 1);
+    final Uint8List tmp7_1 = tmp7_0.asTypedList(tmp8);
+    tmp7_1.setAll(0, tmp6_0);
+    tmp7 = tmp7_0.address;
+    tmp9 = tmp8;
+  }
+  if (tmp10 == null) {
+    tmp11 = 0;
+  } else {
+    tmp11 = 1;
+    final tmp12 = tmp10;
+    final tmp12_0 = utf8.encode(tmp12);
+    tmp14 = tmp12_0.length;
+
+    final ffi.Pointer&lt;ffi.Uint8&gt; tmp13_0 = this.__allocate(tmp14 * 1, 1);
+    final Uint8List tmp13_1 = tmp13_0.asTypedList(tmp14);
+    tmp13_1.setAll(0, tmp12_0);
+    tmp13 = tmp13_0.address;
+    tmp15 = tmp14;
+  }
+  final tmp16 = _newCalendarEventRefBuilder(
+    tmp1,
+    tmp2,
+    tmp3,
+    tmp5,
+    tmp7,
+    tmp8,
+    tmp9,
+    tmp11,
+    tmp13,
+    tmp14,
+    tmp15,
+  );
+  final tmp18 = tmp16.arg0;
+  final tmp19 = tmp16.arg1;
+  final tmp20 = tmp16.arg2;
+  final tmp21 = tmp16.arg3;
+  final tmp22 = tmp16.arg4;
+  if (tmp18 == 0) {
+    debugAllocation(&quot;handle error&quot;, tmp19, tmp20);
+    final ffi.Pointer&lt;ffi.Uint8&gt; tmp19_0 = ffi.Pointer.fromAddress(tmp19);
+    final tmp18_0 =
+        utf8.decode(tmp19_0.asTypedList(tmp20), allowMalformed: true);
+    if (tmp20 &gt; 0) {
+      final ffi.Pointer&lt;ffi.Void&gt; tmp19_0;
+      tmp19_0 = ffi.Pointer.fromAddress(tmp19);
+      this.__deallocate(tmp19_0, tmp21, 1);
+    }
+    throw tmp18_0;
+  }
+  final ffi.Pointer&lt;ffi.Void&gt; tmp22_0 = ffi.Pointer.fromAddress(tmp22);
+  final tmp22_1 = _Box(this, tmp22_0, &quot;drop_box_RefDetailsBuilder&quot;);
+  tmp22_1._finalizer = this._registerFinalizer(tmp22_1);
+  final tmp17 = RefDetailsBuilder._(this, tmp22_1);
+  return tmp17;
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">acter_flutter_sdk</a></li>
+    <li><a href="../../acter/acter-library.html">acter</a></li>
+    <li><a href="../../acter/Api-class.html">Api</a></li>
+    <li class="self-crumb">newCalendarEventRefBuilder method</li>
+</ol>
+
+
+    <h5>Api class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    acter_flutter_sdk
+      0.0.1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

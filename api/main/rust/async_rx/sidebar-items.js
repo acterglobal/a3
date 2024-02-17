@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["BatchWith","Dedup","DedupByKey","Switch"],"trait":["StreamExt"]};

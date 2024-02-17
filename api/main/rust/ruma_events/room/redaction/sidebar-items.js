@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["RoomRedactionEvent","SyncRoomRedactionEvent"],"struct":["OriginalRoomRedactionEvent","OriginalSyncRoomRedactionEvent","RedactedRoomRedactionEvent","RedactedRoomRedactionEventContent","RedactedSyncRoomRedactionEvent","RoomRedactionEventContent","RoomRedactionUnsigned"]};

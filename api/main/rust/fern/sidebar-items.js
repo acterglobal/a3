@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["InitError"],"fn":["log_file"],"mod":["meta"],"struct":["Dispatch","FormatCallback","ImplDispatch","Manual","Output","Panic"],"type":["Filter","Formatter"]};

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the sendNews method from the AddNewsState class, for the Dart programming language.">
+  <title>sendNews method - AddNewsState class - add_news_page library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">acter</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_news_pages_add_news_page/file-___home_runner_work_a3_a3_app_lib_features_news_pages_add_news_page-library.html">features&#47;news&#47;pages&#47;add_news_page.dart</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_news_pages_add_news_page/AddNewsState-class.html">AddNewsState</a></li>
+    <li class="self-crumb">sendNews method</li>
+  </ol>
+  <div class="self-name">sendNews</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="file-___home_runner_work_a3_a3_app_lib_features_news_pages_add_news_page&#47;AddNewsState-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-method">sendNews</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+
+<span class="returntype"><a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+<span class="name ">sendNews</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="sendNews-param-context"><span class="type-annotation">dynamic</span> <span class="parameter-name">context</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">Future&lt;void&gt; sendNews(BuildContext context) async {
+  final client = ref.read(alwaysClientProvider);
+  final spaceId = ref.read(newsStateProvider).newsPostSpaceId;
+  final newsSlideList = ref.watch(newsStateProvider).newsSlideList;
+
+  if (spaceId == null) {
+    customMsgSnackbar(context, &#39;Please first select a space&#39;);
+    return;
+  }
+
+  String displayMsg = &#39;Slide posting&#39;;
+  &#47;&#47; Show loading message
+  EasyLoading.show(status: displayMsg);
+  try {
+    final space = await ref.read(spaceProvider(spaceId).future);
+    NewsEntryDraft draft = space.newsDraft();
+    for (final slidePost in newsSlideList) {
+      final sdk = await ref.read(sdkProvider.future);
+      &#47;&#47; If slide type is text
+      if (slidePost.type == NewsSlideType.text) {
+        if (slidePost.text == null || slidePost.text!.trim().isEmpty) {
+          EasyLoading.showError(&#39;Your text slides must contains some text&#39;);
+          return;
+        }
+        final textDraft = slidePost.html != null
+            ? client.textHtmlDraft(slidePost.html!, slidePost.text!)
+            : client.textMarkdownDraft(slidePost.text!);
+        final textSlideDraft = textDraft.intoNewsSlideDraft();
+
+        textSlideDraft.color(
+          sdk.api.newColorizeBuilder(
+            null,
+            slidePost.backgroundColor?.value,
+          ),
+        );
+        await draft.addSlide(textSlideDraft);
+      }
+
+      &#47;&#47; If slide type is image
+      else if (slidePost.type == NewsSlideType.image &amp;&amp;
+          slidePost.mediaFile != null) {
+        final file = slidePost.mediaFile!;
+        String? mimeType = file.mimeType ?? lookupMimeType(file.path);
+        if (mimeType == null) {
+          EasyLoading.showError(&#39;Invalid media format&#39;);
+          return;
+        }
+        if (!mimeType.startsWith(&#39;image&#47;&#39;)) {
+          EasyLoading.showError(
+            &#39;Posting of $mimeType not yet supported&#39;,
+          );
+          return;
+        }
+        Uint8List bytes = await file.readAsBytes();
+        final decodedImage = await decodeImageFromList(bytes);
+        final imageDraft = client
+            .imageDraft(file.path, mimeType)
+            .size(bytes.length)
+            .width(decodedImage.width)
+            .height(decodedImage.height);
+        final imageSlideDraft = imageDraft.intoNewsSlideDraft();
+        imageSlideDraft.color(
+          sdk.api.newColorizeBuilder(
+            null,
+            slidePost.backgroundColor?.value,
+          ),
+        );
+        await draft.addSlide(imageSlideDraft);
+      }
+
+      &#47;&#47; If slide type is video
+      else if (slidePost.type == NewsSlideType.video &amp;&amp;
+          slidePost.mediaFile != null) {
+        final file = slidePost.mediaFile!;
+        String? mimeType = file.mimeType ?? lookupMimeType(file.path);
+        if (mimeType == null) {
+          EasyLoading.showError(&#39;Invalid media format&#39;);
+          return;
+        }
+        if (!mimeType.startsWith(&#39;video&#47;&#39;)) {
+          EasyLoading.showError(
+            &#39;Posting of $mimeType not yet supported&#39;,
+          );
+          return;
+        }
+        Uint8List bytes = await file.readAsBytes();
+        final videoDraft =
+            client.videoDraft(file.path, mimeType).size(bytes.length);
+        final videoSlideDraft = videoDraft.intoNewsSlideDraft();
+        videoSlideDraft.color(
+          sdk.api.newColorizeBuilder(
+            null,
+            slidePost.backgroundColor?.value,
+          ),
+        );
+        await draft.addSlide(videoSlideDraft);
+      }
+    }
+    await draft.send();
+
+    &#47;&#47; close loading
+    EasyLoading.dismiss();
+
+    &#47;&#47; We are doing as expected, but the lints triggers.
+    &#47;&#47; ignore: use_build_context_synchronously
+    if (!context.mounted) {
+      return;
+    }
+    &#47;&#47; FIXME due to #718. well lets at least try forcing a refresh upon route.
+    ref.invalidate(newsListProvider);
+    ref.invalidate(newsStateProvider);
+    &#47;&#47; Navigate back to update screen.
+    Navigator.of(context).pop();
+    context.pushNamed(Routes.main.name); &#47;&#47; go to the home &#47; main updates
+  } catch (err) {
+    EasyLoading.showError(&#39;$displayMsg failed: \n $err&#39;);
+  }
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">acter</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_news_pages_add_news_page/file-___home_runner_work_a3_a3_app_lib_features_news_pages_add_news_page-library.html">add_news_page</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_news_pages_add_news_page/AddNewsState-class.html">AddNewsState</a></li>
+    <li class="self-crumb">sendNews method</li>
+</ol>
+
+
+    <h5>AddNewsState class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    acter
+      0.0.1+1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

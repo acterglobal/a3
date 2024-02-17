@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the makeHomeShellRoutes function from the home_shell_router library, for the Dart programming language.">
+  <title>makeHomeShellRoutes function - home_shell_router library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">acter</a></li>
+    <li><a href="../file-___home_runner_work_a3_a3_app_lib_router_shell_routers_home_shell_router/file-___home_runner_work_a3_a3_app_lib_router_shell_routers_home_shell_router-library.html">router&#47;shell_routers&#47;home_shell_router.dart</a></li>
+    <li class="self-crumb">makeHomeShellRoutes function</li>
+  </ol>
+  <div class="self-name">makeHomeShellRoutes</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="file-___home_runner_work_a3_a3_app_lib_router_shell_routers_home_shell_router&#47;file-___home_runner_work_a3_a3_app_lib_router_shell_routers_home_shell_router-library-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-function">makeHomeShellRoutes</span> function 
+ 
+</h1></div>
+
+    <section class="multi-line-signature">
+        
+
+<span class="returntype"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a></span>
+<span class="name ">makeHomeShellRoutes</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="makeHomeShellRoutes-param-ref"><span class="type-annotation">dynamic</span> <span class="parameter-name">ref</span></span></li>
+</ol>)
+
+        
+
+    </section>
+    
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">List&lt;RouteBase&gt; makeHomeShellRoutes(ref) {
+  final tabKeyNotifier = ref.watch(selectedTabKeyProvider.notifier);
+  return &lt;RouteBase&gt;[
+    GoRoute(
+      name: Routes.dashboard.name,
+      path: Routes.dashboard.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const Dashboard(),
+        );
+      },
+    ),
+
+    &#47;&#47; ---- SETTINGS
+    GoRoute(
+      name: Routes.settings.name,
+      path: Routes.settings.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const SettingsMenuPage(),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.licenses.name,
+      path: Routes.licenses.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const SettingsLicensesPage(),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.settingsLabs.name,
+      path: Routes.settingsLabs.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const SettingsLabsPage(),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.settingNotifications.name,
+      path: Routes.settingNotifications.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const NotificationsSettingsPage(),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.settingsSuperInvites.name,
+      path: Routes.settingsSuperInvites.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const SuperInvitesPage(),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.info.name,
+      path: Routes.info.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const SettingsInfoPage(),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.myProfile.name,
+      path: Routes.myProfile.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const MyProfilePage(),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.settingSessions.name,
+      path: Routes.settingSessions.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const SessionsPage(),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.emailAddresses.name,
+      path: Routes.emailAddresses.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const EmailAddressesPage(),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.blockedUsers.name,
+      path: Routes.blockedUsers.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const BlockedUsersPage(),
+        );
+      },
+    ),
+
+    GoRoute(
+      name: Routes.spaceRelatedSpaces.name,
+      path: Routes.spaceRelatedSpaces.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        tabKeyNotifier.switchTo(const Key(&#39;spaces&#39;));
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: RelatedSpacesPage(
+            spaceIdOrAlias: state.pathParameters[&#39;spaceId&#39;]!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.spaceMembers.name,
+      path: Routes.spaceMembers.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        tabKeyNotifier.switchTo(const Key(&#39;members&#39;));
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: SpaceMembersPage(
+            spaceIdOrAlias: state.pathParameters[&#39;spaceId&#39;]!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.spacePins.name,
+      path: Routes.spacePins.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        tabKeyNotifier.switchTo(const Key(&#39;pins&#39;));
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: SpacePinsPage(
+            spaceIdOrAlias: state.pathParameters[&#39;spaceId&#39;]!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.spaceEvents.name,
+      path: Routes.spaceEvents.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        tabKeyNotifier.switchTo(const Key(&#39;events&#39;));
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: SpaceEventsPage(
+            spaceIdOrAlias: state.pathParameters[&#39;spaceId&#39;]!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.spaceChats.name,
+      path: Routes.spaceChats.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        tabKeyNotifier.switchTo(const Key(&#39;chat&#39;));
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: SpaceChatsPage(
+            spaceIdOrAlias: state.pathParameters[&#39;spaceId&#39;]!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.spaceTasks.name,
+      path: Routes.spaceTasks.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        tabKeyNotifier.switchTo(const Key(&#39;tasks&#39;));
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: SpaceTasksPage(
+            spaceIdOrAlias: state.pathParameters[&#39;spaceId&#39;]!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.space.name,
+      path: Routes.space.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        tabKeyNotifier.switchTo(const Key(&#39;overview&#39;));
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: SpaceOverview(
+            spaceIdOrAlias: state.pathParameters[&#39;spaceId&#39;]!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.joinSpace.name,
+      path: Routes.joinSpace.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const JoinSpacePage(),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.spaces.name,
+      path: Routes.spaces.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const SpacesPage(),
+        );
+      },
+    ),
+    &#47;&#47; ---- Space SETTINGS
+    GoRoute(
+      name: Routes.spaceSettings.name,
+      path: Routes.spaceSettings.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: SpaceSettingsMenuIndexPage(
+            spaceId: state.pathParameters[&#39;spaceId&#39;]!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.spaceSettingsApps.name,
+      path: Routes.spaceSettingsApps.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: SpaceAppsSettingsPage(
+            spaceId: state.pathParameters[&#39;spaceId&#39;]!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.tasks.name,
+      path: Routes.tasks.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const TasksPage(),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.task.name,
+      path: Routes.task.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: TaskPage(
+            taskListId: state.pathParameters[&#39;taskListId&#39;]!,
+            taskId: state.pathParameters[&#39;taskId&#39;]!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.taskList.name,
+      path: Routes.taskList.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: TaskListPage(
+            taskListId: state.pathParameters[&#39;taskListId&#39;]!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.pins.name,
+      path: Routes.pins.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const PinsPage(),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.pin.name,
+      path: Routes.pin.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: PinPage(pinId: state.pathParameters[&#39;pinId&#39;]!),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.calendarEvents.name,
+      path: Routes.calendarEvents.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const EventsPage(),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.calendarEvent.name,
+      path: Routes.calendarEvent.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: CalendarEventPage(
+            calendarId: state.pathParameters[&#39;calendarId&#39;]!,
+          ),
+        );
+      },
+    ),
+  ];
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">acter</a></li>
+    <li><a href="../file-___home_runner_work_a3_a3_app_lib_router_shell_routers_home_shell_router/file-___home_runner_work_a3_a3_app_lib_router_shell_routers_home_shell_router-library.html">home_shell_router</a></li>
+    <li class="self-crumb">makeHomeShellRoutes function</li>
+</ol>
+
+
+    <h5>home_shell_router library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-left-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    acter
+      0.0.1+1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

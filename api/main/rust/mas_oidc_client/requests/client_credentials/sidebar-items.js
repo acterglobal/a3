@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["access_token_with_client_credentials"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["MessageEventContent","MessageEventContentWithoutRelation","RedactedMessageEventContent","TextContentBlock","TextRepresentation"],"type":["MessageEvent","OriginalMessageEvent","OriginalSyncMessageEvent","RedactedMessageEvent","RedactedSyncMessageEvent","SyncMessageEvent"]};

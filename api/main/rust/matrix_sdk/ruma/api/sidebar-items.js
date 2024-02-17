@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"attr":["request","response"],"enum":["AuthScheme","Direction","MatrixVersion","SendAccessToken","VersioningDecision"],"macro":["metadata"],"mod":["client","error"],"struct":["Metadata","VersionHistory"],"trait":["EndpointError","IncomingRequest","IncomingResponse","OutgoingRequest","OutgoingRequestAppserviceExt","OutgoingResponse"]};

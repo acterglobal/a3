@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["AlgorithmInfo","DeviceLinkProblem","ShieldState","VerificationLevel","VerificationState"],"struct":["EncryptionInfo","SyncTimelineEvent","TimelineEvent"]};

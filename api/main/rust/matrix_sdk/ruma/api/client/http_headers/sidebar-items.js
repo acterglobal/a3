@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["CROSS_ORIGIN_RESOURCE_POLICY"]};

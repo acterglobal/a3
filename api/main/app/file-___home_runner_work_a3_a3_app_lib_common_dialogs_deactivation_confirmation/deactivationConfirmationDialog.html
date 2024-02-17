@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the deactivationConfirmationDialog function from the deactivation_confirmation library, for the Dart programming language.">
+  <title>deactivationConfirmationDialog function - deactivation_confirmation library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">acter</a></li>
+    <li><a href="../file-___home_runner_work_a3_a3_app_lib_common_dialogs_deactivation_confirmation/file-___home_runner_work_a3_a3_app_lib_common_dialogs_deactivation_confirmation-library.html">common&#47;dialogs&#47;deactivation_confirmation.dart</a></li>
+    <li class="self-crumb">deactivationConfirmationDialog function</li>
+  </ol>
+  <div class="self-name">deactivationConfirmationDialog</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="file-___home_runner_work_a3_a3_app_lib_common_dialogs_deactivation_confirmation&#47;file-___home_runner_work_a3_a3_app_lib_common_dialogs_deactivation_confirmation-library-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-function">deactivationConfirmationDialog</span> function 
+ 
+</h1></div>
+
+    <section class="multi-line-signature">
+        
+
+<span class="returntype">void</span>
+<span class="name ">deactivationConfirmationDialog</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="deactivationConfirmationDialog-param-context"><span class="type-annotation">dynamic</span> <span class="parameter-name">context</span>, </span></li>
+<li><span class="parameter" id="deactivationConfirmationDialog-param-ref"><span class="type-annotation">dynamic</span> <span class="parameter-name">ref</span></span></li>
+</ol>)
+
+        
+
+    </section>
+    
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
+  TextEditingController passwordController = TextEditingController();
+  showDialog(
+    context: context,
+    builder: (BuildContext ctx) {
+      return AlertDialog(
+        title: Text(
+          &#39;Deactivate Account&#39;,
+          style: TextStyle(
+            color: AppTheme.brandColorScheme.error,
+            fontSize: 26,
+          ),
+        ),
+        content: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 650),
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    color: Theme.of(context).colorScheme.background,
+                    child: Column(
+                      children: [
+                        Text(
+                          &#39;Careful: You are about to permanently deactivate your account &#39;,
+                          style: TextStyle(
+                            color: AppTheme.brandColorScheme.error,
+                            fontSize: 20,
+                          ),
+                        ),
+                        const Text(&#39;If you proceed: \n  \n&#39;
+                            &#39;- All your personal data will be removed from your homeserver, including display name and avatar \n&#39;
+                            &#39;- All your sessions will be closed immediately, no other device will be able to continue their sessions \n&#39;
+                            &#39;- You will leave all rooms, chats, spaces and DMs that you are in \n&#39;
+                            &#39;- You will not be able to reactivate your account \n&#39;
+                            &#39;- You will no longer be able to log in \n&#39;
+                            &#39;- No one will be able to reuse your username (MXID), including you: this username will remain unavailable indefinitely \n&#39;
+                            &#39;- You will be removed from the identity server, if you provided any information to be found through that (e.g. email or phone number) \n&#39;
+                            &#39;- All local data, including any encryption keys, will be permanently deleted from this device \n&#39;
+                            &#39;- Your old messages will still be visible to people who received them, just like emails you sent in the past. \n&#39;
+                            &#39;\n You will not be able to reverse any of this. This is a permanent and irrevocable action.&#39;),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 10, bottom: 10),
+                child: Text(
+                  &#39;Please provide your user password to confirm you want to deactivate your account.&#39;,
+                  style: TextStyle(
+                    color: AppTheme.brandColorScheme.error,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 250),
+                child: TextField(
+                  key: deactivatePasswordField,
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(hintText: &#39;Password&#39;),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: &lt;Widget&gt;[
+          TextButton(
+            key: deactivateCancelBtn,
+            onPressed: () =&gt; Navigator.of(context, rootNavigator: true).pop(),
+            child: const Text(&#39;Cancel&#39;),
+          ),
+          TextButton(
+            key: deactivateConfirmBtn,
+            onPressed: () async {
+              showAdaptiveDialog(
+                barrierDismissible: false,
+                context: context,
+                builder: (context) =&gt; DefaultDialog(
+                  title: Text(
+                    &#39;Deactivating your account&#39;,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  isLoader: true,
+                ),
+              );
+              final sdk = await ref.read(sdkProvider.future);
+              try {
+                if (!await sdk.deactivateAndDestroyCurrentClient(
+                  passwordController.text,
+                )) {
+                  throw &#39;Deactivation and removing all local data failed&#39;;
+                }
+                &#47;&#47; ignore: use_build_context_synchronously
+                if (!context.mounted) {
+                  return;
+                }
+                &#47;&#47; remove pop up
+                Navigator.of(context, rootNavigator: true).pop();
+                &#47;&#47; remove ourselves
+                Navigator.of(context, rootNavigator: true).pop();
+                context.goNamed(Routes.main.name);
+              } catch (err) {
+                &#47;&#47; We are doing as expected, but the lints triggers.
+                &#47;&#47; ignore: use_build_context_synchronously
+                if (!context.mounted) {
+                  return;
+                }
+
+                showAdaptiveDialog(
+                  context: context,
+                  builder: (context) =&gt; DefaultDialog(
+                    title: Text(
+                      &#39;Deactivating failed: \n $err&quot;&#39;,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    actions: &lt;Widget&gt;[
+                      ElevatedButton(
+                        onPressed: () =&gt;
+                            Navigator.of(context, rootNavigator: true).pop(),
+                        child: const Text(&#39;Close&#39;),
+                      ),
+                    ],
+                  ),
+                );
+              }
+            },
+            child: const Text(&#39;Deactivate&#39;),
+          ),
+        ],
+      );
+    },
+  );
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">acter</a></li>
+    <li><a href="../file-___home_runner_work_a3_a3_app_lib_common_dialogs_deactivation_confirmation/file-___home_runner_work_a3_a3_app_lib_common_dialogs_deactivation_confirmation-library.html">deactivation_confirmation</a></li>
+    <li class="self-crumb">deactivationConfirmationDialog function</li>
+</ol>
+
+
+    <h5>deactivation_confirmation library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-left-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    acter
+      0.0.1+1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

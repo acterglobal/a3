@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="For asserting that two values are equal."><title>assertc_eq in konst - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="konst" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../konst/index.html">konst</a><span class="version">0.3.6</span></h2></div><div class="sidebar-elems"></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../konst/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Macro <a href="index.html">konst</a>::<wbr><a class="macro" href="#">assertc_eq</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/konst/macros/assert_cmp_macros.rs.html#167-171">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><span class="macro">macro_rules! </span>assertc_eq {
+    (<span class="macro-nonterminal">$left</span>:expr, <span class="macro-nonterminal">$right</span>:expr $(, $(<span class="macro-nonterminal">$fmt</span>:tt)* )<span class="question-mark">? </span>) =&gt; { ... };
+}</pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>For asserting that two values are equal.</p>
+<p><a href="#examples"><strong>examples below</strong></a></p>
+<p>This macro is only evaluated at compile-time if used in a context that requires it (eg: in the expression assigned to a <code>const _: () = </code>)</p>
+<h2 id="formatting"><a class="doc-anchor" href="#formatting">§</a>Formatting</h2>
+<p>This uses the same syntax for formatting arguments as <a href="../const_panic/macro.concat_panic.html" title="macro const_panic::concat_panic"><code>const_panic::concat_panic</code></a>.</p>
+<p>By default, this only supports primitive types as arguments, to format arrays or custom types you must enable <code>const_panic</code>’s <code>&quot;non_basic&quot;</code> feature.</p>
+<p>To pass user-defined types, they must implement both of these traits as described in their docs:</p>
+<ul>
+<li><a href="cmp/trait.ConstCmp.html" title="trait konst::cmp::ConstCmp"><code>konst::cmp::ConstCmp</code></a></li>
+<li><a href="../const_panic/fmt/trait.PanicFmt.html" title="trait const_panic::fmt::PanicFmt"><code>const_panic::fmt::PanicFmt</code></a></li>
+</ul>
+<h2 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h2><h4 id="zipping-slices"><a class="doc-anchor" href="#zipping-slices">§</a>Zipping slices</h4>
+<p>This example requires the <code>&quot;iter&quot;</code> feature</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::{iter, slice};
+
+<span class="kw">const </span>A: <span class="kw-2">&amp;</span>[u8] = <span class="kw-2">&amp;</span>[<span class="number">3</span>, <span class="number">5</span>, <span class="number">8</span>, <span class="number">13</span>];
+<span class="kw">const </span>B: <span class="kw-2">&amp;</span>[u8] = <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];
+
+<span class="kw">const </span>C: <span class="kw-2">&amp;</span>[(u8, u8)] = <span class="kw-2">&amp;</span>{
+    <span class="macro">konst::assertc_eq!</span>(A.len(), B.len());
+
+    <span class="macro">iter::collect_const!</span>((u8, u8) =&gt;
+        slice::iter_copied(A),
+            zip(slice::iter_copied(B)),
+    )
+};
+
+<span class="macro">assert_eq!</span>(C, [(<span class="number">3</span>, <span class="number">0</span>), (<span class="number">5</span>, <span class="number">1</span>), (<span class="number">8</span>, <span class="number">2</span>), (<span class="number">13</span>, <span class="number">3</span>)]);
+</code></pre></div>
+<p>If either slice was a different length, this would be the compile-time error:</p>
+<div class="example-wrap"><pre class="language-text"><code>error[E0080]: evaluation of constant value failed
+  --&gt; src/macros/assert_macros.rs:79:5
+   |
+10 |     konst::assertc_eq!(A.len(), B.len());
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the evaluated program panicked at &#39;
+assertion failed: LEFT == RIGHT
+ left: `3`
+right: `4`
+&#39;, src/macros/assert_macros.rs:10:5
+
+</code></pre></div><h4 id="user-defined-type"><a class="doc-anchor" href="#user-defined-type">§</a>User-defined type</h4>
+<p>This example demonstrates formatting of user-defined types.</p>
+<p>The <code>const_panic::PanicFmt</code> derive that this example uses
+requres enabling <code>const_panic</code>’s <code>&quot;derive&quot;</code> feature.</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>konst::assertc_eq;
+<span class="kw">use </span>konst::const_panic::PanicFmt;
+
+<span class="kw">const _</span>: () = assert_same_layout(<span class="macro">layout_for!</span>(u32), <span class="macro">layout_for!</span>(i32));
+
+<span class="attr">#[track_caller]
+</span><span class="kw">const fn </span>assert_same_layout(left: Layout, right: Layout) {
+    <span class="macro">assertc_eq!</span>{left, right, <span class="string">"layout mismatch"</span>}
+}
+
+<span class="attr">#[derive(PanicFmt)]
+</span><span class="kw">struct </span>Layout {
+    type_name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
+    size: usize,
+    alignment: usize,
+}
+
+<span class="macro">konst::impl_cmp!</span>{
+    <span class="kw">impl </span>Layout;
+     
+    <span class="kw">pub const fn </span>const_eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        <span class="macro">konst::const_eq!</span>(<span class="self">self</span>.size, other.size) &amp;&amp;
+        <span class="macro">konst::const_eq!</span>(<span class="self">self</span>.alignment, other.alignment)
+    }
+}
+
+<span class="kw">impl </span>Layout {
+    <span class="kw">pub const fn </span>new&lt;T&gt;(type_name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            type_name,
+            size: std::mem::size_of::&lt;T&gt;(),
+            alignment: std::mem::align_of::&lt;T&gt;(),
+        }
+    }
+}
+
+<span class="macro">macro_rules! </span>layout_for {
+    (<span class="macro-nonterminal">$ty</span>:ty) =&gt; {
+        Layout::new::&lt;<span class="macro-nonterminal">$ty</span>&gt;(<span class="macro">stringify!</span>(<span class="macro-nonterminal">$ty</span>))
+    }
+} <span class="kw">use </span>layout_for;
+</code></pre></div>
+<p>If the types were changed, the example would fail compilation with this error:</p>
+<div class="example-wrap"><pre class="language-text"><code>error[E0080]: evaluation of constant value failed
+ --&gt; src/macros/assert_macros.rs:120:15
+  |
+6 | const _: () = assert_same_layout(layout_for!(u32), layout_for!([u8; 4]));
+  |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the evaluated program panicked at &#39;
+assertion failed: LEFT == RIGHT
+ left: `Layout { type_name: &quot;u32&quot;, size: 4, alignment: 4 }`
+right: `Layout { type_name: &quot;[u8; 4]&quot;, size: 4, alignment: 1 }`
+: layout mismatch&#39;, src/macros/assert_macros.rs:6:15
+
+</code></pre></div></div></details></section></div></main></body></html>

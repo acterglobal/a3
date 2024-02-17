@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["is_char_boundary","str_from","str_range","str_up_to"],"mod":["string_for_konst"]};

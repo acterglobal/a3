@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ApplicationType","AuthenticationMethodOrAccessTokenType","ClaimType","ProviderMetadataVerificationError","SubjectType"],"static":["DEFAULT_AUTH_METHODS_SUPPORTED","DEFAULT_CLAIM_TYPES_SUPPORTED","DEFAULT_GRANT_TYPES_SUPPORTED","DEFAULT_RESPONSE_MODES_SUPPORTED"],"struct":["ProviderMetadata","RpInitiatedLogoutRequest","VerifiedProviderMetadata"]};

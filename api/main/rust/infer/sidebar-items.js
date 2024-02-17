@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["MatcherType"],"fn":["get","get_from_path","is","is_app","is_archive","is_audio","is_book","is_document","is_font","is_image","is_mime","is_mime_supported","is_supported","is_video"],"mod":["app","archive","audio","book","doc","font","image","odf","text","video"],"struct":["Infer","Type"],"type":["Matcher"]};

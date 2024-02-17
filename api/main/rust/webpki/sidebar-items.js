@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Error"],"static":["ECDSA_P256_SHA256","ECDSA_P256_SHA384","ECDSA_P384_SHA256","ECDSA_P384_SHA384","ED25519"],"struct":["DnsNameRef","EndEntityCert","InvalidDnsNameError","SignatureAlgorithm","Time","TlsClientTrustAnchors","TlsServerTrustAnchors","TrustAnchor"],"type":["DNSNameRef","TLSClientTrustAnchors","TLSServerTrustAnchors"]};

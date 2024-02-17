@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Medium"],"struct":["FieldType","FieldTypeInit","Location","Protocol","ProtocolInit","ProtocolInstance","ProtocolInstanceInit","ThirdPartyIdentifier","ThirdPartyIdentifierInit","User"]};

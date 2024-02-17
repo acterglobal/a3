@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["get_location_for_protocol","get_location_for_room_alias","get_protocol","get_protocols","get_user_for_protocol","get_user_for_user_id"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["RedactedUnstablePollEndEventContent","UnstablePollEndContentBlock","UnstablePollEndEventContent"],"type":["OriginalSyncUnstablePollEndEvent","OriginalUnstablePollEndEvent","RedactedSyncUnstablePollEndEvent","RedactedUnstablePollEndEvent","SyncUnstablePollEndEvent","UnstablePollEndEvent"]};

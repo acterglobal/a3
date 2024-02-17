@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Error","MatrixIdError","MatrixToError","MatrixUriError","MxcUriError","VoipVersionIdError"]};

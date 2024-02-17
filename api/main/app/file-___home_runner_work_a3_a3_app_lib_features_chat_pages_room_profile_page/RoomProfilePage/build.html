@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the build method from the RoomProfilePage class, for the Dart programming language.">
+  <title>build method - RoomProfilePage class - room_profile_page library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">acter</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_chat_pages_room_profile_page/file-___home_runner_work_a3_a3_app_lib_features_chat_pages_room_profile_page-library.html">features&#47;chat&#47;pages&#47;room_profile_page.dart</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_chat_pages_room_profile_page/RoomProfilePage-class.html">RoomProfilePage</a></li>
+    <li class="self-crumb">build method</li>
+  </ol>
+  <div class="self-name">build</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="file-___home_runner_work_a3_a3_app_lib_features_chat_pages_room_profile_page&#47;RoomProfilePage-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-method">build</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+  <div>
+    <ol class="annotation-list">
+        <li>@<a href="https://api.flutter.dev/flutter/dart-core/override-constant.html">override</a></li>
+    </ol>
+  </div>
+
+<span class="returntype">dynamic</span>
+<span class="name ">build</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="build-param-context"><span class="type-annotation">dynamic</span> <span class="parameter-name">context</span>, </span></li>
+<li><span class="parameter" id="build-param-ref"><span class="type-annotation">dynamic</span> <span class="parameter-name">ref</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">@override
+Widget build(BuildContext context, WidgetRef ref) {
+  final inSideBar = ref.watch(inSideBarProvider);
+  final isExpanded = ref.watch(hasExpandedPanel);
+  final convo = ref.watch(chatProvider(roomId));
+  final convoProfile = ref.watch(chatProfileDataProviderById(roomId));
+  final members = ref.watch(chatMembersProvider(roomId));
+  final myMembership = ref.watch(roomMembershipProvider(roomId));
+  final tileTextTheme = Theme.of(context).textTheme.bodySmall;
+  final Widget topMenu = members.when(
+    data: (list) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          &#39;Members (${list.length})&#39;,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+      );
+    },
+    error: (error, stackTrace) =&gt; Text(&#39;Error loading members count $error&#39;),
+    loading: () =&gt; const Skeletonizer(
+      child: Text(
+        &#39;100 members&#39;,
+      ),
+    ),
+  );
+
+  return Scaffold(
+    extendBodyBehindAppBar: true,
+    body: CustomScrollView(
+      shrinkWrap: true,
+      slivers: [
+        SliverAppBar(
+          automaticallyImplyLeading: false,
+          leading: Visibility(
+            visible: inSideBar &amp;&amp; isExpanded,
+            replacement: IconButton(
+              onPressed: () =&gt; context.pop(),
+              icon: const Icon(Icons.chevron_left_outlined),
+            ),
+            child: IconButton(
+              onPressed: () =&gt; ref
+                  .read(hasExpandedPanel.notifier)
+                  .update((state) =&gt; false),
+              icon: const Icon(Atlas.xmark_circle_thin),
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0.0,
+        ),
+        SliverToBoxAdapter(
+          child: Column(
+            children: [
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    top: 38,
+                    bottom: 12,
+                  ),
+                  child: RoomAvatar(
+                    roomId: roomId,
+                    avatarSize: 75,
+                    showParent: true,
+                  ),
+                ),
+              ),
+              convoProfile.when(
+                data: (profile) =&gt; Text(
+                  profile.displayName ?? roomId,
+                  softWrap: true,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                error: (err, stackTrace) {
+                  debugPrint(&#39;Some error occured $err&#39;);
+                  return Text(
+                    roomId,
+                    overflow: TextOverflow.clip,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  );
+                },
+                loading: () =&gt; Skeletonizer(child: Text(roomId)),
+              ),
+            ],
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          sliver: convo.when(
+            data: (data) =&gt; SliverToBoxAdapter(
+              child: RenderHtml(
+                text: data.topic() ?? &#39;&#39;,
+                defaultTextStyle: Theme.of(context).textTheme.bodySmall,
+              ),
+            ),
+            loading: () =&gt; const Skeletonizer(child: Text(&#39;loading...&#39;)),
+            error: (e, s) =&gt; Text(&#39;Error: $e&#39;),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: SettingsList(
+            physics: const NeverScrollableScrollPhysics(),
+            darkTheme: SettingsThemeData(
+              settingsListBackground: Colors.transparent,
+              dividerColor: Colors.transparent,
+              leadingIconsColor: Theme.of(context).colorScheme.neutral6,
+            ),
+            shrinkWrap: true,
+            sections: [
+              SettingsSection(
+                tiles: [
+                  SettingsTile(
+                    onPressed: (ctx) {
+                      &#47;&#47;FIXME : ?via=$serverName data should be handle from rust helper function
+                      final serverName = roomId.split(&#39;:&#39;).last;
+                      Clipboard.setData(
+                        ClipboardData(
+                          text: &#39;https:&#47;&#47;matrix.to&#47;#&#47;$roomId?via=$serverName&#39;,
+                        ),
+                      );
+                      customMsgSnackbar(
+                        context,
+                        &#39;Room ID: $roomId copied to clipboard&#39;,
+                      );
+                    },
+                    title: Text(
+                      &#39;Copy room link&#39;,
+                      style: tileTextTheme,
+                    ),
+                    leading: const Icon(Atlas.chain_link_thin, size: 18),
+                    trailing: Icon(
+                      Atlas.pages_thin,
+                      size: 18,
+                      color: Theme.of(context).colorScheme.success,
+                    ),
+                  ),
+                  NotificationsSettingsTile(roomId: roomId),
+                  myMembership.when(
+                    data: (membership) =&gt; SettingsTile.navigation(
+                      onPressed: (ctx) {
+                        membership!.canString(&#39;CanInvite&#39;)
+                            ? ctx.pushNamed(
+                                Routes.spaceInvite.name,
+                                pathParameters: {&#39;spaceId&#39;: roomId},
+                              )
+                            : customMsgSnackbar(
+                                ctx,
+                                &#39;Not enough power level for invites, ask room administrator to change it&#39;,
+                              );
+                      },
+                      title: Text(
+                        &#39;Request and Invites&#39;,
+                        style: tileTextTheme,
+                      ),
+                      leading: const Icon(Atlas.user_plus_thin, size: 18),
+                      trailing: Icon(
+                        Icons.chevron_right_outlined,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
+                    ),
+                    error: (e, st) =&gt; SettingsTile(
+                      title: Text(&#39;Error loading tile due to $e&#39;),
+                    ),
+                    loading: () =&gt; SettingsTile(
+                      title: const Skeletonizer(child: Text(&#39;Loading&#39;)),
+                    ),
+                  ),
+                  SettingsTile(
+                    onPressed: (ctx) async {
+                      await showAdaptiveDialog(
+                        barrierDismissible: true,
+                        context: context,
+                        useRootNavigator: false,
+                        builder: (dialogContext) =&gt; DefaultDialog(
+                          height:
+                              MediaQuery.of(dialogContext).size.height * 0.5,
+                          title: topMenu,
+                          description: convo.when(
+                            data: (data) =&gt; MemberList(convo: data),
+                            loading: () =&gt; const Skeletonizer(
+                              child: Text(&#39;loading...&#39;),
+                            ),
+                            error: (e, s) =&gt; Text(&#39;Error: $e&#39;),
+                          ),
+                        ),
+                      );
+                    },
+                    title: Text(
+                      &#39;Members&#39;,
+                      style: tileTextTheme,
+                    ),
+                    leading: const Icon(
+                      Atlas.accounts_group_people_thin,
+                      size: 18,
+                    ),
+                    trailing: Icon(
+                      Icons.chevron_right_outlined,
+                      size: 18,
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
+                  ),
+                ],
+              ),
+              SettingsSection(
+                title: Text(
+                  &#39;Danger Zone&#39;,
+                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        color: Theme.of(context).colorScheme.badgeUrgent,
+                      ),
+                ),
+                tiles: [
+                  SettingsTile(
+                    onPressed: (ctx) =&gt; showAdaptiveDialog(
+                      context: ctx,
+                      builder: (ctx) =&gt; DefaultDialog(
+                        title: Text(
+                          &#39;Leave Room&#39;,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        subtitle: Text(
+                          &#39;Are you sure you want to leave room? This action cannot be undone&#39;,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        actions: [
+                          OutlinedButton(
+                            onPressed: () =&gt;
+                                Navigator.of(context, rootNavigator: true)
+                                    .pop(),
+                            child: const Text(&#39;No&#39;),
+                          ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              Navigator.of(context, rootNavigator: true)
+                                  .pop();
+                              EasyLoading.show(status: &#39;Leaving Room&#39;);
+                              var res = await _handleLeaveRoom(ref, roomId);
+                              if (res) {
+                                if (context.mounted) {
+                                  EasyLoading.dismiss();
+                                  context.goNamed(Routes.chat.name);
+                                }
+                              } else {
+                                EasyLoading.dismiss();
+                                EasyLoading.showError(
+                                  &#39;Some error occured leaving room&#39;,
+                                );
+                              }
+                            },
+                            child: const Text(&#39;Yes&#39;),
+                          ),
+                        ],
+                      ),
+                    ),
+                    title: Text(
+                      &#39;Leave Room&#39;,
+                      style: tileTextTheme!.copyWith(
+                        color: Theme.of(context).colorScheme.badgeUrgent,
+                      ),
+                    ),
+                    leading: Icon(
+                      Atlas.trash_thin,
+                      size: 18,
+                      color: Theme.of(context).colorScheme.badgeUrgent,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">acter</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_chat_pages_room_profile_page/file-___home_runner_work_a3_a3_app_lib_features_chat_pages_room_profile_page-library.html">room_profile_page</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_chat_pages_room_profile_page/RoomProfilePage-class.html">RoomProfilePage</a></li>
+    <li class="self-crumb">build method</li>
+</ol>
+
+
+    <h5>RoomProfilePage class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    acter
+      0.0.1+1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

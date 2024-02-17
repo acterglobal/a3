@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["HtmlSanitizerMode","RemoveReplyFallback"],"fn":["remove_html_reply_fallback","sanitize_html"],"struct":["ElementData","Html","Node","SanitizerConfig"]};

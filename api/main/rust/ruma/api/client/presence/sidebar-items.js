@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["get_presence","set_presence"]};

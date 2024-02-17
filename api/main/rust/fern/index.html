@@ -1,0 +1,109 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Efficient, configurable logging in Rust."><title>fern - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="fern" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../fern/index.html">fern</a><span class="version">0.6.1</span></h2></div><div class="sidebar-elems"><ul class="block">
+            <li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#functions">Functions</a></li><li><a href="#types">Type Aliases</a></li></ul></section></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../fern/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">fern</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/fern/lib.rs.html#1-353">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Efficient, configurable logging in Rust.</p>
+<h2 id="depending-on-fern"><a class="doc-anchor" href="#depending-on-fern">§</a>Depending on fern</h2>
+<p>Ensure you require both fern and log in your project’s <code>Cargo.toml</code>:</p>
+<div class="example-wrap"><pre class="language-toml"><code>[dependencies]
+log = &quot;0.4&quot;
+fern = &quot;0.6&quot;
+</code></pre></div><h2 id="example-setup"><a class="doc-anchor" href="#example-setup">§</a>Example setup</h2>
+<p>With fern, all logger configuration is done via builder-like methods on
+instances of the <a href="struct.Dispatch.html"><code>Dispatch</code></a> structure.</p>
+<p>Here’s an example logger which formats messages, and sends everything Debug
+and above to both stdout and an output.log file:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>log::{debug, error, info, trace, warn};
+
+<span class="kw">fn </span>setup_logger() -&gt; <span class="prelude-ty">Result</span>&lt;(), fern::InitError&gt; {
+    fern::Dispatch::new()
+        .format(|out, message, record| {
+            out.finish(<span class="macro">format_args!</span>(
+                <span class="string">"{}[{}][{}] {}"</span>,
+                chrono::Local::now().format(<span class="string">"[%Y-%m-%d][%H:%M:%S]"</span>),
+                record.target(),
+                record.level(),
+                message
+            ))
+        })
+        .level(log::LevelFilter::Debug)
+        .chain(std::io::stdout())
+        .chain(fern::log_file(<span class="string">"output.log"</span>)<span class="question-mark">?</span>)
+        .apply()<span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+<p>Let’s unwrap this:</p>
+<hr />
+<p><a href="struct.Dispatch.html#method.new"><code>fern::Dispatch::new()</code></a></p>
+<p>Create an empty configuration.</p>
+<hr />
+<p><a href="struct.Dispatch.html#method.format"><code>.format(|...| ...)</code></a></p>
+<p>Add a formatter to the logger, modifying all messages sent through.</p>
+<hr />
+<p><a href="https://docs.rs/chrono/0.4/chrono/offset/local/struct.Local.html#method.now"><code>chrono::Local::now()</code></a></p>
+<p>Get the current time in the local timezone using the <a href="https://github.com/chronotope/chrono"><code>chrono</code></a> library.
+See the <a href="https://docs.rs/chrono/0.4/chrono/index.html#date-and-time">time-and-date docs</a>.</p>
+<hr />
+<p><a href="https://docs.rs/chrono/0.4/chrono/datetime/struct.DateTime.html#method.format"><code>.format(&quot;[%Y-%m-%d][%H:%M:%S]&quot;)</code></a></p>
+<p>Use chrono’s lazy format specifier to turn the time into a readable string.</p>
+<hr />
+<p><a href="struct.FormatCallback.html#method.finish"><code>out.finish(format_args!(...))</code></a></p>
+<p>Call the <code>fern::FormattingCallback</code> to submit the formatted message.</p>
+<p>This roundabout way is slightly odd, but it allows for very fast logging.
+No string allocation required!</p>
+<p><a href="https://doc.rust-lang.org/std/macro.format_args.html"><code>format_args!()</code></a> has the same format as <a href="https://doc.rust-lang.org/std/macro.println.html"><code>println!()</code></a> (and every other
+<a href="https://doc.rust-lang.org/std/fmt/"><code>std::fmt</code></a>-based macro).</p>
+<hr />
+<p><a href="struct.Dispatch.html#method.level"><code>.level(log::LevelFilter::Debug)</code></a></p>
+<p>Set the minimum level needed to output to <code>Debug</code>.</p>
+<hr />
+<p><a href="struct.Dispatch.html#method.chain"><code>.chain(std::io::stdout())</code></a></p>
+<p>Add a child to the logger. All messages which pass the filters will be sent
+to stdout.</p>
+<p><a href="struct.Dispatch.html#method.chain"><code>Dispatch::chain</code></a> accepts <a href="https://doc.rust-lang.org/std/io/struct.Stdout.html"><code>Stdout</code></a>, <a href="https://doc.rust-lang.org/std/io/struct.Stderr.html"><code>Stderr</code></a>, <a href="https://doc.rust-lang.org/std/fs/struct.File.html"><code>File</code></a> and other
+<a href="struct.Dispatch.html"><code>Dispatch</code></a> instances.</p>
+<hr />
+<p><a href="struct.Dispatch.html#method.chain"><code>.chain(fern::log_file(...)?)</code></a></p>
+<p>Add a second child sending messages to the file “output.log”.</p>
+<p>See <a href="fn.log_file.html"><code>fern::log_file()</code></a> for more info on file output.</p>
+<hr />
+<p><a href="struct.Dispatch.html#method.apply"><code>.apply()</code></a></p>
+<p>Consume the configuration and instantiate it as the current runtime global
+logger.</p>
+<p>This will fail if and only if <code>.apply()</code> or equivalent form another crate
+has already been used this runtime.</p>
+<p>Since the binary crate is the only one ever setting up logging, the
+<a href="struct.Dispatch.html#method.apply"><code>apply</code></a> result can be reasonably unwrapped: it’s a bug if any crate is
+calling this method more than once.</p>
+<hr />
+<p>The final output will look like:</p>
+<div class="example-wrap"><pre class="language-text"><code>[2017-01-20][12:55:04][crate-name][INFO] Hello, world!
+[2017-01-20][12:56:21][crate-name][WARN] Ahhh!
+[2017-01-20][12:58:00][crate-name][DEBUG] Something less important happened.
+</code></pre></div><h2 id="logging"><a class="doc-anchor" href="#logging">§</a>Logging</h2>
+<p>Once the logger has been set, it will pick up all logging calls from your
+crate and all libraries you depend on.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>
+fern::Dispatch::new()
+    <span class="comment">// ...
+    </span>.apply()<span class="question-mark">?</span>;
+
+<span class="macro">trace!</span>(<span class="string">"Trace message"</span>);
+<span class="macro">debug!</span>(<span class="string">"Debug message"</span>);
+<span class="macro">info!</span>(<span class="string">"Info message"</span>);
+<span class="macro">warn!</span>(<span class="string">"Warning message"</span>);
+<span class="macro">error!</span>(<span class="string">"Error message"</span>);</code></pre></div>
+<h2 id="more"><a class="doc-anchor" href="#more">§</a>More</h2>
+<p>The <a href="struct.Dispatch.html"><code>Dispatch</code> documentation</a> has example usages of each method, and the
+<a href="https://github.com/daboross/fern/tree/fern-0.6.1/examples/cmd-program.rs">full example program</a> might be useful for using fern in a larger
+application context.</p>
+<p>See the <a href="colors/index.html">colors</a> module for examples using ANSI terminal coloring.</p>
+<p>See the <a href="syslog/index.html">syslog</a> module for examples outputting to the unix syslog, or the
+<a href="https://github.com/daboross/fern/tree/fern-0.6.1/examples/syslog.rs">syslog full example program</a> for a more realistic sample.</p>
+<p>See the <a href="meta/index.html">meta</a> module for information on getting logging-within-logging
+working correctly.</p>
+</div></details><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="mod" href="meta/index.html" title="mod fern::meta">meta</a></div><div class="desc docblock-short">Fern supports logging most things by default, except for one kind of struct: structs which make log
+calls to the global logger from within their <code>Display</code> or <code>Debug</code> implementations.</div></li></ul><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.Dispatch.html" title="struct fern::Dispatch">Dispatch</a></div><div class="desc docblock-short">The base dispatch logger.</div></li><li><div class="item-name"><a class="struct" href="struct.FormatCallback.html" title="struct fern::FormatCallback">FormatCallback</a></div><div class="desc docblock-short">Callback struct for use within a formatter closure</div></li><li><div class="item-name"><a class="struct" href="struct.ImplDispatch.html" title="struct fern::ImplDispatch">ImplDispatch</a></div></li><li><div class="item-name"><a class="struct" href="struct.Manual.html" title="struct fern::Manual">Manual</a></div><div class="desc docblock-short">This is used to generate log file suffixed based on date, hour, and minute.</div></li><li><div class="item-name"><a class="struct" href="struct.Output.html" title="struct fern::Output">Output</a></div><div class="desc docblock-short">Configuration for a logger output.</div></li><li><div class="item-name"><a class="struct" href="struct.Panic.html" title="struct fern::Panic">Panic</a></div><div class="desc docblock-short">Logger which will panic whenever anything is logged. The panic
+will be exactly the message of the log.</div></li></ul><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="enum" href="enum.InitError.html" title="enum fern::InitError">InitError</a></div><div class="desc docblock-short">Convenience error combining possible errors which could occur while
+initializing logging.</div></li></ul><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="fn" href="fn.log_file.html" title="fn fern::log_file">log_file</a></div><div class="desc docblock-short">Convenience method for opening a log file with common options.</div></li></ul><h2 id="types" class="section-header">Type Aliases<a href="#types" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="type" href="type.Filter.html" title="type fern::Filter">Filter</a></div><div class="desc docblock-short">A type alias for a log filter. Returning true means the record should
+succeed - false means it should fail.</div></li><li><div class="item-name"><a class="type" href="type.Formatter.html" title="type fern::Formatter">Formatter</a></div><div class="desc docblock-short">A type alias for a log formatter.</div></li></ul></section></div></main></body></html>

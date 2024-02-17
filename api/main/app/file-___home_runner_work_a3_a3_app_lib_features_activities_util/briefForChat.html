@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the briefForChat function from the util library, for the Dart programming language.">
+  <title>briefForChat function - util library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">acter</a></li>
+    <li><a href="../file-___home_runner_work_a3_a3_app_lib_features_activities_util/file-___home_runner_work_a3_a3_app_lib_features_activities_util-library.html">features&#47;activities&#47;util.dart</a></li>
+    <li class="self-crumb">briefForChat function</li>
+  </ol>
+  <div class="self-name">briefForChat</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="file-___home_runner_work_a3_a3_app_lib_features_activities_util&#47;file-___home_runner_work_a3_a3_app_lib_features_activities_util-library-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-function">briefForChat</span> function 
+ 
+</h1></div>
+
+    <section class="multi-line-signature">
+        
+
+<span class="returntype">dynamic</span>
+<span class="name ">briefForChat</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="briefForChat-param-notification"><span class="type-annotation">dynamic</span> <span class="parameter-name">notification</span></span></li>
+</ol>)
+
+        
+
+    </section>
+    
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">NotificationBrief briefForChat(ffi.Notification notification) {
+  final message = notification.roomMessage();
+  const route = Routes.chatroom;
+  if (message == null) {
+    return const NotificationBrief(
+      title: &#39;unsupported chat message&#39;,
+      route: route,
+    );
+  }
+
+  ffi.RoomEventItem? eventItem = message.eventItem();
+  if (eventItem == null) {
+    return const NotificationBrief(title: &#39;unknown chat message&#39;, route: route);
+  }
+
+  &#47;&#47; String sender = eventItem.sender();
+  String eventType = eventItem.eventType();
+  &#47;&#47; message event
+  switch (eventType) {
+    case &#39;m.call.answer&#39;:
+    case &#39;m.call.candidates&#39;:
+    case &#39;m.call.hangup&#39;:
+    case &#39;m.call.invite&#39;:
+    case &#39;m.room.aliases&#39;:
+    case &#39;m.room.avatar&#39;:
+    case &#39;m.room.canonical_alias&#39;:
+    case &#39;m.room.create&#39;:
+    case &#39;m.room.encryption&#39;:
+    case &#39;m.room.guest.access&#39;:
+    case &#39;m.room.history_visibility&#39;:
+    case &#39;m.room.join.rules&#39;:
+    case &#39;m.room.name&#39;:
+    case &#39;m.room.pinned_events&#39;:
+    case &#39;m.room.power_levels&#39;:
+    case &#39;m.room.server_acl&#39;:
+    case &#39;m.room.third_party_invite&#39;:
+    case &#39;m.room.tombstone&#39;:
+    case &#39;m.room.topic&#39;:
+    case &#39;m.space.child&#39;:
+    case &#39;m.space.parent&#39;:
+    case &#39;m.room.message&#39;:
+      String? msgType = eventItem.msgType();
+      switch (msgType) {
+        case &#39;m.audio&#39;:
+        case &#39;m.file&#39;:
+        case &#39;m.image&#39;:
+        case &#39;m.video&#39;:
+        case &#39;m.emote&#39;:
+        case &#39;m.location&#39;:
+        case &#39;m.key.verification.request&#39;:
+        case &#39;m.notice&#39;:
+        case &#39;m.server_notice&#39;:
+        case &#39;m.text&#39;:
+          return NotificationBrief.fromMsgContent(
+            eventItem.msgContent(),
+            route,
+          );
+      }
+      return NotificationBrief(title: msgType ?? eventType, route: route);
+
+    case &#39;m.reaction&#39;:
+    case &#39;m.sticker&#39;:
+    case &#39;m.room.member&#39;:
+    case &#39;m.poll.start&#39;:
+      return NotificationBrief.fromMsgContent(eventItem.msgContent(), route);
+    case &#39;m.room.redaction&#39;:
+      return const NotificationBrief(title: &#39;Message deleted&#39;, route: route);
+    case &#39;m.room.encrypted&#39;:
+      return const NotificationBrief(title: &#39;encrypted message&#39;, route: route);
+    default:
+      return NotificationBrief(title: eventType, route: route);
+  }
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">acter</a></li>
+    <li><a href="../file-___home_runner_work_a3_a3_app_lib_features_activities_util/file-___home_runner_work_a3_a3_app_lib_features_activities_util-library.html">util</a></li>
+    <li class="self-crumb">briefForChat function</li>
+</ol>
+
+
+    <h5>util library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-left-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    acter
+      0.0.1+1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

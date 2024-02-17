@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the updateTests function from the updates library, for the Dart programming language.">
+  <title>updateTests function - updates library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">acter</a></li>
+    <li><a href="../file-___home_runner_work_a3_a3_app_integration_test_tests_updates/file-___home_runner_work_a3_a3_app_integration_test_tests_updates-library.html">gration_test&#47;tests&#47;updates.dart</a></li>
+    <li class="self-crumb">updateTests function</li>
+  </ol>
+  <div class="self-name">updateTests</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="file-___home_runner_work_a3_a3_app_integration_test_tests_updates&#47;file-___home_runner_work_a3_a3_app_integration_test_tests_updates-library-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-function">updateTests</span> function 
+ 
+</h1></div>
+
+    <section class="multi-line-signature">
+        
+
+<span class="returntype">void</span>
+<span class="name ">updateTests</span>(<wbr>)
+
+        
+
+    </section>
+    
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">void updateTests() {
+  acterTestWidget(&#39;Single Plain-Text News Update&#39;, (t) async {
+    final spaceId = await t.freshAccountWithSpace();
+    const text = &#39;Welcome to the show&#39;;
+
+    await t.openCreateNews();
+    await t.addTextSlide(text);
+    await t.toggleBackgroundColor();
+    await t.submitNews(spaceId);
+
+    &#47;&#47; we expect to be thrown to the news screen and see our latest item first:
+    final textUpdateContent = find.byKey(NewsUpdateKeys.textUpdateContent);
+    await textUpdateContent.should(findsOneWidget);
+    await find.text(text).should(findsWidgets);
+  });
+
+  acterTestWidget(&#39;Multi-Slide Html-Text News Update&#39;, (t) async {
+    final spaceId = await t.freshAccountWithSpace();
+    const text = &#39;This is our big update&#39;;
+
+    await t.openCreateNews();
+    final editorState = await t.addTextSlide(text);
+
+    await editorState.insertNewLine();
+    await editorState.insertTextAtCurrentSelection(
+      &#39;This is a second line of text with some &#39;,
+    );
+    final lastSelectable = editorState.getLastSelectable()!;
+    final transaction = editorState.transaction;
+    transaction.insertText(
+      lastSelectable.$1,
+      40,
+      &#39;bold text&#39;,
+      attributes: {&#39;bold&#39;: true},
+    );
+    await editorState.apply(transaction);
+
+    await t.openAddSlide();
+    await t.addTextSlide(&#39;this is slide b&#39;);
+
+    &#47;&#47; ensure the editor has properly reset
+    await find.text(text).should(findsNothing);
+
+    await t.submitNews(spaceId);
+
+    &#47;&#47; we expect to be thrown to the news screen and see our latest item first:
+    final textUpdateContent = find.byKey(NewsUpdateKeys.textUpdateContent);
+    await textUpdateContent.should(findsOneWidget);
+    await find.text(text).should(findsOneWidget);
+    await find
+        .text(&#39;This is a second line of text with some bold text&#39;)
+        .should(findsOneWidget);
+    &#47;&#47; FIXME: actually check the `bold text` is bold.... how to do that?
+  });
+
+  acterTestWidget(&#39;Single Image News Update&#39;, (t) async {
+    final spaceId = await t.freshAccountWithSpace();
+
+    await t.openCreateNews();
+    await t.addImageSlide();
+    await t.toggleBackgroundColor();
+    await t.submitNews(spaceId);
+
+    &#47;&#47; we expect to be thrown to the news screen and see our latest item first:
+    final imageUpdateContent = find.byKey(NewsUpdateKeys.imageUpdateContent);
+    await imageUpdateContent.should(findsOneWidget);
+  });
+
+  acterTestWidget(&#39;Single Video News Update&#39;, (t) async {
+    final spaceId = await t.freshAccountWithSpace();
+
+    await t.openCreateNews();
+    await t.addVideoSlide();
+    await t.toggleBackgroundColor();
+    await t.submitNews(spaceId);
+
+    &#47;&#47; we expect to be thrown to the news screen and see our latest item first:
+    final videoUpdateContent = find.byKey(NewsUpdateKeys.videoNewsContent);
+    await videoUpdateContent.should(findsOneWidget);
+  });
+
+  acterTestWidget(&#39;Multi-Slide News Updates&#39;, (t) async {
+    final spaceId = await t.freshAccountWithSpace();
+    const text = &#39;Welcome to the show&#39;;
+
+    await t.openCreateNews();
+    await t.addTextSlide(&#39;&#39;);
+    await t.toggleBackgroundColor();
+
+    await t.openAddSlide();
+    await t.addImageSlide();
+    await t.closeAddSlide();
+    await t.toggleBackgroundColor();
+
+    await t.openAddSlide();
+    await t.addVideoSlide();
+    await t.closeAddSlide();
+    await t.toggleBackgroundColor();
+
+    await t.submitNews(null); &#47;&#47; no space selected, this will fail
+    &#47;&#47; so we select a space
+    await t.selectSpace(spaceId, NewsUpdateKeys.selectSpace);
+    await t.submitNews(null); &#47;&#47; text is empty, so this will fail
+
+    await t.trigger(
+      const Key(&#39;remove-slide-text-0&#39;),
+    ); &#47;&#47; will remove the empty slide
+
+    &#47;&#47; Getting image slide in list
+    await t.trigger(const Key(&#39;slide-image-0&#39;));
+    await t.toggleBackgroundColor();
+
+    &#47;&#47; Getting video slide in list
+    await t.trigger(const Key(&#39;slide-video-1&#39;));
+
+    await t.toggleBackgroundColor();
+    await t.openAddSlide();
+    await t.addTextSlide(text); &#47;&#47;add a slide with content
+
+    await t.toggleBackgroundColor();
+    await t.submitNews(null); &#47;&#47; this will now work
+
+    &#47;&#47; we expect to be thrown to the news screen and see our latest item first:
+    &#47;&#47; For Image
+    final imageUpdateContent = find.byKey(NewsUpdateKeys.imageUpdateContent);
+    await imageUpdateContent.should(findsOneWidget);
+  });
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">acter</a></li>
+    <li><a href="../file-___home_runner_work_a3_a3_app_integration_test_tests_updates/file-___home_runner_work_a3_a3_app_integration_test_tests_updates-library.html">updates</a></li>
+    <li class="self-crumb">updateTests function</li>
+</ol>
+
+
+    <h5>updates library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-left-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    acter
+      0.0.1+1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["get_global_account_data","get_room_account_data","set_global_account_data","set_room_account_data"]};

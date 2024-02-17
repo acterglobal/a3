@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MSGPACK_VERSION"],"enum":["Marker"],"mod":["decode","encode"]};

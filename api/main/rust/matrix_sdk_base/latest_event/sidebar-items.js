@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["PossibleLatestEvent"],"fn":["is_suitable_for_latest_event"],"struct":["LatestEvent"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["REQUEST_RECEIVED_TIMEOUT","REQUEST_TIMESTAMP_TIMEOUT"],"enum":["HashAlgorithm","KeyAgreementProtocol","MessageAuthenticationCode","ShortAuthenticationString","VerificationMethod"],"mod":["accept","cancel","done","key","mac","ready","request","start"]};

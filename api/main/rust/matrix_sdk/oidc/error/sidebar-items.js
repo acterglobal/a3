@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["AuthorizationError","CredentialsError","DiscoveryError","Error","IdTokenError","IntrospectionError","JwksError","JwtVerificationError","PushedAuthorizationError","RegistrationError","TokenAuthorizationCodeError","TokenRefreshError","TokenRequestError","TokenRevokeError","UserInfoError"],"struct":["ErrorBody","HttpError"],"type":["BoxError"]};

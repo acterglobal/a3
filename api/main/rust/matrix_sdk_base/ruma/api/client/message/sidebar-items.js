@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["get_message_events","send_message_event"]};

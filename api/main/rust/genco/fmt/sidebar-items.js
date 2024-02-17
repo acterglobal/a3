@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Indentation"],"struct":["Config","FmtWriter","Formatter","IoWriter","VecWriter"],"type":["Error","Result"]};

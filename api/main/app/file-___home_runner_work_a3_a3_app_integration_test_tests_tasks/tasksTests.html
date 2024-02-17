@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the tasksTests function from the tasks library, for the Dart programming language.">
+  <title>tasksTests function - tasks library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">acter</a></li>
+    <li><a href="../file-___home_runner_work_a3_a3_app_integration_test_tests_tasks/file-___home_runner_work_a3_a3_app_integration_test_tests_tasks-library.html">gration_test&#47;tests&#47;tasks.dart</a></li>
+    <li class="self-crumb">tasksTests function</li>
+  </ol>
+  <div class="self-name">tasksTests</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="file-___home_runner_work_a3_a3_app_integration_test_tests_tasks&#47;file-___home_runner_work_a3_a3_app_integration_test_tests_tasks-library-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-function">tasksTests</span> function 
+ 
+</h1></div>
+
+    <section class="multi-line-signature">
+        
+
+<span class="returntype">void</span>
+<span class="name ">tasksTests</span>(<wbr>)
+
+        
+
+    </section>
+    
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">void tasksTests() {
+  acterTestWidget(&#39;We can enable Tasks for a fresh Space&#39;, (t) async {
+    final spaceId = await t.freshAccountWithSpace();
+    await t.ensureTasksAreEnabled(spaceId);
+    await t.gotoSpace(spaceId);
+    await t.navigateTo([TabEntry.tasks]); &#47;&#47; this worked now
+  });
+
+  acterTestWidget(&#39;New TaskList &amp; tasks via Space&#39;, (t) async {
+    final spaceId = await t.freshAccountWithSpace(
+      spaceDisplayName: &#39;Task list via Space Test&#39;,
+    );
+    await t.ensureTasksAreEnabled(spaceId);
+    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    await t.navigateTo([
+      SpaceTasksPage.createTaskKey,
+    ]);
+
+    await t.createTaskList(
+      &#39;Errands&#39;,
+      description: &#39;These are the most important things to do&#39;,
+      tasks: [
+        &#39;Buy milk&#39;,
+        &#39;Pickup dogs med&#39;,
+      ],
+    );
+
+    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    await t.ensureHasWidget&lt;SpaceHeader&gt;();
+    &#47;&#47; we see our entry now
+    await find.text(&#39;Errands&#39;).should(findsOneWidget);
+    await find.text(&#39;Buy milk&#39;).should(findsOneWidget);
+    await find.text(&#39;Pickup dogs med&#39;).should(findsOneWidget);
+
+    await t.navigateTo([MainNavKeys.quickJump, QuickJumpKeys.tasks]);
+    &#47;&#47; we see our entry now
+    await find.text(&#39;Errands&#39;).should(findsOneWidget);
+    await find.text(&#39;Buy milk&#39;).should(findsOneWidget);
+    await find.text(&#39;Pickup dogs med&#39;).should(findsOneWidget);
+  });
+
+  acterTestWidget(&#39;New TaskList &amp; tasks via all tasks&#39;, (t) async {
+    final spaceId = await t.freshAccountWithSpace(
+      spaceDisplayName: &#39;Task list via all tasks&#39;,
+    );
+    await t.ensureTasksAreEnabled(spaceId);
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      QuickJumpKeys.tasks,
+      TasksPage.createNewTaskListKey,
+    ]);
+
+    await t.createTaskList(
+      &#39;Protest Preparations&#39;,
+      description: &#39;Things we have to do for the protest&#39;,
+      tasks: [
+        &#39;Buy markers&#39;,
+        &#39;Pick up banner&#39;,
+      ],
+      selectSpaceId: spaceId,
+    );
+
+    &#47;&#47;
+    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    &#47;&#47; we see our entry now
+    await find.text(&#39;Protest Preparations&#39;).should(findsOneWidget);
+    await find.text(&#39;Buy markers&#39;).should(findsOneWidget);
+    await find.text(&#39;Pick up banner&#39;).should(findsOneWidget);
+    await t.navigateTo([MainNavKeys.quickJump, QuickJumpKeys.tasks]);
+    &#47;&#47; we see our entry now
+    await find.text(&#39;Protest Preparations&#39;).should(findsOneWidget);
+    await find.text(&#39;Buy markers&#39;).should(findsOneWidget);
+    await find.text(&#39;Pick up banner&#39;).should(findsOneWidget);
+  });
+
+  acterTestWidget(&#39;New TaskList &amp; tasks via quickjump&#39;, (t) async {
+    final spaceId = await t.freshAccountWithSpace(
+      spaceDisplayName: &#39;Task list via quickjump&#39;,
+    );
+    await t.ensureTasksAreEnabled(spaceId);
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      QuickJumpKeys.createTaskListAction,
+    ]);
+
+    await t.createTaskList(
+      &#39;Club Party&#39;,
+      description: &#39;Things we have to do for the party on the 11th&#39;,
+      tasks: [
+        &#39;Get drinks&#39;,
+        &#39;Order chips&#39;,
+        &#39;Remind everyone of the potluck&#39;,
+      ],
+      selectSpaceId: spaceId,
+    );
+
+    &#47;&#47;
+    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    &#47;&#47; we see our entry now
+    await find.text(&#39;Club Party&#39;).should(findsOneWidget);
+    await find.text(&#39;Get drinks&#39;).should(findsOneWidget);
+    await find.text(&#39;Order chips&#39;).should(findsOneWidget);
+    await find.text(&#39;Remind everyone of the potluck&#39;).should(findsOneWidget);
+    await t.navigateTo([MainNavKeys.quickJump, QuickJumpKeys.tasks]);
+    &#47;&#47; we see our entry now
+    await find.text(&#39;Club Party&#39;).should(findsOneWidget);
+    await find.text(&#39;Get drinks&#39;).should(findsOneWidget);
+    await find.text(&#39;Order chips&#39;).should(findsOneWidget);
+    await find.text(&#39;Remind everyone of the potluck&#39;).should(findsOneWidget);
+  });
+  acterTestWidget(&#39;Add many tasks scrolls fine&#39;, (t) async {
+    final spaceId = await t.freshAccountWithSpace(
+      spaceDisplayName: &#39;Many Tasks&#39;,
+    );
+    await t.ensureTasksAreEnabled(spaceId);
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      QuickJumpKeys.createTaskListAction,
+    ]);
+
+    &#47;&#47; the first one
+
+    await t.createTaskList(
+      &#39;Club Party Groceries&#39;,
+      description: &#39;Things we have to do buy for the party&#39;,
+      tasks: [
+        &#39;4x packs cola&#39;,
+        &#39;3 bottles orange juice&#39;,
+        &#39;2 bottles apple juice&#39;,
+        &#39;card deck&#39;,
+        &#39;glitter&#39;,
+        &#39;4 packs of crisps&#39;,
+        &#39;bag of flips&#39;,
+        &#39;pretzels&#39;,
+        &#39;bananas&#39;,
+        &#39;apples&#39;,
+        &#39;bag of potatoes&#39;,
+        &#39;apple pie&#39;,
+        &#39;cheese cake&#39;,
+        &#39;50 plates&#39;,
+        &#39;10 forks&#39;,
+        &#39;50 cups&#39;,
+      ],
+      selectSpaceId: spaceId,
+    );
+  });
+
+  acterTestWidget(&#39;Multiple TaskLists &amp; tasks&#39;, (t) async {
+    final spaceId = await t.freshAccountWithSpace(
+      spaceDisplayName: &#39;Multiple Tasks &amp; Lists&#39;,
+    );
+    await t.ensureTasksAreEnabled(spaceId);
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      QuickJumpKeys.createTaskListAction,
+    ]);
+
+    &#47;&#47; the first one
+
+    await t.createTaskList(
+      &#39;Club Party&#39;,
+      description: &#39;Things we have to do for the party on the 11th&#39;,
+      tasks: [
+        &#39;Get drinks&#39;,
+        &#39;Order chips&#39;,
+        &#39;Remind everyone of the potluck&#39;,
+      ],
+      selectSpaceId: spaceId,
+    );
+
+    &#47;&#47;
+    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    &#47;&#47; we see our entry now
+    await find.text(&#39;Club Party&#39;).should(findsOneWidget);
+    await find.text(&#39;Get drinks&#39;).should(findsOneWidget);
+    await find.text(&#39;Order chips&#39;).should(findsOneWidget);
+    await find.text(&#39;Remind everyone of the potluck&#39;).should(findsOneWidget);
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      MainNavKeys.quickJump,
+      QuickJumpKeys.tasks,
+    ]);
+    &#47;&#47; we see our entry now
+    await find.text(&#39;Club Party&#39;).should(findsOneWidget);
+    await find.text(&#39;Get drinks&#39;).should(findsOneWidget);
+    await find.text(&#39;Order chips&#39;).should(findsOneWidget);
+    await find.text(&#39;Remind everyone of the potluck&#39;).should(findsOneWidget);
+
+    &#47;&#47; the second one, created via the space itself.
+
+    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    await t.navigateTo([
+      SpaceTasksPage.createTaskKey,
+    ]);
+
+    await t.createTaskList(
+      &#39;Errands&#39;,
+      description: &#39;These are the most important things to do&#39;,
+      tasks: [
+        &#39;Buy milk&#39;,
+        &#39;Pickup dogs med&#39;,
+      ],
+    );
+
+    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+    await t.ensureHasWidget&lt;SpaceHeader&gt;();
+    &#47;&#47; we see our entry now
+
+    final errands = find.text(&#39;Errands&#39;);
+
+    await t.tester.ensureVisible(errands);
+    await errands.should(findsOneWidget);
+    await find.text(&#39;Buy milk&#39;).should(findsOneWidget);
+    await find.text(&#39;Pickup dogs med&#39;).should(findsOneWidget);
+
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      MainNavKeys.quickJump,
+      QuickJumpKeys.tasks,
+    ]);
+    &#47;&#47; we see our entry now
+    await find.text(&#39;Errands&#39;).should(findsOneWidget);
+    await find.text(&#39;Buy milk&#39;).should(findsOneWidget);
+    await find.text(&#39;Pickup dogs med&#39;).should(findsOneWidget);
+
+    &#47;&#47; and a third one
+
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      MainNavKeys.quickJump,
+      QuickJumpKeys.tasks,
+      TasksPage.createNewTaskListKey,
+    ]);
+
+    await t.createTaskList(
+      &#39;Protest Preparations&#39;,
+      description: &#39;Things we have to do for the protest&#39;,
+      tasks: [
+        &#39;Buy markers&#39;,
+        &#39;Pick up banner&#39;,
+      ],
+      selectSpaceId: spaceId,
+    );
+
+    final protestPrep = find.text(&#39;Protest Preparations&#39;);
+
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      MainNavKeys.quickJump,
+      QuickJumpKeys.tasks,
+    ]);
+
+    &#47;&#47; scroll down to make the item visible
+    await t.tester.scrollUntilVisible(protestPrep, 50);
+    await find.text(&#39;Buy markers&#39;).should(findsOneWidget);
+    await find.text(&#39;Pick up banner&#39;).should(findsOneWidget);
+
+    &#47;&#47;
+    await t.gotoSpace(spaceId, appTab: TabEntry.tasks);
+
+    &#47;&#47; we see our entry now
+    await t.tester.dragUntilVisible(
+      protestPrep,
+      find.byKey(SpaceTasksPage.scrollView),
+      const Offset(0, -500),
+    );
+    await find.text(&#39;Buy markers&#39;).should(findsOneWidget);
+    await find.text(&#39;Pick up banner&#39;).should(findsOneWidget);
+  });
+
+  acterTestWidget(&#39;Check and uncheck&#39;, (t) async {
+    final spaceId = await t.freshAccountWithSpace(
+      spaceDisplayName: &#39;Protest Camp&#39;,
+    );
+    await t.ensureTasksAreEnabled(spaceId);
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      QuickJumpKeys.createTaskListAction,
+    ]);
+
+    await t.createTaskList(
+      &#39;Kitchen&#39;,
+      tasks: [
+        &#39;Refill sanitizer&#39;,
+        &#39;Buy soap&#39;,
+      ],
+      selectSpaceId: spaceId,
+    );
+    await t.navigateTo([MainNavKeys.quickJump, QuickJumpKeys.tasks]);
+    &#47;&#47; we see our entry now
+    await find.text(&#39;Kitchen&#39;).should(findsOneWidget);
+    await find.text(&#39;Buy soap&#39;).should(findsOneWidget);
+    await find
+        .text(&#39;Buy soap&#39;)
+        .tap(); &#47;&#47; this should navigate us to the item page
+
+    final btnNotDoneFinder = find.byKey(TaskInfo.statusBtnNotDone);
+    await btnNotDoneFinder.should(findsOneWidget);
+    await btnNotDoneFinder.tap(); &#47;&#47; toggle done
+
+    final btnDoneFinder = find.byKey(TaskInfo.statusBtnDone);
+    await btnDoneFinder.should(findsOneWidget);
+    await btnDoneFinder.tap(); &#47;&#47; toggle undone
+
+    await btnNotDoneFinder.should(findsOneWidget); &#47;&#47; is undone again
+  });
+
+  acterTestWidget(&#39;Create Tasks from overview&#39;, (t) async {
+    final taskListId = (await t.freshWithTasks(
+      [], &#47;&#47; no tasks yet
+      listTitle: &#39;Operations&#39;,
+      spaceDisplayName: &#39;Protest Camp&#39;,
+    ))
+        .taskListId;
+
+    await t.navigateTo([MainNavKeys.quickJump, QuickJumpKeys.tasks]);
+    await find.text(&#39;Operations&#39;).should(findsOneWidget);
+
+    final inlineAddBtn =
+        find.byKey(Key(&#39;task-list-$taskListId-add-task-inline&#39;));
+    await inlineAddBtn.should(findsOneWidget);
+    await inlineAddBtn.tap(); &#47;&#47; activate inline add
+    await t.addTasks(taskListId, [&#39;Buy duct tape&#39;]);
+    &#47;&#47; close inline add
+    final cancelInlineAdd =
+        find.byKey(Key(&#39;task-list-$taskListId-add-task-inline-cancel&#39;));
+    await cancelInlineAdd.should(findsOneWidget);
+    await cancelInlineAdd.tap();
+
+    &#47;&#47; we see our entry now
+    await find.text(&#39;Operations&#39;).should(findsOneWidget);
+    await find.text(&#39;Buy duct tape&#39;).should(findsOneWidget);
+    final taskEntry = find
+        .ancestor(
+          of: find.text(&#39;Buy duct tape&#39;),
+          matching:
+              find.byWidgetPredicate((Widget widget) =&gt; widget is TaskEntry),
+        )
+        .evaluate()
+        .first
+        .widget as TaskEntry;
+
+    final btnNotDoneFinder = find.byKey(taskEntry.notDoneKey());
+    await btnNotDoneFinder.should(findsOneWidget);
+    await btnNotDoneFinder.tap(); &#47;&#47; toggle done
+
+    final btnDoneFinder = find.byKey(taskEntry.doneKey());
+    await btnDoneFinder.should(findsOneWidget);
+    await btnDoneFinder.tap(); &#47;&#47; toggle undone
+
+    await btnNotDoneFinder.should(findsOneWidget); &#47;&#47; is undone again
+  });
+
+  acterTestWidget(&#39;Check and uncheck in overview&#39;, (t) async {
+    await t.freshWithTasks(
+      [
+        &#39;Refill sanitizer&#39;,
+        &#39;Buy duct tape&#39;,
+      ],
+      listTitle: &#39;Operations&#39;,
+      spaceDisplayName: &#39;Protest Camp&#39;,
+    );
+
+    await t.navigateTo([MainNavKeys.quickJump, QuickJumpKeys.tasks]);
+    &#47;&#47; we see our entry now
+    await find.text(&#39;Operations&#39;).should(findsOneWidget);
+    await find.text(&#39;Buy duct tape&#39;).should(findsOneWidget);
+    final taskEntry = find
+        .ancestor(
+          of: find.text(&#39;Buy duct tape&#39;),
+          matching:
+              find.byWidgetPredicate((Widget widget) =&gt; widget is TaskEntry),
+        )
+        .evaluate()
+        .first
+        .widget as TaskEntry;
+
+    final btnNotDoneFinder = find.byKey(taskEntry.notDoneKey());
+    await btnNotDoneFinder.should(findsOneWidget);
+    await btnNotDoneFinder.tap(); &#47;&#47; toggle done
+
+    final btnDoneFinder = find.byKey(taskEntry.doneKey());
+    await btnDoneFinder.should(findsOneWidget);
+    await btnDoneFinder.tap(); &#47;&#47; toggle undone
+
+    await btnNotDoneFinder.should(findsOneWidget); &#47;&#47; is undone again
+  });
+
+  acterTestWidget(&#39;Change due date&#39;, (t) async {
+    await t.freshWithTasks(
+      [
+        &#39;Refill sanitizer&#39;,
+        &#39;Buy duct tape&#39;,
+      ],
+      listTitle: &#39;Operations&#39;,
+      spaceDisplayName: &#39;Protest Camp&#39;,
+    );
+
+    &#47;&#47; we see our entry now
+    await find.text(&#39;Operations&#39;).should(findsOneWidget);
+    await find.text(&#39;Buy duct tape&#39;).should(findsOneWidget);
+    await find
+        .text(&#39;Buy duct tape&#39;)
+        .tap(); &#47;&#47; this should navigate us to the item page
+
+    final dueDateFinder = find.byKey(TaskInfo.dueDateField);
+    await dueDateFinder.should(findsOneWidget);
+    await dueDateFinder.tap(); &#47;&#47; open due dialog
+
+    &#47;&#47; select tomorrow
+    final tomorrow = find.byKey(DuePicker.quickSelectTomorrow);
+    await tomorrow.should(findsOneWidget);
+    await tomorrow.tap(); &#47;&#47; set to tomorrow
+
+    await dueDateFinder.should(findsOneWidget);
+    &#47;&#47; FIXME: translation problem
+    await find
+        .descendant(of: dueDateFinder, matching: find.text(&#39;due tomorrow&#39;))
+        .should(findsOneWidget);
+
+    await dueDateFinder.tap(); &#47;&#47; open due dialog
+
+    &#47;&#47; select today
+    final today = find.byKey(DuePicker.quickSelectToday);
+    await today.should(findsOneWidget);
+    await today.tap(); &#47;&#47; set to today
+
+    await dueDateFinder.should(findsOneWidget);
+    await find
+        .descendant(of: dueDateFinder, matching: find.text(&#39;due today&#39;))
+        .should(findsOneWidget);
+
+    await t.navigateTo([MainNavKeys.quickJump, QuickJumpKeys.tasks]);
+    await find.text(&#39;Buy duct tape&#39;).should(findsOneWidget);
+
+    final taskEntry = find.ancestor(
+      of: find.text(&#39;Buy duct tape&#39;),
+      matching: find.byWidgetPredicate((Widget widget) =&gt; widget is TaskEntry),
+    );
+
+    await find
+        .descendant(of: taskEntry, matching: find.text(&#39;due today&#39;))
+        .should(findsOneWidget);
+  });
+
+  acterTestWidget(&#39;Change title&#39;, (t) async {
+    await t.freshWithTasks(
+      [
+        &#39;Buy duct tape&#39;,
+      ],
+      listTitle: &#39;Operations&#39;,
+      spaceDisplayName: &#39;Protest Camp&#39;,
+    );
+
+    &#47;&#47; we see our entry now
+    await find.text(&#39;Operations&#39;).should(findsOneWidget);
+    await find.text(&#39;Buy duct tape&#39;).should(findsOneWidget);
+    await find
+        .text(&#39;Buy duct tape&#39;)
+        .tap(); &#47;&#47; this should navigate us to the item page
+    await t.renameTask(&#39;Buy black gaffer tape&#39;);
+    await find.text(&#39;Buy black gaffer tape&#39;).should(findsOneWidget);
+  });
+
+  acterTestWidget(&#39;Change body&#39;, (t) async {
+    await t.freshWithTasks(
+      [
+        &#39;Refill sanitizer&#39;,
+      ],
+      listTitle: &#39;Operations&#39;,
+      spaceDisplayName: &#39;Protest Camp&#39;,
+    );
+
+    &#47;&#47; we see our entry now
+    await find.text(&#39;Operations&#39;).should(findsOneWidget);
+    await find.text(&#39;Refill sanitizer&#39;).should(findsOneWidget);
+    await find
+        .text(&#39;Refill sanitizer&#39;)
+        .tap(); &#47;&#47; this should navigate us to the item page
+
+    await t.replaceTaskBody(&#39;At least 6 packages of 500ml or more&#39;);
+    await find
+        .text(&#39;At least 6 packages of 500ml or more&#39;)
+        .should(findsOneWidget);
+
+    await t.replaceTaskBody(&#39;At least 10 packages of 500ml or more&#39;);
+
+    await find
+        .text(&#39;At least 10 packages of 500ml or more&#39;)
+        .should(findsOneWidget);
+  });
+
+  acterTestWidget(&#39;Self Assignment &#39;, (t) async {
+    await t.freshWithTasks(
+      [
+        &#39;Take out the trash&#39;,
+      ],
+      listTitle: &#39;Cleaning&#39;,
+      spaceDisplayName: &#39;Club House&#39;,
+      userDisplayName: &#39;Ruben&#39;,
+    );
+
+    &#47;&#47; we see our entry now
+    await find.text(&#39;Cleaning&#39;).should(findsOneWidget);
+    await find.text(&#39;Take out the trash&#39;).should(findsOneWidget);
+    await find
+        .text(&#39;Take out the trash&#39;)
+        .tap(); &#47;&#47; this should navigate us to the item page
+
+    &#47;&#47; ensure we are not assigned
+    final assignmentsField = find.byKey(TaskInfo.assignmentsFields);
+    await assignmentsField.should(findsOneWidget);
+    await find
+        .descendant(of: assignmentsField, matching: find.text(&#39;Ruben&#39;))
+        .should(findsNothing);
+
+    final selfAssign = find.byKey(TaskInfo.selfAssignKey);
+    await selfAssign.should(findsOneWidget);
+    await selfAssign.tap(); &#47;&#47; assign myself
+
+    &#47;&#47; FOUND!
+    await find
+        .descendant(of: assignmentsField, matching: find.text(&#39;Ruben&#39;))
+        .should(findsOneWidget);
+    await selfAssign.should(findsNothing); &#47;&#47; and the button is gone
+
+    &#47;&#47; but the unassign button is there.
+    final selfUnassign = find.byKey(TaskInfo.selfUnassignKey);
+    await selfUnassign.should(findsOneWidget);
+    await selfUnassign.tap(); &#47;&#47; unassign myself
+
+    &#47;&#47; and we are not assigned anymore \o&#47;
+    await find
+        .descendant(of: assignmentsField, matching: find.text(&#39;Ruben&#39;))
+        .should(findsNothing);
+
+    &#47;&#47; let&#39;s assign ourselves again.
+    await selfAssign.should(findsOneWidget);
+    await selfAssign.tap(); &#47;&#47; assign myself
+
+    &#47;&#47; FOUND!
+    await find
+        .descendant(of: assignmentsField, matching: find.text(&#39;Ruben&#39;))
+        .should(findsOneWidget);
+    await selfAssign.should(findsNothing); &#47;&#47; and the button is gone
+
+    &#47;&#47; okay, this should show up on our dashboard now!
+    await t.navigateTo([
+      MainNavKeys.dashboardHome,
+      MainNavKeys.dashboardHome,
+    ]);
+
+    await find
+        .text(&#39;Take out the trash&#39;)
+        .should(findsOneWidget); &#47;&#47; this should navigate us to the item page
+
+    final taskEntry = find
+        .ancestor(
+          of: find.text(&#39;Take out the trash&#39;),
+          matching:
+              find.byWidgetPredicate((Widget widget) =&gt; widget is TaskEntry),
+        )
+        .evaluate()
+        .first
+        .widget as TaskEntry;
+
+    &#47;&#47; mark as done.
+    final btnNotDoneFinder = find.byKey(taskEntry.notDoneKey());
+    await btnNotDoneFinder.should(findsOneWidget);
+    await btnNotDoneFinder.tap(); &#47;&#47; toggle done
+
+    &#47;&#47; makes it disappear!
+    await find.text(&#39;Take out the trash&#39;).should(findsNothing);
+  });
+
+  acterTestWidget(&#39;Full multi user run&#39;, (t) async {
+    final spaceId = (await t.freshWithTasks(
+      [
+        &#39;Trash&#39;,
+      ],
+      listTitle: &#39;Cleaning&#39;,
+      spaceDisplayName: &#39;Club House&#39;,
+      userDisplayName: &#39;Alice&#39;,
+    ))
+        .spaceId;
+
+    &#47;&#47; we see our entry now
+    await find.text(&#39;Cleaning&#39;).should(findsOneWidget);
+    await find.text(&#39;Trash&#39;).should(findsOneWidget);
+    await find.text(&#39;Trash&#39;).tap(); &#47;&#47; this should navigate us to the item page
+
+    &#47;&#47; assignment
+
+    &#47;&#47; ensure we are not assigned
+    final assignmentsField = find.byKey(TaskInfo.assignmentsFields);
+    await assignmentsField.should(findsOneWidget);
+    await find
+        .descendant(of: assignmentsField, matching: find.text(&#39;Alice&#39;))
+        .should(findsNothing);
+
+    final selfAssign = find.byKey(TaskInfo.selfAssignKey);
+    await selfAssign.should(findsOneWidget);
+    await selfAssign.tap(); &#47;&#47; assign myself
+
+    &#47;&#47; FOUND!
+    await find
+        .descendant(of: assignmentsField, matching: find.text(&#39;Alice&#39;))
+        .should(findsOneWidget);
+    await selfAssign.should(findsNothing); &#47;&#47; and the button is gone
+
+    &#47;&#47; but the unassign button is there.
+    final selfUnassign = find.byKey(TaskInfo.selfUnassignKey);
+    await selfUnassign.should(findsOneWidget);
+    await selfUnassign.tap(); &#47;&#47; unassign myself
+
+    &#47;&#47; and we are not assigned anymore \o&#47;
+    await find
+        .descendant(of: assignmentsField, matching: find.text(&#39;Alice&#39;))
+        .should(findsNothing);
+
+    &#47;&#47; -- change body
+
+    await t.replaceTaskBody(
+      &#39;Both the one in the kitchen and the one in the bathroom&#39;,
+    );
+    await find
+        .text(&#39;Both the one in the kitchen and the one in the bathroom&#39;)
+        .should(findsOneWidget);
+
+    &#47;&#47; -- change title
+    await t.renameTask(&#39;Take out the trash&#39;);
+    await find.text(&#39;Take out the trash&#39;).should(findsOneWidget);
+
+    &#47;&#47; -- change due
+
+    final dueDateFinder = find.byKey(TaskInfo.dueDateField);
+    await dueDateFinder.should(findsOneWidget);
+    await dueDateFinder.tap(); &#47;&#47; open due dialog
+
+    &#47;&#47; select today
+    final today = find.byKey(DuePicker.quickSelectToday);
+    await today.should(findsOneWidget);
+    await today.tap(); &#47;&#47; set to today
+
+    await dueDateFinder.should(findsOneWidget);
+    await find
+        .descendant(of: dueDateFinder, matching: find.text(&#39;due today&#39;))
+        .should(findsOneWidget);
+
+    &#47;&#47; okay, let&#39;s get that other person in.
+    final tokenCode = await t.createSuperInvite([spaceId]);
+
+    await t.logout();
+    await t.freshAccount(registrationToken: tokenCode, displayName: &#39;Bahira&#39;);
+    await t.ensureTasksAreEnabled(null);
+
+    await t.navigateTo([
+      MainNavKeys.quickJump,
+      QuickJumpKeys.tasks,
+    ]);
+
+    await find.text(&#39;Cleaning&#39;).should(findsOneWidget);
+    await find.text(&#39;Take out the trash&#39;).should(findsOneWidget);
+    await find
+        .text(&#39;Take out the trash&#39;)
+        .tap(); &#47;&#47; this should navigate us to the item page
+
+    &#47;&#47; -- check values and content:
+    await dueDateFinder.should(findsOneWidget);
+    await find
+        .descendant(of: dueDateFinder, matching: find.text(&#39;due today&#39;))
+        .should(findsOneWidget);
+    await find
+        .text(&#39;Both the one in the kitchen and the one in the bathroom&#39;)
+        .should(findsOneWidget);
+
+    &#47;&#47; ensure Alice isn&#39;t assigned
+    await assignmentsField.should(findsOneWidget);
+    await find
+        .descendant(of: assignmentsField, matching: find.text(&#39;Alice&#39;))
+        .should(findsNothing);
+
+    await selfAssign.should(findsOneWidget);
+    await selfAssign.tap(); &#47;&#47; assign myself
+
+    &#47;&#47; we are now assigned
+    await find
+        .descendant(of: assignmentsField, matching: find.text(&#39;Bahira&#39;))
+        .should(findsOneWidget);
+    await selfAssign.should(findsNothing); &#47;&#47; and the button is gone
+
+    &#47;&#47; and the unassign button is there.
+    await selfUnassign.should(findsOneWidget);
+
+    &#47;&#47; okay, this should show up on our dashboard now!
+    await t.navigateTo([
+      MainNavKeys.dashboardHome,
+      MainNavKeys.dashboardHome,
+    ]);
+
+    await find
+        .text(&#39;Take out the trash&#39;)
+        .should(findsOneWidget); &#47;&#47; this should navigate us to the item page
+
+    final taskEntry = find
+        .ancestor(
+          of: find.text(&#39;Take out the trash&#39;),
+          matching:
+              find.byWidgetPredicate((Widget widget) =&gt; widget is TaskEntry),
+        )
+        .evaluate()
+        .first
+        .widget as TaskEntry;
+
+    &#47;&#47; mark as done.
+    final btnNotDoneFinder = find.byKey(taskEntry.notDoneKey());
+    await btnNotDoneFinder.should(findsOneWidget);
+    await btnNotDoneFinder.tap(); &#47;&#47; toggle done
+
+    &#47;&#47; makes it disappear!
+    await find.text(&#39;Take out the trash&#39;).should(findsNothing);
+  });
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">acter</a></li>
+    <li><a href="../file-___home_runner_work_a3_a3_app_integration_test_tests_tasks/file-___home_runner_work_a3_a3_app_integration_test_tests_tasks-library.html">tasks</a></li>
+    <li class="self-crumb">tasksTests function</li>
+</ol>
+
+
+    <h5>tasks library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-left-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    acter
+      0.0.1+1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

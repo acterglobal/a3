@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["compile_poll_results","compile_unstable_poll_results"],"mod":["end","response","start","unstable_end","unstable_response","unstable_start"],"struct":["PollResponseData"]};

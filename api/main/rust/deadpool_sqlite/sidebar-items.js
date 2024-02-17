@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["InteractError","Runtime"],"struct":["Config","Manager","Metrics","PoolConfig","Status","SyncGuard","Timeouts"],"type":["BuildError","ConfigError","Connection","CreatePoolError","Hook","HookError","Object","Pool","PoolBuilder","PoolError"]};

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the build method from the RelatedSpacesPage class, for the Dart programming language.">
+  <title>build method - RelatedSpacesPage class - related_spaces_page library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">acter</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_space_pages_related_spaces_page/file-___home_runner_work_a3_a3_app_lib_features_space_pages_related_spaces_page-library.html">features&#47;space&#47;pages&#47;related_spaces_page.dart</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_space_pages_related_spaces_page/RelatedSpacesPage-class.html">RelatedSpacesPage</a></li>
+    <li class="self-crumb">build method</li>
+  </ol>
+  <div class="self-name">build</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="file-___home_runner_work_a3_a3_app_lib_features_space_pages_related_spaces_page&#47;RelatedSpacesPage-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-method">build</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+  <div>
+    <ol class="annotation-list">
+        <li>@<a href="https://api.flutter.dev/flutter/dart-core/override-constant.html">override</a></li>
+    </ol>
+  </div>
+
+<span class="returntype">dynamic</span>
+<span class="name ">build</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="build-param-context"><span class="type-annotation">dynamic</span> <span class="parameter-name">context</span>, </span></li>
+<li><span class="parameter" id="build-param-ref"><span class="type-annotation">dynamic</span> <span class="parameter-name">ref</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">@override
+Widget build(BuildContext context, WidgetRef ref) {
+  final spaces = ref.watch(spaceRelationsOverviewProvider(spaceIdOrAlias));
+  &#47;&#47; get platform of context.
+  return DecoratedBox(
+    decoration: const BoxDecoration(gradient: primaryGradient),
+    child: CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
+        ),
+        ...spaces.when(
+          data: (spaces) {
+            final widthCount =
+                (MediaQuery.of(context).size.width ~&#47; 300).toInt();
+            const int minCount = 3;
+            &#47;&#47; we have more than just the spaces screen, put them into a grid.
+            final List&lt;Widget&gt; items = [];
+            bool checkPermission(String permission) {
+              if (spaces.membership != null) {
+                return spaces.membership!.canString(permission);
+              }
+              return false;
+            }
+
+            final canLinkSpace = checkPermission(&#39;CanLinkSpaces&#39;);
+            void addSubspaceHeading(String title, bool withTools) {
+              List&lt;Widget&gt; children = [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(title),
+                  ),
+                ),
+              ];
+              if (canLinkSpace &amp;&amp; withTools) {
+                children.add(
+                  PopupMenuButton(
+                    icon: Icon(
+                      Atlas.plus_circle,
+                      key: moreOptionKey,
+                      color: Theme.of(context).colorScheme.neutral5,
+                    ),
+                    iconSize: 28,
+                    color: Theme.of(context).colorScheme.surface,
+                    itemBuilder: (BuildContext context) =&gt; &lt;PopupMenuEntry&gt;[
+                      PopupMenuItem(
+                        key: createSubspaceKey,
+                        onTap: () =&gt; context.pushNamed(
+                          Routes.createSpace.name,
+                          queryParameters: {&#39;parentSpaceId&#39;: spaceIdOrAlias},
+                        ),
+                        child: const Row(
+                          children: &lt;Widget&gt;[
+                            Text(&#39;Create Subspace&#39;),
+                            Spacer(),
+                            Icon(Atlas.connection),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        key: linkSubspaceKey,
+                        onTap: () =&gt; context.pushNamed(
+                          Routes.linkSubspace.name,
+                          pathParameters: {&#39;spaceId&#39;: spaceIdOrAlias},
+                        ),
+                        child: const Row(
+                          children: &lt;Widget&gt;[
+                            Text(&#39;Link existing Space&#39;),
+                            Spacer(),
+                            Icon(Atlas.connection),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              items.add(
+                SliverToBoxAdapter(
+                  child: Row(
+                    children: children,
+                  ),
+                ),
+              );
+            }
+
+            if (spaces.parents.isNotEmpty || spaces.mainParent != null) {
+              List&lt;Widget&gt; children = [
+                const Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(&#39;Parents&#39;),
+                  ),
+                ),
+              ];
+              items.add(
+                SliverToBoxAdapter(
+                  child: Row(
+                    children: children,
+                  ),
+                ),
+              );
+            }
+
+            if (spaces.mainParent != null) {
+              final space = spaces.mainParent!;
+              items.add(
+                SliverToBoxAdapter(
+                  child:
+                      SpaceCard(key: Key(space.getRoomIdStr()), space: space),
+                ),
+              );
+            }
+            if (spaces.parents.isNotEmpty) {
+              if (spaces.parents.isNotEmpty) {
+                items.add(
+                  SliverGrid.builder(
+                    itemCount: spaces.parents.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: max(1, min(widthCount, minCount)),
+                      childAspectRatio: 4.0,
+                      mainAxisExtent: 100,
+                    ),
+                    itemBuilder: (context, index) {
+                      final space = spaces.parents[index];
+                      return SpaceCard(
+                        key: Key(&#39;parent-list-item-${space.getRoomIdStr()}&#39;),
+                        space: space,
+                        showParent: false,
+                      );
+                    },
+                  ),
+                );
+              }
+            }
+            if (spaces.knownSubspaces.isNotEmpty) {
+              if (spaces.hasMoreSubspaces) {
+                addSubspaceHeading(&#39;My Subspaces&#39;, false);
+              } else {
+                addSubspaceHeading(&#39;Subspaces&#39;, true);
+              }
+              items.add(
+                SliverGrid.builder(
+                  itemCount: spaces.knownSubspaces.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: max(1, min(widthCount, minCount)),
+                    childAspectRatio: 9.0,
+                    mainAxisExtent: 100,
+                  ),
+                  itemBuilder: (context, index) {
+                    final space = spaces.knownSubspaces[index];
+                    return SpaceCard(
+                      key: Key(&#39;subspace-list-item-${space.getRoomIdStr()}&#39;),
+                      space: space,
+                      showParent: false,
+                    );
+                  },
+                ),
+              );
+            }
+            if (spaces.hasMoreSubspaces) {
+              if (spaces.knownSubspaces.isEmpty) {
+                addSubspaceHeading(&#39;Subspaces&#39;, true);
+              } else {
+                addSubspaceHeading(&#39;More Subspaces&#39;, true);
+              }
+              items.add(
+                RiverPagedBuilder&lt;Next?, SpaceHierarchyRoomInfo&gt;.autoDispose(
+                  firstPageKey: const Next(isStart: true),
+                  provider: remoteSpaceHierarchyProvider(spaces),
+                  itemBuilder: (context, item, index) =&gt; SpaceHierarchyCard(
+                    key: Key(&#39;subspace-list-item-${item.roomIdStr()}&#39;),
+                    space: item,
+                  ),
+                  pagedBuilder: (controller, builder) =&gt; PagedSliverList(
+                    pagingController: controller,
+                    builderDelegate: builder,
+                  ),
+                ),
+              );
+            }
+
+            if (spaces.knownSubspaces.isEmpty &amp;&amp;
+                !spaces.hasMoreSubspaces &amp;&amp;
+                canLinkSpace) {
+              &#47;&#47; fallback if there are no subspaces show, allow admins to access the buttons
+              addSubspaceHeading(&#39;Subspaces&#39;, true);
+            }
+
+            if (spaces.otherRelations.isNotEmpty || canLinkSpace) {
+              List&lt;Widget&gt; children = [
+                const Expanded(child: Text(&#39;Recommended Spaces&#39;)),
+                IconButton(
+                  icon: Icon(
+                    Atlas.plus_circle,
+                    color: Theme.of(context).colorScheme.neutral5,
+                  ),
+                  onPressed: () =&gt; context.pushNamed(
+                    Routes.linkRecommended.name,
+                    pathParameters: {&#39;spaceId&#39;: spaceIdOrAlias},
+                  ),
+                ),
+              ];
+              items.add(
+                SliverToBoxAdapter(
+                  child: Row(
+                    children: children,
+                  ),
+                ),
+              );
+            }
+            if (spaces.otherRelations.isNotEmpty) {
+              items.add(
+                SliverGrid.builder(
+                  itemCount: spaces.otherRelations.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: max(1, min(widthCount, minCount)),
+                    childAspectRatio: 4.0,
+                    mainAxisExtent: 100,
+                  ),
+                  itemBuilder: (context, index) {
+                    final space = spaces.otherRelations[index];
+                    return SpaceCard(
+                      key: Key(&#39;subspace-list-item-${space.getRoomIdStr()}&#39;),
+                      space: space,
+                    );
+                  },
+                ),
+              );
+            }
+
+            &#47;&#47; Widget to use when there are no spaces linked
+            if (items.isEmpty) {
+              items.add(
+                SliverToBoxAdapter(
+                  child: Center(
+                    heightFactor: 1,
+                    child: EmptyState(
+                      title: &#39;No connected spaces&#39;,
+                      subtitle:
+                          &#39;In connected spaces, you can focus on specific actions or campaigns of your working groups and start organizing.&#39;,
+                      image: &#39;assets&#47;images&#47;empty_space.svg&#39;,
+                      primaryButton: canLinkSpace
+                          ? ElevatedButton(
+                              onPressed: () =&gt; context.pushNamed(
+                                Routes.createSpace.name,
+                                queryParameters: {
+                                  &#39;parentSpaceId&#39;: spaceIdOrAlias,
+                                },
+                              ),
+                              child: const Text(&#39;Create New Spaces&#39;),
+                            )
+                          : null,
+                    ),
+                  ),
+                ),
+              );
+            }
+
+            return items;
+          },
+          error: (error, stack) =&gt; [
+            SliverToBoxAdapter(
+              child: Center(
+                child: Text(&#39;Loading failed: $error&#39;),
+              ),
+            ),
+          ],
+          loading: () =&gt; [
+            const SliverToBoxAdapter(
+              child: Center(
+                child: Text(&#39;Loading&#39;),
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">acter</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_space_pages_related_spaces_page/file-___home_runner_work_a3_a3_app_lib_features_space_pages_related_spaces_page-library.html">related_spaces_page</a></li>
+    <li><a href="../../file-___home_runner_work_a3_a3_app_lib_features_space_pages_related_spaces_page/RelatedSpacesPage-class.html">RelatedSpacesPage</a></li>
+    <li class="self-crumb">build method</li>
+</ol>
+
+
+    <h5>RelatedSpacesPage class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    acter
+      0.0.1+1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+

@@ -1,0 +1,185 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="End-to-end encryption related types"><title>matrix_sdk::encryption - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="matrix_sdk" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../matrix_sdk/index.html">matrix_sdk</a><span class="version">0.7.1</span></h2></div><h2 class="location"><a href="#">Module encryption</a></h2><div class="sidebar-elems"><section><ul class="block"><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#statics">Statics</a></li></ul></section><h2><a href="../index.html">In crate matrix_sdk</a></h2></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../matrix_sdk/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../index.html">matrix_sdk</a>::<wbr><a class="mod" href="#">encryption</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../../src/matrix_sdk/encryption/mod.rs.html#16-1607">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>End-to-end encryption related types</p>
+<p>Matrix has support for end-to-end encrypted messaging, this module contains
+types related to end-to-end encryption, describes a bit how E2EE works in
+the matrix-sdk, and how to set your <a href="../struct.Client.html" title="struct matrix_sdk::Client"><code>Client</code></a> up to support E2EE.</p>
+<p>Jump to the <a href="#client-setup">Client Setup</a> section if you don’t care how E2EE
+works under the hood.</p>
+<h2 id="end-to-end-encryption"><a class="doc-anchor" href="#end-to-end-encryption">§</a>End-to-end encryption</h2>
+<p>While all messages in Matrix land are transferred to the server in an
+encrypted manner, rooms can be marked as end-to-end encrypted. If a room is
+marked as end-to-end encrypted, using a <code>m.room.encrypted</code> state event, all
+messages that are sent to this room will be encrypted for the individual
+room members. This means that the server won’t be able to read messages that
+get sent to such a room.</p>
+<div class="example-wrap"><pre class="language-text"><code>                              ┌──────────────┐
+                              │  Homeserver  │
+     ┌───────┐                │              │                ┌───────┐
+     │ Alice │═══════════════►│  unencrypted │═══════════════►│  Bob  │
+     └───────┘   encrypted    │              │   encrypted    └───────┘
+                              └──────────────┘
+</code></pre></div><div class="example-wrap"><pre class="language-text"><code>                              ┌──────────────┐
+                              │  Homeserver  │
+     ┌───────┐                │              │                ┌───────┐
+     │ Alice │≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡►│─────────────►│≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡►│  Bob  │
+     └───────┘   encrypted    │   encrypted  │   encrypted    └───────┘
+                              └──────────────┘
+</code></pre></div><h3 id="encrypting-for-each-end"><a class="doc-anchor" href="#encrypting-for-each-end">§</a>Encrypting for each end</h3>
+<p>We already mentioned that a message in a end-to-end encrypted world needs to
+be encrypted for each individual member, though that isn’t completely
+correct. A message needs to be encrypted for each individual <em>end</em>. An <em>end</em>
+in Matrix land is a client that communicates with the homeserver. The spec
+calls an <em>end</em> a Device, while other clients might call an <em>end</em> a Session.</p>
+<p>The matrix-sdk represents an <em>end</em> as a <a href="identities/struct.Device.html" title="struct matrix_sdk::encryption::identities::Device"><code>Device</code></a> object. Each individual
+message should be encrypted for each individual <a href="identities/struct.Device.html" title="struct matrix_sdk::encryption::identities::Device"><code>Device</code></a> of each
+individual room member.</p>
+<p>Since rooms might grow quite big, encrypting each message for every
+<a href="identities/struct.Device.html" title="struct matrix_sdk::encryption::identities::Device"><code>Device</code></a> becomes quickly unsustainable. Because of that room keys have
+been introduced.</p>
+<h3 id="room-keys"><a class="doc-anchor" href="#room-keys">§</a>Room keys</h3>
+<p>Room keys remove the need to encrypt each message for each <em>end</em>.
+Instead a room key needs to be shared with each <em>end</em>, after that a message
+can be encrypted in a single, O(1), step.</p>
+<p>A room key is backed by a <a href="https://gitlab.matrix.org/matrix-org/olm/blob/master/docs/megolm.md">Megolm</a> session, which in turn consists two
+parts. The first part, the outbound group session is used for encryption,
+this one never leaves your device. The second part is the inbound group
+session, which is shared with each <em>end</em>.</p>
+<div class="example-wrap"><pre class="language-text"><code>            ┌────────────────────────┬───────────────────────┐
+            │       Encryption       │      Decryption       │
+            ├────────────────────────┼───────────────────────┤
+            │ Outbound group session │ Inbound group session │
+            └────────────────────────┴───────────────────────┘
+</code></pre></div><h4 id="lifetime-of-a-room-key"><a class="doc-anchor" href="#lifetime-of-a-room-key">§</a>Lifetime of a room key</h4>
+<ol>
+<li>Create a room key</li>
+<li>Share the room key with each participant</li>
+<li>Encrypt messages using the room key</li>
+<li>If needed, rotate the room key and go back to 1</li>
+</ol>
+<p>The <code>m.room.encryption</code> state event of the room decides how long a room key
+should be used. By default this is for 100 messages or for 1 week, whichever
+comes first.</p>
+<h4 id="decrypting-the-room-history"><a class="doc-anchor" href="#decrypting-the-room-history">§</a>Decrypting the room history</h4>
+<p>Since room keys get relatively often rotated, each room key will need to be
+stored, otherwise we won’t be able to decrypt historical messages. The SDK
+stores all room keys locally in an encrypted manner.</p>
+<p>Besides storing them as part of the SDK store, users can export room keys
+using the <a href="struct.Encryption.html#method.export_room_keys" title="method matrix_sdk::encryption::Encryption::export_room_keys"><code>Encryption::export_room_keys</code></a> method.</p>
+<h2 id="verification"><a class="doc-anchor" href="#verification">§</a>Verification</h2>
+<p>One important aspect of end-to-end encryption is to check that the <em>end</em> you
+are communicating with is indeed the person you expect. This checking is
+done in Matrix via interactive verification. While interactively verifying,
+we’ll need to exchange some critical piece of information over another
+communication channel, over the phone, or in person are good candidates
+for such a channel.</p>
+<p>Usually each <em>end</em> will need to verify every <em>end</em> it communicates with. An
+<em>end</em> is represented as a <a href="identities/struct.Device.html" title="struct matrix_sdk::encryption::identities::Device"><code>Device</code></a> in the matrix-sdk. This gets rather
+complicated quickly as is shown bellow, with Alice and Bob each having two
+devices. Each arrow represents who needs to verify whom for the
+communication between Alice and Bob to be considered secure.</p>
+<div class="example-wrap"><pre class="language-text"><code>
+              ┌───────────────────────────────────────────┐
+              ▼                                           │
+        ┌───────────┐                                ┌────┴────┐
+      ┌►│Alice Phone├───────────────────────────────►│Bob Phone│◄──┐
+      │ └─────┬─────┘                                └─────┬───┘   │
+      │       ▼                                            ▼       │
+      │ ┌────────────┐                               ┌───────────┐ │
+      └─┤Alice Laptop├──────────────────────────────►│Bob Desktop├─┘
+        └────────────┘                               └─────┬─────┘
+              ▲                                            │
+              └────────────────────────────────────────────┘
+
+</code></pre></div>
+<p>To simplify things and lower the amount of devices a user needs to verify
+cross signing has been introduced. Cross signing adds a concept of a user
+identity which is represented in the matrix-sdk using the <a href="#struct.verification.UserIdentity"><code>UserIdentity</code></a>
+struct. This way Alice and Bob only need to verify their own devices and
+each others user identity for the communication to be considered secure.</p>
+<div class="example-wrap"><pre class="language-text"><code>
+           ┌─────────────────────────────────────────────────┐
+           │   ┌─────────────────────────────────────────┐   │
+           ▼   │                                         ▼   │
+    ┌──────────┴─────────┐                   ┌───────────────┴──────┐
+    │┌──────────────────┐│                   │  ┌────────────────┐  │
+    ││Alice UserIdentity││                   │  │Bob UserIdentity│  │
+    │└───┬─────────┬────┘│                   │  └─┬───────────┬──┘  │
+    │    │         │     │                   │    │           │     │
+    │    ▼         ▼     │                   │    ▼           ▼     │
+    │┌───────┐ ┌────────┐│                   │┌───────┐  ┌─────────┐│
+    ││ Alice │ │ Alice  ││                   ││  Bob  │  │   Bob   ││
+    ││ Phone │ │ Laptop ││                   ││ Phone │  │ Desktop ││
+    │└───────┘ └────────┘│                   │└───────┘  └─────────┘│
+    └────────────────────┘                   └──────────────────────┘
+
+</code></pre></div>
+<p>More info about devices and identities can be found in the <a href="identities/index.html" title="mod matrix_sdk::encryption::identities"><code>identities</code></a>
+module.</p>
+<p>To add interactive verification support to your client please see the
+<a href="verification/index.html" title="mod matrix_sdk::encryption::verification"><code>verification</code></a> module, also check out the documentation for the
+<a href="identities/struct.Device.html#method.is_verified" title="method matrix_sdk::encryption::identities::Device::is_verified"><code>Device::is_verified()</code></a> method, which explains in more detail what
+it means for a <a href="identities/struct.Device.html" title="struct matrix_sdk::encryption::identities::Device"><code>Device</code></a> to be verified.</p>
+<h2 id="client-setup"><a class="doc-anchor" href="#client-setup">§</a>Client setup</h2>
+<p>The matrix-sdk aims to provide encryption support transparently. If
+encryption is enabled and correctly set up, events that need to be encrypted
+will be encrypted automatically. Events will also be decrypted
+automatically.</p>
+<p>Please note that, unless a client is specifically set up to ignore
+unverified devices, verifying devices is <strong>not</strong> necessary for encryption
+to work.</p>
+<ol>
+<li>Make sure the <code>e2e-encryption</code> feature is enabled.</li>
+<li>To persist the encryption keys, you can use <a href="../struct.ClientBuilder.html#method.store_config" title="method matrix_sdk::ClientBuilder::store_config"><code>ClientBuilder::store_config</code></a>
+or one of the other <code>_store</code> methods on <a href="../struct.ClientBuilder.html" title="struct matrix_sdk::ClientBuilder"><code>ClientBuilder</code></a>.</li>
+</ol>
+<h3 id="restoring-a-client"><a class="doc-anchor" href="#restoring-a-client">§</a>Restoring a client</h3>
+<p>Restoring a Client is relatively easy, still some things need to be kept in
+mind before doing so.</p>
+<p>There are two ways one might wish to restore a <a href="../struct.Client.html" title="struct matrix_sdk::Client"><code>Client</code></a>:</p>
+<ol>
+<li>Using an access token</li>
+<li>Using the password</li>
+</ol>
+<p>Initially, logging in creates a device ID and access token on the server,
+those two are directly connected to each other, more on this relationship
+can be found in the <a href="https://spec.matrix.org/unstable/client-server-api/#relationship-between-access-tokens-and-devices">spec</a>.</p>
+<p>After we log in the client will upload the end-to-end encryption related
+<a href="https://spec.matrix.org/unstable/client-server-api/#device-keys">device keys</a> to the server. Those device keys cannot be replaced once they
+have been uploaded and tied to a device ID.</p>
+<h4 id="using-an-access-token"><a class="doc-anchor" href="#using-an-access-token">§</a>Using an access token</h4>
+<ol>
+<li>Log in with the password using <a href="../matrix_auth/struct.MatrixAuth.html#method.login_username" title="method matrix_sdk::matrix_auth::MatrixAuth::login_username"><code>MatrixAuth::login_username()</code></a>.</li>
+<li>Store the access token, preferably somewhere secure.</li>
+<li>Use <a href="../struct.Client.html#method.restore_session" title="method matrix_sdk::Client::restore_session"><code>Client::restore_session()</code></a> the next time the client starts.</li>
+</ol>
+<p><strong>Note</strong> that the access token is directly connected to a device ID that
+lives on a server. If you’re skipping step one of this method, remember that
+you <strong>can’t</strong> use an access token that already has some device keys tied to
+the device ID.</p>
+<h4 id="using-a-password"><a class="doc-anchor" href="#using-a-password">§</a>Using a password.</h4>
+<ol>
+<li>Log in using <a href="../matrix_auth/struct.MatrixAuth.html#method.login_username" title="method matrix_sdk::matrix_auth::MatrixAuth::login_username"><code>MatrixAuth::login_username()</code></a>.</li>
+<li>Store the <code>device_id</code> that was returned in the login response from the
+server.</li>
+<li>Use <a href="../matrix_auth/struct.MatrixAuth.html#method.login_username" title="method matrix_sdk::matrix_auth::MatrixAuth::login_username"><code>MatrixAuth::login_username()</code></a> the next time the client starts, make
+sure to set <code>device_id</code> to the stored <code>device_id</code> from the previous step.
+This will replace the access token from the previous login call, but won’t
+create a new device.</li>
+</ol>
+<p><strong>Note</strong> that the default store supports only a single device, logging in
+with a different device ID (either <code>None</code> or a device ID of another client)
+is <strong>not</strong> supported using the default store.</p>
+<h3 id="common-pitfalls"><a class="doc-anchor" href="#common-pitfalls">§</a>Common pitfalls</h3><div><table><thead><tr><th>Failure</th><th>Cause</th><th>Fix</th></tr></thead><tbody>
+<tr><td>No messages get encrypted nor decrypted</td><td>The <code>e2e-encryption</code> feature is disabled</td><td><a href="https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#choosing-features">Enable the feature in your <code>Cargo.toml</code> file</a></td></tr>
+<tr><td>Messages that were decryptable aren’t after a restart</td><td>Storage isn’t setup to be persistent</td><td>Ensure you’ve activated the persistent storage backend feature, e.g. <code>sqlite</code></td></tr>
+<tr><td>Messages are encrypted but can’t be decrypted</td><td>The access token that the client is using is tied to another device</td><td>Clear storage to create a new device, read the <a href="#restoring-a-client">Restoring a Client</a> section</td></tr>
+<tr><td>Messages don’t get encrypted but get decrypted</td><td>The <code>m.room.encryption</code> event is missing</td><td>Make sure encryption is <a href="../room/struct.Room.html#method.enable_encryption" title="method matrix_sdk::room::Room::enable_encryption">enabled</a> for the room and the event isn’t <a href="../config/struct.SyncSettings.html#method.filter" title="method matrix_sdk::config::SyncSettings::filter">filtered</a> out, otherwise it might be a deserialization bug</td></tr>
+</tbody></table>
+</div></div></details><h2 id="reexports" class="section-header">Re-exports<a href="#reexports" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name" id="reexport.vodozemac"><code>pub use matrix_sdk_base::crypto::<a class="mod" href="../../vodozemac/index.html" title="mod vodozemac">vodozemac</a>;</code></div></li></ul><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="mod" href="backups/index.html" title="mod matrix_sdk::encryption::backups">backups</a></div><div class="desc docblock-short">Room key backup support</div></li><li><div class="item-name"><a class="mod" href="futures/index.html" title="mod matrix_sdk::encryption::futures">futures</a></div><div class="desc docblock-short">Named futures returned from methods on types in
+<a href="index.html" title="mod matrix_sdk::encryption">the <code>encryption</code> module</a>.</div></li><li><div class="item-name"><a class="mod" href="identities/index.html" title="mod matrix_sdk::encryption::identities">identities</a></div><div class="desc docblock-short">Cryptographic identities used in Matrix.</div></li><li><div class="item-name"><a class="mod" href="recovery/index.html" title="mod matrix_sdk::encryption::recovery">recovery</a></div><div class="desc docblock-short">The recovery module</div></li><li><div class="item-name"><a class="mod" href="secret_storage/index.html" title="mod matrix_sdk::encryption::secret_storage">secret_storage</a></div><div class="desc docblock-short">Secret Storage Support</div></li><li><div class="item-name"><a class="mod" href="verification/index.html" title="mod matrix_sdk::encryption::verification">verification</a></div><div class="desc docblock-short">Interactive verification for E2EE capable users and devices in Matrix.</div></li></ul><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.CrossSigningStatus.html" title="struct matrix_sdk::encryption::CrossSigningStatus">CrossSigningStatus</a></div><div class="desc docblock-short">Struct representing the state of our private cross signing keys, it shows
+which private cross signing keys we have locally stored.</div></li><li><div class="item-name"><a class="struct" href="struct.Encryption.html" title="struct matrix_sdk::encryption::Encryption">Encryption</a></div><div class="desc docblock-short">A high-level API to manage the client’s encryption.</div></li><li><div class="item-name"><a class="struct" href="struct.EncryptionSettings.html" title="struct matrix_sdk::encryption::EncryptionSettings">EncryptionSettings</a></div><div class="desc docblock-short">Settings for end-to-end encryption features.</div></li><li><div class="item-name"><a class="struct" href="struct.MediaEncryptionInfo.html" title="struct matrix_sdk::encryption::MediaEncryptionInfo">MediaEncryptionInfo</a></div><div class="desc docblock-short">Struct holding all the information that is needed to decrypt an encrypted
+file.</div></li><li><div class="item-name"><a class="struct" href="struct.RoomKeyImportResult.html" title="struct matrix_sdk::encryption::RoomKeyImportResult">RoomKeyImportResult</a></div><div class="desc docblock-short">Return type for the room key importing.</div></li></ul><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="enum" href="enum.BackupDownloadStrategy.html" title="enum matrix_sdk::encryption::BackupDownloadStrategy">BackupDownloadStrategy</a></div><div class="desc docblock-short">Settings for end-to-end encryption features.</div></li><li><div class="item-name"><a class="enum" href="enum.CryptoStoreError.html" title="enum matrix_sdk::encryption::CryptoStoreError">CryptoStoreError</a></div><div class="desc docblock-short">The crypto store’s error type.</div></li><li><div class="item-name"><a class="enum" href="enum.DecryptorError.html" title="enum matrix_sdk::encryption::DecryptorError">DecryptorError</a></div><div class="desc docblock-short">Error type for attachment decryption.</div></li><li><div class="item-name"><a class="enum" href="enum.EventError.html" title="enum matrix_sdk::encryption::EventError">EventError</a></div><div class="desc docblock-short">Error that occurs when decrypting an event that is malformed.</div></li><li><div class="item-name"><a class="enum" href="enum.KeyExportError.html" title="enum matrix_sdk::encryption::KeyExportError">KeyExportError</a></div><div class="desc docblock-short">Error representing a failure during key export or import.</div></li><li><div class="item-name"><a class="enum" href="enum.LocalTrust.html" title="enum matrix_sdk::encryption::LocalTrust">LocalTrust</a></div><div class="desc docblock-short">The local trust state of a device.</div></li><li><div class="item-name"><a class="enum" href="enum.MegolmError.html" title="enum matrix_sdk::encryption::MegolmError">MegolmError</a></div><div class="desc docblock-short">Error representing a failure during a group encryption operation.</div></li><li><div class="item-name"><a class="enum" href="enum.MegolmSessionCreationError.html" title="enum matrix_sdk::encryption::MegolmSessionCreationError">MegolmSessionCreationError</a></div><div class="desc docblock-short">An error type for the creation of group sessions.</div></li><li><div class="item-name"><a class="enum" href="enum.OlmError.html" title="enum matrix_sdk::encryption::OlmError">OlmError</a></div><div class="desc docblock-short">Error representing a failure during a device to device cryptographic
+operation.</div></li><li><div class="item-name"><a class="enum" href="enum.OlmSessionExportError.html" title="enum matrix_sdk::encryption::OlmSessionExportError">OlmSessionExportError</a></div><div class="desc docblock-short">An error type for the export of inbound group sessions.</div></li><li><div class="item-name"><a class="enum" href="enum.RoomKeyImportError.html" title="enum matrix_sdk::encryption::RoomKeyImportError">RoomKeyImportError</a></div><div class="desc docblock-short">Error for the room key importing functionality.</div></li><li><div class="item-name"><a class="enum" href="enum.SecretImportError.html" title="enum matrix_sdk::encryption::SecretImportError">SecretImportError</a></div><div class="desc docblock-short">Error describing what went wrong when importing private cross signing keys
+or the key backup key.</div></li><li><div class="item-name"><a class="enum" href="enum.SessionCreationError.html" title="enum matrix_sdk::encryption::SessionCreationError">SessionCreationError</a></div><div class="desc docblock-short">Error that occurs when a room key can’t be converted into a valid Megolm
+session.</div></li><li><div class="item-name"><a class="enum" href="enum.SignatureError.html" title="enum matrix_sdk::encryption::SignatureError">SignatureError</a></div><div class="desc docblock-short">Error type describing different errors that happen when we check or create
+signatures for a Matrix JSON object.</div></li></ul><h2 id="statics" class="section-header">Statics<a href="#statics" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="static" href="static.VERSION.html" title="static matrix_sdk::encryption::VERSION">VERSION</a></div><div class="desc docblock-short">The version of the matrix-sdk-cypto crate being used</div></li></ul></section></div></main></body></html>

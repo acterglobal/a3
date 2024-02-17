@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["CreateSpaceSettingsBuilderError","RelationTargetType"],"fn":["is_acter_space"],"struct":["CreateSpaceSettings","CreateSpaceSettingsBuilder","SpaceRelation","SpaceRelations"]};

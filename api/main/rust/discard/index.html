@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="There are situations where you need to intentionally leak some memory but not other memory. This crate can help!"><title>discard - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-b1a3e7f8283b8434.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="discard" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (d5fd09972 2024-01-22)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../discard/index.html">discard</a><span class="version">1.0.4</span></h2></div><div class="sidebar-elems"><ul class="block">
+            <li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#structs">Structs</a></li><li><a href="#traits">Traits</a></li></ul></section></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../discard/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">discard</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/discard/lib.rs.html#1-319">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>There are situations where you need to intentionally leak <em>some</em>
+memory but not <em>other</em> memory. This crate can help!</p>
+<p>But before I explain, you are probably wondering: why would I
+want to leak memory in the first place?</p>
+<p>There are certain rare situations where leaking memory is either
+desirable or <em>necessary</em>.</p>
+<p>As an example, let’s say I am using <a href="https://crates.io/crates/stdweb">stdweb</a>,
+which lets me use JavaScript APIs in Rust.</p>
+<p>So I write some code like this:</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code>node.add_event_listener(|event: ClickEvent| {
+    <span class="comment">// ...
+</span>});</code></pre></div>
+<p>Seems reasonable, right? But there’s a problem: the <code>add_event_listener</code> method
+returns an <code>EventListenerHandle</code>, and when the <code>EventListenerHandle</code> is dropped it
+will remove the event listener.</p>
+<p>Because I’m not using the <code>EventListenerHandle</code>, it is immediately dropped, so it
+receives no events!</p>
+<p>Okay, no problem, just use <a href="https://doc.rust-lang.org/std/mem/fn.forget.html"><code>std::mem::forget</code></a>:</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="comment">// This will automatically remove the event listener when `handle` is dropped
+</span><span class="kw">let </span>handle = node.add_event_listener(|event: ClickEvent| {
+    <span class="comment">// ...
+</span>});
+
+<span class="comment">// Now it will no longer remove the event listener
+</span>std::mem::forget(handle);</code></pre></div>
+<p>Now the event listener will remain alive forever, which is what I want.</p>
+<p>But there’s two problems with this:</p>
+<ol>
+<li>
+<p>I want it to keep the event listener alive forever, but I <em>also</em> want it to clean up any
+unused internal memory. Using <a href="https://doc.rust-lang.org/std/mem/fn.forget.html"><code>std::mem::forget</code></a>
+causes it to leak <em><strong>all</strong></em> of the memory, which is wasteful.</p>
+</li>
+<li>
+<p>There are situations where I want to leak the event listener, and then later <em>unleak</em> it.
+That’s not possible with <a href="https://doc.rust-lang.org/std/mem/fn.forget.html"><code>std::mem::forget</code></a>.</p>
+</li>
+</ol>
+<p>The solution to all of these problems is:</p>
+<ol>
+<li>
+<p>The <code>EventListenerHandle</code> should <em><strong>not</strong></em> implement the <a href="https://doc.rust-lang.org/std/ops/trait.Drop.html"><code>Drop</code></a> trait.</p>
+</li>
+<li>
+<p>The <code>EventListenerHandle</code> should implement the <a href="trait.Discard.html"><code>Discard</code></a> trait instead.</p>
+</li>
+<li>
+<p>The <code>add_event_listener</code> method should return <code>DiscardOnDrop&lt;EventListenerHandle&gt;</code>.</p>
+</li>
+</ol>
+<p>Now let’s look at what is possible:</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="comment">// This will automatically remove the event listener when `handle` is dropped
+</span><span class="kw">let </span>handle = node.add_event_listener(|event: ClickEvent| {
+    <span class="comment">// ...
+</span>});
+
+<span class="comment">// Now it will no longer remove the event listener, this is similar to `std::mem::forget`
+</span><span class="kw">let </span>leaked = DiscardOnDrop::leak(handle);
+
+<span class="comment">// Now it will remove the event listener, even though it was leaked
+</span>leaked.discard();</code></pre></div>
+<p>There’s two huge differences between <a href="struct.DiscardOnDrop.html#method.leak"><code>DiscardOnDrop::leak</code></a>
+and <a href="https://doc.rust-lang.org/std/mem/fn.forget.html"><code>std::mem::forget</code></a>:</p>
+<ol>
+<li>
+<p><a href="https://doc.rust-lang.org/std/mem/fn.forget.html"><code>std::mem::forget</code></a> leaks <em><strong>all</strong></em> of the memory,
+<a href="struct.DiscardOnDrop.html#method.leak"><code>DiscardOnDrop::leak</code></a> leaks the <em>minimal</em>
+amount of memory: unused memory is properly cleaned up.</p>
+</li>
+<li>
+<p>With <a href="https://doc.rust-lang.org/std/mem/fn.forget.html"><code>std::mem::forget</code></a> you cannot
+clean up a value after it has been leaked, but with
+<a href="struct.DiscardOnDrop.html#method.leak"><code>DiscardOnDrop::leak</code></a> you can manually discard
+the value even after it has been leaked.</p>
+</li>
+</ol>
+<p>Most of the time you don’t need to worry about any of this:
+<a href="struct.DiscardOnDrop.html"><code>DiscardOnDrop</code></a> will automatically call
+<a href="trait.Discard.html#tymethod.discard"><code>discard</code></a> when it is dropped, so in that situation
+<a href="trait.Discard.html"><code>Discard</code></a> behaves the same as <a href="https://doc.rust-lang.org/std/ops/trait.Drop.html"><code>Drop</code></a>.</p>
+<p>So you can use normal Rust idioms, and everything works as you would expect. You only need to
+worry about <a href="trait.Discard.html"><code>Discard</code></a> when you need to intentionally leak some memory.</p>
+</div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.DiscardOnDrop.html" title="struct discard::DiscardOnDrop">DiscardOnDrop</a></div><div class="desc docblock-short">If you have a value which implements <a href="trait.Discard.html"><code>Discard</code></a>, you can use
+<a href="struct.DiscardOnDrop.html#method.new"><code>DiscardOnDrop::new(value)</code></a> which will wrap the value.
+When the wrapper is dropped it will automatically call <a href="trait.Discard.html#tymethod.discard"><code>value.discard()</code></a>.</div></li></ul><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="trait" href="trait.Discard.html" title="trait discard::Discard">Discard</a></div><div class="desc docblock-short">This trait is very similar to <a href="https://doc.rust-lang.org/std/ops/trait.Drop.html"><code>Drop</code></a>:
+it allows for cleaning up memory and resources when they are no longer needed.</div></li></ul></section></div></main></body></html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["new_filter_all","new_filter_all_non_left","new_filter_fuzzy_match_room_name","new_filter_none","new_filter_normalized_match_room_name"]};

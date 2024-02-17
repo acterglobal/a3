@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["EventFormat","LazyLoadOptions","UrlFilter"],"mod":["create_filter","get_filter"],"struct":["Filter","FilterDefinition","RoomEventFilter","RoomFilter"]};
