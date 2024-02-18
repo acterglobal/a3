@@ -8443,6 +8443,54 @@ class Api {
     return tmp7;
   }
 
+  FfiBufferUint8? __notificationItemImageFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _notificationItemImageFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   bool? __pusherDeleteFuturePoll(
     int boxed,
     int postCobject,
@@ -20060,126 +20108,100 @@ class Api {
           int Function(
             int,
           )>();
-  late final _notificationItemIsInvitePtr = _lookup<
+  late final _notificationItemRoomInvitePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint8 Function(
+          _NotificationItemRoomInviteReturn Function(
             ffi.Int64,
-          )>>("__NotificationItem_is_invite");
+          )>>("__NotificationItem_room_invite");
 
-  late final _notificationItemIsInvite =
-      _notificationItemIsInvitePtr.asFunction<
-          int Function(
+  late final _notificationItemRoomInvite =
+      _notificationItemRoomInvitePtr.asFunction<
+          _NotificationItemRoomInviteReturn Function(
             int,
           )>();
-  late final _notificationItemRoomMessagePtr = _lookup<
+  late final _notificationItemTitlePtr = _lookup<
       ffi.NativeFunction<
-          _NotificationItemRoomMessageReturn Function(
+          _NotificationItemTitleReturn Function(
             ffi.Int64,
-          )>>("__NotificationItem_room_message");
+          )>>("__NotificationItem_title");
 
-  late final _notificationItemRoomMessage =
-      _notificationItemRoomMessagePtr.asFunction<
-          _NotificationItemRoomMessageReturn Function(
-            int,
-          )>();
-  late final _notificationItemSenderDisplayNamePtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemSenderDisplayNameReturn Function(
-            ffi.Int64,
-          )>>("__NotificationItem_sender_display_name");
-
-  late final _notificationItemSenderDisplayName =
-      _notificationItemSenderDisplayNamePtr.asFunction<
-          _NotificationItemSenderDisplayNameReturn Function(
-            int,
-          )>();
-  late final _notificationItemSenderAvatarUrlPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemSenderAvatarUrlReturn Function(
-            ffi.Int64,
-          )>>("__NotificationItem_sender_avatar_url");
-
-  late final _notificationItemSenderAvatarUrl =
-      _notificationItemSenderAvatarUrlPtr.asFunction<
-          _NotificationItemSenderAvatarUrlReturn Function(
-            int,
-          )>();
-  late final _notificationItemRoomDisplayNamePtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemRoomDisplayNameReturn Function(
-            ffi.Int64,
-          )>>("__NotificationItem_room_display_name");
-
-  late final _notificationItemRoomDisplayName =
-      _notificationItemRoomDisplayNamePtr.asFunction<
-          _NotificationItemRoomDisplayNameReturn Function(
-            int,
-          )>();
-  late final _notificationItemRoomAvatarUrlPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemRoomAvatarUrlReturn Function(
-            ffi.Int64,
-          )>>("__NotificationItem_room_avatar_url");
-
-  late final _notificationItemRoomAvatarUrl =
-      _notificationItemRoomAvatarUrlPtr.asFunction<
-          _NotificationItemRoomAvatarUrlReturn Function(
-            int,
-          )>();
-  late final _notificationItemRoomCanonicalAliasPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemRoomCanonicalAliasReturn Function(
-            ffi.Int64,
-          )>>("__NotificationItem_room_canonical_alias");
-
-  late final _notificationItemRoomCanonicalAlias =
-      _notificationItemRoomCanonicalAliasPtr.asFunction<
-          _NotificationItemRoomCanonicalAliasReturn Function(
-            int,
-          )>();
-  late final _notificationItemIsRoomEncryptedPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemIsRoomEncryptedReturn Function(
-            ffi.Int64,
-          )>>("__NotificationItem_is_room_encrypted");
-
-  late final _notificationItemIsRoomEncrypted =
-      _notificationItemIsRoomEncryptedPtr.asFunction<
-          _NotificationItemIsRoomEncryptedReturn Function(
-            int,
-          )>();
-  late final _notificationItemIsDirectMessageRoomPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Uint8 Function(
-            ffi.Int64,
-          )>>("__NotificationItem_is_direct_message_room");
-
-  late final _notificationItemIsDirectMessageRoom =
-      _notificationItemIsDirectMessageRoomPtr.asFunction<
-          int Function(
-            int,
-          )>();
-  late final _notificationItemIsNoisyPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemIsNoisyReturn Function(
-            ffi.Int64,
-          )>>("__NotificationItem_is_noisy");
-
-  late final _notificationItemIsNoisy = _notificationItemIsNoisyPtr.asFunction<
-      _NotificationItemIsNoisyReturn Function(
+  late final _notificationItemTitle = _notificationItemTitlePtr.asFunction<
+      _NotificationItemTitleReturn Function(
         int,
       )>();
-  late final _notificationItemJoinedMembersCountPtr = _lookup<
+  late final _notificationItemTargetUrlPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint64 Function(
+          _NotificationItemTargetUrlReturn Function(
             ffi.Int64,
-          )>>("__NotificationItem_joined_members_count");
+          )>>("__NotificationItem_target_url");
 
-  late final _notificationItemJoinedMembersCount =
-      _notificationItemJoinedMembersCountPtr.asFunction<
+  late final _notificationItemTargetUrl =
+      _notificationItemTargetUrlPtr.asFunction<
+          _NotificationItemTargetUrlReturn Function(
+            int,
+          )>();
+  late final _notificationItemBodyPtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationItemBodyReturn Function(
+            ffi.Int64,
+          )>>("__NotificationItem_body");
+
+  late final _notificationItemBody = _notificationItemBodyPtr.asFunction<
+      _NotificationItemBodyReturn Function(
+        int,
+      )>();
+  late final _notificationItemIconUrlPtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationItemIconUrlReturn Function(
+            ffi.Int64,
+          )>>("__NotificationItem_icon_url");
+
+  late final _notificationItemIconUrl = _notificationItemIconUrlPtr.asFunction<
+      _NotificationItemIconUrlReturn Function(
+        int,
+      )>();
+  late final _notificationItemThreadIdPtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationItemThreadIdReturn Function(
+            ffi.Int64,
+          )>>("__NotificationItem_thread_id");
+
+  late final _notificationItemThreadId =
+      _notificationItemThreadIdPtr.asFunction<
+          _NotificationItemThreadIdReturn Function(
+            int,
+          )>();
+  late final _notificationItemNoisyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__NotificationItem_noisy");
+
+  late final _notificationItemNoisy = _notificationItemNoisyPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _notificationItemHasImagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__NotificationItem_has_image");
+
+  late final _notificationItemHasImage =
+      _notificationItemHasImagePtr.asFunction<
           int Function(
             int,
           )>();
+  late final _notificationItemImagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__NotificationItem_image");
+
+  late final _notificationItemImage = _notificationItemImagePtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _pusherIsEmailPusherPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
@@ -24468,6 +24490,21 @@ class Api {
   late final _notificationListResultNotificationsFuturePoll =
       _notificationListResultNotificationsFuturePollPtr.asFunction<
           _NotificationListResultNotificationsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _notificationItemImageFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationItemImageFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__NotificationItem_image_future_poll");
+
+  late final _notificationItemImageFuturePoll =
+      _notificationItemImageFuturePollPtr.asFunction<
+          _NotificationItemImageFuturePollReturn Function(
             int,
             int,
             int,
@@ -41562,39 +41599,10 @@ class NotificationItem {
 
   NotificationItem._(this._api, this._box);
 
-  bool isInvite() {
+  String? roomInvite() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemIsInvite(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3 > 0;
-    return tmp2;
-  }
-
-  RoomMessage? roomMessage() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemRoomMessage(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomMessage");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = RoomMessage._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  String? senderDisplayName() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemSenderDisplayName(
+    final tmp1 = _api._notificationItemRoomInvite(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -41624,43 +41632,10 @@ class NotificationItem {
     return tmp2;
   }
 
-  String? senderAvatarUrl() {
+  String title() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemSenderAvatarUrl(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  String roomDisplayName() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemRoomDisplayName(
+    final tmp1 = _api._notificationItemTitle(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -41686,10 +41661,57 @@ class NotificationItem {
     return tmp2;
   }
 
-  String? roomAvatarUrl() {
+  String targetUrl() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemRoomAvatarUrl(
+    final tmp1 = _api._notificationItemTargetUrl(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  MsgContent? body() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemBody(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MsgContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = MsgContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  String? iconUrl() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemIconUrl(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -41719,10 +41741,10 @@ class NotificationItem {
     return tmp2;
   }
 
-  String? roomCanonicalAlias() {
+  String? threadId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemRoomCanonicalAlias(
+    final tmp1 = _api._notificationItemThreadId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -41752,25 +41774,10 @@ class NotificationItem {
     return tmp2;
   }
 
-  bool? isRoomEncrypted() {
+  bool noisy() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemIsRoomEncrypted(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4 > 0;
-    return tmp2;
-  }
-
-  bool isDirectMessageRoom() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemIsDirectMessageRoom(
+    final tmp1 = _api._notificationItemNoisy(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -41778,29 +41785,28 @@ class NotificationItem {
     return tmp2;
   }
 
-  bool? isNoisy() {
+  bool hasImage() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemIsNoisy(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4 > 0;
-    return tmp2;
-  }
-
-  int joinedMembersCount() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemJoinedMembersCount(
+    final tmp1 = _api._notificationItemHasImage(
       tmp0,
     );
     final tmp3 = tmp1;
-    final tmp2 = tmp3;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  Future<FfiBufferUint8> image() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemImage(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__NotificationItem_image_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__notificationItemImageFuturePoll);
     return tmp2;
   }
 
@@ -48505,14 +48511,7 @@ class _NotificationListResultNextBatchReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _NotificationItemRoomMessageReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _NotificationItemSenderDisplayNameReturn extends ffi.Struct {
+class _NotificationItemRoomInviteReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -48523,7 +48522,32 @@ class _NotificationItemSenderDisplayNameReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _NotificationItemSenderAvatarUrlReturn extends ffi.Struct {
+class _NotificationItemTitleReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _NotificationItemTargetUrlReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _NotificationItemBodyReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _NotificationItemIconUrlReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -48534,16 +48558,7 @@ class _NotificationItemSenderAvatarUrlReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _NotificationItemRoomDisplayNameReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
-class _NotificationItemRoomAvatarUrlReturn extends ffi.Struct {
+class _NotificationItemThreadIdReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -48552,31 +48567,6 @@ class _NotificationItemRoomAvatarUrlReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-}
-
-class _NotificationItemRoomCanonicalAliasReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-}
-
-class _NotificationItemIsRoomEncryptedReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-}
-
-class _NotificationItemIsNoisyReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
 }
 
 class _PusherPushkeyReturn extends ffi.Struct {
@@ -50958,6 +50948,21 @@ class _NotificationConvoFuturePollReturn extends ffi.Struct {
 }
 
 class _NotificationListResultNotificationsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _NotificationItemImageFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

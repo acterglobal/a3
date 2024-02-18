@@ -2035,17 +2035,16 @@ object NotificationListResult {
 // converting a room_id+event_id into the notification item to show
 // from push context.
 object NotificationItem {
-    fn is_invite() -> bool;
-    fn room_message() -> Option<RoomMessage>;
-    fn sender_display_name() -> Option<string>;
-    fn sender_avatar_url() -> Option<string>;
-    fn room_display_name() -> string;
-    fn room_avatar_url() -> Option<string>;
-    fn room_canonical_alias() -> Option<string>;
-    fn is_room_encrypted() -> Option<bool>;
-    fn is_direct_message_room() -> bool;
-    fn is_noisy() -> Option<bool>;
-    fn joined_members_count() -> u64;
+    // if this is an invite, this the room it invites to
+    fn room_invite() -> Option<string>;
+    fn title() -> string;
+    fn target_url() -> string;
+    fn body() -> Option<MsgContent>;
+    fn icon_url() -> Option<string>;
+    fn thread_id() -> Option<string>;
+    fn noisy() -> bool;
+    fn has_image() -> bool;
+    fn image() -> Future<Result<buffer<u8>>>;
 }
 
 /// The pusher we sent notifications via to the user

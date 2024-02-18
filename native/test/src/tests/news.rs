@@ -340,6 +340,19 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
     let image_slide = final_entry.get_slide(0).expect("we have a slide");
     assert_eq!(image_slide.type_str(), "image");
 
+    // also check what the notification will be like
+    let notif = user
+        .get_notification_item(
+            space.room_id().to_string(),
+            final_entry.event_id().to_string(),
+        )
+        .await?;
+
+    assert_eq!(notif.title(), space.name().unwrap());
+    assert!(notif.body().is_none());
+    assert!(notif.has_image());
+    let _image_data = notif.image().await?;
+
     Ok(())
 }
 

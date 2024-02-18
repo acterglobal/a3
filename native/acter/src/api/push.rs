@@ -30,8 +30,8 @@ use matrix_sdk_ui::notification_client::{
 use ruma_client_api::push::{get_pushrules_all, set_pushrule, RuleScope};
 use ruma_common::{EventId, OwnedRoomId, RoomId};
 use ruma_events::{
-    room::message::MessageType, AnySyncMessageLikeEvent, AnySyncTimelineEvent, MessageLikeEvent,
-    SyncMessageLikeEvent,
+    room::{message::MessageType, MediaSource},
+    AnySyncMessageLikeEvent, AnySyncTimelineEvent, MessageLikeEvent, SyncMessageLikeEvent,
 };
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 
@@ -40,7 +40,7 @@ use super::{
     Client,
 };
 
-use crate::{MsgContent, RoomMessage, RUNTIME};
+use crate::{api::api::FfiBuffer, MsgContent, RoomMessage, RUNTIME};
 
 pub(crate) fn room_notification_mode_name(input: &RoomNotificationMode) -> String {
     match input {
@@ -67,6 +67,7 @@ pub(crate) fn notification_mode_from_input(input: &str) -> Option<RoomNotificati
 
 #[derive(Debug, Builder)]
 pub struct NotificationItem {
+    client: Client,
     title: String,
     target_url: String,
     #[builder(default)]
@@ -79,6 +80,8 @@ pub struct NotificationItem {
     thread_id: Option<String>,
     #[builder(setter(into, strip_option), default)]
     room_invite: Option<String>,
+    #[builder(setter(into, strip_option), default)]
+    image: Option<MediaSource>,
 }
 
 impl NotificationItem {
@@ -103,11 +106,25 @@ impl NotificationItem {
     pub fn room_invite(&self) -> Option<String> {
         self.room_invite.clone()
     }
+    pub fn has_image(&self) -> bool {
+        self.image.is_some()
+    }
+    pub async fn image(&self) -> Result<FfiBuffer<u8>> {
+        let Some(source) = self.image.clone() else {
+            return bail!("No media found in item");
+        };
+        let client = self.client.clone();
 
-    fn from(inner: SdkNotificationItem, room_id: OwnedRoomId) -> Result<Self> {
+        RUNTIME
+            .spawn(async move { Ok(client.source_binary(source, None).await?) })
+            .await?
+    }
+
+    fn from(client: Client, inner: SdkNotificationItem, room_id: OwnedRoomId) -> Result<Self> {
         let mut builder = NotificationItemBuilder::default();
         // setting defaults;
         builder
+            .client(client)
             .thread_id(room_id.to_string())
             .title(inner.room_display_name)
             .noisy(inner.is_noisy)
@@ -128,6 +145,9 @@ impl NotificationItem {
                             match &first_slide.content {
                                 NewsContent::Text(msg_content) => {
                                     builder.body(msg_content);
+                                }
+                                NewsContent::Image(msg_content) => {
+                                    builder.image(msg_content.source.clone());
                                 }
                                 _ => {}
                             }
@@ -237,13 +257,13 @@ impl Client {
         room_id: String,
         event_id: String,
     ) -> Result<NotificationItem> {
-        let client = self.core.client().clone();
+        let client = self.clone();
         let room_id = RoomId::parse(room_id)?;
         let event_id = EventId::parse(event_id)?;
         RUNTIME
             .spawn(async move {
                 let notif_client = NotificationClient::builder(
-                    client,
+                    client.core.client().clone(),
                     NotificationProcessSetup::MultipleProcesses,
                 )
                 .await?
@@ -253,7 +273,7 @@ impl Client {
                     .get_notification(&room_id, &event_id)
                     .await?
                     .context("(hidden notification)")?;
-                Ok(NotificationItem::from(notif, room_id)?)
+                Ok(NotificationItem::from(client, notif, room_id)?)
             })
             .await?
     }

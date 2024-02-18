@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:acter/common/providers/sdk_provider.dart';
@@ -8,6 +9,7 @@ import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:convert/convert.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
@@ -318,56 +320,8 @@ Future<bool> handleMessage(
   try {
     final instance = await ActerSdk.instance;
     final notif = await instance.getNotificationFor(deviceId, roomId, eventId);
-    final isDm = notif.isDirectMessageRoom();
-    final roomDisplayName = notif.roomDisplayName();
-    debugPrint('got a matrix notification in $roomDisplayName ($isDm)');
-
-    String body = '(new message)';
-    String title = roomDisplayName;
-
-    if (isDm) {
-      final roomMsg = notif.roomMessage();
-      if (roomMsg != null) {
-        final eventItem = roomMsg.eventItem();
-        if (eventItem != null) {
-          final msgContent = eventItem.msgContent();
-          if (msgContent != null) {
-            body = msgContent.body();
-          }
-        }
-      }
-    } else {
-      final roomMsg = notif.roomMessage();
-      if (roomMsg != null) {
-        final eventItem = roomMsg.eventItem();
-        if (eventItem != null) {
-          final msgContent = eventItem.msgContent();
-          if (msgContent != null) {
-            body = msgContent.body();
-          }
-        }
-      }
-
-      final sender = notif.senderDisplayName();
-      body = sender != null ? '$sender: $body' : body;
-    }
-
-    try {
-      final currentBase =
-          // ignore: use_build_context_synchronously
-          rootNavKey.currentContext!.read(currentRoutingLocation);
-      final isInChat = currentBase == '/chat/${Uri.encodeComponent(roomId)}';
-      debugPrint('current path: $currentBase == /chat/$roomId : $isInChat');
-      if (isInChat) {
-        debugPrint('We are already in the chatroom. Not showing notification.');
-        return false;
-      }
-    } catch (e) {
-      // ignore this
-      debugPrint('lookup failed: $e');
-    }
-
-    _showNotification(title, body, roomId, payload);
+    debugPrint('got a notification');
+    await _showNotification(notif);
     return true;
   } catch (e) {
     debugPrint('Parsing Notification failed: $e');
@@ -376,19 +330,37 @@ Future<bool> handleMessage(
 }
 
 Future<void> _showNotification(
-  String title,
-  String body,
-  String threadId,
-  String payload,
+  NotificationItem notification,
 ) async {
-  const androidNotificationDetails = AndroidNotificationDetails(
+  String? body;
+  String title = notification.title();
+  String? payload = notification.targetUrl();
+  String? threadId = notification.threadId();
+
+  AndroidNotificationDetails androidNotificationDetails =
+      AndroidNotificationDetails(
     'messages',
     'Messages',
     channelDescription: 'Messages sent to you',
-    importance: Importance.max,
-    priority: Priority.high,
-    ticker: 'ticker',
+    groupKey: threadId,
   );
+
+  if (notification.hasImage()) {
+    try {
+      final image = await notification.image();
+      androidNotificationDetails = AndroidNotificationDetails(
+        'messages',
+        'Messages',
+        channelDescription: 'Messages sent to you',
+        groupKey: threadId,
+        styleInformation: BigPictureStyleInformation(
+            ByteArrayAndroidBitmap(image.asTypedList())),
+      );
+    } catch (e) {
+      debugPrint('fetching image data failed: $e');
+    }
+  }
+
   final darwinDetails = DarwinNotificationDetails(
     threadIdentifier: threadId,
   );
