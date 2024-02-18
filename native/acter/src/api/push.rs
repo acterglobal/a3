@@ -1,6 +1,9 @@
 use std::sync::Arc;
 
-use acter_core::push::default_rules;
+use acter_core::{
+    events::{news::NewsContent, AnyActerEvent},
+    push::default_rules,
+};
 use anyhow::{bail, Context, Result};
 use matrix_sdk::{
     notification_settings::{
@@ -17,13 +20,19 @@ use matrix_sdk::{
     },
 };
 
+use derive_builder::Builder;
+use derive_getters::Getters;
 use futures::stream::StreamExt;
 use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
-    NotificationProcessSetup,
+    NotificationProcessSetup, RawNotificationEvent,
 };
 use ruma_client_api::push::{get_pushrules_all, set_pushrule, RuleScope};
 use ruma_common::{EventId, OwnedRoomId, RoomId};
+use ruma_events::{
+    room::message::MessageType, AnySyncMessageLikeEvent, AnySyncTimelineEvent, MessageLikeEvent,
+    SyncMessageLikeEvent,
+};
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 
 use super::{
@@ -31,7 +40,7 @@ use super::{
     Client,
 };
 
-use crate::{RoomMessage, RUNTIME};
+use crate::{MsgContent, RoomMessage, RUNTIME};
 
 pub(crate) fn room_notification_mode_name(input: &RoomNotificationMode) -> String {
     match input {
@@ -50,65 +59,122 @@ pub(crate) fn notification_mode_from_input(input: &str) -> Option<RoomNotificati
     }
 }
 
+// pub struct NotificationItem {
+//     pub(crate) inner: SdkNotificationItem,
+//     pub(crate) acter_event: Option<AnyActerEvent>,
+//     pub(crate) room_id: OwnedRoomId,
+// }
+
+#[derive(Debug, Builder)]
 pub struct NotificationItem {
-    pub(crate) inner: SdkNotificationItem,
-    pub(crate) room_id: OwnedRoomId,
+    title: String,
+    target_url: String,
+    #[builder(default)]
+    icon_url: Option<String>,
+    #[builder(setter(into, strip_option), default)]
+    body: Option<MsgContent>,
+    #[builder(default)]
+    noisy: Option<bool>,
+    #[builder(setter(into, strip_option), default)]
+    thread_id: Option<String>,
+    #[builder(setter(into, strip_option), default)]
+    room_invite: Option<String>,
 }
 
 impl NotificationItem {
-    fn new(inner: SdkNotificationItem, room_id: OwnedRoomId) -> Self {
-        NotificationItem { inner, room_id }
+    pub fn title(&self) -> String {
+        self.title.clone()
     }
-}
-
-impl NotificationItem {
-    pub fn is_invite(&self) -> bool {
-        matches!(self.inner.event, NotificationEvent::Invite(_))
+    pub fn target_url(&self) -> String {
+        self.target_url.clone()
+    }
+    pub fn icon_url(&self) -> Option<String> {
+        self.icon_url.clone()
+    }
+    pub fn body(&self) -> Option<MsgContent> {
+        self.body.clone()
+    }
+    pub fn noisy(&self) -> bool {
+        self.noisy.unwrap_or_default()
+    }
+    pub fn thread_id(&self) -> Option<String> {
+        self.thread_id.clone()
+    }
+    pub fn room_invite(&self) -> Option<String> {
+        self.room_invite.clone()
     }
 
-    pub fn room_message(&self) -> Option<RoomMessage> {
-        let NotificationEvent::Timeline(s) = &self.inner.event else {
-            return None;
+    fn from(inner: SdkNotificationItem, room_id: OwnedRoomId) -> Result<Self> {
+        let mut builder = NotificationItemBuilder::default();
+        // setting defaults;
+        builder
+            .thread_id(room_id.to_string())
+            .title(inner.room_display_name)
+            .noisy(inner.is_noisy)
+            .icon_url(inner.room_avatar_url);
+
+        if let NotificationEvent::Invite(invite) = inner.event {
+            return Ok(builder
+                .target_url(format!("/activites/{:}", room_id))
+                .room_invite(room_id.to_string())
+                .build()?);
+        }
+
+        if let RawNotificationEvent::Timeline(raw_tl) = &inner.raw_event {
+            if let Ok(any_acter_event) = raw_tl.deserialize_as::<AnyActerEvent>() {
+                match any_acter_event {
+                    AnyActerEvent::NewsEntry(MessageLikeEvent::Original(e)) => {
+                        if let Some(first_slide) = e.content.slides.first() {
+                            match &first_slide.content {
+                                NewsContent::Text(msg_content) => {
+                                    builder.body(msg_content);
+                                }
+                                _ => {}
+                            }
+                            return Ok(builder
+                                .target_url(format!("/updates/{:}", e.event_id))
+                                .build()?);
+                        }
+                    }
+                    _ => {}
+                }
+            }
         };
-        any_sync_event_to_message(s.clone(), self.room_id.clone())
-    }
-    // pub fn event(&self) -> NotificationEvent {
-    //     self.inner.event
-    // }
-    pub fn sender_display_name(&self) -> Option<String> {
-        self.inner.sender_display_name.clone()
-    }
 
-    pub fn sender_avatar_url(&self) -> Option<String> {
-        self.inner.sender_avatar_url.clone()
-    }
+        if let NotificationEvent::Timeline(AnySyncTimelineEvent::MessageLike(
+            AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(event)),
+        )) = inner.event
+        {
+            match event.content.msgtype {
+                MessageType::Audio(content) => {
+                    builder.body(MsgContent::from(&content));
+                }
+                MessageType::Emote(content) => {
+                    builder.body(MsgContent::from(&content));
+                }
+                MessageType::File(content) => {
+                    builder.body(MsgContent::from(&content));
+                }
+                MessageType::Image(content) => {
+                    // attach the actual content?!?
+                    builder.body(MsgContent::from(&content));
+                }
+                MessageType::Location(content) => {
+                    // attach the actual content?!?
+                    builder.body(MsgContent::from(&content));
+                }
+                MessageType::Text(content) => {
+                    builder.body(MsgContent::from(content));
+                }
+                MessageType::Video(content) => {
+                    // attach the actual content?!?
+                    builder.body(MsgContent::from(&content));
+                }
+                _ => {}
+            }
+        }
 
-    pub fn room_display_name(&self) -> String {
-        self.inner.room_display_name.clone()
-    }
-
-    pub fn room_avatar_url(&self) -> Option<String> {
-        self.inner.room_avatar_url.clone()
-    }
-
-    pub fn room_canonical_alias(&self) -> Option<String> {
-        self.inner.room_canonical_alias.clone()
-    }
-
-    pub fn is_room_encrypted(&self) -> Option<bool> {
-        self.inner.is_room_encrypted
-    }
-
-    pub fn is_direct_message_room(&self) -> bool {
-        self.inner.is_direct_message_room
-    }
-
-    pub fn joined_members_count(&self) -> u64 {
-        self.inner.joined_members_count
-    }
-
-    pub fn is_noisy(&self) -> Option<bool> {
-        self.inner.is_noisy
+        Ok(builder.build()?)
     }
 }
 
@@ -187,7 +253,7 @@ impl Client {
                     .get_notification(&room_id, &event_id)
                     .await?
                     .context("(hidden notification)")?;
-                Ok(NotificationItem::new(notif, room_id))
+                Ok(NotificationItem::from(notif, room_id)?)
             })
             .await?
     }

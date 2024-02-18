@@ -142,11 +142,23 @@ async fn news_plain_text_test() -> Result<()> {
 
     let slides = space.latest_news_entries(1).await?;
     let final_entry = slides.first().expect("Item is there");
+    let event_id = final_entry.event_id();
     let text_slide = final_entry.get_slide(0).expect("we have a slide");
     assert_eq!(text_slide.type_str(), "text");
     let msg_content = text_slide.msg_content();
     assert!(msg_content.formatted_body().is_none());
     assert_eq!(msg_content.body(), "This is a simple text".to_owned());
+
+    // also check what the notification will be like
+    let notif = user
+        .get_notification_item(space.room_id().to_string(), event_id.to_string())
+        .await?;
+
+    assert_eq!(notif.title(), space.name().unwrap());
+    assert_eq!(
+        notif.body().map(|e| e.body()),
+        Some("This is a simple text".to_owned())
+    );
 
     Ok(())
 }
