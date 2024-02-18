@@ -27,7 +27,8 @@ uniffi = { version = "0.26.1", features = [ "build" ] }
 anyhow = "1.0.79"
 async-stream = "0.3.5"
 chrono = "0.4"
-derive_builder = "0.13.0"
+derive-getters = { workspace = true }
+derive_builder = { workspace = true }
 eyeball-im = "0.4.2"
 fern = { git = "https://github.com/acterglobal/fern", branch = "rotate", features = ["manual"] }
 ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen" }
