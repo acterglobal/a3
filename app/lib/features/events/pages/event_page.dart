@@ -371,7 +371,7 @@ class CalendarEventPage extends ConsumerWidget {
     final event = await ref.read(calendarEventProvider(calendarId).future);
     final rsvpManager = await event.rsvpManager();
     final draft = rsvpManager.rsvpDraft();
-    draft.status(status.toString());
+    draft.status(status.name.toLowerCase()); // pascal case
     final rsvpId = await draft.send();
     EasyLoading.dismiss();
     debugPrint('new rsvp id: $rsvpId');
