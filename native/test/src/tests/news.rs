@@ -271,6 +271,19 @@ async fn news_markdown_text_test() -> Result<()> {
         Some("<h2>This is a simple text</h2>\n".to_owned())
     );
 
+    // also check what the notification will be like
+    let notif = user
+        .get_notification_item(
+            space.room_id().to_string(),
+            final_entry.event_id().to_string(),
+        )
+        .await?;
+
+    assert_eq!(notif.title(), space.name().unwrap());
+    assert_eq!(
+        notif.body().and_then(|e| e.formatted_body()),
+        Some("<h2>This is a simple text</h2>\n".to_owned())
+    );
     Ok(())
 }
 
