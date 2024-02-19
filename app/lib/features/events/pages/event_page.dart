@@ -14,11 +14,42 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:material_segmented_control/material_segmented_control.dart';
 
-class CalendarEventPage extends ConsumerWidget {
+class CalendarEventPage extends ConsumerStatefulWidget {
   final String calendarId;
 
   const CalendarEventPage({super.key, required this.calendarId});
+
+  @override
+  ConsumerState<CalendarEventPage> createState() => _CalendarEventPageState();
+}
+
+class _CalendarEventPageState extends ConsumerState<CalendarEventPage> {
+  RsvpStatusTag? rsvpStatus;
+
+  @override
+  void initState() {
+    super.initState();
+    AsyncValue<OptionRsvpStatus> myRsvpStatus =
+        ref.read(myRsvpStatusProvider(widget.calendarId));
+    myRsvpStatus.maybeWhen(
+      data: (data) {
+        switch (data.statusStr(true)) {
+          case 'Yes':
+            rsvpStatus = RsvpStatusTag.Yes;
+            break;
+          case 'Maybe':
+            rsvpStatus = RsvpStatusTag.Maybe;
+            break;
+          case 'No':
+            rsvpStatus = RsvpStatusTag.No;
+            break;
+        }
+      },
+      orElse: () => null,
+    );
+  }
 
   Widget buildActions(
     BuildContext context,
@@ -36,7 +67,7 @@ class CalendarEventPage extends ConsumerWidget {
           PopupMenuItem(
             onTap: () => context.pushNamed(
               Routes.editCalendarEvent.name,
-              pathParameters: {'calendarId': calendarId},
+              pathParameters: {'calendarId': widget.calendarId},
             ),
             child: const Row(
               children: <Widget>[
@@ -94,7 +125,7 @@ class CalendarEventPage extends ConsumerWidget {
               title: 'Report this Event',
               description:
                   'Report this content to your homeserver administrator. Please note that your administrator won\'t be able to read or view files in encrypted spaces.',
-              eventId: calendarId,
+              eventId: widget.calendarId,
               roomId: spaceId,
               senderId: senderId,
               isSpace: true,
@@ -122,32 +153,9 @@ class CalendarEventPage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    debugPrint('event page build -----------------------------------');
+  Widget build(BuildContext context) {
     AsyncValue<CalendarEvent> event =
-        ref.watch(calendarEventProvider(calendarId));
-    AsyncValue<OptionRsvpStatus> myRsvpStatus =
-        ref.watch(myRsvpStatusProvider(calendarId));
-    Set<RsvpStatusTag?> rsvp = <RsvpStatusTag?>{null};
-    myRsvpStatus.maybeWhen(
-      data: (data) {
-        switch (data.statusStr(true)) {
-          case 'Yes':
-            debugPrint('rsvp status: yes --------------------------------');
-            rsvp = <RsvpStatusTag?>{RsvpStatusTag.Yes};
-            break;
-          case 'Maybe':
-            debugPrint('rsvp status: maybe --------------------------------');
-            rsvp = <RsvpStatusTag?>{RsvpStatusTag.Maybe};
-            break;
-          case 'No':
-            debugPrint('rsvp status: no --------------------------------');
-            rsvp = <RsvpStatusTag?>{RsvpStatusTag.No};
-            break;
-        }
-      },
-      orElse: () => null,
-    );
+        ref.watch(calendarEventProvider(widget.calendarId));
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.neutral,
       body: CustomScrollView(
@@ -185,7 +193,7 @@ class CalendarEventPage extends ConsumerWidget {
               return SliverToBoxAdapter(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  key: Key(calendarId),
+                  key: Key(widget.calendarId),
                   children: [
                     const SizedBox(height: 50),
                     Flexible(
@@ -324,29 +332,33 @@ class CalendarEventPage extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 15),
-                    SegmentedButton<RsvpStatusTag?>(
-                      multiSelectionEnabled: false,
-                      emptySelectionAllowed: false,
-                      showSelectedIcon: false,
-                      selected: rsvp,
-                      onSelectionChanged: (Set<RsvpStatusTag?> rsvp) async {
-                        await onRsvp(context, rsvp.single!, ref);
-                        event = ref.refresh(calendarEventProvider(calendarId));
+                    MaterialSegmentedControl(
+                      children: const {
+                        RsvpStatusTag.Yes: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Text('Yes'),
+                        ),
+                        RsvpStatusTag.Maybe: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Text('Maybe'),
+                        ),
+                        RsvpStatusTag.No: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Text('No'),
+                        ),
                       },
-                      segments: const [
-                        ButtonSegment<RsvpStatusTag>(
-                          value: RsvpStatusTag.Yes,
-                          label: Text('Yes'),
-                        ),
-                        ButtonSegment<RsvpStatusTag>(
-                          value: RsvpStatusTag.Maybe,
-                          label: Text('Maybe'),
-                        ),
-                        ButtonSegment<RsvpStatusTag>(
-                          value: RsvpStatusTag.No,
-                          label: Text('No'),
-                        ),
-                      ],
+                      selectionIndex: rsvpStatus,
+                      borderColor: Colors.grey,
+                      selectedColor: Colors.transparent,
+                      unselectedColor: Colors.transparent,
+                      selectedTextStyle: const TextStyle(color: Colors.white),
+                      unselectedTextStyle: const TextStyle(color: Colors.grey),
+                      // borderWidth: 0.7,
+                      // borderRadius: 32,
+                      onSegmentTapped: (value) async {
+                        await onRsvp(context, value, ref);
+                        setState(() => rsvpStatus = value);
+                      },
                     ),
                   ],
                 ),
@@ -370,7 +382,8 @@ class CalendarEventPage extends ConsumerWidget {
     WidgetRef ref,
   ) async {
     EasyLoading.show(status: 'Updating RSVP', dismissOnTap: false);
-    final event = await ref.read(calendarEventProvider(calendarId).future);
+    final event =
+        await ref.read(calendarEventProvider(widget.calendarId).future);
     final rsvpManager = await event.rsvpManager();
     final draft = rsvpManager.rsvpDraft();
     draft.status(status.name.toLowerCase()); // pascal case
