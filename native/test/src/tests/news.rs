@@ -155,6 +155,7 @@ async fn news_plain_text_test() -> Result<()> {
         .await?;
 
     assert_eq!(notif.title(), space.name().unwrap());
+    assert_eq!(notif.push_style().as_str(), "news");
     assert_eq!(
         notif.body().map(|e| e.body()),
         Some("This is a simple text".to_owned())
@@ -280,6 +281,7 @@ async fn news_markdown_text_test() -> Result<()> {
         .await?;
 
     assert_eq!(notif.title(), space.name().unwrap());
+    assert_eq!(notif.push_style().as_str(), "news");
     assert_eq!(
         notif.body().and_then(|e| e.formatted_body()),
         Some("<h2>This is a simple text</h2>\n".to_owned())
@@ -350,6 +352,7 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
 
     assert_eq!(notif.title(), space.name().unwrap());
     assert!(notif.body().is_none());
+    assert_eq!(notif.push_style().as_str(), "news");
     assert!(notif.has_image());
     let _image_data = notif.image().await?;
 

@@ -329,13 +329,40 @@ Future<bool> handleMessage(
   return false;
 }
 
-Future<void> _showNotification(
-  NotificationItem notification,
-) async {
+Future<ByteArrayAndroidBitmap?> _fetchImage(
+    NotificationItem notification) async {
+  if (notification.hasImage()) {
+    try {
+      final image = await notification.image();
+      return ByteArrayAndroidBitmap(image.asTypedList());
+    } catch (e) {
+      debugPrint('fetching image data failed: $e');
+    }
+  }
+}
+
+Future<Person> _makeSenderPerson(NotificationItem notification) async {
+  final sender = notification.sender();
+  if (sender.hasImage()) {
+    try {
+      final image = await sender.image();
+      return Person(
+          icon: ByteArrayAndroidIcon(image.asTypedList()),
+          key: sender.userId(),
+          name: sender.displayName());
+    } catch (e) {
+      debugPrint('fetching image data failed: $e');
+    }
+  }
+  return Person(key: sender.userId(), name: sender.displayName());
+}
+
+Future<void> _showNotificationOnAndroid(NotificationItem notification) async {
   String? body;
   String title = notification.title();
   String? payload = notification.targetUrl();
   String? threadId = notification.threadId();
+  String pushStyle = notification.pushStyle();
 
   AndroidNotificationDetails androidNotificationDetails =
       AndroidNotificationDetails(
@@ -345,27 +372,130 @@ Future<void> _showNotification(
     groupKey: threadId,
   );
 
-  if (notification.hasImage()) {
-    try {
-      final image = await notification.image();
+  if (pushStyle == 'invite') {
+    final person = await _makeSenderPerson(notification);
+    androidNotificationDetails = AndroidNotificationDetails(
+      'invites',
+      'Invites',
+      channelDescription: 'When you are invited to spaces or chats',
+      groupKey: threadId,
+      styleInformation: MessagingStyleInformation(
+        person,
+        groupConversation: true,
+        conversationTitle: title,
+        messages: [
+          Message('<i>invited you to join</i>', DateTime.now(), person),
+        ],
+        htmlFormatContent: true,
+      ),
+    );
+  } else if (pushStyle == 'news') {
+    final image = await _fetchImage(notification);
+    if (image != null) {
       androidNotificationDetails = AndroidNotificationDetails(
-        'messages',
-        'Messages',
-        channelDescription: 'Messages sent to you',
+        'updates',
+        'Updates',
+        channelDescription: 'Updates from your spaces',
         groupKey: threadId,
-        styleInformation: BigPictureStyleInformation(
-            ByteArrayAndroidBitmap(image.asTypedList())),
+        styleInformation: BigPictureStyleInformation(image),
       );
-    } catch (e) {
-      debugPrint('fetching image data failed: $e');
+    } else {
+      final msg = notification.body();
+      if (msg != null) {
+        final formatted = msg.formattedBody();
+        body = msg.body();
+        androidNotificationDetails = AndroidNotificationDetails(
+          'updates',
+          'Updates',
+          channelDescription: 'Updates from your spaces',
+          groupKey: threadId,
+          styleInformation: BigTextStyleInformation(
+            formatted ?? body,
+            htmlFormatBigText: formatted != null,
+          ),
+        );
+      }
     }
+  } else if (pushStyle == 'chat') {
+    debugPrint("notification for chat");
+    final person = await _makeSenderPerson(notification);
+    final msg = notification.body()!;
+    final formatted = msg.formattedBody();
+    if (formatted != null) {
+      body = formatted;
+    } else {
+      body = msg.body();
+    }
+    androidNotificationDetails = AndroidNotificationDetails(
+      'chat',
+      'Chat',
+      channelDescription: 'Chat messages from group conversations',
+      groupKey: threadId,
+      styleInformation: MessagingStyleInformation(
+        person,
+        groupConversation: true,
+        conversationTitle: title,
+        messages: [Message(body, DateTime.now(), person)],
+        htmlFormatContent: formatted != null,
+      ),
+    );
+  } else if (pushStyle == 'dm') {
+    debugPrint("notification for dm");
+    final person = await _makeSenderPerson(notification);
+    final msg = notification.body()!;
+    final formatted = msg.formattedBody();
+    title = msg.body();
+    if (formatted != null) {
+      body = formatted;
+    } else {
+      body = msg.body();
+    }
+    debugPrint('$title, $body');
+    androidNotificationDetails = AndroidNotificationDetails(
+      'dm',
+      'DM',
+      channelDescription: 'Chat messages from DMs',
+      groupKey: threadId,
+      styleInformation: MessagingStyleInformation(
+        person,
+        groupConversation: false,
+        messages: [Message(body, DateTime.now(), person)],
+        htmlFormatContent: formatted != null,
+      ),
+    );
+  }
+  await flutterLocalNotificationsPlugin.show(
+    id++,
+    title,
+    body,
+    NotificationDetails(android: androidNotificationDetails),
+    payload: payload,
+  );
+}
+
+Future<void> _showNotification(
+  NotificationItem notification,
+) async {
+  String pushStyle = notification.pushStyle();
+
+  debugPrint("notification style: $pushStyle");
+  if (Platform.isAndroid) {
+    return await _showNotificationOnAndroid(notification);
+  }
+  // fallback for non-android
+  String? body;
+  String title = notification.title();
+  String? payload = notification.targetUrl();
+
+  final msg = notification.body();
+  if (msg != null) {
+    body = msg.body();
   }
 
   final darwinDetails = DarwinNotificationDetails(
-    threadIdentifier: threadId,
+    threadIdentifier: notification.threadId(),
   );
   final notificationDetails = NotificationDetails(
-    android: androidNotificationDetails,
     macOS: darwinDetails,
     iOS: darwinDetails,
   );

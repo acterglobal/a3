@@ -1,7 +1,10 @@
 use std::sync::Arc;
 
 use acter_core::{
-    events::{news::NewsContent, AnyActerEvent},
+    events::{
+        news::{FallbackNewsContent, NewsContent},
+        AnyActerEvent,
+    },
     push::default_rules,
 };
 use anyhow::{bail, Context, Result};
@@ -28,7 +31,7 @@ use matrix_sdk_ui::notification_client::{
     NotificationProcessSetup, RawNotificationEvent,
 };
 use ruma_client_api::push::{get_pushrules_all, set_pushrule, RuleScope};
-use ruma_common::{EventId, OwnedRoomId, RoomId};
+use ruma_common::{EventId, OwnedMxcUri, OwnedRoomId, RoomId};
 use ruma_events::{
     room::{message::MessageType, MediaSource},
     AnySyncMessageLikeEvent, AnySyncTimelineEvent, MessageLikeEvent, SyncMessageLikeEvent,
@@ -65,11 +68,53 @@ pub(crate) fn notification_mode_from_input(input: &str) -> Option<RoomNotificati
 //     pub(crate) room_id: OwnedRoomId,
 // }
 
+#[derive(Debug, Clone)]
+pub struct NotificationSender {
+    user_id: String,
+    display_name: Option<String>,
+    image: Option<MediaSource>,
+    client: Client,
+}
+impl NotificationSender {
+    fn from(client: Client, notif: &SdkNotificationItem) -> Self {
+        NotificationSender {
+            user_id: notif.event.sender().to_string(),
+            display_name: notif.sender_display_name.clone(),
+            image: notif
+                .sender_avatar_url
+                .clone()
+                .map(|u| MediaSource::Plain(OwnedMxcUri::from(u))),
+            client,
+        }
+    }
+    pub fn user_id(&self) -> String {
+        self.user_id.clone()
+    }
+    pub fn display_name(&self) -> Option<String> {
+        self.display_name.clone()
+    }
+    pub fn has_image(&self) -> bool {
+        self.image.is_some()
+    }
+    pub async fn image(&self) -> Result<FfiBuffer<u8>> {
+        let Some(source) = self.image.clone() else {
+            return bail!("No media found in item");
+        };
+        let client = self.client.clone();
+
+        RUNTIME
+            .spawn(async move { Ok(client.source_binary(source, None).await?) })
+            .await?
+    }
+}
+
 #[derive(Debug, Builder)]
 pub struct NotificationItem {
     client: Client,
     title: String,
+    push_style: String,
     target_url: String,
+    sender: NotificationSender,
     #[builder(default)]
     icon_url: Option<String>,
     #[builder(setter(into, strip_option), default)]
@@ -88,8 +133,14 @@ impl NotificationItem {
     pub fn title(&self) -> String {
         self.title.clone()
     }
+    pub fn push_style(&self) -> String {
+        self.push_style.clone()
+    }
     pub fn target_url(&self) -> String {
         self.target_url.clone()
+    }
+    pub fn sender(&self) -> NotificationSender {
+        self.sender.clone()
     }
     pub fn icon_url(&self) -> Option<String> {
         self.icon_url.clone()
@@ -124,16 +175,21 @@ impl NotificationItem {
         let mut builder = NotificationItemBuilder::default();
         // setting defaults;
         builder
+            .sender(NotificationSender::from(client.clone(), &inner))
             .client(client)
             .thread_id(room_id.to_string())
             .title(inner.room_display_name)
             .noisy(inner.is_noisy)
+            .push_style("fallback".to_owned())
             .icon_url(inner.room_avatar_url);
 
         if let NotificationEvent::Invite(invite) = inner.event {
             return Ok(builder
-                .target_url(format!("/activites/{:}", room_id))
+                .target_url(format!("/activities/"))
+                // FIXME: we still need support for specific activities linking
+                // .target_url(format!("/activities/{:}", room_id))
                 .room_invite(room_id.to_string())
+                .push_style("invite".to_owned())
                 .build()?);
         }
 
@@ -143,16 +199,40 @@ impl NotificationItem {
                     AnyActerEvent::NewsEntry(MessageLikeEvent::Original(e)) => {
                         if let Some(first_slide) = e.content.slides.first() {
                             match &first_slide.content {
-                                NewsContent::Text(msg_content) => {
-                                    builder.body(msg_content);
-                                }
-                                NewsContent::Image(msg_content) => {
+                                // we have improved support for showing images
+                                NewsContent::Fallback(FallbackNewsContent::Image(msg_content))
+                                | NewsContent::Image(msg_content) => {
                                     builder.image(msg_content.source.clone());
                                 }
-                                _ => {}
+                                // everything else we have to fallback to the body-text thing ...
+                                NewsContent::Fallback(FallbackNewsContent::Text(msg_content))
+                                | NewsContent::Text(msg_content) => {
+                                    builder.body(msg_content);
+                                }
+                                NewsContent::Fallback(FallbackNewsContent::Video(msg_content))
+                                | NewsContent::Video(msg_content) => {
+                                    builder.body(MsgContent::from(msg_content));
+                                }
+                                NewsContent::Fallback(FallbackNewsContent::Audio(msg_content))
+                                | NewsContent::Audio(msg_content) => {
+                                    builder.body(MsgContent::from(msg_content));
+                                }
+                                NewsContent::Fallback(FallbackNewsContent::File(msg_content))
+                                | NewsContent::File(msg_content) => {
+                                    builder.body(MsgContent::from(msg_content));
+                                }
+                                NewsContent::Fallback(FallbackNewsContent::Location(
+                                    msg_content,
+                                ))
+                                | NewsContent::Location(msg_content) => {
+                                    builder.body(MsgContent::from(msg_content));
+                                }
                             }
                             return Ok(builder
-                                .target_url(format!("/updates/{:}", e.event_id))
+                                .target_url("/updates".to_owned())
+                                // FIXME: link to each specific update directly.
+                                // .target_url(format!("/updates/{:}", e.event_id))
+                                .push_style("news".to_owned())
                                 .build()?);
                         }
                     }
@@ -165,32 +245,46 @@ impl NotificationItem {
             AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(event)),
         )) = inner.event
         {
-            match event.content.msgtype {
+            if match event.content.msgtype {
                 MessageType::Audio(content) => {
                     builder.body(MsgContent::from(&content));
+                    true
                 }
                 MessageType::Emote(content) => {
                     builder.body(MsgContent::from(&content));
+                    true
                 }
                 MessageType::File(content) => {
                     builder.body(MsgContent::from(&content));
+                    true
                 }
                 MessageType::Image(content) => {
-                    // attach the actual content?!?
-                    builder.body(MsgContent::from(&content));
+                    builder.image(content.source);
+                    true
                 }
                 MessageType::Location(content) => {
                     // attach the actual content?!?
                     builder.body(MsgContent::from(&content));
+                    true
                 }
                 MessageType::Text(content) => {
                     builder.body(MsgContent::from(content));
+                    true
                 }
                 MessageType::Video(content) => {
                     // attach the actual content?!?
                     builder.body(MsgContent::from(&content));
+                    true
                 }
-                _ => {}
+                _ => false,
+            } {
+                // a compatible message
+                if inner.is_direct_message_room {
+                    builder.push_style("dm".to_owned());
+                } else {
+                    builder.push_style("chat".to_owned());
+                }
+                builder.target_url(format!("/chat/{:}", room_id));
             }
         }
 

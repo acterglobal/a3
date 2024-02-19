@@ -2032,12 +2032,19 @@ object NotificationListResult {
     fn notifications() -> Future<Result<Vec<Notification>>>;
 }
 
+object NotificationSender {
+    fn user_id() -> string;
+    fn display_name() -> Option<string>;
+    fn has_image() -> bool;
+    fn image() -> Future<Result<buffer<u8>>>;
+}
+
 // converting a room_id+event_id into the notification item to show
 // from push context.
 object NotificationItem {
-    // if this is an invite, this the room it invites to
-    fn room_invite() -> Option<string>;
+    fn push_style() -> string;
     fn title() -> string;
+    fn sender() -> NotificationSender;
     fn target_url() -> string;
     fn body() -> Option<MsgContent>;
     fn icon_url() -> Option<string>;
@@ -2045,6 +2052,9 @@ object NotificationItem {
     fn noisy() -> bool;
     fn has_image() -> bool;
     fn image() -> Future<Result<buffer<u8>>>;
+
+    // if this is an invite, this the room it invites to
+    fn room_invite() -> Option<string>;
 }
 
 /// The pusher we sent notifications via to the user
