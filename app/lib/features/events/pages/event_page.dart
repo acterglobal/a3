@@ -358,6 +358,8 @@ class _CalendarEventPageState extends ConsumerState<CalendarEventPage> {
                       onSegmentTapped: (value) async {
                         await onRsvp(context, value, ref);
                         setState(() => rsvpStatus = value);
+                        // refresh outer page
+                        ref.invalidate(myRsvpStatusProvider(widget.calendarId));
                       },
                     ),
                   ],
