@@ -123,6 +123,7 @@ class CalendarEventPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    debugPrint('event page build -----------------------------------');
     AsyncValue<CalendarEvent> event =
         ref.watch(calendarEventProvider(calendarId));
     AsyncValue<OptionRsvpStatus> myRsvpStatus =
@@ -132,12 +133,15 @@ class CalendarEventPage extends ConsumerWidget {
       data: (data) {
         switch (data.statusStr(true)) {
           case 'Yes':
+            debugPrint('rsvp status: yes --------------------------------');
             rsvp = <RsvpStatusTag?>{RsvpStatusTag.Yes};
             break;
           case 'Maybe':
+            debugPrint('rsvp status: maybe --------------------------------');
             rsvp = <RsvpStatusTag?>{RsvpStatusTag.Maybe};
             break;
           case 'No':
+            debugPrint('rsvp status: no --------------------------------');
             rsvp = <RsvpStatusTag?>{RsvpStatusTag.No};
             break;
         }
