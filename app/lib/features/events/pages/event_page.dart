@@ -26,8 +26,9 @@ class CalendarEventPage extends ConsumerWidget {
     CalendarEvent event,
   ) {
     final spaceId = event.roomIdStr();
-    List<PopupMenuEntry> actions = [];
     final membership = ref.watch(roomMembershipProvider(spaceId));
+    List<PopupMenuEntry> actions = [];
+    final senderId = event.sender().toString();
     if (membership.valueOrNull != null) {
       final memb = membership.requireValue!;
       if (memb.canString('CanPostEvent')) {
@@ -49,8 +50,7 @@ class CalendarEventPage extends ConsumerWidget {
       }
 
       if (memb.canString('CanRedactOwn') &&
-          memb.userId().toString() == event.sender().toString()) {
-        final roomId = event.roomIdStr();
+          memb.userId().toString() == senderId) {
         actions.addAll([
           PopupMenuItem(
             onTap: () => showAdaptiveDialog(
@@ -63,12 +63,12 @@ class CalendarEventPage extends ConsumerWidget {
                   if (context.mounted) {
                     context.goNamed(
                       Routes.spaceEvents.name,
-                      pathParameters: {'spaceId': roomId},
+                      pathParameters: {'spaceId': spaceId},
                     );
                   }
                 },
-                senderId: event.sender().toString(),
-                roomId: roomId,
+                senderId: senderId,
+                roomId: spaceId,
                 isSpace: true,
               ),
             ),
@@ -95,8 +95,8 @@ class CalendarEventPage extends ConsumerWidget {
               description:
                   'Report this content to your homeserver administrator. Please note that your administrator won\'t be able to read or view files in encrypted spaces.',
               eventId: calendarId,
-              roomId: event.roomIdStr(),
-              senderId: event.sender().toString(),
+              roomId: spaceId,
+              senderId: senderId,
               isSpace: true,
             ),
           ),
@@ -118,9 +118,7 @@ class CalendarEventPage extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
-    return PopupMenuButton(
-      itemBuilder: (ctx) => actions,
-    );
+    return PopupMenuButton(itemBuilder: (ctx) => actions);
   }
 
   @override
