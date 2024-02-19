@@ -44,20 +44,18 @@ There are few basis standard we would like to follow in futter code.
 - General try-catches (rather use AsyncValues)
 - Router for state management
 
-**1. Scaffold usage**
-Every parent page should use Scaffold widget to structure entire screen layout.
-
 **2. Scrolling usage**
 - Use `SingleChildScrollView` in all the general use cases where need widgets need to be scrollable
 - Use `CustomScrollView` with its `Slivers` when complex scrolling behavior is required
 
-**3. Avoid code nesting**
+**3. Avoid Deeply Nested Widget Hierarchies**
 - Use module approach of widget layout and avoid huge nesting in code
-- Create sperate `methods` or `class` for common widgets
+- It helps to break things out into separate functions / methods, each of which returns a small widget that contributes to a larger interface. This also facilitates code re-use and, at least in theory, makes your code easier to test.
+- General rule of thumb: If something feels unwieldy, that usually means you should probably break that logical section out into it's own function.
 
 **4. State management with Riverpod**
 - Avoid unneccesary usage of provider where things can be handle without it
-- Use appropriate River proivder type based on the use-case
+- Use appropriate Riverpod provider type based on the use-case
 - Avoiding `requireValue` and `ref.watch(clientProvider)!`
 - Proper dependency management (ref.watch rather than ref.read(someProvider.notifier).someFunction())`)
 
@@ -67,6 +65,7 @@ Every parent page should use Scaffold widget to structure entire screen layout.
 - File names should contain singular nouns.
 - File Names with Prefixes for Related Components
 - Keep consistency and reuse in mind
+  e.g. `ThingDetailsPage` and `ThingListItem` are common practice.
 
 **5. Common Widget**
 Create separate widget which can be reuse
