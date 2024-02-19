@@ -26,6 +26,10 @@ class SpaceSettingsMenu extends ConsumerWidget {
     final spaceProfile = ref.watch(spaceProfileDataForSpaceIdProvider(spaceId));
     final canonicalParent = ref.watch(canonicalParentProvider(spaceId));
 
+    final notificationStatus =
+        ref.watch(roomNotificationStatusProvider(spaceId));
+    final curNotifStatus = notificationStatus.valueOrNull;
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -86,13 +90,33 @@ class SpaceSettingsMenu extends ConsumerWidget {
           child: SettingsList(
             sections: [
               SettingsSection(
-                title: const Text('My Settings'),
+                title: const Text('Personal Settings'),
                 tiles: [
-                  NotificationsSettingsTile(roomId: spaceId),
+                  SettingsTile(
+                    key: appsMenu,
+                    title: const Text('Notifications Overwrites'),
+                    description: const Text(
+                      'Overwrite your notifications configurations for this space',
+                    ),
+                    leading: curNotifStatus == 'muted'
+                        ? const Icon(Atlas.bell_dash_bold, size: 18)
+                        : const Icon(Atlas.bell_thin, size: 18),
+                    onPressed: (context) {
+                      isDesktop || size.width > 770
+                          ? context.goNamed(
+                              Routes.spaceSettingsNotifications.name,
+                              pathParameters: {'spaceId': spaceId},
+                            )
+                          : context.pushNamed(
+                              Routes.spaceSettingsNotifications.name,
+                              pathParameters: {'spaceId': spaceId},
+                            );
+                    },
+                  ),
                 ],
               ),
               SettingsSection(
-                title: const Text('My Settings'),
+                title: const Text('Space Configuration'),
                 tiles: <SettingsTile>[
                   SettingsTile(
                     title: const Text('Access & Visibility'),
