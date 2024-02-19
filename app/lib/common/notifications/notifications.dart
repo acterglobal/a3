@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
-import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -330,7 +328,7 @@ Future<bool> handleMessage(
 }
 
 Future<ByteArrayAndroidBitmap?> _fetchImage(
-    NotificationItem notification) async {
+    NotificationItem notification,) async {
   if (notification.hasImage()) {
     try {
       final image = await notification.image();
@@ -339,6 +337,7 @@ Future<ByteArrayAndroidBitmap?> _fetchImage(
       debugPrint('fetching image data failed: $e');
     }
   }
+  return null;
 }
 
 Future<Person> _makeSenderPerson(NotificationItem notification) async {
@@ -349,7 +348,7 @@ Future<Person> _makeSenderPerson(NotificationItem notification) async {
       return Person(
           icon: ByteArrayAndroidIcon(image.asTypedList()),
           key: sender.userId(),
-          name: sender.displayName());
+          name: sender.displayName(),);
     } catch (e) {
       debugPrint('fetching image data failed: $e');
     }
@@ -417,7 +416,7 @@ Future<void> _showNotificationOnAndroid(NotificationItem notification) async {
       }
     }
   } else if (pushStyle == 'chat') {
-    debugPrint("notification for chat");
+    debugPrint('notification for chat');
     final person = await _makeSenderPerson(notification);
     final msg = notification.body()!;
     final formatted = msg.formattedBody();
@@ -440,7 +439,7 @@ Future<void> _showNotificationOnAndroid(NotificationItem notification) async {
       ),
     );
   } else if (pushStyle == 'dm') {
-    debugPrint("notification for dm");
+    debugPrint('notification for dm');
     final person = await _makeSenderPerson(notification);
     final msg = notification.body()!;
     final formatted = msg.formattedBody();
@@ -478,7 +477,7 @@ Future<void> _showNotification(
 ) async {
   String pushStyle = notification.pushStyle();
 
-  debugPrint("notification style: $pushStyle");
+  debugPrint('notification style: $pushStyle');
   if (Platform.isAndroid) {
     return await _showNotificationOnAndroid(notification);
   }

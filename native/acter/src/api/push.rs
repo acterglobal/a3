@@ -97,13 +97,14 @@ impl NotificationSender {
         self.image.is_some()
     }
     pub async fn image(&self) -> Result<FfiBuffer<u8>> {
+        #[allow(clippy::diverging_sub_expression)]
         let Some(source) = self.image.clone() else {
             return bail!("No media found in item");
         };
         let client = self.client.clone();
 
         RUNTIME
-            .spawn(async move { Ok(client.source_binary(source, None).await?) })
+            .spawn(async move { client.source_binary(source, None).await })
             .await?
     }
 }
@@ -161,13 +162,14 @@ impl NotificationItem {
         self.image.is_some()
     }
     pub async fn image(&self) -> Result<FfiBuffer<u8>> {
+        #[allow(clippy::diverging_sub_expression)]
         let Some(source) = self.image.clone() else {
             return bail!("No media found in item");
         };
         let client = self.client.clone();
 
         RUNTIME
-            .spawn(async move { Ok(client.source_binary(source, None).await?) })
+            .spawn(async move { client.source_binary(source, None).await })
             .await?
     }
 
@@ -185,7 +187,7 @@ impl NotificationItem {
 
         if let NotificationEvent::Invite(invite) = inner.event {
             return Ok(builder
-                .target_url(format!("/activities/"))
+                .target_url("/activities/".to_string())
                 // FIXME: we still need support for specific activities linking
                 // .target_url(format!("/activities/{:}", room_id))
                 .room_invite(room_id.to_string())
@@ -194,49 +196,44 @@ impl NotificationItem {
         }
 
         if let RawNotificationEvent::Timeline(raw_tl) = &inner.raw_event {
-            if let Ok(any_acter_event) = raw_tl.deserialize_as::<AnyActerEvent>() {
-                match any_acter_event {
-                    AnyActerEvent::NewsEntry(MessageLikeEvent::Original(e)) => {
-                        if let Some(first_slide) = e.content.slides.first() {
-                            match &first_slide.content {
-                                // we have improved support for showing images
-                                NewsContent::Fallback(FallbackNewsContent::Image(msg_content))
-                                | NewsContent::Image(msg_content) => {
-                                    builder.image(msg_content.source.clone());
-                                }
-                                // everything else we have to fallback to the body-text thing ...
-                                NewsContent::Fallback(FallbackNewsContent::Text(msg_content))
-                                | NewsContent::Text(msg_content) => {
-                                    builder.body(msg_content);
-                                }
-                                NewsContent::Fallback(FallbackNewsContent::Video(msg_content))
-                                | NewsContent::Video(msg_content) => {
-                                    builder.body(MsgContent::from(msg_content));
-                                }
-                                NewsContent::Fallback(FallbackNewsContent::Audio(msg_content))
-                                | NewsContent::Audio(msg_content) => {
-                                    builder.body(MsgContent::from(msg_content));
-                                }
-                                NewsContent::Fallback(FallbackNewsContent::File(msg_content))
-                                | NewsContent::File(msg_content) => {
-                                    builder.body(MsgContent::from(msg_content));
-                                }
-                                NewsContent::Fallback(FallbackNewsContent::Location(
-                                    msg_content,
-                                ))
-                                | NewsContent::Location(msg_content) => {
-                                    builder.body(MsgContent::from(msg_content));
-                                }
-                            }
-                            return Ok(builder
-                                .target_url("/updates".to_owned())
-                                // FIXME: link to each specific update directly.
-                                // .target_url(format!("/updates/{:}", e.event_id))
-                                .push_style("news".to_owned())
-                                .build()?);
+            if let Ok(AnyActerEvent::NewsEntry(MessageLikeEvent::Original(e))) =
+                raw_tl.deserialize_as::<AnyActerEvent>()
+            {
+                if let Some(first_slide) = e.content.slides.first() {
+                    match &first_slide.content {
+                        // we have improved support for showing images
+                        NewsContent::Fallback(FallbackNewsContent::Image(msg_content))
+                        | NewsContent::Image(msg_content) => {
+                            builder.image(msg_content.source.clone());
+                        }
+                        // everything else we have to fallback to the body-text thing ...
+                        NewsContent::Fallback(FallbackNewsContent::Text(msg_content))
+                        | NewsContent::Text(msg_content) => {
+                            builder.body(msg_content);
+                        }
+                        NewsContent::Fallback(FallbackNewsContent::Video(msg_content))
+                        | NewsContent::Video(msg_content) => {
+                            builder.body(MsgContent::from(msg_content));
+                        }
+                        NewsContent::Fallback(FallbackNewsContent::Audio(msg_content))
+                        | NewsContent::Audio(msg_content) => {
+                            builder.body(MsgContent::from(msg_content));
+                        }
+                        NewsContent::Fallback(FallbackNewsContent::File(msg_content))
+                        | NewsContent::File(msg_content) => {
+                            builder.body(MsgContent::from(msg_content));
+                        }
+                        NewsContent::Fallback(FallbackNewsContent::Location(msg_content))
+                        | NewsContent::Location(msg_content) => {
+                            builder.body(MsgContent::from(msg_content));
                         }
                     }
-                    _ => {}
+                    return Ok(builder
+                        .target_url("/updates".to_owned())
+                        // FIXME: link to each specific update directly.
+                        // .target_url(format!("/updates/{:}", e.event_id))
+                        .push_style("news".to_owned())
+                        .build()?);
                 }
             }
         };
@@ -367,7 +364,7 @@ impl Client {
                     .get_notification(&room_id, &event_id)
                     .await?
                     .context("(hidden notification)")?;
-                Ok(NotificationItem::from(client, notif, room_id)?)
+                NotificationItem::from(client, notif, room_id)
             })
             .await?
     }
