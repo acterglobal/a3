@@ -15,20 +15,23 @@ class SpaceNotificationConfigurationPage extends ConsumerWidget {
       sidebar: SpaceSettingsMenu(
         spaceId: spaceId,
       ),
-      child: SettingsList(
-        sections: [
-          SettingsSection(
-            title: const Text('General'),
-            tiles: [
-              NotificationsSettingsTile(
-                roomId: spaceId,
-                title: 'Space-wide overwrite',
-                defaultTitle: 'No Overwrite',
-                includeMentions: false,
-              ),
-            ],
-          ),
-        ],
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Space Notifications')),
+        body: SettingsList(
+          sections: [
+            SettingsSection(
+              title: const Text('General'),
+              tiles: [
+                NotificationsSettingsTile(
+                  roomId: spaceId,
+                  title: 'Space-wide overwrite',
+                  defaultTitle: 'No Overwrite',
+                  includeMentions: false,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
