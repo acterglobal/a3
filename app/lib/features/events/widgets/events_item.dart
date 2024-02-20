@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 
 class EventItem extends ConsumerWidget {
   final CalendarEvent event;
+
   const EventItem({super.key, required this.event});
 
   @override
@@ -22,7 +23,7 @@ class EventItem extends ConsumerWidget {
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         subtitle: Text(
-          '${formatDt(event)} (${formatTime(event)})',
+          '${formatDate(event)} (${formatTime(event)})',
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         trailing: myRsvpStatus.when(

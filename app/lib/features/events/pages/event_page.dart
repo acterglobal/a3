@@ -173,7 +173,7 @@ class CalendarEventPage extends ConsumerWidget {
           ),
           event.when(
             data: (ev) {
-              String date = formatDt(ev);
+              String date = formatDate(ev);
               String time =
                   '${Jiffy.parseFromMillisecondsSinceEpoch(ev.utcStart().timestampMillis()).jm} - ${Jiffy.parseFromMillisecondsSinceEpoch(ev.utcEnd().timestampMillis()).jm}';
               String description = '';

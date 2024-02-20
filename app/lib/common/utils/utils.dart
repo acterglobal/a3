@@ -1,19 +1,19 @@
 // ignore_for_file: unnecessary_null_comparison
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-import 'dart:async';
 
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jiffy/jiffy.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Get provider right from the context no matter where we are
 extension Context on BuildContext {
@@ -63,7 +63,7 @@ List<DateTime> daysInRange(DateTime first, DateTime last) {
   );
 }
 
-String formatDt(CalendarEvent e) {
+String formatDate(CalendarEvent e) {
   final start = toDartDatetime(e.utcStart()).toLocal();
   final end = toDartDatetime(e.utcEnd()).toLocal();
   final startFmt = DateFormat.yMMMd().format(start);
@@ -75,11 +75,11 @@ String formatDt(CalendarEvent e) {
   }
 }
 
-String formatTime(CalendarEvent e) => '${Jiffy.parseFromDateTime(
-      toDartDatetime(e.utcStart()).toLocal(),
-    ).jm} - ${Jiffy.parseFromDateTime(
-      toDartDatetime(e.utcEnd()).toLocal(),
-    ).jm}';
+String formatTime(CalendarEvent e) {
+  final start = toDartDatetime(e.utcStart()).toLocal();
+  final end = toDartDatetime(e.utcEnd()).toLocal();
+  return '${Jiffy.parseFromDateTime(start).jm} - ${Jiffy.parseFromDateTime(end).jm}';
+}
 
 String jiffyTime(int timeInterval) {
   final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
