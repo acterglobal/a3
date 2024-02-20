@@ -42,9 +42,9 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   EditorState textEditorState = EditorState.blank();
   NewsSlideItem? selectedNewsPost;
 
-  //Build UI
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     ref.listenManual(newsStateProvider, fireImmediately: true,
         (prevState, nextState) async {
       if (nextState.currentNewsSlide != null && // we have a new one
@@ -81,6 +81,11 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         setState(() => selectedNewsPost = nextState.currentNewsSlide);
       }
     });
+  }
+
+  //Build UI
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBarUI(context),
       body: bodyUI(context),

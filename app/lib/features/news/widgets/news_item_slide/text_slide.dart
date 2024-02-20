@@ -62,7 +62,7 @@ class _TextSlideState extends ConsumerState<TextSlide> {
     final formattedText = slideContent.formattedBody();
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 26,vertical: 70),
+      padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 70),
       color: widget.bgColor,
       alignment: Alignment.center,
       child: SingleChildScrollView(
