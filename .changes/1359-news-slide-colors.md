@@ -1,1 +1,0 @@
-- [new] : User can now set background color for different news update slides

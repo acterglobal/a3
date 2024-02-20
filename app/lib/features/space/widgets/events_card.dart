@@ -18,9 +18,13 @@ class EventsCard extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          'Events',
-          style: Theme.of(context).textTheme.titleMedium,
+        const SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Text(
+            'Events',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
         ),
         events.when(
           error: (error, stackTrace) => Text(
@@ -28,40 +32,37 @@ class EventsCard extends ConsumerWidget {
           ),
           data: (events) {
             int eventsLimit = min(events.length, 3);
-            return Padding(
-              padding: const EdgeInsets.only(top: 5),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  events.isNotEmpty
-                      ? ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: eventsLimit,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, idx) =>
-                              EventItem(event: events[idx]),
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'There are no events scheduled',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                events.isNotEmpty
+                    ? ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: eventsLimit,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, idx) =>
+                            EventItem(event: events[idx]),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'There are no events scheduled',
+                          style: Theme.of(context).textTheme.bodySmall,
                         ),
-                  eventsLimit != events.length
-                      ? Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: OutlinedButton(
-                            onPressed: () => context.pushNamed(
-                              Routes.spaceEvents.name,
-                              pathParameters: {'spaceId': spaceId},
-                            ),
-                            child: Text('See all my ${events.length} events'),
+                      ),
+                eventsLimit != events.length
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: OutlinedButton(
+                          onPressed: () => context.pushNamed(
+                            Routes.spaceEvents.name,
+                            pathParameters: {'spaceId': spaceId},
                           ),
-                        )
-                      : const SizedBox.shrink(),
-                ],
-              ),
+                          child: Text('See all my ${events.length} events'),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ],
             );
           },
           loading: () => const CircularProgressIndicator(),

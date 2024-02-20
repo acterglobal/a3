@@ -1,44 +1,45 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/search/model/util.dart';
-import 'package:acter/features/search/providers/spaces.dart';
+import 'package:acter/features/search/providers/pins.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SpacesBuilder extends ConsumerWidget {
+class PinsBuilder extends ConsumerWidget {
   final NavigateTo navigateTo;
 
-  const SpacesBuilder({
+  const PinsBuilder({
     super.key,
     required this.navigateTo,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final foundSpaces = ref.watch(spacesFoundProvider);
-    return foundSpaces.when(
+    final foundPins = ref.watch(pinsFoundProvider);
+    return foundPins.when(
       loading: () => const Text('loading'),
       error: (e, st) => Text('error: $e'),
       data: (data) {
         final Widget body;
         if (data.isEmpty) {
-          body = const Text('no matching spaces found');
+          body = const Text('no matching pins found');
         } else {
           final List<Widget> children = data
               .map(
                 (e) => InkWell(
-                  child: Container(
+                  child: Padding(
                     padding: const EdgeInsets.all(10),
-                    child: Column(
+                    child: Row(
                       children: [
                         e.icon,
-                        const SizedBox(height: 3),
+                        const SizedBox(width: 5),
                         Text(e.name),
                       ],
                     ),
                   ),
                   onTap: () async => await navigateTo(
-                    Routes.space,
-                    pathParameters: {'spaceId': e.navigationTargetId},
+                    Routes.pin,
+                    pathParameters: {'pinId': e.navigationTargetId},
+                    push: true,
                   ),
                 ),
               )
@@ -52,7 +53,7 @@ class SpacesBuilder extends ConsumerWidget {
           padding: const EdgeInsets.only(top: 10),
           child: Column(
             children: [
-              const Text('Spaces'),
+              const Text('Pins'),
               const SizedBox(height: 15),
               body,
               const SizedBox(height: 10),

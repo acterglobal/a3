@@ -52,28 +52,30 @@ class _PinListItemState extends ConsumerState<PinListItem> {
     super.initState();
   }
 
+  Future<void> openItem() async {
+    final String pinId = widget.pin.eventIdStr();
+    await context.pushNamed(
+      Routes.pin.name,
+      pathParameters: {'pinId': pinId},
+    );
+  }
+
+  // handler for gesture interaction on pin
+  Future<void> onTap() async {
+    final bool isLink = widget.pin.isLink();
+    if (isLink) {
+      final target = widget.pin.url()!;
+      await openLink(target, context);
+    } else {
+      await openItem();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final pin = widget.pin;
-    final pinId = pin.eventIdStr();
     final isLink = pin.isLink();
     final spaceId = pin.roomIdStr();
-
-    Future<void> openItem() async {
-      await context.pushNamed(
-        Routes.pin.name,
-        pathParameters: {'pinId': pinId},
-      );
-    }
-
-    Future<void> onTap() async {
-      if (isLink) {
-        final target = pin.url()!;
-        await openLink(target, context);
-      } else {
-        await openItem();
-      }
-    }
 
     return InkWell(
       onTap: onTap,

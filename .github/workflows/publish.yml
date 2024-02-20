@@ -210,6 +210,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
+          flutter-version: '3.16.9'
           channel: 'stable'
 
       - name: Flutter info

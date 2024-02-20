@@ -9,7 +9,7 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
-use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
+use ruma_common::{EventId, OwnedEventId, OwnedRoomId, OwnedUserId, RoomId};
 use ruma_events::room::message::{
     AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
     LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
@@ -149,6 +149,7 @@ impl Space {
 pub struct NewsSlide {
     client: Client,
     room: Room,
+    unique_id: String,
     inner: news::NewsSlide,
 }
 
@@ -163,23 +164,12 @@ impl NewsSlide {
     pub fn type_str(&self) -> String {
         self.inner.content().type_str()
     }
-
-    pub fn has_formatted_text(&self) -> bool {
-        matches!(
-            self.inner.content().text(),
-            Some(TextMessageEventContent {
-                formatted: Some(_),
-                ..
-            }),
-        )
+    pub fn unique_id(&self) -> String {
+        self.unique_id.clone()
     }
 
     pub fn colors(&self) -> Option<Colorize> {
         self.inner.colors.to_owned()
-    }
-
-    pub fn text(&self) -> String {
-        self.inner.content.text_str()
     }
 
     pub fn msg_content(&self) -> MsgContent {
@@ -335,6 +325,10 @@ impl NewsSlideDraft {
                 let text_content = TextMessageEventContent::markdown(body);
                 NewsContent::Text(text_content)
             }
+            MsgContentDraft::TextHtml { html, plain } => {
+                let text_content = TextMessageEventContent::html(plain, html);
+                NewsContent::Text(text_content)
+            }
             MsgContentDraft::Image { source, info } => {
                 let info = info.expect("image info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
@@ -478,6 +472,7 @@ impl NewsSlideDraft {
             .colors(self.colorize_builder.build())
             .build()?)
     }
+
     #[allow(clippy::boxed_local)]
     pub fn add_reference(&mut self, reference: Box<ObjRef>) -> &Self {
         self.references.push(*reference);
@@ -511,6 +506,7 @@ impl NewsEntry {
     }
 
     pub fn get_slide(&self, pos: u8) -> Option<NewsSlide> {
+        let unique_id = format!("{}-${pos}", self.content.event_id());
         self.content
             .slides()
             .get(pos as usize)
@@ -518,18 +514,22 @@ impl NewsEntry {
                 inner: inner.clone(),
                 client: self.client.clone(),
                 room: self.room.clone(),
+                unique_id,
             })
     }
 
     pub fn slides(&self) -> Vec<NewsSlide> {
+        let event_id = self.content.event_id();
         self.content
             .slides()
             .iter()
-            .map(|slide| {
+            .enumerate()
+            .map(|(pos, slide)| {
                 (NewsSlide {
                     inner: slide.clone(),
                     client: self.client.clone(),
                     room: self.room.clone(),
+                    unique_id: format!("${event_id}-${pos}"),
                 })
             })
             .collect()
@@ -740,18 +740,6 @@ impl Space {
             client: self.client.clone(),
             room: self.inner.room.clone(),
             content: Default::default(),
-            slides: vec![],
-        })
-    }
-
-    pub fn news_draft_with_builder(&self, content: NewsEntryBuilder) -> Result<NewsEntryDraft> {
-        if !self.is_joined() {
-            bail!("Unable to create news for spaces we are not part on");
-        }
-        Ok(NewsEntryDraft {
-            client: self.client.clone(),
-            room: self.inner.room.clone(),
-            content,
             slides: vec![],
         })
     }

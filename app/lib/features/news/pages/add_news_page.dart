@@ -4,7 +4,9 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
+import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
@@ -16,32 +18,74 @@ import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_post_editor/select_action_item.dart';
 import 'package:acter/features/news/widgets/news_post_editor/news_slide_options.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mime/mime.dart';
 
+const addNewsKey = Key('add-news');
+
 class AddNewsPage extends ConsumerStatefulWidget {
-  const AddNewsPage({super.key});
+  const AddNewsPage({super.key = addNewsKey});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _AddNewsState();
+  ConsumerState<ConsumerStatefulWidget> createState() => AddNewsState();
 }
 
-class _AddNewsState extends ConsumerState<AddNewsPage> {
-  //General variable declaration
-  final textController = TextEditingController();
+class AddNewsState extends ConsumerState<AddNewsPage> {
+  EditorState textEditorState = EditorState.blank();
   NewsSlideItem? selectedNewsPost;
+
+  @override
+  void initState() {
+    super.initState();
+    ref.listenManual(newsStateProvider, fireImmediately: true,
+        (prevState, nextState) async {
+      if (nextState.currentNewsSlide != null && // we have a new one
+              nextState.currentNewsSlide?.type ==
+                  NewsSlideType.text && // and it is a text type
+              prevState?.currentNewsSlide !=
+                  nextState.currentNewsSlide // and the slides have changed
+          ) {
+        final next = nextState.currentNewsSlide!;
+        final document = next.html != null
+            ? ActerDocumentHelpers.fromHtml(next.html!)
+            : ActerDocumentHelpers.fromMarkdown(next.text ?? '');
+        final autoFocus =
+            (next.html?.isEmpty ?? true) && (next.text?.isEmpty ?? true);
+
+        setState(() {
+          selectedNewsPost = next;
+          textEditorState = EditorState(document: document);
+        });
+
+        if (autoFocus) {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            // we have switched to an empty text slide: auto focus the editor
+            textEditorState.updateSelectionWithReason(
+              Selection.single(
+                path: [0],
+                startOffset: 0,
+              ),
+              reason: SelectionUpdateReason.uiEvent,
+            );
+          });
+        }
+      } else {
+        setState(() => selectedNewsPost = nextState.currentNewsSlide);
+      }
+    });
+  }
 
   //Build UI
   @override
   Widget build(BuildContext context) {
-    selectedNewsPost = ref.watch(newsStateProvider).currentNewsSlide;
-
     return Scaffold(
       appBar: appBarUI(context),
       body: bodyUI(context),
@@ -269,31 +313,25 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
   }
 
   Widget slideTextPostUI(BuildContext context) {
-    textController.text = selectedNewsPost!.text ?? '';
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+      padding: const EdgeInsets.all(20),
       alignment: Alignment.center,
-      color: selectedNewsPost!.backgroundColor,
-      child: TextField(
-        key: NewsUpdateKeys.textSlideInputField,
-        controller: textController,
-        textAlign: TextAlign.center,
-        textInputAction: TextInputAction.newline,
-        minLines: 1,
-        maxLines: 10,
-        onChanged: (value) {
-          ref.read(newsStateProvider.notifier).changeTextSlideValue(value);
-        },
-        decoration: InputDecoration(
-          fillColor: Colors.transparent,
-          hintText: 'Type a text',
-          hintStyle: Theme.of(context)
-              .textTheme
-              .titleMedium!
-              .copyWith(color: Colors.white.withOpacity(0.5)),
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
+      color: selectedNewsPost?.backgroundColor,
+      child: SingleChildScrollView(
+        child: IntrinsicHeight(
+          child: HtmlEditor(
+            key: NewsUpdateKeys.textSlideInputField,
+            editorState: textEditorState,
+            editable: true,
+            autoFocus: false,
+            // we manage the auto focus manually
+            shrinkWrap: true,
+            onChanged: (body, html) {
+              ref
+                  .read(newsStateProvider.notifier)
+                  .changeTextSlideValue(body, html);
+            },
+          ),
         ),
       ),
     );
@@ -342,13 +380,14 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
       for (final slidePost in newsSlideList) {
         final sdk = await ref.read(sdkProvider.future);
         // If slide type is text
-        if (slidePost.type == NewsSlideType.text && slidePost.text != null) {
-          if (slidePost.text!.isEmpty) {
-            EasyLoading.showError('Please add some text');
+        if (slidePost.type == NewsSlideType.text) {
+          if (slidePost.text == null || slidePost.text!.trim().isEmpty) {
+            EasyLoading.showError('Your text slides must contains some text');
             return;
           }
-
-          final textDraft = client.textMarkdownDraft(slidePost.text!);
+          final textDraft = slidePost.html != null
+              ? client.textHtmlDraft(slidePost.html!, slidePost.text!)
+              : client.textMarkdownDraft(slidePost.text!);
           final textSlideDraft = textDraft.intoNewsSlideDraft();
 
           textSlideDraft.color(
@@ -435,6 +474,7 @@ class _AddNewsState extends ConsumerState<AddNewsPage> {
       ref.invalidate(newsStateProvider);
       // Navigate back to update screen.
       Navigator.of(context).pop();
+      context.goNamed(Routes.main.name); // go to the home / main updates
     } catch (err) {
       EasyLoading.showError('$displayMsg failed: \n $err');
     }
