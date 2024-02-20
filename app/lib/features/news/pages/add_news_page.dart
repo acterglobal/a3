@@ -45,7 +45,8 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   //Build UI
   @override
   Widget build(BuildContext context) {
-    ref.listen(newsStateProvider, (prevState, nextState) async {
+    ref.listenManual(newsStateProvider, fireImmediately: true,
+        (prevState, nextState) async {
       if (nextState.currentNewsSlide != null && // we have a new one
               nextState.currentNewsSlide?.type ==
                   NewsSlideType.text && // and it is a text type
@@ -317,7 +318,8 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
             key: NewsUpdateKeys.textSlideInputField,
             editorState: textEditorState,
             editable: true,
-            autoFocus: false, // we manage the auto focus manually
+            autoFocus: false,
+            // we manage the auto focus manually
             shrinkWrap: true,
             onChanged: (body, html) {
               ref
