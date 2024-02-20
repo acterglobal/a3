@@ -16,12 +16,14 @@ class NewsItem extends ConsumerStatefulWidget {
   final Client client;
   final NewsEntry news;
   final int index;
+  final PageController pageController;
 
   const NewsItem({
     super.key,
     required this.client,
     required this.news,
     required this.index,
+    required this.pageController,
   });
 
   @override
@@ -77,6 +79,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
                   slide: slides[idx],
                   bgColor: bgColor,
                   fgColor: fgColor,
+                  pageController: widget.pageController,
                 );
 
               default:

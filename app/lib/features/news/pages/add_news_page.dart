@@ -42,10 +42,11 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   EditorState textEditorState = EditorState.blank();
   NewsSlideItem? selectedNewsPost;
 
-  //Build UI
   @override
-  Widget build(BuildContext context) {
-    ref.listen(newsStateProvider, (prevState, nextState) async {
+  void initState() {
+    super.initState();
+    ref.listenManual(newsStateProvider, fireImmediately: true,
+        (prevState, nextState) async {
       if (nextState.currentNewsSlide != null && // we have a new one
               nextState.currentNewsSlide?.type ==
                   NewsSlideType.text && // and it is a text type
@@ -80,6 +81,11 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         setState(() => selectedNewsPost = nextState.currentNewsSlide);
       }
     });
+  }
+
+  //Build UI
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBarUI(context),
       body: bodyUI(context),
@@ -317,7 +323,8 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
             key: NewsUpdateKeys.textSlideInputField,
             editorState: textEditorState,
             editable: true,
-            autoFocus: false, // we manage the auto focus manually
+            autoFocus: false,
+            // we manage the auto focus manually
             shrinkWrap: true,
             onChanged: (body, html) {
               ref
@@ -467,7 +474,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       ref.invalidate(newsStateProvider);
       // Navigate back to update screen.
       Navigator.of(context).pop();
-      context.pushNamed(Routes.main.name); // go to the home / main updates
+      context.goNamed(Routes.main.name); // go to the home / main updates
     } catch (err) {
       EasyLoading.showError('$displayMsg failed: \n $err');
     }
