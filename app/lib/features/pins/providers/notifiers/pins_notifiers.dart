@@ -11,7 +11,7 @@ class AsyncPinsNotifier extends AutoDisposeAsyncNotifier<List<ActerPin>> {
   late StreamSubscription<void> _poller;
 
   Future<List<ActerPin>> _getPins() async {
-    final client = ref.watch(alwaysClientProvider);
+    final client = ref.read(alwaysClientProvider);
     return (await client.pins()).toList(); // this might throw internally
   }
 
@@ -34,7 +34,7 @@ class AsyncPinNotifier
   late StreamSubscription<void> _poller;
 
   Future<ActerPin> _getPin() async {
-    final client = ref.watch(alwaysClientProvider);
+    final client = ref.read(alwaysClientProvider);
     return await client.waitForPin(arg, null);
   }
 

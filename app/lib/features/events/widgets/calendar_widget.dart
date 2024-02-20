@@ -37,7 +37,7 @@ class _CalendarWidgetConsumerState extends ConsumerState<CalendarWidget> {
   List<ffi.CalendarEvent> _getEventsForDay(
     DateTime day,
   ) {
-    final calendarEvents = ref.watch(myUpcomingEventsProvider);
+    final calendarEvents = ref.read(myUpcomingEventsProvider);
     final List<ffi.CalendarEvent> events =
         calendarEvents.hasValue ? calendarEvents.value! : [];
 

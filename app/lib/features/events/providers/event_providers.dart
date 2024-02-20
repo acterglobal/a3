@@ -39,7 +39,7 @@ class AsyncCalendarEventNotifier
   late Stream<void> _listener;
 
   Future<ffi.CalendarEvent> _getCalendarEvent() async {
-    final client = ref.watch(alwaysClientProvider);
+    final client = ref.read(alwaysClientProvider);
     return await client.waitForCalendarEvent(arg, null);
   }
 
@@ -63,7 +63,7 @@ class AsyncUpcomingEventsNotifier
   late Stream<void> _listener;
 
   Future<List<ffi.CalendarEvent>> _getAllUpcoming() async {
-    final client = ref.watch(alwaysClientProvider);
+    final client = ref.read(alwaysClientProvider);
     return (await client.allUpcomingEvents(null)).toList();
     // this might throw internally
   }
@@ -88,7 +88,7 @@ class AsyncMyUpcomingEventsNotifier
   late Stream<void> _listener;
 
   Future<List<ffi.CalendarEvent>> _getMyUpcoming() async {
-    final client = ref.watch(alwaysClientProvider);
+    final client = ref.read(alwaysClientProvider);
     return (await client.myUpcomingEvents(null)).toList();
     // this might throw internally
   }
@@ -113,7 +113,7 @@ class AsyncMyPastEventsNotifier
   late Stream<void> _listener;
 
   Future<List<ffi.CalendarEvent>> _getMyPast() async {
-    final client = ref.watch(alwaysClientProvider);
+    final client = ref.read(alwaysClientProvider);
     return (await client.myPastEvents(null)).toList();
     // this might throw internally
   }
