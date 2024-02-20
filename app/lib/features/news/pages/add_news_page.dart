@@ -467,7 +467,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       ref.invalidate(newsStateProvider);
       // Navigate back to update screen.
       Navigator.of(context).pop();
-      context.pushNamed(Routes.main.name); // go to the home / main updates
+      context.goNamed(Routes.main.name); // go to the home / main updates
     } catch (err) {
       EasyLoading.showError('$displayMsg failed: \n $err');
     }
