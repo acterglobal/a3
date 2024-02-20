@@ -124,7 +124,7 @@ Future<void> initializeNotifications() async {
   }
 
   const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('app_icon');
+      AndroidInitializationSettings('logo_notification');
 
   final List<DarwinNotificationCategory> darwinNotificationCategories =
       <DarwinNotificationCategory>[
@@ -328,7 +328,8 @@ Future<bool> handleMessage(
 }
 
 Future<ByteArrayAndroidBitmap?> _fetchImage(
-    NotificationItem notification,) async {
+  NotificationItem notification,
+) async {
   if (notification.hasImage()) {
     try {
       final image = await notification.image();
@@ -346,9 +347,10 @@ Future<Person> _makeSenderPerson(NotificationItem notification) async {
     try {
       final image = await sender.image();
       return Person(
-          icon: ByteArrayAndroidIcon(image.asTypedList()),
-          key: sender.userId(),
-          name: sender.displayName(),);
+        icon: ByteArrayAndroidIcon(image.asTypedList()),
+        key: sender.userId(),
+        name: sender.displayName(),
+      );
     } catch (e) {
       debugPrint('fetching image data failed: $e');
     }
