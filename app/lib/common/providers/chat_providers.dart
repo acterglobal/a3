@@ -42,7 +42,7 @@ final latestMessageProvider =
 final chatProfileDataProviderById =
     FutureProvider.family<ProfileData, String>((ref, roomId) async {
   final chat = await ref.watch(chatProvider(roomId).future);
-  return (await ref.watch(chatProfileDataProvider(chat).future));
+  return await ref.watch(chatProfileDataProvider(chat).future);
 });
 
 /// Provider the profile data of a the given space, keeps up to date with underlying client

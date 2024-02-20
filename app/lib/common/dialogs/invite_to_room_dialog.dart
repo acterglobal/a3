@@ -105,8 +105,8 @@ final filteredSuggestedUsersProvider =
     if (element.userId.toLowerCase().contains(lowered)) {
       return true;
     }
-    return (element.profile.displayName != null &&
-        element.profile.displayName!.toLowerCase().contains(lowered));
+    return element.profile.displayName != null &&
+        element.profile.displayName!.toLowerCase().contains(lowered);
   }).toList();
 });
 

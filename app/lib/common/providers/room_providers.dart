@@ -212,8 +212,8 @@ final roomDefaultNotificationStatusProvider =
 /// Get the default RoomNotificationsStatus for this room type
 final roomIsMutedProvider =
     FutureProvider.autoDispose.family<bool, String>((ref, roomId) async {
-  return (await ref.watch(roomNotificationStatusProvider(roomId).future)) ==
-      'muted';
+  final status = await ref.watch(roomNotificationStatusProvider(roomId).future);
+  return status == 'muted';
 });
 
 class MemberNotFound extends Error {}

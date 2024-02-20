@@ -43,8 +43,7 @@ class _CalendarWidgetConsumerState extends ConsumerState<CalendarWidget> {
 
     return events.where((ev) {
       final evDay = toDartDatetime(ev.utcStart()).toLocal();
-
-      return (DateUtils.isSameDay(evDay, day));
+      return DateUtils.isSameDay(evDay, day);
     }).toList();
   }
 
