@@ -120,7 +120,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
     EasyLoading.show(status: 'Creating Chat');
     try {
       final sdk = await ref.read(sdkProvider.future);
-      final config = sdk.newConvoSettingsBuilder();
+      final config = sdk.api.newConvoSettingsBuilder();
       final selectedUsers = ref.watch(_selectedUsersProvider);
       // we check whether user has selected participants for DM/Group DM.
       if (selectedUsers.isNotEmpty) {

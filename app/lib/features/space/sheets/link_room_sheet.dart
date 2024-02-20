@@ -395,7 +395,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
         currentRooms.add(parentSpaceId);
 
         final sdk = await ref.read(sdkProvider.future);
-        final update = sdk.newJoinRuleBuilder();
+        final update = sdk.api.newJoinRuleBuilder();
         update.joinRule(newRule);
         for (final roomId in currentRooms) {
           update.addRoom(roomId);

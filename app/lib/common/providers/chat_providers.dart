@@ -28,7 +28,7 @@ final chatProfileDataProvider =
     return ProfileData(displayName.text(), null, isDm: isDm);
   }
   final sdk = await ref.watch(sdkProvider.future);
-  final size = sdk.newThumbSize(48, 48);
+  final size = sdk.api.newThumbSize(48, 48);
   final avatar = await profile.getAvatar(size);
   return ProfileData(displayName.text(), avatar.data(), isDm: isDm);
 });
@@ -95,7 +95,7 @@ final memberProfileProvider =
   UserProfile profile = member.getProfile();
   final displayName = profile.getDisplayName();
   final sdk = await ref.watch(sdkProvider.future);
-  final size = sdk.newThumbSize(62, 60);
+  final size = sdk.api.newThumbSize(62, 60);
   final avatar = await profile.getAvatar(size);
   return ProfileData(displayName, avatar.data());
 });
