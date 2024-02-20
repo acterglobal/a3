@@ -1,6 +1,7 @@
 import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/settings/widgets/app_notifications_settings_tile.dart';
 import 'package:acter/features/settings/widgets/labs_notifications_settings_tile.dart';
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
 import 'package:acter/features/settings/providers/notifications_mode_provider.dart';
@@ -87,6 +88,11 @@ class NotificationsSettingsPage extends ConsumerWidget {
               title: Text('Notifications'),
               tiles: [
                 LabsNotificationsSettingsTile(title: 'Push to this device'),
+                AppsNotificationsSettingsTile(
+                  title: 'Updates',
+                  description: 'Notify about Space Updates immediately',
+                  appKey: 'global.acter.dev.news',
+                ),
               ],
             ),
             SettingsSection(

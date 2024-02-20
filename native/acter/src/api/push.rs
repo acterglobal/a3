@@ -556,4 +556,33 @@ impl NotificationSettings {
             })
             .await?
     }
+    pub async fn global_content_setting(&self, content_key: String) -> Result<bool> {
+        let inner = self.inner.clone();
+        Ok(RUNTIME
+            .spawn(async move {
+                inner
+                    .is_push_rule_enabled(ruma_common::push::RuleKind::Underride, content_key)
+                    .await
+            })
+            .await??)
+    }
+    pub async fn set_global_content_setting(
+        &self,
+        content_key: String,
+        enabled: bool,
+    ) -> Result<bool> {
+        let inner = self.inner.clone();
+        RUNTIME
+            .spawn(async move {
+                inner
+                    .set_push_rule_enabled(
+                        ruma_common::push::RuleKind::Underride,
+                        content_key,
+                        enabled,
+                    )
+                    .await?;
+                Ok(enabled)
+            })
+            .await?
+    }
 }

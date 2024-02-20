@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/notifiers/network_notifier.dart';
+import 'package:acter/common/providers/notifiers/notification_settings_notifier.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -48,6 +49,17 @@ final accountProfileProvider = FutureProvider((ref) async {
   final account = ref.watch(accountProvider);
   final profile = await getProfileData(account);
   return AccountProfile(account, profile);
+});
+
+final notificationSettingsProvider = AsyncNotifierProvider<
+    AsyncNotificationSettingsNotifier,
+    NotificationSettings>(() => AsyncNotificationSettingsNotifier());
+
+final appContentNotificationSetting =
+    FutureProvider.family<bool, String>((ref, appKey) async {
+  final notificationsSettings =
+      await ref.watch(notificationSettingsProvider.future);
+  return await notificationsSettings.globalContentSetting(appKey);
 });
 
 // Email addresses that registered by user
