@@ -1,0 +1,2 @@
+- You will now receive a push notification to your mobile device for Updates pushed to spaces you follow. On supported devices it even shows the content including the image of the update in the notification. You can disable receiving those in your push notification settings.
+- We've enhanced the render of push notifications for DMs and chat messages including the chat name and user avatar (on supported devices).
