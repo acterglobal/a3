@@ -184,7 +184,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     EasyLoading.show(status: 'Creating Space');
     try {
       final sdk = await ref.read(sdkProvider.future);
-      final config = sdk.newSpaceSettingsBuilder();
+      final config = sdk.api.newSpaceSettingsBuilder();
       config.setName(spaceName);
       if (description.isNotEmpty) {
         config.setTopic(description);

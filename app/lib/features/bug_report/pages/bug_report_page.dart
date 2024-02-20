@@ -37,7 +37,7 @@ Future<String> report({
     }
   }
   if (withLog) {
-    String logFile = sdk.rotateLogFile();
+    String logFile = sdk.api.rotateLogFile();
     if (logFile.isNotEmpty) {
       request.files.add(
         http.MultipartFile.fromBytes(
