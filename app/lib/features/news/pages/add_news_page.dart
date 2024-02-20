@@ -42,12 +42,18 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   EditorState textEditorState = EditorState.blank();
   NewsSlideItem? selectedNewsPost;
 
-  //Build UI
   @override
-  Widget build(BuildContext context) {
-    ref.listen(newsStateProvider.select((i) => i.currentNewsSlide),
-        (prev, next) async {
-      if (next != null && next.type == NewsSlideType.text) {
+  void initState() {
+    super.initState();
+    ref.listenManual(newsStateProvider, fireImmediately: true,
+        (prevState, nextState) async {
+      if (nextState.currentNewsSlide != null && // we have a new one
+              nextState.currentNewsSlide?.type ==
+                  NewsSlideType.text && // and it is a text type
+              prevState?.currentNewsSlide !=
+                  nextState.currentNewsSlide // and the slides have changed
+          ) {
+        final next = nextState.currentNewsSlide!;
         final document = next.html != null
             ? ActerDocumentHelpers.fromHtml(next.html!)
             : ActerDocumentHelpers.fromMarkdown(next.text ?? '');
@@ -72,9 +78,14 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           });
         }
       } else {
-        setState(() => selectedNewsPost = next);
+        setState(() => selectedNewsPost = nextState.currentNewsSlide);
       }
     });
+  }
+
+  //Build UI
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBarUI(context),
       body: bodyUI(context),
@@ -302,20 +313,18 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   }
 
   Widget slideTextPostUI(BuildContext context) {
-    final backgroundColor = ref.watch(
-      newsStateProvider.select((i) => i.currentNewsSlide?.backgroundColor),
-    );
     return Container(
       padding: const EdgeInsets.all(20),
       alignment: Alignment.center,
-      color: backgroundColor,
+      color: selectedNewsPost?.backgroundColor,
       child: SingleChildScrollView(
         child: IntrinsicHeight(
           child: HtmlEditor(
             key: NewsUpdateKeys.textSlideInputField,
             editorState: textEditorState,
             editable: true,
-            autoFocus: false, // we manage the auto focus manually
+            autoFocus: false,
+            // we manage the auto focus manually
             shrinkWrap: true,
             onChanged: (body, html) {
               ref
@@ -465,7 +474,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       ref.invalidate(newsStateProvider);
       // Navigate back to update screen.
       Navigator.of(context).pop();
-      context.pushNamed(Routes.main.name); // go to the home / main updates
+      context.goNamed(Routes.main.name); // go to the home / main updates
     } catch (err) {
       EasyLoading.showError('$displayMsg failed: \n $err');
     }

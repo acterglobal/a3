@@ -15,18 +15,19 @@ class NewsWidget extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _NewsWidgetState();
 }
 
-class _NewsWidgetState extends ConsumerState<NewsWidget>
-    with SingleTickerProviderStateMixin {
-  late AnimationController controller;
+class _NewsWidgetState extends ConsumerState<NewsWidget> {
+  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
+    _pageController = PageController(initialPage: 0);
+  }
 
-    controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1),
-    );
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
@@ -50,6 +51,7 @@ class _NewsWidgetState extends ConsumerState<NewsWidget>
           );
         }
         return PageView.builder(
+          controller: _pageController,
           itemCount: data.length,
           scrollDirection: Axis.vertical,
           itemBuilder: (context, index) => InkWell(
@@ -60,6 +62,7 @@ class _NewsWidgetState extends ConsumerState<NewsWidget>
               client: client,
               news: data[index],
               index: index,
+              pageController: _pageController,
             ),
           ),
         );
