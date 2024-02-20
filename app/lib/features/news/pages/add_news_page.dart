@@ -45,9 +45,14 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   //Build UI
   @override
   Widget build(BuildContext context) {
-    ref.listen(newsStateProvider.select((i) => i.currentNewsSlide),
-        (prev, next) async {
-      if (next != null && next.type == NewsSlideType.text) {
+    ref.listen(newsStateProvider, (prevState, nextState) async {
+      if (nextState.currentNewsSlide != null && // we have a new one
+              nextState.currentNewsSlide?.type ==
+                  NewsSlideType.text && // and it is a text type
+              prevState?.currentNewsSlide !=
+                  nextState.currentNewsSlide // and the slides have changed
+          ) {
+        final next = nextState.currentNewsSlide!;
         final document = next.html != null
             ? ActerDocumentHelpers.fromHtml(next.html!)
             : ActerDocumentHelpers.fromMarkdown(next.text ?? '');
@@ -72,7 +77,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           });
         }
       } else {
-        setState(() => selectedNewsPost = next);
+        setState(() => selectedNewsPost = nextState.currentNewsSlide);
       }
     });
     return Scaffold(
@@ -302,13 +307,10 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   }
 
   Widget slideTextPostUI(BuildContext context) {
-    final backgroundColor = ref.watch(
-      newsStateProvider.select((i) => i.currentNewsSlide?.backgroundColor),
-    );
     return Container(
       padding: const EdgeInsets.all(20),
       alignment: Alignment.center,
-      color: backgroundColor,
+      color: selectedNewsPost?.backgroundColor,
       child: SingleChildScrollView(
         child: IntrinsicHeight(
           child: HtmlEditor(
