@@ -32,18 +32,20 @@ Future<ProfileData> getProfileData(Account account) async {
   return ProfileData(displayName.text(), avatar.data());
 }
 
-final myUserIdStrProvider = StateProvider((ref) {
-  final client = ref.watch(alwaysClientProvider);
-  return client.userId().toString();
-});
+final myUserIdStrProvider = StateProvider(
+  (ref) => ref.watch(
+    alwaysClientProvider.select((client) => client.userId().toString()),
+  ),
+);
 
-final accountProvider = FutureProvider((ref) async {
-  final client = ref.watch(alwaysClientProvider);
-  return client.account();
-});
+final accountProvider = StateProvider(
+  (ref) => ref.watch(
+    alwaysClientProvider.select((client) => client.account()),
+  ),
+);
 
 final accountProfileProvider = FutureProvider((ref) async {
-  final account = await ref.watch(accountProvider.future);
+  final account = ref.watch(accountProvider);
   final profile = await getProfileData(account);
   return AccountProfile(account, profile);
 });
