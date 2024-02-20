@@ -491,7 +491,7 @@ class _CreateRoomFormWidgetConsumerState
   Widget build(BuildContext context) {
     final titleInput = ref.watch(_titleProvider);
     final avatarUpload = ref.watch(_avatarProvider);
-    final currentParentSpace = ref.read(selectedSpaceIdProvider);
+    final currentParentSpace = ref.watch(selectedSpaceIdProvider);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 18),

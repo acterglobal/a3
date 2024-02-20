@@ -66,7 +66,7 @@ final searchResultProvider = FutureProvider<List<UserProfile>>((ref) async {
     // ignore we got cancelled
     return [];
   }
-  final client = ref.read(alwaysClientProvider);
+  final client = ref.watch(alwaysClientProvider);
   return (await client.searchUsers(newSearchValue)).toList();
 });
 
