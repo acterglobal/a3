@@ -15,7 +15,7 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, Convo> {
   @override
   Future<Convo> build(Convo arg) async {
     final convo = arg;
-    final convoId = convo.getRoomId().toString();
+    final convoId = convo.getRoomIdStr();
     final client = ref.watch(alwaysClientProvider);
     ref.onDispose(onDispose);
     _listener = client.subscribeStream(convoId);
@@ -46,15 +46,13 @@ class LatestMsgNotifier extends StateNotifier<RoomMessage?> {
   late StreamSubscription<bool> _sub;
 
   LatestMsgNotifier(this.ref, this.convo) : super(null) {
-    final convoId = convo.getRoomId().toString();
+    final convoId = convo.getRoomIdStr();
     state = convo.latestMessage();
     final client = ref.watch(alwaysClientProvider);
     _listener = client.subscribeStream('$convoId::latest_message');
     _sub = _listener.listen(
       (e) {
-        debugPrint(
-          'received new latest message call for ${convo.getRoomIdStr()}',
-        );
+        debugPrint('received new latest message call for $convoId');
         state = convo.latestMessage();
       },
       onError: (e, stack) {

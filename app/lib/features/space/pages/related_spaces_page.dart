@@ -136,8 +136,10 @@ class RelatedSpacesPage extends ConsumerWidget {
                 final space = spaces.mainParent!;
                 items.add(
                   SliverToBoxAdapter(
-                    child:
-                        SpaceCard(key: Key(space.getRoomIdStr()), space: space),
+                    child: SpaceCard(
+                      key: Key(space.getRoomIdStr()),
+                      space: space,
+                    ),
                   ),
                 );
               }

@@ -25,7 +25,7 @@ final AutoDisposeFutureProvider<List<SpaceDetails>> spacesFoundProvider =
 
   for (final space in spaces) {
     final info = await ref.watch(spaceProfileDataProvider(space).future);
-    final roomId = space.getRoomId().toString();
+    final roomId = space.getRoomIdStr();
     if (searchValue.isNotEmpty) {
       if (!(info.displayName!.toLowerCase()).contains(searchValue)) {
         continue;

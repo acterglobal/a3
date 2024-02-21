@@ -217,11 +217,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   Future<void> _fetchMentionRecords() async {
-    final activeMembers =
-        await ref.read(chatMembersProvider(convo.getRoomIdStr()).future);
+    final roomId = convo.getRoomIdStr();
+    final activeMembers = await ref.read(chatMembersProvider(roomId).future);
     List<Map<String, String>> mentionRecords = [];
-    final mentionListNotifier =
-        ref.read(chatInputProvider(convo.getRoomIdStr()).notifier);
+    final mentionListNotifier = ref.read(chatInputProvider(roomId).notifier);
     for (int i = 0; i < activeMembers.length; i++) {
       String userId = activeMembers[i].userId().toString();
       final profile = activeMembers[i].getProfile();

@@ -28,7 +28,7 @@ class AsyncSpaceProfileDataNotifier
   Future<ProfileData> build(Space arg) async {
     final client = ref.watch(alwaysClientProvider);
     ref.onDispose(onDispose);
-    _listener = client.subscribeStream(arg.getRoomId().toString());
+    _listener = client.subscribeStream(arg.getRoomIdStr());
     _sub = _listener.listen(
       (e) async {
         debugPrint('seen update $arg');
