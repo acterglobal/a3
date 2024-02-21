@@ -1,4 +1,4 @@
-use acter::{api::RoomMessage, ruma_common::OwnedEventId, new_colorize_builder};
+use acter::{api::RoomMessage, new_colorize_builder, ruma_common::OwnedEventId};
 use anyhow::{bail, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
