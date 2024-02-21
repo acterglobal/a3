@@ -109,6 +109,47 @@ impl NotificationSender {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct NotificationRoom {
+    room_id: String,
+    display_name: String,
+    image: Option<MediaSource>,
+    client: Client,
+}
+impl NotificationRoom {
+    fn from(client: Client, notif: &SdkNotificationItem, room_id: &OwnedRoomId) -> Self {
+        NotificationRoom {
+            room_id: room_id.to_string(),
+            display_name: notif.room_display_name.clone(),
+            image: notif
+                .room_avatar_url
+                .clone()
+                .map(|u| MediaSource::Plain(OwnedMxcUri::from(u))),
+            client,
+        }
+    }
+    pub fn room_id(&self) -> String {
+        self.room_id.clone()
+    }
+    pub fn display_name(&self) -> String {
+        self.display_name.clone()
+    }
+    pub fn has_image(&self) -> bool {
+        self.image.is_some()
+    }
+    pub async fn image(&self) -> Result<FfiBuffer<u8>> {
+        #[allow(clippy::diverging_sub_expression)]
+        let Some(source) = self.image.clone() else {
+            return bail!("No media found in item");
+        };
+        let client = self.client.clone();
+
+        RUNTIME
+            .spawn(async move { client.source_binary(source, None).await })
+            .await?
+    }
+}
+
 #[derive(Debug, Builder)]
 pub struct NotificationItem {
     client: Client,
@@ -116,6 +157,7 @@ pub struct NotificationItem {
     push_style: String,
     target_url: String,
     sender: NotificationSender,
+    room: NotificationRoom,
     #[builder(default)]
     icon_url: Option<String>,
     #[builder(setter(into, strip_option), default)]
@@ -142,6 +184,9 @@ impl NotificationItem {
     }
     pub fn sender(&self) -> NotificationSender {
         self.sender.clone()
+    }
+    pub fn room(&self) -> NotificationRoom {
+        self.room.clone()
     }
     pub fn icon_url(&self) -> Option<String> {
         self.icon_url.clone()
@@ -178,6 +223,7 @@ impl NotificationItem {
         // setting defaults;
         builder
             .sender(NotificationSender::from(client.clone(), &inner))
+            .room(NotificationRoom::from(client.clone(), &inner, &room_id))
             .client(client)
             .thread_id(room_id.to_string())
             .title(inner.room_display_name)

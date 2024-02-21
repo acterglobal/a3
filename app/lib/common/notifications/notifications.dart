@@ -357,6 +357,21 @@ Future<Person> _makeSenderPerson(NotificationItem notification) async {
   return Person(key: sender.userId(), name: sender.displayName());
 }
 
+Future<ByteArrayAndroidBitmap?> _fetchRoomAvatar(
+  NotificationItem notification,
+) async {
+  final room = notification.room();
+  if (room.hasImage()) {
+    try {
+      final image = await room.image();
+      return ByteArrayAndroidBitmap(image.asTypedList());
+    } catch (e) {
+      debugPrint('fetching room avatar failed: $e');
+    }
+  }
+  return null;
+}
+
 Future<void> _showNotificationOnAndroid(NotificationItem notification) async {
   String? body;
   String title = notification.title();
@@ -372,6 +387,8 @@ Future<void> _showNotificationOnAndroid(NotificationItem notification) async {
     groupKey: threadId,
   );
 
+  final roomAvatar = await _fetchRoomAvatar(notification);
+
   if (pushStyle == 'invite') {
     final person = await _makeSenderPerson(notification);
     androidNotificationDetails = AndroidNotificationDetails(
@@ -379,6 +396,7 @@ Future<void> _showNotificationOnAndroid(NotificationItem notification) async {
       'Invites',
       channelDescription: 'When you are invited to spaces or chats',
       groupKey: threadId,
+      largeIcon: roomAvatar,
       styleInformation: MessagingStyleInformation(
         person,
         groupConversation: true,
@@ -397,6 +415,7 @@ Future<void> _showNotificationOnAndroid(NotificationItem notification) async {
         'Updates',
         channelDescription: 'Updates from your spaces',
         groupKey: threadId,
+        largeIcon: roomAvatar,
         styleInformation: BigPictureStyleInformation(image),
       );
     } else {
@@ -409,6 +428,7 @@ Future<void> _showNotificationOnAndroid(NotificationItem notification) async {
           'Updates',
           channelDescription: 'Updates from your spaces',
           groupKey: threadId,
+          largeIcon: roomAvatar,
           styleInformation: BigTextStyleInformation(
             formatted ?? body,
             htmlFormatBigText: formatted != null,
@@ -431,6 +451,7 @@ Future<void> _showNotificationOnAndroid(NotificationItem notification) async {
       'Chat',
       channelDescription: 'Chat messages from group conversations',
       groupKey: threadId,
+      largeIcon: roomAvatar,
       styleInformation: MessagingStyleInformation(
         person,
         groupConversation: true,
@@ -456,6 +477,7 @@ Future<void> _showNotificationOnAndroid(NotificationItem notification) async {
       'DM',
       channelDescription: 'Chat messages from DMs',
       groupKey: threadId,
+      largeIcon: roomAvatar,
       styleInformation: MessagingStyleInformation(
         person,
         groupConversation: false,

@@ -2039,12 +2039,21 @@ object NotificationSender {
     fn image() -> Future<Result<buffer<u8>>>;
 }
 
+object NotificationRoom {
+    fn room_id() -> string;
+    fn display_name() -> string;
+    fn has_image() -> bool;
+    fn image() -> Future<Result<buffer<u8>>>;
+}
+
+
 // converting a room_id+event_id into the notification item to show
 // from push context.
 object NotificationItem {
     fn push_style() -> string;
     fn title() -> string;
     fn sender() -> NotificationSender;
+    fn room() -> NotificationRoom;
     fn target_url() -> string;
     fn body() -> Option<MsgContent>;
     fn icon_url() -> Option<string>;
