@@ -2,13 +2,18 @@ use chrono::{DateTime, Utc};
 use ruma_common::OwnedEventId;
 use serde::{Deserialize, Serialize};
 
+mod color;
 mod labels;
 mod object_reference;
 mod rendering;
 
+pub use color::Color;
 pub use labels::Labels;
-pub use object_reference::{ObjRef, RefDetails};
-pub use rendering::{BrandIcon, Color, Colorize, Icon, Position};
+pub use object_reference::{
+    CalendarEventAction, ObjRef, ObjRefBuilder, RefDetails, RefDetailsBuilder, TaskAction,
+    TaskListAction,
+};
+pub use rendering::{BrandIcon, Colorize, ColorizeBuilder, Icon, Position};
 
 /// Default UTC DateTime Object
 pub type UtcDateTime = DateTime<Utc>;

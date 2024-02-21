@@ -19,8 +19,6 @@ mixin _$NewsPostState {
   NewsSlideItem? get currentNewsSlide => throw _privateConstructorUsedError;
   List<NewsSlideItem> get newsSlideList => throw _privateConstructorUsedError;
   String? get newsPostSpaceId => throw _privateConstructorUsedError;
-  String? get invitedSpaceId => throw _privateConstructorUsedError;
-  String? get invitedChatId => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $NewsPostStateCopyWith<NewsPostState> get copyWith =>
@@ -36,9 +34,7 @@ abstract class $NewsPostStateCopyWith<$Res> {
   $Res call(
       {NewsSlideItem? currentNewsSlide,
       List<NewsSlideItem> newsSlideList,
-      String? newsPostSpaceId,
-      String? invitedSpaceId,
-      String? invitedChatId});
+      String? newsPostSpaceId});
 }
 
 /// @nodoc
@@ -57,8 +53,6 @@ class _$NewsPostStateCopyWithImpl<$Res, $Val extends NewsPostState>
     Object? currentNewsSlide = freezed,
     Object? newsSlideList = null,
     Object? newsPostSpaceId = freezed,
-    Object? invitedSpaceId = freezed,
-    Object? invitedChatId = freezed,
   }) {
     return _then(_value.copyWith(
       currentNewsSlide: freezed == currentNewsSlide
@@ -72,14 +66,6 @@ class _$NewsPostStateCopyWithImpl<$Res, $Val extends NewsPostState>
       newsPostSpaceId: freezed == newsPostSpaceId
           ? _value.newsPostSpaceId
           : newsPostSpaceId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      invitedSpaceId: freezed == invitedSpaceId
-          ? _value.invitedSpaceId
-          : invitedSpaceId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      invitedChatId: freezed == invitedChatId
-          ? _value.invitedChatId
-          : invitedChatId // ignore: cast_nullable_to_non_nullable
               as String?,
     ) as $Val);
   }
@@ -96,9 +82,7 @@ abstract class _$$NewsPostStateImplCopyWith<$Res>
   $Res call(
       {NewsSlideItem? currentNewsSlide,
       List<NewsSlideItem> newsSlideList,
-      String? newsPostSpaceId,
-      String? invitedSpaceId,
-      String? invitedChatId});
+      String? newsPostSpaceId});
 }
 
 /// @nodoc
@@ -115,8 +99,6 @@ class __$$NewsPostStateImplCopyWithImpl<$Res>
     Object? currentNewsSlide = freezed,
     Object? newsSlideList = null,
     Object? newsPostSpaceId = freezed,
-    Object? invitedSpaceId = freezed,
-    Object? invitedChatId = freezed,
   }) {
     return _then(_$NewsPostStateImpl(
       currentNewsSlide: freezed == currentNewsSlide
@@ -131,14 +113,6 @@ class __$$NewsPostStateImplCopyWithImpl<$Res>
           ? _value.newsPostSpaceId
           : newsPostSpaceId // ignore: cast_nullable_to_non_nullable
               as String?,
-      invitedSpaceId: freezed == invitedSpaceId
-          ? _value.invitedSpaceId
-          : invitedSpaceId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      invitedChatId: freezed == invitedChatId
-          ? _value.invitedChatId
-          : invitedChatId // ignore: cast_nullable_to_non_nullable
-              as String?,
     ));
   }
 }
@@ -149,9 +123,7 @@ class _$NewsPostStateImpl implements _NewsPostState {
   const _$NewsPostStateImpl(
       {this.currentNewsSlide,
       final List<NewsSlideItem> newsSlideList = const [],
-      this.newsPostSpaceId,
-      this.invitedSpaceId,
-      this.invitedChatId})
+      this.newsPostSpaceId})
       : _newsSlideList = newsSlideList;
 
   @override
@@ -167,14 +139,10 @@ class _$NewsPostStateImpl implements _NewsPostState {
 
   @override
   final String? newsPostSpaceId;
-  @override
-  final String? invitedSpaceId;
-  @override
-  final String? invitedChatId;
 
   @override
   String toString() {
-    return 'NewsPostState(currentNewsSlide: $currentNewsSlide, newsSlideList: $newsSlideList, newsPostSpaceId: $newsPostSpaceId, invitedSpaceId: $invitedSpaceId, invitedChatId: $invitedChatId)';
+    return 'NewsPostState(currentNewsSlide: $currentNewsSlide, newsSlideList: $newsSlideList, newsPostSpaceId: $newsPostSpaceId)';
   }
 
   @override
@@ -187,21 +155,12 @@ class _$NewsPostStateImpl implements _NewsPostState {
             const DeepCollectionEquality()
                 .equals(other._newsSlideList, _newsSlideList) &&
             (identical(other.newsPostSpaceId, newsPostSpaceId) ||
-                other.newsPostSpaceId == newsPostSpaceId) &&
-            (identical(other.invitedSpaceId, invitedSpaceId) ||
-                other.invitedSpaceId == invitedSpaceId) &&
-            (identical(other.invitedChatId, invitedChatId) ||
-                other.invitedChatId == invitedChatId));
+                other.newsPostSpaceId == newsPostSpaceId));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      currentNewsSlide,
-      const DeepCollectionEquality().hash(_newsSlideList),
-      newsPostSpaceId,
-      invitedSpaceId,
-      invitedChatId);
+  int get hashCode => Object.hash(runtimeType, currentNewsSlide,
+      const DeepCollectionEquality().hash(_newsSlideList), newsPostSpaceId);
 
   @JsonKey(ignore: true)
   @override
@@ -214,9 +173,7 @@ abstract class _NewsPostState implements NewsPostState {
   const factory _NewsPostState(
       {final NewsSlideItem? currentNewsSlide,
       final List<NewsSlideItem> newsSlideList,
-      final String? newsPostSpaceId,
-      final String? invitedSpaceId,
-      final String? invitedChatId}) = _$NewsPostStateImpl;
+      final String? newsPostSpaceId}) = _$NewsPostStateImpl;
 
   @override
   NewsSlideItem? get currentNewsSlide;
@@ -224,10 +181,6 @@ abstract class _NewsPostState implements NewsPostState {
   List<NewsSlideItem> get newsSlideList;
   @override
   String? get newsPostSpaceId;
-  @override
-  String? get invitedSpaceId;
-  @override
-  String? get invitedChatId;
   @override
   @JsonKey(ignore: true)
   _$$NewsPostStateImplCopyWith<_$NewsPostStateImpl> get copyWith =>

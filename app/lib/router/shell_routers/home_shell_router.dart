@@ -123,7 +123,7 @@ List<RouteBase> makeHomeShellRoutes(ref) {
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: const MyProfile(),
+          child: const MyProfilePage(),
         );
       },
     ),

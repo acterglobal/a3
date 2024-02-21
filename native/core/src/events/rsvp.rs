@@ -7,11 +7,18 @@ use strum::Display;
 use super::BelongsTo;
 
 /// RSVP status
-#[derive(Clone, Debug, Serialize, Deserialize, Display)]
-#[serde(tag = "type")]
+// previously accepted only PascalCase
+// now accept will serialize to kebab-case but also deserialize the previously
+// posted PascalCase variants
+#[derive(Clone, Debug, Serialize, Deserialize, Display, Eq, PartialEq)]
+#[serde(rename_all = "kebab-case", tag = "type")]
+#[strum(serialize_all = "kebab-case")]
 pub enum RsvpStatus {
+    #[serde(alias = "Yes")]
     Yes,
+    #[serde(alias = "Maybe")]
     Maybe,
+    #[serde(alias = "No")]
     No,
 }
 
@@ -20,9 +27,9 @@ impl FromStr for RsvpStatus {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "Yes" => Ok(RsvpStatus::Yes),
-            "No" => Ok(RsvpStatus::No),
-            "Maybe" => Ok(RsvpStatus::Maybe),
+            "yes" => Ok(RsvpStatus::Yes),
+            "no" => Ok(RsvpStatus::No),
+            "maybe" => Ok(RsvpStatus::Maybe),
             _ => Err(()),
         }
     }

@@ -1,13 +1,20 @@
+import 'dart:io';
+
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:acter/router/router.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path/path.dart' as p;
+import 'package:share_plus/share_plus.dart';
 import 'spaces.dart';
 
 extension ActerUtil on ConvenientTest {
@@ -43,7 +50,7 @@ extension ActerUtil on ConvenientTest {
       await textField.enterTextWithoutReplace(entry.value);
     }
     if (selectSpaceId != null) {
-      await selectSpace(selectSpaceId);
+      await selectSpace(selectSpaceId, SelectSpaceFormField.openKey);
     }
     if (submitBtnKey != null) {
       final submit = find.byKey(submitBtnKey);
@@ -90,4 +97,30 @@ extension ActerUtil on ConvenientTest {
     await homeKey.should(findsOneWidget);
     await homeKey.tap();
   }
+}
+
+Future<XFile> convertAssetImageToXFile(String assetPath) async {
+  // Load the asset as a byte data
+  final byteData = await rootBundle.load(assetPath);
+
+  // Create a temporary directory
+  Directory tempDir = await Directory.systemTemp.createTemp();
+
+  // Create a new file in the temporary directory
+  final fileName = p.basename(assetPath);
+  final file = File(p.join(tempDir.path, fileName));
+
+  // Write the asset byte data to the file
+  if (!(await file.exists())) {
+    await file.create(recursive: true);
+    await file.writeAsBytes(
+      byteData.buffer.asUint8List(
+        byteData.offsetInBytes,
+        byteData.lengthInBytes,
+      ),
+    );
+  }
+
+  // Return the file as an XFile
+  return XFile(file.path);
 }

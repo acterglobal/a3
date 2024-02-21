@@ -245,7 +245,7 @@ impl CalendarEventUpdateEventContent {
         }
 
         if let Some(color) = &self.color {
-            calendar_event.color = color.clone();
+            calendar_event.color = *color;
             updated = true;
         }
 

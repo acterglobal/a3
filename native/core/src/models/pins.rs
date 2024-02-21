@@ -35,7 +35,6 @@ impl Pin {
     pub fn sender(&self) -> &UserId {
         &self.meta.sender
     }
-
     pub fn is_link(&self) -> bool {
         self.inner.url.is_some()
     }

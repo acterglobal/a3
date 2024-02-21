@@ -1,7 +1,9 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/search/model/keys.dart';
+import 'package:acter/features/search/model/util.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -9,11 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class QuickActionsBuilder extends ConsumerWidget {
-  final Future<void> Function({
-    Routes? route,
-    bool push,
-    String? target,
-  }) navigateTo;
+  final NavigateTo navigateTo;
 
   const QuickActionsBuilder({
     super.key,
@@ -46,7 +44,7 @@ class QuickActionsBuilder extends ConsumerWidget {
     final canPostTaskList = isActive(LabsFeature.tasks) &&
         (canCreateTaskListProvider.valueOrNull ?? false);
     return Wrap(
-      alignment: WrapAlignment.spaceBetween,
+      alignment: WrapAlignment.spaceEvenly,
       spacing: 8,
       runSpacing: 10,
       children: List.from(
@@ -54,9 +52,8 @@ class QuickActionsBuilder extends ConsumerWidget {
           canPostNews
               ? OutlinedButton.icon(
                   key: QuickJumpKeys.createUpdateAction,
-                  onPressed: () {
-                    navigateTo(route: Routes.actionAddUpdate, push: true);
-                  },
+                  onPressed: () =>
+                      navigateTo(Routes.actionAddUpdate, push: true),
                   icon: const Icon(
                     Atlas.plus_circle_thin,
                     size: 18,
@@ -70,7 +67,7 @@ class QuickActionsBuilder extends ConsumerWidget {
           canPostPin
               ? OutlinedButton.icon(
                   key: QuickJumpKeys.createPinAction,
-                  onPressed: () => context.pushNamed(Routes.actionAddPin.name),
+                  onPressed: () => navigateTo(Routes.actionAddPin, push: true),
                   icon: const Icon(
                     Atlas.plus_circle_thin,
                     size: 18,
@@ -83,7 +80,7 @@ class QuickActionsBuilder extends ConsumerWidget {
               : null,
           canPostEvent
               ? OutlinedButton.icon(
-                  onPressed: () => context.pushNamed(Routes.createEvent.name),
+                  onPressed: () => navigateTo(Routes.createEvent, push: true),
                   icon: const Icon(Atlas.plus_circle_thin, size: 18),
                   label: Text(
                     'Event',
@@ -95,7 +92,7 @@ class QuickActionsBuilder extends ConsumerWidget {
               ? OutlinedButton.icon(
                   key: QuickJumpKeys.createTaskListAction,
                   onPressed: () =>
-                      context.pushNamed(Routes.actionAddTaskList.name),
+                      navigateTo(Routes.actionAddTaskList, push: true),
                   icon: const Icon(Atlas.plus_circle_thin, size: 18),
                   label: Text(
                     'Task List',
@@ -135,6 +132,7 @@ class QuickActionsBuilder extends ConsumerWidget {
                 )
               : null,
           OutlinedButton.icon(
+            key: QuickJumpKeys.bugReport,
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.greenAccent,
               side: const BorderSide(width: 1, color: Colors.greenAccent),
@@ -144,7 +142,16 @@ class QuickActionsBuilder extends ConsumerWidget {
               'Report bug',
               style: Theme.of(context).textTheme.labelMedium,
             ),
-            onPressed: () => navigateTo(route: Routes.bugReport, push: true),
+            onPressed: () => navigateTo(
+              Routes.bugReport,
+              prepare: (context) async {
+                if (context.canPop()) {
+                  context.pop();
+                }
+                await openBugReport(context);
+                return true; // indicate this should stop processing.
+              },
+            ),
           ),
         ].where((element) => element != null),
       ),

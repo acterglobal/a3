@@ -1,6 +1,5 @@
 mod attachments;
 mod calendar;
-mod color;
 mod comments;
 mod common;
 mod news;
@@ -15,7 +14,6 @@ mod test;
 use async_recursion::async_recursion;
 pub use attachments::{Attachment, AttachmentUpdate, AttachmentsManager, AttachmentsStats};
 pub use calendar::{CalendarEvent, CalendarEventUpdate};
-pub use color::Color;
 pub use comments::{Comment, CommentUpdate, CommentsManager, CommentsStats};
 pub use common::*;
 pub use core::fmt::Debug;

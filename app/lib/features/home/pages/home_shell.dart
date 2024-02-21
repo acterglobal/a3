@@ -1,4 +1,3 @@
-
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/themes/app_theme.dart';
@@ -9,6 +8,8 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/providers/navigation.dart';
 import 'package:acter/features/home/widgets/sidebar_widget.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
@@ -16,21 +17,47 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:shake/shake.dart';
+
+const homeShellKey = Key('home-shell');
+ScreenshotController screenshotController = ScreenshotController();
+bool bugReportOpen = false;
+
+Future<void> openBugReport(BuildContext context) async {
+  if (bugReportOpen) {
+    return;
+  }
+  final cacheDir = await appCacheDir();
+  // rage shake disallows dot in filename
+  int timestamp = DateTime.now().timestamp;
+  final imagePath = await screenshotController.captureAndSave(
+    cacheDir,
+    fileName: 'screenshot_$timestamp.png',
+  );
+  if (context.mounted) {
+    bugReportOpen = true;
+    await context.pushNamed(
+      Routes.bugReport.name,
+      queryParameters: imagePath != null ? {'screenshot': imagePath} : {},
+    );
+    bugReportOpen = false;
+  } else {
+    // ignore: avoid_print
+    print('not mounted :(');
+  }
+}
 
 class HomeShell extends ConsumerStatefulWidget {
   final StatefulNavigationShell navigationShell;
 
-  const HomeShell({super.key, required this.navigationShell});
+  const HomeShell({super.key = homeShellKey, required this.navigationShell});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _HomeShellState();
+  ConsumerState<ConsumerStatefulWidget> createState() => HomeShellState();
 }
 
-class _HomeShellState extends ConsumerState<HomeShell> {
-  ScreenshotController screenshotController = ScreenshotController();
+class HomeShellState extends ConsumerState<HomeShell> {
   final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
   late ShakeDetector detector;
 
@@ -45,7 +72,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     if (await isRealPhone()) {
       detector = ShakeDetector.waitForStart(
         onPhoneShake: () {
-          handleBugReport();
+          openBugReport(context);
         },
       );
       detector.startListening();
@@ -236,23 +263,5 @@ class _HomeShellState extends ConsumerState<HomeShell> {
         ),
       ),
     );
-  }
-
-  Future<void> handleBugReport() async {
-    final appDocDir = await getApplicationDocumentsDirectory();
-    // rage shake disallows dot in filename
-    String timestamp = DateTime.now().toIso8601String();
-    final imagePath = await screenshotController.captureAndSave(
-      appDocDir.path,
-      fileName: 'screenshot_$timestamp.png',
-    );
-    if (imagePath != null && context.mounted) {
-      await context.pushNamed(
-        Routes.bugReport.name,
-        extra: {'screenshot': imagePath},
-      );
-    } else if (context.mounted) {
-      await context.push(Routes.bugReport.name);
-    }
   }
 }

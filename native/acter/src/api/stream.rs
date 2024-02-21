@@ -122,6 +122,10 @@ impl TimelineStream {
                         let content = RoomMessageEventContent::text_markdown(body);
                         timeline.send(content.into()).await;
                     }
+                    MsgContentDraft::TextHtml { html, plain } => {
+                        let text_content = RoomMessageEventContent::text_html(plain, html);
+                        timeline.send(text_content.into()).await;
+                    }
                     MsgContentDraft::Image { source, info } => {
                         let mut config = AttachmentConfig::new();
                         let mut mime_type = None;
@@ -474,6 +478,10 @@ pub enum MsgContentDraft {
     TextMarkdown {
         body: String,
     },
+    TextHtml {
+        html: String,
+        plain: String,
+    },
     Image {
         source: String,
         info: Option<ImageInfo>,
@@ -705,6 +713,9 @@ impl MsgContentDraft {
             MsgContentDraft::TextMarkdown { body } => {
                 Ok(RoomMessageEventContent::text_markdown(body))
             }
+            MsgContentDraft::TextHtml { html, plain } => {
+                Ok(RoomMessageEventContent::text_html(plain, html))
+            }
             MsgContentDraft::Image { source, info } => {
                 let info = info.expect("image info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
@@ -863,6 +874,10 @@ impl MsgContentDraft {
                 let replied_content = RoomMessageEventContentWithoutRelation::text_markdown(body);
                 Ok(replied_content)
             }
+            MsgContentDraft::TextHtml { html, plain } => {
+                let text_content = RoomMessageEventContentWithoutRelation::text_html(plain, html);
+                Ok(text_content)
+            }
             MsgContentDraft::Image { source, info } => {
                 let info = info.expect("image info needed");
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
@@ -1017,6 +1032,10 @@ impl Client {
 
     pub fn text_markdown_draft(&self, body: String) -> MsgContentDraft {
         MsgContentDraft::TextMarkdown { body }
+    }
+
+    pub fn text_html_draft(&self, html: String, plain: String) -> MsgContentDraft {
+        MsgContentDraft::TextHtml { html, plain }
     }
 
     pub fn image_draft(&self, source: String, mimetype: String) -> MsgContentDraft {

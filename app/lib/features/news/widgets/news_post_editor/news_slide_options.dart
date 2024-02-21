@@ -1,21 +1,17 @@
+import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/snackbars/custom_msg.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
-import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_post_editor/post_attachment_options.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:cross_file_image/cross_file_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mime/mime.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class NewsSlideOptions extends ConsumerStatefulWidget {
   const NewsSlideOptions({super.key});
@@ -34,75 +30,27 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
   }
 
   Widget newsSlideOptionsUI(BuildContext context) {
-    final newsPostSpaceId = ref.watch(newsStateProvider).newsPostSpaceId;
+    final keyboardVisibility = ref.watch(keyboardVisibleProvider);
     return Visibility(
-      visible: ref.read(newsStateProvider).currentNewsSlide != null,
+      visible: ref.read(newsStateProvider).currentNewsSlide != null &&
+          !(keyboardVisibility.value ?? false),
       child: Container(
         color: Theme.of(context).colorScheme.primary,
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            if (newsPostSpaceId != null)
-              InkWell(
-                onTap: () async {
-                  await ref
-                      .read(newsStateProvider.notifier)
-                      .changeNewsPostSpaceId(context);
-                },
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Space',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    SpaceChip(spaceId: newsPostSpaceId),
-                  ],
-                ),
-              )
-            else
-              OutlinedButton(
-                onPressed: () async {
-                  await ref
-                      .read(newsStateProvider.notifier)
-                      .changeNewsPostSpaceId(context);
-                },
-                child: const Text('Select Space'),
-              ),
-            verticalDivider(context),
-            Expanded(child: newsSlideListUI(context)),
-            IconButton(
-              onPressed: () => sendNews(context),
-              style: ButtonStyle(
-                backgroundColor: MaterialStatePropertyAll(
-                  Theme.of(context).colorScheme.background,
-                ),
-              ),
-              icon: const Icon(Icons.send),
-            ),
-          ],
-        ),
+        child: newsSlideListUI(context),
       ),
-    );
-  }
-
-  Widget verticalDivider(BuildContext context) {
-    return Container(
-      height: 50,
-      width: 2,
-      margin: const EdgeInsets.symmetric(horizontal: 10.0),
-      color: Theme.of(context).colorScheme.onPrimary,
     );
   }
 
   Widget newsSlideListUI(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        parentSpaceSelector(),
+        verticalDivider(context),
         Expanded(
-          child: SizedBox(
+          child: Container(
             height: 80,
+            padding: const EdgeInsets.symmetric(horizontal: 6),
             child: ListView.builder(
               shrinkWrap: true,
               itemCount: newsSlideList.length,
@@ -113,6 +61,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                   fit: StackFit.passthrough,
                   children: [
                     InkWell(
+                      key: Key('slide-${slidePost.type.name}-$index'),
                       onTap: () {
                         ref
                             .read(newsStateProvider.notifier)
@@ -143,6 +92,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                       top: 0,
                       right: 0,
                       child: InkWell(
+                        key: Key('remove-slide-${slidePost.type.name}-$index'),
                         onTap: () {
                           ref
                               .read(newsStateProvider.notifier)
@@ -161,20 +111,100 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           ),
         ),
         IconButton(
+          key: NewsUpdateKeys.addNewsSlide,
           onPressed: () => showPostAttachmentOptions(context),
-          style: ButtonStyle(
-            backgroundColor: MaterialStatePropertyAll(
-              Theme.of(context).colorScheme.background,
-            ),
-            shape: MaterialStatePropertyAll(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5),
-              ),
-            ),
-          ),
           icon: const Icon(Icons.add),
         ),
       ],
+    );
+  }
+
+  Widget parentSpaceSelector() {
+    final newsPostSpaceId = ref.read(newsStateProvider).newsPostSpaceId;
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: (newsPostSpaceId != null)
+          ? InkWell(
+              key: NewsUpdateKeys.selectSpace,
+              onTap: () async {
+                await ref
+                    .read(newsStateProvider.notifier)
+                    .changeNewsPostSpaceId(context);
+              },
+              child: Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.topRight,
+                children: [
+                  spaceAvatar(newsPostSpaceId),
+                  Positioned(
+                    top: -5,
+                    right: -5,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        shape: BoxShape.circle,
+                      ),
+                      padding: const EdgeInsets.all(5),
+                      child: const Icon(
+                        Atlas.pencil_box,
+                        size: 12,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : OutlinedButton(
+              key: NewsUpdateKeys.selectSpace,
+              onPressed: () async {
+                await ref
+                    .read(newsStateProvider.notifier)
+                    .changeNewsPostSpaceId(context);
+              },
+              child: const Text('Select Space'),
+            ),
+    );
+  }
+
+  Widget verticalDivider(BuildContext context) {
+    return Container(
+      height: 50,
+      width: 2,
+      margin: const EdgeInsets.symmetric(horizontal: 10.0),
+      color: Theme.of(context).colorScheme.onPrimary,
+    );
+  }
+
+  Widget spaceAvatar(String spaceId) {
+    final profileData = ref.watch(spaceProfileDataForSpaceIdProvider(spaceId));
+    return profileData.when(
+      data: (space) => ActerAvatar(
+        mode: DisplayMode.Space,
+        avatarInfo: AvatarInfo(
+          uniqueId: spaceId,
+          displayName: space.profile.displayName,
+          avatar: space.profile.avatarMem,
+        ),
+        size: 42,
+      ),
+      error: (e, st) {
+        debugPrint('Error loading space: $e');
+        return ActerAvatar(
+          mode: DisplayMode.Space,
+          avatarInfo: AvatarInfo(
+            uniqueId: spaceId,
+            displayName: spaceId,
+          ),
+          size: 42,
+        );
+      },
+      loading: () => Skeletonizer(
+        child: ActerAvatar(
+          mode: DisplayMode.Space,
+          avatarInfo: AvatarInfo(uniqueId: spaceId),
+          size: 42,
+        ),
+      ),
     );
   }
 
@@ -211,119 +241,32 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           ),
         );
       case NewsSlideType.video:
-        return FutureBuilder(
-          future: NewsUtils.getThumbnailData(mediaFile!),
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data != null) {
-              return ClipRRect(
-                borderRadius: BorderRadius.circular(5.0),
-                child: Image.file(
-                  snapshot.data!,
-                  fit: BoxFit.cover,
-                ),
-              );
-            }
-            return const SizedBox.shrink();
-          },
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            FutureBuilder(
+              future: NewsUtils.getThumbnailData(mediaFile!),
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data != null) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(5.0),
+                    child: Image.file(
+                      snapshot.data!,
+                      fit: BoxFit.cover,
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+            Container(
+              color: Colors.black38,
+              child: const Icon(Icons.play_arrow_outlined, size: 32),
+            ),
+          ],
         );
       default:
         return Container();
-    }
-  }
-
-  Future<void> sendNews(BuildContext context) async {
-    final client = ref.read(clientProvider)!;
-    final spaceId = ref.read(newsStateProvider).newsPostSpaceId;
-
-    if (spaceId == null) {
-      customMsgSnackbar(context, 'Please first select a space');
-      return;
-    }
-
-    String displayMsg = 'Slide posting';
-    // Show loading message
-    EasyLoading.show(status: displayMsg);
-    try {
-      final space = await ref.read(spaceProvider(spaceId).future);
-      NewsEntryDraft draft = space.newsDraft();
-      for (final slidePost in newsSlideList) {
-        // If slide type is text
-        if (slidePost.type == NewsSlideType.text && slidePost.text != null) {
-          if (slidePost.text!.isEmpty) {
-            EasyLoading.showError('Please add some text');
-            return;
-          }
-
-          final textDraft = client.textMarkdownDraft(slidePost.text!);
-          final textSlideDraft = textDraft.intoNewsSlideDraft();
-          await draft.addSlide(textSlideDraft);
-        }
-
-        // If slide type is image
-        else if (slidePost.type == NewsSlideType.image &&
-            slidePost.mediaFile != null) {
-          final file = slidePost.mediaFile!;
-          String? mimeType = file.mimeType ?? lookupMimeType(file.path);
-          if (mimeType == null) {
-            EasyLoading.showError('Invalid media format');
-            return;
-          }
-          if (!mimeType.startsWith('image/')) {
-            EasyLoading.showError(
-              'Posting of $mimeType not yet supported',
-            );
-            return;
-          }
-          Uint8List bytes = await file.readAsBytes();
-          final decodedImage = await decodeImageFromList(bytes);
-          final imageDraft = client
-              .imageDraft(file.path, mimeType)
-              .size(bytes.length)
-              .width(decodedImage.width)
-              .height(decodedImage.height);
-          final imageSlideDraft = imageDraft.intoNewsSlideDraft();
-          await draft.addSlide(imageSlideDraft);
-        }
-
-        // If slide type is video
-        else if (slidePost.type == NewsSlideType.video &&
-            slidePost.mediaFile != null) {
-          final file = slidePost.mediaFile!;
-          String? mimeType = file.mimeType ?? lookupMimeType(file.path);
-          if (mimeType == null) {
-            EasyLoading.showError('Invalid media format');
-            return;
-          }
-          if (!mimeType.startsWith('video/')) {
-            EasyLoading.showError(
-              'Posting of $mimeType not yet supported',
-            );
-            return;
-          }
-          Uint8List bytes = await file.readAsBytes();
-          final videoDraft =
-              client.videoDraft(file.path, mimeType).size(bytes.length);
-          final videoSlideDraft = videoDraft.intoNewsSlideDraft();
-          await draft.addSlide(videoSlideDraft);
-        }
-      }
-      await draft.send();
-
-      // close loading
-      EasyLoading.dismiss();
-
-      // We are doing as expected, but the lints triggers.
-      // ignore: use_build_context_synchronously
-      if (!context.mounted) {
-        return;
-      }
-      // FIXME due to #718. well lets at least try forcing a refresh upon route.
-      ref.invalidate(newsListProvider);
-      ref.invalidate(newsStateProvider);
-      // Navigate back to update screen.
-      Navigator.of(context).pop();
-    } catch (err) {
-      EasyLoading.showError('$displayMsg failed: \n $err');
     }
   }
 }

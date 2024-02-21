@@ -405,13 +405,13 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                       InkWell(
                         onTap: () => onSendButtonPressed(),
                         child: CircleAvatar(
-                          radius: 18,
+                          radius: 22,
                           backgroundColor:
                               Theme.of(context).colorScheme.primary,
                           child: Icon(
                             Icons.send,
                             size: 20,
-                            color: Theme.of(context).colorScheme.neutral2,
+                            color: Theme.of(context).colorScheme.onPrimary,
                           ),
                         ),
                       ),
@@ -568,7 +568,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     ChatAttachmentType chatAttachmentType,
   ) async {
     final roomId = widget.convo.getRoomIdStr();
-    final client = ref.read(clientProvider)!;
+    final client = ref.read(alwaysClientProvider);
     final inputState = ref.read(chatInputProvider(roomId));
     final stream = widget.convo.timelineStream();
 
@@ -771,7 +771,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
   // push messages in convo
   Future<void> handleSendPressed(String markdownMessage) async {
     final roomId = widget.convo.getRoomIdStr();
-    final client = ref.read(clientProvider)!;
+    final client = ref.read(alwaysClientProvider);
     final inputState = ref.read(chatInputProvider(roomId));
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
@@ -913,7 +913,7 @@ class _TextInputWidget extends ConsumerWidget {
           textInputAction: TextInputAction.newline,
           enabled: chatInputState.allowEdit,
           onSubmitted: (value) => onSendButtonPressed(),
-          style: Theme.of(context).textTheme.titleSmall,
+          style: Theme.of(context).textTheme.bodyMedium,
           cursorColor: Theme.of(context).colorScheme.primary,
           maxLines: 6,
           minLines: 1,

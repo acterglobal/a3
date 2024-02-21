@@ -62,7 +62,6 @@ enum Routes {
   // -- pins
   pins('/pins'),
   pin('/pins/:pinId'),
-  editPin('/pins/:pinId/edit'),
 
   // -- events
   calendarEvents('/events'),

@@ -1,7 +1,7 @@
 use acter_core::{
     events::{
         news::{self, FallbackNewsContent, NewsContent, NewsEntryBuilder, NewsSlideBuilder},
-        Colorize, ObjRef,
+        Colorize, ColorizeBuilder, ObjRef,
     },
     models::{self, ActerModel, AnyActerModel, ReactionManager},
     statics::KEYS,
@@ -9,7 +9,7 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
-use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
+use ruma_common::{EventId, OwnedEventId, OwnedRoomId, OwnedUserId, RoomId};
 use ruma_events::room::message::{
     AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
     LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
@@ -149,6 +149,7 @@ impl Space {
 pub struct NewsSlide {
     client: Client,
     room: Room,
+    unique_id: String,
     inner: news::NewsSlide,
 }
 
@@ -163,19 +164,12 @@ impl NewsSlide {
     pub fn type_str(&self) -> String {
         self.inner.content().type_str()
     }
-
-    pub fn has_formatted_text(&self) -> bool {
-        matches!(
-            self.inner.content().text(),
-            Some(TextMessageEventContent {
-                formatted: Some(_),
-                ..
-            }),
-        )
+    pub fn unique_id(&self) -> String {
+        self.unique_id.clone()
     }
 
-    pub fn text(&self) -> String {
-        self.inner.content.text_str()
+    pub fn colors(&self) -> Option<Colorize> {
+        self.inner.colors.to_owned()
     }
 
     pub fn msg_content(&self) -> MsgContent {
@@ -305,6 +299,7 @@ impl NewsSlide {
 pub struct NewsSlideDraft {
     content: MsgContentDraft,
     references: Vec<ObjRef>,
+    colorize_builder: ColorizeBuilder,
 }
 
 impl NewsSlideDraft {
@@ -312,8 +307,14 @@ impl NewsSlideDraft {
         NewsSlideDraft {
             content,
             references: vec![],
+            colorize_builder: ColorizeBuilder::default(),
         }
     }
+    #[allow(clippy::boxed_local)]
+    pub fn color(&mut self, colors: Box<ColorizeBuilder>) {
+        self.colorize_builder = *colors;
+    }
+
     async fn build(self, client: &Client, room: &Room) -> Result<news::NewsSlide> {
         let content = match self.content {
             MsgContentDraft::TextPlain { body } => {
@@ -322,6 +323,10 @@ impl NewsSlideDraft {
             }
             MsgContentDraft::TextMarkdown { body } => {
                 let text_content = TextMessageEventContent::markdown(body);
+                NewsContent::Text(text_content)
+            }
+            MsgContentDraft::TextHtml { html, plain } => {
+                let text_content = TextMessageEventContent::html(plain, html);
                 NewsContent::Text(text_content)
             }
             MsgContentDraft::Image { source, info } => {
@@ -464,8 +469,10 @@ impl NewsSlideDraft {
         Ok(NewsSlideBuilder::default()
             .content(content)
             .references(self.references)
+            .colors(self.colorize_builder.build())
             .build()?)
     }
+
     #[allow(clippy::boxed_local)]
     pub fn add_reference(&mut self, reference: Box<ObjRef>) -> &Self {
         self.references.push(*reference);
@@ -499,6 +506,7 @@ impl NewsEntry {
     }
 
     pub fn get_slide(&self, pos: u8) -> Option<NewsSlide> {
+        let unique_id = format!("{}-${pos}", self.content.event_id());
         self.content
             .slides()
             .get(pos as usize)
@@ -506,18 +514,22 @@ impl NewsEntry {
                 inner: inner.clone(),
                 client: self.client.clone(),
                 room: self.room.clone(),
+                unique_id,
             })
     }
 
     pub fn slides(&self) -> Vec<NewsSlide> {
+        let event_id = self.content.event_id();
         self.content
             .slides()
             .iter()
-            .map(|slide| {
+            .enumerate()
+            .map(|(pos, slide)| {
                 (NewsSlide {
                     inner: slide.clone(),
                     client: self.client.clone(),
                     room: self.room.clone(),
+                    unique_id: format!("${event_id}-${pos}"),
                 })
             })
             .collect()
@@ -640,10 +652,6 @@ impl NewsEntry {
     pub fn event_id(&self) -> OwnedEventId {
         self.content.event_id().to_owned()
     }
-
-    pub fn colors(&self) -> Option<Colorize> {
-        self.content.colors().to_owned()
-    }
 }
 
 #[derive(Clone)]
@@ -674,16 +682,6 @@ impl NewsEntryDraft {
 
     pub fn unset_slides(&mut self) -> &mut Self {
         self.slides.clear();
-        self
-    }
-
-    pub fn colors(&mut self, colors: Box<Colorize>) -> &mut Self {
-        self.content.colors(Some(Box::into_inner(colors)));
-        self
-    }
-
-    pub fn unset_colors(&mut self) -> &mut Self {
-        self.content.colors(None);
         self
     }
 
@@ -760,21 +758,6 @@ impl NewsEntryUpdateBuilder {
         self
     }
 
-    pub fn colors(&mut self, colors: Box<Colorize>) -> &mut Self {
-        self.content.colors(Some(Some(Box::into_inner(colors))));
-        self
-    }
-
-    pub fn unset_colors(&mut self) -> &mut Self {
-        self.content.colors(Some(None));
-        self
-    }
-
-    pub fn unset_colors_update(&mut self) -> &mut Self {
-        self.content.colors(None::<Option<Colorize>>);
-        self
-    }
-
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
 
@@ -797,18 +780,6 @@ impl Space {
             client: self.client.clone(),
             room: self.inner.room.clone(),
             content: Default::default(),
-            slides: vec![],
-        })
-    }
-
-    pub fn news_draft_with_builder(&self, content: NewsEntryBuilder) -> Result<NewsEntryDraft> {
-        if !self.is_joined() {
-            bail!("Unable to create news for spaces we are not part on");
-        }
-        Ok(NewsEntryDraft {
-            client: self.client.clone(),
-            room: self.inner.room.clone(),
-            content,
             slides: vec![],
         })
     }

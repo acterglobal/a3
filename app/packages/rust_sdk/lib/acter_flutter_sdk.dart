@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:core';
 import 'dart:convert';
+import 'dart:core';
 import 'dart:developer' as developer;
 import 'dart:ffi';
 import 'dart:io';
@@ -65,19 +65,11 @@ const versionName = String.fromEnvironment(
 const isDevBuild = versionName == 'DEV';
 
 String userAgent = '$appName/$versionName';
+RegExp logFileRegExp = RegExp('app_.*log');
+RegExp screenshotFileRegExp = RegExp('screenshot_.*png');
 
-Color convertColor(ffi.EfkColor? primary, Color fallback) {
-  if (primary == null) {
-    return fallback;
-  }
-  final data = primary.rgbaU8();
-  return Color.fromARGB(
-    data[3],
-    data[0],
-    data[1],
-    data[2],
-  );
-}
+Color convertColor(int? primary, Color fallback) =>
+    Color(primary ?? fallback.value);
 
 Completer<SharedPreferences>? _sharedPrefCompl;
 Completer<String>? _appDirCompl;
@@ -196,6 +188,7 @@ const mOptions = MacOsOptions(
 
 class ActerSdk {
   late final ffi.Api _api;
+  late final String _previousLogPath;
   static String _sessionKey = defaultSessionKey;
   int _index = 0;
   static final List<ffi.Client> _clients = [];
@@ -229,6 +222,10 @@ class ActerSdk {
     _sessionKey = sessionKey;
     await storage.write(key: _sessionKey, value: json.encode([]));
   }
+
+  String? get previousLogPath => _previousLogPath;
+
+  ffi.Api get api => _api;
 
   Future<ffi.Client> getClientWithDeviceId(String deviceId) async {
     ffi.Client? client;
@@ -418,6 +415,30 @@ class ActerSdk {
         ? ffi.Api(await _getAndroidDynLib('libacter.so'))
         : ffi.Api.load();
     String logPath = await appCacheDir();
+    FileSystemEntity? latestLogPath;
+
+    // clear screenshots, and logs (but keep the latest one)
+    final entities = Directory(logPath).list(
+      recursive: false,
+      followLinks: false,
+    );
+    await for (final entity in entities) {
+      if (screenshotFileRegExp.hasMatch(entity.path)) {
+        await entity.delete(); // remove old screenshots
+      }
+      if (logFileRegExp.hasMatch(entity.path)) {
+        if (latestLogPath == null) {
+          latestLogPath = entity;
+        } else {
+          if (latestLogPath.path.compareTo(entity.path) < 0) {
+            await latestLogPath.delete();
+            latestLogPath = entity;
+          } else {
+            await entity.delete();
+          }
+        }
+      }
+    }
 
     final logSettings = (await sharedPrefs()).getString(rustLogKey);
     try {
@@ -451,6 +472,10 @@ class ActerSdk {
       );
     }
     final instance = ActerSdk._(api);
+    if (latestLogPath != null) {
+      instance._previousLogPath = latestLogPath.absolute.path;
+      debugPrint('Prior log file: ${instance._previousLogPath}');
+    }
     return instance;
   }
 
@@ -612,33 +637,5 @@ class ActerSdk {
       userId,
       defaultServerName,
     );
-  }
-
-  ffi.CreateConvoSettingsBuilder newConvoSettingsBuilder() {
-    return _api.newConvoSettingsBuilder();
-  }
-
-  ffi.CreateSpaceSettingsBuilder newSpaceSettingsBuilder() {
-    return _api.newSpaceSettingsBuilder();
-  }
-
-  ffi.JoinRuleBuilder newJoinRuleBuilder() {
-    return _api.newJoinRuleBuilder();
-  }
-
-  String rotateLogFile() {
-    return _api.rotateLogFile();
-  }
-
-  String? parseMarkdown(String text) {
-    return _api.parseMarkdown(text);
-  }
-
-  void writeLog(String text, String level) {
-    _api.writeLog(text, level);
-  }
-
-  ffi.ThumbnailSize newThumbSize(int width, int height) {
-    return _api.newThumbSize(width, height);
   }
 }

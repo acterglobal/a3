@@ -1,4 +1,4 @@
-use acter::{api::RoomMessage, ruma_common::OwnedEventId};
+use acter::{api::RoomMessage, ruma_common::OwnedEventId, new_colorize_builder};
 use anyhow::{bail, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
@@ -149,8 +149,67 @@ async fn news_plain_text_test() -> Result<()> {
     let final_entry = slides.first().expect("Item is there");
     let text_slide = final_entry.get_slide(0).expect("we have a slide");
     assert_eq!(text_slide.type_str(), "text");
-    assert!(!text_slide.has_formatted_text());
-    assert_eq!(text_slide.text(), "This is a simple text".to_owned());
+    let msg_content = text_slide.msg_content();
+    assert!(msg_content.formatted_body().is_none());
+    assert_eq!(msg_content.body(), "This is a simple text".to_owned());
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn news_slide_color_test() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (mut user, space_id) = random_user_with_random_space("news_plain").await?;
+    let state_sync = user.start_sync();
+    state_sync.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    let space_id_str = space_id.to_string();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        let space_id = space_id_str.clone();
+        async move { client.space(space_id).await }
+    })
+    .await?;
+
+    let space = user.space(space_id.to_string()).await?;
+    let mut draft = space.news_draft()?;
+    let mut slide_draft = user
+        .text_plain_draft("This is a simple text".to_owned())
+        .into_news_slide_draft();
+    slide_draft.color(Box::new(new_colorize_builder(None, Some(0xFF112233))?));
+    draft.add_slide(Box::new(slide_draft)).await?;
+    draft.send().await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let space_cl = space.clone();
+    Retry::spawn(retry_strategy, move || {
+        let inner_space = space_cl.clone();
+        async move {
+            if inner_space.latest_news_entries(1).await?.len() != 1 {
+                bail!("news not found");
+            } else {
+                Ok(())
+            }
+        }
+    })
+    .await?;
+
+    let slides = space.latest_news_entries(1).await?;
+    let final_entry = slides.first().expect("Item is there");
+    let text_slide = final_entry.get_slide(0).expect("we have a slide");
+    // no foreground color
+    assert_eq!(
+        text_slide.colors().map(|e| e.color().is_some()),
+        Some(false)
+    );
+    // the correct background color
+    assert_eq!(
+        text_slide.colors().and_then(|e| e.background()),
+        Some(0xFF112233)
+    );
 
     Ok(())
 }
@@ -199,10 +258,10 @@ async fn news_markdown_text_test() -> Result<()> {
     let final_entry = slides.first().expect("Item is there");
     let text_slide = final_entry.get_slide(0).expect("we have a slide");
     assert_eq!(text_slide.type_str(), "text");
-    assert!(text_slide.has_formatted_text());
+    let msg_content = text_slide.msg_content();
     assert_eq!(
-        text_slide.text(),
-        "<h2>This is a simple text</h2>\n".to_owned()
+        msg_content.formatted_body(),
+        Some("<h2>This is a simple text</h2>\n".to_owned())
     );
 
     Ok(())
@@ -401,15 +460,16 @@ async fn news_multiple_slide_test() -> Result<()> {
         .get_slide(1)
         .expect("We have markdown text slide");
     assert_eq!(second_slide.type_str(), "text");
-    assert!(second_slide.has_formatted_text());
+    let msg_content = second_slide.msg_content();
     assert_eq!(
-        second_slide.text(),
-        "<p>This update is <em><strong>reallly important</strong></em></p>\n".to_owned()
+        msg_content.formatted_body(),
+        Some("<p>This update is <em><strong>reallly important</strong></em></p>\n".to_owned())
     );
     let third_slide = final_entry.get_slide(2).expect("We have plain text slide");
     assert_eq!(third_slide.type_str(), "text");
-    assert!(!third_slide.has_formatted_text());
-    assert_eq!(third_slide.text(), "Hello Updates!".to_owned());
+    let msg_content = third_slide.msg_content();
+    assert!(msg_content.formatted_body().is_none());
+    assert_eq!(msg_content.body(), "Hello Updates!".to_owned());
 
     let fourth_slide = final_entry.get_slide(3).expect("We have video slide");
     assert_eq!(fourth_slide.type_str(), "video");
