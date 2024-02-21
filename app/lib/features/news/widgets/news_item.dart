@@ -152,7 +152,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
     final newsReferencesList = newsSlide.references().toList();
     if (newsReferencesList.isEmpty) return const SizedBox();
 
-    final referenceDetails = newsReferencesList.first.reference();
+    final referenceDetails = newsReferencesList.first.refDetails();
     final type = referenceDetails.typeStr();
     final title = referenceDetails.title() ?? '';
     debugPrint('News Reference Data =>> $type');
