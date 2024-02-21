@@ -287,7 +287,7 @@ private func uniffiCheckCallStatus(
             }
 
         case CALL_CANCELLED:
-                throw CancellationError()
+            fatalError("Cancellation not supported yet")
 
         default:
             throw UniffiInternalError.unexpectedRustCallStatusCode
@@ -296,19 +296,6 @@ private func uniffiCheckCallStatus(
 
 // Public interface members begin here.
 
-
-fileprivate struct FfiConverterUInt64: FfiConverterPrimitive {
-    typealias FfiType = UInt64
-    typealias SwiftType = UInt64
-
-    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> UInt64 {
-        return try lift(readInt(&buf))
-    }
-
-    public static func write(_ value: SwiftType, into buf: inout [UInt8]) {
-        writeInt(&buf, lower(value))
-    }
-}
 
 fileprivate struct FfiConverterBool : FfiConverter {
     typealias FfiType = Int8
@@ -371,35 +358,42 @@ fileprivate struct FfiConverterString: FfiConverter {
 
 
 public struct NotificationItem {
-    public var roomId: String
-    public var shortMsg: String
-    public var isInvite: Bool
-    public var unsupported: Bool
-    public var senderDisplayName: String?
-    public var senderAvatarUrl: String?
-    public var roomDisplayName: String
-    public var roomAvatarUrl: String?
-    public var roomCanonicalAlias: String?
-    public var isRoomEncrypted: Bool?
-    public var isDirectMessageRoom: Bool
-    public var joinedMembersCount: UInt64
+    public var title: String
+    public var pushStyle: String
+    public var targetUrl: String
+    public var body: String?
+    public var threadId: String?
+    public var imagePath: String?
+    /**
+     * Is it a noisy notification? (i.e. does any push action contain a sound
+     * action)
+     *
+     * It is set if and only if the push actions could be determined.
+     */
     public var isNoisy: Bool?
 
     // Default memberwise initializers are never public by default, so we
     // declare one manually.
-    public init(roomId: String, shortMsg: String, isInvite: Bool, unsupported: Bool, senderDisplayName: String?, senderAvatarUrl: String?, roomDisplayName: String, roomAvatarUrl: String?, roomCanonicalAlias: String?, isRoomEncrypted: Bool?, isDirectMessageRoom: Bool, joinedMembersCount: UInt64, isNoisy: Bool?) {
-        self.roomId = roomId
-        self.shortMsg = shortMsg
-        self.isInvite = isInvite
-        self.unsupported = unsupported
-        self.senderDisplayName = senderDisplayName
-        self.senderAvatarUrl = senderAvatarUrl
-        self.roomDisplayName = roomDisplayName
-        self.roomAvatarUrl = roomAvatarUrl
-        self.roomCanonicalAlias = roomCanonicalAlias
-        self.isRoomEncrypted = isRoomEncrypted
-        self.isDirectMessageRoom = isDirectMessageRoom
-        self.joinedMembersCount = joinedMembersCount
+    public init(
+        title: String, 
+        pushStyle: String, 
+        targetUrl: String, 
+        body: String?, 
+        threadId: String?, 
+        imagePath: String?, 
+        /**
+         * Is it a noisy notification? (i.e. does any push action contain a sound
+         * action)
+         *
+         * It is set if and only if the push actions could be determined.
+         */
+        isNoisy: Bool?) {
+        self.title = title
+        self.pushStyle = pushStyle
+        self.targetUrl = targetUrl
+        self.body = body
+        self.threadId = threadId
+        self.imagePath = imagePath
         self.isNoisy = isNoisy
     }
 }
@@ -407,40 +401,22 @@ public struct NotificationItem {
 
 extension NotificationItem: Equatable, Hashable {
     public static func ==(lhs: NotificationItem, rhs: NotificationItem) -> Bool {
-        if lhs.roomId != rhs.roomId {
+        if lhs.title != rhs.title {
             return false
         }
-        if lhs.shortMsg != rhs.shortMsg {
+        if lhs.pushStyle != rhs.pushStyle {
             return false
         }
-        if lhs.isInvite != rhs.isInvite {
+        if lhs.targetUrl != rhs.targetUrl {
             return false
         }
-        if lhs.unsupported != rhs.unsupported {
+        if lhs.body != rhs.body {
             return false
         }
-        if lhs.senderDisplayName != rhs.senderDisplayName {
+        if lhs.threadId != rhs.threadId {
             return false
         }
-        if lhs.senderAvatarUrl != rhs.senderAvatarUrl {
-            return false
-        }
-        if lhs.roomDisplayName != rhs.roomDisplayName {
-            return false
-        }
-        if lhs.roomAvatarUrl != rhs.roomAvatarUrl {
-            return false
-        }
-        if lhs.roomCanonicalAlias != rhs.roomCanonicalAlias {
-            return false
-        }
-        if lhs.isRoomEncrypted != rhs.isRoomEncrypted {
-            return false
-        }
-        if lhs.isDirectMessageRoom != rhs.isDirectMessageRoom {
-            return false
-        }
-        if lhs.joinedMembersCount != rhs.joinedMembersCount {
+        if lhs.imagePath != rhs.imagePath {
             return false
         }
         if lhs.isNoisy != rhs.isNoisy {
@@ -450,18 +426,12 @@ extension NotificationItem: Equatable, Hashable {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(roomId)
-        hasher.combine(shortMsg)
-        hasher.combine(isInvite)
-        hasher.combine(unsupported)
-        hasher.combine(senderDisplayName)
-        hasher.combine(senderAvatarUrl)
-        hasher.combine(roomDisplayName)
-        hasher.combine(roomAvatarUrl)
-        hasher.combine(roomCanonicalAlias)
-        hasher.combine(isRoomEncrypted)
-        hasher.combine(isDirectMessageRoom)
-        hasher.combine(joinedMembersCount)
+        hasher.combine(title)
+        hasher.combine(pushStyle)
+        hasher.combine(targetUrl)
+        hasher.combine(body)
+        hasher.combine(threadId)
+        hasher.combine(imagePath)
         hasher.combine(isNoisy)
     }
 }
@@ -469,36 +439,25 @@ extension NotificationItem: Equatable, Hashable {
 
 public struct FfiConverterTypeNotificationItem: FfiConverterRustBuffer {
     public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> NotificationItem {
-        return try NotificationItem(
-            roomId: FfiConverterString.read(from: &buf), 
-            shortMsg: FfiConverterString.read(from: &buf), 
-            isInvite: FfiConverterBool.read(from: &buf), 
-            unsupported: FfiConverterBool.read(from: &buf), 
-            senderDisplayName: FfiConverterOptionString.read(from: &buf), 
-            senderAvatarUrl: FfiConverterOptionString.read(from: &buf), 
-            roomDisplayName: FfiConverterString.read(from: &buf), 
-            roomAvatarUrl: FfiConverterOptionString.read(from: &buf), 
-            roomCanonicalAlias: FfiConverterOptionString.read(from: &buf), 
-            isRoomEncrypted: FfiConverterOptionBool.read(from: &buf), 
-            isDirectMessageRoom: FfiConverterBool.read(from: &buf), 
-            joinedMembersCount: FfiConverterUInt64.read(from: &buf), 
-            isNoisy: FfiConverterOptionBool.read(from: &buf)
+        return
+            try NotificationItem(
+                title: FfiConverterString.read(from: &buf), 
+                pushStyle: FfiConverterString.read(from: &buf), 
+                targetUrl: FfiConverterString.read(from: &buf), 
+                body: FfiConverterOptionString.read(from: &buf), 
+                threadId: FfiConverterOptionString.read(from: &buf), 
+                imagePath: FfiConverterOptionString.read(from: &buf), 
+                isNoisy: FfiConverterOptionBool.read(from: &buf)
         )
     }
 
     public static func write(_ value: NotificationItem, into buf: inout [UInt8]) {
-        FfiConverterString.write(value.roomId, into: &buf)
-        FfiConverterString.write(value.shortMsg, into: &buf)
-        FfiConverterBool.write(value.isInvite, into: &buf)
-        FfiConverterBool.write(value.unsupported, into: &buf)
-        FfiConverterOptionString.write(value.senderDisplayName, into: &buf)
-        FfiConverterOptionString.write(value.senderAvatarUrl, into: &buf)
-        FfiConverterString.write(value.roomDisplayName, into: &buf)
-        FfiConverterOptionString.write(value.roomAvatarUrl, into: &buf)
-        FfiConverterOptionString.write(value.roomCanonicalAlias, into: &buf)
-        FfiConverterOptionBool.write(value.isRoomEncrypted, into: &buf)
-        FfiConverterBool.write(value.isDirectMessageRoom, into: &buf)
-        FfiConverterUInt64.write(value.joinedMembersCount, into: &buf)
+        FfiConverterString.write(value.title, into: &buf)
+        FfiConverterString.write(value.pushStyle, into: &buf)
+        FfiConverterString.write(value.targetUrl, into: &buf)
+        FfiConverterOptionString.write(value.body, into: &buf)
+        FfiConverterOptionString.write(value.threadId, into: &buf)
+        FfiConverterOptionString.write(value.imagePath, into: &buf)
         FfiConverterOptionBool.write(value.isNoisy, into: &buf)
     }
 }
@@ -512,17 +471,15 @@ public func FfiConverterTypeNotificationItem_lower(_ value: NotificationItem) ->
     return FfiConverterTypeNotificationItem.lower(value)
 }
 
+
 public enum ActerError {
 
     
     
-    // Simple error enums only carry a message
     case Disconnect(message: String)
     
-    // Simple error enums only carry a message
     case Unknown(message: String)
     
-    // Simple error enums only carry a message
     case Anyhow(message: String)
     
 
@@ -626,9 +583,9 @@ fileprivate struct FfiConverterOptionString: FfiConverterRustBuffer {
 private let UNIFFI_RUST_FUTURE_POLL_READY: Int8 = 0
 private let UNIFFI_RUST_FUTURE_POLL_MAYBE_READY: Int8 = 1
 
-internal func uniffiRustCallAsync<F, T>(
+fileprivate func uniffiRustCallAsync<F, T>(
     rustFutureFunc: () -> UnsafeMutableRawPointer,
-    pollFunc: (UnsafeMutableRawPointer, UnsafeMutableRawPointer) -> (),
+    pollFunc: (UnsafeMutableRawPointer, @escaping UniFfiRustFutureContinuation, UnsafeMutableRawPointer) -> (),
     completeFunc: (UnsafeMutableRawPointer, UnsafeMutablePointer<RustCallStatus>) -> F,
     freeFunc: (UnsafeMutableRawPointer) -> (),
     liftFunc: (F) throws -> T,
@@ -644,7 +601,7 @@ internal func uniffiRustCallAsync<F, T>(
     var pollResult: Int8;
     repeat {
         pollResult = await withUnsafeContinuation {
-            pollFunc(rustFuture, ContinuationHolder($0).toOpaque())
+            pollFunc(rustFuture, uniffiFutureContinuationCallback, ContinuationHolder($0).toOpaque())
         }
     } while pollResult != UNIFFI_RUST_FUTURE_POLL_READY
 
@@ -662,7 +619,7 @@ fileprivate func uniffiFutureContinuationCallback(ptr: UnsafeMutableRawPointer, 
 
 // Wraps UnsafeContinuation in a class so that we can use reference counting when passing it across
 // the FFI
-class ContinuationHolder {
+fileprivate class ContinuationHolder {
     let continuation: UnsafeContinuation<Int8, Never>
 
     init(_ continuation: UnsafeContinuation<Int8, Never>) {
@@ -681,16 +638,12 @@ class ContinuationHolder {
         return Unmanaged<ContinuationHolder>.fromOpaque(ptr).takeRetainedValue()
     }
 }
-
-fileprivate func uniffiInitContinuationCallback() {
-    ffi_acter_rust_future_continuation_callback_set(uniffiFutureContinuationCallback)
-}
-
-public func getNotificationItem(_ basePath: String, _ restoreToken: String, _ roomId: String, _ eventId: String) async throws -> NotificationItem {
+public func getNotificationItem(_ basePath: String, _ tempDir: String, _ restoreToken: String, _ roomId: String, _ eventId: String) async throws  -> NotificationItem {
     return try  await uniffiRustCallAsync(
         rustFutureFunc: {
             uniffi_acter_fn_func_get_notification_item(
                 FfiConverterString.lower(basePath),
+                FfiConverterString.lower(tempDir),
                 FfiConverterString.lower(restoreToken),
                 FfiConverterString.lower(roomId),
                 FfiConverterString.lower(eventId)
@@ -715,17 +668,16 @@ private enum InitializationResult {
 // the code inside is only computed once.
 private var initializationResult: InitializationResult {
     // Get the bindings contract version from our ComponentInterface
-    let bindings_contract_version = 24
+    let bindings_contract_version = 25
     // Get the scaffolding contract version by calling the into the dylib
     let scaffolding_contract_version = ffi_acter_uniffi_contract_version()
     if bindings_contract_version != scaffolding_contract_version {
         return InitializationResult.contractVersionMismatch
     }
-    if (uniffi_acter_checksum_func_get_notification_item() != 33076) {
+    if (uniffi_acter_checksum_func_get_notification_item() != 30207) {
         return InitializationResult.apiChecksumMismatch
     }
 
-    uniffiInitContinuationCallback()
     return InitializationResult.ok
 }
 

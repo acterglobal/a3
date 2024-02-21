@@ -11,7 +11,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:convert/convert.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -518,7 +517,7 @@ Future<void> _showNotification(
   }
   if (notification.hasImage()) {
     final tempDir = await getTemporaryDirectory();
-    final filePath = await notification.imagePath(tempDir);
+    final filePath = await notification.imagePath(tempDir.path);
     attachments.add(DarwinNotificationAttachment(filePath));
   }
 

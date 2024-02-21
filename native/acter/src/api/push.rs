@@ -152,24 +152,24 @@ impl NotificationRoom {
 
 #[derive(Debug, Builder)]
 pub struct NotificationItem {
-    client: Client,
-    title: String,
-    push_style: String,
-    target_url: String,
-    sender: NotificationSender,
-    room: NotificationRoom,
+    pub(crate) client: Client,
+    pub(crate) title: String,
+    pub(crate) push_style: String,
+    pub(crate) target_url: String,
+    pub(crate) sender: NotificationSender,
+    pub(crate) room: NotificationRoom,
     #[builder(default)]
-    icon_url: Option<String>,
+    pub(crate) icon_url: Option<String>,
     #[builder(setter(into, strip_option), default)]
-    body: Option<MsgContent>,
+    pub(crate) body: Option<MsgContent>,
     #[builder(default)]
-    noisy: Option<bool>,
+    pub(crate) noisy: Option<bool>,
     #[builder(setter(into, strip_option), default)]
-    thread_id: Option<String>,
+    pub(crate) thread_id: Option<String>,
     #[builder(setter(into, strip_option), default)]
-    room_invite: Option<String>,
+    pub(crate) room_invite: Option<String>,
     #[builder(setter(into, strip_option), default)]
-    image: Option<MediaSource>,
+    pub(crate) image: Option<MediaSource>,
 }
 
 impl NotificationItem {

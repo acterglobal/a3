@@ -20,30 +20,12 @@ pub enum ActerError {
 
 #[derive(Debug, uniffi::Record)]
 pub struct NotificationItem {
-    pub room_id: String,
-    /// Underlying Ruma event.
-    // pub event: NotificationEvent,
-    pub short_msg: String,
-    pub is_invite: bool,
-    pub unsupported: bool,
-
-    /// Display name of the sender.
-    pub sender_display_name: Option<String>,
-    /// Avatar URL of the sender.
-    pub sender_avatar_url: Option<String>,
-
-    /// Room display name.
-    pub room_display_name: String,
-    /// Room avatar URL.
-    pub room_avatar_url: Option<String>,
-    /// Room canonical alias.
-    pub room_canonical_alias: Option<String>,
-    /// Is this room encrypted?
-    pub is_room_encrypted: Option<bool>,
-    /// Is this room considered a direct message?
-    pub is_direct_message_room: bool,
-    /// Numbers of members who joined the room.
-    pub joined_members_count: u64,
+    pub title: String,
+    pub push_style: String,
+    pub target_url: String,
+    pub body: Option<String>,
+    pub thread_id: Option<String>,
+    pub image_path: Option<String>,
 
     /// Is it a noisy notification? (i.e. does any push action contain a sound
     /// action)
@@ -52,79 +34,50 @@ pub struct NotificationItem {
     pub is_noisy: Option<bool>,
 }
 
-impl From<ApiNotificationItem> for NotificationItem {
-    fn from(value: ApiNotificationItem) -> NotificationItem {
+impl NotificationItem {
+    async fn from(value: ApiNotificationItem, temp_dir: String) -> NotificationItem {
+        let image_path = if value.has_image() {
+            value.image_path(temp_dir).await.ok()
+        } else {
+            None
+        };
+
         let ApiNotificationItem {
-            room_id,
-            inner:
-                SdkNotificationItem {
-                    event,
-                    sender_display_name,
-                    room_display_name,
-                    sender_avatar_url,
-                    room_avatar_url,
-                    room_canonical_alias,
-                    is_room_encrypted,
-                    is_direct_message_room,
-                    joined_members_count,
-                    is_noisy,
-                    ..
-                },
+            title,
+            push_style,
+            target_url,
+            room_invite,
+            thread_id,
+            body,
+            noisy,
+            sender,
+            image,
+            ..
         } = value;
 
-        let mut is_invite = false;
-        let mut short_msg = "".to_owned();
-        let mut unsupported = false;
+        let mut short_msg = None;
 
-        match event {
-            NotificationEvent::Invite(_) => {
-                is_invite = true;
-            }
-            NotificationEvent::Timeline(AnySyncTimelineEvent::MessageLike(s)) => {
-                short_msg = match s {
-                    AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(m)) => {
-                        match m.content.msgtype {
-                            MessageType::Audio(m) => m.body,
-                            MessageType::Emote(m) => m.body,
-                            MessageType::File(m) => m.body,
-                            MessageType::Image(m) => m.body,
-                            MessageType::Location(m) => m.body,
-                            MessageType::Notice(m) => m.body,
-                            MessageType::ServerNotice(m) => m.body,
-                            MessageType::Text(m) => m.body,
-                            MessageType::Video(m) => m.body,
-                            _ => {
-                                unsupported = true;
-                                "".to_owned()
-                            }
-                        }
-                    }
-                    _ => {
-                        unsupported = true;
-                        "".to_owned()
-                    }
-                }
-            }
-            _ => {
-                unsupported = true;
+        if let Some(invite) = room_invite {
+            short_msg = Some(invite);
+        } else if let Some(content) = body {
+            short_msg = Some(content.body());
+        }
+
+        if push_style == "chat" {
+            if let Some(sender_name) = sender.display_name() {
+                // wrap the user display name before the message
+                short_msg = Some(format!("${sender_name}: $short_msg"));
             }
         }
 
         NotificationItem {
-            // event,
-            short_msg,
-            is_invite,
-            unsupported,
-            sender_display_name,
-            room_display_name,
-            sender_avatar_url,
-            room_avatar_url,
-            room_canonical_alias,
-            is_room_encrypted,
-            is_direct_message_room,
-            joined_members_count,
-            is_noisy,
-            room_id: room_id.to_string(),
+            title,
+            body: short_msg,
+            push_style,
+            target_url,
+            is_noisy: noisy,
+            image_path,
+            thread_id,
         }
     }
 }
@@ -132,13 +85,11 @@ impl From<ApiNotificationItem> for NotificationItem {
 #[uniffi::export]
 pub async fn get_notification_item(
     base_path: String,
+    temp_dir: String,
     restore_token: String,
     room_id: String,
     event_id: String,
 ) -> uniffi::Result<NotificationItem, ActerError> {
     let client = login_with_token(base_path, restore_token).await?;
-    Ok(client
-        .get_notification_item(room_id, event_id)
-        .await?
-        .into())
+    Ok(NotificationItem::from(client.get_notification_item(room_id, event_id).await?, temp_dir).await)
 }

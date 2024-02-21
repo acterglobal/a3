@@ -62,20 +62,24 @@ class NotificationService: UNNotificationServiceExtension {
 
         do {
             Logger.push.log("Session found: \(session, privacy: .public); BasePath: \(basePath, privacy: .public)");
-            let notification = try await getNotificationItem(basePath, session, roomId, eventId);
+            let notification = try await getNotificationItem(basePath, session, roomId, eventId, NSTemporaryDirectory());
             
             if let bestAttemptContent = bestAttemptContent {
-                bestAttemptContent.title = notification.roomDisplayName
-                if (notification.isInvite) {
-                    bestAttemptContent.body = "invited by \(notification.senderDisplayName)"
-                } else if (notification.unsupported) {
-                    bestAttemptContent.body = "??? by \(notification.senderDisplayName)"
-                } else {
-                    if (notification.isDirectMessageRoom) {
-                        bestAttemptContent.body = notification.shortMsg;
-                    } else {
-                        bestAttemptContent.body = "\(notification.senderDisplayName) : \(notification.shortMsg)"
+                bestAttemptContent.title = notification.title;
+                if let body = notification.body {
+                    bestAttemptContent.body = body;
+                }
+                if let threadId = notification.threadId {
+                    bestAttemptContent.threadIdentifier = threadId;
+                }
+
+                if let imagePath = notification.imagePath as? String {
+                    guard let url = try URL(string: imagePath) else {
+                        notify()
+                        return
                     }
+                    let attachment = try UNNotificationAttachment(identifier: "image", url: url)
+                    bestAttemptContent.attachments = [ attachment ]
                 }
                 notify()
             } else {
