@@ -2,6 +2,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/news/model/news_post_state.dart';
+import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod/riverpod.dart';
@@ -38,8 +39,12 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
 
   Future<void> changeInvitedSpaceId(BuildContext context) async {
     final spaceId = await selectSpaceDrawer(context: context);
+    final newsSpaceReference = NewsReferencesModel(
+      type: NewsReferencesType.inviteToSpace,
+      id: spaceId,
+    );
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-    selectedNewsSlide?.invitedSpaceId = spaceId;
+    selectedNewsSlide?.newsReferencesModel = newsSpaceReference;
     state = state.copyWith(
       currentNewsSlide: selectedNewsSlide,
     );
@@ -47,8 +52,12 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
 
   Future<void> changeInvitedChatId(BuildContext context) async {
     final chatId = await selectChatDrawer(context: context);
+    final newsChatReference = NewsReferencesModel(
+      type: NewsReferencesType.inviteToChat,
+      id: chatId,
+    );
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-    selectedNewsSlide?.invitedChatId = chatId;
+    selectedNewsSlide?.newsReferencesModel = newsChatReference;
     state = state.copyWith(
       currentNewsSlide: selectedNewsSlide,
     );

@@ -11,6 +11,7 @@ import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/news/model/keys.dart';
+import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
@@ -208,15 +209,16 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
 
   //Show selected Action Buttons
   Widget selectedActionButtonsUI() {
-    final invitedSpaceId = selectedNewsPost?.invitedSpaceId;
-    final invitedChatId = selectedNewsPost?.invitedChatId;
+    final newsReferences = selectedNewsPost?.newsReferencesModel;
 
+    if (newsReferences == null) return const SizedBox();
     return Positioned(
       bottom: 10,
       left: 10,
       child: Row(
         children: [
-          if (invitedSpaceId != null)
+          if (newsReferences.type == NewsReferencesType.inviteToSpace &&
+              newsReferences.id != null)
             InkWell(
               onTap: () async {
                 await ref
@@ -226,12 +228,12 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
               child: Column(
                 children: [
                   const Text('Space'),
-                  SpaceChip(spaceId: invitedSpaceId),
+                  SpaceChip(spaceId: newsReferences.id),
                 ],
               ),
-            ),
-          if (invitedSpaceId != null) const SizedBox(width: 10.0),
-          if (invitedChatId != null)
+            )
+          else if (newsReferences.type == NewsReferencesType.inviteToChat &&
+              newsReferences.id != null)
             InkWell(
               onTap: () async {
                 await ref
@@ -241,7 +243,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
               child: Column(
                 children: [
                   const Text('Chat'),
-                  chatChip(invitedChatId),
+                  chatChip(newsReferences.id!),
                 ],
               ),
             ),
@@ -405,6 +407,17 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
               slidePost.backgroundColor?.value,
             ),
           );
+
+          if (slidePost.newsReferencesModel != null) {
+            final linkBuilder = sdk.api.newLinkRefBuilder(
+              slidePost.newsReferencesModel!.type.name,
+              slidePost.newsReferencesModel!.id ?? '',
+            );
+            final linkRef = linkBuilder.build();
+            final objBuilder = sdk.api.newObjRefBuilder(null, linkRef);
+            final objRef = objBuilder.build();
+            textSlideDraft.addReference(objRef);
+          }
           await draft.addSlide(textSlideDraft);
         }
 
@@ -437,6 +450,16 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
               slidePost.backgroundColor?.value,
             ),
           );
+          if (slidePost.newsReferencesModel != null) {
+            final linkBuilder = sdk.api.newLinkRefBuilder(
+              slidePost.newsReferencesModel!.type.name,
+              slidePost.newsReferencesModel!.id ?? '',
+            );
+            final linkRef = linkBuilder.build();
+            final objBuilder = sdk.api.newObjRefBuilder(null, linkRef);
+            final objRef = objBuilder.build();
+            imageSlideDraft.addReference(objRef);
+          }
           await draft.addSlide(imageSlideDraft);
         }
 
@@ -465,6 +488,16 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
               slidePost.backgroundColor?.value,
             ),
           );
+          if (slidePost.newsReferencesModel != null) {
+            final linkBuilder = sdk.api.newLinkRefBuilder(
+              slidePost.newsReferencesModel!.type.name,
+              slidePost.newsReferencesModel!.id ?? '',
+            );
+            final linkRef = linkBuilder.build();
+            final objBuilder = sdk.api.newObjRefBuilder(null, linkRef);
+            final objRef = objBuilder.build();
+            videoSlideDraft.addReference(objRef);
+          }
           await draft.addSlide(videoSlideDraft);
         }
       }

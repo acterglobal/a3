@@ -113,6 +113,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
                   ),
                 ),
               ),
+              newsActionButtons(newsSlide: slides[currentSlideIndex]),
             ],
           ),
         ),
@@ -143,5 +144,20 @@ class _NewsItemState extends ConsumerState<NewsItem> {
         ),
       ],
     );
+  }
+
+  Widget newsActionButtons({
+    required NewsSlide newsSlide,
+  }) {
+    final newsReferencesList = newsSlide.references().toList();
+    if (newsReferencesList.isEmpty) return const SizedBox();
+
+    final referenceDetails = newsReferencesList.first.reference();
+    final type = referenceDetails.typeStr();
+    final title = referenceDetails.title() ?? '';
+    debugPrint('News Reference Data =>> $type');
+    debugPrint('News Reference Data =>> $title');
+
+    return const SizedBox();
   }
 }
