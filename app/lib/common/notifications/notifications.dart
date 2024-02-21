@@ -11,10 +11,12 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:convert/convert.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:push/push.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -508,14 +510,21 @@ Future<void> _showNotification(
   String? body;
   String title = notification.title();
   String? payload = notification.targetUrl();
+  List<DarwinNotificationAttachment> attachments = [];
 
   final msg = notification.body();
   if (msg != null) {
     body = msg.body();
   }
+  if (notification.hasImage()) {
+    final tempDir = await getTemporaryDirectory();
+    final filePath = await notification.imagePath(tempDir);
+    attachments.add(DarwinNotificationAttachment(filePath));
+  }
 
   final darwinDetails = DarwinNotificationDetails(
     threadIdentifier: notification.threadId(),
+    attachments: attachments,
   );
   final notificationDetails = NotificationDetails(
     macOS: darwinDetails,

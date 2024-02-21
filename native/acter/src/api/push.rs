@@ -218,6 +218,16 @@ impl NotificationItem {
             .await?
     }
 
+    pub async fn image_path(&self, tmp_dir: String) -> Result<String> {
+        #[allow(clippy::diverging_sub_expression)]
+        let Some(source) = self.image.clone() else {
+            return bail!("No media found in item");
+        };
+        self.client
+            .source_binary_tmp_path(source, None, tmp_dir)
+            .await
+    }
+
     fn from(client: Client, inner: SdkNotificationItem, room_id: OwnedRoomId) -> Result<Self> {
         let mut builder = NotificationItemBuilder::default();
         // setting defaults;

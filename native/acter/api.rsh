@@ -2061,6 +2061,7 @@ object NotificationItem {
     fn noisy() -> bool;
     fn has_image() -> bool;
     fn image() -> Future<Result<buffer<u8>>>;
+    fn image_path(tmp_dir: string) -> Future<Result<string>>;
 
     // if this is an invite, this the room it invites to
     fn room_invite() -> Option<string>;
