@@ -24,7 +24,7 @@ class SpaceNotificationConfigurationPage extends ConsumerWidget {
               tiles: [
                 NotificationsSettingsTile(
                   roomId: spaceId,
-                  title: 'Space-wide overwrite',
+                  title: 'Space notification overwrite',
                   defaultTitle: 'No Overwrite',
                   includeMentions: false,
                 ),
