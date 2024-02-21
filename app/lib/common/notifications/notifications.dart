@@ -279,6 +279,7 @@ bool handleMessageTap(Map<String?, Object?> data) {
       debugPrint('Not our kind of push event. $roomId, $eventId, $deviceId');
       return false;
     }
+    // fallback support
     rootNavKey.currentContext!.push(
       makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId),
     );
@@ -313,8 +314,6 @@ Future<bool> handleMessage(
   final roomId = message.data!['room_id'] as String;
   final eventId = message.data!['event_id'] as String;
   debugPrint('Received msg $roomId: $eventId');
-  final payload =
-      makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId);
   try {
     final instance = await ActerSdk.instance;
     final notif = await instance.getNotificationFor(deviceId, roomId, eventId);
