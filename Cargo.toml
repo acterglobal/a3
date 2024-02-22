@@ -63,6 +63,7 @@ rev = "68c9bb0930f2195fa8672fbef9633ef62737df5d"
 
 [workspace.dependencies]
 strum = { version = "0.26.1", features = ["derive"] }
+base64ct = "1.6.0"
 derive-getters = "0.3.0"
 derive_builder = "0.20.0"
 

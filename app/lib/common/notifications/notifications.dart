@@ -517,11 +517,12 @@ Future<void> _showNotification(
   }
   // FIXME: currently failing with 
   // Parsing Notification failed: PlatformException(Error 101, Unrecognized attachment file type, UNErrorDomain, null)
-  // if (notification.hasImage()) {
-  //   final tempDir = await getTemporaryDirectory();
-  //   final filePath = await notification.imagePath(tempDir.path);
-  //   attachments.add(DarwinNotificationAttachment(filePath));
-  // }
+  if (notification.hasImage()) {
+    final tempDir = await getTemporaryDirectory();
+    final filePath = await notification.imagePath(tempDir.path);
+    debugPrint('attachment at $filePath');
+    attachments.add(DarwinNotificationAttachment(filePath));
+  }
 
   final darwinDetails = DarwinNotificationDetails(
     threadIdentifier: notification.threadId(),

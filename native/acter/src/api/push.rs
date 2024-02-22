@@ -224,7 +224,7 @@ impl NotificationItem {
             return bail!("No media found in item");
         };
         self.client
-            .source_binary_tmp_path(source, None, tmp_dir)
+            .source_binary_tmp_path(source, None, tmp_dir, "png")
             .await
     }
 

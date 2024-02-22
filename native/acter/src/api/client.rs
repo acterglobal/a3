@@ -3,6 +3,7 @@ use acter_core::{
     store::Store, templates::Engine, CustomAuthSession, RestoreToken,
 };
 use anyhow::{Context, Result};
+use base64ct::{Base64UrlUnpadded, Encoding};
 use core::time::Duration;
 use derive_builder::Builder;
 use eyeball_im::{ObservableVector, Vector};
@@ -412,13 +413,21 @@ impl Client {
         source: MediaSource,
         thumb_size: Option<Box<ThumbnailSize>>,
         tmp_path: String,
+        file_suffix: &str,
     ) -> Result<String> {
         // any variable in self can't be called directly in spawn
         let client = self.clone();
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
         let request = MediaRequest { source, format };
-        trace!(?request, "tasked to get source binary and store to file");
-        let path = PathBuf::from(tmp_path).join(request.unique_key());
+        let path = PathBuf::from(tmp_path).join(format!(
+            "{}.{file_suffix}",
+            Base64UrlUnpadded::encode_string(request.unique_key().as_bytes())
+        ));
+        trace!(
+            ?request,
+            ?path,
+            "tasked to get source binary and store to file"
+        );
         if (!path.exists()) {
             // only download if the temp isn't already there.
             let target_path = path.clone();
@@ -432,10 +441,10 @@ impl Client {
                 .await?;
         }
 
-        return Ok(path
+        return path
             .to_str()
             .map(|s| s.to_string())
-            .context("Path was generated from strings. Must be string")?);
+            .context("Path was generated from strings. Must be string");
     }
 
     pub(crate) async fn join_room(

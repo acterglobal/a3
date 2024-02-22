@@ -91,5 +91,9 @@ pub async fn get_notification_item(
     event_id: String,
 ) -> uniffi::Result<NotificationItem, ActerError> {
     let client = login_with_token(base_path, restore_token).await?;
-    Ok(NotificationItem::from(client.get_notification_item(room_id, event_id).await?, temp_dir).await)
+    Ok(NotificationItem::from(
+        client.get_notification_item(room_id, event_id).await?,
+        temp_dir,
+    )
+    .await)
 }

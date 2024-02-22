@@ -9,7 +9,7 @@ rust-version = "1.70"
 
 [dependencies]
 async-trait = "0.1.60"
-base64ct = { version = "1.6.0", features = ["alloc"] }
+base64ct = { workspace = true, features = ["alloc"] }
 matrix-sdk-base = { workspace = true }
 matrix-sdk-store-encryption = { workspace = true }
 rmp-serde = "1.1.2"
