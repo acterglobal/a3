@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
@@ -27,14 +28,11 @@ class NewsSideBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = news.roomId().toString();
-    final userId = ref.watch(alwaysClientProvider).userId().toString();
+    final userId = ref.watch(myUserIdStrProvider);
     final reactions = ref.watch(reactionEntriesProvider(news));
     final isLikedByMe = ref.watch(myNewsReactionStatusProvider(news));
     final space = ref.watch(briefSpaceItemWithMembershipProvider(roomId));
-
-    final TextStyle style = Theme.of(context).textTheme.bodyLarge!.copyWith(
-          fontSize: 13,
-        );
+    final style = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 13);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -42,8 +40,7 @@ class NewsSideBar extends ConsumerWidget {
         const Spacer(),
         LikeButton(
           isLiked: isLikedByMe.valueOrNull ?? false,
-          likeCount:
-              reactions.valueOrNull != null ? reactions.valueOrNull!.length : 0,
+          likeCount: reactions.valueOrNull?.length ?? 0,
           style: style,
           color: Colors.white,
           index: index,
