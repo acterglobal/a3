@@ -1,1 +1,0 @@
-- You can now create Markdown News-Updates with our WYSIWYG editor (AppFlowy), including bullet and numbers lists, headlines, bold, italic and setting of links
