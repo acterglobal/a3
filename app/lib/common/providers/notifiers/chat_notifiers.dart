@@ -45,7 +45,8 @@ class LatestMsgNotifier extends StateNotifier<RoomMessage?> {
     state = convo.latestMessage();
     final client = ref.watch(alwaysClientProvider);
     _listener = client.subscribeStream(
-        '$convoId::latest_message'); // keep it resident in memory
+      '$convoId::latest_message',
+    ); // keep it resident in memory
     _poller = _listener.listen(
       (e) {
         debugPrint('received new latest message call for $convoId');
