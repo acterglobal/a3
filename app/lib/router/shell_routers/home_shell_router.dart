@@ -24,6 +24,7 @@ import 'package:acter/features/space/pages/tasks_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/settings/pages/index_page.dart';
+import 'package:acter/features/space/settings/pages/notification_configuration_page.dart';
 import 'package:acter/features/spaces/pages/join_space.dart';
 import 'package:acter/features/spaces/pages/spaces_page.dart';
 import 'package:acter/features/tasks/pages/task_list_page.dart';
@@ -303,6 +304,19 @@ List<RouteBase> makeHomeShellRoutes(ref) {
         return NoTransitionPage(
           key: state.pageKey,
           child: SpaceAppsSettingsPage(
+            spaceId: state.pathParameters['spaceId']!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: Routes.spaceSettingsNotifications.name,
+      path: Routes.spaceSettingsNotifications.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: SpaceNotificationConfigurationPage(
             spaceId: state.pathParameters['spaceId']!,
           ),
         );

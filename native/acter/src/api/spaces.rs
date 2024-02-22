@@ -99,8 +99,8 @@ impl Space {
             .add_event_handler_context(self.client.executor().clone());
         trace!(room_id=?self.room.room_id(), "adding handles");
         // FIXME: combine into one handler
-        // Tasks
         vec![
+            // Task
             self.room.add_event_handler(
                 |ev: SyncTaskListEvent,
                  room: SdkRoom,
@@ -182,7 +182,8 @@ impl Space {
                     }
                 },
             ),
-            // Comments
+
+            // Comment
             self.room.add_event_handler(
                 |ev: SyncCommentEvent,
                  room: SdkRoom,
@@ -213,7 +214,7 @@ impl Space {
                 },
             ),
 
-            // Attachments
+            // Attachment
             self.room.add_event_handler(
                 |ev: SyncAttachmentEvent,
                  room: SdkRoom,
@@ -272,7 +273,7 @@ impl Space {
                 },
             ),
 
-            // CalendarEvents
+            // Calendar Event
             self.room.add_event_handler(
                 |ev: SyncCalendarEventEvent,
                  room: SdkRoom,
@@ -306,7 +307,7 @@ impl Space {
                 },
             ),
 
-            // RSVPs
+            // RSVP
             self.room.add_event_handler(
                 |ev: SyncRsvpEvent,
                  room: SdkRoom,
@@ -324,7 +325,7 @@ impl Space {
                 },
             ),
 
-            // NewsEntrys
+            // News Entry
             self.room.add_event_handler(
                 |ev: SyncNewsEntryEvent,
                  room: SdkRoom,
@@ -464,7 +465,11 @@ impl Space {
     #[cfg(feature = "testing")]
     pub async fn timeline_stream(&self) -> TimelineStream {
         let room = self.inner.room.clone();
-        let timeline = Arc::new(room.timeline().await);
+        let timeline = Arc::new(
+            room.timeline()
+                .await
+                .expect("Timeline creation doesn't fail"),
+        );
         TimelineStream::new(room, timeline)
     }
 

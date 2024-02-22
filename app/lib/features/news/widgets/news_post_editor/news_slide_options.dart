@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
@@ -29,8 +30,10 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
   }
 
   Widget newsSlideOptionsUI(BuildContext context) {
+    final keyboardVisibility = ref.watch(keyboardVisibleProvider);
     return Visibility(
-      visible: ref.read(newsStateProvider).currentNewsSlide != null,
+      visible: ref.watch(newsStateProvider).currentNewsSlide != null &&
+          !(keyboardVisibility.value ?? false),
       child: Container(
         color: Theme.of(context).colorScheme.primary,
         child: newsSlideListUI(context),
@@ -74,7 +77,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                           color: Theme.of(context).colorScheme.background,
                           borderRadius: BorderRadius.circular(5),
                           border:
-                              ref.read(newsStateProvider).currentNewsSlide ==
+                              ref.watch(newsStateProvider).currentNewsSlide ==
                                       slidePost
                                   ? Border.all(color: Colors.white)
                                   : null,
@@ -117,7 +120,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
   }
 
   Widget parentSpaceSelector() {
-    final newsPostSpaceId = ref.read(newsStateProvider).newsPostSpaceId;
+    final newsPostSpaceId = ref.watch(newsStateProvider).newsPostSpaceId;
     return Padding(
       padding: const EdgeInsets.all(12),
       child: (newsPostSpaceId != null)

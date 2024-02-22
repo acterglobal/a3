@@ -5,9 +5,9 @@ import 'dart:io';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
-import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:convert/convert.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
@@ -15,6 +15,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:push/push.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -124,7 +125,7 @@ Future<void> initializeNotifications() async {
   }
 
   const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('app_icon');
+      AndroidInitializationSettings('logo_notification');
 
   final List<DarwinNotificationCategory> darwinNotificationCategories =
       <DarwinNotificationCategory>[
@@ -279,6 +280,7 @@ bool handleMessageTap(Map<String?, Object?> data) {
       debugPrint('Not our kind of push event. $roomId, $eventId, $deviceId');
       return false;
     }
+    // fallback support
     rootNavKey.currentContext!.push(
       makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId),
     );
@@ -312,60 +314,12 @@ Future<bool> handleMessage(
   final deviceId = message.data!['device_id'] as String;
   final roomId = message.data!['room_id'] as String;
   final eventId = message.data!['event_id'] as String;
-  final payload =
-      makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId);
+  debugPrint('Received msg $roomId: $eventId');
   try {
     final instance = await ActerSdk.instance;
     final notif = await instance.getNotificationFor(deviceId, roomId, eventId);
-    final isDm = notif.isDirectMessageRoom();
-    final roomDisplayName = notif.roomDisplayName();
-    debugPrint('got a matrix notification in $roomDisplayName ($isDm)');
-
-    String body = '(new message)';
-    String title = roomDisplayName;
-
-    if (isDm) {
-      final roomMsg = notif.roomMessage();
-      if (roomMsg != null) {
-        final eventItem = roomMsg.eventItem();
-        if (eventItem != null) {
-          final msgContent = eventItem.msgContent();
-          if (msgContent != null) {
-            body = msgContent.body();
-          }
-        }
-      }
-    } else {
-      final roomMsg = notif.roomMessage();
-      if (roomMsg != null) {
-        final eventItem = roomMsg.eventItem();
-        if (eventItem != null) {
-          final msgContent = eventItem.msgContent();
-          if (msgContent != null) {
-            body = msgContent.body();
-          }
-        }
-      }
-
-      final sender = notif.senderDisplayName();
-      body = sender != null ? '$sender: $body' : body;
-    }
-
-    try {
-      final currentBase =
-          // ignore: use_build_context_synchronously
-          rootNavKey.currentContext!.read(currentRoutingLocation);
-      final isInChat = currentBase == '/chat/${Uri.encodeComponent(roomId)}';
-      debugPrint('current path: $currentBase == /chat/$roomId : $isInChat');
-      if (isInChat) {
-        debugPrint('We are already in the chatroom. Not showing notification.');
-        return false;
-      }
-    } catch (e) {
-      // ignore this
-    }
-
-    _showNotification(title, body, roomId, payload);
+    debugPrint('got a notification');
+    await _showNotification(notif);
     return true;
   } catch (e) {
     debugPrint('Parsing Notification failed: $e');
@@ -373,25 +327,208 @@ Future<bool> handleMessage(
   return false;
 }
 
-Future<void> _showNotification(
-  String title,
-  String body,
-  String threadId,
-  String payload,
+Future<ByteArrayAndroidBitmap?> _fetchImage(
+  NotificationItem notification,
 ) async {
-  const androidNotificationDetails = AndroidNotificationDetails(
+  if (notification.hasImage()) {
+    try {
+      final image = await notification.image();
+      return ByteArrayAndroidBitmap(image.asTypedList());
+    } catch (e) {
+      debugPrint('fetching image data failed: $e');
+    }
+  }
+  return null;
+}
+
+Future<Person> _makeSenderPerson(NotificationItem notification) async {
+  final sender = notification.sender();
+  if (sender.hasImage()) {
+    try {
+      final image = await sender.image();
+      return Person(
+        icon: ByteArrayAndroidIcon(image.asTypedList()),
+        key: sender.userId(),
+        name: sender.displayName(),
+      );
+    } catch (e) {
+      debugPrint('fetching image data failed: $e');
+    }
+  }
+  return Person(key: sender.userId(), name: sender.displayName());
+}
+
+Future<ByteArrayAndroidBitmap?> _fetchRoomAvatar(
+  NotificationItem notification,
+) async {
+  final room = notification.room();
+  if (room.hasImage()) {
+    try {
+      final image = await room.image();
+      return ByteArrayAndroidBitmap(image.asTypedList());
+    } catch (e) {
+      debugPrint('fetching room avatar failed: $e');
+    }
+  }
+  return null;
+}
+
+Future<void> _showNotificationOnAndroid(NotificationItem notification) async {
+  String? body;
+  String title = notification.title();
+  String? payload = notification.targetUrl();
+  String? threadId = notification.threadId();
+  String pushStyle = notification.pushStyle();
+
+  AndroidNotificationDetails androidNotificationDetails =
+      AndroidNotificationDetails(
     'messages',
     'Messages',
     channelDescription: 'Messages sent to you',
-    importance: Importance.max,
-    priority: Priority.high,
-    ticker: 'ticker',
+    groupKey: threadId,
   );
+
+  final roomAvatar = await _fetchRoomAvatar(notification);
+
+  if (pushStyle == 'invite') {
+    final person = await _makeSenderPerson(notification);
+    androidNotificationDetails = AndroidNotificationDetails(
+      'invites',
+      'Invites',
+      channelDescription: 'When you are invited to spaces or chats',
+      groupKey: threadId,
+      largeIcon: roomAvatar,
+      styleInformation: MessagingStyleInformation(
+        person,
+        groupConversation: true,
+        conversationTitle: title,
+        messages: [
+          Message('<i>invited you to join</i>', DateTime.now(), person),
+        ],
+        htmlFormatContent: true,
+      ),
+    );
+  } else if (pushStyle == 'news') {
+    final image = await _fetchImage(notification);
+    if (image != null) {
+      androidNotificationDetails = AndroidNotificationDetails(
+        'updates',
+        'Updates',
+        channelDescription: 'Updates from your spaces',
+        groupKey: threadId,
+        largeIcon: roomAvatar,
+        styleInformation: BigPictureStyleInformation(image),
+      );
+    } else {
+      final msg = notification.body();
+      if (msg != null) {
+        final formatted = msg.formattedBody();
+        body = msg.body();
+        androidNotificationDetails = AndroidNotificationDetails(
+          'updates',
+          'Updates',
+          channelDescription: 'Updates from your spaces',
+          groupKey: threadId,
+          largeIcon: roomAvatar,
+          styleInformation: BigTextStyleInformation(
+            formatted ?? body,
+            htmlFormatBigText: formatted != null,
+          ),
+        );
+      }
+    }
+  } else if (pushStyle == 'chat') {
+    debugPrint('notification for chat');
+    final person = await _makeSenderPerson(notification);
+    final msg = notification.body()!;
+    final formatted = msg.formattedBody();
+    if (formatted != null) {
+      body = formatted;
+    } else {
+      body = msg.body();
+    }
+    androidNotificationDetails = AndroidNotificationDetails(
+      'chat',
+      'Chat',
+      channelDescription: 'Chat messages from group conversations',
+      groupKey: threadId,
+      largeIcon: roomAvatar,
+      styleInformation: MessagingStyleInformation(
+        person,
+        groupConversation: true,
+        conversationTitle: title,
+        messages: [Message(body, DateTime.now(), person)],
+        htmlFormatContent: formatted != null,
+      ),
+    );
+  } else if (pushStyle == 'dm') {
+    debugPrint('notification for dm');
+    final person = await _makeSenderPerson(notification);
+    final msg = notification.body()!;
+    final formatted = msg.formattedBody();
+    title = msg.body();
+    if (formatted != null) {
+      body = formatted;
+    } else {
+      body = msg.body();
+    }
+    debugPrint('$title, $body');
+    androidNotificationDetails = AndroidNotificationDetails(
+      'dm',
+      'DM',
+      channelDescription: 'Chat messages from DMs',
+      groupKey: threadId,
+      largeIcon: roomAvatar,
+      styleInformation: MessagingStyleInformation(
+        person,
+        groupConversation: false,
+        messages: [Message(body, DateTime.now(), person)],
+        htmlFormatContent: formatted != null,
+      ),
+    );
+  }
+  await flutterLocalNotificationsPlugin.show(
+    id++,
+    title,
+    body,
+    NotificationDetails(android: androidNotificationDetails),
+    payload: payload,
+  );
+}
+
+Future<void> _showNotification(
+  NotificationItem notification,
+) async {
+  String pushStyle = notification.pushStyle();
+
+  debugPrint('notification style: $pushStyle');
+  if (Platform.isAndroid) {
+    return await _showNotificationOnAndroid(notification);
+  }
+  // fallback for non-android
+  String? body;
+  String title = notification.title();
+  String? payload = notification.targetUrl();
+  List<DarwinNotificationAttachment> attachments = [];
+
+  final msg = notification.body();
+  if (msg != null) {
+    body = msg.body();
+  }
+  // FIXME: currently failing with 
+  // Parsing Notification failed: PlatformException(Error 101, Unrecognized attachment file type, UNErrorDomain, null)
+  if (notification.hasImage()) {
+    final tempDir = await getTemporaryDirectory();
+    final filePath = await notification.imagePath(tempDir.path);
+    debugPrint('attachment at $filePath');
+    attachments.add(DarwinNotificationAttachment(filePath));
+  }
+
   final darwinDetails = DarwinNotificationDetails(
-    threadIdentifier: threadId,
+    threadIdentifier: notification.threadId(),
+    attachments: attachments,
   );
   final notificationDetails = NotificationDetails(
-    android: androidNotificationDetails,
     macOS: darwinDetails,
     iOS: darwinDetails,
   );
@@ -407,7 +544,7 @@ Future<void> _showNotification(
 Future<bool> wasRejected(String deviceId) async {
   final SharedPreferences preferences = await sharedPrefs();
   final prefKey = '$deviceId.rejected_notifications';
-  return (preferences.getBool(prefKey) ?? false);
+  return preferences.getBool(prefKey) ?? false;
 }
 
 Future<void> setRejected(String deviceId, bool value) async {
@@ -425,6 +562,7 @@ Future<bool> setupPushNotifications(
   }
   if (pushServer.isEmpty) {
     // no server given. Ignoring
+    debugPrint('No push server configured. Skipping push notification setup.');
     return false;
   }
 
@@ -499,9 +637,14 @@ Future<bool> onToken(Client client, String token) async {
   );
 
   debugPrint(
-    ' ---- notification pusher sent: $appName ($appId) on $name ($token) to $pushServerUrl',
+    ' ---- notification pusher set: $appName ($appId) on $name ($token) to $pushServerUrl',
   );
 
+  await client.installDefaultActerPushRules();
+
+  debugPrint(
+    ' ---- default push rules submitted',
+  );
   return true;
 }
 

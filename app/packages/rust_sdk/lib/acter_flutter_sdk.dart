@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:core';
 import 'dart:convert';
+import 'dart:core';
 import 'dart:developer' as developer;
 import 'dart:ffi';
 import 'dart:io';
@@ -227,16 +227,21 @@ class ActerSdk {
 
   ffi.Api get api => _api;
 
-  Future<ffi.Client> getClientWithDeviceId(String deviceId) async {
+  Future<ffi.Client> getClientWithDeviceId(String deviceId, bool setAsCurrent) async {
     ffi.Client? client;
+    int foundIdx = 0;
     for (final c in _clients) {
       if (c.deviceId().toString() == deviceId) {
         client = c;
         break;
       }
+      foundIdx += 1;
     }
     if (client == null) {
       throw 'Unknown client $deviceId';
+    }
+    if (setAsCurrent) {
+      _index = foundIdx;
     }
 
     return client;
@@ -247,7 +252,7 @@ class ActerSdk {
     String roomId,
     String eventId,
   ) async {
-    final client = await getClientWithDeviceId(deviceId);
+    final client = await getClientWithDeviceId(deviceId, false);
     return await client.getNotificationItem(roomId, eventId);
   }
 
@@ -637,33 +642,5 @@ class ActerSdk {
       userId,
       defaultServerName,
     );
-  }
-
-  ffi.CreateConvoSettingsBuilder newConvoSettingsBuilder() {
-    return _api.newConvoSettingsBuilder();
-  }
-
-  ffi.CreateSpaceSettingsBuilder newSpaceSettingsBuilder() {
-    return _api.newSpaceSettingsBuilder();
-  }
-
-  ffi.JoinRuleBuilder newJoinRuleBuilder() {
-    return _api.newJoinRuleBuilder();
-  }
-
-  String rotateLogFile() {
-    return _api.rotateLogFile();
-  }
-
-  String? parseMarkdown(String text) {
-    return _api.parseMarkdown(text);
-  }
-
-  void writeLog(String text, String level) {
-    _api.writeLog(text, level);
-  }
-
-  ffi.ThumbnailSize newThumbSize(int width, int height) {
-    return _api.newThumbSize(width, height);
   }
 }

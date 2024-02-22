@@ -42,8 +42,31 @@ fn parse_markdown(text: string) -> Option<string>;
 /// create size object to be used for thumbnail download
 fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize>;
 
-// create a new colorize builder
+/// create a colorize builder
 fn new_colorize_builder(color: Option<u32>, background: Option<u32>) -> Result<ColorizeBuilder>;
+
+/// create a task ref builder
+/// target_id: event id of target
+/// task_list: event id of task list
+/// action: link/embed/embed-subscribe/embed-accept-assignment/embed-mark-done
+fn new_task_ref_builder(target_id: string, room_id: Option<string>, task_list: string, action: Option<string>) -> Result<RefDetailsBuilder>;
+
+/// create a task list ref builder
+/// target_id: event id of target
+/// action: link/embed/embed-subscribe
+fn new_task_list_ref_builder(target_id: string, room_id: Option<string>, action: Option<string>) -> Result<RefDetailsBuilder>;
+
+/// create a calendar event ref builder
+/// target_id: event id of target
+/// action: link/embed/embed-rsvp
+fn new_calendar_event_ref_builder(target_id: string, room_id: Option<string>, action: Option<string>) -> Result<RefDetailsBuilder>;
+
+/// create a link ref builder
+fn new_link_ref_builder(title: string, uri: string) -> Result<RefDetailsBuilder>;
+
+/// create object reference
+/// position: top-left/top-middle/top-right/center-left/center-middle/center-right/bottom-left/bottom-middle/bottom-right
+fn new_obj_ref_builder(position: Option<string>, reference: RefDetails) -> Result<ObjRefBuilder>;
 
 
 //  ########  ########  #### ##     ## #### ######## #### ##     ## ########  ######  
@@ -90,6 +113,20 @@ object ObjRef {
     fn reference() -> RefDetails;
 }
 
+/// A builder for ObjRef
+object ObjRefBuilder {
+    /// set position of element
+    /// position: top-left/top-middle/top-right/center-left/center-middle/center-right/bottom-left/bottom-middle/bottom-right
+    fn position(position: string);
+    /// empty position of element
+    fn unset_position();
+
+    /// change ref details
+    fn reference(reference: RefDetails);
+
+    fn build() -> ObjRef;
+}
+
 /// A foreground and background color setting
 object Colorize {
     /// Foreground or text color
@@ -100,14 +137,45 @@ object Colorize {
 
 /// A builder for Colorize. Allowing you to set (foreground) color and background
 object ColorizeBuilder {
-    /// RGBA color representation as int for the foreground color 
+    /// RGBA color representation as int for the foreground color
     fn color(color: u32);
     /// unset the color
     fn unset_color();
+
     /// RGBA color representation as int for the background color
     fn background(color: u32);
     /// unset the background color
     fn unset_background();
+}
+
+/// A builder for RefDetails
+object RefDetailsBuilder {
+    /// it is valid for Task/TaskList/CalendarEvent ref
+    /// target_id: event id of target
+    fn target_id(target_id: string);
+
+    /// it is valid for Task/TaskList/CalendarEvent ref
+    fn room_id(room_id: string);
+    /// unset the room id, it is optional field
+    fn unset_room_id();
+
+    /// it is valid for Task/TaskList/CalendarEvent ref
+    /// task_list: event id of task list
+    fn task_list(task_list: string);
+
+    /// it is valid for Task/TaskList/CalendarEvent ref
+    /// action is one of TaskAction/TaskListAction/CalendarEventAction
+    fn action(action: string);
+    /// unset the action, it is optional field
+    fn unset_action();
+
+    /// it is valid for Link ref
+    fn title(title: string);
+
+    /// it is valid for Link ref
+    fn uri(uri: string);
+
+    fn build() -> RefDetails;
 }
 
 // enum LocationType {
@@ -122,7 +190,7 @@ object ColorizeBuilder {
 //    fn description() -> Option<TextMessageContent>;
 //    fn coordinates() -> Option<string>;
 //    fn uri() -> Option<string>;
-//}
+// }
 
 
 
@@ -288,10 +356,9 @@ object NewsSlide {
     /// the content of this slide
     fn type_str() -> string;
 
-    /// whether this text-slide has a formatted html body
-    fn has_formatted_text() -> bool;
-    /// the textual content of this slide
-    fn text() -> string;
+    /// the unique, predictable ID for this slide
+    fn unique_id() -> string;
+
     /// the references linked in this slide
     fn references() -> Vec<ObjRef>;
 
@@ -1965,20 +2032,39 @@ object NotificationListResult {
     fn notifications() -> Future<Result<Vec<Notification>>>;
 }
 
+object NotificationSender {
+    fn user_id() -> string;
+    fn display_name() -> Option<string>;
+    fn has_image() -> bool;
+    fn image() -> Future<Result<buffer<u8>>>;
+}
+
+object NotificationRoom {
+    fn room_id() -> string;
+    fn display_name() -> string;
+    fn has_image() -> bool;
+    fn image() -> Future<Result<buffer<u8>>>;
+}
+
+
 // converting a room_id+event_id into the notification item to show
 // from push context.
 object NotificationItem {
-    fn is_invite() -> bool;
-    fn room_message() -> Option<RoomMessage>;
-    fn sender_display_name() -> Option<string>;
-    fn sender_avatar_url() -> Option<string>;
-    fn room_display_name() -> string;
-    fn room_avatar_url() -> Option<string>;
-    fn room_canonical_alias() -> Option<string>;
-    fn is_room_encrypted() -> Option<bool>;
-    fn is_direct_message_room() -> bool;
-    fn is_noisy() -> Option<bool>;
-    fn joined_members_count() -> u64;
+    fn push_style() -> string;
+    fn title() -> string;
+    fn sender() -> NotificationSender;
+    fn room() -> NotificationRoom;
+    fn target_url() -> string;
+    fn body() -> Option<MsgContent>;
+    fn icon_url() -> Option<string>;
+    fn thread_id() -> Option<string>;
+    fn noisy() -> bool;
+    fn has_image() -> bool;
+    fn image() -> Future<Result<buffer<u8>>>;
+    fn image_path(tmp_dir: string) -> Future<Result<string>>;
+
+    // if this is an invite, this the room it invites to
+    fn room_invite() -> Option<string>;
 }
 
 /// The pusher we sent notifications via to the user
@@ -2249,6 +2335,9 @@ object Client {
     /// listen to incoming notifications
     fn notifications_stream() -> Stream<Notification>;
 
+    /// install the default acter push rules for fallback
+    fn install_default_acter_push_rules() -> Future<Result<bool>>;
+
     /// list of pushers
     fn pushers() -> Future<Result<Vec<Pusher>>>;
 
@@ -2288,6 +2377,9 @@ object Client {
     /// make draft to send text markdown msg
     fn text_markdown_draft(body: string) -> MsgContentDraft;
 
+    /// make draft to send html marked up msg
+    fn text_html_draft(html: string, plain: string) -> MsgContentDraft;
+
     /// make draft to send image msg
     fn image_draft(source: string, mimetype: string) -> MsgContentDraft;
 
@@ -2315,6 +2407,10 @@ object NotificationSettings {
     /// set default RoomNotificationMode for this combination
     fn set_default_notification_mode(is_encrypted: bool, is_one_on_one: bool, mode: string) -> Future<Result<bool>>;
     
+
+    /// app settings
+    fn global_content_setting(app_key: string) -> Future<Result<bool>>;
+    fn set_global_content_setting(app_key: string, enabled: bool) -> Future<Result<bool>>;
 }
 
 

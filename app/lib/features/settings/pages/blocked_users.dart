@@ -90,9 +90,7 @@ class BlockedUsersPage extends ConsumerWidget {
                   builder: (BuildContext context) => const AddUserToBlock(),
                 );
                 if (userToAdd != null) {
-                  final account = ref
-                      .read(accountProvider)
-                      .requireValue; // is guaranteed because of the ignoredUsersProvider using it
+                  final account = ref.read(accountProvider);
 
                   await account.ignoreUser(userToAdd);
                   if (context.mounted) {
@@ -123,9 +121,7 @@ class BlockedUsersPage extends ConsumerWidget {
                             trailing: OutlinedButton(
                               child: const Text('Unblock'),
                               onPressed: () async {
-                                final account = ref
-                                    .read(accountProvider)
-                                    .requireValue; // is guaranteed because of the ignoredUsersProvider using it
+                                final account = ref.read(accountProvider);
                                 await account.unignoreUser(user.toString());
                                 if (context.mounted) {
                                   customMsgSnackbar(

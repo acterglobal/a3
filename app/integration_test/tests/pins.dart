@@ -52,9 +52,10 @@ extension ActerNews on ConvenientTest {
     await quickJumpKey.should(findsOneWidget);
     await quickJumpKey.tap();
 
-    final spacesKey = find.byKey(QuickJumpKeys.createPinAction);
-    await spacesKey.should(findsOneWidget);
-    await spacesKey.tap();
+    final pinActionKey = find.byKey(QuickJumpKeys.createPinAction);
+    await tester.ensureVisible(pinActionKey);
+    await pinActionKey.should(findsOneWidget);
+    await pinActionKey.tap();
 
     final titleField = find.byKey(CreatePinSheet.titleFieldKey);
     await titleField.should(findsOneWidget);

@@ -188,7 +188,7 @@ final spaceSearchValueProvider =
 final searchedSpacesProvider =
     FutureProvider.autoDispose<List<SpaceItem>>((ref) async {
   final allSpaces =
-      await ref.read(briefSpaceItemsProviderWithMembership.future);
+      await ref.watch(briefSpaceItemsProviderWithMembership.future);
   final searchValue = ref.watch(spaceSearchValueProvider);
   if (searchValue == null || searchValue.isEmpty) {
     return allSpaces;

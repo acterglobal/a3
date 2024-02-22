@@ -26,8 +26,10 @@ uniffi = { version = "0.26.1", features = [ "build" ] }
 [dependencies]
 anyhow = "1.0.79"
 async-stream = "0.3.5"
+base64ct = { workspace = true, features = ["alloc"] }
 chrono = "0.4"
-derive_builder = "0.13.0"
+derive-getters = { workspace = true }
+derive_builder = { workspace = true }
 eyeball-im = "0.4.2"
 fern = { git = "https://github.com/acterglobal/fern", branch = "rotate", features = ["manual"] }
 ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen" }
@@ -54,6 +56,7 @@ tokio-stream = "0.1.14"
 tokio-retry = "0.3.0"
 tracing = { version = "0.1.40", default-features = false, features = ["log"] }
 uuid = { version = "1.6.1", features = ["v4"] }
+urlencoding = "2.1.3"
 
 # for markdown support.
 pulldown-cmark = { version = "0.9.3", default-features = false }

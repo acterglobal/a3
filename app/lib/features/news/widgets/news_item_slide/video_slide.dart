@@ -26,7 +26,7 @@ class VideoSlide extends StatefulWidget {
 class _VideoSlideState extends State<VideoSlide> {
   Future<File> getNewsVideo() async {
     final newsVideo = await widget.slide.sourceBinary(null);
-    final videoName = widget.slide.text();
+    final videoName = widget.slide.uniqueId();
     final tempDir = await getTemporaryDirectory();
     final filePath = p.join(tempDir.path, videoName);
     File file = File(filePath);

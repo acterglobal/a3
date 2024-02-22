@@ -1,10 +1,13 @@
-use acter_core::events::{attachments::AttachmentContent, rsvp::RsvpStatus, ColorizeBuilder};
+use acter_core::events::{
+    attachments::AttachmentContent, rsvp::RsvpStatus, ColorizeBuilder, ObjRef, ObjRefBuilder,
+    Position, RefDetails, RefDetailsBuilder,
+};
 use anyhow::{Context, Result};
 use core::time::Duration;
 use matrix_sdk::media::{MediaFormat, MediaThumbnailSize};
 use ruma::UInt;
 use ruma_client_api::media::get_content_thumbnail;
-use ruma_common::{MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri, OwnedUserId};
+use ruma_common::{EventId, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri, OwnedUserId};
 use ruma_events::{
     room::{
         message::{
@@ -18,6 +21,7 @@ use ruma_events::{
     sticker::StickerEventContent,
 };
 use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 
 use super::api::FfiBuffer;
 
@@ -143,6 +147,15 @@ impl From<&TextMessageEventContent> for MsgContent {
         MsgContent::Text {
             body: value.body.clone(),
             formatted_body: value.formatted.clone().map(|x| x.body),
+        }
+    }
+}
+
+impl From<TextMessageEventContent> for MsgContent {
+    fn from(value: TextMessageEventContent) -> Self {
+        MsgContent::Text {
+            body: value.body,
+            formatted_body: value.formatted.map(|x| x.body),
         }
     }
 }
@@ -580,4 +593,72 @@ pub fn new_colorize_builder(
         builder.background(background);
     }
     Ok(builder)
+}
+
+pub fn new_task_ref_builder(
+    target_id: String,
+    room_id: Option<String>,
+    task_list: String,
+    action: Option<String>,
+) -> Result<RefDetailsBuilder> {
+    let target_id = EventId::parse(target_id)?;
+    let task_list = EventId::parse(task_list)?;
+    let mut builder = RefDetailsBuilder::new_task_ref_builder(target_id, task_list);
+    if let Some(room_id) = room_id {
+        builder.room_id(room_id);
+    }
+    if let Some(action) = action {
+        builder.action(action);
+    }
+    Ok(builder)
+}
+
+pub fn new_task_list_ref_builder(
+    target_id: String,
+    room_id: Option<String>,
+    action: Option<String>,
+) -> Result<RefDetailsBuilder> {
+    let target_id = EventId::parse(target_id)?;
+    let mut builder = RefDetailsBuilder::new_task_list_ref_builder(target_id);
+    if let Some(room_id) = room_id {
+        builder.room_id(room_id);
+    }
+    if let Some(action) = action {
+        builder.action(action);
+    }
+    Ok(builder)
+}
+
+pub fn new_calendar_event_ref_builder(
+    target_id: String,
+    room_id: Option<String>,
+    action: Option<String>,
+) -> Result<RefDetailsBuilder> {
+    let target_id = EventId::parse(target_id)?;
+    let mut builder = RefDetailsBuilder::new_calendar_event_ref_builder(target_id);
+    if let Some(room_id) = room_id {
+        builder.room_id(room_id);
+    }
+    if let Some(action) = action {
+        builder.action(action);
+    }
+    Ok(builder)
+}
+
+pub fn new_link_ref_builder(title: String, uri: String) -> Result<RefDetailsBuilder> {
+    let builder = RefDetailsBuilder::new_link_ref_builder(title, uri);
+    Ok(builder)
+}
+
+#[allow(clippy::boxed_local)]
+pub fn new_obj_ref_builder(
+    position: Option<String>,
+    reference: Box<RefDetails>,
+) -> Result<ObjRefBuilder> {
+    if let Some(p) = position {
+        let p = Position::from_str(&p)?;
+        Ok(ObjRefBuilder::new(Some(p), *reference))
+    } else {
+        Ok(ObjRefBuilder::new(None, *reference))
+    }
 }
