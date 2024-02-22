@@ -364,7 +364,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   Future<void> sendNews(BuildContext context) async {
     final client = ref.read(alwaysClientProvider);
     final spaceId = ref.read(newsStateProvider).newsPostSpaceId;
-    final newsSlideList = ref.watch(newsStateProvider).newsSlideList;
+    final newsSlideList = ref.read(newsStateProvider).newsSlideList;
 
     if (spaceId == null) {
       customMsgSnackbar(context, 'Please first select a space');

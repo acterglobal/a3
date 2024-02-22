@@ -13,8 +13,8 @@ class ClientNotifier extends StateNotifier<Client?> {
   Future<void> _loadUp(Ref ref) async {
     final asyncSdk = await ref.watch(sdkProvider.future);
     PlatformDispatcher.instance.onError = (exception, stackTrace) {
-      asyncSdk.writeLog(exception.toString(), 'error');
-      asyncSdk.writeLog(stackTrace.toString(), 'error');
+      asyncSdk.api.writeLog(exception.toString(), 'error');
+      asyncSdk.api.writeLog(stackTrace.toString(), 'error');
       return true; // make this error handled
     };
     state = asyncSdk.currentClient;

@@ -1111,8 +1111,7 @@ dependencies = [
 [[package]]
 name = "const_panic"
 version = "0.2.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6051f239ecec86fde3410901ab7860d458d160371533842974fc61f96d15879b"
+source = "git+https://github.com/jplatte/const_panic?rev=9024a4cb3eac45c1d2d980f17aaee287b17be498#9024a4cb3eac45c1d2d980f17aaee287b17be498"
 
 [[package]]
 name = "constant_time_eq"

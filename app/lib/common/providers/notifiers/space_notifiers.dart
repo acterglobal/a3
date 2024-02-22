@@ -18,8 +18,8 @@ class AsyncSpaceProfileDataNotifier
     final space = arg;
     final profile = space.getProfile();
     OptionString displayName = await profile.getDisplayName();
-    final sdk = await ref.watch(sdkProvider.future);
-    final size = sdk.newThumbSize(48, 48);
+    final sdk = await ref.read(sdkProvider.future);
+    final size = sdk.api.newThumbSize(48, 48);
     final avatar = await profile.getAvatar(size);
     return ProfileData(displayName.text(), avatar.data());
   }

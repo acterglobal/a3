@@ -212,8 +212,8 @@ final roomDefaultNotificationStatusProvider =
 /// Get the default RoomNotificationsStatus for this room type
 final roomIsMutedProvider =
     FutureProvider.autoDispose.family<bool, String>((ref, roomId) async {
-  return (await ref.watch(roomNotificationStatusProvider(roomId).future)) ==
-      'muted';
+  final status = await ref.watch(roomNotificationStatusProvider(roomId).future);
+  return status == 'muted';
 });
 
 class MemberNotFound extends Error {}
@@ -245,7 +245,7 @@ final userProfileDataProvider =
   if (!profile.hasAvatar()) {
     return ProfileData(displayName, null);
   }
-  final size = sdk.newThumbSize(48, 48);
+  final size = sdk.api.newThumbSize(48, 48);
   final avatar = await profile.getAvatar(size);
   return ProfileData(displayName, avatar.data());
 });

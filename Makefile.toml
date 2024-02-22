@@ -563,14 +563,14 @@ dependencies = [
 [tasks.desktop-tracing-inner]
 private = true
 condition = { env_true = ["DEV"] }
-env = { RUSTFLAGS="--cfg tokio_unstable", MACOSX_DEPLOYMENT_TARGET = 11 }
+env = { RUSTFLAGS="--cfg tokio_unstable", MACOSX_DEPLOYMENT_TARGET = 12 }
 command = "cargo"
 args = ["build", "--lib", "--features", "tracing"]
 
 [tasks.desktop-build]
 private = true
 condition = { env_true = ["DEV"] }
-env = { MACOSX_DEPLOYMENT_TARGET = 11 }
+env = { MACOSX_DEPLOYMENT_TARGET = 12 }
 command = "cargo"
 args = ["build", "--lib"]
 
@@ -589,7 +589,7 @@ script = [
     export MAC_LIPO=${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib
     export MACOSX_DEPLOYMENT_TARGET=10.14
     cargo build --lib --target x86_64-apple-darwin --release
-    export MACOSX_DEPLOYMENT_TARGET=11
+    export MACOSX_DEPLOYMENT_TARGET=12
     cargo build --lib --target aarch64-apple-darwin --release
 
     # fix inner reference name

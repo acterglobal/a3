@@ -13,10 +13,7 @@ class SpaceToolbar extends ConsumerWidget {
   static const settingsMenu = Key('space-options-settings');
   final String spaceId;
 
-  const SpaceToolbar({
-    super.key,
-    required this.spaceId,
-  });
+  const SpaceToolbar({super.key, required this.spaceId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -110,7 +107,7 @@ class SpaceToolbar extends ConsumerWidget {
           ),
           ElevatedButton(
             onPressed: () async {
-              final space = await ref.watch(spaceProvider(spaceId).future);
+              final space = await ref.read(spaceProvider(spaceId).future);
               await space.leave();
               // refresh spaces list
               ref.invalidate(spacesProvider);

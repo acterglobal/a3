@@ -543,7 +543,7 @@ Future<void> _showNotification(
 Future<bool> wasRejected(String deviceId) async {
   final SharedPreferences preferences = await sharedPrefs();
   final prefKey = '$deviceId.rejected_notifications';
-  return (preferences.getBool(prefKey) ?? false);
+  return preferences.getBool(prefKey) ?? false;
 }
 
 Future<void> setRejected(String deviceId, bool value) async {
