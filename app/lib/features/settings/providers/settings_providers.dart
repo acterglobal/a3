@@ -20,7 +20,7 @@ final featuresProvider =
 });
 
 final ignoredUsersProvider = FutureProvider<List<UserId>>((ref) async {
-  final account = await ref.watch(accountProvider.future);
+  final account = ref.watch(accountProvider);
   return (await account.ignoredUsers()).toList();
 });
 
