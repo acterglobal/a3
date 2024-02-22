@@ -42,7 +42,7 @@ final latestMessageProvider =
 final chatProfileDataProviderById =
     FutureProvider.family<ProfileData, String>((ref, roomId) async {
   final chat = await ref.watch(chatProvider(roomId).future);
-  return (await ref.watch(chatProfileDataProvider(chat).future));
+  return await ref.watch(chatProfileDataProvider(chat).future);
 });
 
 /// Provider the profile data of a the given space, keeps up to date with underlying client
@@ -80,10 +80,7 @@ final selectedChatIdProvider =
 // Member Providers
 final memberProfileByInfoProvider =
     FutureProvider.family<ProfileData, MemberInfo>((ref, memberInfo) async {
-  final member = await ref.read(
-    memberProvider((roomId: memberInfo.roomId, userId: memberInfo.userId))
-        .future,
-  );
+  final member = await ref.read(memberProvider(memberInfo).future);
   if (member == null) {
     throw 'Member not found';
   }
@@ -103,7 +100,7 @@ final memberProfileProvider =
 final memberProvider =
     FutureProvider.family<Member?, MemberInfo>((ref, memberInfo) async {
   try {
-    final convo = await ref.read(chatProvider((memberInfo.roomId!)).future);
+    final convo = await ref.watch(chatProvider((memberInfo.roomId!)).future);
     return await convo.getMember(memberInfo.userId);
   } catch (e) {
     throw e.toString();

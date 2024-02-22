@@ -70,3 +70,6 @@ opt-level = 2
 lto = true
 codegen-units = 1
 strip = true  # Automatically strip symbols from the binary.
+
+[patch.crates-io]
+const_panic = { git = "https://github.com/jplatte/const_panic", rev = "9024a4cb3eac45c1d2d980f17aaee287b17be498" }

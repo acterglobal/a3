@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 class NonActerSpaceCard extends ConsumerWidget {
   final String spaceId;
+
   const NonActerSpaceCard({super.key, required this.spaceId});
 
   @override
@@ -54,7 +55,7 @@ class NonActerSpaceCard extends ConsumerWidget {
     customMsgSnackbar(context, 'Converting to acter space');
 
     try {
-      final space = await ref.watch(spaceProvider(spaceId).future);
+      final space = await ref.read(spaceProvider(spaceId).future);
       debugPrint('before setting space state');
 
       await space.setActerSpaceStates();

@@ -124,7 +124,7 @@ extension ActerTasks on ConvenientTest {
       listTitle ?? 'Errands',
       tasks: tasks,
     );
-    return ((spaceId: spaceId, taskListId: taskListId));
+    return (spaceId: spaceId, taskListId: taskListId);
   }
 
   Future<void> renameTask(String newTitle) async {

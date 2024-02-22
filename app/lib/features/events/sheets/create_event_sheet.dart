@@ -233,8 +233,8 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   }
 
   Future<void> _selectDateTime() async {
-    final selectedStartDate = ref.watch(_startDateProvider);
-    final selectedEndDate = ref.watch(_endDateProvider);
+    final selectedStartDate = ref.read(_startDateProvider);
+    final selectedEndDate = ref.read(_endDateProvider);
     final picked = await showOmniDateTimeRangePicker(
       context: context,
       startFirstDate: DateTime.now(),
