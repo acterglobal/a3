@@ -2,6 +2,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/pages/home_shell.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/router/shell_routers/activities_shell_router.dart';
 import 'package:acter/router/shell_routers/chat_shell_router.dart';
 import 'package:acter/router/general_router.dart';
@@ -11,6 +12,7 @@ import 'package:acter/router/shell_routers/update_shell_router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -60,9 +62,16 @@ Future<String?> forwardRedirect(
       // we are not logged in.
       return null;
     }
-    final deviceId = state.uri.queryParameters['deviceId'];
+    Client client;
+    try {
+      final deviceId = state.uri.queryParameters['deviceId'];
+      client = await acterSdk.getClientWithDeviceId(deviceId!, true);
+      final ref = ProviderScope.containerOf(context);
+      ref.invalidate(clientProvider); // ensure we have selected the right client
+    } catch(error) {
+      return null;
+    }
     final roomId = state.uri.queryParameters['roomId'];
-    final client = await acterSdk.getClientWithDeviceId(deviceId!);
     if (await client.hasConvo(roomId!)) {
       // this is a chat
       return state.namedLocation(
@@ -73,7 +82,7 @@ Future<String?> forwardRedirect(
       // final eventId = state.uri.queryParameters['eventId'];
       // with the event ID or further information we could figure out the specific action
       return state
-          .namedLocation(Routes.space.name, pathParameters: {'roomId': roomId});
+          .namedLocation(Routes.space.name, pathParameters: {'spaceId': roomId});
     }
   } catch (error, trace) {
     // ignore: deprecated_member_use

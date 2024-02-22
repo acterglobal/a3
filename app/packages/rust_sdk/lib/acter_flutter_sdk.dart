@@ -227,16 +227,21 @@ class ActerSdk {
 
   ffi.Api get api => _api;
 
-  Future<ffi.Client> getClientWithDeviceId(String deviceId) async {
+  Future<ffi.Client> getClientWithDeviceId(String deviceId, bool setAsCurrent) async {
     ffi.Client? client;
+    int foundIdx = 0;
     for (final c in _clients) {
       if (c.deviceId().toString() == deviceId) {
         client = c;
         break;
       }
+      foundIdx += 1;
     }
     if (client == null) {
       throw 'Unknown client $deviceId';
+    }
+    if (setAsCurrent) {
+      _index = foundIdx;
     }
 
     return client;
@@ -247,7 +252,7 @@ class ActerSdk {
     String roomId,
     String eventId,
   ) async {
-    final client = await getClientWithDeviceId(deviceId);
+    final client = await getClientWithDeviceId(deviceId, false);
     return await client.getNotificationItem(roomId, eventId);
   }
 

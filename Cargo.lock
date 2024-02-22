@@ -71,6 +71,7 @@ dependencies = [
  "tracing-subscriber",
  "tracing-wasm",
  "uniffi",
+ "urlencoding",
  "uuid 1.6.1",
  "wasm-bindgen-futures",
 ]

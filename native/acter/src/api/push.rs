@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use urlencoding::encode;
 
 use acter_core::{
     events::{
@@ -30,7 +31,7 @@ use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
     NotificationProcessSetup, RawNotificationEvent,
 };
-use ruma_client_api::push::{get_pushrules_all, set_pushrule, RuleScope};
+use ruma_client_api::{push::{get_pushrules_all, set_pushrule, RuleScope}, device};
 use ruma_common::{EventId, OwnedMxcUri, OwnedRoomId, RoomId};
 use ruma_events::{
     room::{message::MessageType, MediaSource},
@@ -230,6 +231,7 @@ impl NotificationItem {
 
     fn from(client: Client, inner: SdkNotificationItem, room_id: OwnedRoomId) -> Result<Self> {
         let mut builder = NotificationItemBuilder::default();
+        let device_id = client.device_id()?;
         // setting defaults;
         builder
             .sender(NotificationSender::from(client.clone(), &inner))
@@ -239,6 +241,7 @@ impl NotificationItem {
             .title(inner.room_display_name)
             .noisy(inner.is_noisy)
             .push_style("fallback".to_owned())
+            .target_url(format!("/forward?deviceId={}&roomId={}", encode(device_id.as_str()), encode(room_id.as_str()))) //default is forward
             .icon_url(inner.room_avatar_url);
 
         if let NotificationEvent::Invite(invite) = inner.event {
