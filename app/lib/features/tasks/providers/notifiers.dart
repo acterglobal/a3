@@ -7,9 +7,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TasksNotifier extends FamilyAsyncNotifier<TasksOverview, TaskList> {
-  late Stream<void> _subscriber;
+  late Stream<bool> _listener;
   // ignore: unused_field
-  late StreamSubscription<void> _listener;
+  late StreamSubscription<bool> _poller;
 
   Future<TasksOverview> _refresh(TaskList taskList) async {
     final tasks = (await taskList.tasks()).toList();
@@ -32,23 +32,23 @@ class TasksNotifier extends FamilyAsyncNotifier<TasksOverview, TaskList> {
   Future<TasksOverview> build(TaskList arg) async {
     // Load initial todo list from the remote repository
     final taskList = arg;
-    final retState = _refresh(taskList);
-    _subscriber = taskList.subscribeStream();
-    _listener = _subscriber.listen((element) async {
+    _listener = taskList.subscribeStream(); // keep it resident in memory
+    _poller = _listener.listen((element) async {
       debugPrint('got tasks list update');
       state = await AsyncValue.guard(() async {
         final freshTaskList = await taskList.refresh();
         return await _refresh(freshTaskList);
       });
     });
-    return retState;
+    ref.onDispose(() => _poller.cancel());
+    return await _refresh(taskList);
   }
 }
 
 class TaskListNotifier extends FamilyAsyncNotifier<TaskList, String> {
-  late Stream<void> _subscriber;
+  late Stream<bool> _listener;
   // ignore: unused_field
-  late StreamSubscription<void> _listener;
+  late StreamSubscription<bool> _poller;
 
   Future<TaskList> _refresh(Client client, String taskListId) async {
     return await client.taskList(taskListId, 60);
@@ -59,33 +59,31 @@ class TaskListNotifier extends FamilyAsyncNotifier<TaskList, String> {
     // Load initial todo list from the remote repository
     final client = ref.watch(alwaysClientProvider);
     final taskList = await _refresh(client, arg);
-    _subscriber = taskList.subscribeStream();
-    _listener = _subscriber.listen((element) async {
+    _listener = taskList.subscribeStream(); // keep it resident in memory
+    _poller = _listener.listen((element) async {
       debugPrint('got taskList update');
-      state = await AsyncValue.guard(() async {
-        return await _refresh(client, arg);
-      });
+      state = await AsyncValue.guard(() async => await _refresh(client, arg));
     });
+    ref.onDispose(() => _poller.cancel());
     return taskList;
   }
 }
 
 class TaskNotifier extends FamilyAsyncNotifier<Task, Task> {
-  late Stream<void> _subscriber;
+  late Stream<bool> _listener;
   // ignore: unused_field
-  late StreamSubscription<void> _listener;
+  late StreamSubscription<bool> _poller;
 
   @override
   Future<Task> build(Task arg) async {
     // Load initial todo list from the remote repository
     final task = arg;
-    _subscriber = task.subscribeStream();
-    _listener = _subscriber.listen((element) async {
+    _listener = task.subscribeStream(); // keep it resident in memory
+    _poller = _listener.listen((element) async {
       debugPrint('got tasks list update');
-      state = await AsyncValue.guard(() async {
-        return await task.refresh();
-      });
+      state = await AsyncValue.guard(() async => await task.refresh());
     });
+    ref.onDispose(() => _poller.cancel());
     return task;
   }
 }
