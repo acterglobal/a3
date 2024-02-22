@@ -1,11 +1,15 @@
 [package]
 name = "matrix-sdk-store-media-cache-wrapper"
 description = "Wrap any matrix-sdk State Store to store media files in a separate directory instead"
-version = "0.1.0"
+version = "0.1.2+dev"
 edition = "2021"
 rust-version = "1.70"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+authors = ["Benjamin Kampmann <ben@gnunicorn.org>", "Acter Team <team@acter.global>"]
+repository = "https://github.com/acterglobal/a3/tree/main/native/media-cache-wrapper"
+website = "https://acter.global/"
+keywords = ["matrix-sdk", "cache", "store"]
+readme = "Readme.md"
+license = "MIT OR Apache-2.0"
 
 [dependencies]
 async-trait = "0.1.60"
