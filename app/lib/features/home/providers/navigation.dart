@@ -21,7 +21,7 @@ final spaceItemsProvider = FutureProvider.autoDispose
 
   return spaces.map((space) {
     final profileData = ref.watch(spaceProfileDataProvider(space));
-    final roomId = space.getRoomId().toString();
+    final roomId = space.getRoomIdStr();
     final canonicalParent = ref.watch(canonicalParentProvider(roomId));
     return profileData.when(
       loading: () => SidebarNavigationItem(

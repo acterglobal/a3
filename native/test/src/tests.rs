@@ -6,6 +6,7 @@ mod msg_edit;
 mod news;
 mod onboarding;
 mod pins;
+mod push;
 mod reaction;
 mod receipt;
 mod redact;

@@ -88,15 +88,15 @@ final briefRoomItemsWithMembershipProvider =
       ref.watch(chatsProvider).where((element) => (!element.isDm())).toList();
 
   List<RoomItem> items = [];
-  for (final element in chatList) {
-    final room =
-        await ref.watch(maybeRoomProvider(element.getRoomIdStr()).future);
+  for (final convo in chatList) {
+    final roomId = convo.getRoomIdStr();
+    final room = await ref.watch(maybeRoomProvider(roomId).future);
     if (room != null) {
-      final profileData = await ref
-          .watch(roomProfileDataProvider(element.getRoomIdStr()).future);
+      final profileData =
+          await ref.watch(roomProfileDataProvider(roomId).future);
 
       final item = RoomItem(
-        roomId: room.roomIdStr(),
+        roomId: roomId,
         room: room,
         membership: room.isJoined() ? await room.getMyMembership() : null,
         activeMembers: [],

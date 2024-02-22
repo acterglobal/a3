@@ -103,14 +103,10 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
                             MenuItemButton(
                               child: const Text('Unmute'),
                               onPressed: () async {
-                                final room = await ref.read(
-                                  maybeRoomProvider(widget.room.getRoomIdStr())
-                                      .future,
-                                );
+                                final room = await ref
+                                    .read(maybeRoomProvider(roomId).future);
                                 if (room == null) {
-                                  EasyLoading.showError(
-                                    'Room not found',
-                                  );
+                                  EasyLoading.showError('Room not found');
                                   return;
                                 }
                                 await room.unmute();

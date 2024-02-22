@@ -65,7 +65,7 @@ final maybeSpaceInfoProvider =
   final membership = await space.getMyMembership();
   return SpaceItem(
     space: space,
-    roomId: space.getRoomId().toString(),
+    roomId: space.getRoomIdStr(),
     membership: membership,
     activeMembers: [],
     spaceProfileData: profileData,
@@ -172,7 +172,7 @@ final briefSpaceItemsProviderWithMembership =
     final profileData =
         await ref.watch(spaceProfileDataProvider(element).future);
     final item = SpaceItem(
-      roomId: element.getRoomId().toString(),
+      roomId: element.getRoomIdStr(),
       membership: await element.getMyMembership(),
       activeMembers: [],
       spaceProfileData: profileData,
@@ -218,7 +218,7 @@ final briefSpaceItemProvider =
   final space = await ref.watch(spaceProvider(spaceId).future);
   final profileData = await ref.watch(spaceProfileDataProvider(space).future);
   return SpaceItem(
-    roomId: space.getRoomId().toString(),
+    roomId: space.getRoomIdStr(),
     membership: null,
     activeMembers: [],
     spaceProfileData: profileData,
@@ -233,7 +233,7 @@ final briefSpaceItemWithMembershipProvider =
   final space = await ref.watch(spaceProvider(spaceId).future);
   final profileData = await ref.watch(spaceProfileDataProvider(space).future);
   return SpaceItem(
-    roomId: space.getRoomId().toString(),
+    roomId: space.getRoomIdStr(),
     space: space,
     membership: space.isJoined() ? await space.getMyMembership() : null,
     activeMembers: [],
@@ -259,7 +259,7 @@ final spaceItemsProvider =
       members = [];
     }
     final item = SpaceItem(
-      roomId: element.getRoomId().toString(),
+      roomId: element.getRoomIdStr(),
       activeMembers: members,
       spaceProfileData: profileData,
     );

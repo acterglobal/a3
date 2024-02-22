@@ -151,6 +151,15 @@ impl From<&TextMessageEventContent> for MsgContent {
     }
 }
 
+impl From<TextMessageEventContent> for MsgContent {
+    fn from(value: TextMessageEventContent) -> Self {
+        MsgContent::Text {
+            body: value.body,
+            formatted_body: value.formatted.map(|x| x.body),
+        }
+    }
+}
+
 impl From<&ImageMessageEventContent> for MsgContent {
     fn from(value: &ImageMessageEventContent) -> Self {
         MsgContent::Image {

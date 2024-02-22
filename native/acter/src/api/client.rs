@@ -3,6 +3,7 @@ use acter_core::{
     store::Store, templates::Engine, CustomAuthSession, RestoreToken,
 };
 use anyhow::{Context, Result};
+use base64ct::{Base64UrlUnpadded, Encoding};
 use core::time::Duration;
 use derive_builder::Builder;
 use eyeball_im::{ObservableVector, Vector};
@@ -17,6 +18,7 @@ use matrix_sdk::{
     event_handler::EventHandlerHandle, media::MediaRequest, room::Room as SdkRoom,
     Client as SdkClient, LoopCtrl, RoomState, RumaApiError,
 };
+use matrix_sdk_base::media::UniqueKey;
 use ruma_client_api::{
     error::{ErrorBody, ErrorKind},
     push::get_notifications,
@@ -30,6 +32,7 @@ use ruma_common::{
 use ruma_events::room::MediaSource;
 use std::{
     collections::{BTreeMap, HashMap},
+    io::Write,
     ops::Deref,
     path::PathBuf,
     sync::{
@@ -403,6 +406,45 @@ impl Client {
                 Ok(FfiBuffer::new(buf))
             })
             .await?
+    }
+
+    pub(crate) async fn source_binary_tmp_path(
+        &self,
+        source: MediaSource,
+        thumb_size: Option<Box<ThumbnailSize>>,
+        tmp_path: String,
+        file_suffix: &str,
+    ) -> Result<String> {
+        // any variable in self can't be called directly in spawn
+        let client = self.clone();
+        let format = ThumbnailSize::parse_into_media_format(thumb_size);
+        let request = MediaRequest { source, format };
+        let path = PathBuf::from(tmp_path).join(format!(
+            "{}.{file_suffix}",
+            Base64UrlUnpadded::encode_string(request.unique_key().as_bytes())
+        ));
+        trace!(
+            ?request,
+            ?path,
+            "tasked to get source binary and store to file"
+        );
+        if (!path.exists()) {
+            // only download if the temp isn't already there.
+            let target_path = path.clone();
+            RUNTIME
+                .spawn(async move {
+                    let data = client.media().get_media_content(&request, true).await?;
+                    let mut file = std::fs::File::create(target_path)?;
+                    file.write_all(&data)?;
+                    anyhow::Ok(())
+                })
+                .await?;
+        }
+
+        return path
+            .to_str()
+            .map(|s| s.to_string())
+            .context("Path was generated from strings. Must be string");
     }
 
     pub(crate) async fn join_room(

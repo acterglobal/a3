@@ -116,7 +116,7 @@ class SpaceCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomId = space.getRoomId().toString();
+    final roomId = space.getRoomIdStr();
     final profile = ref.watch(spaceProfileDataProvider(space));
     final subtitle = subtitleFn != null ? subtitleFn!(space) : null;
     final parent = ref.watch(canonicalParentProvider(roomId));

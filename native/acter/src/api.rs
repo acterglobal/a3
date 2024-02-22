@@ -93,7 +93,9 @@ pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide, New
 pub use notifications::{Notification, NotificationListResult};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
-pub use push::{NotificationItem, NotificationSettings, Pusher};
+pub use push::{
+    NotificationItem, NotificationRoom, NotificationSender, NotificationSettings, Pusher,
+};
 pub use reactions::{Reaction, ReactionManager};
 pub use receipt::{ReceiptEvent, ReceiptRecord, ReceiptThread};
 pub use room::{

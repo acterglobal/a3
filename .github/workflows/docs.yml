@@ -53,7 +53,7 @@ jobs:
 
       - name: Build Rust docs
         run: |
-          cargo doc -p acter
+          cargo doc -p acter -p acter-core -p matrix-sdk-store-media-cache-wrapper
           echo --- Moving docs
           mv target/doc/ docs/static/api/main/rust
 

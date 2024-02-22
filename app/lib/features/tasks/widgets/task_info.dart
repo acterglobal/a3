@@ -111,8 +111,7 @@ class TaskInfo extends ConsumerWidget {
                 key: selfUnassignKey,
                 size: 20,
               ),
-              onDeleted: account.hasValue &&
-                      account.value!.userId().toString() == userId
+              onDeleted: account.userId().toString() == userId
                   ? () async {
                       await task.unassignSelf();
                       EasyLoading.showToast(

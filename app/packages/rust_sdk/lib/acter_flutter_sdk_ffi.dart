@@ -8855,6 +8855,212 @@ class Api {
     return tmp7;
   }
 
+  FfiBufferUint8? __notificationSenderImageFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _notificationSenderImageFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  FfiBufferUint8? __notificationRoomImageFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _notificationRoomImageFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  FfiBufferUint8? __notificationItemImageFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _notificationItemImageFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  String? __notificationItemImagePathFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _notificationItemImagePathFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
+    return tmp7;
+  }
+
   bool? __pusherDeleteFuturePoll(
     int boxed,
     int postCobject,
@@ -10540,6 +10746,50 @@ class Api {
     return tmp7;
   }
 
+  bool? __clientInstallDefaultActerPushRulesFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientInstallDefaultActerPushRulesFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   FfiListPusher? __clientPushersFuturePoll(
     int boxed,
     int postCobject,
@@ -11039,6 +11289,94 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 = _notificationSettingsSetDefaultNotificationModeFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __notificationSettingsGlobalContentSettingFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _notificationSettingsGlobalContentSettingFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __notificationSettingsSetGlobalContentSettingFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _notificationSettingsSetGlobalContentSettingFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -20685,124 +21023,231 @@ class Api {
           int Function(
             int,
           )>();
-  late final _notificationItemIsInvitePtr = _lookup<
+  late final _notificationSenderUserIdPtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationSenderUserIdReturn Function(
+            ffi.Int64,
+          )>>("__NotificationSender_user_id");
+
+  late final _notificationSenderUserId =
+      _notificationSenderUserIdPtr.asFunction<
+          _NotificationSenderUserIdReturn Function(
+            int,
+          )>();
+  late final _notificationSenderDisplayNamePtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationSenderDisplayNameReturn Function(
+            ffi.Int64,
+          )>>("__NotificationSender_display_name");
+
+  late final _notificationSenderDisplayName =
+      _notificationSenderDisplayNamePtr.asFunction<
+          _NotificationSenderDisplayNameReturn Function(
+            int,
+          )>();
+  late final _notificationSenderHasImagePtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
             ffi.Int64,
-          )>>("__NotificationItem_is_invite");
+          )>>("__NotificationSender_has_image");
 
-  late final _notificationItemIsInvite =
-      _notificationItemIsInvitePtr.asFunction<
+  late final _notificationSenderHasImage =
+      _notificationSenderHasImagePtr.asFunction<
           int Function(
             int,
           )>();
-  late final _notificationItemRoomMessagePtr = _lookup<
+  late final _notificationSenderImagePtr = _lookup<
       ffi.NativeFunction<
-          _NotificationItemRoomMessageReturn Function(
+          ffi.Int64 Function(
             ffi.Int64,
-          )>>("__NotificationItem_room_message");
+          )>>("__NotificationSender_image");
 
-  late final _notificationItemRoomMessage =
-      _notificationItemRoomMessagePtr.asFunction<
-          _NotificationItemRoomMessageReturn Function(
-            int,
-          )>();
-  late final _notificationItemSenderDisplayNamePtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemSenderDisplayNameReturn Function(
-            ffi.Int64,
-          )>>("__NotificationItem_sender_display_name");
-
-  late final _notificationItemSenderDisplayName =
-      _notificationItemSenderDisplayNamePtr.asFunction<
-          _NotificationItemSenderDisplayNameReturn Function(
-            int,
-          )>();
-  late final _notificationItemSenderAvatarUrlPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemSenderAvatarUrlReturn Function(
-            ffi.Int64,
-          )>>("__NotificationItem_sender_avatar_url");
-
-  late final _notificationItemSenderAvatarUrl =
-      _notificationItemSenderAvatarUrlPtr.asFunction<
-          _NotificationItemSenderAvatarUrlReturn Function(
-            int,
-          )>();
-  late final _notificationItemRoomDisplayNamePtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemRoomDisplayNameReturn Function(
-            ffi.Int64,
-          )>>("__NotificationItem_room_display_name");
-
-  late final _notificationItemRoomDisplayName =
-      _notificationItemRoomDisplayNamePtr.asFunction<
-          _NotificationItemRoomDisplayNameReturn Function(
-            int,
-          )>();
-  late final _notificationItemRoomAvatarUrlPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemRoomAvatarUrlReturn Function(
-            ffi.Int64,
-          )>>("__NotificationItem_room_avatar_url");
-
-  late final _notificationItemRoomAvatarUrl =
-      _notificationItemRoomAvatarUrlPtr.asFunction<
-          _NotificationItemRoomAvatarUrlReturn Function(
-            int,
-          )>();
-  late final _notificationItemRoomCanonicalAliasPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemRoomCanonicalAliasReturn Function(
-            ffi.Int64,
-          )>>("__NotificationItem_room_canonical_alias");
-
-  late final _notificationItemRoomCanonicalAlias =
-      _notificationItemRoomCanonicalAliasPtr.asFunction<
-          _NotificationItemRoomCanonicalAliasReturn Function(
-            int,
-          )>();
-  late final _notificationItemIsRoomEncryptedPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemIsRoomEncryptedReturn Function(
-            ffi.Int64,
-          )>>("__NotificationItem_is_room_encrypted");
-
-  late final _notificationItemIsRoomEncrypted =
-      _notificationItemIsRoomEncryptedPtr.asFunction<
-          _NotificationItemIsRoomEncryptedReturn Function(
-            int,
-          )>();
-  late final _notificationItemIsDirectMessageRoomPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Uint8 Function(
-            ffi.Int64,
-          )>>("__NotificationItem_is_direct_message_room");
-
-  late final _notificationItemIsDirectMessageRoom =
-      _notificationItemIsDirectMessageRoomPtr.asFunction<
-          int Function(
-            int,
-          )>();
-  late final _notificationItemIsNoisyPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemIsNoisyReturn Function(
-            ffi.Int64,
-          )>>("__NotificationItem_is_noisy");
-
-  late final _notificationItemIsNoisy = _notificationItemIsNoisyPtr.asFunction<
-      _NotificationItemIsNoisyReturn Function(
+  late final _notificationSenderImage = _notificationSenderImagePtr.asFunction<
+      int Function(
         int,
       )>();
-  late final _notificationItemJoinedMembersCountPtr = _lookup<
+  late final _notificationRoomRoomIdPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint64 Function(
+          _NotificationRoomRoomIdReturn Function(
             ffi.Int64,
-          )>>("__NotificationItem_joined_members_count");
+          )>>("__NotificationRoom_room_id");
 
-  late final _notificationItemJoinedMembersCount =
-      _notificationItemJoinedMembersCountPtr.asFunction<
+  late final _notificationRoomRoomId = _notificationRoomRoomIdPtr.asFunction<
+      _NotificationRoomRoomIdReturn Function(
+        int,
+      )>();
+  late final _notificationRoomDisplayNamePtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationRoomDisplayNameReturn Function(
+            ffi.Int64,
+          )>>("__NotificationRoom_display_name");
+
+  late final _notificationRoomDisplayName =
+      _notificationRoomDisplayNamePtr.asFunction<
+          _NotificationRoomDisplayNameReturn Function(
+            int,
+          )>();
+  late final _notificationRoomHasImagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__NotificationRoom_has_image");
+
+  late final _notificationRoomHasImage =
+      _notificationRoomHasImagePtr.asFunction<
           int Function(
+            int,
+          )>();
+  late final _notificationRoomImagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__NotificationRoom_image");
+
+  late final _notificationRoomImage = _notificationRoomImagePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _notificationItemPushStylePtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationItemPushStyleReturn Function(
+            ffi.Int64,
+          )>>("__NotificationItem_push_style");
+
+  late final _notificationItemPushStyle =
+      _notificationItemPushStylePtr.asFunction<
+          _NotificationItemPushStyleReturn Function(
+            int,
+          )>();
+  late final _notificationItemTitlePtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationItemTitleReturn Function(
+            ffi.Int64,
+          )>>("__NotificationItem_title");
+
+  late final _notificationItemTitle = _notificationItemTitlePtr.asFunction<
+      _NotificationItemTitleReturn Function(
+        int,
+      )>();
+  late final _notificationItemSenderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__NotificationItem_sender");
+
+  late final _notificationItemSender = _notificationItemSenderPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _notificationItemRoomPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__NotificationItem_room");
+
+  late final _notificationItemRoom = _notificationItemRoomPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _notificationItemTargetUrlPtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationItemTargetUrlReturn Function(
+            ffi.Int64,
+          )>>("__NotificationItem_target_url");
+
+  late final _notificationItemTargetUrl =
+      _notificationItemTargetUrlPtr.asFunction<
+          _NotificationItemTargetUrlReturn Function(
+            int,
+          )>();
+  late final _notificationItemBodyPtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationItemBodyReturn Function(
+            ffi.Int64,
+          )>>("__NotificationItem_body");
+
+  late final _notificationItemBody = _notificationItemBodyPtr.asFunction<
+      _NotificationItemBodyReturn Function(
+        int,
+      )>();
+  late final _notificationItemIconUrlPtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationItemIconUrlReturn Function(
+            ffi.Int64,
+          )>>("__NotificationItem_icon_url");
+
+  late final _notificationItemIconUrl = _notificationItemIconUrlPtr.asFunction<
+      _NotificationItemIconUrlReturn Function(
+        int,
+      )>();
+  late final _notificationItemThreadIdPtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationItemThreadIdReturn Function(
+            ffi.Int64,
+          )>>("__NotificationItem_thread_id");
+
+  late final _notificationItemThreadId =
+      _notificationItemThreadIdPtr.asFunction<
+          _NotificationItemThreadIdReturn Function(
+            int,
+          )>();
+  late final _notificationItemNoisyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__NotificationItem_noisy");
+
+  late final _notificationItemNoisy = _notificationItemNoisyPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _notificationItemHasImagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__NotificationItem_has_image");
+
+  late final _notificationItemHasImage =
+      _notificationItemHasImagePtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _notificationItemImagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__NotificationItem_image");
+
+  late final _notificationItemImage = _notificationItemImagePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _notificationItemImagePathPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__NotificationItem_image_path");
+
+  late final _notificationItemImagePath =
+      _notificationItemImagePathPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _notificationItemRoomInvitePtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationItemRoomInviteReturn Function(
+            ffi.Int64,
+          )>>("__NotificationItem_room_invite");
+
+  late final _notificationItemRoomInvite =
+      _notificationItemRoomInvitePtr.asFunction<
+          _NotificationItemRoomInviteReturn Function(
             int,
           )>();
   late final _pusherIsEmailPusherPtr = _lookup<
@@ -21934,6 +22379,17 @@ class Api {
           int Function(
             int,
           )>();
+  late final _clientInstallDefaultActerPushRulesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Client_install_default_acter_push_rules");
+
+  late final _clientInstallDefaultActerPushRules =
+      _clientInstallDefaultActerPushRulesPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _clientPushersPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -22343,6 +22799,42 @@ class Api {
       _notificationSettingsSetDefaultNotificationModePtr.asFunction<
           int Function(
             int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _notificationSettingsGlobalContentSettingPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__NotificationSettings_global_content_setting");
+
+  late final _notificationSettingsGlobalContentSetting =
+      _notificationSettingsGlobalContentSettingPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _notificationSettingsSetGlobalContentSettingPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Uint8,
+          )>>("__NotificationSettings_set_global_content_setting");
+
+  late final _notificationSettingsSetGlobalContentSetting =
+      _notificationSettingsSetGlobalContentSettingPtr.asFunction<
+          int Function(
             int,
             int,
             int,
@@ -25241,6 +25733,66 @@ class Api {
             int,
             int,
           )>();
+  late final _notificationSenderImageFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationSenderImageFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__NotificationSender_image_future_poll");
+
+  late final _notificationSenderImageFuturePoll =
+      _notificationSenderImageFuturePollPtr.asFunction<
+          _NotificationSenderImageFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _notificationRoomImageFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationRoomImageFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__NotificationRoom_image_future_poll");
+
+  late final _notificationRoomImageFuturePoll =
+      _notificationRoomImageFuturePollPtr.asFunction<
+          _NotificationRoomImageFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _notificationItemImageFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationItemImageFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__NotificationItem_image_future_poll");
+
+  late final _notificationItemImageFuturePoll =
+      _notificationItemImageFuturePollPtr.asFunction<
+          _NotificationItemImageFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _notificationItemImagePathFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationItemImagePathFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__NotificationItem_image_path_future_poll");
+
+  late final _notificationItemImagePathFuturePoll =
+      _notificationItemImagePathFuturePollPtr.asFunction<
+          _NotificationItemImagePathFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _pusherDeleteFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _PusherDeleteFuturePollReturn Function(
@@ -25773,6 +26325,21 @@ class Api {
             int,
             int,
           )>();
+  late final _clientInstallDefaultActerPushRulesFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientInstallDefaultActerPushRulesFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_install_default_acter_push_rules_future_poll");
+
+  late final _clientInstallDefaultActerPushRulesFuturePoll =
+      _clientInstallDefaultActerPushRulesFuturePollPtr.asFunction<
+          _ClientInstallDefaultActerPushRulesFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _clientPushersFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientPushersFuturePollReturn Function(
@@ -25940,6 +26507,39 @@ class Api {
       _notificationSettingsSetDefaultNotificationModeFuturePollPtr.asFunction<
           _NotificationSettingsSetDefaultNotificationModeFuturePollReturn
               Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _notificationSettingsGlobalContentSettingFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationSettingsGlobalContentSettingFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__NotificationSettings_global_content_setting_future_poll");
+
+  late final _notificationSettingsGlobalContentSettingFuturePoll =
+      _notificationSettingsGlobalContentSettingFuturePollPtr.asFunction<
+          _NotificationSettingsGlobalContentSettingFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _notificationSettingsSetGlobalContentSettingFuturePollPtr =
+      _lookup<
+              ffi.NativeFunction<
+                  _NotificationSettingsSetGlobalContentSettingFuturePollReturn
+                      Function(
+                    ffi.Int64,
+                    ffi.Int64,
+                    ffi.Int64,
+                  )>>(
+          "__NotificationSettings_set_global_content_setting_future_poll");
+
+  late final _notificationSettingsSetGlobalContentSettingFuturePoll =
+      _notificationSettingsSetGlobalContentSettingFuturePollPtr.asFunction<
+          _NotificationSettingsSetGlobalContentSettingFuturePollReturn Function(
             int,
             int,
             int,
@@ -42759,111 +43359,16 @@ class NotificationListResult {
   }
 }
 
-class NotificationItem {
+class NotificationSender {
   final Api _api;
   final _Box _box;
 
-  NotificationItem._(this._api, this._box);
+  NotificationSender._(this._api, this._box);
 
-  bool isInvite() {
+  String userId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemIsInvite(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3 > 0;
-    return tmp2;
-  }
-
-  RoomMessage? roomMessage() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemRoomMessage(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomMessage");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = RoomMessage._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  String? senderDisplayName() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemSenderDisplayName(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  String? senderAvatarUrl() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemSenderAvatarUrl(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  String roomDisplayName() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemRoomDisplayName(
+    final tmp1 = _api._notificationSenderUserId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -42889,10 +43394,10 @@ class NotificationItem {
     return tmp2;
   }
 
-  String? roomAvatarUrl() {
+  String? displayName() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemRoomAvatarUrl(
+    final tmp1 = _api._notificationSenderDisplayName(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -42922,58 +43427,10 @@ class NotificationItem {
     return tmp2;
   }
 
-  String? roomCanonicalAlias() {
+  bool hasImage() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemRoomCanonicalAlias(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  bool? isRoomEncrypted() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemIsRoomEncrypted(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4 > 0;
-    return tmp2;
-  }
-
-  bool isDirectMessageRoom() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemIsDirectMessageRoom(
+    final tmp1 = _api._notificationSenderHasImage(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -42981,10 +43438,247 @@ class NotificationItem {
     return tmp2;
   }
 
-  bool? isNoisy() {
+  Future<FfiBufferUint8> image() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemIsNoisy(
+    final tmp1 = _api._notificationSenderImage(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__NotificationSender_image_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__notificationSenderImageFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class NotificationRoom {
+  final Api _api;
+  final _Box _box;
+
+  NotificationRoom._(this._api, this._box);
+
+  String roomId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationRoomRoomId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String displayName() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationRoomDisplayName(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  bool hasImage() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationRoomHasImage(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  Future<FfiBufferUint8> image() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationRoomImage(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__NotificationRoom_image_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__notificationRoomImageFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class NotificationItem {
+  final Api _api;
+  final _Box _box;
+
+  NotificationItem._(this._api, this._box);
+
+  String pushStyle() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemPushStyle(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String title() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemTitle(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  NotificationSender sender() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemSender(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_NotificationSender");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = NotificationSender._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  NotificationRoom room() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemRoom(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_NotificationRoom");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = NotificationRoom._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  String targetUrl() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemTargetUrl(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  MsgContent? body() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemBody(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -42992,18 +43686,178 @@ class NotificationItem {
     if (tmp3 == 0) {
       return null;
     }
-    final tmp2 = tmp4 > 0;
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MsgContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = MsgContent._(_api, tmp4_1);
     return tmp2;
   }
 
-  int joinedMembersCount() {
+  String? iconUrl() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemJoinedMembersCount(
+    final tmp1 = _api._notificationItemIconUrl(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? threadId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemThreadId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  bool noisy() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemNoisy(
       tmp0,
     );
     final tmp3 = tmp1;
-    final tmp2 = tmp3;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  bool hasImage() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemHasImage(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  Future<FfiBufferUint8> image() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemImage(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__NotificationItem_image_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__notificationItemImageFuturePoll);
+    return tmp2;
+  }
+
+  Future<String> imagePath(
+    String tmpDir,
+  ) {
+    final tmp1 = tmpDir;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._notificationItemImagePath(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__NotificationItem_image_path_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__notificationItemImagePathFuturePoll);
+    return tmp6;
+  }
+
+  String? roomInvite() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemRoomInvite(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -45337,6 +46191,23 @@ class Client {
     return tmp2;
   }
 
+  /// install the default acter push rules for fallback
+  Future<bool> installDefaultActerPushRules() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientInstallDefaultActerPushRules(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(
+        _api, tmp3_0, "__Client_install_default_acter_push_rules_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(
+        tmp3_1, _api.__clientInstallDefaultActerPushRulesFuturePoll);
+    return tmp2;
+  }
+
   /// list of pushers
   Future<FfiListPusher> pushers() {
     var tmp0 = 0;
@@ -46241,6 +47112,78 @@ class NotificationSettings {
     final tmp10 = _nativeFuture(tmp11_1,
         _api.__notificationSettingsSetDefaultNotificationModeFuturePoll);
     return tmp10;
+  }
+
+  /// app settings
+  Future<bool> globalContentSetting(
+    String appKey,
+  ) {
+    final tmp1 = appKey;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._notificationSettingsGlobalContentSetting(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0,
+        "__NotificationSettings_global_content_setting_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(
+        tmp7_1, _api.__notificationSettingsGlobalContentSettingFuturePoll);
+    return tmp6;
+  }
+
+  Future<bool> setGlobalContentSetting(
+    String appKey,
+    bool enabled,
+  ) {
+    final tmp1 = appKey;
+    final tmp5 = enabled;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    tmp6 = tmp5 ? 1 : 0;
+    final tmp7 = _api._notificationSettingsSetGlobalContentSetting(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+    );
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0,
+        "__NotificationSettings_set_global_content_setting_future_drop");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = _nativeFuture(
+        tmp9_1, _api.__notificationSettingsSetGlobalContentSettingFuturePoll);
+    return tmp8;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -49756,14 +50699,16 @@ class _NotificationListResultNextBatchReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _NotificationItemRoomMessageReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
+class _NotificationSenderUserIdReturn extends ffi.Struct {
   @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
   external int arg1;
+  @ffi.Uint64()
+  external int arg2;
 }
 
-class _NotificationItemSenderDisplayNameReturn extends ffi.Struct {
+class _NotificationSenderDisplayNameReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -49774,7 +50719,59 @@ class _NotificationItemSenderDisplayNameReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _NotificationItemSenderAvatarUrlReturn extends ffi.Struct {
+class _NotificationRoomRoomIdReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _NotificationRoomDisplayNameReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _NotificationItemPushStyleReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _NotificationItemTitleReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _NotificationItemTargetUrlReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _NotificationItemBodyReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _NotificationItemIconUrlReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -49785,16 +50782,7 @@ class _NotificationItemSenderAvatarUrlReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _NotificationItemRoomDisplayNameReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
-class _NotificationItemRoomAvatarUrlReturn extends ffi.Struct {
+class _NotificationItemThreadIdReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -49805,7 +50793,7 @@ class _NotificationItemRoomAvatarUrlReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _NotificationItemRoomCanonicalAliasReturn extends ffi.Struct {
+class _NotificationItemRoomInviteReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -49814,20 +50802,6 @@ class _NotificationItemRoomCanonicalAliasReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-}
-
-class _NotificationItemIsRoomEncryptedReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-}
-
-class _NotificationItemIsNoisyReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
 }
 
 class _PusherPushkeyReturn extends ffi.Struct {
@@ -52358,6 +53332,70 @@ class _NotificationListResultNotificationsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _NotificationSenderImageFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _NotificationRoomImageFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _NotificationItemImageFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _NotificationItemImagePathFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
+}
+
 class _PusherDeleteFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -52894,6 +53932,21 @@ class _ClientListNotificationsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ClientInstallDefaultActerPushRulesFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _ClientPushersFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -53050,6 +54103,38 @@ class _NotificationSettingsDefaultNotificationModeFuturePollReturn
 }
 
 class _NotificationSettingsSetDefaultNotificationModeFuturePollReturn
+    extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _NotificationSettingsGlobalContentSettingFuturePollReturn
+    extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _NotificationSettingsSetGlobalContentSettingFuturePollReturn
     extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;

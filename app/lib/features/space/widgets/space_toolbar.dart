@@ -31,29 +31,24 @@ class SpaceToolbar extends ConsumerWidget {
             child: const Text('Edit Details'),
           ),
         );
-        submenu.add(
-          PopupMenuItem(
-            key: settingsMenu,
-            onTap: () => context.pushNamed(
-              Routes.spaceSettings.name,
-              pathParameters: {'spaceId': spaceId},
-            ),
-            child: const Text('Settings'),
-          ),
-        );
       }
     }
 
-    if (submenu.isNotEmpty) {
-      // add divider
-      submenu.add(const PopupMenuDivider());
-    }
-    submenu.add(
+    submenu.addAll([
+      PopupMenuItem(
+        key: settingsMenu,
+        onTap: () => context.pushNamed(
+          Routes.spaceSettings.name,
+          pathParameters: {'spaceId': spaceId},
+        ),
+        child: const Text('Settings'),
+      ),
+      const PopupMenuDivider(),
       PopupMenuItem(
         onTap: () => _handleLeaveSpace(context, ref),
         child: const Text('Leave Space'),
       ),
-    );
+    ]);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
