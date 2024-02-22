@@ -3236,7 +3236,7 @@ dependencies = [
 
 [[package]]
 name = "matrix-sdk-store-media-cache-wrapper"
-version = "0.1.0"
+version = "0.1.2+dev"
 dependencies = [
  "anyhow",
  "async-trait",

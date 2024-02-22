@@ -27,6 +27,8 @@ jobs:
             package: acter-cli
           - name: TUI
             package: acter-tui
+          - name: media-cache-wrapper
+            package: matrix-sdk-store-media-cache-wrapper
     steps:
       - uses: actions/checkout@v2
       - name: Install specific toolchain
