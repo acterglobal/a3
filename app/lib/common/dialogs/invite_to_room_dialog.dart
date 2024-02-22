@@ -66,7 +66,7 @@ final searchResultProvider = FutureProvider<List<UserProfile>>((ref) async {
     // ignore we got cancelled
     return [];
   }
-  final client = ref.read(alwaysClientProvider);
+  final client = ref.watch(alwaysClientProvider);
   return (await client.searchUsers(newSearchValue)).toList();
 });
 
@@ -105,8 +105,8 @@ final filteredSuggestedUsersProvider =
     if (element.userId.toLowerCase().contains(lowered)) {
       return true;
     }
-    return (element.profile.displayName != null &&
-        element.profile.displayName!.toLowerCase().contains(lowered));
+    return element.profile.displayName != null &&
+        element.profile.displayName!.toLowerCase().contains(lowered);
   }).toList();
 });
 

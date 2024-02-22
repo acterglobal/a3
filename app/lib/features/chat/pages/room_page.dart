@@ -73,7 +73,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
       }
     }
     final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
-    final userId = ref.watch(myUserIdStrProvider);
+    final userId = ref.read(myUserIdStrProvider);
     if (userId == message.author.id && message is types.TextMessage) {
       inputNotifier.showEditButton(true);
     } else {
@@ -126,8 +126,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                     )
                   : null,
               flexibleSpace: FrostEffect(
-                child: Container(
-                ),
+                child: Container(),
               ),
               title: GestureDetector(
                 onTap: () {
