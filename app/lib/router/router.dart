@@ -14,7 +14,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:riverpod/riverpod.dart';
 
 Future<String?> authGuardRedirect(
   BuildContext context,
@@ -66,6 +65,7 @@ Future<String?> forwardRedirect(
     try {
       final deviceId = state.uri.queryParameters['deviceId'];
       client = await acterSdk.getClientWithDeviceId(deviceId!, true);
+      // ignore: use_build_context_synchronously
       final ref = ProviderScope.containerOf(context);
       ref.invalidate(clientProvider); // ensure we have selected the right client
     } catch(error) {

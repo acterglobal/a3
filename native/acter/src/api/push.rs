@@ -31,7 +31,10 @@ use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
     NotificationProcessSetup, RawNotificationEvent,
 };
-use ruma_client_api::{push::{get_pushrules_all, set_pushrule, RuleScope}, device};
+use ruma_client_api::{
+    device,
+    push::{get_pushrules_all, set_pushrule, RuleScope},
+};
 use ruma_common::{EventId, OwnedMxcUri, OwnedRoomId, RoomId};
 use ruma_events::{
     room::{message::MessageType, MediaSource},
@@ -241,7 +244,11 @@ impl NotificationItem {
             .title(inner.room_display_name)
             .noisy(inner.is_noisy)
             .push_style("fallback".to_owned())
-            .target_url(format!("/forward?deviceId={}&roomId={}", encode(device_id.as_str()), encode(room_id.as_str()))) //default is forward
+            .target_url(format!(
+                "/forward?deviceId={}&roomId={}",
+                encode(device_id.as_str()),
+                encode(room_id.as_str())
+            )) //default is forward
             .icon_url(inner.room_avatar_url);
 
         if let NotificationEvent::Invite(invite) = inner.event {
