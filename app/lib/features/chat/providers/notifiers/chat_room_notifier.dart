@@ -6,7 +6,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
@@ -20,8 +20,9 @@ class PostProcessItem {
 class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   final Ref ref;
   final Convo convo;
-  TimelineStream? timeline;
-  StreamSubscription<TimelineDiff>? subscription;
+  late TimelineStream timeline;
+  late Stream<TimelineDiff> _listener;
+  late StreamSubscription<TimelineDiff> _poller;
 
   ChatRoomNotifier({
     required this.convo,
@@ -31,20 +32,18 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     _fetchMentionRecords();
   }
 
-  void _init() async {
+  Future<void> _init() async {
     try {
       timeline = convo.timelineStream();
-      subscription = timeline?.diffStream().listen((timelineDiff) async {
+      _listener = timeline.diffStream(); // keep it resident in memory
+      _poller = _listener.listen((timelineDiff) async {
         await _handleDiff(timelineDiff);
       });
       do {
         await loadMore();
         await Future.delayed(const Duration(milliseconds: 100), () => null);
       } while (state.hasMore && state.messages.length < 10);
-      ref.onDispose(() async {
-        debugPrint('disposing message stream');
-        await subscription?.cancel();
-      });
+      ref.onDispose(() => _poller.cancel());
     } catch (e) {
       state = state.copyWith(
         loading: ChatRoomLoadingState.error(
@@ -55,7 +54,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   Future<void> loadMore() async {
-    final hasMore = await timeline!.paginateBackwards(20);
+    final hasMore = await timeline.paginateBackwards(20);
     // wait for diffRx to be finished
     state = state.copyWith(hasMore: hasMore);
   }
@@ -217,11 +216,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   Future<void> _fetchMentionRecords() async {
-    final activeMembers =
-        await ref.read(chatMembersProvider(convo.getRoomIdStr()).future);
+    final roomId = convo.getRoomIdStr();
+    final activeMembers = await ref.read(chatMembersProvider(roomId).future);
     List<Map<String, String>> mentionRecords = [];
-    final mentionListNotifier =
-        ref.read(chatInputProvider(convo.getRoomIdStr()).notifier);
+    final mentionListNotifier = ref.read(chatInputProvider(roomId).notifier);
     for (int i = 0; i < activeMembers.length; i++) {
       String userId = activeMembers[i].userId().toString();
       final profile = activeMembers[i].getProfile();

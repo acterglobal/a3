@@ -54,9 +54,9 @@ class NotificationListState extends PagedState<Next?, ffi.Notification> {
 
 class NotificationsListNotifier extends StateNotifier<NotificationListState>
     with PagedNotifierMixin<Next?, ffi.Notification, NotificationListState> {
-  Stream<ffi.Notification>? _listener;
+  late Stream<ffi.Notification> _listener;
   // ignore: unused_field
-  StreamSubscription<void>? _poller;
+  late StreamSubscription<ffi.Notification> _poller;
   final Ref ref;
 
   NotificationsListNotifier(this.ref) : super(const NotificationListState()) {
@@ -69,13 +69,11 @@ class NotificationsListNotifier extends StateNotifier<NotificationListState>
       return;
     }
 
-    _listener = client.notificationsStream();
-    if (_listener != null) {
-      _poller = _listener!.listen((ev) {
-        state = state.addNotification(ev);
-      });
-      ref.onDispose(() => _poller?.cancel());
-    }
+    _listener = client.notificationsStream(); // keep it resident in memory
+    _poller = _listener.listen((ev) {
+      state = state.addNotification(ev);
+    });
+    ref.onDispose(() => _poller.cancel());
   }
 
   @override

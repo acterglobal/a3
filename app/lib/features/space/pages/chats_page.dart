@@ -116,9 +116,7 @@ class SpaceChatsPage extends ConsumerWidget {
                       showParent: false,
                       onTap: () => context.goNamed(
                         Routes.chatroom.name,
-                        pathParameters: {
-                          'roomId': rooms[index].getRoomIdStr(),
-                        },
+                        pathParameters: {'roomId': rooms[index].getRoomIdStr()},
                       ),
                     ),
                   ),

@@ -1,12 +1,10 @@
-import 'dart:core';
-
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/tasks/providers/notifiers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AsyncTaskListsNotifier extends AsyncNotifier<List<TaskList>> {
-  late Stream<void> subscriber;
+  late Stream<bool> _listener;
 
   Future<List<TaskList>> _refresh(Client client) async {
     final taskLists = await client.taskLists();
@@ -17,14 +15,11 @@ class AsyncTaskListsNotifier extends AsyncNotifier<List<TaskList>> {
   Future<List<TaskList>> build() async {
     // Load initial todo list from the remote repository
     final client = ref.watch(alwaysClientProvider);
-    final retState = _refresh(client);
-    subscriber = client.subscribeStream('tasks');
-    subscriber.forEach((element) async {
-      state = await AsyncValue.guard(() async {
-        return await _refresh(client);
-      });
+    _listener = client.subscribeStream('tasks'); // keep it resident in memory
+    _listener.forEach((element) async {
+      state = await AsyncValue.guard(() async => await _refresh(client));
     });
-    return retState;
+    return await _refresh(client);
   }
 }
 
