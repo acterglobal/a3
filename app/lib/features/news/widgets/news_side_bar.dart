@@ -56,9 +56,7 @@ class NewsSideBar extends ConsumerWidget {
               );
               await client.waitForReaction(eventId.toString(), null);
             } else {
-              final reactions = await manager
-                  .reactionEntries()
-                  .then((value) => value.toList());
+              final reactions = (await manager.reactionEntries()).toList();
               final eventId = reactions[0].eventIdStr();
               await manager.redactReaction(eventId, null, null);
             }
@@ -172,10 +170,9 @@ class ActionBox extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final senderId = news.sender().toString();
-
     final isAuthor = senderId == userId;
-
     List<Widget> actions = [const Text('Actions'), const Divider()];
+
     if (!isAuthor) {
       actions.add(
         TextButton.icon(
@@ -205,9 +202,7 @@ class ActionBox extends ConsumerWidget {
             builder: (context) => RedactContentWidget(
               title: 'Remove this post',
               eventId: news.eventId().toString(),
-              onSuccess: () {
-                ref.invalidate(newsListProvider);
-              },
+              onSuccess: () => ref.invalidate(newsListProvider),
               senderId: senderId,
               roomId: roomId,
               isSpace: true,
