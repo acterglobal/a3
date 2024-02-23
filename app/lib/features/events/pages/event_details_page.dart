@@ -40,12 +40,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             ],
           );
         },
-        error: (error, stackTrace) => SliverToBoxAdapter(
-          child: Text('Error loading event due to $error'),
-        ),
-        loading: () => const SliverToBoxAdapter(
-          child: Center(child: CircularProgressIndicator()),
-        ),
+        error: (error, stackTrace) => Text('Error loading event due to $error'),
+        loading: () => const Center(child: CircularProgressIndicator()),
       ),
     );
   }
@@ -137,10 +133,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           ),
         ]);
       }
-    }
-
-    //Report Event Action
-    else {
+    } else {
+      //Report Event Action
       actions.add(
         PopupMenuItem(
           onTap: () => showAdaptiveDialog(
@@ -167,10 +161,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           ),
         ),
       );
-    }
-
-    if (actions.isEmpty) {
-      return const SizedBox.shrink();
     }
 
     return PopupMenuButton(
@@ -370,14 +360,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             leading: const Icon(Atlas.calendar_dots),
             title: Text(inDays),
             subtitle: Text('$startDate - $endDate'),
-          ),
-          const ListTile(
-            leading: Icon(Icons.link),
-            title: Text('Not set'),
-          ),
-          const ListTile(
-            leading: Icon(Atlas.map_navigation),
-            title: Text('Not set'),
           ),
         ],
       ),
