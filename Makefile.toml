@@ -653,7 +653,7 @@ script = [
 
 [tasks.test-server]
 # condition = { platforms = ["mac"], env_true = ["RELEASE"] }
-script_runner =  "@duckscript"
+script_runner = "@duckscript"
 script = [
     """
     os = os_family
