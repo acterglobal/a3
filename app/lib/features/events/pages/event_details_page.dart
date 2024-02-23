@@ -5,6 +5,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -41,7 +42,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           );
         },
         error: (error, stackTrace) => Text('Error loading event due to $error'),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const EventDetailsSkeleton(),
       ),
     );
   }
