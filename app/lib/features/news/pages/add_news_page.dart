@@ -97,7 +97,11 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   AppBar appBarUI(BuildContext context) {
     return AppBar(
       leading: IconButton(
-        onPressed: () => context.pop(),
+        onPressed: () {
+          // Hide Keyboard
+          SystemChannels.textInput.invokeMethod('TextInput.hide');
+          context.pop();
+        },
         icon: const Icon(Atlas.xmark_circle),
       ),
       backgroundColor: selectedNewsPost == null
@@ -313,24 +317,27 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   }
 
   Widget slideTextPostUI(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      alignment: Alignment.center,
-      color: selectedNewsPost?.backgroundColor,
-      child: SingleChildScrollView(
-        child: IntrinsicHeight(
-          child: HtmlEditor(
-            key: NewsUpdateKeys.textSlideInputField,
-            editorState: textEditorState,
-            editable: true,
-            autoFocus: false,
-            // we manage the auto focus manually
-            shrinkWrap: true,
-            onChanged: (body, html) {
-              ref
-                  .read(newsStateProvider.notifier)
-                  .changeTextSlideValue(body, html);
-            },
+    return GestureDetector(
+      onTap: () => SystemChannels.textInput.invokeMethod('TextInput.hide'),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        alignment: Alignment.center,
+        color: selectedNewsPost?.backgroundColor,
+        child: SingleChildScrollView(
+          child: IntrinsicHeight(
+            child: HtmlEditor(
+              key: NewsUpdateKeys.textSlideInputField,
+              editorState: textEditorState,
+              editable: true,
+              autoFocus: false,
+              // we manage the auto focus manually
+              shrinkWrap: true,
+              onChanged: (body, html) {
+                ref
+                    .read(newsStateProvider.notifier)
+                    .changeTextSlideValue(body, html);
+              },
+            ),
           ),
         ),
       ),
@@ -362,6 +369,8 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   }
 
   Future<void> sendNews(BuildContext context) async {
+    // Hide Keyboard
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
     final client = ref.read(alwaysClientProvider);
     final spaceId = ref.read(newsStateProvider).newsPostSpaceId;
     final newsSlideList = ref.read(newsStateProvider).newsSlideList;
