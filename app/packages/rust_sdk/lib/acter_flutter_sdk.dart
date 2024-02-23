@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:core';
 import 'dart:developer' as developer;
 import 'dart:ffi';
 import 'dart:io';
@@ -227,7 +226,10 @@ class ActerSdk {
 
   ffi.Api get api => _api;
 
-  Future<ffi.Client> getClientWithDeviceId(String deviceId, bool setAsCurrent) async {
+  Future<ffi.Client> getClientWithDeviceId(
+    String deviceId,
+    bool setAsCurrent,
+  ) async {
     ffi.Client? client;
     int foundIdx = 0;
     for (final c in _clients) {

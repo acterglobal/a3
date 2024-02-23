@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:core';
 import 'dart:io';
 
 import 'package:acter/features/cli/util.dart';
@@ -11,6 +10,7 @@ import 'package:path/path.dart' as p;
 class BackupAndResetCommand extends Command {
   @override
   final name = 'backup-and-reset';
+
   @override
   final description =
       'Backup accounts and sessions and reset the state to fresh and clean';

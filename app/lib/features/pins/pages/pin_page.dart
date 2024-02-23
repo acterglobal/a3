@@ -1,4 +1,3 @@
-import 'dart:core';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/widgets/redact_content.dart';
@@ -19,6 +18,7 @@ class PinPage extends ConsumerWidget {
   static const titleFieldKey = Key('edit-pin-title-field');
 
   final String pinId;
+
   // ignore: use_key_in_widget_constructors
   const PinPage({
     Key key = pinPageKey,
