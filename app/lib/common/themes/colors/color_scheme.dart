@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 //Main Colors
 Color brandColor = const Color(0xff1E4E7B);
 Color darkBlueColor = const Color(0xFF042E4B);
@@ -9,10 +8,9 @@ Color blackColor = const Color(0xFF121212);
 
 //General Colors
 Color greenColor = const Color(0xFF74A64D);
-Color yellowColor =  Colors.yellow;
+Color yellowColor = Colors.yellow;
 Color whiteColor = const Color(0xfffbfcfd);
 Color whiteBlueColor = const Color(0xFFA5B9CC);
-
 
 const primaryGradient = LinearGradient(
   begin: AlignmentDirectional(-1.5, -2.0),
@@ -35,7 +33,6 @@ const introGradient = LinearGradient(
   stops: [0.0, 0.6, 0.8, 1.0],
   tileMode: TileMode.decal,
 );
-
 
 var colorScheme = ColorScheme.dark(
   brightness: Brightness.dark,

@@ -1,5 +1,3 @@
-import 'dart:core';
-
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/member_list_entry.dart';
@@ -9,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MemberList extends ConsumerWidget {
   final Convo convo;
+
   const MemberList({
     required this.convo,
     super.key,

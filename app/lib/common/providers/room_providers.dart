@@ -1,9 +1,8 @@
 /// Get the relations of the given SpaceId.  Throws
 library;
 
-import 'dart:core';
-
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/room_notifiers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
@@ -11,7 +10,6 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/common/providers/chat_providers.dart';
 
 class RoomItem {
   final Member? membership;

@@ -131,6 +131,11 @@ String randomString() {
   return base64UrlEncode(values);
 }
 
+T getRandomElement<T>(List<T> list) {
+  final i = Random().nextInt(list.length);
+  return list[i];
+}
+
 int hexOfRGBA(int r, int g, int b, {double opacity = 1}) {
   r = (r < 0) ? -r : r;
   g = (g < 0) ? -g : g;
