@@ -59,6 +59,7 @@ class RoomProfilePage extends ConsumerWidget {
         shrinkWrap: true,
         slivers: [
           SliverAppBar(
+            pinned: true,
             automaticallyImplyLeading: false,
             leading: Visibility(
               visible: inSideBar && isExpanded,
@@ -131,6 +132,7 @@ class RoomProfilePage extends ConsumerWidget {
               darkTheme: SettingsThemeData(
                 settingsListBackground: Colors.transparent,
                 dividerColor: Colors.transparent,
+                settingsSectionBackground: Colors.transparent,
                 leadingIconsColor: Theme.of(context).colorScheme.neutral6,
               ),
               shrinkWrap: true,
