@@ -88,7 +88,7 @@ class _EventListSkeletonState extends State<EventDetailsSkeleton> {
               color: Colors.white,
             ),
           ),
-          SizedBox(width: 20),
+          const SizedBox(width: 20),
           Expanded(
             child: Container(
               height: 80,

@@ -134,35 +134,35 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           ),
         ]);
       }
-    } else {
-      //Report Event Action
-      actions.add(
-        PopupMenuItem(
-          onTap: () => showAdaptiveDialog(
-            context: context,
-            builder: (ctx) => ReportContentWidget(
-              title: 'Report this Event',
-              description:
-                  'Report this content to your homeserver administrator. Please note that your administrator won\'t be able to read or view files in encrypted spaces.',
-              eventId: widget.calendarId,
-              roomId: event.roomIdStr(),
-              senderId: event.sender().toString(),
-              isSpace: true,
-            ),
-          ),
-          child: Row(
-            children: <Widget>[
-              Icon(
-                Atlas.warning_thin,
-                color: Theme.of(context).colorScheme.error,
-              ),
-              const SizedBox(width: 10),
-              const Text('Report Event'),
-            ],
+    }
+
+    //Report Event Action
+    actions.add(
+      PopupMenuItem(
+        onTap: () => showAdaptiveDialog(
+          context: context,
+          builder: (ctx) => ReportContentWidget(
+            title: 'Report this Event',
+            description:
+                'Report this content to your homeserver administrator. Please note that your administrator won\'t be able to read or view files in encrypted spaces.',
+            eventId: widget.calendarId,
+            roomId: event.roomIdStr(),
+            senderId: event.sender().toString(),
+            isSpace: true,
           ),
         ),
-      );
-    }
+        child: Row(
+          children: <Widget>[
+            Icon(
+              Atlas.warning_thin,
+              color: Theme.of(context).colorScheme.error,
+            ),
+            const SizedBox(width: 10),
+            const Text('Report Event'),
+          ],
+        ),
+      ),
+    );
 
     return PopupMenuButton(
       itemBuilder: (ctx) => actions,
