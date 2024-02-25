@@ -5,6 +5,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::chat');
 
 // ignore_for_file: unused_field
 
@@ -23,10 +26,10 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, Convo> {
         state = await AsyncValue.guard(() async => await client.convo(convoId));
       },
       onError: (e, stack) {
-        debugPrint('stream errored: $e : $stack');
+        _log.severe('stream errored.', e, stack);
       },
       onDone: () {
-        debugPrint('stream ended');
+        _log.info('stream ended');
       },
     );
     ref.onDispose(() => _poller.cancel());
@@ -49,14 +52,14 @@ class LatestMsgNotifier extends StateNotifier<RoomMessage?> {
     ); // keep it resident in memory
     _poller = _listener.listen(
       (e) {
-        debugPrint('received new latest message call for $convoId');
+        _log.info('received new latest message call for $convoId');
         state = convo.latestMessage();
       },
       onError: (e, stack) {
-        debugPrint('stream errored: $e : $stack');
+        _log.severe('stream errored', e, stack);
       },
       onDone: () {
-        debugPrint('stream ended');
+        _log.info('stream ended');
       },
     );
     ref.onDispose(() => _poller.cancel());

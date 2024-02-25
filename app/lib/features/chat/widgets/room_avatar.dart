@@ -6,6 +6,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::chat::room_avatar');
 
 class RoomAvatar extends ConsumerWidget {
   final String roomId;
@@ -87,7 +90,7 @@ class RoomAvatar extends ConsumerWidget {
       },
       skipLoadingOnReload: false,
       error: (err, stackTrace) {
-        debugPrint('Failed to load avatar due to $err, $stackTrace');
+        _log.severe('Failed to load avatar', err, stackTrace);
         return ActerAvatar(
           mode: convo.isDm() ? DisplayMode.DM : DisplayMode.GroupChat,
           avatarInfo: AvatarInfo(
@@ -151,7 +154,7 @@ class RoomAvatar extends ConsumerWidget {
         size: avatarSize,
       ),
       error: (err, stackTrace) {
-        debugPrint("Couldn't load avatar");
+        _log.severe("Couldn't load avatar", err, stackTrace);
         return ActerAvatar(
           mode: DisplayMode.DM,
           avatarInfo: AvatarInfo(
@@ -210,7 +213,7 @@ class RoomAvatar extends ConsumerWidget {
         ),
       ),
       error: (err, st) {
-        debugPrint('Couldn\'t load group Avatar');
+        _log.severe('Couldn\'t load group Avatar', err, st);
         return ActerAvatar(
           avatarInfo: AvatarInfo(
             uniqueId: userId,

@@ -14,6 +14,9 @@ import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::util');
 
 /// Get provider right from the context no matter where we are
 extension Context on BuildContext {
@@ -115,12 +118,12 @@ String jiffyTime(int timeInterval) {
 Future<bool> openLink(String target, BuildContext context) async {
   final Uri? url = Uri.tryParse(target);
   if (url == null || !url.hasAuthority) {
-    debugPrint('Opening internally: $url');
+    _log.info('Opening internally: $url');
     // not a valid URL, try local routing
     await context.push(target);
     return true;
   } else {
-    debugPrint('Opening external URL: $url');
+    _log.info('Opening external URL: $url');
     return await launchUrl(url);
   }
 }

@@ -9,6 +9,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::event::edit');
 
 final _titleProvider = StateProvider.autoDispose<String>((ref) => '');
 final _startDateProvider = StateProvider.autoDispose<DateTime?>((ref) => null);
@@ -211,7 +214,7 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
       updateBuilder.utcEndFromRfc3339(utcEndDateTime);
       updateBuilder.descriptionText(description);
       final eventId = await updateBuilder.send();
-      debugPrint('Calendar Event updated $eventId');
+      _log.info('Calendar Event updated $eventId');
 
       EasyLoading.dismiss();
       if (context.mounted) {

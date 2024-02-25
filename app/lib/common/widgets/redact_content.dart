@@ -8,6 +8,9 @@ import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::redact');
 
 /// Reusable reporting acter content widget.
 class RedactContentWidget extends ConsumerWidget {
@@ -92,14 +95,14 @@ class RedactContentWidget extends ConsumerWidget {
         final space = await ref.read(spaceProvider(roomId).future);
         final redactedId = await space.redactContent(eventId, reason);
         ref.invalidate(spacePinsProvider(space));
-        debugPrint(
+        _log.info(
           'Content from user:{$senderId redacted $redactedId reason:$reason}',
         );
       } else {
         final room = await ref.read(chatProvider(roomId).future);
         final redactedId = await room.redactContent(eventId, reason);
         ref.invalidate(spaceEventsProvider(roomId));
-        debugPrint(
+        _log.info(
           'Content from user:{$senderId redacted $redactedId reason:$reason}',
         );
       }

@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/foundation.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::room');
 
 // ignore_for_file: unused_field
 
@@ -22,14 +24,14 @@ class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
     _listener = client.subscribeStream(arg); // keep it resident in memory
     _poller = _listener.listen(
       (e) async {
-        debugPrint('seen update for room $arg');
+        _log.info('seen update for room $arg');
         state = await AsyncValue.guard(_getRoom);
       },
       onError: (e, stack) {
-        debugPrint('stream errored: $e : $stack');
+        _log.severe('stream errored', e, stack);
       },
       onDone: () {
-        debugPrint('stream ended');
+        _log.info('stream ended');
       },
     );
     ref.onDispose(() => _poller.cancel());

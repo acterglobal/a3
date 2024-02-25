@@ -30,6 +30,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:mime/mime.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::chat::custom_input');
 
 enum ChatAttachmentType { camera, image, audio, video, file }
 
@@ -259,7 +262,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                       );
                                     }
                                   } else {
-                                    debugPrint(currentMessageId);
+                                    _log.info(currentMessageId);
                                   }
                                 },
                                 child: const Text('Yes'),
@@ -627,8 +630,8 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
           }
         }
       }
-    } catch (e) {
-      debugPrint('error occurred: $e');
+    } catch (e, s) {
+      _log.severe('error occurred', e, s);
     }
 
     if (inputState.repliedToMessage != null) {
@@ -662,7 +665,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
             size: 12,
           ),
           error: (e, st) {
-            debugPrint('Error loading avatar due to $e');
+            _log.severe('Error loading avatar', e, st);
             return ActerAvatar(
               mode: DisplayMode.DM,
               avatarInfo: AvatarInfo(

@@ -9,6 +9,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::spaces::public_spaces_selector');
 
 typedef OnSelectedFn = void Function(
   PublicSearchResultItem spaceSearchResult,
@@ -228,8 +231,8 @@ class PublicSpaceItem extends ConsumerWidget {
                           ),
                         )
                       : fallbackAvatar(),
-                  error: (e, a) {
-                    debugPrint('loading failed: $e');
+                  error: (e, s) {
+                    _log.severe('loading failed', e, s);
                     return ActerAvatar(
                       mode: DisplayMode.Space,
                       avatarInfo: AvatarInfo(

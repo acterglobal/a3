@@ -9,6 +9,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::news::utils');
 
 class NewsUtils {
   static Future<File?> getThumbnailData(XFile videoFile) async {
@@ -36,9 +39,9 @@ class NewsUtils {
       if (thumbnailGenerated) {
         return destFile;
       }
-    } catch (err) {
+    } catch (err, s) {
       // Handle platform errors.
-      debugPrint('Error => $err');
+      _log.severe('Error', err, s);
     }
     return null;
   }

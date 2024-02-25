@@ -3,6 +3,9 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::room_avatar');
 
 class RoomAvatarBuilder extends ConsumerWidget {
   final String roomId;
@@ -32,7 +35,7 @@ class RoomAvatarBuilder extends ConsumerWidget {
         size: avatarSize,
       ),
       error: (e, st) {
-        debugPrint('ERROR loading room avatar due to $e');
+        _log.severe('error loading room avatar', e, st);
         return ActerAvatar(
           mode: displayMode,
           avatarInfo: AvatarInfo(uniqueId: roomId, displayName: roomId),
