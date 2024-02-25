@@ -30,7 +30,7 @@ const defaultServerName = String.fromEnvironment(
 
 const defaultLogSetting = String.fromEnvironment(
   rustLogKey,
-  defaultValue: 'warn,acter=debug',
+  defaultValue: 'warn,acter=debug,a3=warn',
 );
 
 const defaultSessionKey = String.fromEnvironment(
