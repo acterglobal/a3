@@ -27,10 +27,20 @@ Future<void> initLogging() async {
     }
 
     if (curVal) {
+      final messages = [record.message];
+      if (record.error != null) {
+        messages.add('${record.error}');
+      }
+      if (record.object != null) {
+        messages.add('${record.object}');
+      }
+      if (record.stackTrace != null) {
+        messages.add('${record.stackTrace}');
+      }
       sdk.api.writeLog(
         record.loggerName,
         level,
-        '${record.message} ${record.error} ${record.object} ${record.stackTrace}',
+        messages.join('; '),
         null,
         null,
         null,
