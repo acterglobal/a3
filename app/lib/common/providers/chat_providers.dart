@@ -5,6 +5,7 @@ import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider the profile data of a the given space, keeps up to date with underlying client
@@ -24,13 +25,17 @@ final chatProfileDataProvider =
   final profile = chat.getProfile();
   final displayName = await profile.getDisplayName();
   final isDm = chat.isDm();
-  if (!profile.hasAvatar()) {
-    return ProfileData(displayName.text(), null, isDm: isDm);
+  try {
+    if (profile.hasAvatar()) {
+      final sdk = await ref.watch(sdkProvider.future);
+      final size = sdk.api.newThumbSize(48, 48);
+      final avatar = await profile.getAvatar(size);
+      return ProfileData(displayName.text(), avatar.data(), isDm: isDm);
+    }
+  } catch (e) {
+    debugPrint('Loading avatar for ${convo.getRoomIdStr()} failed: $e');
   }
-  final sdk = await ref.watch(sdkProvider.future);
-  final size = sdk.api.newThumbSize(48, 48);
-  final avatar = await profile.getAvatar(size);
-  return ProfileData(displayName.text(), avatar.data(), isDm: isDm);
+  return ProfileData(displayName.text(), null, isDm: isDm);
 });
 
 final latestMessageProvider =
