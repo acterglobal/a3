@@ -566,7 +566,7 @@ Future<bool> setupPushNotifications(
   if (pushServer.isEmpty) {
     // no server given. Ignoring
     _log.warning(
-        'No push server configured. Skipping push notification setup.');
+        'No push server configured. Skipping push notification setup.',);
     return false;
   }
 

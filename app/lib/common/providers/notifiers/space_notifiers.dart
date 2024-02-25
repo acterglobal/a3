@@ -4,7 +4,6 @@ import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/foundation.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:logging/logging.dart';
 
