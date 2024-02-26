@@ -210,16 +210,23 @@ impl AttachmentDraft {
 }
 
 impl AttachmentsManager {
-    pub(crate) fn new(
+    pub(crate) async fn new(
         client: Client,
         room: Room,
-        inner: models::AttachmentsManager,
-    ) -> AttachmentsManager {
-        AttachmentsManager {
-            client,
-            room,
-            inner,
-        }
+        event_id: OwnedEventId,
+    ) -> Result<AttachmentsManager> {
+        RUNTIME
+            .spawn(async move {
+                let inner =
+                    models::AttachmentsManager::from_store_and_event_id(client.store(), &event_id)
+                        .await;
+                Ok(AttachmentsManager {
+                    client,
+                    room,
+                    inner,
+                })
+            })
+            .await?
     }
 
     pub fn stats(&self) -> models::AttachmentsStats {

@@ -205,44 +205,21 @@ impl CalendarEvent {
         let client = self.client.clone();
         let room = self.room.clone();
         let event_id = self.inner.event_id().to_owned();
-
-        RUNTIME
-            .spawn(async move {
-                let inner =
-                    models::CommentsManager::from_store_and_event_id(client.store(), &event_id)
-                        .await;
-                Ok(crate::CommentsManager::new(client, room, inner))
-            })
-            .await?
+        crate::CommentsManager::new(client, room, event_id).await
     }
 
     pub async fn rsvps(&self) -> Result<crate::RsvpManager> {
         let client = self.client.clone();
         let room = self.room.clone();
         let event_id = self.inner.event_id().to_owned();
-
-        RUNTIME
-            .spawn(async move {
-                let inner =
-                    models::RsvpManager::from_store_and_event_id(client.store(), &event_id).await;
-                Ok(crate::RsvpManager::new(client, room, inner))
-            })
-            .await?
+        crate::RsvpManager::new(client, room, event_id).await
     }
 
     pub async fn reactions(&self) -> Result<crate::ReactionManager> {
         let client = self.client.clone();
         let room = self.room.clone();
         let event_id = self.inner.event_id().to_owned();
-
-        RUNTIME
-            .spawn(async move {
-                let inner =
-                    models::ReactionManager::from_store_and_event_id(client.store(), &event_id)
-                        .await;
-                Ok(crate::ReactionManager::new(client, room, inner))
-            })
-            .await?
+        crate::ReactionManager::new(client, room, event_id).await
     }
 
     pub async fn responded_by_me(&self) -> Result<OptionRsvpStatus> {

@@ -558,15 +558,7 @@ impl NewsEntry {
         let client = self.client.clone();
         let room = self.room.clone();
         let event_id = self.content.event_id().to_owned();
-
-        RUNTIME
-            .spawn(async move {
-                let inner =
-                    models::ReactionManager::from_store_and_event_id(client.store(), &event_id)
-                        .await;
-                Ok(crate::ReactionManager::new(client, room, inner))
-            })
-            .await?
+        crate::ReactionManager::new(client, room, event_id).await
     }
 
     fn is_joined(&self) -> bool {
@@ -597,15 +589,7 @@ impl NewsEntry {
         let client = self.client.clone();
         let room = self.room.clone();
         let event_id = self.content.event_id().to_owned();
-
-        RUNTIME
-            .spawn(async move {
-                let inner =
-                    models::CommentsManager::from_store_and_event_id(client.store(), &event_id)
-                        .await;
-                Ok(crate::CommentsManager::new(client, room, inner))
-            })
-            .await?
+        crate::CommentsManager::new(client, room, event_id).await
     }
 
     pub async fn comments_count(&self) -> Result<u32> {

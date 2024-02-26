@@ -253,12 +253,22 @@ impl Deref for RsvpManager {
 }
 
 impl RsvpManager {
-    pub(crate) fn new(client: Client, room: Room, inner: models::RsvpManager) -> RsvpManager {
-        RsvpManager {
-            client,
-            room,
-            inner,
-        }
+    pub(crate) async fn new(
+        client: Client,
+        room: Room,
+        event_id: OwnedEventId,
+    ) -> Result<RsvpManager> {
+        RUNTIME
+            .spawn(async move {
+                let inner =
+                    models::RsvpManager::from_store_and_event_id(client.store(), &event_id).await;
+                Ok(RsvpManager {
+                    client,
+                    room,
+                    inner,
+                })
+            })
+            .await?
     }
 
     pub fn stats(&self) -> models::RsvpStats {

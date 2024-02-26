@@ -83,16 +83,23 @@ impl Deref for ReactionManager {
 }
 
 impl ReactionManager {
-    pub(crate) fn new(
+    pub(crate) async fn new(
         client: Client,
         room: Room,
-        inner: models::ReactionManager,
-    ) -> ReactionManager {
-        ReactionManager {
-            client,
-            room,
-            inner,
-        }
+        event_id: OwnedEventId,
+    ) -> Result<ReactionManager> {
+        RUNTIME
+            .spawn(async move {
+                let inner =
+                    models::ReactionManager::from_store_and_event_id(client.store(), &event_id)
+                        .await;
+                Ok(ReactionManager {
+                    client,
+                    room,
+                    inner,
+                })
+            })
+            .await?
     }
 
     pub async fn send_reaction(&self, event_id: String, key: String) -> Result<OwnedEventId> {
