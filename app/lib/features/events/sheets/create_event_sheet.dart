@@ -160,6 +160,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                   controller: _descriptionController,
                   hintText: 'Type Description (Optional)',
                   textInputType: TextInputType.multiline,
+                  textInputAction: TextInputAction.newline,
                   maxLines: 10,
                 ),
                 const SizedBox(height: 15),
