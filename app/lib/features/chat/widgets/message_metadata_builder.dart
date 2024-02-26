@@ -8,6 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quds_popup_menu/quds_popup_menu.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::chat::message_metadata_builder');
 
 class MessageMetadataBuilder extends ConsumerWidget {
   final Convo convo;
@@ -148,7 +151,7 @@ class _UserReceiptsWidget extends ConsumerWidget {
                             );
                           },
                           error: (e, st) {
-                            debugPrint('ERROR loading avatar due to $e');
+                            _log.severe('ERROR loading avatar', e, st);
                             return Padding(
                               padding: const EdgeInsets.only(right: 10),
                               child: ActerAvatar(
@@ -203,7 +206,7 @@ class _UserReceiptsWidget extends ConsumerWidget {
                           );
                         },
                         error: (e, st) {
-                          debugPrint('ERROR loading avatar due to $e');
+                          _log.severe('ERROR loading avatar', e, st);
                           return Padding(
                             padding: const EdgeInsets.only(right: 10),
                             child: ActerAvatar(
@@ -276,7 +279,7 @@ class _UserReceiptsWidget extends ConsumerWidget {
                             );
                           },
                           error: (e, st) {
-                            debugPrint('ERROR loading avatar due to $e');
+                            _log.severe('ERROR loading avatar', e, st);
                             return Padding(
                               padding: const EdgeInsets.only(right: 10),
                               child: ActerAvatar(

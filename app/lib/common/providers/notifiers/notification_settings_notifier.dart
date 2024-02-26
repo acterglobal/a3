@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::notification_settings');
 
 // ignore_for_file: unused_field
 
@@ -26,10 +28,10 @@ class AsyncNotificationSettingsNotifier
         state = AsyncValue.data(settings);
       },
       onError: (e, stack) {
-        debugPrint('stream errored: $e : $stack');
+        _log.severe('stream errored', e, stack);
       },
       onDone: () {
-        debugPrint('stream ended');
+        _log.info('stream ended');
       },
     );
     return settings;

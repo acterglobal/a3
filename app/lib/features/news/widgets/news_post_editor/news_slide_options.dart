@@ -12,6 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::news::create');
 
 class NewsSlideOptions extends ConsumerStatefulWidget {
   const NewsSlideOptions({super.key});
@@ -188,7 +191,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
         size: 42,
       ),
       error: (e, st) {
-        debugPrint('Error loading space: $e');
+        _log.severe('Error loading space', e, st);
         return ActerAvatar(
           mode: DisplayMode.Space,
           avatarInfo: AvatarInfo(

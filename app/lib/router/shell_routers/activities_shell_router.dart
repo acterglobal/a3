@@ -8,6 +8,10 @@ import 'package:acter/router/router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::router::activities_shell');
+
 List<RouteBase> makeActivitiesShellRoutes(ref) {
   return [
     GoRoute(
@@ -26,7 +30,7 @@ List<RouteBase> makeActivitiesShellRoutes(ref) {
         )) {
           return true;
         }
-        debugPrint('Attempting to ask for push notifications');
+        _log.info('Attempting to ask for push notifications');
         final client = context.read(clientProvider);
         if (client != null) {
           setupPushNotifications(client);

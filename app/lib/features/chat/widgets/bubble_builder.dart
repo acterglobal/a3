@@ -17,6 +17,9 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:swipe_to/swipe_to.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::chat::bubble_builder');
 
 class BubbleBuilder extends ConsumerWidget {
   final Convo convo;
@@ -249,7 +252,7 @@ class _ChatBubble extends ConsumerWidget {
             size: 12,
           ),
           error: (err, stackTrace) {
-            debugPrint('Failed to load profile due to $err');
+            _log.severe('Failed to load profile', err, stackTrace);
             return ActerAvatar(
               mode: DisplayMode.DM,
               avatarInfo: AvatarInfo(uniqueId: authorId),
@@ -273,7 +276,7 @@ class _ChatBubble extends ConsumerWidget {
                 ),
           ),
           error: (err, stackTrace) {
-            debugPrint('Failed to load profile due to $err');
+            _log.severe('Failed to load profile', err, stackTrace);
             return const Text('');
           },
           loading: () => Skeletonizer(child: Text(authorId)),
@@ -287,8 +290,8 @@ class _ChatBubble extends ConsumerWidget {
     try {
       final stream = convo.timelineStream();
       await stream.toggleReaction(eventId, emoji);
-    } catch (e) {
-      debugPrint('$e');
+    } catch (e, s) {
+      _log.severe('Reaction toggle failed', e, s);
     }
   }
 }

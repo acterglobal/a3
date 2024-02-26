@@ -5,6 +5,9 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::user');
 
 final userAvatarProvider =
     FutureProvider.family<MemoryImage?, UserProfile>((ref, user) async {
@@ -14,8 +17,8 @@ final userAvatarProvider =
       if (data != null) {
         return MemoryImage(data.asTypedList());
       }
-    } catch (e) {
-      debugPrint('failure fetching avatar $e');
+    } catch (e, s) {
+      _log.severe('failure fetching avatar', e, s);
     }
   }
   return null;

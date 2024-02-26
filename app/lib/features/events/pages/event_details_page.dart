@@ -15,6 +15,9 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::event::details');
 
 class EventDetailPage extends ConsumerStatefulWidget {
   final String calendarId;
@@ -241,9 +244,9 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       final draft = rsvpManager.rsvpDraft();
       draft.status(status.toString());
       final rsvpId = await draft.send();
-      debugPrint('new rsvp id: $rsvpId');
-    } catch (e) {
-      debugPrint('Error => $e');
+      _log.info('new rsvp id: $rsvpId');
+    } catch (e, s) {
+      _log.severe('Error =>', e, s);
     } finally {
       EasyLoading.dismiss();
     }

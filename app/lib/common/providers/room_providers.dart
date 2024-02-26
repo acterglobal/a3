@@ -10,6 +10,9 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::room_providers');
 
 class RoomItem {
   final Member? membership;
@@ -162,7 +165,7 @@ final canonicalParentProvider = FutureProvider.autoDispose
     final SpaceWithProfileData data = (space: parentSpace, profile: profile);
     return data;
   } catch (e) {
-    log.warning('Failed to load canonical parent for $roomId');
+    _log.warning('Failed to load canonical parent for $roomId');
     return null;
   }
 });

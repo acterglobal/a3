@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::room::notification_settings_tile');
 
 String? notifToText(String curNotifStatus) {
   if (curNotifStatus == 'muted') {
@@ -56,7 +59,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
         initialValue: curNotifStatus,
         // Callback that sets the selected popup menu item.
         onSelected: (String newMode) async {
-          debugPrint('new value: $newMode');
+          _log.info('new value: $newMode');
           final room = await ref.read(maybeRoomProvider(roomId).future);
           if (room == null) {
             EasyLoading.showError(

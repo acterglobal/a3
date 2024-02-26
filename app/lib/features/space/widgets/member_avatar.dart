@@ -6,6 +6,10 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::space::member_avatar');
+
 class MemberAvatar extends ConsumerWidget {
   final Member member;
 
@@ -31,7 +35,7 @@ class MemberAvatar extends ConsumerWidget {
           size: 18,
         ),
         error: (err, stackTrace) {
-          debugPrint("Couldn't load avatar");
+          _log.severe("Couldn't load avatar", err, stackTrace);
           return ActerAvatar(
             mode: DisplayMode.DM,
             avatarInfo: AvatarInfo(

@@ -6,6 +6,9 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::chat');
 
 /// Provider the profile data of a the given space, keeps up to date with underlying client
 final convoProvider =
@@ -24,13 +27,17 @@ final chatProfileDataProvider =
   final profile = chat.getProfile();
   final displayName = await profile.getDisplayName();
   final isDm = chat.isDm();
-  if (!profile.hasAvatar()) {
-    return ProfileData(displayName.text(), null, isDm: isDm);
+  try {
+    if (profile.hasAvatar()) {
+      final sdk = await ref.watch(sdkProvider.future);
+      final size = sdk.api.newThumbSize(48, 48);
+      final avatar = await profile.getAvatar(size);
+      return ProfileData(displayName.text(), avatar.data(), isDm: isDm);
+    }
+  } catch (e, s) {
+    _log.severe('Loading avatar for ${convo.getRoomIdStr()} failed', e, s);
   }
-  final sdk = await ref.watch(sdkProvider.future);
-  final size = sdk.api.newThumbSize(48, 48);
-  final avatar = await profile.getAvatar(size);
-  return ProfileData(displayName.text(), avatar.data(), isDm: isDm);
+  return ProfileData(displayName.text(), null, isDm: isDm);
 });
 
 final latestMessageProvider =

@@ -8,7 +8,10 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::common::invite_to_room_dialog');
 
 final userNameRegExp = RegExp(
   r'@\S+:\S+.\S+$',
@@ -47,8 +50,8 @@ final userAvatarProvider =
       if (data != null) {
         return MemoryImage(data.asTypedList());
       }
-    } catch (e) {
-      debugPrint('failure fetching avatar $e');
+    } catch (e, s) {
+      _log.severe('failure fetching avatar', e, s);
     }
   }
   return null;
@@ -56,7 +59,7 @@ final userAvatarProvider =
 
 final searchResultProvider = FutureProvider<List<UserProfile>>((ref) async {
   final newSearchValue = ref.watch(searchValueProvider);
-  debugPrint('starting search for $newSearchValue');
+  _log.info('starting search for $newSearchValue');
   if (newSearchValue == null || newSearchValue.length < 3) {
     return [];
   }
@@ -81,8 +84,8 @@ final suggestedUsersProvider =
     if (user.hasAvatar()) {
       try {
         avatar = (await user.getAvatar(null)).data();
-      } catch (e) {
-        debugPrint('failure fetching avatar $e');
+      } catch (e, s) {
+        _log.severe('failure fetching avatar', e, s);
       }
     }
     final profile = ProfileData(displayName, avatar);

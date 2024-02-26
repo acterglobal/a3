@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AsyncPinsNotifier extends AutoDisposeAsyncNotifier<List<ActerPin>> {
@@ -41,7 +40,6 @@ class AsyncPinNotifier
     final client = ref.watch(alwaysClientProvider);
     _listener = client.subscribeStream(arg); // keep it resident in memory
     _poller = _listener.listen((e) async {
-      debugPrint('---------------------- new pin subscribe recieved');
       state = await AsyncValue.guard(_getPin);
     }); // stay up to date
     ref.onDispose(() => _poller.cancel());
@@ -65,7 +63,6 @@ class AsyncSpacePinsNotifier
     _listener =
         client.subscribeStream('$spaceId::pins'); // keep it resident in memory
     _poller = _listener.listen((e) async {
-      debugPrint('---------------------- new pin subscribe recieved');
       state = await AsyncValue.guard(_getPins);
     });
     ref.onDispose(() => _poller.cancel());
