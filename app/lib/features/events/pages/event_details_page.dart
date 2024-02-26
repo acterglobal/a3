@@ -240,7 +240,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       EasyLoading.show(status: 'Updating RSVP', dismissOnTap: false);
       final event =
           await ref.read(calendarEventProvider(widget.calendarId).future);
-      final rsvpManager = await event.rsvpManager();
+      final rsvpManager = await event.rsvps();
       final draft = rsvpManager.rsvpDraft();
       draft.status(status.toString());
       final rsvpId = await draft.send();
