@@ -70,21 +70,8 @@ impl OptionRsvpStatus {
         self.status.clone()
     }
 
-    pub fn status_str(&self, pascal_case: bool) -> Option<String> {
-        let status = self.status.clone();
-        if pascal_case {
-            status.map(|x| {
-                match x {
-                    RsvpStatus::Yes => "Yes",
-                    RsvpStatus::Maybe => "Maybe",
-                    RsvpStatus::No => "No",
-                }
-                .to_owned()
-            })
-        } else {
-            // kebab-case
-            status.map(|x| x.to_string())
-        }
+    pub fn status_str(&self) -> Option<String> {
+        self.status.as_ref().map(|x| x.to_string())
     }
 }
 

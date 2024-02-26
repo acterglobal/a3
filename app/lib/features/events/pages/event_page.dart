@@ -31,20 +31,22 @@ class _CalendarEventPageState extends ConsumerState<CalendarEventPage> {
   @override
   void initState() {
     super.initState();
-    AsyncValue<OptionRsvpStatus> myRsvpStatus =
-        ref.read(myRsvpStatusProvider(widget.calendarId));
+    final myRsvpStatus = ref.read(myRsvpStatusProvider(widget.calendarId));
     myRsvpStatus.maybeWhen(
       data: (data) {
-        switch (data.statusStr(true)) {
-          case 'Yes':
-            rsvpStatus = RsvpStatusTag.Yes;
-            break;
-          case 'Maybe':
-            rsvpStatus = RsvpStatusTag.Maybe;
-            break;
-          case 'No':
-            rsvpStatus = RsvpStatusTag.No;
-            break;
+        final status = data.statusStr(); // kebab-case
+        if (status != null) {
+          switch (status) {
+            case 'yes':
+              rsvpStatus = RsvpStatusTag.Yes;
+              break;
+            case 'maybe':
+              rsvpStatus = RsvpStatusTag.Maybe;
+              break;
+            case 'no':
+              rsvpStatus = RsvpStatusTag.No;
+              break;
+          }
         }
       },
       orElse: () => null,
@@ -154,8 +156,7 @@ class _CalendarEventPageState extends ConsumerState<CalendarEventPage> {
 
   @override
   Widget build(BuildContext context) {
-    AsyncValue<CalendarEvent> event =
-        ref.watch(calendarEventProvider(widget.calendarId));
+    final event = ref.watch(calendarEventProvider(widget.calendarId));
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.neutral,
       body: CustomScrollView(

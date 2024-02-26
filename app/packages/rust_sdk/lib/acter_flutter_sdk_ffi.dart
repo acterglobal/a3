@@ -13350,13 +13350,11 @@ class Api {
       ffi.NativeFunction<
           _OptionRsvpStatusStatusStrReturn Function(
             ffi.Int64,
-            ffi.Uint8,
           )>>("__OptionRsvpStatus_status_str");
 
   late final _optionRsvpStatusStatusStr =
       _optionRsvpStatusStatusStrPtr.asFunction<
           _OptionRsvpStatusStatusStrReturn Function(
-            int,
             int,
           )>();
   late final _userProfileUserIdPtr = _lookup<
@@ -28219,43 +28217,37 @@ class OptionRsvpStatus {
   }
 
   /// get status in string
-  String? statusStr(
-    bool pascalCase,
-  ) {
-    final tmp1 = pascalCase;
+  String? statusStr() {
     var tmp0 = 0;
-    var tmp2 = 0;
     tmp0 = _box.borrow();
-    tmp2 = tmp1 ? 1 : 0;
-    final tmp3 = _api._optionRsvpStatusStatusStr(
+    final tmp1 = _api._optionRsvpStatusStatusStr(
       tmp0,
-      tmp2,
     );
-    final tmp5 = tmp3.arg0;
-    final tmp6 = tmp3.arg1;
-    final tmp7 = tmp3.arg2;
-    final tmp8 = tmp3.arg3;
-    if (tmp5 == 0) {
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
       return null;
     }
-    if (tmp7 == 0) {
+    if (tmp5 == 0) {
       print("returning empty string");
       return "";
     }
-    final ffi.Pointer<ffi.Uint8> tmp6_ptr = ffi.Pointer.fromAddress(tmp6);
-    List<int> tmp6_buf = [];
-    final tmp6_precast = tmp6_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp7; i++) {
-      int char = tmp6_precast.elementAt(i).value;
-      tmp6_buf.add(char);
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
     }
-    final tmp4 = utf8.decode(tmp6_buf, allowMalformed: true);
-    if (tmp8 > 0) {
-      final ffi.Pointer<ffi.Void> tmp6_0;
-      tmp6_0 = ffi.Pointer.fromAddress(tmp6);
-      _api.__deallocate(tmp6_0, tmp8 * 1, 1);
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
     }
-    return tmp4;
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
