@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/tasks/models/tasks.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::tasks::providers');
 
 class TasksNotifier extends FamilyAsyncNotifier<TasksOverview, TaskList> {
   late Stream<bool> _listener;
@@ -34,7 +36,7 @@ class TasksNotifier extends FamilyAsyncNotifier<TasksOverview, TaskList> {
     final taskList = arg;
     _listener = taskList.subscribeStream(); // keep it resident in memory
     _poller = _listener.listen((element) async {
-      debugPrint('got tasks list update');
+      _log.info('got tasks list update');
       state = await AsyncValue.guard(() async {
         final freshTaskList = await taskList.refresh();
         return await _refresh(freshTaskList);
@@ -61,7 +63,7 @@ class TaskListNotifier extends FamilyAsyncNotifier<TaskList, String> {
     final taskList = await _refresh(client, arg);
     _listener = taskList.subscribeStream(); // keep it resident in memory
     _poller = _listener.listen((element) async {
-      debugPrint('got taskList update');
+      _log.info('got taskList update');
       state = await AsyncValue.guard(() async => await _refresh(client, arg));
     });
     ref.onDispose(() => _poller.cancel());
@@ -80,7 +82,7 @@ class TaskNotifier extends FamilyAsyncNotifier<Task, Task> {
     final task = arg;
     _listener = task.subscribeStream(); // keep it resident in memory
     _poller = _listener.listen((element) async {
-      debugPrint('got tasks list update');
+      _log.info('got tasks list update');
       state = await AsyncValue.guard(() async => await task.refresh());
     });
     ref.onDispose(() => _poller.cancel());

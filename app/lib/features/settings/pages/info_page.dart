@@ -131,7 +131,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                 ),
                 SettingsTile(
                   title: Text(
-                    'Rust Log Settings',
+                    'Log Settings',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   onPressed: _displayDebugLevelEditor,

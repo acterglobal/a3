@@ -4,6 +4,9 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::chat::emoji_reaction_item');
 
 class EmojiReactionItem extends ConsumerWidget {
   final List<String> emojis;
@@ -39,8 +42,8 @@ class EmojiReactionItem extends ConsumerWidget {
             size: 24,
           ),
         ),
-        error: (e, t) {
-          debugPrint('loading avatar failed: $e');
+        error: (e, s) {
+          _log.severe('loading avatar failed', e, s);
           return ActerAvatar(
             mode: DisplayMode.DM,
             avatarInfo: AvatarInfo(uniqueId: userId, displayName: userId),

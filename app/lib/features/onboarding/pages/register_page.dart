@@ -18,7 +18,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final log = Logger('Register');
+final _log = Logger('Register');
 
 Future<void> tryRedeem(SuperInvites superInvites, String token) async {
   // try to redeem the token in a fire-and-forget-manner
@@ -27,7 +27,7 @@ Future<void> tryRedeem(SuperInvites superInvites, String token) async {
       token,
     );
   } catch (error) {
-    log.warning('redeeming super invite failed: $error');
+    _log.warning('redeeming super invite failed: $error');
   }
 }
 

@@ -89,7 +89,8 @@ class EventItem extends ConsumerWidget {
     final myRsvpStatus = ref.watch(myRsvpStatusProvider(eventId));
     return myRsvpStatus.when(
       data: (data) {
-        return Chip(label: Text(data.status()?.tag.name ?? 'Pending'));
+        final status = data.statusStr(); // kebab-case
+        return Chip(label: Text(_getStatusLabel(status)));
       },
       error: (e, st) => Chip(
         label: Text('Error loading rsvp status: $e', softWrap: true),
@@ -98,5 +99,19 @@ class EventItem extends ConsumerWidget {
         label: Text('Loading rsvp status'),
       ),
     );
+  }
+
+  String _getStatusLabel(String? status) {
+    if (status != null) {
+      switch (status) {
+        case 'yes':
+          return 'Going';
+        case 'no':
+          return 'Not Going';
+        case 'maybe':
+          return 'Maybe';
+      }
+    }
+    return 'Pending';
   }
 }

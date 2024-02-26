@@ -13,6 +13,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::member_list');
+
 class ChangePowerLevel extends StatefulWidget {
   final Member member;
   final Member? myMembership;
@@ -565,8 +569,8 @@ class MemberListEntry extends ConsumerWidget {
             size: 18,
           ),
         ),
-        error: (e, t) {
-          debugPrint('loading avatar failed: $e');
+        error: (e, s) {
+          _log.severe('loading avatar failed:', e, s);
           return ActerAvatar(
             mode: DisplayMode.DM,
             avatarInfo: AvatarInfo(uniqueId: userId),
@@ -587,7 +591,7 @@ class MemberListEntry extends ConsumerWidget {
           ),
         ),
         error: (e, s) {
-          debugPrint('loading Profile failed $e');
+          _log.severe('loading Profile failed', e, s);
           return const SizedBox.shrink();
         },
       ),

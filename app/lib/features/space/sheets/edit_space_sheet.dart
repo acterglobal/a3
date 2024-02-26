@@ -16,6 +16,10 @@ import 'package:go_router/go_router.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::space::edit');
+
 // interface data providers
 final editTitleProvider = StateProvider.autoDispose<String>((ref) => '');
 final editTopicProvider = StateProvider.autoDispose<String>((ref) => '');
@@ -194,7 +198,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                   ),
                 );
                 final roomId = await _handleUpdateSpace(context);
-                debugPrint('Space Updated: $roomId');
+                _log.info('Space Updated: $roomId');
                 // We are doing as expected, but the lints triggers.
                 // ignore: use_build_context_synchronously
                 if (!context.mounted) {
@@ -278,9 +282,9 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     String title = ref.read(editTitleProvider);
     try {
       final eventId = await space.setName(title);
-      debugPrint('Space update event: $eventId');
-    } catch (e) {
-      debugPrint('$e');
+      _log.info('Space update event: $eventId');
+    } catch (e, s) {
+      _log.severe('Update failed', e, s);
       rethrow;
     }
 
@@ -288,16 +292,16 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     String avatarUri = ref.read(editAvatarProvider);
     if (avatarUri.isNotEmpty) {
       final eventId = await space.uploadAvatar(avatarUri);
-      debugPrint('Avatar update event: ${eventId.toString()}');
+      _log.info('Avatar update event: ${eventId.toString()}');
     } else {
       final eventId = await space.removeAvatar();
-      debugPrint('Avatar removed event: ${eventId.toString()}');
+      _log.info('Avatar removed event: ${eventId.toString()}');
     }
 
     //update space topic
     String topic = ref.read(editTopicProvider);
     final eventId = await space.setTopic(topic);
-    debugPrint('topic update event: $eventId');
+    _log.info('topic update event: $eventId');
 
     return space.getRoomId();
   }

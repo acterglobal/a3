@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/news/model/news_post_state.dart';
@@ -20,8 +20,7 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
 
   void changeTextSlideBackgroundColor() {
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-    selectedNewsSlide?.backgroundColor =
-        Colors.primaries[Random().nextInt(Colors.primaries.length)];
+    selectedNewsSlide?.backgroundColor = getRandomElement(Colors.primaries);
     state = state.copyWith(
       currentNewsSlide: selectedNewsSlide,
     );

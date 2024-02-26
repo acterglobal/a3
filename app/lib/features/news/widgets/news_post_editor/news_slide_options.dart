@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
@@ -11,7 +11,6 @@ import 'package:cross_file_image/cross_file_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 class NewsSlideOptions extends ConsumerStatefulWidget {
   const NewsSlideOptions({super.key});
@@ -135,7 +134,11 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                 clipBehavior: Clip.none,
                 alignment: Alignment.topRight,
                 children: [
-                  spaceAvatar(newsPostSpaceId),
+                  RoomAvatarBuilder(
+                    roomId: newsPostSpaceId,
+                    displayMode: DisplayMode.Space,
+                    avatarSize: 42,
+                  ),
                   Positioned(
                     top: -5,
                     right: -5,
@@ -172,39 +175,6 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
       width: 2,
       margin: const EdgeInsets.symmetric(horizontal: 10.0),
       color: Theme.of(context).colorScheme.onPrimary,
-    );
-  }
-
-  Widget spaceAvatar(String spaceId) {
-    final profileData = ref.watch(spaceProfileDataForSpaceIdProvider(spaceId));
-    return profileData.when(
-      data: (space) => ActerAvatar(
-        mode: DisplayMode.Space,
-        avatarInfo: AvatarInfo(
-          uniqueId: spaceId,
-          displayName: space.profile.displayName,
-          avatar: space.profile.avatarMem,
-        ),
-        size: 42,
-      ),
-      error: (e, st) {
-        debugPrint('Error loading space: $e');
-        return ActerAvatar(
-          mode: DisplayMode.Space,
-          avatarInfo: AvatarInfo(
-            uniqueId: spaceId,
-            displayName: spaceId,
-          ),
-          size: 42,
-        );
-      },
-      loading: () => Skeletonizer(
-        child: ActerAvatar(
-          mode: DisplayMode.Space,
-          avatarInfo: AvatarInfo(uniqueId: spaceId),
-          size: 42,
-        ),
-      ),
     );
   }
 

@@ -423,11 +423,12 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
         // ignore: use_build_context_synchronously
         await checkJoinRule(context, room, selectedParentSpaceId);
       }
-      if (widget.childRoomType == ChildRoomType.recommendedSpace) {
-        recommendedChildSpaceIds.add(roomId);
-      } else {
-        childRoomsIds.add(roomId);
-      }
+    }
+
+    if (widget.childRoomType == ChildRoomType.recommendedSpace) {
+      recommendedChildSpaceIds.add(roomId);
+    } else {
+      childRoomsIds.add(roomId);
     }
   }
 

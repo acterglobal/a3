@@ -1,5 +1,3 @@
-import 'dart:core';
-
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/space_notifiers.dart';
@@ -7,11 +5,10 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final log = Logger('SpaceProviders');
+final _log = Logger('a3::common::space_providers');
 
 /// Provider the profile data of a the given space, keeps up to date with underlying client
 final spaceProfileDataProvider = AsyncNotifierProvider.family<
@@ -355,8 +352,8 @@ final spaceRelationsOverviewProvider = FutureProvider.autoDispose
         if (space.isJoined()) {
           mainParent = space;
         }
-      } catch (e) {
-        debugPrint('Loading main Parent of $spaceId failed: $e');
+      } catch (e, s) {
+        _log.severe('Loading main Parent of $spaceId failed', e, s);
       }
     }
   }
@@ -370,8 +367,8 @@ final spaceRelationsOverviewProvider = FutureProvider.autoDispose
         if (space.isJoined()) {
           parents.add(space);
         }
-      } catch (e) {
-        debugPrint('Loading other Parents of $spaceId failed: $e');
+      } catch (e, s) {
+        _log.severe('Loading other Parents of $spaceId failed', e, s);
       }
     }
   }

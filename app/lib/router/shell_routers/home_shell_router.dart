@@ -1,6 +1,6 @@
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/events/pages/event_page.dart';
 import 'package:acter/features/events/pages/events_page.dart';
+import 'package:acter/features/events/pages/event_details_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/pins/pages/pin_page.dart';
 import 'package:acter/features/pins/pages/pins_page.dart';
@@ -400,7 +400,7 @@ List<RouteBase> makeHomeShellRoutes(ref) {
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: CalendarEventPage(
+          child: EventDetailPage(
             calendarId: state.pathParameters['calendarId']!,
           ),
         );

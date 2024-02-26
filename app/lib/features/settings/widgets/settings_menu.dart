@@ -138,7 +138,7 @@ class SettingsMenu extends ConsumerWidget {
                   style: titleStylesSelected(Routes.settingsSuperInvites),
                 ),
                 description: Text(
-                  'Manage your invitation tokens',
+                  'Manage your invitation codes',
                   style: titleStylesSelected(Routes.settingsSuperInvites),
                 ),
                 leading: Icon(
