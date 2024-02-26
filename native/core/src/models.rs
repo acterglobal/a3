@@ -256,15 +256,13 @@ pub struct EventMeta {
 
 impl EventMeta {
     pub fn for_redacted_source(value: &OriginalRoomRedactionEvent) -> Option<Self> {
-        let Some(target_event_id) = value.redacts.clone() else {
-            return None;
-        };
+        let target_event_id = value.redacts.clone()?;
 
         Some(EventMeta {
             event_id: target_event_id,
             sender: value.sender.clone(),
             room_id: value.room_id.clone(),
-            origin_server_ts: value.origin_server_ts.clone(),
+            origin_server_ts: value.origin_server_ts,
         })
     }
 }
