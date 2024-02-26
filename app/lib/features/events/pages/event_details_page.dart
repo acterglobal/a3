@@ -253,21 +253,20 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget _buildEventRsvpActions() {
-    AsyncValue<OptionRsvpStatus> myRsvpStatus =
-        ref.watch(myRsvpStatusProvider(widget.calendarId));
+    final myRsvpStatus = ref.watch(myRsvpStatusProvider(widget.calendarId));
     Set<RsvpStatusTag?> rsvp = <RsvpStatusTag?>{null};
     myRsvpStatus.maybeWhen(
       data: (data) {
-        final status = data.status();
+        final status = data.statusStr();
         if (status != null) {
-          switch (status.tag) {
-            case RsvpStatusTag.Yes:
+          switch (status) {
+            case 'yes':
               rsvp = <RsvpStatusTag?>{RsvpStatusTag.Yes};
               break;
-            case RsvpStatusTag.Maybe:
+            case 'maybe':
               rsvp = <RsvpStatusTag?>{RsvpStatusTag.Maybe};
               break;
-            case RsvpStatusTag.No:
+            case 'no':
               rsvp = <RsvpStatusTag?>{RsvpStatusTag.No};
               break;
           }

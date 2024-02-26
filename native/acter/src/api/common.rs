@@ -69,6 +69,10 @@ impl OptionRsvpStatus {
     pub fn status(&self) -> Option<RsvpStatus> {
         self.status.clone()
     }
+
+    pub fn status_str(&self) -> Option<String> {
+        self.status.as_ref().map(|x| x.to_string())
+    }
 }
 
 pub struct MediaSource {

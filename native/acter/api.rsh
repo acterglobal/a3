@@ -220,6 +220,9 @@ object OptionBuffer {
 object OptionRsvpStatus {
     /// get status
     fn status() -> Option<RsvpStatus>;
+
+    /// get status in string
+    fn status_str() -> Option<string>;
 }
 
 object UserProfile {
