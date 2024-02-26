@@ -22,5 +22,5 @@ final reactionEntriesProvider = AsyncNotifierProvider.autoDispose
 
 final myNewsReactionStatusProvider =
     FutureProvider.autoDispose.family<bool, NewsEntry>((ref, news) async {
-  return await news.myLikeStatus();
+  return await news.likedByMe();
 });

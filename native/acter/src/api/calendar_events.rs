@@ -245,13 +245,13 @@ impl CalendarEvent {
             .await?
     }
 
-    pub async fn my_rsvp_status(&self) -> Result<OptionRsvpStatus> {
+    pub async fn responded_by_me(&self) -> Result<OptionRsvpStatus> {
         let me = self.clone();
 
         RUNTIME
             .spawn(async move {
                 let manager = me.rsvps().await?;
-                manager.my_status().await
+                manager.responded_by_me().await
             })
             .await?
     }

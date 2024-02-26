@@ -136,5 +136,5 @@ class AsyncMyPastEventsNotifier
 final myRsvpStatusProvider = FutureProvider.family
     .autoDispose<ffi.OptionRsvpStatus, String>((ref, calendarId) async {
   final event = await ref.watch(calendarEventProvider(calendarId).future);
-  return await event.myRsvpStatus();
+  return await event.respondedByMe();
 });

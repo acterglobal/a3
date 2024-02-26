@@ -406,7 +406,7 @@ object NewsEntry {
     fn likes_count() -> Future<Result<u32>>;
 
     /// get my like status on this news entry
-    fn my_like_status() -> Future<Result<bool>>;
+    fn liked_by_me() -> Future<Result<bool>>;
 
     /// get room id
     fn room_id() -> RoomId;
@@ -586,7 +586,7 @@ object CalendarEvent {
     /// get the reaction manager
     fn reactions() -> Future<Result<ReactionManager>>;
     /// get my RSVP status, one of Yes/Maybe/No or None
-    fn my_rsvp_status() -> Future<Result<OptionRsvpStatus>>;
+    fn responded_by_me() -> Future<Result<OptionRsvpStatus>>;
 }
 
 object CalendarEventUpdateBuilder {
@@ -668,7 +668,7 @@ object RsvpManager {
     fn rsvp_entries() -> Future<Result<Vec<Rsvp>>>;
 
     /// get Yes/Maybe/No or None for the user's own status
-    fn my_status() -> Future<Result<OptionRsvpStatus>>;
+    fn responded_by_me() -> Future<Result<OptionRsvpStatus>>;
 
     /// get the count of Yes/Maybe/No
     fn count_at_status(status: string) -> Future<Result<u32>>;
@@ -714,7 +714,7 @@ object Rsvp {
 object ReactionManager {
 
     /// get my reaction status
-    fn my_status() -> Future<Result<bool>>;
+    fn reacted_by_me() -> Future<Result<bool>>;
 
     /// whether manager has reaction entries
     fn has_reaction_entries() -> bool;

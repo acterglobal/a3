@@ -2486,7 +2486,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __newsEntryMyLikeStatusFuturePoll(
+  bool? __newsEntryLikedByMeFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2500,7 +2500,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _newsEntryMyLikeStatusFuturePoll(
+    final tmp6 = _newsEntryLikedByMeFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3088,7 +3088,7 @@ class Api {
     return tmp7;
   }
 
-  OptionRsvpStatus? __calendarEventMyRsvpStatusFuturePoll(
+  OptionRsvpStatus? __calendarEventRespondedByMeFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3102,7 +3102,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _calendarEventMyRsvpStatusFuturePoll(
+    final tmp6 = _calendarEventRespondedByMeFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3277,7 +3277,7 @@ class Api {
     return tmp7;
   }
 
-  OptionRsvpStatus? __rsvpManagerMyStatusFuturePoll(
+  OptionRsvpStatus? __rsvpManagerRespondedByMeFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3291,7 +3291,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _rsvpManagerMyStatusFuturePoll(
+    final tmp6 = _rsvpManagerRespondedByMeFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3463,7 +3463,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __reactionManagerMyStatusFuturePoll(
+  bool? __reactionManagerReactedByMeFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3477,7 +3477,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _reactionManagerMyStatusFuturePoll(
+    final tmp6 = _reactionManagerReactedByMeFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -14810,13 +14810,13 @@ class Api {
       int Function(
         int,
       )>();
-  late final _newsEntryMyLikeStatusPtr = _lookup<
+  late final _newsEntryLikedByMePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__NewsEntry_my_like_status");
+          )>>("__NewsEntry_liked_by_me");
 
-  late final _newsEntryMyLikeStatus = _newsEntryMyLikeStatusPtr.asFunction<
+  late final _newsEntryLikedByMe = _newsEntryLikedByMePtr.asFunction<
       int Function(
         int,
       )>();
@@ -15514,14 +15514,14 @@ class Api {
       int Function(
         int,
       )>();
-  late final _calendarEventMyRsvpStatusPtr = _lookup<
+  late final _calendarEventRespondedByMePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__CalendarEvent_my_rsvp_status");
+          )>>("__CalendarEvent_responded_by_me");
 
-  late final _calendarEventMyRsvpStatus =
-      _calendarEventMyRsvpStatusPtr.asFunction<
+  late final _calendarEventRespondedByMe =
+      _calendarEventRespondedByMePtr.asFunction<
           int Function(
             int,
           )>();
@@ -15884,16 +15884,17 @@ class Api {
       int Function(
         int,
       )>();
-  late final _rsvpManagerMyStatusPtr = _lookup<
+  late final _rsvpManagerRespondedByMePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__RsvpManager_my_status");
+          )>>("__RsvpManager_responded_by_me");
 
-  late final _rsvpManagerMyStatus = _rsvpManagerMyStatusPtr.asFunction<
-      int Function(
-        int,
-      )>();
+  late final _rsvpManagerRespondedByMe =
+      _rsvpManagerRespondedByMePtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _rsvpManagerCountAtStatusPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -16005,16 +16006,17 @@ class Api {
       _RsvpStatusReturn Function(
         int,
       )>();
-  late final _reactionManagerMyStatusPtr = _lookup<
+  late final _reactionManagerReactedByMePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__ReactionManager_my_status");
+          )>>("__ReactionManager_reacted_by_me");
 
-  late final _reactionManagerMyStatus = _reactionManagerMyStatusPtr.asFunction<
-      int Function(
-        int,
-      )>();
+  late final _reactionManagerReactedByMe =
+      _reactionManagerReactedByMePtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _reactionManagerHasReactionEntriesPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
@@ -23827,17 +23829,17 @@ class Api {
             int,
             int,
           )>();
-  late final _newsEntryMyLikeStatusFuturePollPtr = _lookup<
+  late final _newsEntryLikedByMeFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _NewsEntryMyLikeStatusFuturePollReturn Function(
+          _NewsEntryLikedByMeFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__NewsEntry_my_like_status_future_poll");
+          )>>("__NewsEntry_liked_by_me_future_poll");
 
-  late final _newsEntryMyLikeStatusFuturePoll =
-      _newsEntryMyLikeStatusFuturePollPtr.asFunction<
-          _NewsEntryMyLikeStatusFuturePollReturn Function(
+  late final _newsEntryLikedByMeFuturePoll =
+      _newsEntryLikedByMeFuturePollPtr.asFunction<
+          _NewsEntryLikedByMeFuturePollReturn Function(
             int,
             int,
             int,
@@ -24021,17 +24023,17 @@ class Api {
             int,
             int,
           )>();
-  late final _calendarEventMyRsvpStatusFuturePollPtr = _lookup<
+  late final _calendarEventRespondedByMeFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _CalendarEventMyRsvpStatusFuturePollReturn Function(
+          _CalendarEventRespondedByMeFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__CalendarEvent_my_rsvp_status_future_poll");
+          )>>("__CalendarEvent_responded_by_me_future_poll");
 
-  late final _calendarEventMyRsvpStatusFuturePoll =
-      _calendarEventMyRsvpStatusFuturePollPtr.asFunction<
-          _CalendarEventMyRsvpStatusFuturePollReturn Function(
+  late final _calendarEventRespondedByMeFuturePoll =
+      _calendarEventRespondedByMeFuturePollPtr.asFunction<
+          _CalendarEventRespondedByMeFuturePollReturn Function(
             int,
             int,
             int,
@@ -24081,17 +24083,17 @@ class Api {
             int,
             int,
           )>();
-  late final _rsvpManagerMyStatusFuturePollPtr = _lookup<
+  late final _rsvpManagerRespondedByMeFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _RsvpManagerMyStatusFuturePollReturn Function(
+          _RsvpManagerRespondedByMeFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__RsvpManager_my_status_future_poll");
+          )>>("__RsvpManager_responded_by_me_future_poll");
 
-  late final _rsvpManagerMyStatusFuturePoll =
-      _rsvpManagerMyStatusFuturePollPtr.asFunction<
-          _RsvpManagerMyStatusFuturePollReturn Function(
+  late final _rsvpManagerRespondedByMeFuturePoll =
+      _rsvpManagerRespondedByMeFuturePollPtr.asFunction<
+          _RsvpManagerRespondedByMeFuturePollReturn Function(
             int,
             int,
             int,
@@ -24140,17 +24142,17 @@ class Api {
         int,
         int,
       )>();
-  late final _reactionManagerMyStatusFuturePollPtr = _lookup<
+  late final _reactionManagerReactedByMeFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ReactionManagerMyStatusFuturePollReturn Function(
+          _ReactionManagerReactedByMeFuturePollReturn Function(
             ffi.Int64,
             ffi.Int64,
             ffi.Int64,
-          )>>("__ReactionManager_my_status_future_poll");
+          )>>("__ReactionManager_reacted_by_me_future_poll");
 
-  late final _reactionManagerMyStatusFuturePoll =
-      _reactionManagerMyStatusFuturePollPtr.asFunction<
-          _ReactionManagerMyStatusFuturePollReturn Function(
+  late final _reactionManagerReactedByMeFuturePoll =
+      _reactionManagerReactedByMeFuturePollPtr.asFunction<
+          _ReactionManagerReactedByMeFuturePollReturn Function(
             int,
             int,
             int,
@@ -31088,17 +31090,17 @@ class NewsEntry {
   }
 
   /// get my like status on this news entry
-  Future<bool> myLikeStatus() {
+  Future<bool> likedByMe() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._newsEntryMyLikeStatus(
+    final tmp1 = _api._newsEntryLikedByMe(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__NewsEntry_my_like_status_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__NewsEntry_liked_by_me_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__newsEntryMyLikeStatusFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__newsEntryLikedByMeFuturePoll);
     return tmp2;
   }
 
@@ -32332,19 +32334,19 @@ class CalendarEvent {
   }
 
   /// get my RSVP status, one of Yes/Maybe/No or None
-  Future<OptionRsvpStatus> myRsvpStatus() {
+  Future<OptionRsvpStatus> respondedByMe() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._calendarEventMyRsvpStatus(
+    final tmp1 = _api._calendarEventRespondedByMe(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 =
-        _Box(_api, tmp3_0, "__CalendarEvent_my_rsvp_status_future_drop");
+        _Box(_api, tmp3_0, "__CalendarEvent_responded_by_me_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 =
-        _nativeFuture(tmp3_1, _api.__calendarEventMyRsvpStatusFuturePoll);
+        _nativeFuture(tmp3_1, _api.__calendarEventRespondedByMeFuturePoll);
     return tmp2;
   }
 
@@ -33153,17 +33155,19 @@ class RsvpManager {
   }
 
   /// get Yes/Maybe/No or None for the user's own status
-  Future<OptionRsvpStatus> myStatus() {
+  Future<OptionRsvpStatus> respondedByMe() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._rsvpManagerMyStatus(
+    final tmp1 = _api._rsvpManagerRespondedByMe(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__RsvpManager_my_status_future_drop");
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__RsvpManager_responded_by_me_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__rsvpManagerMyStatusFuturePoll);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__rsvpManagerRespondedByMeFuturePoll);
     return tmp2;
   }
 
@@ -33419,19 +33423,19 @@ class ReactionManager {
   ReactionManager._(this._api, this._box);
 
   /// get my reaction status
-  Future<bool> myStatus() {
+  Future<bool> reactedByMe() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._reactionManagerMyStatus(
+    final tmp1 = _api._reactionManagerReactedByMe(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 =
-        _Box(_api, tmp3_0, "__ReactionManager_my_status_future_drop");
+        _Box(_api, tmp3_0, "__ReactionManager_reacted_by_me_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 =
-        _nativeFuture(tmp3_1, _api.__reactionManagerMyStatusFuturePoll);
+        _nativeFuture(tmp3_1, _api.__reactionManagerReactedByMeFuturePoll);
     return tmp2;
   }
 
@@ -51434,7 +51438,7 @@ class _NewsEntryLikesCountFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _NewsEntryMyLikeStatusFuturePollReturn extends ffi.Struct {
+class _NewsEntryLikedByMeFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -51629,7 +51633,7 @@ class _CalendarEventReactionsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _CalendarEventMyRsvpStatusFuturePollReturn extends ffi.Struct {
+class _CalendarEventRespondedByMeFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -51689,7 +51693,7 @@ class _RsvpManagerRsvpEntriesFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _RsvpManagerMyStatusFuturePollReturn extends ffi.Struct {
+class _RsvpManagerRespondedByMeFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -51749,7 +51753,7 @@ class _RsvpDraftSendFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ReactionManagerMyStatusFuturePollReturn extends ffi.Struct {
+class _ReactionManagerReactedByMeFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

@@ -619,7 +619,7 @@ async fn news_like_reaction_test() -> Result<()> {
     }
     info!("loop finished");
 
-    let my_status = reaction_manager.my_status().await?;
+    let my_status = reaction_manager.reacted_by_me().await?;
 
     // indicates news is reacted with like
     assert!(my_status);
@@ -728,7 +728,7 @@ async fn news_unlike_reaction_test() -> Result<()> {
     }
     info!("loop finished");
 
-    let my_status = reaction_manager.my_status().await?;
+    let my_status = reaction_manager.reacted_by_me().await?;
 
     // indicates news is reacted with like
     assert_eq!(my_status, true);
@@ -779,7 +779,7 @@ async fn news_unlike_reaction_test() -> Result<()> {
     }
     info!("loop finished");
 
-    let my_status = reaction_manager.my_status().await?;
+    let my_status = reaction_manager.reacted_by_me().await?;
 
     // indicates news is reacted with like
     assert_eq!(my_status, false);

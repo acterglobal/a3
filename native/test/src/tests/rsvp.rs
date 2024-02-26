@@ -178,7 +178,7 @@ async fn rsvp_my_status() -> Result<()> {
     assert_eq!(entries[0].status(), "no");
 
     // get last RSVP
-    let last_status = rsvp_manager.my_status().await?;
+    let last_status = rsvp_manager.responded_by_me().await?;
     assert_eq!(last_status.status(), Some(RsvpStatus::No));
 
     Ok(())

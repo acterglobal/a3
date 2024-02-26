@@ -157,7 +157,7 @@ impl ReactionManager {
         self.inner.stats().clone()
     }
 
-    pub async fn my_status(&self) -> Result<bool> {
+    pub async fn reacted_by_me(&self) -> Result<bool> {
         let manager = self.inner.clone();
         let my_id = self.client.user_id().context("User not found")?;
         RUNTIME

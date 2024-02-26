@@ -630,13 +630,13 @@ impl NewsEntry {
             .await?
     }
 
-    pub async fn my_like_status(&self) -> Result<bool> {
+    pub async fn liked_by_me(&self) -> Result<bool> {
         let me = self.clone();
 
         RUNTIME
             .spawn(async move {
                 let manager = me.reactions().await?;
-                manager.my_status().await
+                manager.reacted_by_me().await
             })
             .await?
     }

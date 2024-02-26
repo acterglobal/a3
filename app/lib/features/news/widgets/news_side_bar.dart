@@ -49,7 +49,7 @@ class NewsSideBar extends ConsumerWidget {
           index: index,
           onTap: () async {
             final client = ref.read(alwaysClientProvider);
-            final status = await news.myLikeStatus();
+            final status = await news.likedByMe();
             debugPrint('my like status: $status');
             final manager = await news.reactions();
             if (!status) {

@@ -102,7 +102,7 @@ impl Client {
                         let cal_event = CalendarEvent::new(client.clone(), room, inner);
                         // fliter only events that i sent rsvp
                         let rsvp_manager = cal_event.rsvps().await?;
-                        let status = rsvp_manager.my_status().await?;
+                        let status = rsvp_manager.responded_by_me().await?;
                         match status.status() {
                             Some(RsvpStatus::Yes) | Some(RsvpStatus::Maybe) => {
                                 cal_events.push(cal_event);
@@ -144,7 +144,7 @@ impl Client {
                         let cal_event = CalendarEvent::new(client.clone(), room, inner);
                         // fliter only events that i sent rsvp
                         let rsvp_manager = cal_event.rsvps().await?;
-                        let status = rsvp_manager.my_status().await?;
+                        let status = rsvp_manager.responded_by_me().await?;
                         match status.status() {
                             Some(RsvpStatus::Yes) | Some(RsvpStatus::Maybe) => {
                                 cal_events.push(cal_event);
@@ -295,7 +295,7 @@ impl RsvpManager {
             .await?
     }
 
-    pub async fn my_status(&self) -> Result<OptionRsvpStatus> {
+    pub async fn responded_by_me(&self) -> Result<OptionRsvpStatus> {
         let manager = self.inner.clone();
         let my_id = self.client.user_id()?;
         RUNTIME
