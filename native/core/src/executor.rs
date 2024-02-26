@@ -1,8 +1,8 @@
 use dashmap::{mapref::entry::Entry, DashMap};
-use ruma_events::UnsignedRoomRedactionEvent;
+use ruma_events::{room::redaction::OriginalRoomRedactionEvent, UnsignedRoomRedactionEvent};
 use std::sync::Arc;
 use tokio::sync::broadcast::{channel, Receiver, Sender};
-use tracing::{error, trace, trace_span};
+use tracing::{error, trace, trace_span, warn};
 
 use crate::{
     models::{ActerModel, AnyActerModel, EventMeta, RedactedActerModel},
@@ -104,20 +104,53 @@ impl Executor {
         event_meta: EventMeta,
         reason: UnsignedRoomRedactionEvent,
     ) -> Result<()> {
+        trace!(event_id=?event_meta.event_id, ?model_type, "asked to redact");
         match self.store.get(event_meta.event_id.as_str()).await {
             Ok(model) => {
+                trace!("previous model found. overwriting");
                 let redacted = RedactedActerModel::new(
                     model_type.to_owned(),
                     model.indizes(self.store.user_id()),
                     event_meta,
-                    reason,
+                    reason.into(),
                 );
                 self.notify(model.redact(&self.store, redacted).await?);
             }
             Err(Error::ModelNotFound(_)) => {
-                let redacted =
-                    RedactedActerModel::new(model_type.to_owned(), vec![], event_meta, reason);
+                trace!("no model found, storing redaction model");
+                let redacted = RedactedActerModel::new(
+                    model_type.to_owned(),
+                    vec![],
+                    event_meta,
+                    reason.into(),
+                );
                 self.notify(redacted.execute(&self.store).await?);
+            }
+            Err(error) => return Err(error),
+        }
+        Ok(())
+    }
+
+    pub async fn live_redact(&self, event: OriginalRoomRedactionEvent) -> Result<()> {
+        let Some(meta) = EventMeta::for_redacted_source(&event) else {
+            warn!(?event, "Redaction didn't contain any target. skipping.");
+            return Ok(());
+        };
+
+        match self.store.get(meta.event_id.as_str()).await {
+            Ok(model) => {
+                trace!("redacting model live");
+                let redacted = RedactedActerModel::new(
+                    model.model_type().to_owned(),
+                    model.indizes(self.store.user_id()),
+                    meta,
+                    event.into(),
+                );
+                self.notify(model.redact(&self.store, redacted).await?);
+            }
+            Err(Error::ModelNotFound(_)) => {
+                trace!("no model found");
+                self.notify(vec![meta.event_id.to_string()]);
             }
             Err(error) => return Err(error),
         }
