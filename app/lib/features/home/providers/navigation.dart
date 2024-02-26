@@ -12,6 +12,10 @@ import 'package:flutter/material.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::home::navigation');
+
 const fallbackSidebarIdx = 1;
 const fallbackBottomBarIdx = 0;
 
@@ -21,7 +25,7 @@ final spaceItemsProvider = FutureProvider.autoDispose
 
   return spaces.map((space) {
     final profileData = ref.watch(spaceProfileDataProvider(space));
-    final roomId = space.getRoomId().toString();
+    final roomId = space.getRoomIdStr();
     final canonicalParent = ref.watch(canonicalParentProvider(roomId));
     return profileData.when(
       loading: () => SidebarNavigationItem(
@@ -184,11 +188,11 @@ final currentSelectedSidebarIndexProvider =
     Provider.autoDispose.family<int, BuildContext>((ref, context) {
   final items = ref.watch(sidebarItemsProvider(context));
   final location = ref.watch(currentRoutingLocation);
-  debugPrint('location: $location');
+  _log.info('location: $location');
   final index = items.indexWhere(
     (t) => t.location != null && location.startsWith(t.location!),
   );
-  debugPrint('index: $index');
+  _log.info('index: $index');
   // if index not found (-1), return 0
   return index < 0 ? fallbackSidebarIdx : index;
 });
@@ -265,10 +269,10 @@ final currentSelectedBottomBarIndexProvider =
   final location = ref.watch(currentRoutingLocation);
   final bottomBarNav = ref.watch(bottomBarNavProvider(context));
 
-  debugPrint('bottom location: $location');
+  _log.info('bottom location: $location');
   final index =
       bottomBarNav.indexWhere((t) => location.startsWith(t.initialLocation));
-  debugPrint('bottom index: $index');
+  _log.info('bottom index: $index');
 
   return index < 0 ? fallbackBottomBarIdx : index;
 });

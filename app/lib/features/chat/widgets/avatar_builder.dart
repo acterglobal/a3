@@ -3,6 +3,9 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::chat::avatar_builder');
 
 class AvatarBuilder extends ConsumerWidget {
   final String roomId;
@@ -34,7 +37,7 @@ class AvatarBuilder extends ConsumerWidget {
         );
       },
       error: (e, st) {
-        debugPrint('ERROR loading avatar due to $e');
+        _log.severe('Error loading avatar', e, st);
         return Padding(
           padding: const EdgeInsets.only(right: 10),
           child: ActerAvatar(

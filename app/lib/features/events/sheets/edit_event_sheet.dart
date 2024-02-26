@@ -9,6 +9,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::event::edit');
 
 final _titleProvider = StateProvider.autoDispose<String>((ref) => '');
 final _startDateProvider = StateProvider.autoDispose<DateTime?>((ref) => null);
@@ -211,7 +214,7 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
       updateBuilder.utcEndFromRfc3339(utcEndDateTime);
       updateBuilder.descriptionText(description);
       final eventId = await updateBuilder.send();
-      debugPrint('Calendar Event updated $eventId');
+      _log.info('Calendar Event updated $eventId');
 
       EasyLoading.dismiss();
       if (context.mounted) {
@@ -225,23 +228,26 @@ class _EditEventSheetConsumerState extends ConsumerState<EditEventSheet> {
   }
 
   void _selectDateTime() async {
-    await showOmniDateTimeRangePicker(
+    final picked = await showOmniDateTimeRangePicker(
       context: context,
-      startFirstDate: ref.watch(_startDateProvider),
-      startInitialDate: ref.watch(_startDateProvider),
-      endInitialDate: ref.watch(_endDateProvider),
-      endFirstDate: ref.watch(_endDateProvider),
+      startFirstDate: ref.read(_startDateProvider),
+      startInitialDate: ref.read(_startDateProvider),
+      endInitialDate: ref.read(_endDateProvider),
+      endFirstDate: ref.read(_endDateProvider),
       borderRadius: BorderRadius.circular(12),
       isForce2Digits: true,
-    ).then((picked) {
-      if (picked != null) {
-        ref.read(_startDateProvider.notifier).update((state) => picked[0]);
-        ref.read(_endDateProvider.notifier).update((state) => picked[1]);
-        _dateController.text =
-            '${DateFormat.yMd().format(picked[0])} - ${DateFormat.yMd().format(picked[1])}';
-        _timeController.text =
-            '${DateFormat.jm().format(picked[0])} - ${DateFormat.jm().format(picked[1])}';
-      }
-    });
+    );
+    if (picked != null) {
+      final startDate = DateFormat.yMd().format(picked[0]);
+      final endDate = DateFormat.yMd().format(picked[1]);
+      _dateController.text = '$startDate - $endDate';
+
+      final startTime = DateFormat.jm().format(picked[0]);
+      final endTime = DateFormat.jm().format(picked[1]);
+      _timeController.text = '$startTime - $endTime';
+
+      ref.read(_startDateProvider.notifier).update((state) => picked[0]);
+      ref.read(_endDateProvider.notifier).update((state) => picked[1]);
+    }
   }
 }

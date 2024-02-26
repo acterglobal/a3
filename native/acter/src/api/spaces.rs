@@ -465,7 +465,11 @@ impl Space {
     #[cfg(feature = "testing")]
     pub async fn timeline_stream(&self) -> TimelineStream {
         let room = self.inner.room.clone();
-        let timeline = Arc::new(room.timeline().await);
+        let timeline = Arc::new(
+            room.timeline()
+                .await
+                .expect("Timeline creation doesn't fail"),
+        );
         TimelineStream::new(room, timeline)
     }
 

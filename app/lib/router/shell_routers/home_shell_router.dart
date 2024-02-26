@@ -1,6 +1,6 @@
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/events/pages/event_page.dart';
 import 'package:acter/features/events/pages/events_page.dart';
+import 'package:acter/features/events/pages/event_details_page.dart';
 import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/pins/pages/pin_page.dart';
 import 'package:acter/features/pins/pages/pins_page.dart';
@@ -24,6 +24,7 @@ import 'package:acter/features/space/pages/tasks_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/settings/pages/index_page.dart';
+import 'package:acter/features/space/settings/pages/notification_configuration_page.dart';
 import 'package:acter/features/spaces/pages/join_space.dart';
 import 'package:acter/features/spaces/pages/spaces_page.dart';
 import 'package:acter/features/tasks/pages/task_list_page.dart';
@@ -309,6 +310,19 @@ List<RouteBase> makeHomeShellRoutes(ref) {
       },
     ),
     GoRoute(
+      name: Routes.spaceSettingsNotifications.name,
+      path: Routes.spaceSettingsNotifications.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: SpaceNotificationConfigurationPage(
+            spaceId: state.pathParameters['spaceId']!,
+          ),
+        );
+      },
+    ),
+    GoRoute(
       name: Routes.tasks.name,
       path: Routes.tasks.route,
       redirect: authGuardRedirect,
@@ -386,7 +400,7 @@ List<RouteBase> makeHomeShellRoutes(ref) {
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: CalendarEventPage(
+          child: EventDetailPage(
             calendarId: state.pathParameters['calendarId']!,
           ),
         );

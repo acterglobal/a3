@@ -5,9 +5,9 @@ import 'dart:io';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
-import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:convert/convert.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
@@ -15,8 +15,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:push/push.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+final _log = Logger('a3::notifications');
 
 final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
@@ -90,12 +94,12 @@ const String darwinNotificationCategoryPlain = 'plainCategory';
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse notificationResponse) {
   // ignore: avoid_print
-  print('notification(${notificationResponse.id}) action tapped: '
+  _log.info('notification(${notificationResponse.id}) action tapped: '
       '${notificationResponse.actionId} with'
       ' payload: ${notificationResponse.payload}');
   if (notificationResponse.input?.isNotEmpty ?? false) {
     // ignore: avoid_print
-    print(
+    _log.info(
       'notification action tapped with input: ${notificationResponse.input}',
     );
   }
@@ -124,7 +128,7 @@ Future<void> initializeNotifications() async {
   }
 
   const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('app_icon');
+      AndroidInitializationSettings('logo_notification');
 
   final List<DarwinNotificationCategory> darwinNotificationCategories =
       <DarwinNotificationCategory>[
@@ -225,7 +229,7 @@ Future<void> initializeNotifications() async {
     // Handle notification launching app from terminated state
     Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data) {
       if (data != null) {
-        debugPrint('Notification tap launched app from terminated state:\n'
+        _log.info('Notification tap launched app from terminated state:\n'
             'RemoteMessage: $data \n');
         handleMessageTap(data);
       }
@@ -253,21 +257,21 @@ Future<void> initializeNotifications() async {
     // You should update your servers with this token
     Push.instance.onNewToken.listen((token) {
       // FIXME: how to identify which clients are connected to this?
-      debugPrint('Just got a new FCM registration token: $token');
+      _log.info('Just got a new FCM registration token: $token');
       onNewToken(token);
     });
-  } catch (e) {
+  } catch (e, s) {
     // this fails on hot-reload and in integration tests... if so, ignore for now
-    debugPrint('Push initialization error: $e');
+    _log.warning('Push initialization error', e, s);
   }
 }
 
 bool handleMessageTap(Map<String?, Object?> data) {
-  debugPrint('Notification was tapped. Data: \n $data');
+  _log.info('Notification was tapped. Data: \n $data');
   try {
     final uri = data['payload'] as String?;
     if (uri != null) {
-      debugPrint('Uri found $uri');
+      _log.info('Uri found $uri');
       rootNavKey.currentContext!.push(uri);
       return true;
     }
@@ -276,14 +280,15 @@ bool handleMessageTap(Map<String?, Object?> data) {
     final eventId = data['event_id'] as String?;
     final deviceId = data['device_id'] as String?;
     if (roomId == null || eventId == null || deviceId == null) {
-      debugPrint('Not our kind of push event. $roomId, $eventId, $deviceId');
+      _log.info('Not our kind of push event. $roomId, $eventId, $deviceId');
       return false;
     }
+    // fallback support
     rootNavKey.currentContext!.push(
       makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId),
     );
-  } catch (e) {
-    debugPrint('Handling Notification tap failed: $e');
+  } catch (e, s) {
+    _log.severe('Handling Notification tap failed', e, s);
   }
 
   return true;
@@ -297,101 +302,236 @@ Future<bool> handleMessage(
     // ignore: use_build_context_synchronously
     if (!rootNavKey.currentContext!
         .read(isActiveProvider(LabsFeature.mobilePushNotifications))) {
-      debugPrint(
+      _log.info(
         'Showing push notifications has been disabled on this device. Ignoring',
       );
       return false;
     }
-  } catch (e) {
-    debugPrint('Reading current context failed: $e');
+  } catch (e, s) {
+    _log.severe('Reading current context failed', e, s);
   }
   if (message.data == null) {
-    debugPrint('non-matrix push: $message');
+    _log.info('non-matrix push: $message');
     return false;
   }
   final deviceId = message.data!['device_id'] as String;
   final roomId = message.data!['room_id'] as String;
   final eventId = message.data!['event_id'] as String;
-  final payload =
-      makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId);
+  _log.info('Received msg $roomId: $eventId');
   try {
     final instance = await ActerSdk.instance;
     final notif = await instance.getNotificationFor(deviceId, roomId, eventId);
-    final isDm = notif.isDirectMessageRoom();
-    final roomDisplayName = notif.roomDisplayName();
-    debugPrint('got a matrix notification in $roomDisplayName ($isDm)');
-
-    String body = '(new message)';
-    String title = roomDisplayName;
-
-    if (isDm) {
-      final roomMsg = notif.roomMessage();
-      if (roomMsg != null) {
-        final eventItem = roomMsg.eventItem();
-        if (eventItem != null) {
-          final msgContent = eventItem.msgContent();
-          if (msgContent != null) {
-            body = msgContent.body();
-          }
-        }
-      }
-    } else {
-      final roomMsg = notif.roomMessage();
-      if (roomMsg != null) {
-        final eventItem = roomMsg.eventItem();
-        if (eventItem != null) {
-          final msgContent = eventItem.msgContent();
-          if (msgContent != null) {
-            body = msgContent.body();
-          }
-        }
-      }
-
-      final sender = notif.senderDisplayName();
-      body = sender != null ? '$sender: $body' : body;
-    }
-
-    try {
-      final currentBase =
-          // ignore: use_build_context_synchronously
-          rootNavKey.currentContext!.read(currentRoutingLocation);
-      final isInChat = currentBase == '/chat/${Uri.encodeComponent(roomId)}';
-      debugPrint('current path: $currentBase == /chat/$roomId : $isInChat');
-      if (isInChat) {
-        debugPrint('We are already in the chatroom. Not showing notification.');
-        return false;
-      }
-    } catch (e) {
-      // ignore this
-    }
-
-    _showNotification(title, body, roomId, payload);
+    _log.info('got a notification');
+    await _showNotification(notif);
     return true;
-  } catch (e) {
-    debugPrint('Parsing Notification failed: $e');
+  } catch (e, s) {
+    _log.severe('Parsing Notification failed', e, s);
   }
   return false;
 }
 
-Future<void> _showNotification(
-  String title,
-  String body,
-  String threadId,
-  String payload,
+Future<ByteArrayAndroidBitmap?> _fetchImage(
+  NotificationItem notification,
 ) async {
-  const androidNotificationDetails = AndroidNotificationDetails(
+  if (notification.hasImage()) {
+    try {
+      final image = await notification.image();
+      return ByteArrayAndroidBitmap(image.asTypedList());
+    } catch (e, s) {
+      _log.severe('fetching image data failed', e, s);
+    }
+  }
+  return null;
+}
+
+Future<Person> _makeSenderPerson(NotificationItem notification) async {
+  final sender = notification.sender();
+  if (sender.hasImage()) {
+    try {
+      final image = await sender.image();
+      return Person(
+        icon: ByteArrayAndroidIcon(image.asTypedList()),
+        key: sender.userId(),
+        name: sender.displayName(),
+      );
+    } catch (e, s) {
+      _log.severe('fetching image data failed', e, s);
+    }
+  }
+  return Person(key: sender.userId(), name: sender.displayName());
+}
+
+Future<ByteArrayAndroidBitmap?> _fetchRoomAvatar(
+  NotificationItem notification,
+) async {
+  final room = notification.room();
+  if (room.hasImage()) {
+    try {
+      final image = await room.image();
+      return ByteArrayAndroidBitmap(image.asTypedList());
+    } catch (e, s) {
+      _log.severe('fetching room avatar failed', e, s);
+    }
+  }
+  return null;
+}
+
+Future<void> _showNotificationOnAndroid(NotificationItem notification) async {
+  String? body;
+  String title = notification.title();
+  String? payload = notification.targetUrl();
+  String? threadId = notification.threadId();
+  String pushStyle = notification.pushStyle();
+
+  AndroidNotificationDetails androidNotificationDetails =
+      AndroidNotificationDetails(
     'messages',
     'Messages',
     channelDescription: 'Messages sent to you',
-    importance: Importance.max,
-    priority: Priority.high,
-    ticker: 'ticker',
+    groupKey: threadId,
   );
+
+  final roomAvatar = await _fetchRoomAvatar(notification);
+
+  if (pushStyle == 'invite') {
+    final person = await _makeSenderPerson(notification);
+    androidNotificationDetails = AndroidNotificationDetails(
+      'invites',
+      'Invites',
+      channelDescription: 'When you are invited to spaces or chats',
+      groupKey: threadId,
+      largeIcon: roomAvatar,
+      styleInformation: MessagingStyleInformation(
+        person,
+        groupConversation: true,
+        conversationTitle: title,
+        messages: [
+          Message('<i>invited you to join</i>', DateTime.now(), person),
+        ],
+        htmlFormatContent: true,
+      ),
+    );
+  } else if (pushStyle == 'news') {
+    final image = await _fetchImage(notification);
+    if (image != null) {
+      androidNotificationDetails = AndroidNotificationDetails(
+        'updates',
+        'Updates',
+        channelDescription: 'Updates from your spaces',
+        groupKey: threadId,
+        largeIcon: roomAvatar,
+        styleInformation: BigPictureStyleInformation(image),
+      );
+    } else {
+      final msg = notification.body();
+      if (msg != null) {
+        final formatted = msg.formattedBody();
+        body = msg.body();
+        androidNotificationDetails = AndroidNotificationDetails(
+          'updates',
+          'Updates',
+          channelDescription: 'Updates from your spaces',
+          groupKey: threadId,
+          largeIcon: roomAvatar,
+          styleInformation: BigTextStyleInformation(
+            formatted ?? body,
+            htmlFormatBigText: formatted != null,
+          ),
+        );
+      }
+    }
+  } else if (pushStyle == 'chat') {
+    _log.info('notification for chat');
+    final person = await _makeSenderPerson(notification);
+    final msg = notification.body()!;
+    final formatted = msg.formattedBody();
+    if (formatted != null) {
+      body = formatted;
+    } else {
+      body = msg.body();
+    }
+    androidNotificationDetails = AndroidNotificationDetails(
+      'chat',
+      'Chat',
+      channelDescription: 'Chat messages from group conversations',
+      groupKey: threadId,
+      largeIcon: roomAvatar,
+      styleInformation: MessagingStyleInformation(
+        person,
+        groupConversation: true,
+        conversationTitle: title,
+        messages: [Message(body, DateTime.now(), person)],
+        htmlFormatContent: formatted != null,
+      ),
+    );
+  } else if (pushStyle == 'dm') {
+    _log.info('notification for dm');
+    final person = await _makeSenderPerson(notification);
+    final msg = notification.body()!;
+    final formatted = msg.formattedBody();
+    title = msg.body();
+    if (formatted != null) {
+      body = formatted;
+    } else {
+      body = msg.body();
+    }
+    _log.info('$title, $body');
+    androidNotificationDetails = AndroidNotificationDetails(
+      'dm',
+      'DM',
+      channelDescription: 'Chat messages from DMs',
+      groupKey: threadId,
+      largeIcon: roomAvatar,
+      styleInformation: MessagingStyleInformation(
+        person,
+        groupConversation: false,
+        messages: [Message(body, DateTime.now(), person)],
+        htmlFormatContent: formatted != null,
+      ),
+    );
+  }
+  await flutterLocalNotificationsPlugin.show(
+    id++,
+    title,
+    body,
+    NotificationDetails(android: androidNotificationDetails),
+    payload: payload,
+  );
+}
+
+Future<void> _showNotification(
+  NotificationItem notification,
+) async {
+  String pushStyle = notification.pushStyle();
+
+  _log.info('notification style: $pushStyle');
+  if (Platform.isAndroid) {
+    return await _showNotificationOnAndroid(notification);
+  }
+  // fallback for non-android
+  String? body;
+  String title = notification.title();
+  String? payload = notification.targetUrl();
+  List<DarwinNotificationAttachment> attachments = [];
+
+  final msg = notification.body();
+  if (msg != null) {
+    body = msg.body();
+  }
+  // FIXME: currently failing with
+  // Parsing Notification failed: PlatformException(Error 101, Unrecognized attachment file type, UNErrorDomain, null)
+  if (notification.hasImage()) {
+    final tempDir = await getTemporaryDirectory();
+    final filePath = await notification.imagePath(tempDir.path);
+    _log.info('attachment at $filePath');
+    attachments.add(DarwinNotificationAttachment(filePath));
+  }
+
   final darwinDetails = DarwinNotificationDetails(
-    threadIdentifier: threadId,
+    threadIdentifier: notification.threadId(),
+    attachments: attachments,
   );
   final notificationDetails = NotificationDetails(
-    android: androidNotificationDetails,
     macOS: darwinDetails,
     iOS: darwinDetails,
   );
@@ -407,7 +547,7 @@ Future<void> _showNotification(
 Future<bool> wasRejected(String deviceId) async {
   final SharedPreferences preferences = await sharedPrefs();
   final prefKey = '$deviceId.rejected_notifications';
-  return (preferences.getBool(prefKey) ?? false);
+  return preferences.getBool(prefKey) ?? false;
 }
 
 Future<void> setRejected(String deviceId, bool value) async {
@@ -425,6 +565,8 @@ Future<bool> setupPushNotifications(
   }
   if (pushServer.isEmpty) {
     // no server given. Ignoring
+    _log.warning(
+        'No push server configured. Skipping push notification setup.',);
     return false;
   }
 
@@ -448,7 +590,7 @@ Future<bool> setupPushNotifications(
   final token = await Push.instance.token;
 
   if (token == null) {
-    debugPrint('No token given');
+    _log.info('No token given');
     return false;
   }
 
@@ -456,7 +598,7 @@ Future<bool> setupPushNotifications(
 }
 
 Future<bool> onNewToken(String token) async {
-  debugPrint(
+  _log.info(
     'Received the update information for the token. Updating all clients.',
   );
   // ignore: use_build_context_synchronously
@@ -465,7 +607,7 @@ Future<bool> onNewToken(String token) async {
   for (final client in sdk.clients) {
     final deviceId = client.deviceId().toString();
     if (await wasRejected(deviceId)) {
-      debugPrint('$deviceId was ignored for token update');
+      _log.info('$deviceId was ignored for token update');
       continue;
     }
     await onToken(client, token);
@@ -498,10 +640,15 @@ Future<bool> onToken(Client client, String token) async {
     null,
   );
 
-  debugPrint(
-    ' ---- notification pusher sent: $appName ($appId) on $name ($token) to $pushServerUrl',
+  _log.info(
+    ' ---- notification pusher set: $appName ($appId) on $name ($token) to $pushServerUrl',
   );
 
+  await client.installDefaultActerPushRules();
+
+  _log.info(
+    ' ---- default push rules submitted',
+  );
   return true;
 }
 

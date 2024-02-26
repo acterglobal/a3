@@ -1,7 +1,7 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:flutter/material.dart';
 
-var bottomNavigationBarTheme =  BottomNavigationBarThemeData(
+var bottomNavigationBarTheme = BottomNavigationBarThemeData(
   backgroundColor: darkBlueColor,
   unselectedLabelStyle: const TextStyle(
     color: Colors.white,
@@ -22,7 +22,7 @@ var bottomNavigationBarTheme =  BottomNavigationBarThemeData(
   elevation: 0,
 );
 
-var navigationRailTheme =  NavigationRailThemeData(
+var navigationRailTheme = NavigationRailThemeData(
   backgroundColor: darkBlueColor,
   indicatorColor: brandColor,
   unselectedLabelTextStyle: const TextStyle(

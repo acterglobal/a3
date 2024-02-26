@@ -1,5 +1,3 @@
-import 'dart:core';
-
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/space_notifiers.dart';
@@ -7,11 +5,10 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final log = Logger('SpaceProviders');
+final _log = Logger('a3::common::space_providers');
 
 /// Provider the profile data of a the given space, keeps up to date with underlying client
 final spaceProfileDataProvider = AsyncNotifierProvider.family<
@@ -65,7 +62,7 @@ final maybeSpaceInfoProvider =
   final membership = await space.getMyMembership();
   return SpaceItem(
     space: space,
-    roomId: space.getRoomId().toString(),
+    roomId: space.getRoomIdStr(),
     membership: membership,
     activeMembers: [],
     spaceProfileData: profileData,
@@ -172,7 +169,7 @@ final briefSpaceItemsProviderWithMembership =
     final profileData =
         await ref.watch(spaceProfileDataProvider(element).future);
     final item = SpaceItem(
-      roomId: element.getRoomId().toString(),
+      roomId: element.getRoomIdStr(),
       membership: await element.getMyMembership(),
       activeMembers: [],
       spaceProfileData: profileData,
@@ -188,7 +185,7 @@ final spaceSearchValueProvider =
 final searchedSpacesProvider =
     FutureProvider.autoDispose<List<SpaceItem>>((ref) async {
   final allSpaces =
-      await ref.read(briefSpaceItemsProviderWithMembership.future);
+      await ref.watch(briefSpaceItemsProviderWithMembership.future);
   final searchValue = ref.watch(spaceSearchValueProvider);
   if (searchValue == null || searchValue.isEmpty) {
     return allSpaces;
@@ -218,7 +215,7 @@ final briefSpaceItemProvider =
   final space = await ref.watch(spaceProvider(spaceId).future);
   final profileData = await ref.watch(spaceProfileDataProvider(space).future);
   return SpaceItem(
-    roomId: space.getRoomId().toString(),
+    roomId: space.getRoomIdStr(),
     membership: null,
     activeMembers: [],
     spaceProfileData: profileData,
@@ -233,7 +230,7 @@ final briefSpaceItemWithMembershipProvider =
   final space = await ref.watch(spaceProvider(spaceId).future);
   final profileData = await ref.watch(spaceProfileDataProvider(space).future);
   return SpaceItem(
-    roomId: space.getRoomId().toString(),
+    roomId: space.getRoomIdStr(),
     space: space,
     membership: space.isJoined() ? await space.getMyMembership() : null,
     activeMembers: [],
@@ -259,7 +256,7 @@ final spaceItemsProvider =
       members = [];
     }
     final item = SpaceItem(
-      roomId: element.getRoomId().toString(),
+      roomId: element.getRoomIdStr(),
       activeMembers: members,
       spaceProfileData: profileData,
     );
@@ -355,8 +352,8 @@ final spaceRelationsOverviewProvider = FutureProvider.autoDispose
         if (space.isJoined()) {
           mainParent = space;
         }
-      } catch (e) {
-        debugPrint('Loading main Parent of $spaceId failed: $e');
+      } catch (e, s) {
+        _log.severe('Loading main Parent of $spaceId failed', e, s);
       }
     }
   }
@@ -370,8 +367,8 @@ final spaceRelationsOverviewProvider = FutureProvider.autoDispose
         if (space.isJoined()) {
           parents.add(space);
         }
-      } catch (e) {
-        debugPrint('Loading other Parents of $spaceId failed: $e');
+      } catch (e, s) {
+        _log.severe('Loading other Parents of $spaceId failed', e, s);
       }
     }
   }

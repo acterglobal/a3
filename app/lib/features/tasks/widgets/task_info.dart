@@ -1,16 +1,15 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/user_chip.dart';
 import 'package:acter/features/tasks/widgets/due_chip.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'dart:core';
 
 class TaskInfo extends ConsumerWidget {
   static const statusBtnNotDone = Key('task-info-status-not-done');
@@ -21,6 +20,7 @@ class TaskInfo extends ConsumerWidget {
   static const selfAssignKey = Key('task-self-assign');
   static const selfUnassignKey = Key('task-self-unassign');
   final Task task;
+
   const TaskInfo({super.key, required this.task});
 
   @override
@@ -111,8 +111,7 @@ class TaskInfo extends ConsumerWidget {
                 key: selfUnassignKey,
                 size: 20,
               ),
-              onDeleted: account.hasValue &&
-                      account.value!.userId().toString() == userId
+              onDeleted: account.userId().toString() == userId
                   ? () async {
                       await task.unassignSelf();
                       EasyLoading.showToast(
@@ -144,6 +143,7 @@ class TaskInfo extends ConsumerWidget {
 
 class TaskTitle extends StatefulWidget {
   final Task task;
+
   const TaskTitle({super.key, required this.task});
 
   @override
@@ -230,7 +230,9 @@ class TaskBody extends StatefulWidget {
   static const editorKey = Key('task-body-editor');
   static const saveEditKey = Key('task-body-save');
   static const cancelEditKey = Key('task-body-cancel');
+
   final Task task;
+
   const TaskBody({super.key, required this.task});
 
   @override

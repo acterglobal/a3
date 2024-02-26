@@ -54,14 +54,28 @@ class _ActerVideoPlayerState extends State<ActerVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_controller.value.isInitialized) {
+      return Container();
+    }
+
+    final Size screenSize = MediaQuery.of(context).size;
+    final double aspectRatio = _controller.value.aspectRatio;
+
     return AspectRatio(
-      aspectRatio: _controller.value.aspectRatio,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          VideoPlayer(_controller),
-          controlsOverlay(),
-        ],
+      aspectRatio: aspectRatio,
+      child: FittedBox(
+        fit: BoxFit.cover,
+        child: SizedBox(
+          width: screenSize.width,
+          height: screenSize.height,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              VideoPlayer(_controller),
+              controlsOverlay(),
+            ],
+          ),
+        ),
       ),
     );
   }

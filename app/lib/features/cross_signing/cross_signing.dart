@@ -10,6 +10,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sprintf/sprintf.dart';
 
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::cross_signing');
+
 class VerificationProcess {
   bool verifiyingThisDevice;
   String stage;
@@ -41,7 +45,7 @@ class CrossSigning {
   void _installVerificationEvent() {
     _verificationPoller = client.verificationEventRx()?.listen((event) {
       String eventType = event.eventType();
-      debugPrint('$eventType - flow_id: ${event.flowId()}');
+      _log.info('$eventType - flow_id: ${event.flowId()}');
       switch (eventType) {
         case 'm.key.verification.request':
           _onKeyVerificationRequest(event);
@@ -167,7 +171,7 @@ class CrossSigning {
       return const CircularProgressIndicator();
     }
     return ElevatedButton(
-      child:  Text(AppLocalizations.of(context)!.acceptRequest),
+      child: Text(AppLocalizations.of(context)!.acceptRequest),
       onPressed: () async {
         if (_mounted) {
           acceptingRequest = true;
@@ -496,7 +500,7 @@ class CrossSigning {
           child: SizedBox(
             width: MediaQuery.of(context).size.width * 0.40,
             child: ElevatedButton(
-              child:  Text(AppLocalizations.of(context)!.sasGotIt),
+              child: Text(AppLocalizations.of(context)!.sasGotIt),
               onPressed: () {
                 rootNavKey.currentContext?.pop();
                 // finish verification
@@ -733,7 +737,7 @@ class CrossSigning {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         ElevatedButton(
-          child:  Text(AppLocalizations.of(context)!.verificationSasDoNotMatch),
+          child: Text(AppLocalizations.of(context)!.verificationSasDoNotMatch),
           onPressed: () async {
             rootNavKey.currentContext?.pop();
             // mismatch sas verification
@@ -742,7 +746,7 @@ class CrossSigning {
         ),
         const SizedBox(width: 15),
         ElevatedButton(
-          child:  Text(AppLocalizations.of(context)!.verificationSasMatch),
+          child: Text(AppLocalizations.of(context)!.verificationSasMatch),
           onPressed: () async {
             if (_mounted) {
               waitForMatch = true;
@@ -854,7 +858,7 @@ class CrossSigning {
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.40,
               child: ElevatedButton(
-                child:  Text(AppLocalizations.of(context)!.sasGotIt),
+                child: Text(AppLocalizations.of(context)!.sasGotIt),
                 onPressed: () {
                   rootNavKey.currentContext?.pop();
                   // finish verification

@@ -5,6 +5,9 @@ import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::report');
 
 final _ignoreUserProvider = StateProvider.autoDispose<bool>((ref) => false);
 
@@ -115,18 +118,18 @@ class ReportContentWidget extends ConsumerWidget {
         if (ignoreFlag) {
           var member = await space.getMember(senderId);
           bool ignore = await member.ignore();
-          debugPrint('User added to ignore list:{$senderId:$ignore}');
+          _log.info('User added to ignore list:{$senderId:$ignore}');
         }
         res = await space.reportContent(eventId, null, reason);
-        debugPrint('Content from user:{$senderId flagged $res reason:$reason}');
+        _log.info('Content from user:{$senderId flagged $res reason:$reason}');
       } else {
         final room = await ref.read(chatProvider(roomId).future);
         res = await room.reportContent(eventId, null, reason);
-        debugPrint('Content from user:{$senderId flagged $res reason:$reason}');
+        _log.info('Content from user:{$senderId flagged $res reason:$reason}');
         if (ignoreFlag) {
           var member = await room.getMember(senderId);
           bool ignore = await member.ignore();
-          debugPrint('User added to ignore list:$senderId:$ignore');
+          _log.info('User added to ignore list:$senderId:$ignore');
         }
       }
 

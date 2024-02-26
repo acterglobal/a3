@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'dart:math';
 
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
@@ -9,6 +9,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::news::utils');
 
 class NewsUtils {
   static Future<File?> getThumbnailData(XFile videoFile) async {
@@ -36,16 +39,16 @@ class NewsUtils {
       if (thumbnailGenerated) {
         return destFile;
       }
-    } catch (err) {
+    } catch (err, s) {
       // Handle platform errors.
-      debugPrint('Error => $err');
+      _log.severe('Error', err, s);
     }
     return null;
   }
 
   //Add text slide
   static void addTextSlide(WidgetRef ref) {
-    final clr = Colors.primaries[Random().nextInt(Colors.primaries.length)];
+    final clr = getRandomElement(Colors.primaries);
     NewsSlideItem textSlide = NewsSlideItem(
       type: NewsSlideType.text,
       text: '',
@@ -56,7 +59,7 @@ class NewsUtils {
 
   //Add image slide
   static Future<void> addImageSlide(WidgetRef ref) async {
-    final clr = Colors.primaries[Random().nextInt(Colors.primaries.length)];
+    final clr = getRandomElement(Colors.primaries);
     XFile? imageFile = await ImagePicker().pickImage(
       source: ImageSource.gallery,
     );
@@ -72,7 +75,7 @@ class NewsUtils {
 
   //Add video slide
   static Future<void> addVideoSlide(WidgetRef ref) async {
-    final clr = Colors.primaries[Random().nextInt(Colors.primaries.length)];
+    final clr = getRandomElement(Colors.primaries);
     XFile? videoFile = await ImagePicker().pickVideo(
       source: ImageSource.gallery,
     );

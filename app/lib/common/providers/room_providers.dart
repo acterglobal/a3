@@ -1,9 +1,8 @@
 /// Get the relations of the given SpaceId.  Throws
 library;
 
-import 'dart:core';
-
 import 'package:acter/common/models/profile_data.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/room_notifiers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
@@ -11,7 +10,9 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/common/providers/chat_providers.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::room_providers');
 
 class RoomItem {
   final Member? membership;
@@ -46,8 +47,9 @@ final roomProfileDataProvider =
 
   final profile = room.getProfile();
   OptionString displayName = await profile.getDisplayName();
-  final avatar = await profile.getAvatar(null);
-  return ProfileData(displayName.text(), avatar.data());
+  final avatar = (await profile.getAvatar(null)).data();
+  _log.info('$roomId : hasAvatar: ${avatar != null}');
+  return ProfileData(displayName.text(), avatar);
 });
 
 /// Get the members invited of a given roomId the user knows about. Errors
@@ -88,15 +90,15 @@ final briefRoomItemsWithMembershipProvider =
       ref.watch(chatsProvider).where((element) => (!element.isDm())).toList();
 
   List<RoomItem> items = [];
-  for (final element in chatList) {
-    final room =
-        await ref.watch(maybeRoomProvider(element.getRoomIdStr()).future);
+  for (final convo in chatList) {
+    final roomId = convo.getRoomIdStr();
+    final room = await ref.watch(maybeRoomProvider(roomId).future);
     if (room != null) {
-      final profileData = await ref
-          .watch(roomProfileDataProvider(element.getRoomIdStr()).future);
+      final profileData =
+          await ref.watch(roomProfileDataProvider(roomId).future);
 
       final item = RoomItem(
-        roomId: room.roomIdStr(),
+        roomId: roomId,
         room: room,
         membership: room.isJoined() ? await room.getMyMembership() : null,
         activeMembers: [],
@@ -164,7 +166,7 @@ final canonicalParentProvider = FutureProvider.autoDispose
     final SpaceWithProfileData data = (space: parentSpace, profile: profile);
     return data;
   } catch (e) {
-    log.warning('Failed to load canonical parent for $roomId');
+    _log.warning('Failed to load canonical parent for $roomId');
     return null;
   }
 });
@@ -212,8 +214,8 @@ final roomDefaultNotificationStatusProvider =
 /// Get the default RoomNotificationsStatus for this room type
 final roomIsMutedProvider =
     FutureProvider.autoDispose.family<bool, String>((ref, roomId) async {
-  return (await ref.watch(roomNotificationStatusProvider(roomId).future)) ==
-      'muted';
+  final status = await ref.watch(roomNotificationStatusProvider(roomId).future);
+  return status == 'muted';
 });
 
 class MemberNotFound extends Error {}
@@ -245,7 +247,7 @@ final userProfileDataProvider =
   if (!profile.hasAvatar()) {
     return ProfileData(displayName, null);
   }
-  final size = sdk.newThumbSize(48, 48);
+  final size = sdk.api.newThumbSize(48, 48);
   final avatar = await profile.getAvatar(size);
   return ProfileData(displayName, avatar.data());
 });

@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::room::notification_settings_tile');
 
 String? notifToText(String curNotifStatus) {
   if (curNotifStatus == 'muted') {
@@ -19,9 +22,15 @@ String? notifToText(String curNotifStatus) {
 
 class _NotificationSettingsTile extends ConsumerWidget {
   final String roomId;
+  final String? title;
+  final String? defaultTitle;
+  final bool includeMentions;
 
   const _NotificationSettingsTile({
     required this.roomId,
+    this.title,
+    this.defaultTitle,
+    this.includeMentions = true,
   });
 
   @override
@@ -35,12 +44,13 @@ class _NotificationSettingsTile extends ConsumerWidget {
     // ignore: always_declare_return_types
     return SettingsTile(
       title: Text(
-        'Notifications',
+        title ?? 'Notifications',
         style: tileTextTheme,
       ),
       description: Text(
         notifToText(curNotifStatus ?? '') ??
-            'Default (${notifToText(defaultNotificationStatus.valueOrNull ?? '') ?? 'undefined'})',
+            (defaultTitle ??
+                'Default (${notifToText(defaultNotificationStatus.valueOrNull ?? '') ?? 'undefined'})'),
       ),
       leading: curNotifStatus == 'muted'
           ? const Icon(Atlas.bell_dash_bold, size: 18)
@@ -49,7 +59,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
         initialValue: curNotifStatus,
         // Callback that sets the selected popup menu item.
         onSelected: (String newMode) async {
-          debugPrint('new value: $newMode');
+          _log.info('new value: $newMode');
           final room = await ref.read(maybeRoomProvider(roomId).future);
           if (room == null) {
             EasyLoading.showError(
@@ -82,14 +92,15 @@ class _NotificationSettingsTile extends ConsumerWidget {
               'All Messages',
             ),
           ),
-          PopupMenuItem<String>(
-            value: 'mentions',
-            child: notificationSettingItemUI(
-              context,
-              curNotifStatus == 'mentions',
-              'Mentions and Keywords only',
+          if (includeMentions)
+            PopupMenuItem<String>(
+              value: 'mentions',
+              child: notificationSettingItemUI(
+                context,
+                curNotifStatus == 'mentions',
+                'Mentions and Keywords only',
+              ),
             ),
-          ),
           PopupMenuItem<String>(
             value: 'muted',
             child: notificationSettingItemUI(
@@ -103,7 +114,8 @@ class _NotificationSettingsTile extends ConsumerWidget {
             child: notificationSettingItemUI(
               context,
               curNotifStatus == '',
-              'Default (${notifToText(defaultNotificationStatus.valueOrNull ?? '') ?? 'unedefined'})',
+              defaultTitle ??
+                  'Default (${notifToText(defaultNotificationStatus.valueOrNull ?? '') ?? 'unedefined'})',
             ),
           ),
         ],
@@ -118,7 +130,10 @@ class _NotificationSettingsTile extends ConsumerWidget {
   ) {
     return ListTile(
       selected: isSelected,
-      title: Text(title,style: Theme.of(context).textTheme.bodyMedium,),
+      title: Text(
+        title,
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
       trailing: isSelected
           ? Icon(
               Atlas.check_circle,
@@ -132,14 +147,25 @@ class _NotificationSettingsTile extends ConsumerWidget {
 
 class NotificationsSettingsTile extends AbstractSettingsTile {
   final String roomId;
+  final String? title;
+  final String? defaultTitle;
+  final bool? includeMentions;
 
   const NotificationsSettingsTile({
     required this.roomId,
+    this.title,
+    this.defaultTitle,
+    this.includeMentions,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    return _NotificationSettingsTile(roomId: roomId);
+    return _NotificationSettingsTile(
+      roomId: roomId,
+      title: title,
+      defaultTitle: defaultTitle,
+      includeMentions: includeMentions ?? true,
+    );
   }
 }

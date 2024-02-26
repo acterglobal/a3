@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:core';
 import 'dart:developer' as developer;
 import 'dart:ffi';
 import 'dart:io';
@@ -13,8 +12,11 @@ import 'package:package_info/package_info.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:logging/logging.dart';
 
 export './acter_flutter_sdk_ffi.dart' show Client;
+
+final _log = Logger('a3::sdk');
 
 const rustLogKey = 'RUST_LOG';
 const proxyKey = 'HTTP_PROXY';
@@ -31,7 +33,7 @@ const defaultServerName = String.fromEnvironment(
 
 const defaultLogSetting = String.fromEnvironment(
   rustLogKey,
-  defaultValue: 'warn,acter=debug',
+  defaultValue: 'acter=debug,a3::sdk=info,a3=warn,warn',
 );
 
 const defaultSessionKey = String.fromEnvironment(
@@ -213,7 +215,7 @@ class ActerSdk {
     await storage.write(key: _sessionKey, value: json.encode(sessions));
     final key = '$_sessionKey::currentClientIdx';
     await storage.write(key: key, value: '$_index');
-    debugPrint('session stored: $sessions');
+    _log.info('${sessions.length} sessions stored');
   }
 
   static Future<void> resetSessionsAndClients(String sessionKey) async {
@@ -227,16 +229,24 @@ class ActerSdk {
 
   ffi.Api get api => _api;
 
-  Future<ffi.Client> getClientWithDeviceId(String deviceId) async {
+  Future<ffi.Client> getClientWithDeviceId(
+    String deviceId,
+    bool setAsCurrent,
+  ) async {
     ffi.Client? client;
+    int foundIdx = 0;
     for (final c in _clients) {
       if (c.deviceId().toString() == deviceId) {
         client = c;
         break;
       }
+      foundIdx += 1;
     }
     if (client == null) {
       throw 'Unknown client $deviceId';
+    }
+    if (setAsCurrent) {
+      _index = foundIdx;
     }
 
     return client;
@@ -247,7 +257,7 @@ class ActerSdk {
     String roomId,
     String eventId,
   ) async {
-    final client = await getClientWithDeviceId(deviceId);
+    final client = await getClientWithDeviceId(deviceId, false);
     return await client.getNotificationItem(roomId, eventId);
   }
 
@@ -259,7 +269,7 @@ class ActerSdk {
       _clients.add(client);
     }
     _index = prefs.getInt('$_sessionKey::currentClientIdx') ?? 0;
-    debugPrint('Migrated $_clients');
+    _log.warning('Migrated $_clients');
 
     await _persistSessions();
     // then destroy the old records.
@@ -269,21 +279,22 @@ class ActerSdk {
 
   Future<void> _restore() async {
     if (_clients.isNotEmpty) {
-      debugPrint('double restore. ignore');
+      _log.warning('double restore. ignore');
       return;
     }
     String appDocPath = await appDir();
     int delayedCounter = 0;
     while (!await storage.isCupertinoProtectedDataAvailable()) {
       if (delayedCounter > 10) {
+        _log.severe('Secure Store not available after 10 seconds');
         throw 'Secure Store not available';
       }
       delayedCounter += 1;
-      debugPrint("Secure Storage isn't available yet. Delaying");
+      _log.info("Secure Storage isn't available yet. Delaying");
       await Future.delayed(const Duration(milliseconds: 50));
     }
 
-    debugPrint('Secure Storage is available. Attempting to read.');
+    _log.info('Secure Storage is available. Attempting to read.');
     if (Platform.isAndroid) {
       // fake read for https://github.com/mogol/flutter_secure_storage/issues/566
       await storage.read(key: _sessionKey);
@@ -303,14 +314,14 @@ class ActerSdk {
           ffi.Client client = await _api.loginWithToken(appDocPath, token);
           _clients.add(client);
         } else {
-          debugPrint('$deviceId not found. despite in session list');
+          _log.severe('$deviceId not found. despite in session list');
         }
       }
       final key = await storage.read(key: '$_sessionKey::currentClientIdx');
       _index = int.tryParse(key ?? '0') ?? 0;
     }
-    debugPrint('loading configuration from $appDocPath');
-    debugPrint('restored $_clients');
+    _log.info('loading configuration from $appDocPath');
+    _log.info('restored ${_clients.length} clients');
   }
 
   ffi.Client? get currentClient {
@@ -399,8 +410,8 @@ class ActerSdk {
           userId,
           defaultServerName,
         );
-      } catch (e) {
-        debugPrint('Error logging out: $e');
+      } catch (e, s) {
+        _log.severe('Error nuking', e, s);
       }
     }
 
@@ -474,7 +485,7 @@ class ActerSdk {
     final instance = ActerSdk._(api);
     if (latestLogPath != null) {
       instance._previousLogPath = latestLogPath.absolute.path;
-      debugPrint('Prior log file: ${instance._previousLogPath}');
+      _log.info('Prior log file: ${instance._previousLogPath}');
     }
     return instance;
   }
@@ -531,11 +542,7 @@ class ActerSdk {
       final client = _clients.removeAt(0);
       unawaited(
         client.logout().catchError((e) {
-          developer.log(
-            'Logout of Guest failed',
-            level: 900, // warning
-            error: e,
-          );
+          _log.warning('Logout of Guest failed', e);
           return e is int;
         }),
       ); // Explicitly-ignored fire-and-forget.
@@ -549,15 +556,11 @@ class ActerSdk {
     // remove current client from list
     final client = _clients.removeAt(_index);
     _index = _index > 0 ? _index - 1 : 0;
-    debugPrint('Remaining clients $_clients');
+    _log.info('Remaining clients: ${_clients.length}');
     await _persistSessions();
     unawaited(
       client.logout().catchError((e) {
-        developer.log(
-          'Logout failed',
-          level: 900, // warning
-          error: e,
-        );
+        _log.warning('Logout failed', e);
         return e is int;
       }),
     ); // Explicitly-ignored fire-and-forget.
@@ -637,82 +640,5 @@ class ActerSdk {
       userId,
       defaultServerName,
     );
-  }
-
-  ffi.CreateConvoSettingsBuilder newConvoSettingsBuilder() {
-    return _api.newConvoSettingsBuilder();
-  }
-
-  ffi.CreateSpaceSettingsBuilder newSpaceSettingsBuilder() {
-    return _api.newSpaceSettingsBuilder();
-  }
-
-  ffi.JoinRuleBuilder newJoinRuleBuilder() {
-    return _api.newJoinRuleBuilder();
-  }
-
-  String rotateLogFile() {
-    return _api.rotateLogFile();
-  }
-
-  String? parseMarkdown(String text) {
-    return _api.parseMarkdown(text);
-  }
-
-  void writeLog(String text, String level) {
-    _api.writeLog(text, level);
-  }
-
-  ffi.ThumbnailSize newThumbSize(int width, int height) {
-    return _api.newThumbSize(width, height);
-  }
-
-  // create a task ref builder
-  // target_id: event id of target
-  // task_list: event id of task list
-  // action: link/embed/embed-subscribe/embed-accept-assignment/embed-mark-done
-  ffi.RefDetailsBuilder newTaskRefBuilder(
-    String targetId,
-    String? roomId,
-    String taskList,
-    String? action,
-  ) {
-    return _api.newTaskRefBuilder(targetId, roomId, taskList, action);
-  }
-
-  // create a task list ref builder
-  // target_id: event id of target
-  // action: link/embed/embed-subscribe
-  ffi.RefDetailsBuilder newTaskListRefBuilder(
-    String targetId,
-    String? roomId,
-    String? action,
-  ) {
-    return _api.newTaskListRefBuilder(targetId, roomId, action);
-  }
-
-  // create a calendar event ref builder
-  // target_id: event id of target
-  // action: link/embed/embed-rsvp
-  ffi.RefDetailsBuilder newCalendarEventRefBuilder(
-    String targetId,
-    String? roomId,
-    String? action,
-  ) {
-    return _api.newCalendarEventRefBuilder(targetId, roomId, action);
-  }
-
-  // create a link ref builder
-  ffi.RefDetailsBuilder newLinkRefBuilder(String title, String uri) {
-    return _api.newLinkRefBuilder(title, uri);
-  }
-
-  // create object reference
-  // position: top-left/top-middle/top-right/center-left/center-middle/center-right/bottom-left/bottom-middle/bottom-right
-  ffi.ObjRefBuilder newObjRefBuilder(
-    String? position,
-    ffi.RefDetails reference,
-  ) {
-    return _api.newObjRefBuilder(position, reference);
   }
 }

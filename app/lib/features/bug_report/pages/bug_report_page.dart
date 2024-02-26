@@ -13,6 +13,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::bug_report');
 
 Future<String> report({
   bool withLog = false,
@@ -37,7 +40,7 @@ Future<String> report({
     }
   }
   if (withLog) {
-    String logFile = sdk.rotateLogFile();
+    String logFile = sdk.api.rotateLogFile();
     if (logFile.isNotEmpty) {
       request.files.add(
         http.MultipartFile.fromBytes(
@@ -64,7 +67,7 @@ Future<String> report({
     }
   }
   if (screenshotPath != null) {
-    debugPrint('sending with screenshot');
+    _log.info('sending with screenshot');
     request.files.add(
       http.MultipartFile.fromBytes(
         'file',
@@ -74,7 +77,7 @@ Future<String> report({
       ),
     );
   }
-  debugPrint('sending $rageshakeUrl');
+  _log.info('sending $rageshakeUrl');
   final resp = await request.send();
   if (resp.statusCode == HttpStatus.ok) {
     Map<String, dynamic> json = jsonDecode(await resp.stream.bytesToString());
@@ -85,6 +88,7 @@ Future<String> report({
     return json['report_url'] ?? '';
   } else {
     String body = await resp.stream.bytesToString();
+    _log.severe('Sending bug report failed with ${resp.statusCode}: $body');
     throw '${resp.statusCode}: $body';
   }
 }

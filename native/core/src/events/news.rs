@@ -238,7 +238,7 @@ pub struct NewsSlide {
 pub struct NewsEntryEventContent {
     /// A news entry may have one or more slides of news
     /// which are scrolled through horizontally
-    slides: Vec<NewsSlide>,
+    pub slides: Vec<NewsSlide>,
 }
 
 /// The payload for our news update event.

@@ -11,6 +11,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::event::create');
 
 final _titleProvider = StateProvider.autoDispose<String>((ref) => '');
 final _startDateProvider = StateProvider.autoDispose<DateTime?>((ref) => null);
@@ -160,6 +163,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                   controller: _descriptionController,
                   hintText: 'Type Description (Optional)',
                   textInputType: TextInputType.multiline,
+                  textInputAction: TextInputAction.newline,
                   maxLines: 10,
                 ),
                 const SizedBox(height: 15),
@@ -192,7 +196,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
 
       final date = ref.read(_startDateProvider);
       final endDate = ref.read(_endDateProvider);
-      debugPrint('endDATE = $endDate');
+      _log.info('endDATE = $endDate');
 
       final utcStartDateTime = date!.toUtc().toIso8601String();
       final utcEndDateTime = endDate!.toUtc().toIso8601String();
@@ -215,7 +219,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       final rsvpDraft = rsvpManager.rsvpDraft();
       rsvpDraft.status('yes');
       await rsvpDraft.send();
-      debugPrint('Created Calendar Event: ${eventId.toString()}');
+      _log.info('Created Calendar Event: ${eventId.toString()}');
       EasyLoading.dismiss();
       if (context.mounted) {
         ref.invalidate(calendarEventProvider);
@@ -233,8 +237,8 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
   }
 
   Future<void> _selectDateTime() async {
-    final selectedStartDate = ref.watch(_startDateProvider);
-    final selectedEndDate = ref.watch(_endDateProvider);
+    final selectedStartDate = ref.read(_startDateProvider);
+    final selectedEndDate = ref.read(_endDateProvider);
     final picked = await showOmniDateTimeRangePicker(
       context: context,
       startFirstDate: DateTime.now(),

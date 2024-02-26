@@ -60,25 +60,24 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
 //Fetch known sub-rooms list of selected parent space
   void fetchKnownSubChatsData() async {
-    final selectedParentSpaceId = ref.watch(selectedSpaceIdProvider);
+    final selectedParentSpaceId = ref.read(selectedSpaceIdProvider);
     if (selectedParentSpaceId == null) return;
     final space = await ref
-        .watch(spaceRelationsOverviewProvider(selectedParentSpaceId).future);
+        .read(spaceRelationsOverviewProvider(selectedParentSpaceId).future);
 
     childRoomsIds.clear();
     if (widget.childRoomType == ChildRoomType.chat) {
       for (int i = 0; i < space.knownChats.length; i++) {
-        childRoomsIds.add(space.knownChats[i].getRoomId().toString());
+        childRoomsIds.add(space.knownChats[i].getRoomIdStr());
       }
     } else {
       for (int i = 0; i < space.knownSubspaces.length; i++) {
-        childRoomsIds.add(space.knownSubspaces[i].getRoomId().toString());
+        childRoomsIds.add(space.knownSubspaces[i].getRoomIdStr());
       }
       //Add recommended child spaces ids
       recommendedChildSpaceIds.clear();
       for (int i = 0; i < space.otherRelations.length; i++) {
-        recommendedChildSpaceIds
-            .add(space.otherRelations[i].getRoomId().toString());
+        recommendedChildSpaceIds.add(space.otherRelations[i].getRoomIdStr());
       }
     }
   }
@@ -218,19 +217,20 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
 //Show space list based on the search term
   Widget searchedSpaceList() {
-    return ref.watch(searchedSpacesProvider).when(
-          data: (spaces) {
-            if (spaces.isEmpty) {
-              return const Center(
-                heightFactor: 10,
-                child: Text('No chats found matching your search term'),
-              );
-            }
-            return spaceListUI(spaces);
-          },
-          loading: () => loadingUI(),
-          error: (e, s) => errorUI('Searching failed', e),
-        );
+    final searchedSpaces = ref.watch(searchedSpacesProvider);
+    return searchedSpaces.when(
+      data: (spaces) {
+        if (spaces.isEmpty) {
+          return const Center(
+            heightFactor: 10,
+            child: Text('No chats found matching your search term'),
+          );
+        }
+        return spaceListUI(spaces);
+      },
+      loading: () => loadingUI(),
+      error: (e, s) => errorUI('Searching failed', e),
+    );
   }
 
 //Space List
@@ -395,7 +395,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
         currentRooms.add(parentSpaceId);
 
         final sdk = await ref.read(sdkProvider.future);
-        final update = sdk.newJoinRuleBuilder();
+        final update = sdk.api.newJoinRuleBuilder();
         update.joinRule(newRule);
         for (final roomId in currentRooms) {
           update.addRoom(roomId);
@@ -407,42 +407,43 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
 //Link child room
   void onTapLinkChildRoom(BuildContext context, String roomId) async {
-    final selectedParentSpaceId = ref.watch(selectedSpaceIdProvider);
+    final selectedParentSpaceId = ref.read(selectedSpaceIdProvider);
     if (selectedParentSpaceId == null) return;
 
     //Fetch selected parent space data and add given roomId as child
-    final space = await ref.watch(spaceProvider(selectedParentSpaceId).future);
+    final space = await ref.read(spaceProvider(selectedParentSpaceId).future);
     space.addChildRoom(roomId);
 
     //Make subspace
     if (widget.childRoomType == ChildRoomType.space) {
       //Fetch selected room data and add given parentSpaceId as parent
-      final room = await ref.watch(maybeRoomProvider(roomId).future);
+      final room = await ref.read(maybeRoomProvider(roomId).future);
       if (room != null) {
         room.addParentRoom(selectedParentSpaceId, true);
         // ignore: use_build_context_synchronously
         await checkJoinRule(context, room, selectedParentSpaceId);
       }
-      if (widget.childRoomType == ChildRoomType.recommendedSpace) {
-        recommendedChildSpaceIds.add(roomId);
-      } else {
-        childRoomsIds.add(roomId);
-      }
+    }
+
+    if (widget.childRoomType == ChildRoomType.recommendedSpace) {
+      recommendedChildSpaceIds.add(roomId);
+    } else {
+      childRoomsIds.add(roomId);
     }
   }
 
 //Unlink child room
   void onTapUnlinkChildRoom(String roomId) async {
-    final selectedParentSpaceId = ref.watch(selectedSpaceIdProvider);
+    final selectedParentSpaceId = ref.read(selectedSpaceIdProvider);
     if (selectedParentSpaceId == null) return;
 
     //Fetch selected parent space data and add given roomId as child
-    final space = await ref.watch(spaceProvider(selectedParentSpaceId).future);
+    final space = await ref.read(spaceProvider(selectedParentSpaceId).future);
     space.removeChildRoom(roomId, 'Unlink room');
 
     if (widget.childRoomType == ChildRoomType.space) {
       //Fetch selected room data and add given parentSpaceId as parent
-      final room = await ref.watch(maybeRoomProvider(roomId).future);
+      final room = await ref.read(maybeRoomProvider(roomId).future);
       if (room != null) {
         room.removeParentRoom(selectedParentSpaceId, 'Unlink room');
       }

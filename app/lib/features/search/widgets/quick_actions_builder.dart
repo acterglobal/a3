@@ -10,6 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::search::quick_actions_builder');
+
 class QuickActionsBuilder extends ConsumerWidget {
   final NavigateTo navigateTo;
 
@@ -103,7 +107,7 @@ class QuickActionsBuilder extends ConsumerWidget {
           isActive(LabsFeature.polls)
               ? OutlinedButton.icon(
                   onPressed: () {
-                    debugPrint('poll');
+                    _log.info('poll pressed');
                   },
                   icon: const Icon(Atlas.plus_circle_thin, size: 18),
                   label: Text(
@@ -119,7 +123,7 @@ class QuickActionsBuilder extends ConsumerWidget {
                     side: const BorderSide(width: 2, color: Colors.white),
                   ),
                   onPressed: () {
-                    debugPrint('Discussion');
+                    _log.info('Discussion pressed');
                   },
                   icon: const Icon(
                     Atlas.plus_circle_thin,

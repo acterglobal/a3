@@ -73,7 +73,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
       }
     }
     final inputNotifier = ref.read(chatInputProvider(roomId).notifier);
-    final userId = ref.watch(myUserIdStrProvider);
+    final userId = ref.read(myUserIdStrProvider);
     if (userId == message.author.id && message is types.TextMessage) {
       inputNotifier.showEditButton(true);
     } else {
@@ -91,11 +91,11 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
   @override
   Widget build(BuildContext context) {
     final userId = ref.watch(myUserIdStrProvider);
-    final convo = widget.convo;
+    final roomId = widget.convo.getRoomIdStr();
     final inSideBar = ref.watch(inSideBarProvider);
-    final convoProfile = ref.watch(chatProfileDataProvider(convo));
-    final activeMembers = ref.watch(chatMembersProvider(convo.getRoomIdStr()));
-    final chatState = ref.watch(chatStateProvider(convo));
+    final convoProfile = ref.watch(chatProfileDataProvider(widget.convo));
+    final activeMembers = ref.watch(chatMembersProvider(roomId));
+    final chatState = ref.watch(chatStateProvider(widget.convo));
     final messages = chatState.messages
         .where(
           // filter only items we can show
@@ -105,7 +105,6 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         .reversed
         .toList();
 
-    final roomId = widget.convo.getRoomIdStr();
     return OrientationBuilder(
       builder: (context, orientation) => Scaffold(
         resizeToAvoidBottomInset: orientation == Orientation.portrait,
@@ -126,8 +125,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                     )
                   : null,
               flexibleSpace: FrostEffect(
-                child: Container(
-                ),
+                child: Container(),
               ),
               title: GestureDetector(
                 onTap: () {
@@ -137,7 +135,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                           .update((state) => true)
                       : context.pushNamed(
                           Routes.chatProfile.name,
-                          pathParameters: {'roomId': convo.getRoomIdStr()},
+                          pathParameters: {'roomId': roomId},
                         );
                 },
                 child: Column(
@@ -145,14 +143,11 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     convoProfile.when(
-                      data: (profile) {
-                        final roomId = convo.getRoomIdStr();
-                        return Text(
-                          profile.displayName ?? roomId,
-                          overflow: TextOverflow.clip,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        );
-                      },
+                      data: (profile) => Text(
+                        profile.displayName ?? roomId,
+                        overflow: TextOverflow.clip,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
                       skipLoadingOnReload: true,
                       error: (error, stackTrace) => Text(
                         'Error loading profile $error',
@@ -189,13 +184,13 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                             .update((state) => true)
                         : context.pushNamed(
                             Routes.chatProfile.name,
-                            pathParameters: {'roomId': convo.getRoomIdStr()},
+                            pathParameters: {'roomId': roomId},
                           );
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(right: 10),
                     child: RoomAvatar(
-                      roomId: widget.convo.getRoomIdStr(),
+                      roomId: roomId,
                       showParent: true,
                     ),
                   ),
@@ -212,7 +207,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                       ? ScrollViewKeyboardDismissBehavior.onDrag
                       : ScrollViewKeyboardDismissBehavior.manual,
                   customBottomWidget:
-                      CustomChatInput(key: Key(roomId), convo: convo),
+                      CustomChatInput(key: Key(roomId), convo: widget.convo),
                   textMessageBuilder: (
                     types.TextMessage m, {
                     required int messageWidth,
@@ -250,7 +245,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                       showMessageOptions(context, message, roomId);
                     },
                     child: BubbleBuilder(
-                      convo: convo,
+                      convo: widget.convo,
                       message: message,
                       nextMessageInGroup: nextMessageInGroup,
                       enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
@@ -262,7 +257,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                     required int messageWidth,
                   }) =>
                       ImageMessageBuilder(
-                    convo: convo,
+                    convo: widget.convo,
                     message: message,
                     messageWidth: messageWidth,
                   ),
@@ -271,7 +266,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                     required int messageWidth,
                   }) =>
                       VideoMessageBuilder(
-                    convo: convo,
+                    convo: widget.convo,
                     message: message,
                     messageWidth: messageWidth,
                   ),
@@ -280,7 +275,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                     required messageWidth,
                   }) {
                     return FileMessageBuilder(
-                      convo: convo,
+                      convo: widget.convo,
                       message: message,
                       messageWidth: messageWidth,
                     );
@@ -301,7 +296,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
                     showMessageOptions(context, message, roomId);
                   },
                   onEndReached: ref
-                      .read(chatStateProvider(convo).notifier)
+                      .read(chatStateProvider(widget.convo).notifier)
                       .handleEndReached,
                   onEndReachedThreshold: 0.75,
                   onBackgroundTap: () {

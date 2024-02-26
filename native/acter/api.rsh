@@ -17,8 +17,11 @@ fn set_proxy(proxy: Option<string>);
 /// Rotate the logging file
 fn rotate_log_file() -> Result<string>;
 
-/// Allow flutter to call logging on rust side
-fn write_log(text: string, level: string) -> Result<()>;
+// would this get logged?
+fn would_log(target: string, level: string) -> bool;
+
+/// Log the entry to the rust logging
+fn write_log(target: string, level: string, message: string, file: Option<string>, line: Option<u32>, module_path: Option<string>);
 
 /// Create a new client for homeserver at url with storage at data_path
 fn login_new_client(base_path: string, media_cache_base_path: string, username: string, password: string, default_homeserver_name: string, default_homeserver_url: string, device_name: Option<string>) -> Future<Result<Client>>;
@@ -2035,20 +2038,39 @@ object NotificationListResult {
     fn notifications() -> Future<Result<Vec<Notification>>>;
 }
 
+object NotificationSender {
+    fn user_id() -> string;
+    fn display_name() -> Option<string>;
+    fn has_image() -> bool;
+    fn image() -> Future<Result<buffer<u8>>>;
+}
+
+object NotificationRoom {
+    fn room_id() -> string;
+    fn display_name() -> string;
+    fn has_image() -> bool;
+    fn image() -> Future<Result<buffer<u8>>>;
+}
+
+
 // converting a room_id+event_id into the notification item to show
 // from push context.
 object NotificationItem {
-    fn is_invite() -> bool;
-    fn room_message() -> Option<RoomMessage>;
-    fn sender_display_name() -> Option<string>;
-    fn sender_avatar_url() -> Option<string>;
-    fn room_display_name() -> string;
-    fn room_avatar_url() -> Option<string>;
-    fn room_canonical_alias() -> Option<string>;
-    fn is_room_encrypted() -> Option<bool>;
-    fn is_direct_message_room() -> bool;
-    fn is_noisy() -> Option<bool>;
-    fn joined_members_count() -> u64;
+    fn push_style() -> string;
+    fn title() -> string;
+    fn sender() -> NotificationSender;
+    fn room() -> NotificationRoom;
+    fn target_url() -> string;
+    fn body() -> Option<MsgContent>;
+    fn icon_url() -> Option<string>;
+    fn thread_id() -> Option<string>;
+    fn noisy() -> bool;
+    fn has_image() -> bool;
+    fn image() -> Future<Result<buffer<u8>>>;
+    fn image_path(tmp_dir: string) -> Future<Result<string>>;
+
+    // if this is an invite, this the room it invites to
+    fn room_invite() -> Option<string>;
 }
 
 /// The pusher we sent notifications via to the user
@@ -2319,6 +2341,9 @@ object Client {
     /// listen to incoming notifications
     fn notifications_stream() -> Stream<Notification>;
 
+    /// install the default acter push rules for fallback
+    fn install_default_acter_push_rules() -> Future<Result<bool>>;
+
     /// list of pushers
     fn pushers() -> Future<Result<Vec<Pusher>>>;
 
@@ -2388,6 +2413,10 @@ object NotificationSettings {
     /// set default RoomNotificationMode for this combination
     fn set_default_notification_mode(is_encrypted: bool, is_one_on_one: bool, mode: string) -> Future<Result<bool>>;
     
+
+    /// app settings
+    fn global_content_setting(app_key: string) -> Future<Result<bool>>;
+    fn set_global_content_setting(app_key: string, enabled: bool) -> Future<Result<bool>>;
 }
 
 

@@ -2,7 +2,9 @@ import 'package:acter/common/models/invitation_profile.dart';
 import 'package:acter/features/activities/providers/notifiers/invitation_list_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/foundation.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::invitations');
 
 final invitationListProvider =
     NotifierProvider<InvitationListNotifier, List<Invitation>>(
@@ -18,8 +20,8 @@ final invitationProfileProvider =
     UserProfile profile = await invitation.getSenderProfile();
     displayName = profile.getDisplayName();
     avatar = (await profile.getAvatar(null)).data();
-  } catch (e) {
-    debugPrint('failed to load profile: $e');
+  } catch (e, s) {
+    _log.severe('failed to load profile', e, s);
   }
   String? roomName = await invitation.roomName();
   String roomId = invitation.roomId().toString();

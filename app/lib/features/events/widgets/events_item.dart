@@ -105,11 +105,11 @@ class EventItem extends ConsumerWidget {
     if (status != null) {
       switch (status) {
         case 'yes':
-          return 'Yes';
+          return 'Going';
+        case 'no':
+          return 'Not Going';
         case 'maybe':
           return 'Maybe';
-        case 'no':
-          return 'No';
       }
     }
     return 'Pending';

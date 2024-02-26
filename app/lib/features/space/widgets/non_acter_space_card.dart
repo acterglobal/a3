@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::space::non_acter_space_card');
 
 class NonActerSpaceCard extends ConsumerWidget {
   final String spaceId;
+
   const NonActerSpaceCard({super.key, required this.spaceId});
 
   @override
@@ -54,11 +58,11 @@ class NonActerSpaceCard extends ConsumerWidget {
     customMsgSnackbar(context, 'Converting to acter space');
 
     try {
-      final space = await ref.watch(spaceProvider(spaceId).future);
-      debugPrint('before setting space state');
+      final space = await ref.read(spaceProvider(spaceId).future);
+      _log.info('before setting space state');
 
       await space.setActerSpaceStates();
-      debugPrint('after setting space state');
+      _log.info('after setting space state');
       // We are doing as expected, but the lint still triggers.
       // ignore: use_build_context_synchronously
       if (!context.mounted) {

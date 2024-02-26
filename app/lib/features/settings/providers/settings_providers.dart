@@ -4,7 +4,6 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/notifiers/labs_features.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final featuresProvider =
@@ -20,7 +19,7 @@ final featuresProvider =
 });
 
 final ignoredUsersProvider = FutureProvider<List<UserId>>((ref) async {
-  final account = await ref.watch(accountProvider.future);
+  final account = ref.watch(accountProvider);
   return (await account.ignoredUsers()).toList();
 });
 
@@ -45,11 +44,9 @@ final possibleEmailToAddForPushProvider =
     if (p.isEmailPusher()) {
       // for each pusher, remove the email from the potential list
       final addr = p.pushkey();
-      debugPrint(addr);
       if (allowedEmails.contains(addr)) {
         allowedEmails.remove(addr);
       }
-      debugPrint('$allowedEmails');
     }
   }
   return allowedEmails;
@@ -61,7 +58,6 @@ final isActiveProvider = StateProvider.family<bool, LabsFeature>(
 
 // helper
 bool updateFeatureState(ref, f, value) {
-  debugPrint('setting $f to $value');
   ref.read(featuresProvider.notifier).setActive(f, value);
   return value;
 }
