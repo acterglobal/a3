@@ -1,22 +1,24 @@
 import 'dart:io';
 
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/html_editor.dart';
-import 'package:acter/features/chat/widgets/room_avatar.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/widgets/events_item.dart';
+import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/news/model/keys.dart';
+import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_post_editor/select_action_item.dart';
 import 'package:acter/features/news/widgets/news_post_editor/news_slide_options.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -150,17 +152,15 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         return AlertDialog.adaptive(
           title: const Text('Add an action widget'),
           content: SelectActionItem(
-            onSpaceItemSelected: () async {
+            onShareEventSelected: () async {
               Navigator.of(context, rootNavigator: true).pop();
+              if (ref.read(newsStateProvider).newsPostSpaceId == null) {
+                customMsgSnackbar(context, 'Please first select a space');
+                return;
+              }
               await ref
                   .read(newsStateProvider.notifier)
-                  .changeInvitedSpaceId(context);
-            },
-            onChatItemSelected: () async {
-              Navigator.of(context, rootNavigator: true).pop();
-              await ref
-                  .read(newsStateProvider.notifier)
-                  .changeInvitedChatId(context);
+                  .selectEventToShare(context);
             },
           ),
         );
@@ -208,69 +208,39 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
 
   //Show selected Action Buttons
   Widget selectedActionButtonsUI() {
-    final invitedSpaceId = selectedNewsPost?.invitedSpaceId;
-    final invitedChatId = selectedNewsPost?.invitedChatId;
+    final newsReferences = selectedNewsPost?.newsReferencesModel;
 
+    if (newsReferences == null) return const SizedBox();
     return Positioned(
       bottom: 10,
       left: 10,
       child: Row(
         children: [
-          if (invitedSpaceId != null)
-            InkWell(
-              onTap: () async {
-                await ref
-                    .read(newsStateProvider.notifier)
-                    .changeInvitedSpaceId(context);
-              },
-              child: Column(
-                children: [
-                  const Text('Space'),
-                  SpaceChip(spaceId: invitedSpaceId),
-                ],
-              ),
-            ),
-          if (invitedSpaceId != null) const SizedBox(width: 10.0),
-          if (invitedChatId != null)
-            InkWell(
-              onTap: () async {
-                await ref
-                    .read(newsStateProvider.notifier)
-                    .changeInvitedChatId(context);
-              },
-              child: Column(
-                children: [
-                  const Text('Chat'),
-                  chatChip(invitedChatId),
-                ],
-              ),
-            ),
+          if (newsReferences.type == NewsReferencesType.shareEvent &&
+              newsReferences.id != null)
+            ref.watch(calendarEventProvider(newsReferences.id!)).when(
+                  data: (calendarEvent) {
+                    return SizedBox(
+                      width: 300,
+                      child: EventItem(
+                        event: calendarEvent,
+                        isShowRsvp: false,
+                        onTapEventItem: (event) async {
+                          await ref
+                              .read(newsStateProvider.notifier)
+                              .selectEventToShare(context);
+                        },
+                      ),
+                    );
+                  },
+                  loading: () =>
+                      const SizedBox(width: 300, child: EventItemSkeleton()),
+                  error: (e, s) => Center(
+                    child: Text('Event failed: $e'),
+                  ),
+                ),
         ],
       ),
-    );
-  }
-
-  Widget chatChip(String invitedChatId) {
-    return Chip(
-      avatar: RoomAvatar(
-        roomId: invitedChatId,
-        avatarSize: 30,
-        showParent: true,
-      ),
-      label: ref.watch(chatProfileDataProviderById(invitedChatId)).when(
-            data: (profile) => Text(
-              profile.displayName ?? invitedChatId,
-              softWrap: true,
-              textAlign: TextAlign.center,
-            ),
-            error: (err, stackTrace) {
-              return Text(
-                invitedChatId,
-                overflow: TextOverflow.clip,
-              );
-            },
-            loading: () => const CircularProgressIndicator(),
-          ),
     );
   }
 
@@ -405,6 +375,11 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
               slidePost.backgroundColor?.value,
             ),
           );
+
+          if (slidePost.newsReferencesModel != null) {
+            final objRef = getSlideReference(sdk, slidePost);
+            textSlideDraft.addReference(objRef);
+          }
           await draft.addSlide(textSlideDraft);
         }
 
@@ -437,6 +412,10 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
               slidePost.backgroundColor?.value,
             ),
           );
+          if (slidePost.newsReferencesModel != null) {
+            final objRef = getSlideReference(sdk, slidePost);
+            imageSlideDraft.addReference(objRef);
+          }
           await draft.addSlide(imageSlideDraft);
         }
 
@@ -465,6 +444,10 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
               slidePost.backgroundColor?.value,
             ),
           );
+          if (slidePost.newsReferencesModel != null) {
+            final objRef = getSlideReference(sdk, slidePost);
+            videoSlideDraft.addReference(objRef);
+          }
           await draft.addSlide(videoSlideDraft);
         }
       }
@@ -487,5 +470,16 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
     } catch (err) {
       EasyLoading.showError('$displayMsg failed: \n $err');
     }
+  }
+
+  ObjRef getSlideReference(ActerSdk sdk, NewsSlideItem slidePost) {
+    final linkBuilder = sdk.api.newLinkRefBuilder(
+      slidePost.newsReferencesModel!.type.name,
+      slidePost.newsReferencesModel!.id ?? '',
+    );
+    final linkRef = linkBuilder.build();
+    final objBuilder = sdk.api.newObjRefBuilder(null, linkRef);
+    final objRef = objBuilder.build();
+    return objRef;
   }
 }

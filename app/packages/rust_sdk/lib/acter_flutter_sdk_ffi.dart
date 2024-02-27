@@ -14344,13 +14344,13 @@ class Api {
       _ObjRefPositionStrReturn Function(
         int,
       )>();
-  late final _objRefReferencePtr = _lookup<
+  late final _objRefRefDetailsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
             ffi.Int64,
-          )>>("__ObjRef_reference");
+          )>>("__ObjRef_ref_details");
 
-  late final _objRefReference = _objRefReferencePtr.asFunction<
+  late final _objRefRefDetails = _objRefRefDetailsPtr.asFunction<
       int Function(
         int,
       )>();
@@ -29832,10 +29832,10 @@ class ObjRef {
   }
 
   /// further details of the reference
-  RefDetails reference() {
+  RefDetails refDetails() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._objRefReference(
+    final tmp1 = _api._objRefRefDetails(
       tmp0,
     );
     final tmp3 = tmp1;
