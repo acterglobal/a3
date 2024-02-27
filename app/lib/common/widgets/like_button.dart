@@ -8,7 +8,7 @@ class LikeButton extends StatefulWidget {
   final TextStyle style;
   final Color color;
   final int index;
-  final void Function()? onTap;
+  final Future<void> Function() onTap;
 
   const LikeButton({
     super.key,
@@ -17,7 +17,7 @@ class LikeButton extends StatefulWidget {
     required this.color,
     required this.index,
     this.isLiked = false,
-    this.onTap,
+    required this.onTap,
   });
 
   @override
@@ -124,11 +124,9 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
                 alignment: Alignment.center,
                 children: [
                   InkWell(
-                    onTap: () {
+                    onTap: () async {
                       debugPrint('like click --------------------------------');
-                      if (widget.onTap != null) {
-                        widget.onTap!();
-                      }
+                      await widget.onTap();
                       if (!widget.isLiked) {
                         controller.reset();
                         controller.forward();
@@ -138,32 +136,26 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
                         }
                       }
                     },
-                    child: widget.isLiked
-                        ? _LikeWidget(
-                            size: Size(
-                              heartSize.value * 30,
-                              heartSize.value * 30,
-                            ),
-                            icon: const Icon(
+                    child: _LikeWidget(
+                      size: Size(
+                        heartSize.value * 30,
+                        heartSize.value * 30,
+                      ),
+                      icon: widget.isLiked
+                          ? const Icon(
                               Atlas.heart,
                               fill: 1.0,
                               color: Colors.red,
-                            ),
-                            color: Theme.of(context).colorScheme.tertiary,
-                            isSmall: false,
-                          )
-                        : _LikeWidget(
-                            size: Size(
-                              heartSize.value * 30,
-                              heartSize.value * 30,
-                            ),
-                            icon: const Icon(
+                            )
+                          : const Icon(
                               Atlas.heart,
                               color: Colors.white,
                             ),
-                            color: widget.color,
-                            isSmall: false,
-                          ),
+                      color: widget.isLiked
+                          ? Theme.of(context).colorScheme.tertiary
+                          : widget.color,
+                      isSmall: false,
+                    ),
                   ),
                   Align(
                     alignment: Alignment.bottomLeft,
