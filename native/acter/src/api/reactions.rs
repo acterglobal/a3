@@ -208,13 +208,8 @@ impl ReactionManager {
         let my_id = self.client.user_id().context("User not found")?;
         RUNTIME
             .spawn(async move {
-                let entries = manager.reaction_entries().await?;
-                if let Some(entry) = entries.get(&my_id) {
-                    if entry.relates_to.key.as_str() == "\\u{2764}" {
-                        return Ok(true);
-                    }
-                }
-                Ok(false)
+                let result = manager.liked_by_me(my_id).await?;
+                Ok(result)
             })
             .await?
     }
@@ -224,13 +219,8 @@ impl ReactionManager {
         let my_id = self.client.user_id().context("User not found")?;
         RUNTIME
             .spawn(async move {
-                let entries = manager.reaction_entries().await?;
-                if let Some(entry) = entries.get(&my_id) {
-                    if entry.relates_to.key.as_str() == "\\u{FE0F}" {
-                        return Ok(true);
-                    }
-                }
-                Ok(false)
+                let result = manager.unliked_by_me(my_id).await?;
+                Ok(result)
             })
             .await?
     }
@@ -240,11 +230,8 @@ impl ReactionManager {
         let my_id = self.client.user_id().context("User not found")?;
         RUNTIME
             .spawn(async move {
-                let entries = manager.reaction_entries().await?;
-                if let Some(entry) = entries.get(&my_id) {
-                    return Ok(true);
-                }
-                Ok(false)
+                let result = manager.reacted_by_me(my_id).await?;
+                Ok(result)
             })
             .await?
     }
