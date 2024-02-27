@@ -114,7 +114,7 @@ impl ReactionManager {
                     .get_member(&my_id)
                     .await?
                     .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                if !member.can_send_message(MessageLikeEventType::Reaction) {
                     bail!("No permission to send message in this room");
                 }
 
@@ -149,7 +149,7 @@ impl ReactionManager {
                     .get_member(&my_id)
                     .await?
                     .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::RoomMessage) {
+                if !member.can_send_message(MessageLikeEventType::Reaction) {
                     bail!("No permission to send message in this room");
                 }
                 trace!("before redacting reaction");
