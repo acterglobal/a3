@@ -121,8 +121,10 @@ class _PinListItemState extends State<PinListItem> {
               Wrap(
                 children: <Widget>[SpaceChip(spaceId: spaceId)],
               ),
+            const SizedBox(height: 5),
             if (pinContent.isNotEmpty)
               Html(
+                padding: const EdgeInsets.all(0),
                 data: pinContent,
                 maxLines: 2,
                 defaultTextStyle: Theme.of(context)

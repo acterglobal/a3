@@ -80,7 +80,7 @@ class PinsPage extends ConsumerWidget {
           itemCount: pins.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: max(1, min(widthCount, minCount)),
-            mainAxisExtent: size.width / 2.5,
+            mainAxisExtent: 170,
           ),
           itemBuilder: (context, index) {
             final pin = pins[index];
