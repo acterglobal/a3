@@ -34110,11 +34110,11 @@ class ReactionManager {
 
   /// redact the reaction
   Future<EventId> redactReaction(
-    String eventId,
+    String key,
     String? reason,
     String? txnId,
   ) {
-    final tmp1 = eventId;
+    final tmp1 = key;
     final tmp5 = reason;
     final tmp11 = txnId;
     var tmp0 = 0;

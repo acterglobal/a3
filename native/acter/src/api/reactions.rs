@@ -130,21 +130,28 @@ impl ReactionManager {
 
     pub async fn redact_reaction(
         &self,
-        event_id: String,
+        key: String,
         reason: Option<String>,
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("User not found")?
-            .to_owned();
-        let event_id = EventId::parse(event_id)?;
+        let my_id = self.client.user_id().context("User not found")?;
+        let manager = self.inner.clone();
         let txn_id = txn_id.map(OwnedTransactionId::from);
 
         RUNTIME
             .spawn(async move {
+                let entries = manager.reaction_entries().await?;
+                let mut event_id = None;
+                for (user_id, reaction) in entries.into_iter() {
+                    if reaction.relates_to.key == key && user_id == my_id {
+                        event_id = Some(reaction.event_id().to_owned());
+                        break;
+                    }
+                }
+                let Some(event_id) = event_id else {
+                    bail!("Not found event id to be redacted")
+                };
                 let member = room
                     .get_member(&my_id)
                     .await?

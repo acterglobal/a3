@@ -56,9 +56,12 @@ class NewsSideBar extends ConsumerWidget {
               final eventId = await manager.sendReaction('\u{2764}');
               await client.waitForReaction(eventId.toString(), null);
             } else {
-              final reactions = (await manager.reactionEntries()).toList();
-              final eventId = reactions[0].eventIdStr();
-              await manager.redactReaction(eventId, null, null);
+              final eventId = await manager.redactReaction(
+                '\u{2764}',
+                null,
+                null,
+              );
+              await client.waitForReaction(eventId.toString(), null);
             }
           },
         ),

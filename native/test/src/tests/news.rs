@@ -678,7 +678,7 @@ async fn news_unlike_reaction_test() -> Result<()> {
     let slides = space.latest_news_entries(1).await?;
     let final_entry = slides.first().expect("Item is there");
     let reaction_manager = final_entry.reactions().await?;
-    let reaction_evt_id = reaction_manager.send_reaction("❤️".to_string()).await?;
+    reaction_manager.send_reaction("❤️".to_string()).await?;
 
     // text msg may reach via reset action or set action
     let mut i = 10;
@@ -728,7 +728,7 @@ async fn news_unlike_reaction_test() -> Result<()> {
     assert_eq!(my_status, true);
 
     reaction_manager
-        .redact_reaction(reaction_evt_id.to_string(), None, None)
+        .redact_reaction("❤️".to_string(), None, None)
         .await?;
 
     // text msg may reach via reset action or set action
