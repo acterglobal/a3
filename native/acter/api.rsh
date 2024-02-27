@@ -747,7 +747,7 @@ object ReactionManager {
     fn reaction_entries() -> Future<Result<Vec<Reaction>>>;
 
     /// send the reaction
-    fn send_reaction(event_id: string, key: string) -> Future<Result<EventId>>;
+    fn send_reaction(key: string) -> Future<Result<EventId>>;
 
     /// redact the reaction
     fn redact_reaction(event_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;

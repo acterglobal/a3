@@ -102,11 +102,11 @@ impl ReactionManager {
             .await?
     }
 
-    pub async fn send_reaction(&self, event_id: String, key: String) -> Result<OwnedEventId> {
+    pub async fn send_reaction(&self, key: String) -> Result<OwnedEventId> {
         let room = self.room.clone();
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
-        let event_id = EventId::parse(&event_id)?;
+        let event_id = self.inner.event_id();
 
         RUNTIME
             .spawn(async move {

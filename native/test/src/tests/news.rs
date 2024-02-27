@@ -572,10 +572,7 @@ async fn news_like_reaction_test() -> Result<()> {
     let final_entry = slides.first().expect("Item is there");
     let reaction_manager = final_entry.reactions().await?;
     info!("send like reaction ------------------------------------");
-    let entry_evt_id = final_entry.event_id().to_string();
-    reaction_manager
-        .send_reaction(entry_evt_id, "❤️".to_string())
-        .await?;
+    reaction_manager.send_reaction("❤️".to_string()).await?;
 
     // text msg may reach via reset action or set action
     let mut i = 10;
@@ -681,10 +678,7 @@ async fn news_unlike_reaction_test() -> Result<()> {
     let slides = space.latest_news_entries(1).await?;
     let final_entry = slides.first().expect("Item is there");
     let reaction_manager = final_entry.reactions().await?;
-    let entry_evt_id = final_entry.event_id();
-    let reaction_evt_id = reaction_manager
-        .send_reaction(entry_evt_id.to_string(), "❤️".to_string())
-        .await?;
+    let reaction_evt_id = reaction_manager.send_reaction("❤️".to_string()).await?;
 
     // text msg may reach via reset action or set action
     let mut i = 10;
