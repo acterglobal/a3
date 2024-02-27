@@ -176,6 +176,8 @@ dependencies = [
 condition = { platforms = ["mac"] }
 dependencies = [
     "ios-aarch64-apple-ios-sim",
+    "ios-aarch64-apple-ios-sim-release",
+    "ios-x86_64-apple-ios",
     "post-ios-sim",
     "make-ios-swift-sim",
 ]
@@ -204,13 +206,6 @@ args = [
     "-Zbuild-std",
     "--release"
 ]
-
-[tasks.build-ios-swift]
-dependencies = [
-    "cargo-build-uniffi-dev",
-    "cargo-build-uniffi-release",
-]
-
 
 [tasks.cargo-build-uniffi-dev]
 private = true
@@ -303,6 +298,21 @@ args = [
 ]
 
 [tasks.make-ios-swift-sim]
+private = true
+condition = { platforms = ["mac"] }
+dependencies = [
+    "build-swift-uniffi-sim",
+]
+script = [
+    """
+    cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}
+    cp target/swift-out/acterFFI.modulemap ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/app/ios/acterFFI/module.modulemap
+    cp target/swift-out/acterFFI.h ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/app/ios/acterFFI/acterFFI.h
+    cp target/swift-out/acter.swift ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/app/ios/ActerPushServiceExtension/acter.swift
+    """,
+]
+
+[tasks.build-swift-uniffi-sim]
 private = true
 condition = { }
 command = "cargo"
@@ -397,9 +407,17 @@ script = [
 script_runner = "@shell"
 script = [
     """
+
     LIBNAME=libacter.a
+    mkdir -p ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/ios-lipo
+    LIPO_LIB=${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/ios-lipo/$LIBNAME
+
+    lipo -create -output $LIPO_LIB \
+            ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/x86_64-apple-ios/${LIB_OUT_DIR}/$LIBNAME \
+            ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/aarch64-apple-ios-sim/${LIB_OUT_DIR}/$LIBNAME
+
     cp "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/bindings.h" "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/Classes/libacter.h"
-    cp "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/aarch64-apple-ios-sim/${LIB_OUT_DIR}/$LIBNAME" "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/$LIBNAME"
+    cp "$LIPO_LIB" "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/$LIBNAME"
     """,
 ]
 
