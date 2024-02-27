@@ -217,30 +217,27 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         children: [
           if (newsReferences.type == NewsReferencesType.shareEvent &&
               newsReferences.id != null)
-            InkWell(
-              onTap: () async {
-                await ref
-                    .read(newsStateProvider.notifier)
-                    .selectEventToShare(context);
-              },
-              child: ref.watch(calendarEventProvider(newsReferences.id!)).when(
-                    data: (calendarEvent) {
-                      return SizedBox(
-                        width: 300,
-                        child: EventItem(
-                          event: calendarEvent,
-                          isShowRsvp: false,
-                          onTapEventItem: (event) {},
-                        ),
-                      );
-                    },
-                    loading: () =>
-                        const SizedBox(width: 300, child: EventItemSkeleton()),
-                    error: (e, s) => Center(
-                      child: Text('Event failed: $e'),
-                    ),
+            ref.watch(calendarEventProvider(newsReferences.id!)).when(
+                  data: (calendarEvent) {
+                    return SizedBox(
+                      width: 300,
+                      child: EventItem(
+                        event: calendarEvent,
+                        isShowRsvp: false,
+                        onTapEventItem: (event) async {
+                          await ref
+                              .read(newsStateProvider.notifier)
+                              .selectEventToShare(context);
+                        },
+                      ),
+                    );
+                  },
+                  loading: () =>
+                      const SizedBox(width: 300, child: EventItemSkeleton()),
+                  error: (e, s) => Center(
+                    child: Text('Event failed: $e'),
                   ),
-            ),
+                ),
         ],
       ),
     );
