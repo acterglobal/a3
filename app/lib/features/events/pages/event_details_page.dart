@@ -6,6 +6,7 @@ import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -231,20 +232,31 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
   }
 
-  Future<void> onRsvp(
-    BuildContext context,
-    RsvpStatusTag status,
-    WidgetRef ref,
-  ) async {
+  Future<void> onRsvp(RsvpStatusTag status, WidgetRef ref) async {
     try {
       EasyLoading.show(status: 'Updating RSVP', dismissOnTap: false);
       final event =
           await ref.read(calendarEventProvider(widget.calendarId).future);
       final rsvpManager = await event.rsvpManager();
       final draft = rsvpManager.rsvpDraft();
-      draft.status(status.toString());
+      switch (status) {
+        case RsvpStatusTag.Yes:
+          draft.status('yes');
+          break;
+        case RsvpStatusTag.No:
+          draft.status('no');
+          break;
+        case RsvpStatusTag.Maybe:
+          draft.status('maybe');
+          break;
+      }
       final rsvpId = await draft.send();
       _log.info('new rsvp id: $rsvpId');
+      // refresh cache
+      final client = ref.read(alwaysClientProvider);
+      await client.waitForRsvp(rsvpId.toString(), null);
+      // refresh UI of this page & outer page
+      ref.invalidate(myRsvpStatusProvider(widget.calendarId));
     } catch (e, s) {
       _log.severe('Error =>', e, s);
     } finally {
@@ -281,21 +293,21 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       child: Row(
         children: [
           _buildEventRsvpActionItem(
-            onTap: () => onRsvp(context, RsvpStatusTag.Yes, ref),
+            onTap: () => onRsvp(RsvpStatusTag.Yes, ref),
             iconData: Icons.check,
             actionName: 'Going',
             isSelected: rsvp.single == RsvpStatusTag.Yes,
           ),
           _buildVerticalDivider(),
           _buildEventRsvpActionItem(
-            onTap: () => onRsvp(context, RsvpStatusTag.No, ref),
+            onTap: () => onRsvp(RsvpStatusTag.No, ref),
             iconData: Icons.close,
             actionName: 'Not Going',
             isSelected: rsvp.single == RsvpStatusTag.No,
           ),
           _buildVerticalDivider(),
           _buildEventRsvpActionItem(
-            onTap: () => onRsvp(context, RsvpStatusTag.Maybe, ref),
+            onTap: () => onRsvp(RsvpStatusTag.Maybe, ref),
             iconData: Icons.question_mark,
             actionName: 'Maybe',
             isSelected: rsvp.single == RsvpStatusTag.Maybe,
