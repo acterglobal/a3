@@ -1,7 +1,8 @@
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
+import 'package:acter/common/widgets/event/event_selector_drawer.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/news/model/news_post_state.dart';
+import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod/riverpod.dart';
@@ -31,24 +32,25 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
       context: context,
       canCheck: 'CanPostNews',
     );
+    //Clear object reference if news post id gets changes
+    state.currentNewsSlide?.newsReferencesModel = null;
+
     state = state.copyWith(
       newsPostSpaceId: spaceId,
     );
   }
 
-  Future<void> changeInvitedSpaceId(BuildContext context) async {
-    final spaceId = await selectSpaceDrawer(context: context);
-    NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-    selectedNewsSlide?.invitedSpaceId = spaceId;
-    state = state.copyWith(
-      currentNewsSlide: selectedNewsSlide,
+  Future<void> selectEventToShare(BuildContext context) async {
+    final eventId = await selectEventDrawer(
+      context: context,
+      spaceId: state.newsPostSpaceId!,
     );
-  }
-
-  Future<void> changeInvitedChatId(BuildContext context) async {
-    final chatId = await selectChatDrawer(context: context);
+    final newsSpaceReference = NewsReferencesModel(
+      type: NewsReferencesType.shareEvent,
+      id: eventId,
+    );
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-    selectedNewsSlide?.invitedChatId = chatId;
+    selectedNewsSlide?.newsReferencesModel = newsSpaceReference;
     state = state.copyWith(
       currentNewsSlide: selectedNewsSlide,
     );

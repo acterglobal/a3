@@ -1,4 +1,3 @@
-use derive_getters::Getters;
 use ruma_common::{EventId, OwnedEventId, OwnedRoomId, RoomId};
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
@@ -544,7 +543,7 @@ impl RefDetailsBuilder {
 /// to a specific object with an optional flag to explain
 /// how to embed said object. These may be interactive
 /// elements when rendered on the view.
-#[derive(Clone, Debug, Getters, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "rel_type", rename = "global.acter.dev.object_ref")]
 pub struct ObjRef {
     /// an object reference might be overlayed on another items, if so
@@ -565,6 +564,10 @@ impl ObjRef {
 
     pub fn position_str(&self) -> Option<String> {
         self.position.as_ref().map(|p| p.to_string())
+    }
+
+    pub fn ref_details(&self) -> RefDetails {
+        self.reference.clone()
     }
 }
 

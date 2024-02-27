@@ -113,7 +113,7 @@ object ObjRef {
     /// where to position the element (if given)
     fn position_str() -> Option<string>;
     /// further details of the reference
-    fn reference() -> RefDetails;
+    fn ref_details() -> RefDetails;
 }
 
 /// A builder for ObjRef

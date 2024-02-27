@@ -2,13 +2,11 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
 class SelectActionItem extends StatelessWidget {
-  final Function onSpaceItemSelected;
-  final Function onChatItemSelected;
+  final Function onShareEventSelected;
 
   const SelectActionItem({
     super.key,
-    required this.onSpaceItemSelected,
-    required this.onChatItemSelected,
+    required this.onShareEventSelected,
   });
 
   @override
@@ -19,16 +17,9 @@ class SelectActionItem extends StatelessWidget {
         const SizedBox(height: 20.0),
         actionItemUI(
           context: context,
-          actionIcon: Atlas.connection,
-          actionName: 'Invite to space',
-          onTap: () => onSpaceItemSelected(),
-        ),
-        const SizedBox(height: 20.0),
-        actionItemUI(
-          context: context,
-          actionIcon: Atlas.message,
-          actionName: 'Invite to chat',
-          onTap: () => onChatItemSelected(),
+          actionIcon: Atlas.calendar_dots,
+          actionName: 'Share Event',
+          onTap: () => onShareEventSelected(),
         ),
         const SizedBox(height: 20.0),
       ],
