@@ -63,7 +63,9 @@ class PinsPage extends ConsumerWidget {
   Widget _buildPinsGrid(BuildContext context, AsyncValue<List<ActerPin>> pins) {
     return pins.when(
       data: (pins) {
-        final widthCount = (MediaQuery.of(context).size.width ~/ 600).toInt();
+        final size = MediaQuery.of(context).size;
+
+        final widthCount = (size.width ~/ 600).toInt();
         const int minCount = 2;
 
         if (pins.isEmpty) {
@@ -78,7 +80,7 @@ class PinsPage extends ConsumerWidget {
           itemCount: pins.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: max(1, min(widthCount, minCount)),
-            mainAxisExtent: 100,
+            mainAxisExtent: size.width / 2.5,
           ),
           itemBuilder: (context, index) {
             final pin = pins[index];
