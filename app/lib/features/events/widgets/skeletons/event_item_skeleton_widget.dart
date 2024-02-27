@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class EventItemSkeleton extends StatefulWidget {
+class EventItemSkeleton extends StatelessWidget {
   const EventItemSkeleton({super.key});
 
-  @override
-  State<EventItemSkeleton> createState() => _EventListSkeletonState();
-}
-
-class _EventListSkeletonState extends State<EventItemSkeleton> {
   @override
   Widget build(BuildContext context) {
     return Skeletonizer(child: _buildEventItemSkeletonUI());

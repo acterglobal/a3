@@ -18,6 +18,7 @@ import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_post_editor/select_action_item.dart';
 import 'package:acter/features/news/widgets/news_post_editor/news_slide_options.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -376,13 +377,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           );
 
           if (slidePost.newsReferencesModel != null) {
-            final linkBuilder = sdk.api.newLinkRefBuilder(
-              slidePost.newsReferencesModel!.type.name,
-              slidePost.newsReferencesModel!.id ?? '',
-            );
-            final linkRef = linkBuilder.build();
-            final objBuilder = sdk.api.newObjRefBuilder(null, linkRef);
-            final objRef = objBuilder.build();
+            final objRef = getSlideReference(sdk, slidePost);
             textSlideDraft.addReference(objRef);
           }
           await draft.addSlide(textSlideDraft);
@@ -418,13 +413,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
             ),
           );
           if (slidePost.newsReferencesModel != null) {
-            final linkBuilder = sdk.api.newLinkRefBuilder(
-              slidePost.newsReferencesModel!.type.name,
-              slidePost.newsReferencesModel!.id ?? '',
-            );
-            final linkRef = linkBuilder.build();
-            final objBuilder = sdk.api.newObjRefBuilder(null, linkRef);
-            final objRef = objBuilder.build();
+            final objRef = getSlideReference(sdk, slidePost);
             imageSlideDraft.addReference(objRef);
           }
           await draft.addSlide(imageSlideDraft);
@@ -456,13 +445,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
             ),
           );
           if (slidePost.newsReferencesModel != null) {
-            final linkBuilder = sdk.api.newLinkRefBuilder(
-              slidePost.newsReferencesModel!.type.name,
-              slidePost.newsReferencesModel!.id ?? '',
-            );
-            final linkRef = linkBuilder.build();
-            final objBuilder = sdk.api.newObjRefBuilder(null, linkRef);
-            final objRef = objBuilder.build();
+            final objRef = getSlideReference(sdk, slidePost);
             videoSlideDraft.addReference(objRef);
           }
           await draft.addSlide(videoSlideDraft);
@@ -487,5 +470,16 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
     } catch (err) {
       EasyLoading.showError('$displayMsg failed: \n $err');
     }
+  }
+
+  ObjRef getSlideReference(ActerSdk sdk, NewsSlideItem slidePost) {
+    final linkBuilder = sdk.api.newLinkRefBuilder(
+      slidePost.newsReferencesModel!.type.name,
+      slidePost.newsReferencesModel!.id ?? '',
+    );
+    final linkRef = linkBuilder.build();
+    final objBuilder = sdk.api.newObjRefBuilder(null, linkRef);
+    final objRef = objBuilder.build();
+    return objRef;
   }
 }

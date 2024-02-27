@@ -32,6 +32,9 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
       context: context,
       canCheck: 'CanPostNews',
     );
+    //Clear object reference if news post id gets changes
+    state.currentNewsSlide?.newsReferencesModel = null;
+
     state = state.copyWith(
       newsPostSpaceId: spaceId,
     );

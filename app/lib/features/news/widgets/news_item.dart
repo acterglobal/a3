@@ -173,7 +173,12 @@ class _NewsItemState extends ConsumerState<NewsItem> {
             error: (e, s) => Center(child: Text('Event failed: $e')),
           );
     } else {
-      return const SizedBox();
+      return const Card(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Text('Unsupported - Please upgrade!'),
+        ),
+      );
     }
   }
 }

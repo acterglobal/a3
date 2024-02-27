@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class EventItem extends ConsumerWidget {
+class EventItem extends StatelessWidget {
   final CalendarEvent event;
   final Function(String)? onTapEventItem;
   final bool isShowRsvp;
@@ -20,7 +20,7 @@ class EventItem extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
         if (onTapEventItem != null) {
@@ -48,10 +48,7 @@ class EventItem extends ConsumerWidget {
               ),
             ),
             const SizedBox(width: 10),
-            Visibility(
-              visible: isShowRsvp,
-              child: _buildRsvpStatus(context, ref),
-            ),
+            if (isShowRsvp) _buildRsvpStatus(context),
             const SizedBox(width: 10),
           ],
         ),
@@ -100,20 +97,24 @@ class EventItem extends ConsumerWidget {
     );
   }
 
-  Widget _buildRsvpStatus(BuildContext context, WidgetRef ref) {
-    final eventId = event.eventId().toString();
-    final myRsvpStatus = ref.watch(myRsvpStatusProvider(eventId));
-    return myRsvpStatus.when(
-      data: (data) {
-        final status = data.statusStr(); // kebab-case
-        return Chip(label: Text(_getStatusLabel(status)));
+  Widget _buildRsvpStatus(BuildContext context) {
+    return Consumer(
+      builder: (ctx, ref, child) {
+        final eventId = event.eventId().toString();
+        final myRsvpStatus = ref.watch(myRsvpStatusProvider(eventId));
+        return myRsvpStatus.when(
+          data: (data) {
+            final status = data.statusStr(); // kebab-case
+            return Chip(label: Text(_getStatusLabel(status)));
+          },
+          error: (e, st) => Chip(
+            label: Text('Error loading rsvp status: $e', softWrap: true),
+          ),
+          loading: () => const Chip(
+            label: Text('Loading rsvp status'),
+          ),
+        );
       },
-      error: (e, st) => Chip(
-        label: Text('Error loading rsvp status: $e', softWrap: true),
-      ),
-      loading: () => const Chip(
-        label: Text('Loading rsvp status'),
-      ),
     );
   }
 
