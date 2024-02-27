@@ -1,6 +1,5 @@
 enum NewsReferencesType {
-  inviteToSpace,
-  inviteToChat,
+  shareEvent,
 }
 
 class NewsReferencesModel {

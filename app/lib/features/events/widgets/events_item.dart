@@ -9,16 +9,29 @@ import 'package:go_router/go_router.dart';
 
 class EventItem extends ConsumerWidget {
   final CalendarEvent event;
+  final Function(String)? onTapEventItem;
+  final bool isShowRsvp;
 
-  const EventItem({super.key, required this.event});
+  const EventItem({
+    super.key,
+    required this.event,
+    this.onTapEventItem,
+    this.isShowRsvp = true,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return InkWell(
-      onTap: () => context.pushNamed(
-        Routes.calendarEvent.name,
-        pathParameters: {'calendarId': event.eventId().toString()},
-      ),
+      onTap: () {
+        if (onTapEventItem != null) {
+          onTapEventItem!(event.eventId().toString());
+          return;
+        }
+        context.pushNamed(
+          Routes.calendarEvent.name,
+          pathParameters: {'calendarId': event.eventId().toString()},
+        );
+      },
       child: Card(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -35,7 +48,10 @@ class EventItem extends ConsumerWidget {
               ),
             ),
             const SizedBox(width: 10),
-            _buildRsvpStatus(context, ref),
+            Visibility(
+              visible: isShowRsvp,
+              child: _buildRsvpStatus(context, ref),
+            ),
             const SizedBox(width: 10),
           ],
         ),

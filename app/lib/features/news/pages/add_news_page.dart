@@ -1,15 +1,15 @@
 import 'dart:io';
 
-import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/snackbars/custom_msg.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/html_editor.dart';
-import 'package:acter/features/chat/widgets/room_avatar.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/widgets/events_item.dart';
+import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
@@ -151,17 +151,15 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         return AlertDialog.adaptive(
           title: const Text('Add an action widget'),
           content: SelectActionItem(
-            onSpaceItemSelected: () async {
+            onShareEventSelected: () async {
               Navigator.of(context, rootNavigator: true).pop();
+              if (ref.read(newsStateProvider).newsPostSpaceId == null) {
+                customMsgSnackbar(context, 'Please first select a space');
+                return;
+              }
               await ref
                   .read(newsStateProvider.notifier)
-                  .changeInvitedSpaceId(context);
-            },
-            onChatItemSelected: () async {
-              Navigator.of(context, rootNavigator: true).pop();
-              await ref
-                  .read(newsStateProvider.notifier)
-                  .changeInvitedChatId(context);
+                  .selectEventToShare(context);
             },
           ),
         );
@@ -217,62 +215,34 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       left: 10,
       child: Row(
         children: [
-          if (newsReferences.type == NewsReferencesType.inviteToSpace &&
+          if (newsReferences.type == NewsReferencesType.shareEvent &&
               newsReferences.id != null)
             InkWell(
               onTap: () async {
                 await ref
                     .read(newsStateProvider.notifier)
-                    .changeInvitedSpaceId(context);
+                    .selectEventToShare(context);
               },
-              child: Column(
-                children: [
-                  const Text('Space'),
-                  SpaceChip(spaceId: newsReferences.id),
-                ],
-              ),
-            )
-          else if (newsReferences.type == NewsReferencesType.inviteToChat &&
-              newsReferences.id != null)
-            InkWell(
-              onTap: () async {
-                await ref
-                    .read(newsStateProvider.notifier)
-                    .changeInvitedChatId(context);
-              },
-              child: Column(
-                children: [
-                  const Text('Chat'),
-                  chatChip(newsReferences.id!),
-                ],
-              ),
+              child: ref.watch(calendarEventProvider(newsReferences.id!)).when(
+                    data: (calendarEvent) {
+                      return SizedBox(
+                        width: 300,
+                        child: EventItem(
+                          event: calendarEvent,
+                          isShowRsvp: false,
+                          onTapEventItem: (event) {},
+                        ),
+                      );
+                    },
+                    loading: () =>
+                        const SizedBox(width: 300, child: EventItemSkeleton()),
+                    error: (e, s) => Center(
+                      child: Text('Event failed: $e'),
+                    ),
+                  ),
             ),
         ],
       ),
-    );
-  }
-
-  Widget chatChip(String invitedChatId) {
-    return Chip(
-      avatar: RoomAvatar(
-        roomId: invitedChatId,
-        avatarSize: 30,
-        showParent: true,
-      ),
-      label: ref.watch(chatProfileDataProviderById(invitedChatId)).when(
-            data: (profile) => Text(
-              profile.displayName ?? invitedChatId,
-              softWrap: true,
-              textAlign: TextAlign.center,
-            ),
-            error: (err, stackTrace) {
-              return Text(
-                invitedChatId,
-                overflow: TextOverflow.clip,
-              );
-            },
-            loading: () => const CircularProgressIndicator(),
-          ),
     );
   }
 

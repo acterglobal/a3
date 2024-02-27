@@ -1,5 +1,9 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/widgets/events_item.dart';
+import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
+import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/widgets/news_item_slide/video_slide.dart';
 import 'package:acter/features/news/widgets/news_side_bar.dart';
 import 'package:acter/features/news/widgets/news_item_slide/image_slide.dart';
@@ -91,19 +95,23 @@ class _NewsItemState extends ConsumerState<NewsItem> {
             }
           },
         ),
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              InkWell(
-                onTap: () {
-                  context.pushNamed(
-                    Routes.space.name,
-                    pathParameters: {'spaceId': roomId},
-                  );
-                },
+        Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 60, bottom: 20),
+              child: newsActionButtons(newsSlide: slides[currentSlideIndex]),
+            ),
+            InkWell(
+              onTap: () {
+                context.pushNamed(
+                  Routes.space.name,
+                  pathParameters: {'spaceId': roomId},
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(16),
                 child: space.when(
                   data: (space) =>
                       Text(space!.spaceProfileData.displayName ?? roomId),
@@ -113,9 +121,8 @@ class _NewsItemState extends ConsumerState<NewsItem> {
                   ),
                 ),
               ),
-              newsActionButtons(newsSlide: slides[currentSlideIndex]),
-            ],
-          ),
+            ),
+          ],
         ),
         Align(
           alignment: Alignment.bottomRight,
@@ -125,7 +132,6 @@ class _NewsItemState extends ConsumerState<NewsItem> {
           ),
         ),
         Positioned.fill(
-          bottom: 50,
           child: Visibility(
             visible: slides.length > 1,
             child: Align(
@@ -153,11 +159,21 @@ class _NewsItemState extends ConsumerState<NewsItem> {
     if (newsReferencesList.isEmpty) return const SizedBox();
 
     final referenceDetails = newsReferencesList.first.refDetails();
-    final type = referenceDetails.typeStr();
+    final uriId = referenceDetails.uri() ?? '';
     final title = referenceDetails.title() ?? '';
-    debugPrint('News Reference Data =>> $type');
-    debugPrint('News Reference Data =>> $title');
 
-    return const SizedBox();
+    if (title == NewsReferencesType.shareEvent.name) {
+      return ref.watch(calendarEventProvider(uriId)).when(
+            data: (calendarEvent) {
+              return EventItem(
+                event: calendarEvent,
+              );
+            },
+            loading: () => const EventItemSkeleton(),
+            error: (e, s) => Center(child: Text('Event failed: $e')),
+          );
+    } else {
+      return const SizedBox();
+    }
   }
 }
