@@ -1,0 +1,1 @@
+- [new] : Now users can add "Share Event" action button in news update slides
