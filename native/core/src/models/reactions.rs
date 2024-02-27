@@ -55,8 +55,8 @@ impl ReactionManager {
             .await?
         {
             if let AnyActerModel::Reaction(c) = mdl {
-                let key = c.clone().meta.sender;
-                entries.insert(key, c);
+                let sender = c.clone().meta.sender;
+                entries.insert(sender, c);
             }
         }
         Ok(entries)

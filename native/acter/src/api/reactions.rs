@@ -164,13 +164,76 @@ impl ReactionManager {
         self.inner.stats().clone()
     }
 
+    pub async fn likes_count(&self) -> Result<u32> {
+        let manager = self.inner.clone();
+        RUNTIME
+            .spawn(async move {
+                let mut count = 0;
+                let entries = manager.reaction_entries().await?;
+                for (user_id, reaction) in entries.into_iter() {
+                    if reaction.relates_to.key.as_str() == "\\u{2764}" {
+                        count += 1;
+                    }
+                }
+                Ok(count)
+            })
+            .await?
+    }
+
+    pub async fn unlikes_count(&self) -> Result<u32> {
+        let manager = self.inner.clone();
+        RUNTIME
+            .spawn(async move {
+                let mut count = 0;
+                let entries = manager.reaction_entries().await?;
+                for (user_id, reaction) in entries.into_iter() {
+                    if reaction.relates_to.key.as_str() == "\\u{FE0F}" {
+                        count += 1;
+                    }
+                }
+                Ok(count)
+            })
+            .await?
+    }
+
+    pub async fn liked_by_me(&self) -> Result<bool> {
+        let manager = self.inner.clone();
+        let my_id = self.client.user_id().context("User not found")?;
+        RUNTIME
+            .spawn(async move {
+                let entries = manager.reaction_entries().await?;
+                if let Some(entry) = entries.get(&my_id) {
+                    if entry.relates_to.key.as_str() == "\\u{2764}" {
+                        return Ok(true);
+                    }
+                }
+                Ok(false)
+            })
+            .await?
+    }
+
+    pub async fn unliked_by_me(&self) -> Result<bool> {
+        let manager = self.inner.clone();
+        let my_id = self.client.user_id().context("User not found")?;
+        RUNTIME
+            .spawn(async move {
+                let entries = manager.reaction_entries().await?;
+                if let Some(entry) = entries.get(&my_id) {
+                    if entry.relates_to.key.as_str() == "\\u{FE0F}" {
+                        return Ok(true);
+                    }
+                }
+                Ok(false)
+            })
+            .await?
+    }
+
     pub async fn reacted_by_me(&self) -> Result<bool> {
         let manager = self.inner.clone();
         let my_id = self.client.user_id().context("User not found")?;
         RUNTIME
             .spawn(async move {
                 let entries = manager.reaction_entries().await?;
-                info!("my status: {:?}", entries.clone());
                 if let Some(entry) = entries.get(&my_id) {
                     return Ok(true);
                 }

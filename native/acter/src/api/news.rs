@@ -598,7 +598,7 @@ impl NewsEntry {
         RUNTIME
             .spawn(async move {
                 let manager = me.comments().await?;
-                Ok(manager.stats().total_comments_count().to_owned())
+                Ok(manager.comments_count())
             })
             .await?
     }
@@ -609,12 +609,45 @@ impl NewsEntry {
         RUNTIME
             .spawn(async move {
                 let manager = me.reactions().await?;
-                Ok(manager.stats().total_reaction_count().to_owned())
+                manager.likes_count().await
+            })
+            .await?
+    }
+
+    pub async fn unlikes_count(&self) -> Result<u32> {
+        let me = self.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let manager = me.reactions().await?;
+                manager.unlikes_count().await
             })
             .await?
     }
 
     pub async fn liked_by_me(&self) -> Result<bool> {
+        let me = self.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let manager = me.reactions().await?;
+                manager.liked_by_me().await
+            })
+            .await?
+    }
+
+    pub async fn unliked_by_me(&self) -> Result<bool> {
+        let me = self.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let manager = me.reactions().await?;
+                manager.unliked_by_me().await
+            })
+            .await?
+    }
+
+    pub async fn reacted_by_me(&self) -> Result<bool> {
         let me = self.clone();
 
         RUNTIME

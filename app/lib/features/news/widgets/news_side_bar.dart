@@ -55,7 +55,7 @@ class NewsSideBar extends ConsumerWidget {
             if (!status) {
               final eventId = await manager.sendReaction(
                 news.eventId().toString(),
-                '\u{dd25}',
+                '\u{2764}',
               );
               await client.waitForReaction(eventId.toString(), null);
             } else {

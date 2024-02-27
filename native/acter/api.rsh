@@ -405,8 +405,17 @@ object NewsEntry {
     /// how many likes on this news entry
     fn likes_count() -> Future<Result<u32>>;
 
+    /// how many likes on this news entry
+    fn unlikes_count() -> Future<Result<u32>>;
+
     /// get my like status on this news entry
     fn liked_by_me() -> Future<Result<bool>>;
+
+    /// get my like status on this news entry
+    fn unliked_by_me() -> Future<Result<bool>>;
+
+    /// get my like status on this news entry
+    fn reacted_by_me() -> Future<Result<bool>>;
 
     /// get room id
     fn room_id() -> RoomId;
@@ -712,6 +721,18 @@ object Rsvp {
 
 
 object ReactionManager {
+
+    /// get my reaction status
+    fn likes_count() -> Future<Result<u32>>;
+
+    /// get my reaction status
+    fn unlikes_count() -> Future<Result<u32>>;
+
+    /// get my reaction status
+    fn liked_by_me() -> Future<Result<bool>>;
+
+    /// get my reaction status
+    fn unliked_by_me() -> Future<Result<bool>>;
 
     /// get my reaction status
     fn reacted_by_me() -> Future<Result<bool>>;
