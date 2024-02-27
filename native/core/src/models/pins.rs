@@ -65,7 +65,7 @@ impl ActerModel for Pin {
     fn capabilities(&self) -> &[Capability] {
         &[
             Capability::Commentable,
-            Capability::Attachable,
+            Capability::Attachmentable,
             Capability::Reactable,
         ]
     }

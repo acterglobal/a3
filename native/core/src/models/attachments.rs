@@ -149,7 +149,7 @@ impl ActerModel for Attachment {
         let mut managers = vec![];
         for p in belongs_to {
             let parent = store.get(&p).await?;
-            if !parent.capabilities().contains(&Capability::Attachable) {
+            if !parent.capabilities().contains(&Capability::Attachmentable) {
                 error!(?parent, attachment = ?self, "doesn't support attachments. can't apply");
                 continue;
             }

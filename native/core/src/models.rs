@@ -66,7 +66,7 @@ pub enum Capability {
     // someone can add comment on this
     Commentable,
     // someone can add attachment on this
-    Attachable,
+    Attachmentable,
     // another custom capability
     Custom(&'static str),
 }

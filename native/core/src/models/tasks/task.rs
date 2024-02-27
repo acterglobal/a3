@@ -121,7 +121,7 @@ impl ActerModel for Task {
     fn capabilities(&self) -> &[Capability] {
         &[
             Capability::Commentable,
-            Capability::Attachable,
+            Capability::Attachmentable,
             Capability::Reactable,
         ]
     }
