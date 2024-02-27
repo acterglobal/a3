@@ -24,8 +24,9 @@ use ruma_common::{
     serde::Raw, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, UserId,
 };
 use ruma_events::{
-    room::redaction::RoomRedactionEventContent, AnySyncTimelineEvent, AnyTimelineEvent,
-    MessageLikeEvent, StaticEventContent, UnsignedRoomRedactionEvent,
+    room::redaction::{OriginalRoomRedactionEvent, RoomRedactionEventContent},
+    AnySyncTimelineEvent, AnyTimelineEvent, MessageLikeEvent, StaticEventContent,
+    UnsignedRoomRedactionEvent,
 };
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
@@ -151,7 +152,7 @@ pub struct RedactionContent {
     /// Data specific to the event type.
     pub content: RoomRedactionEventContent,
 
-    /// The globally unique event identifier for the user who sent the event.
+    /// The globally unique event identifier for the event.
     pub event_id: OwnedEventId,
 
     /// The fully-qualified ID of the user who sent this event.
@@ -164,6 +165,24 @@ pub struct RedactionContent {
 impl From<UnsignedRoomRedactionEvent> for RedactionContent {
     fn from(value: UnsignedRoomRedactionEvent) -> Self {
         let UnsignedRoomRedactionEvent {
+            content,
+            event_id,
+            sender,
+            origin_server_ts,
+            ..
+        } = value;
+        RedactionContent {
+            content,
+            event_id,
+            sender,
+            origin_server_ts,
+        }
+    }
+}
+
+impl From<OriginalRoomRedactionEvent> for RedactionContent {
+    fn from(value: OriginalRoomRedactionEvent) -> Self {
+        let OriginalRoomRedactionEvent {
             content,
             event_id,
             sender,
@@ -192,12 +211,12 @@ impl RedactedActerModel {
         orig_type: String,
         orig_indizes: Vec<String>,
         meta: EventMeta,
-        content: UnsignedRoomRedactionEvent,
+        content: RedactionContent,
     ) -> Self {
         RedactedActerModel {
             meta,
             orig_type,
-            content: content.into(),
+            content,
             indizes: orig_indizes
                 .into_iter()
                 .map(|s| format!("{s}::redacted"))
@@ -222,17 +241,30 @@ impl ActerModel for RedactedActerModel {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct EventMeta {
-    /// The globally unique event identifier attached to this task
+    /// The globally unique event identifier attached to this event
     pub event_id: OwnedEventId,
 
-    /// The fully-qualified ID of the user who sent created this task
+    /// The fully-qualified ID of the user who sent created this event
     pub sender: OwnedUserId,
 
-    /// Timestamp in milliseconds on originating homeserver when the task was created
+    /// Timestamp in milliseconds on originating homeserver when the event was created
     pub origin_server_ts: MilliSecondsSinceUnixEpoch,
 
-    /// The ID of the room of this task
+    /// The ID of the room of this event
     pub room_id: OwnedRoomId,
+}
+
+impl EventMeta {
+    pub fn for_redacted_source(value: &OriginalRoomRedactionEvent) -> Option<Self> {
+        let target_event_id = value.redacts.clone()?;
+
+        Some(EventMeta {
+            event_id: target_event_id,
+            sender: value.sender.clone(),
+            room_id: value.room_id.clone(),
+            origin_server_ts: value.origin_server_ts,
+        })
+    }
 }
 
 #[enum_dispatch]
@@ -271,6 +303,33 @@ pub enum AnyActerModel {
 
     #[cfg(test)]
     TestModel(TestModel),
+}
+
+impl AnyActerModel {
+    pub fn model_type(&self) -> &str {
+        match self {
+            AnyActerModel::CalendarEvent(_) => CalendarEventEventContent::TYPE,
+            AnyActerModel::CalendarEventUpdate(_) => CalendarEventUpdateEventContent::TYPE,
+            AnyActerModel::TaskList(_) => TaskListEventContent::TYPE,
+            AnyActerModel::TaskListUpdate(_) => TaskListUpdateEventContent::TYPE,
+            AnyActerModel::Task(_) => TaskEventContent::TYPE,
+            AnyActerModel::TaskUpdate(_) => TaskUpdateEventContent::TYPE,
+            AnyActerModel::TaskSelfAssign(_) => TaskSelfAssignEventContent::TYPE,
+            AnyActerModel::TaskSelfUnassign(_) => TaskSelfUnassignEventContent::TYPE,
+            AnyActerModel::Pin(_) => PinEventContent::TYPE,
+            AnyActerModel::PinUpdate(_) => PinUpdateEventContent::TYPE,
+            AnyActerModel::NewsEntry(_) => NewsEntryEventContent::TYPE,
+            AnyActerModel::NewsEntryUpdate(_) => NewsEntryUpdateEventContent::TYPE,
+            AnyActerModel::Comment(_) => CommentEventContent::TYPE,
+            AnyActerModel::CommentUpdate(_) => CommentUpdateEventContent::TYPE,
+            AnyActerModel::Attachment(_) => AttachmentEventContent::TYPE,
+            AnyActerModel::AttachmentUpdate(_) => AttachmentUpdateEventContent::TYPE,
+            AnyActerModel::Rsvp(_) => RsvpEventContent::TYPE,
+            AnyActerModel::RedactedActerModel(_) => "unknown_redacted_model",
+            #[cfg(test)]
+            AnyActerModel::TestModel(_) => "test_model",
+        }
+    }
 }
 
 impl TryFrom<AnyActerEvent> for AnyActerModel {
