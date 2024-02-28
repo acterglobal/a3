@@ -97,7 +97,6 @@ class _PinListItemState extends State<PinListItem> {
         key: Key(widget.pin.eventIdStr()),
         onTap: () => onTap(context),
         onLongPress: () => openItem(context),
-        // contentPadding: const EdgeInsets.all(12),
         title: Row(
           children: <Widget>[
             Icon(
