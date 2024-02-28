@@ -32,8 +32,8 @@ class NewsSideBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = news.roomId().toString();
     final userId = ref.watch(myUserIdStrProvider);
-    final reactions = ref.watch(reactionEntriesProvider(news));
     final isLikedByMe = ref.watch(likedByMeProvider(news));
+    final likesCount = ref.watch(totalLikesForNewsProvider(news));
     final space = ref.watch(briefSpaceItemWithMembershipProvider(roomId));
     final style = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 13);
 
@@ -43,21 +43,18 @@ class NewsSideBar extends ConsumerWidget {
         const Spacer(),
         LikeButton(
           isLiked: isLikedByMe.valueOrNull ?? false,
-          likeCount: reactions.valueOrNull?.length ?? 0,
+          likeCount: likesCount.valueOrNull ?? 0,
           style: style,
           color: Colors.white,
           index: index,
           onTap: () async {
-            final client = ref.read(alwaysClientProvider);
             final manager = await ref.watch(newsReactionsProvider(news).future);
             final status = manager.likedByMe();
             debugPrint('my like status: $status');
             if (!status) {
-              final eventId = await manager.sendLike();
-              await client.waitForReaction(eventId.toString(), null);
+              await manager.sendLike();
             } else {
-              final eventId = await manager.redactLike(null, null);
-              await client.waitForReaction(eventId.toString(), null);
+              await manager.redactLike(null, null);
             }
           },
         ),

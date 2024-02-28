@@ -674,7 +674,7 @@ object RsvpManager {
     fn rsvp_draft() -> Result<RsvpDraft>;
 
     /// get informed about changes to this manager
-    fn subscribe_stream() -> Stream<()>;
+    fn subscribe_stream() -> Stream<bool>;
 }
 
 object RsvpDraft {
@@ -735,7 +735,10 @@ object ReactionManager {
     fn redact_like(reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// get informed about changes to this manager
-    fn subscribe_stream() -> Stream<()>;
+    fn subscribe_stream() -> Stream<bool>;
+
+    /// get informed about changes to this manager
+    fn reload() -> Future<Result<ReactionManager>>;
 }
 
 object Reaction {

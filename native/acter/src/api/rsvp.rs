@@ -364,8 +364,8 @@ impl RsvpManager {
         })
     }
 
-    pub fn subscribe_stream(&self) -> impl Stream<Item = ()> {
-        BroadcastStream::new(self.subscribe()).map(|f| f.unwrap_or_default())
+    pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.subscribe()).map(|f| true)
     }
 
     pub fn subscribe(&self) -> Receiver<()> {

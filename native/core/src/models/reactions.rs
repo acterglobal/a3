@@ -155,7 +155,7 @@ impl ReactionManager {
             self.stats
                 .user_reactions
                 .retain(|e| e != &entry.meta.event_id); // only keep the others
-            self.stats.has_like_reactions = self.stats.user_reactions.len() > 0
+            self.stats.user_has_reacted = self.stats.user_reactions.len() > 0
         }
 
         if entry.inner.relates_to.key == LIKE_HEART {
@@ -169,7 +169,7 @@ impl ReactionManager {
 
             if was_my_reaction {
                 self.stats.user_likes.retain(|e| e != &entry.meta.event_id); // only keep the others
-                self.stats.has_like_reactions = self.stats.user_likes.len() > 0
+                self.stats.user_has_liked = self.stats.user_likes.len() > 0
             }
         }
         Ok(true)
@@ -179,11 +179,12 @@ impl ReactionManager {
         self.stats.clone()
     }
 
-    fn update_key(&self) -> String {
+    pub fn update_key(&self) -> String {
         Self::stats_field_for(&self.event_id)
     }
 
     pub async fn save(&self) -> Result<String> {
+        trace!(?self.stats, ?self.event_id, "Updated entry");
         let update_key = self.update_key();
         self.store.set_raw(&update_key, &self.stats).await?;
         Ok(update_key)

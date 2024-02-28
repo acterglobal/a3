@@ -1,7 +1,7 @@
+import 'package:acter/common/providers/reactions_providers.dart';
 import 'package:acter/features/news/providers/notifiers/news_list_notifier.dart';
-import 'package:acter/features/news/providers/notifiers/reaction_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show NewsEntry, ReactionManager, Reaction;
+    show NewsEntry, ReactionManager;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final newsListProvider =
@@ -9,19 +9,20 @@ final newsListProvider =
   () => AsyncNewsListNotifier(),
 );
 
-final newsReactionsProvider = FutureProvider.autoDispose
-    .family<ReactionManager, NewsEntry>((ref, news) async {
+final newsReactionsProvider =
+    FutureProvider.family<ReactionManager, NewsEntry>((ref, news) async {
   final manager = await news.reactions();
-  return manager;
+  return ref.watch(reactionManagerProvider(manager));
 });
-
-final reactionEntriesProvider = AsyncNotifierProvider.autoDispose
-    .family<AsyncNewsReactionsNotifier, List<Reaction>, NewsEntry>(
-  () => AsyncNewsReactionsNotifier(),
-);
 
 final likedByMeProvider =
     FutureProvider.autoDispose.family<bool, NewsEntry>((ref, news) async {
   final reactionsManager = await ref.watch(newsReactionsProvider(news).future);
   return reactionsManager.likedByMe();
+});
+
+final totalLikesForNewsProvider =
+    FutureProvider.autoDispose.family<int, NewsEntry>((ref, news) async {
+  final reactionsManager = await ref.watch(newsReactionsProvider(news).future);
+  return reactionsManager.likesCount();
 });

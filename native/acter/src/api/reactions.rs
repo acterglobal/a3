@@ -102,6 +102,15 @@ impl ReactionManager {
             .await?
     }
 
+    pub async fn reload(&self) -> Result<ReactionManager> {
+        ReactionManager::new(
+            self.client.clone(),
+            self.room.clone(),
+            self.inner.event_id(),
+        )
+        .await
+    }
+
     pub async fn send_like(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
         let client = room.client();
@@ -221,12 +230,11 @@ impl ReactionManager {
             .await?
     }
 
-    pub fn subscribe_stream(&self) -> impl Stream<Item = ()> {
-        BroadcastStream::new(self.subscribe()).map(|f| f.unwrap_or_default())
+    pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.subscribe()).map(|f| true)
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        let key = models::Reaction::index_for(&self.inner.event_id());
-        self.client.subscribe(key)
+        self.client.subscribe(self.inner.update_key())
     }
 }
