@@ -747,7 +747,19 @@ object ReactionManager {
     fn reaction_entries() -> Future<Result<Vec<Reaction>>>;
 
     /// send the reaction
+    fn send_like() -> Future<Result<EventId>>;
+
+    /// send the reaction
+    fn send_unlike() -> Future<Result<EventId>>;
+
+    /// send the reaction
     fn send_reaction(key: string) -> Future<Result<EventId>>;
+
+    /// redact the reaction
+    fn redact_like(reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
+
+    /// redact the reaction
+    fn redact_unlike(reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// redact the reaction
     fn redact_reaction(key: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;

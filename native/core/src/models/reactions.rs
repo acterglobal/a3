@@ -47,7 +47,7 @@ impl ReactionManager {
         self.event_id.clone()
     }
 
-    pub async fn liked_by_me(&self, my_id: OwnedUserId) -> Result<bool> {
+    pub async fn liked_by_me(&self, my_id: &UserId) -> Result<bool> {
         for mdl in self
             .store
             .get_list(&Reaction::index_for(&self.event_id))
@@ -62,7 +62,22 @@ impl ReactionManager {
         Ok(false)
     }
 
-    pub async fn unliked_by_me(&self, my_id: OwnedUserId) -> Result<bool> {
+    pub async fn liked_event_id(&self, my_id: &UserId) -> Result<Option<OwnedEventId>> {
+        for mdl in self
+            .store
+            .get_list(&Reaction::index_for(&self.event_id))
+            .await?
+        {
+            if let AnyActerModel::Reaction(c) = mdl {
+                if c.meta.sender == my_id && c.relates_to.key.as_str() == "\\u{2764}" {
+                    return Ok(Some(c.meta.event_id.clone()));
+                }
+            }
+        }
+        Ok(None)
+    }
+
+    pub async fn unliked_by_me(&self, my_id: &UserId) -> Result<bool> {
         for mdl in self
             .store
             .get_list(&Reaction::index_for(&self.event_id))
@@ -77,7 +92,22 @@ impl ReactionManager {
         Ok(false)
     }
 
-    pub async fn reacted_by_me(&self, my_id: OwnedUserId) -> Result<bool> {
+    pub async fn unliked_event_id(&self, my_id: &UserId) -> Result<Option<OwnedEventId>> {
+        for mdl in self
+            .store
+            .get_list(&Reaction::index_for(&self.event_id))
+            .await?
+        {
+            if let AnyActerModel::Reaction(c) = mdl {
+                if c.meta.sender == my_id && c.relates_to.key.as_str() == "\\u{FE0F}" {
+                    return Ok(Some(c.meta.event_id.clone()));
+                }
+            }
+        }
+        Ok(None)
+    }
+
+    pub async fn reacted_by_me(&self, my_id: &UserId) -> Result<bool> {
         for mdl in self
             .store
             .get_list(&Reaction::index_for(&self.event_id))
@@ -90,6 +120,21 @@ impl ReactionManager {
             }
         }
         Ok(false)
+    }
+
+    pub async fn reacted_event_id(&self, my_id: &UserId) -> Result<Option<OwnedEventId>> {
+        for mdl in self
+            .store
+            .get_list(&Reaction::index_for(&self.event_id))
+            .await?
+        {
+            if let AnyActerModel::Reaction(c) = mdl {
+                if c.meta.sender == my_id {
+                    return Ok(Some(c.meta.event_id.clone()));
+                }
+            }
+        }
+        Ok(None)
     }
 
     pub async fn reaction_entries(&self) -> Result<HashMap<OwnedUserId, Reaction>> {
