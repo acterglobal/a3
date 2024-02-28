@@ -3378,226 +3378,6 @@ class Api {
     return tmp7;
   }
 
-  int? __reactionManagerLikesCountFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _reactionManagerLikesCountFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13;
-    return tmp7;
-  }
-
-  int? __reactionManagerUnlikesCountFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _reactionManagerUnlikesCountFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13;
-    return tmp7;
-  }
-
-  bool? __reactionManagerLikedByMeFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _reactionManagerLikedByMeFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
-  bool? __reactionManagerUnlikedByMeFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _reactionManagerUnlikedByMeFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
-  bool? __reactionManagerReactedByMeFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _reactionManagerReactedByMeFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
   FfiListReaction? __reactionManagerReactionEntriesFuturePoll(
     int boxed,
     int postCobject,
@@ -3693,53 +3473,6 @@ class Api {
     return tmp7;
   }
 
-  EventId? __reactionManagerSendUnlikeFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _reactionManagerSendUnlikeFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = EventId._(this, tmp13_1);
-    return tmp7;
-  }
-
   EventId? __reactionManagerSendReactionFuturePoll(
     int boxed,
     int postCobject,
@@ -3802,100 +3535,6 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 = _reactionManagerRedactLikeFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = EventId._(this, tmp13_1);
-    return tmp7;
-  }
-
-  EventId? __reactionManagerRedactUnlikeFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _reactionManagerRedactUnlikeFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = EventId._(this, tmp13_1);
-    return tmp7;
-  }
-
-  EventId? __reactionManagerRedactReactionFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _reactionManagerRedactReactionFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -16267,7 +15906,7 @@ class Api {
       )>();
   late final _reactionManagerLikesCountPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          ffi.Uint32 Function(
             ffi.Int64,
           )>>("__ReactionManager_likes_count");
 
@@ -16276,20 +15915,9 @@ class Api {
           int Function(
             int,
           )>();
-  late final _reactionManagerUnlikesCountPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__ReactionManager_unlikes_count");
-
-  late final _reactionManagerUnlikesCount =
-      _reactionManagerUnlikesCountPtr.asFunction<
-          int Function(
-            int,
-          )>();
   late final _reactionManagerLikedByMePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          ffi.Uint8 Function(
             ffi.Int64,
           )>>("__ReactionManager_liked_by_me");
 
@@ -16298,20 +15926,9 @@ class Api {
           int Function(
             int,
           )>();
-  late final _reactionManagerUnlikedByMePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__ReactionManager_unliked_by_me");
-
-  late final _reactionManagerUnlikedByMe =
-      _reactionManagerUnlikedByMePtr.asFunction<
-          int Function(
-            int,
-          )>();
   late final _reactionManagerReactedByMePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          ffi.Uint8 Function(
             ffi.Int64,
           )>>("__ReactionManager_reacted_by_me");
 
@@ -16363,17 +15980,6 @@ class Api {
       int Function(
         int,
       )>();
-  late final _reactionManagerSendUnlikePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-          )>>("__ReactionManager_send_unlike");
-
-  late final _reactionManagerSendUnlike =
-      _reactionManagerSendUnlikePtr.asFunction<
-          int Function(
-            int,
-          )>();
   late final _reactionManagerSendReactionPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -16408,66 +16014,6 @@ class Api {
   late final _reactionManagerRedactLike =
       _reactionManagerRedactLikePtr.asFunction<
           int Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _reactionManagerRedactUnlikePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__ReactionManager_redact_unlike");
-
-  late final _reactionManagerRedactUnlike =
-      _reactionManagerRedactUnlikePtr.asFunction<
-          int Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _reactionManagerRedactReactionPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Int64,
-            ffi.Uint64,
-            ffi.Uint64,
-          )>>("__ReactionManager_redact_reaction");
-
-  late final _reactionManagerRedactReaction =
-      _reactionManagerRedactReactionPtr.asFunction<
-          int Function(
-            int,
-            int,
-            int,
             int,
             int,
             int,
@@ -24484,81 +24030,6 @@ class Api {
         int,
         int,
       )>();
-  late final _reactionManagerLikesCountFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ReactionManagerLikesCountFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__ReactionManager_likes_count_future_poll");
-
-  late final _reactionManagerLikesCountFuturePoll =
-      _reactionManagerLikesCountFuturePollPtr.asFunction<
-          _ReactionManagerLikesCountFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _reactionManagerUnlikesCountFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ReactionManagerUnlikesCountFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__ReactionManager_unlikes_count_future_poll");
-
-  late final _reactionManagerUnlikesCountFuturePoll =
-      _reactionManagerUnlikesCountFuturePollPtr.asFunction<
-          _ReactionManagerUnlikesCountFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _reactionManagerLikedByMeFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ReactionManagerLikedByMeFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__ReactionManager_liked_by_me_future_poll");
-
-  late final _reactionManagerLikedByMeFuturePoll =
-      _reactionManagerLikedByMeFuturePollPtr.asFunction<
-          _ReactionManagerLikedByMeFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _reactionManagerUnlikedByMeFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ReactionManagerUnlikedByMeFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__ReactionManager_unliked_by_me_future_poll");
-
-  late final _reactionManagerUnlikedByMeFuturePoll =
-      _reactionManagerUnlikedByMeFuturePollPtr.asFunction<
-          _ReactionManagerUnlikedByMeFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _reactionManagerReactedByMeFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ReactionManagerReactedByMeFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__ReactionManager_reacted_by_me_future_poll");
-
-  late final _reactionManagerReactedByMeFuturePoll =
-      _reactionManagerReactedByMeFuturePollPtr.asFunction<
-          _ReactionManagerReactedByMeFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
   late final _reactionManagerReactionEntriesFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ReactionManagerReactionEntriesFuturePollReturn Function(
@@ -24589,21 +24060,6 @@ class Api {
             int,
             int,
           )>();
-  late final _reactionManagerSendUnlikeFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ReactionManagerSendUnlikeFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__ReactionManager_send_unlike_future_poll");
-
-  late final _reactionManagerSendUnlikeFuturePoll =
-      _reactionManagerSendUnlikeFuturePollPtr.asFunction<
-          _ReactionManagerSendUnlikeFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
   late final _reactionManagerSendReactionFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ReactionManagerSendReactionFuturePollReturn Function(
@@ -24630,36 +24086,6 @@ class Api {
   late final _reactionManagerRedactLikeFuturePoll =
       _reactionManagerRedactLikeFuturePollPtr.asFunction<
           _ReactionManagerRedactLikeFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _reactionManagerRedactUnlikeFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ReactionManagerRedactUnlikeFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__ReactionManager_redact_unlike_future_poll");
-
-  late final _reactionManagerRedactUnlikeFuturePoll =
-      _reactionManagerRedactUnlikeFuturePollPtr.asFunction<
-          _ReactionManagerRedactUnlikeFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _reactionManagerRedactReactionFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ReactionManagerRedactReactionFuturePollReturn Function(
-            ffi.Int64,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__ReactionManager_redact_reaction_future_poll");
-
-  late final _reactionManagerRedactReactionFuturePoll =
-      _reactionManagerRedactReactionFuturePollPtr.asFunction<
-          _ReactionManagerRedactReactionFuturePollReturn Function(
             int,
             int,
             int,
@@ -33855,87 +33281,38 @@ class ReactionManager {
   ReactionManager._(this._api, this._box);
 
   /// get count sent like by me and other people
-  Future<int> likesCount() {
+  int likesCount() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._reactionManagerLikesCount(
       tmp0,
     );
     final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__ReactionManager_likes_count_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__reactionManagerLikesCountFuturePoll);
+    final tmp2 = tmp3;
     return tmp2;
   }
 
-  /// get count sent unlike by me and other people
-  Future<int> unlikesCount() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._reactionManagerUnlikesCount(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__ReactionManager_unlikes_count_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__reactionManagerUnlikesCountFuturePoll);
-    return tmp2;
-  }
-
-  /// whether I sent like (U+2764)
-  Future<bool> likedByMe() {
+  /// whether I sent like
+  bool likedByMe() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._reactionManagerLikedByMe(
       tmp0,
     );
     final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__ReactionManager_liked_by_me_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__reactionManagerLikedByMeFuturePoll);
-    return tmp2;
-  }
-
-  /// whether I sent unlike (U+FE0F)
-  Future<bool> unlikedByMe() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._reactionManagerUnlikedByMe(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__ReactionManager_unliked_by_me_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__reactionManagerUnlikedByMeFuturePoll);
+    final tmp2 = tmp3 > 0;
     return tmp2;
   }
 
   /// whether I reacted using symbol key
-  Future<bool> reactedByMe() {
+  bool reactedByMe() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._reactionManagerReactedByMe(
       tmp0,
     );
     final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__ReactionManager_reacted_by_me_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__reactionManagerReactedByMeFuturePoll);
+    final tmp2 = tmp3 > 0;
     return tmp2;
   }
 
@@ -33980,7 +33357,7 @@ class ReactionManager {
     return tmp2;
   }
 
-  /// send the like (U+2764)
+  /// send a like
   Future<EventId> sendLike() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -33994,23 +33371,6 @@ class ReactionManager {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 =
         _nativeFuture(tmp3_1, _api.__reactionManagerSendLikeFuturePoll);
-    return tmp2;
-  }
-
-  /// send the unlike (U+FE0F)
-  Future<EventId> sendUnlike() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._reactionManagerSendUnlike(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__ReactionManager_send_unlike_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__reactionManagerSendUnlikeFuturePoll);
     return tmp2;
   }
 
@@ -34048,7 +33408,7 @@ class ReactionManager {
     return tmp6;
   }
 
-  /// redact the like (U+2764)
+  /// remove the like
   Future<EventId> redactLike(
     String? reason,
     String? txnId,
@@ -34112,154 +33472,6 @@ class ReactionManager {
     final tmp14 =
         _nativeFuture(tmp15_1, _api.__reactionManagerRedactLikeFuturePoll);
     return tmp14;
-  }
-
-  /// redact the unlike (U+FE0F)
-  Future<EventId> redactUnlike(
-    String? reason,
-    String? txnId,
-  ) {
-    final tmp1 = reason;
-    final tmp7 = txnId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp4 = 0;
-    var tmp5 = 0;
-    var tmp6 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp11 = 0;
-    var tmp12 = 0;
-    tmp0 = _box.borrow();
-    if (tmp1 == null) {
-      tmp2 = 0;
-    } else {
-      tmp2 = 1;
-      final tmp3 = tmp1;
-      final tmp3_0 = utf8.encode(tmp3);
-      tmp5 = tmp3_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
-      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
-      tmp4_1.setAll(0, tmp3_0);
-      tmp4 = tmp4_0.address;
-      tmp6 = tmp5;
-    }
-    if (tmp7 == null) {
-      tmp8 = 0;
-    } else {
-      tmp8 = 1;
-      final tmp9 = tmp7;
-      final tmp9_0 = utf8.encode(tmp9);
-      tmp11 = tmp9_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-      final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-      tmp10_1.setAll(0, tmp9_0);
-      tmp10 = tmp10_0.address;
-      tmp12 = tmp11;
-    }
-    final tmp13 = _api._reactionManagerRedactUnlike(
-      tmp0,
-      tmp2,
-      tmp4,
-      tmp5,
-      tmp6,
-      tmp8,
-      tmp10,
-      tmp11,
-      tmp12,
-    );
-    final tmp15 = tmp13;
-    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
-    final tmp15_1 =
-        _Box(_api, tmp15_0, "__ReactionManager_redact_unlike_future_drop");
-    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
-    final tmp14 =
-        _nativeFuture(tmp15_1, _api.__reactionManagerRedactUnlikeFuturePoll);
-    return tmp14;
-  }
-
-  /// redact the reaction using symbol key
-  Future<EventId> redactReaction(
-    String key,
-    String? reason,
-    String? txnId,
-  ) {
-    final tmp1 = key;
-    final tmp5 = reason;
-    final tmp11 = txnId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp8 = 0;
-    var tmp9 = 0;
-    var tmp10 = 0;
-    var tmp12 = 0;
-    var tmp14 = 0;
-    var tmp15 = 0;
-    var tmp16 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    if (tmp5 == null) {
-      tmp6 = 0;
-    } else {
-      tmp6 = 1;
-      final tmp7 = tmp5;
-      final tmp7_0 = utf8.encode(tmp7);
-      tmp9 = tmp7_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
-      final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
-      tmp8_1.setAll(0, tmp7_0);
-      tmp8 = tmp8_0.address;
-      tmp10 = tmp9;
-    }
-    if (tmp11 == null) {
-      tmp12 = 0;
-    } else {
-      tmp12 = 1;
-      final tmp13 = tmp11;
-      final tmp13_0 = utf8.encode(tmp13);
-      tmp15 = tmp13_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp14_0 = _api.__allocate(tmp15 * 1, 1);
-      final Uint8List tmp14_1 = tmp14_0.asTypedList(tmp15);
-      tmp14_1.setAll(0, tmp13_0);
-      tmp14 = tmp14_0.address;
-      tmp16 = tmp15;
-    }
-    final tmp17 = _api._reactionManagerRedactReaction(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp8,
-      tmp9,
-      tmp10,
-      tmp12,
-      tmp14,
-      tmp15,
-      tmp16,
-    );
-    final tmp19 = tmp17;
-    final ffi.Pointer<ffi.Void> tmp19_0 = ffi.Pointer.fromAddress(tmp19);
-    final tmp19_1 =
-        _Box(_api, tmp19_0, "__ReactionManager_redact_reaction_future_drop");
-    tmp19_1._finalizer = _api._registerFinalizer(tmp19_1);
-    final tmp18 =
-        _nativeFuture(tmp19_1, _api.__reactionManagerRedactReactionFuturePoll);
-    return tmp18;
   }
 
   /// get informed about changes to this manager
@@ -52373,81 +51585,6 @@ class _RsvpDraftSendFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ReactionManagerLikesCountFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Uint32()
-  external int arg5;
-}
-
-class _ReactionManagerUnlikesCountFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Uint32()
-  external int arg5;
-}
-
-class _ReactionManagerLikedByMeFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
-class _ReactionManagerUnlikedByMeFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
-class _ReactionManagerReactedByMeFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
 class _ReactionManagerReactionEntriesFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -52478,21 +51615,6 @@ class _ReactionManagerSendLikeFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ReactionManagerSendUnlikeFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
 class _ReactionManagerSendReactionFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -52509,36 +51631,6 @@ class _ReactionManagerSendReactionFuturePollReturn extends ffi.Struct {
 }
 
 class _ReactionManagerRedactLikeFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _ReactionManagerRedactUnlikeFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _ReactionManagerRedactReactionFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

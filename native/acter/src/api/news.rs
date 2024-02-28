@@ -46,11 +46,7 @@ impl Client {
                     .client()
                     .get_room(content.room_id())
                     .context("Room not found")?;
-                Ok(NewsEntry {
-                    client: me.clone(),
-                    room,
-                    content,
-                })
+                NewsEntry::new(me.clone(), room, content).await
             })
             .await?
     }
@@ -92,11 +88,7 @@ impl Client {
                             }
                         }
                     };
-                    news.push(NewsEntry {
-                        client: client.clone(),
-                        room,
-                        content,
-                    });
+                    news.push(NewsEntry::new(client.clone(), room, content).await?);
                     count -= 1;
                 }
                 Ok(news)
@@ -131,11 +123,7 @@ impl Space {
                     if count == 0 {
                         break; // we filled what we wanted
                     }
-                    news.push(NewsEntry {
-                        client: client.clone(),
-                        room: room.clone(),
-                        content,
-                    });
+                    news.push(NewsEntry::new(client.clone(), room.clone(), content).await?);
                     count -= 1;
                 }
 
@@ -501,6 +489,14 @@ impl Deref for NewsEntry {
 
 /// Custom functions
 impl NewsEntry {
+    pub async fn new(client: Client, room: Room, content: models::NewsEntry) -> Result<Self> {
+        Ok(NewsEntry {
+            client,
+            room,
+            content,
+        })
+    }
+
     pub fn slides_count(&self) -> u8 {
         self.content.slides().len() as u8
     }
@@ -545,20 +541,18 @@ impl NewsEntry {
                 let AnyActerModel::NewsEntry(content) = client.store().get(&key).await? else {
                     bail!("Refreshing failed. {key} not a news")
                 };
-                Ok(NewsEntry {
-                    client,
-                    room,
-                    content,
-                })
+                NewsEntry::new(client, room, content).await
             })
             .await?
     }
 
     pub async fn reactions(&self) -> Result<crate::ReactionManager> {
-        let client = self.client.clone();
-        let room = self.room.clone();
-        let event_id = self.content.event_id().to_owned();
-        crate::ReactionManager::new(client, room, event_id).await
+        crate::ReactionManager::new(
+            self.client.clone(),
+            self.room.clone(),
+            self.content.event_id().to_owned(),
+        )
+        .await
     }
 
     fn is_joined(&self) -> bool {

@@ -708,19 +708,13 @@ object Rsvp {
 object ReactionManager {
 
     /// get count sent like by me and other people
-    fn likes_count() -> Future<Result<u32>>;
+    fn likes_count() -> u32;
 
-    /// get count sent unlike by me and other people
-    fn unlikes_count() -> Future<Result<u32>>;
-
-    /// whether I sent like (U+2764)
-    fn liked_by_me() -> Future<Result<bool>>;
-
-    /// whether I sent unlike (U+FE0F)
-    fn unliked_by_me() -> Future<Result<bool>>;
+    /// whether I sent like
+    fn liked_by_me() -> bool;
 
     /// whether I reacted using symbol key
-    fn reacted_by_me() -> Future<Result<bool>>;
+    fn reacted_by_me() -> bool;
 
     /// whether manager has reaction entries
     fn has_reaction_entries() -> bool;
@@ -731,23 +725,14 @@ object ReactionManager {
     /// get reaction entries
     fn reaction_entries() -> Future<Result<Vec<Reaction>>>;
 
-    /// send the like (U+2764)
+    /// send a like
     fn send_like() -> Future<Result<EventId>>;
-
-    /// send the unlike (U+FE0F)
-    fn send_unlike() -> Future<Result<EventId>>;
 
     /// send the reaction using symbol key
     fn send_reaction(key: string) -> Future<Result<EventId>>;
 
-    /// redact the like (U+2764)
+    /// remove the like
     fn redact_like(reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
-
-    /// redact the unlike (U+FE0F)
-    fn redact_unlike(reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
-
-    /// redact the reaction using symbol key
-    fn redact_reaction(key: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// get informed about changes to this manager
     fn subscribe_stream() -> Stream<()>;

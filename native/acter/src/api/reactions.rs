@@ -106,7 +106,7 @@ impl ReactionManager {
         let room = self.room.clone();
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
-        let event_id = self.inner.event_id();
+        let event = self.inner.construct_like_event();
 
         RUNTIME
             .spawn(async move {
@@ -115,40 +115,13 @@ impl ReactionManager {
                     .await?
                     .context("Couldn't find me among room members")?;
                 if !member.can_send_message(MessageLikeEventType::Reaction) {
-                    bail!("No permission to send message in this room");
+                    bail!("No permission to send reaction in this room");
                 }
 
                 trace!("before sending like");
-                let relates_to = Annotation::new(event_id, "\\u{2764}".to_string());
-                let response = room.send(ReactionEventContent::new(relates_to)).await?;
+                let response = room.send(event).await?;
 
                 trace!("after sending like");
-                Ok(response.event_id)
-            })
-            .await?
-    }
-
-    pub async fn send_unlike(&self) -> Result<OwnedEventId> {
-        let room = self.room.clone();
-        let client = room.client();
-        let my_id = client.user_id().context("User not found")?.to_owned();
-        let event_id = self.inner.event_id();
-
-        RUNTIME
-            .spawn(async move {
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::Reaction) {
-                    bail!("No permission to send message in this room");
-                }
-
-                trace!("before sending unlike");
-                let relates_to = Annotation::new(event_id, "\\u{FE0F}".to_owned());
-                let response = room.send(ReactionEventContent::new(relates_to)).await?;
-
-                trace!("after sending unlike");
                 Ok(response.event_id)
             })
             .await?
@@ -158,7 +131,7 @@ impl ReactionManager {
         let room = self.room.clone();
         let client = room.client();
         let my_id = client.user_id().context("User not found")?.to_owned();
-        let event_id = self.inner.event_id();
+        let event = self.inner.construct_reaction_event(key);
 
         RUNTIME
             .spawn(async move {
@@ -171,8 +144,7 @@ impl ReactionManager {
                 }
 
                 trace!("before sending reaction");
-                let relates_to = Annotation::new(event_id, key);
-                let response = room.send(ReactionEventContent::new(relates_to)).await?;
+                let response = room.send(event).await?;
 
                 trace!("after sending reaction");
                 Ok(response.event_id)
@@ -186,86 +158,18 @@ impl ReactionManager {
         txn_id: Option<String>,
     ) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let my_id = self.client.user_id().context("User not found")?;
-        let manager = self.inner.clone();
+        let stats = self.inner.stats();
+        let Some(event_id) = stats.user_likes.last().cloned() else {
+            bail!("User hasn't liked");
+        };
+
         let txn_id = txn_id.map(OwnedTransactionId::from);
 
         RUNTIME
             .spawn(async move {
-                let Some(event_id) = manager.liked_event_id(&my_id).await? else {
-                    bail!("Not found event id to be redacted")
-                };
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::Reaction) {
-                    bail!("No permission to send message in this room");
-                }
                 trace!("before redacting like");
                 let response = room.redact(&event_id, reason.as_deref(), txn_id).await?;
                 trace!("after redacting like");
-                Ok(response.event_id)
-            })
-            .await?
-    }
-
-    pub async fn redact_unlike(
-        &self,
-        reason: Option<String>,
-        txn_id: Option<String>,
-    ) -> Result<OwnedEventId> {
-        let room = self.room.clone();
-        let my_id = self.client.user_id().context("User not found")?;
-        let manager = self.inner.clone();
-        let txn_id = txn_id.map(OwnedTransactionId::from);
-
-        RUNTIME
-            .spawn(async move {
-                let Some(event_id) = manager.unliked_event_id(&my_id).await? else {
-                    bail!("Not found event id to be redacted")
-                };
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::Reaction) {
-                    bail!("No permission to send message in this room");
-                }
-                trace!("before redacting unlike");
-                let response = room.redact(&event_id, reason.as_deref(), txn_id).await?;
-                trace!("after redacting unlike");
-                Ok(response.event_id)
-            })
-            .await?
-    }
-
-    pub async fn redact_reaction(
-        &self,
-        key: String,
-        reason: Option<String>,
-        txn_id: Option<String>,
-    ) -> Result<OwnedEventId> {
-        let room = self.room.clone();
-        let my_id = self.client.user_id().context("User not found")?;
-        let manager = self.inner.clone();
-        let txn_id = txn_id.map(OwnedTransactionId::from);
-
-        RUNTIME
-            .spawn(async move {
-                let Some(event_id) = manager.reacted_event_id(&my_id).await? else {
-                    bail!("Not found event id to be redacted")
-                };
-                let member = room
-                    .get_member(&my_id)
-                    .await?
-                    .context("Couldn't find me among room members")?;
-                if !member.can_send_message(MessageLikeEventType::Reaction) {
-                    bail!("No permission to send message in this room");
-                }
-                trace!("before redacting reaction");
-                let response = room.redact(&event_id, reason.as_deref(), txn_id).await?;
-                trace!("after redacting reaction");
                 Ok(response.event_id)
             })
             .await?
@@ -275,65 +179,24 @@ impl ReactionManager {
         self.inner.stats().clone()
     }
 
-    pub async fn likes_count(&self) -> Result<u32> {
-        let manager = self.inner.clone();
-        RUNTIME
-            .spawn(async move {
-                let count = manager.likes_count().await?;
-                Ok(count)
-            })
-            .await?
+    pub fn likes_count(&self) -> u32 {
+        self.inner.stats().total_like_reactions
     }
 
-    pub async fn unlikes_count(&self) -> Result<u32> {
-        let manager = self.inner.clone();
-        RUNTIME
-            .spawn(async move {
-                let count = manager.unlikes_count().await?;
-                Ok(count)
-            })
-            .await?
+    pub fn liked_by_me(&self) -> bool {
+        self.inner.stats().user_has_liked
     }
 
-    pub async fn liked_by_me(&self) -> Result<bool> {
-        let manager = self.inner.clone();
-        let my_id = self.client.user_id().context("User not found")?;
-        RUNTIME
-            .spawn(async move {
-                let result = manager.liked_by_me(&my_id).await?;
-                Ok(result)
-            })
-            .await?
-    }
-
-    pub async fn unliked_by_me(&self) -> Result<bool> {
-        let manager = self.inner.clone();
-        let my_id = self.client.user_id().context("User not found")?;
-        RUNTIME
-            .spawn(async move {
-                let result = manager.unliked_by_me(&my_id).await?;
-                Ok(result)
-            })
-            .await?
-    }
-
-    pub async fn reacted_by_me(&self) -> Result<bool> {
-        let manager = self.inner.clone();
-        let my_id = self.client.user_id().context("User not found")?;
-        RUNTIME
-            .spawn(async move {
-                let result = manager.reacted_by_me(&my_id).await?;
-                Ok(result)
-            })
-            .await?
+    pub fn reacted_by_me(&self) -> bool {
+        self.inner.stats().user_has_reacted
     }
 
     pub fn has_reaction_entries(&self) -> bool {
-        *self.stats().has_reaction_entries()
+        self.stats().has_reaction_entries
     }
 
     pub fn total_reaction_count(&self) -> u32 {
-        *self.stats().total_reaction_count()
+        self.stats().total_reaction_count
     }
 
     pub async fn reaction_entries(&self) -> Result<Vec<Reaction>> {

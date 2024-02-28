@@ -1,20 +1,47 @@
 use derive_getters::Getters;
 use ruma_common::{EventId, OwnedEventId, OwnedUserId, UserId};
-use ruma_events::{reaction::ReactionEventContent, OriginalMessageLikeEvent};
+use ruma_events::{reaction::ReactionEventContent, relation::Annotation, OriginalMessageLikeEvent};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Deref};
 use tracing::{error, trace};
 
-use super::{ActerModel, AnyActerModel, Capability, EventMeta};
+use super::{ActerModel, AnyActerModel, Capability, EventMeta, RedactedActerModel};
 use crate::{store::Store, Result};
 
+// We understand all unicode [Red Heart](https://emojipedia.org/red-heart#technical) as quick-likes
+static LIKE_HEART: &str = "\u{2764}\u{FE0F}";
 static REACTIONS_FIELD: &str = "reactions";
 static REACTIONS_STATS_FIELD: &str = "reactions_stats";
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Getters)]
 pub struct ReactionStats {
-    has_reaction_entries: bool,
-    total_reaction_count: u32,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub has_reaction_entries: bool,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub has_like_reactions: bool,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    pub total_like_reactions: u32,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub user_has_liked: bool,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub user_likes: Vec<OwnedEventId>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub user_has_reacted: bool,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    pub total_reaction_count: u32,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub user_reactions: Vec<OwnedEventId>,
+}
+/// This is only used for serialize
+#[allow(clippy::trivially_copy_pass_by_ref)]
+fn is_zero(num: &u32) -> bool {
+    *num == 0
+}
+
+/// This is only used for serialize
+#[allow(clippy::trivially_copy_pass_by_ref)]
+fn is_false(val: &bool) -> bool {
+    *val == false
 }
 
 #[derive(Clone, Debug)]
@@ -47,126 +74,31 @@ impl ReactionManager {
         self.event_id.clone()
     }
 
-    pub async fn likes_count(&self) -> Result<u32> {
-        let mut count = 0;
+    pub async fn get_reacted_user_event(
+        &self,
+        user_id: &UserId,
+        filter: fn(&Reaction) -> bool,
+    ) -> Result<Option<Reaction>> {
         for mdl in self
             .store
             .get_list(&Reaction::index_for(&self.event_id))
             .await?
         {
             if let AnyActerModel::Reaction(c) = mdl {
-                if c.relates_to.key.as_str() == "\\u{2764}" {
-                    count += 1;
-                }
-            }
-        }
-        Ok(count)
-    }
-
-    pub async fn liked_by_me(&self, my_id: &UserId) -> Result<bool> {
-        for mdl in self
-            .store
-            .get_list(&Reaction::index_for(&self.event_id))
-            .await?
-        {
-            if let AnyActerModel::Reaction(c) = mdl {
-                if c.meta.sender == my_id && c.relates_to.key.as_str() == "\\u{2764}" {
-                    return Ok(true);
-                }
-            }
-        }
-        Ok(false)
-    }
-
-    pub async fn liked_event_id(&self, my_id: &UserId) -> Result<Option<OwnedEventId>> {
-        for mdl in self
-            .store
-            .get_list(&Reaction::index_for(&self.event_id))
-            .await?
-        {
-            if let AnyActerModel::Reaction(c) = mdl {
-                if c.meta.sender == my_id && c.relates_to.key.as_str() == "\\u{2764}" {
-                    return Ok(Some(c.meta.event_id.clone()));
+                if c.meta.sender == user_id && filter(&c) {
+                    return Ok(Some(c));
                 }
             }
         }
         Ok(None)
     }
 
-    pub async fn unlikes_count(&self) -> Result<u32> {
-        let mut count = 0;
-        for mdl in self
-            .store
-            .get_list(&Reaction::index_for(&self.event_id))
-            .await?
-        {
-            if let AnyActerModel::Reaction(c) = mdl {
-                if c.relates_to.key.as_str() == "\\u{FE0F}" {
-                    count += 1;
-                }
-            }
-        }
-        Ok(count)
+    pub fn construct_like_event(&self) -> ReactionEventContent {
+        self.construct_reaction_event(LIKE_HEART.to_string())
     }
 
-    pub async fn unliked_by_me(&self, my_id: &UserId) -> Result<bool> {
-        for mdl in self
-            .store
-            .get_list(&Reaction::index_for(&self.event_id))
-            .await?
-        {
-            if let AnyActerModel::Reaction(c) = mdl {
-                if c.meta.sender == my_id && c.relates_to.key.as_str() == "\\u{FE0F}" {
-                    return Ok(true);
-                }
-            }
-        }
-        Ok(false)
-    }
-
-    pub async fn unliked_event_id(&self, my_id: &UserId) -> Result<Option<OwnedEventId>> {
-        for mdl in self
-            .store
-            .get_list(&Reaction::index_for(&self.event_id))
-            .await?
-        {
-            if let AnyActerModel::Reaction(c) = mdl {
-                if c.meta.sender == my_id && c.relates_to.key.as_str() == "\\u{FE0F}" {
-                    return Ok(Some(c.meta.event_id.clone()));
-                }
-            }
-        }
-        Ok(None)
-    }
-
-    pub async fn reacted_by_me(&self, my_id: &UserId) -> Result<bool> {
-        for mdl in self
-            .store
-            .get_list(&Reaction::index_for(&self.event_id))
-            .await?
-        {
-            if let AnyActerModel::Reaction(c) = mdl {
-                if c.meta.sender == my_id {
-                    return Ok(true);
-                }
-            }
-        }
-        Ok(false)
-    }
-
-    pub async fn reacted_event_id(&self, my_id: &UserId) -> Result<Option<OwnedEventId>> {
-        for mdl in self
-            .store
-            .get_list(&Reaction::index_for(&self.event_id))
-            .await?
-        {
-            if let AnyActerModel::Reaction(c) = mdl {
-                if c.meta.sender == my_id {
-                    return Ok(Some(c.meta.event_id.clone()));
-                }
-            }
-        }
-        Ok(None)
+    pub fn construct_reaction_event(&self, key: String) -> ReactionEventContent {
+        ReactionEventContent::new(Annotation::new(self.event_id.clone(), key))
     }
 
     pub async fn reaction_entries(&self) -> Result<HashMap<OwnedUserId, Reaction>> {
@@ -184,14 +116,67 @@ impl ReactionManager {
         Ok(entries)
     }
 
-    pub(crate) fn add_reaction_entry(&mut self, _entry: &Reaction) -> Result<bool> {
+    pub(crate) fn add_reaction_entry(&mut self, entry: &Reaction) -> Result<bool> {
         self.stats.has_reaction_entries = true;
         self.stats.total_reaction_count += 1;
+        let is_my_reaction = self.store.user_id() == entry.meta.sender;
+
+        if is_my_reaction {
+            self.stats.user_has_reacted = true;
+            self.stats.user_reactions.push(entry.meta.event_id.clone());
+        }
+
+        if entry.inner.relates_to.key == LIKE_HEART {
+            self.stats.has_like_reactions = true;
+            self.stats.total_like_reactions += 1;
+
+            if is_my_reaction {
+                self.stats.user_has_liked = true;
+                self.stats.user_likes.push(entry.meta.event_id.clone());
+            }
+        }
         Ok(true)
     }
 
-    pub fn stats(&self) -> &ReactionStats {
-        &self.stats
+    pub(crate) fn redact_reaction_entry(
+        &mut self,
+        entry: &Reaction,
+        _redaction: &RedactedActerModel,
+    ) -> Result<bool> {
+        let was_my_reaction = self.store.user_id() == entry.meta.sender;
+
+        self.stats.total_reaction_count = self
+            .stats
+            .total_reaction_count
+            .checked_sub(1)
+            .unwrap_or_default();
+        self.stats.has_reaction_entries = self.stats.total_reaction_count > 0;
+        if was_my_reaction {
+            self.stats
+                .user_reactions
+                .retain(|e| e != &entry.meta.event_id); // only keep the others
+            self.stats.has_like_reactions = self.stats.user_reactions.len() > 0
+        }
+
+        if entry.inner.relates_to.key == LIKE_HEART {
+            self.stats.has_like_reactions = true;
+            self.stats.total_like_reactions = self
+                .stats
+                .total_like_reactions
+                .checked_sub(1)
+                .unwrap_or_default();
+            self.stats.has_like_reactions = self.stats.total_like_reactions > 0;
+
+            if was_my_reaction {
+                self.stats.user_likes.retain(|e| e != &entry.meta.event_id); // only keep the others
+                self.stats.has_like_reactions = self.stats.user_likes.len() > 0
+            }
+        }
+        Ok(true)
+    }
+
+    pub fn stats(&self) -> ReactionStats {
+        self.stats.clone()
     }
 
     fn update_key(&self) -> String {
@@ -230,6 +215,46 @@ impl Reaction {
         let r = parent.as_ref();
         format!("{r}::{REACTIONS_FIELD}")
     }
+
+    async fn apply(
+        &self,
+        store: &Store,
+        redaction_model: Option<RedactedActerModel>,
+    ) -> Result<Vec<String>> {
+        let belongs_to = self.belongs_to().unwrap();
+        trace!(event_id=?self.event_id(), ?belongs_to, "applying reaction");
+
+        let mut managers = vec![];
+        for m in belongs_to {
+            let model = store.get(&m).await?;
+            if !model.capabilities().contains(&Capability::Reactable) {
+                error!(?model, reaction = ?self, "doesn't support entries. can't apply");
+                continue;
+            }
+
+            // FIXME: what if we have this twice in the same loop?
+            let mut manager =
+                ReactionManager::from_store_and_event_id(store, model.event_id()).await;
+            trace!(event_id=?self.event_id(), "adding reaction entry");
+            if let Some(redacted) = redaction_model.as_ref() {
+                if manager.redact_reaction_entry(&self, &redacted)? {
+                    trace!(event_id=?self.event_id(), "added reaction entry");
+                    managers.push(manager);
+                }
+            } else {
+                if manager.add_reaction_entry(&self)? {
+                    trace!(event_id=?self.event_id(), "added reaction entry");
+                    managers.push(manager);
+                }
+            }
+        }
+        let mut updates = store.save(self.clone().into()).await?;
+        trace!(event_id=?self.event_id(), "saved reaction entry");
+        for manager in managers {
+            updates.push(manager.save().await?);
+        }
+        Ok(updates)
+    }
 }
 
 impl ActerModel for Reaction {
@@ -246,36 +271,20 @@ impl ActerModel for Reaction {
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {
-        let belongs_to = self.belongs_to().unwrap();
-        trace!(event_id=?self.event_id(), ?belongs_to, "applying reaction");
-
-        let mut managers = vec![];
-        for m in belongs_to {
-            let model = store.get(&m).await?;
-            if !model.capabilities().contains(&Capability::Reactable) {
-                error!(?model, reaction = ?self, "doesn't support entries. can't apply");
-                continue;
-            }
-
-            // FIXME: what if we have this twice in the same loop?
-            let mut manager =
-                ReactionManager::from_store_and_event_id(store, model.event_id()).await;
-            trace!(event_id=?self.event_id(), "adding reaction entry");
-            if manager.add_reaction_entry(&self)? {
-                trace!(event_id=?self.event_id(), "added reaction entry");
-                managers.push(manager);
-            }
-        }
-        let mut updates = store.save(self.clone().into()).await?;
-        trace!(event_id=?self.event_id(), "saved reaction entry");
-        for manager in managers {
-            updates.push(manager.save().await?);
-        }
-        Ok(updates)
+        self.apply(store, None).await
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
         Some(vec![self.inner.relates_to.event_id.to_string()])
+    }
+
+    // custom redaction code
+    async fn redact(
+        &self,
+        store: &Store,
+        redaction_model: RedactedActerModel,
+    ) -> crate::Result<Vec<String>> {
+        self.apply(store, Some(redaction_model)).await
     }
 }
 
