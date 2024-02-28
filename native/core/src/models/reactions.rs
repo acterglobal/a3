@@ -3,7 +3,7 @@ use ruma_common::{EventId, OwnedEventId, OwnedUserId, UserId};
 use ruma_events::{reaction::ReactionEventContent, relation::Annotation, OriginalMessageLikeEvent};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Deref};
-use tracing::{error, trace};
+use tracing::{error, info, trace};
 
 use super::{ActerModel, AnyActerModel, Capability, EventMeta, RedactedActerModel};
 use crate::{store::Store, Result};
@@ -41,7 +41,7 @@ fn is_zero(num: &u32) -> bool {
 /// This is only used for serialize
 #[allow(clippy::trivially_copy_pass_by_ref)]
 fn is_false(val: &bool) -> bool {
-    *val == false
+    !(*val)
 }
 
 #[derive(Clone, Debug)]
@@ -59,10 +59,18 @@ impl ReactionManager {
 
     pub async fn from_store_and_event_id(store: &Store, event_id: &EventId) -> ReactionManager {
         let store = store.clone();
-        let stats = store
-            .get_raw(&Self::stats_field_for(&event_id))
-            .await
-            .unwrap_or_default();
+        let stats = match store.get_raw(&Self::stats_field_for(&event_id)).await {
+            Ok(e) => e,
+            Err(error) => {
+                info!(
+                    ?error,
+                    ?event_id,
+                    "failed to read reaction stats. starting with default"
+                );
+                Default::default()
+            }
+        };
+
         ReactionManager {
             store,
             stats,
@@ -155,7 +163,7 @@ impl ReactionManager {
             self.stats
                 .user_reactions
                 .retain(|e| e != &entry.meta.event_id); // only keep the others
-            self.stats.user_has_reacted = self.stats.user_reactions.len() > 0
+            self.stats.user_has_reacted = !self.stats.user_reactions.is_empty()
         }
 
         if entry.inner.relates_to.key == LIKE_HEART {
@@ -169,7 +177,7 @@ impl ReactionManager {
 
             if was_my_reaction {
                 self.stats.user_likes.retain(|e| e != &entry.meta.event_id); // only keep the others
-                self.stats.user_has_liked = self.stats.user_likes.len() > 0
+                self.stats.user_has_liked = !self.stats.user_likes.is_empty()
             }
         }
         Ok(true)
@@ -238,15 +246,13 @@ impl Reaction {
                 ReactionManager::from_store_and_event_id(store, model.event_id()).await;
             trace!(event_id=?self.event_id(), "adding reaction entry");
             if let Some(redacted) = redaction_model.as_ref() {
-                if manager.redact_reaction_entry(&self, &redacted)? {
-                    trace!(event_id=?self.event_id(), "added reaction entry");
+                if manager.redact_reaction_entry(self, redacted)? {
+                    trace!(event_id=?self.event_id(), "redacted reaction entry");
                     managers.push(manager);
                 }
-            } else {
-                if manager.add_reaction_entry(&self)? {
-                    trace!(event_id=?self.event_id(), "added reaction entry");
-                    managers.push(manager);
-                }
+            } else if manager.add_reaction_entry(self)? {
+                trace!(event_id=?self.event_id(), "added reaction entry");
+                managers.push(manager);
             }
         }
         let mut updates = store.save(self.clone().into()).await?;
