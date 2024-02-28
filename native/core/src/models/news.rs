@@ -3,10 +3,11 @@ use ruma_events::OriginalMessageLikeEvent;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
-use super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store};
+use super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta};
 use crate::{
     events::news::{NewsEntryEventContent, NewsEntryUpdateBuilder, NewsEntryUpdateEventContent},
     statics::KEYS,
+    store::Store,
     Result,
 };
 
@@ -58,7 +59,7 @@ impl ActerModel for NewsEntry {
     }
 
     fn capabilities(&self) -> &[Capability] {
-        &[Capability::Commentable]
+        &[Capability::Commentable, Capability::Reactable]
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {

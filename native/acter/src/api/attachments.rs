@@ -187,11 +187,7 @@ impl AttachmentDraft {
             bail!("Can only attachment in joined rooms");
         }
         let room = self.room.clone();
-        let my_id = room
-            .client()
-            .user_id()
-            .context("You must be logged in to do that")?
-            .to_owned();
+        let my_id = self.client.user_id().context("User not found")?;
         let inner = self.inner.build()?;
         RUNTIME
             .spawn(async move {
@@ -210,16 +206,23 @@ impl AttachmentDraft {
 }
 
 impl AttachmentsManager {
-    pub(crate) fn new(
+    pub(crate) async fn new(
         client: Client,
         room: Room,
-        inner: models::AttachmentsManager,
-    ) -> AttachmentsManager {
-        AttachmentsManager {
-            client,
-            room,
-            inner,
-        }
+        event_id: OwnedEventId,
+    ) -> Result<AttachmentsManager> {
+        RUNTIME
+            .spawn(async move {
+                let inner =
+                    models::AttachmentsManager::from_store_and_event_id(client.store(), &event_id)
+                        .await;
+                Ok(AttachmentsManager {
+                    client,
+                    room,
+                    inner,
+                })
+            })
+            .await?
     }
 
     pub fn stats(&self) -> models::AttachmentsStats {

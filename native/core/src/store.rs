@@ -12,7 +12,6 @@ use crate::{
 #[derive(Clone, Debug)]
 pub struct Store {
     pub(crate) client: Client,
-    fresh: bool,
     user_id: OwnedUserId,
     models: Arc<DashMap<String, AnyActerModel>>,
     indizes: Arc<DashMap<String, Vec<String>>>,
@@ -34,9 +33,6 @@ async fn get_from_store<T: serde::de::DeserializeOwned>(client: Client, key: &st
 
 impl Store {
     pub async fn get_raw<T: serde::de::DeserializeOwned>(&self, key: &str) -> Result<T> {
-        if self.fresh {
-            return Err(Error::ModelNotFound(key.to_owned()));
-        }
         get_from_store(self.client.clone(), key).await
     }
 
@@ -92,7 +88,6 @@ impl Store {
                 .map_err(|e| Error::Custom(format!("setting db version failed: {e}")))?;
 
             return Ok(Store {
-                fresh: true,
                 client,
                 user_id,
                 indizes: Default::default(),
@@ -152,7 +147,6 @@ impl Store {
         let models = DashMap::from_iter(models_sources);
 
         Ok(Store {
-            fresh: false,
             client,
             user_id,
             indizes: Arc::new(indizes),
@@ -192,7 +186,7 @@ impl Store {
     }
 
     #[instrument(skip(self))]
-    pub async fn save_model_inner(&self, mdl: AnyActerModel) -> Result<Vec<String>> {
+    async fn save_model_inner(&self, mdl: AnyActerModel) -> Result<Vec<String>> {
         let key = mdl.event_id().to_string();
         let user_id = self.user_id();
         let mut keys_changed = vec![key.clone()];
@@ -246,7 +240,7 @@ impl Store {
         Ok(keys)
     }
 
-    pub async fn sync(&self) -> Result<()> {
+    async fn sync(&self) -> Result<()> {
         trace!("sync");
         let client_store = self.client.store();
         let dirty = {

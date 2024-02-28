@@ -50,6 +50,9 @@ pub enum Error {
         reason: UnsignedRoomRedactionEvent,
     },
 
+    #[error("{0:?} field is missing")]
+    MissingField(String),
+
     #[error("{0}")]
     Custom(String),
 }

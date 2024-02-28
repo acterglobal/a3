@@ -34,6 +34,7 @@ mod notifications;
 mod pins;
 mod profile;
 mod push;
+mod reactions;
 mod receipt;
 mod room;
 mod rsvp;
@@ -95,6 +96,7 @@ pub use profile::{RoomProfile, UserProfile};
 pub use push::{
     NotificationItem, NotificationRoom, NotificationSender, NotificationSettings, Pusher,
 };
+pub use reactions::{Reaction, ReactionManager};
 pub use receipt::{ReceiptEvent, ReceiptRecord, ReceiptThread};
 pub use room::{
     new_join_rule_builder, JoinRuleBuilder, Member, MemberPermission, MembershipStatus, Room,
@@ -111,7 +113,7 @@ pub use spaces::{
     new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
     RelationTargetType, Space, SpaceDiff,
 };
-pub use stream::{MsgContentDraft, TimelineDiff, TimelineStream};
+pub use stream::{MsgContentDraft, RoomMessageDiff, TimelineStream};
 pub use super_invites::{SuperInviteToken, SuperInvites, SuperInvitesTokenUpdateBuilder};
 pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,

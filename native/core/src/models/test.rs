@@ -4,8 +4,8 @@ use ruma_common::{
 };
 use serde::{Deserialize, Serialize};
 
-use super::EventMeta;
-use crate::{models::ActerModel, Result};
+use super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta};
+use crate::{store::Store, Result};
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, Builder)]
 pub struct TestModel {
@@ -41,8 +41,8 @@ impl ActerModel for TestModel {
         &self.event_id
     }
 
-    fn capabilities(&self) -> &[super::Capability] {
-        &[super::Capability::Commentable]
+    fn capabilities(&self) -> &[Capability] {
+        &[Capability::Commentable, Capability::Reactable]
     }
 
     fn indizes(&self, _user_id: &UserId) -> Vec<String> {
@@ -53,11 +53,11 @@ impl ActerModel for TestModel {
         Some(self.belongs_to.clone())
     }
 
-    fn transition(&mut self, _model: &super::AnyActerModel) -> Result<bool> {
+    fn transition(&mut self, _model: &AnyActerModel) -> Result<bool> {
         Ok(true)
     }
 
-    async fn execute(self, store: &super::Store) -> Result<Vec<String>> {
-        super::default_model_execute(store, self.into()).await
+    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+        default_model_execute(store, self.into()).await
     }
 }
