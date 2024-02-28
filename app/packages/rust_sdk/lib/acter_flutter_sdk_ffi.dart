@@ -34271,7 +34271,7 @@ class ReactionManager {
 
   ReactionManager._(this._api, this._box);
 
-  /// get my reaction status
+  /// get count sent like by me and other people
   Future<int> likesCount() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -34288,7 +34288,7 @@ class ReactionManager {
     return tmp2;
   }
 
-  /// get my reaction status
+  /// get count sent unlike by me and other people
   Future<int> unlikesCount() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -34305,7 +34305,7 @@ class ReactionManager {
     return tmp2;
   }
 
-  /// get my reaction status
+  /// whether I sent like (U+2764)
   Future<bool> likedByMe() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -34322,7 +34322,7 @@ class ReactionManager {
     return tmp2;
   }
 
-  /// get my reaction status
+  /// whether I sent unlike (U+FE0F)
   Future<bool> unlikedByMe() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -34339,7 +34339,7 @@ class ReactionManager {
     return tmp2;
   }
 
-  /// get my reaction status
+  /// whether I reacted using symbol key
   Future<bool> reactedByMe() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -34397,7 +34397,7 @@ class ReactionManager {
     return tmp2;
   }
 
-  /// send the reaction
+  /// send the like (U+2764)
   Future<EventId> sendLike() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -34414,7 +34414,7 @@ class ReactionManager {
     return tmp2;
   }
 
-  /// send the reaction
+  /// send the unlike (U+FE0F)
   Future<EventId> sendUnlike() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -34431,7 +34431,7 @@ class ReactionManager {
     return tmp2;
   }
 
-  /// send the reaction
+  /// send the reaction using symbol key
   Future<EventId> sendReaction(
     String key,
   ) {
@@ -34465,7 +34465,7 @@ class ReactionManager {
     return tmp6;
   }
 
-  /// redact the reaction
+  /// redact the like (U+2764)
   Future<EventId> redactLike(
     String? reason,
     String? txnId,
@@ -34531,7 +34531,7 @@ class ReactionManager {
     return tmp14;
   }
 
-  /// redact the reaction
+  /// redact the unlike (U+FE0F)
   Future<EventId> redactUnlike(
     String? reason,
     String? txnId,
@@ -34597,7 +34597,7 @@ class ReactionManager {
     return tmp14;
   }
 
-  /// redact the reaction
+  /// redact the reaction using symbol key
   Future<EventId> redactReaction(
     String key,
     String? reason,
