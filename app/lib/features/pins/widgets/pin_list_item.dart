@@ -2,6 +2,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -33,7 +34,7 @@ class PinListItemById extends ConsumerWidget {
   }
 }
 
-class PinListItem extends ConsumerStatefulWidget {
+class PinListItem extends StatefulWidget {
   final ActerPin pin;
   final bool showSpace;
   const PinListItem({
@@ -43,16 +44,31 @@ class PinListItem extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _PinListItemState();
+  State<PinListItem> createState() => _PinListItemState();
 }
 
-class _PinListItemState extends ConsumerState<PinListItem> {
+class _PinListItemState extends State<PinListItem> {
+  String pinContent = '';
+
   @override
   void initState() {
     super.initState();
+    _buildPinContent();
   }
 
-  Future<void> openItem() async {
+  void _buildPinContent() async {
+    MsgContent? msgContent = widget.pin.content();
+    if (msgContent != null) {
+      final formattedBody = msgContent.formattedBody();
+      if (formattedBody != null) {
+        pinContent = formattedBody;
+      } else {
+        pinContent = msgContent.body();
+      }
+    }
+  }
+
+  Future<void> openItem(BuildContext context) async {
     final String pinId = widget.pin.eventIdStr();
     await context.pushNamed(
       Routes.pin.name,
@@ -61,48 +77,63 @@ class _PinListItemState extends ConsumerState<PinListItem> {
   }
 
   // handler for gesture interaction on pin
-  Future<void> onTap() async {
+  Future<void> onTap(BuildContext context) async {
     final bool isLink = widget.pin.isLink();
     if (isLink) {
       final target = widget.pin.url()!;
       await openLink(target, context);
     } else {
-      await openItem();
+      await openItem(context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final pin = widget.pin;
-    final isLink = pin.isLink();
-    final spaceId = pin.roomIdStr();
+    final isLink = widget.pin.isLink();
+    final spaceId = widget.pin.roomIdStr();
 
-    return InkWell(
-      onTap: onTap,
-      onLongPress: openItem,
-      child: Card(
-        child: ListTile(
-          key: Key(pin.eventIdStr()),
-          leading: Icon(isLink ? Atlas.link_chain_thin : Atlas.document_thin),
-          title: Text(
-            pin.title(),
-            softWrap: false,
-            overflow: TextOverflow.ellipsis,
-          ),
-          titleTextStyle: Theme.of(context).textTheme.titleSmall,
-          subtitle: widget.showSpace
-              ? Wrap(
-                  alignment: WrapAlignment.start,
-                  children: [SpaceChip(spaceId: spaceId)],
-                )
-              : null,
-          onTap: onTap,
-          trailing: IconButton(
-            icon: isLink
-                ? const Icon(Icons.open_in_full_sharp)
-                : const Icon(Icons.chevron_right_sharp),
-            onPressed: openItem,
-          ),
+    return Card(
+      child: ListTile(
+        key: Key(widget.pin.eventIdStr()),
+        onTap: () => onTap(context),
+        onLongPress: () => openItem(context),
+        title: Row(
+          children: <Widget>[
+            Icon(
+              isLink ? Atlas.link_chain_thin : Atlas.document_thin,
+              size: 18,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                widget.pin.title(),
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        titleTextStyle: Theme.of(context).textTheme.titleSmall,
+        subtitle: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(height: 10),
+            if (widget.showSpace) Flexible(child: SpaceChip(spaceId: spaceId)),
+            const SizedBox(height: 10),
+            if (pinContent.isNotEmpty)
+              Flexible(
+                child: Html(
+                  padding: const EdgeInsets.all(0),
+                  data: pinContent,
+                  maxLines: 2,
+                  defaultTextStyle: Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .copyWith(overflow: TextOverflow.ellipsis),
+                ),
+              ),
+          ],
         ),
       ),
     );
