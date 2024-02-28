@@ -69,9 +69,9 @@ class _DueChipState extends State<DueChip> {
     TextStyle? dueTheme;
 
     if (dueDate!.isToday) {
-      label = 'due today';
+      label = 'Due today';
     } else if (dueDate!.isTomorrow) {
-      label = 'due tomorrow';
+      label = 'Due tomorrow';
     } else if (dueDate!.isPast) {
       label = dueDate!.timeago();
       dueTheme = textStyle.copyWith(
@@ -84,7 +84,7 @@ class _DueChipState extends State<DueChip> {
       label: Text(
         // FIXME: tooltip to show the full date?
         label ??
-            'due: ${DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(dueDate!)}',
+            'Due: ${DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(dueDate!)}',
         style: widget.task.isDone() ? null : dueTheme,
       ),
     );

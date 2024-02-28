@@ -17,8 +17,11 @@ fn set_proxy(proxy: Option<string>);
 /// Rotate the logging file
 fn rotate_log_file() -> Result<string>;
 
-/// Allow flutter to call logging on rust side
-fn write_log(text: string, level: string) -> Result<()>;
+// would this get logged?
+fn would_log(target: string, level: string) -> bool;
+
+/// Log the entry to the rust logging
+fn write_log(target: string, level: string, message: string, file: Option<string>, line: Option<u32>, module_path: Option<string>);
 
 /// Create a new client for homeserver at url with storage at data_path
 fn login_new_client(base_path: string, media_cache_base_path: string, username: string, password: string, default_homeserver_name: string, default_homeserver_url: string, device_name: Option<string>) -> Future<Result<Client>>;
@@ -42,6 +45,32 @@ fn parse_markdown(text: string) -> Option<string>;
 /// create size object to be used for thumbnail download
 fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize>;
 
+/// create a colorize builder
+fn new_colorize_builder(color: Option<u32>, background: Option<u32>) -> Result<ColorizeBuilder>;
+
+/// create a task ref builder
+/// target_id: event id of target
+/// task_list: event id of task list
+/// action: link/embed/embed-subscribe/embed-accept-assignment/embed-mark-done
+fn new_task_ref_builder(target_id: string, room_id: Option<string>, task_list: string, action: Option<string>) -> Result<RefDetailsBuilder>;
+
+/// create a task list ref builder
+/// target_id: event id of target
+/// action: link/embed/embed-subscribe
+fn new_task_list_ref_builder(target_id: string, room_id: Option<string>, action: Option<string>) -> Result<RefDetailsBuilder>;
+
+/// create a calendar event ref builder
+/// target_id: event id of target
+/// action: link/embed/embed-rsvp
+fn new_calendar_event_ref_builder(target_id: string, room_id: Option<string>, action: Option<string>) -> Result<RefDetailsBuilder>;
+
+/// create a link ref builder
+fn new_link_ref_builder(title: string, uri: string) -> Result<RefDetailsBuilder>;
+
+/// create object reference
+/// position: top-left/top-middle/top-right/center-left/center-middle/center-right/bottom-left/bottom-middle/bottom-right
+fn new_obj_ref_builder(position: Option<string>, reference: RefDetails) -> Result<ObjRefBuilder>;
+
 
 //  ########  ########  #### ##     ## #### ######## #### ##     ## ########  ######  
 //  ##     ## ##     ##  ##  ###   ###  ##     ##     ##  ##     ## ##       ##    ## 
@@ -54,12 +83,6 @@ fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize>;
 
 /// Representing a time frame
 object EfkDuration {}
-
-/// Representing a color
-object EfkColor {
-    /// as rgba in u8
-    fn rgba_u8() -> (u8, u8, u8, u8);
-}
 
 object UtcDateTime {
     fn timestamp() -> i64;
@@ -90,26 +113,73 @@ object ObjRef {
     /// where to position the element (if given)
     fn position_str() -> Option<string>;
     /// further details of the reference
-    fn reference() -> RefDetails;
+    fn ref_details() -> RefDetails;
+}
+
+/// A builder for ObjRef
+object ObjRefBuilder {
+    /// set position of element
+    /// position: top-left/top-middle/top-right/center-left/center-middle/center-right/bottom-left/bottom-middle/bottom-right
+    fn position(position: string);
+    /// empty position of element
+    fn unset_position();
+
+    /// change ref details
+    fn reference(reference: RefDetails);
+
+    fn build() -> ObjRef;
 }
 
 /// A foreground and background color setting
 object Colorize {
     /// Foreground or text color
-    fn color() -> Option<EfkColor>;
+    fn color() -> Option<u32>;
     /// Background color
-    fn background() -> Option<EfkColor>;
+    fn background() -> Option<u32>;
 }
 
-object Tag {
-    /// the title of the tag
-    fn title() -> string;
-    /// dash-cased-ascii-version for usage in hashtags (no `#` at the front)
-    fn hash_tag() -> string;
-    /// if given, the specific color for this tag
-    fn color() -> Option<EfkColor>;
+/// A builder for Colorize. Allowing you to set (foreground) color and background
+object ColorizeBuilder {
+    /// RGBA color representation as int for the foreground color
+    fn color(color: u32);
+    /// unset the color
+    fn unset_color();
+
+    /// RGBA color representation as int for the background color
+    fn background(color: u32);
+    /// unset the background color
+    fn unset_background();
 }
 
+/// A builder for RefDetails
+object RefDetailsBuilder {
+    /// it is valid for Task/TaskList/CalendarEvent ref
+    /// target_id: event id of target
+    fn target_id(target_id: string);
+
+    /// it is valid for Task/TaskList/CalendarEvent ref
+    fn room_id(room_id: string);
+    /// unset the room id, it is optional field
+    fn unset_room_id();
+
+    /// it is valid for Task/TaskList/CalendarEvent ref
+    /// task_list: event id of task list
+    fn task_list(task_list: string);
+
+    /// it is valid for Task/TaskList/CalendarEvent ref
+    /// action is one of TaskAction/TaskListAction/CalendarEventAction
+    fn action(action: string);
+    /// unset the action, it is optional field
+    fn unset_action();
+
+    /// it is valid for Link ref
+    fn title(title: string);
+
+    /// it is valid for Link ref
+    fn uri(uri: string);
+
+    fn build() -> RefDetails;
+}
 
 // enum LocationType {
 //    Physical,
@@ -123,9 +193,7 @@ object Tag {
 //    fn description() -> Option<TextMessageContent>;
 //    fn coordinates() -> Option<string>;
 //    fn uri() -> Option<string>;
-//}
-
-
+// }
 
 
 
@@ -145,8 +213,16 @@ object OptionString {
 }
 
 object OptionBuffer {
-    /// get text
+    /// get data
     fn data() -> Option<buffer<u8>>;
+}
+
+object OptionRsvpStatus {
+    /// get status
+    fn status() -> Option<RsvpStatus>;
+
+    /// get status in string
+    fn status_str() -> Option<string>;
 }
 
 object UserProfile {
@@ -286,12 +362,14 @@ object NewsSlide {
     /// the content of this slide
     fn type_str() -> string;
 
-    /// whether this text-slide has a formatted html body
-    fn has_formatted_text() -> bool;
-    /// the textual content of this slide
-    fn text() -> string;
+    /// the unique, predictable ID for this slide
+    fn unique_id() -> string;
+
     /// the references linked in this slide
     fn references() -> Vec<ObjRef>;
+
+    /// The color setting
+    fn colors() -> Option<Colorize>;
 
     /// if this is a media, hand over the description
     fn msg_content() -> MsgContent;
@@ -305,6 +383,9 @@ object NewsSlideDraft {
     /// add reference for this slide draft
     fn add_reference(reference: ObjRef);
 
+    /// set the color according to the colorize builder
+    fn color(color: ColorizeBuilder);
+
     /// unset references for this slide draft
     fn unset_references();
 }
@@ -316,8 +397,6 @@ object NewsEntry {
     fn get_slide(pos: u8) -> Option<NewsSlide>;
     /// get all slides of this news item
     fn slides() -> Vec<NewsSlide>;
-    /// The color setting
-    fn colors() -> Option<Colorize>;
 
     /// how many comments on this news entry
     fn comments_count() -> u32;
@@ -336,20 +415,16 @@ object NewsEntry {
 
 object NewsEntryDraft {
     /// create news slide draft
-    fn add_slide(base_draft: MsgContentDraft) -> Future<Result<bool>>;
+    fn add_slide(base_draft: NewsSlideDraft) -> Future<Result<bool>>;
 
     /// change position of slides draft of this news entry
     fn swap_slides(from: u8, to:u8);
 
-    /// get news slide set for this news entry draft
+    /// get a copy of the news slide set for this news entry draft
     fn slides() -> Vec<NewsSlideDraft>;
 
     /// clear slides
     fn unset_slides();
-
-    /// set the color for this news entry
-    fn colors(colors: Colorize);
-    fn unset_colors();
 
     /// create this news entry
     fn send() -> Future<Result<EventId>>;
@@ -357,7 +432,7 @@ object NewsEntryDraft {
 
 object NewsEntryUpdateBuilder {
     /// set the slides for this news entry
-    fn add_slide(base_draft: MsgContentDraft);
+    fn add_slide(draft: NewsSlideDraft) -> Future<Result<bool>>;
 
     /// reset slides for this news entry
     fn unset_slides();
@@ -365,11 +440,6 @@ object NewsEntryUpdateBuilder {
 
     /// set position of slides for this news entry
     fn swap_slides(from: u8, to: u8);
-
-    /// set the color for this news entry
-    fn colors(colors: Colorize);
-    fn unset_colors();
-    fn unset_colors_update();
 
     /// update this news entry
     fn send() -> Future<Result<EventId>>;
@@ -395,6 +465,8 @@ object PinDraft {
     fn content_text(text: string);
     /// set the content of the pin through markdown
     fn content_markdown(text: string);
+    /// set the content of the pin through html
+    fn content_html(text: string, html: string);
     fn unset_content();
 
     /// set the url for this pin
@@ -410,7 +482,7 @@ object ActerPin {
     /// get the title of the pin
     fn title() -> string;
     /// get the content_text of the pin
-    fn content_text() -> Option<string>;
+    fn content() -> Option<MsgContent>;
     /// get the formatted content of the pin
     fn content_formatted() -> Option<string>;
     /// Whether the inner text is coming as formatted
@@ -420,7 +492,7 @@ object ActerPin {
     /// get the link content
     fn url() -> Option<string>;
     /// get the link color settings
-    fn color() -> Option<EfkColor>;
+    fn color() -> Option<u32>;
     /// The room this Pin belongs to
     //fn team() -> Room;
 
@@ -457,6 +529,7 @@ object PinUpdateBuilder {
     /// set the content for this pin
     fn content_text(text: string);
     fn content_markdown(text: string);
+    fn content_html(text: string, html: string);
     fn unset_content();
     fn unset_content_update();
 
@@ -502,8 +575,8 @@ object CalendarEvent {
     fn update_builder() -> Result<CalendarEventUpdateBuilder>;
     /// get RSVP manager
     fn rsvp_manager() -> Future<Result<RsvpManager>>;
-    /// get my RSVP status, one of Yes/Maybe/No/Pending
-    fn my_rsvp_status() -> Future<Result<string>>;
+    /// get my RSVP status, one of Yes/Maybe/No or None
+    fn my_rsvp_status() -> Future<Result<OptionRsvpStatus>>;
 }
 
 object CalendarEventUpdateBuilder {
@@ -568,6 +641,12 @@ object CalendarEventDraft {
 
 
 
+enum RsvpStatus {
+    Yes,
+    Maybe,
+    No
+}
+
 object RsvpManager {
     /// whether manager has rsvp entries
     fn has_rsvp_entries() -> bool;
@@ -578,8 +657,8 @@ object RsvpManager {
     /// get rsvp entries
     fn rsvp_entries() -> Future<Result<Vec<Rsvp>>>;
 
-    /// get Yes/Maybe/No/Pending for the user's own status
-    fn my_status() -> Future<Result<string>>;
+    /// get Yes/Maybe/No or None for the user's own status
+    fn my_status() -> Future<Result<OptionRsvpStatus>>;
 
     /// get the count of Yes/Maybe/No
     fn count_at_status(status: string) -> Future<Result<u32>>;
@@ -903,6 +982,9 @@ object MsgContentDraft {
 
     /// available for only location
     fn geo_uri(value: string) -> MsgContentDraft;
+
+    // convert this into a NewsSlideDraft;
+    fn into_news_slide_draft() -> NewsSlideDraft;
 }
 
 /// Timeline with Room Events
@@ -1225,7 +1307,7 @@ object Task {
     fn utc_start_rfc3339() -> Option<string>;
 
     /// Has this been colored in?
-    fn color() -> Option<EfkColor>;
+    fn color() -> Option<u32>;
 
     /// is this task already done?
     fn is_done() -> bool;
@@ -1277,7 +1359,7 @@ object TaskUpdateBuilder {
     fn unset_sort_order_update();
 
     /// set the color for this task list
-    fn color(color: EfkColor);
+    fn color(color: u32);
     fn unset_color();
     fn unset_color_update();
 
@@ -1338,7 +1420,7 @@ object TaskDraft {
     fn sort_order(sort_order: u32);
 
     /// set the color for this task
-    fn color(color: EfkColor);
+    fn color(color: u32);
     fn unset_color();
 
     /// set the due day for this task
@@ -1389,7 +1471,7 @@ object TaskList {
     fn sort_order() -> u32;
 
     /// Has this been colored in?
-    fn color() -> Option<EfkColor>;
+    fn color() -> Option<u32>;
 
     /// Does this have any special time zone
     fn time_zone() -> Option<string>;
@@ -1438,7 +1520,7 @@ object TaskListDraft {
     fn sort_order(sort_order: u32);
 
     /// set the color for this task list
-    fn color(color: EfkColor);
+    fn color(color: u32);
     fn unset_color();
 
     /// set the keywords for this task list
@@ -1466,7 +1548,7 @@ object TaskListUpdateBuilder {
     fn sort_order(sort_order: u32);
 
     /// set the color for this task list
-    fn color(color: EfkColor);
+    fn color(color: u32);
     fn unset_color();
     fn unset_color_update();
 
@@ -1956,20 +2038,39 @@ object NotificationListResult {
     fn notifications() -> Future<Result<Vec<Notification>>>;
 }
 
+object NotificationSender {
+    fn user_id() -> string;
+    fn display_name() -> Option<string>;
+    fn has_image() -> bool;
+    fn image() -> Future<Result<buffer<u8>>>;
+}
+
+object NotificationRoom {
+    fn room_id() -> string;
+    fn display_name() -> string;
+    fn has_image() -> bool;
+    fn image() -> Future<Result<buffer<u8>>>;
+}
+
+
 // converting a room_id+event_id into the notification item to show
 // from push context.
 object NotificationItem {
-    fn is_invite() -> bool;
-    fn room_message() -> Option<RoomMessage>;
-    fn sender_display_name() -> Option<string>;
-    fn sender_avatar_url() -> Option<string>;
-    fn room_display_name() -> string;
-    fn room_avatar_url() -> Option<string>;
-    fn room_canonical_alias() -> Option<string>;
-    fn is_room_encrypted() -> Option<bool>;
-    fn is_direct_message_room() -> bool;
-    fn is_noisy() -> Option<bool>;
-    fn joined_members_count() -> u64;
+    fn push_style() -> string;
+    fn title() -> string;
+    fn sender() -> NotificationSender;
+    fn room() -> NotificationRoom;
+    fn target_url() -> string;
+    fn body() -> Option<MsgContent>;
+    fn icon_url() -> Option<string>;
+    fn thread_id() -> Option<string>;
+    fn noisy() -> bool;
+    fn has_image() -> bool;
+    fn image() -> Future<Result<buffer<u8>>>;
+    fn image_path(tmp_dir: string) -> Future<Result<string>>;
+
+    // if this is an invite, this the room it invites to
+    fn room_invite() -> Option<string>;
 }
 
 /// The pusher we sent notifications via to the user
@@ -2240,6 +2341,9 @@ object Client {
     /// listen to incoming notifications
     fn notifications_stream() -> Stream<Notification>;
 
+    /// install the default acter push rules for fallback
+    fn install_default_acter_push_rules() -> Future<Result<bool>>;
+
     /// list of pushers
     fn pushers() -> Future<Result<Vec<Pusher>>>;
 
@@ -2251,6 +2355,7 @@ object Client {
 
     /// getting a notification item from the notification data;
     fn get_notification_item(room_id: string, event_id: string) -> Future<Result<NotificationItem>>;
+    
     /// get all upcoming events, whether I responded or not
     fn all_upcoming_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
 
@@ -2266,6 +2371,9 @@ object Client {
     /// super invites interface
     fn super_invites() -> SuperInvites;
 
+    /// allow to configure notification settings
+    fn notification_settings() -> Future<Result<NotificationSettings>>;
+
     /// the list of devices
     fn device_records(verified: bool) -> Future<Result<Vec<DeviceRecord>>>;
 
@@ -2274,6 +2382,9 @@ object Client {
 
     /// make draft to send text markdown msg
     fn text_markdown_draft(body: string) -> MsgContentDraft;
+
+    /// make draft to send html marked up msg
+    fn text_html_draft(html: string, plain: string) -> MsgContentDraft;
 
     /// make draft to send image msg
     fn image_draft(source: string, mimetype: string) -> MsgContentDraft;
@@ -2289,7 +2400,23 @@ object Client {
 
     /// make draft to send location msg
     fn location_draft(body: string, source: string) -> MsgContentDraft;
+}
 
+object NotificationSettings {
+
+    /// get informed about changes to the notification settings
+    fn changes_stream() -> Stream<bool>;
+
+    /// default RoomNotificationMode for the selected features
+    fn default_notification_mode(is_encrypted: bool, is_one_on_one: bool) -> Future<Result<string>>;
+
+    /// set default RoomNotificationMode for this combination
+    fn set_default_notification_mode(is_encrypted: bool, is_one_on_one: bool, mode: string) -> Future<Result<bool>>;
+    
+
+    /// app settings
+    fn global_content_setting(app_key: string) -> Future<Result<bool>>;
+    fn set_global_content_setting(app_key: string, enabled: bool) -> Future<Result<bool>>;
 }
 
 

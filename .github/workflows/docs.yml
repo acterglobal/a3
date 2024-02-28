@@ -25,12 +25,13 @@ jobs:
       - name: Setup flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.16.9'
           channel: 'stable'
 
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: nightly-2024-01-23
           override: true
 
       #       ---- Install extra tools
@@ -52,7 +53,7 @@ jobs:
 
       - name: Build Rust docs
         run: |
-          cargo doc -p acter
+          cargo doc -p acter -p acter-core -p matrix-sdk-store-media-cache-wrapper
           echo --- Moving docs
           mv target/doc/ docs/static/api/main/rust
 

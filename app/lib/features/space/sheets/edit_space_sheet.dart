@@ -13,7 +13,12 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::space::edit');
 
 // interface data providers
 final editTitleProvider = StateProvider.autoDispose<String>((ref) => '');
@@ -40,7 +45,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
   }
 
   // apply existing data to fields
-  void _editSpaceData() async {
+  Future<void> _editSpaceData() async {
     final space = ref.read(spaceProvider(widget.spaceId!)).requireValue;
     final profileData = await ref.read(spaceProfileDataProvider(space).future);
     final titleNotifier = ref.read(editTitleProvider.notifier);
@@ -51,11 +56,10 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     topicNotifier.update((state) => space.topic() ?? '');
 
     if (profileData.hasAvatar()) {
-      Directory appDocDirectory = await getApplicationDocumentsDirectory();
-      Directory('${appDocDirectory.path}/dir')
-          .create(recursive: true)
-          .then((Directory directory) {});
-      String filePath = '${appDocDirectory.path}/${widget.spaceId}.jpg';
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      final dirPath = p.join(appDocDir.path, 'dir');
+      await Directory(dirPath).create(recursive: true);
+      String filePath = p.join(appDocDir.path, '${widget.spaceId}.jpg');
       final imageFile = File(filePath);
       imageFile.writeAsBytes(profileData.avatar!.asTypedList());
       avatarNotifier.update((state) => imageFile.path);
@@ -194,7 +198,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
                   ),
                 );
                 final roomId = await _handleUpdateSpace(context);
-                debugPrint('Space Updated: $roomId');
+                _log.info('Space Updated: $roomId');
                 // We are doing as expected, but the lints triggers.
                 // ignore: use_build_context_synchronously
                 if (!context.mounted) {
@@ -278,9 +282,9 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     String title = ref.read(editTitleProvider);
     try {
       final eventId = await space.setName(title);
-      debugPrint('Space update event: $eventId');
-    } catch (e) {
-      debugPrint('$e');
+      _log.info('Space update event: $eventId');
+    } catch (e, s) {
+      _log.severe('Update failed', e, s);
       rethrow;
     }
 
@@ -288,16 +292,16 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     String avatarUri = ref.read(editAvatarProvider);
     if (avatarUri.isNotEmpty) {
       final eventId = await space.uploadAvatar(avatarUri);
-      debugPrint('Avatar update event: ${eventId.toString()}');
+      _log.info('Avatar update event: ${eventId.toString()}');
     } else {
       final eventId = await space.removeAvatar();
-      debugPrint('Avatar removed event: ${eventId.toString()}');
+      _log.info('Avatar removed event: ${eventId.toString()}');
     }
 
     //update space topic
     String topic = ref.read(editTopicProvider);
     final eventId = await space.setTopic(topic);
-    debugPrint('topic update event: $eventId');
+    _log.info('topic update event: $eventId');
 
     return space.getRoomId();
   }

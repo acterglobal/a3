@@ -2,14 +2,16 @@ import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/foundation.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::room');
 
 // ignore_for_file: unused_field
 
 class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
   late Stream<bool> _listener;
-  late StreamSubscription<bool> _sub;
+  late StreamSubscription<bool> _poller;
 
   Future<Room?> _getRoom() async {
     final client = ref.read(alwaysClientProvider);
@@ -19,25 +21,20 @@ class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
   @override
   Future<Room?> build(String arg) async {
     final client = ref.watch(alwaysClientProvider);
-    ref.onDispose(onDispose);
-    _listener = client.subscribeStream(arg);
-    _sub = _listener.listen(
+    _listener = client.subscribeStream(arg); // keep it resident in memory
+    _poller = _listener.listen(
       (e) async {
-        debugPrint('seen update for room $arg');
-        state = await AsyncValue.guard(() => _getRoom());
+        _log.info('seen update for room $arg');
+        state = await AsyncValue.guard(_getRoom);
       },
       onError: (e, stack) {
-        debugPrint('stream errored: $e : $stack');
+        _log.severe('stream errored', e, stack);
       },
       onDone: () {
-        debugPrint('stream ended');
+        _log.info('stream ended');
       },
     );
-    return _getRoom();
-  }
-
-  void onDispose() {
-    debugPrint('disposing profile not for $arg');
-    _sub.cancel();
+    ref.onDispose(() => _poller.cancel());
+    return await _getRoom();
   }
 }

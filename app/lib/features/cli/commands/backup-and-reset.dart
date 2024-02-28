@@ -1,14 +1,16 @@
-import 'package:args/command_runner.dart';
-import 'package:acter/features/cli/util.dart';
-
-import 'dart:io';
 import 'dart:convert';
-import 'dart:core';
+import 'dart:io';
+
+import 'package:acter/features/cli/util.dart';
+import 'package:args/command_runner.dart';
+import 'package:path/path.dart' as p;
+
 // ignore_for_file: avoid_print
 
 class BackupAndResetCommand extends Command {
   @override
   final name = 'backup-and-reset';
+
   @override
   final description =
       'Backup accounts and sessions and reset the state to fresh and clean';
@@ -30,8 +32,8 @@ class BackupAndResetCommand extends Command {
       print('⚠️ No active sessions found.');
     } else {
       final encoded = json.encode(appInfo.sessions);
-      final f = await File('${appInfo.appDocPath}/sessions_backup_$stamper')
-          .create(exclusive: true);
+      final filePath = p.join(appInfo.appDocPath, 'sessions_backup_$stamper');
+      final f = await File(filePath).create(exclusive: true);
       f.writeAsString(encoded);
       print('✔️ Sessions backed up ');
     }
@@ -40,8 +42,9 @@ class BackupAndResetCommand extends Command {
       print('⚠️ No account data found.');
     } else {
       for (final a in appInfo.accounts) {
-        await Directory('${appInfo.appDocPath}/$a')
-            .rename('${appInfo.appDocPath}/${a}_backup_$stamper');
+        final oldPath = p.join(appInfo.appDocPath, a);
+        final newPath = p.join(appInfo.appDocPath, '${a}_backup_$stamper');
+        await Directory(oldPath).rename(newPath);
         print('✔️ $a backed up ');
       }
     }

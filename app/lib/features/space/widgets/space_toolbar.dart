@@ -13,10 +13,7 @@ class SpaceToolbar extends ConsumerWidget {
   static const settingsMenu = Key('space-options-settings');
   final String spaceId;
 
-  const SpaceToolbar({
-    super.key,
-    required this.spaceId,
-  });
+  const SpaceToolbar({super.key, required this.spaceId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,29 +31,24 @@ class SpaceToolbar extends ConsumerWidget {
             child: const Text('Edit Details'),
           ),
         );
-        submenu.add(
-          PopupMenuItem(
-            key: settingsMenu,
-            onTap: () => context.pushNamed(
-              Routes.spaceSettings.name,
-              pathParameters: {'spaceId': spaceId},
-            ),
-            child: const Text('Settings'),
-          ),
-        );
       }
     }
 
-    if (submenu.isNotEmpty) {
-      // add divider
-      submenu.add(const PopupMenuDivider());
-    }
-    submenu.add(
+    submenu.addAll([
+      PopupMenuItem(
+        key: settingsMenu,
+        onTap: () => context.pushNamed(
+          Routes.spaceSettings.name,
+          pathParameters: {'spaceId': spaceId},
+        ),
+        child: const Text('Settings'),
+      ),
+      const PopupMenuDivider(),
       PopupMenuItem(
         onTap: () => _handleLeaveSpace(context, ref),
         child: const Text('Leave Space'),
       ),
-    );
+    ]);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -115,7 +107,7 @@ class SpaceToolbar extends ConsumerWidget {
           ),
           ElevatedButton(
             onPressed: () async {
-              final space = await ref.watch(spaceProvider(spaceId).future);
+              final space = await ref.read(spaceProvider(spaceId).future);
               await space.leave();
               // refresh spaces list
               ref.invalidate(spacesProvider);

@@ -11,6 +11,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::event::create');
 
 final _titleProvider = StateProvider.autoDispose<String>((ref) => '');
 final _startDateProvider = StateProvider.autoDispose<DateTime?>((ref) => null);
@@ -160,6 +163,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
                   controller: _descriptionController,
                   hintText: 'Type Description (Optional)',
                   textInputType: TextInputType.multiline,
+                  textInputAction: TextInputAction.newline,
                   maxLines: 10,
                 ),
                 const SizedBox(height: 15),
@@ -171,11 +175,8 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       ),
       confirmActionTitle: 'Create Event',
       cancelActionTitle: 'Cancel',
-      confirmActionOnPressed: (titleInput.isEmpty || startDate == null)
-          ? null
-          : () async {
-              await _handleCreateEvent();
-            },
+      confirmActionOnPressed:
+          (titleInput.isEmpty || startDate == null) ? null : _handleCreateEvent,
       cancelActionOnPressed: () =>
           context.canPop() ? context.pop() : context.goNamed(Routes.main.name),
     );
@@ -195,7 +196,7 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
 
       final date = ref.read(_startDateProvider);
       final endDate = ref.read(_endDateProvider);
-      debugPrint('endDATE = $endDate');
+      _log.info('endDATE = $endDate');
 
       final utcStartDateTime = date!.toUtc().toIso8601String();
       final utcEndDateTime = endDate!.toUtc().toIso8601String();
@@ -216,9 +217,9 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       /// Event is created, set RSVP status to `Yes` by default for host.
       final rsvpManager = await calendarEvent.rsvpManager();
       final rsvpDraft = rsvpManager.rsvpDraft();
-      rsvpDraft.status('Yes');
+      rsvpDraft.status('yes');
       await rsvpDraft.send();
-      debugPrint('Created Calendar Event: ${eventId.toString()}');
+      _log.info('Created Calendar Event: ${eventId.toString()}');
       EasyLoading.dismiss();
       if (context.mounted) {
         ref.invalidate(calendarEventProvider);
@@ -235,10 +236,10 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
     }
   }
 
-  void _selectDateTime() async {
-    final selectedStartDate = ref.watch(_startDateProvider);
-    final selectedEndDate = ref.watch(_endDateProvider);
-    await showOmniDateTimeRangePicker(
+  Future<void> _selectDateTime() async {
+    final selectedStartDate = ref.read(_startDateProvider);
+    final selectedEndDate = ref.read(_endDateProvider);
+    final picked = await showOmniDateTimeRangePicker(
       context: context,
       startFirstDate: DateTime.now(),
       startInitialDate: selectedStartDate ?? DateTime.now(),
@@ -246,23 +247,27 @@ class _CreateEventSheetConsumerState extends ConsumerState<CreateEventSheet> {
       endFirstDate: DateTime.now(),
       borderRadius: BorderRadius.circular(12),
       isForce2Digits: true,
-    ).then((picked) {
-      if (picked != null) {
-        if (picked[0].isAfter(picked[1])) {
-          EasyLoading.showError(
-            'Invalid Date Time Range. Please select valid dates.',
-            duration: const Duration(seconds: 2),
-          );
-          return;
-        }
-        _dateController.text =
-            '${DateFormat.yMd().format(picked[0])} - ${DateFormat.yMd().format(picked[1])}';
-        _timeController.text =
-            '${DateFormat.jm().format(picked[0])} - ${DateFormat.jm().format(picked[1])}';
+    );
+    if (picked == null) {
+      return;
+    }
+    if (picked[0].isAfter(picked[1])) {
+      EasyLoading.showError(
+        'Invalid Date Time Range. Please select valid dates.',
+        duration: const Duration(seconds: 2),
+      );
+      return;
+    }
 
-        ref.read(_startDateProvider.notifier).update((state) => picked[0]);
-        ref.read(_endDateProvider.notifier).update((state) => picked[1]);
-      }
-    });
+    final startDate = DateFormat.yMd().format(picked[0]);
+    final endDate = DateFormat.yMd().format(picked[1]);
+    _dateController.text = '$startDate - $endDate';
+
+    final startTime = DateFormat.jm().format(picked[0]);
+    final endTime = DateFormat.jm().format(picked[1]);
+    _timeController.text = '$startTime - $endTime';
+
+    ref.read(_startDateProvider.notifier).update((state) => picked[0]);
+    ref.read(_endDateProvider.notifier).update((state) => picked[1]);
   }
 }

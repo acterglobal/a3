@@ -1,5 +1,6 @@
+pub use acter_core::events::rsvp::RsvpStatus;
 use acter_core::{
-    events::rsvp::{RsvpBuilder, RsvpStatus},
+    events::rsvp::RsvpBuilder,
     models::{self, ActerModel, AnyActerModel},
     statics::KEYS,
 };
@@ -14,7 +15,7 @@ use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::{error, trace, warn};
 
-use super::{calendar_events::CalendarEvent, client::Client, RUNTIME};
+use super::{calendar_events::CalendarEvent, client::Client, common::OptionRsvpStatus, RUNTIME};
 
 impl Client {
     pub async fn wait_for_rsvp(&self, key: String, timeout: Option<u8>) -> Result<Rsvp> {
@@ -102,8 +103,8 @@ impl Client {
                         // fliter only events that i sent rsvp
                         let rsvp_manager = cal_event.rsvp_manager().await?;
                         let status = rsvp_manager.my_status().await?;
-                        match status.as_str() {
-                            "Yes" | "Maybe" => {
+                        match status.status() {
+                            Some(RsvpStatus::Yes) | Some(RsvpStatus::Maybe) => {
                                 cal_events.push(cal_event);
                             }
                             _ => {}
@@ -144,8 +145,8 @@ impl Client {
                         // fliter only events that i sent rsvp
                         let rsvp_manager = cal_event.rsvp_manager().await?;
                         let status = rsvp_manager.my_status().await?;
-                        match status.as_str() {
-                            "Yes" | "Maybe" => {
+                        match status.status() {
+                            Some(RsvpStatus::Yes) | Some(RsvpStatus::Maybe) => {
                                 cal_events.push(cal_event);
                             }
                             _ => {}
@@ -294,16 +295,14 @@ impl RsvpManager {
             .await?
     }
 
-    pub async fn my_status(&self) -> Result<String> {
+    pub async fn my_status(&self) -> Result<OptionRsvpStatus> {
         let manager = self.inner.clone();
         let my_id = self.client.user_id()?;
         RUNTIME
             .spawn(async move {
                 let entries = manager.rsvp_entries().await?;
-                if let Some(entry) = entries.get(&my_id) {
-                    return Ok(entry.status.to_string());
-                }
-                Ok("Pending".to_string())
+                let status = entries.get(&my_id).map(|x| x.status.clone());
+                Ok(OptionRsvpStatus::new(status))
             })
             .await?
     }

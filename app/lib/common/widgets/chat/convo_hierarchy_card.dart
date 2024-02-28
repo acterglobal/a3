@@ -2,6 +2,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_with_profile_card.dart';
 import 'package:acter/common/widgets/spaces/space_hierarchy_card.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -94,7 +95,16 @@ class ConvoHierarchyCard extends ConsumerWidget {
 
     return profile.when(
       data: (profile) => ConvoWithProfileCard(
-        showParent: false,
+        avatar: ActerAvatar(
+          mode: DisplayMode.Space,
+          avatarInfo: AvatarInfo(
+            uniqueId: roomId,
+            displayName: profile.displayName,
+            avatar: profile.getAvatarImage(),
+          ),
+          size: avatarSize,
+          badgeSize: avatarSize / 2,
+        ),
         roomId: roomId,
         profile: profile,
         subtitle: subtitle,

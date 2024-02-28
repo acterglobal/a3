@@ -135,19 +135,25 @@ class _DuePickerState extends State<DuePicker> {
             ? const SizedBox()
             : Wrap(
                 children: [
-                  const Text('Quick select'),
+                  const Text('Quick select:'),
+                  const SizedBox(
+                    width: 10,
+                  ),
                   ActionChip(
                     key: DuePicker.quickSelectToday,
-                    label: const Text('today'),
+                    label: const Text('Today'),
                     onPressed: () {
                       widget.onSelect(
                         PickedDue(DateTime.now(), false),
                       );
                     },
                   ),
+                  const SizedBox(
+                    width: 10,
+                  ),
                   ActionChip(
                     key: DuePicker.quickSelectTomorrow,
-                    label: const Text('tomorrow'),
+                    label: const Text('Tomorrow'),
                     onPressed: () {
                       widget.onSelect(
                         PickedDue(DateTime.now().nextDay, false),

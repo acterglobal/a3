@@ -76,7 +76,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
         ? Container(
             width: size.width * 0.5,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: Theme.of(context).colorScheme.primary,
               borderRadius: BorderRadius.circular(12),
             ),
             child: PageView.builder(
@@ -120,8 +120,8 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
     EasyLoading.show(status: 'Creating Chat');
     try {
       final sdk = await ref.read(sdkProvider.future);
-      final config = sdk.newConvoSettingsBuilder();
-      final selectedUsers = ref.watch(_selectedUsersProvider);
+      final config = sdk.api.newConvoSettingsBuilder();
+      final selectedUsers = ref.read(_selectedUsersProvider);
       // we check whether user has selected participants for DM/Group DM.
       if (selectedUsers.isNotEmpty) {
         if (selectedUsers.length > 1) {
@@ -324,9 +324,10 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                           );
                         }
                       } else {
+                        final client = ref.read(alwaysClientProvider);
                         String? id = checkUserDMExists(
                           selectedUsers[0].userId().toString(),
-                          ref,
+                          client,
                         );
                         if (id != null) {
                           Navigator.of(context).pop();
@@ -431,7 +432,8 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
     } else if (selectedUsers.length > 1) {
       return 'Start Group DM';
     } else {
-      if (checkUserDMExists(selectedUsers[0].userId().toString(), ref) !=
+      final client = ref.watch(alwaysClientProvider);
+      if (checkUserDMExists(selectedUsers[0].userId().toString(), client) !=
           null) {
         return 'Go to DM';
       } else {
@@ -440,9 +442,8 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
     }
   }
 
-// checks whether user DM already exists or needs created
-  String? checkUserDMExists(String userId, WidgetRef ref) {
-    final client = ref.watch(alwaysClientProvider);
+  // checks whether user DM already exists or needs created
+  String? checkUserDMExists(String userId, ffi.Client client) {
     final id = client.dmWithUser(userId).text();
     if (id != null) return id;
     return null;
@@ -490,7 +491,7 @@ class _CreateRoomFormWidgetConsumerState
   Widget build(BuildContext context) {
     final titleInput = ref.watch(_titleProvider);
     final avatarUpload = ref.watch(_avatarProvider);
-    final currentParentSpace = ref.read(selectedSpaceIdProvider);
+    final currentParentSpace = ref.watch(selectedSpaceIdProvider);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 18),

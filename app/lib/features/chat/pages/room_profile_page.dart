@@ -17,6 +17,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::chat::room_profile_page');
 
 class RoomProfilePage extends ConsumerWidget {
   final String roomId;
@@ -59,6 +62,7 @@ class RoomProfilePage extends ConsumerWidget {
         shrinkWrap: true,
         slivers: [
           SliverAppBar(
+            pinned: true,
             automaticallyImplyLeading: false,
             leading: Visibility(
               visible: inSideBar && isExpanded,
@@ -100,7 +104,7 @@ class RoomProfilePage extends ConsumerWidget {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   error: (err, stackTrace) {
-                    debugPrint('Some error occured $err');
+                    _log.severe('Error loading convo profile', err, stackTrace);
                     return Text(
                       roomId,
                       overflow: TextOverflow.clip,
@@ -131,6 +135,7 @@ class RoomProfilePage extends ConsumerWidget {
               darkTheme: SettingsThemeData(
                 settingsListBackground: Colors.transparent,
                 dividerColor: Colors.transparent,
+                settingsSectionBackground: Colors.transparent,
                 leadingIconsColor: Theme.of(context).colorScheme.neutral6,
               ),
               shrinkWrap: true,

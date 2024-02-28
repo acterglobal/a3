@@ -4,22 +4,24 @@ import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/foundation.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::space');
 
 // ignore_for_file: unused_field
 
 class AsyncSpaceProfileDataNotifier
     extends FamilyAsyncNotifier<ProfileData, Space> {
   late Stream<bool> _listener;
-  late StreamSubscription<bool> _sub;
+  late StreamSubscription<bool> _poller;
 
   Future<ProfileData> _getSpaceProfileData() async {
     final space = arg;
     final profile = space.getProfile();
     OptionString displayName = await profile.getDisplayName();
-    final sdk = await ref.watch(sdkProvider.future);
-    final size = sdk.newThumbSize(48, 48);
+    final sdk = await ref.read(sdkProvider.future);
+    final size = sdk.api.newThumbSize(48, 48);
     final avatar = await profile.getAvatar(size);
     return ProfileData(displayName.text(), avatar.data());
   }
@@ -27,32 +29,28 @@ class AsyncSpaceProfileDataNotifier
   @override
   Future<ProfileData> build(Space arg) async {
     final client = ref.watch(alwaysClientProvider);
-    ref.onDispose(onDispose);
-    _listener = client.subscribeStream(arg.getRoomId().toString());
-    _sub = _listener.listen(
+    _listener = client
+        .subscribeStream(arg.getRoomIdStr()); // keep it resident in memory
+    _poller = _listener.listen(
       (e) async {
-        debugPrint('seen update $arg');
-        state = await AsyncValue.guard(() => _getSpaceProfileData());
+        _log.info('seen update $arg');
+        state = await AsyncValue.guard(_getSpaceProfileData);
       },
       onError: (e, stack) {
-        debugPrint('stream errored: $e : $stack');
+        _log.severe('stream errored', e, stack);
       },
       onDone: () {
-        debugPrint('stream ended');
+        _log.info('stream ended');
       },
     );
-    return _getSpaceProfileData();
-  }
-
-  void onDispose() {
-    debugPrint('disposing profile not for $arg');
-    _sub.cancel();
+    ref.onDispose(() => _poller.cancel());
+    return await _getSpaceProfileData();
   }
 }
 
 class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
   late Stream<bool> _listener;
-  late StreamSubscription<bool> _sub;
+  late StreamSubscription<bool> _poller;
 
   Future<Space?> _getSpace() async {
     final client = ref.read(alwaysClientProvider);
@@ -62,34 +60,29 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
   @override
   Future<Space?> build(String arg) async {
     final client = ref.watch(alwaysClientProvider);
-    ref.onDispose(onDispose);
-    _listener = client.subscribeStream(arg);
-    _sub = _listener.listen(
+    _listener = client.subscribeStream(arg); // keep it resident in memory
+    _poller = _listener.listen(
       (e) async {
-        debugPrint('seen update $arg');
-
-        state = await AsyncValue.guard(() => _getSpace());
+        _log.info('seen update $arg');
+        state = await AsyncValue.guard(_getSpace);
       },
       onError: (e, stack) {
-        debugPrint('stream errored: $e : $stack');
+        _log.severe('stream errored', e, stack);
       },
       onDone: () {
-        debugPrint('stream ended');
+        _log.info('stream ended');
       },
     );
-    return _getSpace();
-  }
-
-  void onDispose() {
-    debugPrint('disposing profile not for $arg');
-    _sub.cancel();
+    ref.onDispose(() => _poller.cancel());
+    return await _getSpace();
   }
 }
 
 class SpaceListNotifier extends StateNotifier<List<Space>> {
   final Ref ref;
   final Client client;
-  StreamSubscription<SpaceDiff>? subscription;
+  late Stream<SpaceDiff> _listener;
+  late StreamSubscription<SpaceDiff> _poller;
 
   SpaceListNotifier({
     required this.ref,
@@ -99,18 +92,14 @@ class SpaceListNotifier extends StateNotifier<List<Space>> {
   }
 
   void _init() async {
-    subscription = client.spacesStream().listen((diff) async {
-      await _handleDiff(diff);
-    });
-    ref.onDispose(() async {
-      debugPrint('disposing message stream');
-      await subscription?.cancel();
-    });
+    _listener = client.spacesStream(); // keep it resident in memory
+    _poller = _listener.listen(_handleDiff);
+    ref.onDispose(() => _poller.cancel());
   }
 
   List<Space> listCopy() => List.from(state, growable: true);
 
-  Future<void> _handleDiff(SpaceDiff diff) async {
+  void _handleDiff(SpaceDiff diff) {
     switch (diff.action()) {
       case 'Append':
         final newList = listCopy();

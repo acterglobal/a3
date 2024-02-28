@@ -1,78 +1,357 @@
-use anyhow::{Context, Result};
+use std::sync::Arc;
+use urlencoding::encode;
+
+use acter_core::{
+    events::{
+        news::{FallbackNewsContent, NewsContent},
+        AnyActerEvent,
+    },
+    push::default_rules,
+};
+use anyhow::{bail, Context, Result};
+use matrix_sdk::{
+    notification_settings::{
+        IsEncrypted, IsOneToOne, NotificationSettings as SdkNotificationSettings,
+        RoomNotificationMode,
+    },
+    ruma::{
+        api::client::push::{
+            get_pushers, set_pusher, EmailPusherData, Pusher as RumaPusher, PusherIds, PusherInit,
+            PusherKind,
+        },
+        assign,
+        push::HttpPusherData,
+    },
+};
+
+use derive_builder::Builder;
+use derive_getters::Getters;
+use futures::stream::StreamExt;
 use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
-    NotificationProcessSetup,
+    NotificationProcessSetup, RawNotificationEvent,
 };
-use ruma::{assign, push::HttpPusherData};
-use ruma_client_api::push::{
-    get_pushers, set_pusher, EmailPusherData, Pusher as RumaPusher, PusherIds, PusherInit,
-    PusherKind,
+use ruma_client_api::{
+    device,
+    push::{get_pushrules_all, set_pushrule, RuleScope},
 };
-use ruma_common::{EventId, OwnedRoomId, RoomId};
+use ruma_common::{EventId, OwnedMxcUri, OwnedRoomId, RoomId};
+use ruma_events::{
+    room::{message::MessageType, MediaSource},
+    AnySyncMessageLikeEvent, AnySyncTimelineEvent, MessageLikeEvent, SyncMessageLikeEvent,
+};
+use tokio_stream::{wrappers::BroadcastStream, Stream};
 
-use super::{message::any_sync_event_to_message, Client};
+use super::{
+    message::{any_sync_event_to_message, sync_event_to_message},
+    Client,
+};
 
-use crate::{RoomMessage, RUNTIME};
+use crate::{api::api::FfiBuffer, MsgContent, RoomMessage, RUNTIME};
 
-pub struct NotificationItem {
-    pub(crate) inner: SdkNotificationItem,
-    pub(crate) room_id: OwnedRoomId,
-}
-
-impl NotificationItem {
-    fn new(inner: SdkNotificationItem, room_id: OwnedRoomId) -> Self {
-        NotificationItem { inner, room_id }
+pub(crate) fn room_notification_mode_name(input: &RoomNotificationMode) -> String {
+    match input {
+        RoomNotificationMode::AllMessages => "all".to_owned(),
+        RoomNotificationMode::MentionsAndKeywordsOnly => "mentions".to_owned(),
+        RoomNotificationMode::Mute => "muted".to_owned(),
     }
 }
 
-impl NotificationItem {
-    pub fn is_invite(&self) -> bool {
-        matches!(self.inner.event, NotificationEvent::Invite(_))
+pub(crate) fn notification_mode_from_input(input: &str) -> Option<RoomNotificationMode> {
+    match input.trim().to_lowercase().as_str() {
+        "all" => Some(RoomNotificationMode::AllMessages),
+        "mentions" => Some(RoomNotificationMode::MentionsAndKeywordsOnly),
+        "muted" => Some(RoomNotificationMode::Mute),
+        _ => None,
     }
+}
 
-    pub fn room_message(&self) -> Option<RoomMessage> {
-        let NotificationEvent::Timeline(s) = &self.inner.event else {
-            return None;
+// pub struct NotificationItem {
+//     pub(crate) inner: SdkNotificationItem,
+//     pub(crate) acter_event: Option<AnyActerEvent>,
+//     pub(crate) room_id: OwnedRoomId,
+// }
+
+#[derive(Debug, Clone)]
+pub struct NotificationSender {
+    user_id: String,
+    display_name: Option<String>,
+    image: Option<MediaSource>,
+    client: Client,
+}
+impl NotificationSender {
+    fn from(client: Client, notif: &SdkNotificationItem) -> Self {
+        NotificationSender {
+            user_id: notif.event.sender().to_string(),
+            display_name: notif.sender_display_name.clone(),
+            image: notif
+                .sender_avatar_url
+                .clone()
+                .map(|u| MediaSource::Plain(OwnedMxcUri::from(u))),
+            client,
+        }
+    }
+    pub fn user_id(&self) -> String {
+        self.user_id.clone()
+    }
+    pub fn display_name(&self) -> Option<String> {
+        self.display_name.clone()
+    }
+    pub fn has_image(&self) -> bool {
+        self.image.is_some()
+    }
+    pub async fn image(&self) -> Result<FfiBuffer<u8>> {
+        #[allow(clippy::diverging_sub_expression)]
+        let Some(source) = self.image.clone() else {
+            return bail!("No media found in item");
         };
-        any_sync_event_to_message(s.clone(), self.room_id.clone())
+        let client = self.client.clone();
+
+        RUNTIME
+            .spawn(async move { client.source_binary(source, None).await })
+            .await?
     }
-    // pub fn event(&self) -> NotificationEvent {
-    //     self.inner.event
-    // }
-    pub fn sender_display_name(&self) -> Option<String> {
-        self.inner.sender_display_name.clone()
+}
+
+#[derive(Debug, Clone)]
+pub struct NotificationRoom {
+    room_id: String,
+    display_name: String,
+    image: Option<MediaSource>,
+    client: Client,
+}
+impl NotificationRoom {
+    fn from(client: Client, notif: &SdkNotificationItem, room_id: &OwnedRoomId) -> Self {
+        NotificationRoom {
+            room_id: room_id.to_string(),
+            display_name: notif.room_display_name.clone(),
+            image: notif
+                .room_avatar_url
+                .clone()
+                .map(|u| MediaSource::Plain(OwnedMxcUri::from(u))),
+            client,
+        }
+    }
+    pub fn room_id(&self) -> String {
+        self.room_id.clone()
+    }
+    pub fn display_name(&self) -> String {
+        self.display_name.clone()
+    }
+    pub fn has_image(&self) -> bool {
+        self.image.is_some()
+    }
+    pub async fn image(&self) -> Result<FfiBuffer<u8>> {
+        #[allow(clippy::diverging_sub_expression)]
+        let Some(source) = self.image.clone() else {
+            return bail!("No media found in item");
+        };
+        let client = self.client.clone();
+
+        RUNTIME
+            .spawn(async move { client.source_binary(source, None).await })
+            .await?
+    }
+}
+
+#[derive(Debug, Builder)]
+pub struct NotificationItem {
+    pub(crate) client: Client,
+    pub(crate) title: String,
+    pub(crate) push_style: String,
+    pub(crate) target_url: String,
+    pub(crate) sender: NotificationSender,
+    pub(crate) room: NotificationRoom,
+    #[builder(default)]
+    pub(crate) icon_url: Option<String>,
+    #[builder(setter(into, strip_option), default)]
+    pub(crate) body: Option<MsgContent>,
+    #[builder(default)]
+    pub(crate) noisy: Option<bool>,
+    #[builder(setter(into, strip_option), default)]
+    pub(crate) thread_id: Option<String>,
+    #[builder(setter(into, strip_option), default)]
+    pub(crate) room_invite: Option<String>,
+    #[builder(setter(into, strip_option), default)]
+    pub(crate) image: Option<MediaSource>,
+}
+
+impl NotificationItem {
+    pub fn title(&self) -> String {
+        self.title.clone()
+    }
+    pub fn push_style(&self) -> String {
+        self.push_style.clone()
+    }
+    pub fn target_url(&self) -> String {
+        self.target_url.clone()
+    }
+    pub fn sender(&self) -> NotificationSender {
+        self.sender.clone()
+    }
+    pub fn room(&self) -> NotificationRoom {
+        self.room.clone()
+    }
+    pub fn icon_url(&self) -> Option<String> {
+        self.icon_url.clone()
+    }
+    pub fn body(&self) -> Option<MsgContent> {
+        self.body.clone()
+    }
+    pub fn noisy(&self) -> bool {
+        self.noisy.unwrap_or_default()
+    }
+    pub fn thread_id(&self) -> Option<String> {
+        self.thread_id.clone()
+    }
+    pub fn room_invite(&self) -> Option<String> {
+        self.room_invite.clone()
+    }
+    pub fn has_image(&self) -> bool {
+        self.image.is_some()
+    }
+    pub async fn image(&self) -> Result<FfiBuffer<u8>> {
+        #[allow(clippy::diverging_sub_expression)]
+        let Some(source) = self.image.clone() else {
+            return bail!("No media found in item");
+        };
+        let client = self.client.clone();
+
+        RUNTIME
+            .spawn(async move { client.source_binary(source, None).await })
+            .await?
     }
 
-    pub fn sender_avatar_url(&self) -> Option<String> {
-        self.inner.sender_avatar_url.clone()
+    pub async fn image_path(&self, tmp_dir: String) -> Result<String> {
+        #[allow(clippy::diverging_sub_expression)]
+        let Some(source) = self.image.clone() else {
+            return bail!("No media found in item");
+        };
+        self.client
+            .source_binary_tmp_path(source, None, tmp_dir, "png")
+            .await
     }
 
-    pub fn room_display_name(&self) -> String {
-        self.inner.room_display_name.clone()
-    }
+    fn from(client: Client, inner: SdkNotificationItem, room_id: OwnedRoomId) -> Result<Self> {
+        let mut builder = NotificationItemBuilder::default();
+        let device_id = client.device_id()?;
+        // setting defaults;
+        builder
+            .sender(NotificationSender::from(client.clone(), &inner))
+            .room(NotificationRoom::from(client.clone(), &inner, &room_id))
+            .client(client)
+            .thread_id(room_id.to_string())
+            .title(inner.room_display_name)
+            .noisy(inner.is_noisy)
+            .push_style("fallback".to_owned())
+            .target_url(format!(
+                "/forward?deviceId={}&roomId={}",
+                encode(device_id.as_str()),
+                encode(room_id.as_str())
+            )) //default is forward
+            .icon_url(inner.room_avatar_url);
 
-    pub fn room_avatar_url(&self) -> Option<String> {
-        self.inner.room_avatar_url.clone()
-    }
+        if let NotificationEvent::Invite(invite) = inner.event {
+            return Ok(builder
+                .target_url("/activities/".to_string())
+                // FIXME: we still need support for specific activities linking
+                // .target_url(format!("/activities/{:}", room_id))
+                .room_invite(room_id.to_string())
+                .push_style("invite".to_owned())
+                .build()?);
+        }
 
-    pub fn room_canonical_alias(&self) -> Option<String> {
-        self.inner.room_canonical_alias.clone()
-    }
+        if let RawNotificationEvent::Timeline(raw_tl) = &inner.raw_event {
+            if let Ok(AnyActerEvent::NewsEntry(MessageLikeEvent::Original(e))) =
+                raw_tl.deserialize_as::<AnyActerEvent>()
+            {
+                if let Some(first_slide) = e.content.slides.first() {
+                    match &first_slide.content {
+                        // we have improved support for showing images
+                        NewsContent::Fallback(FallbackNewsContent::Image(msg_content))
+                        | NewsContent::Image(msg_content) => {
+                            builder.image(msg_content.source.clone());
+                        }
+                        // everything else we have to fallback to the body-text thing ...
+                        NewsContent::Fallback(FallbackNewsContent::Text(msg_content))
+                        | NewsContent::Text(msg_content) => {
+                            builder.body(msg_content);
+                        }
+                        NewsContent::Fallback(FallbackNewsContent::Video(msg_content))
+                        | NewsContent::Video(msg_content) => {
+                            builder.body(MsgContent::from(msg_content));
+                        }
+                        NewsContent::Fallback(FallbackNewsContent::Audio(msg_content))
+                        | NewsContent::Audio(msg_content) => {
+                            builder.body(MsgContent::from(msg_content));
+                        }
+                        NewsContent::Fallback(FallbackNewsContent::File(msg_content))
+                        | NewsContent::File(msg_content) => {
+                            builder.body(MsgContent::from(msg_content));
+                        }
+                        NewsContent::Fallback(FallbackNewsContent::Location(msg_content))
+                        | NewsContent::Location(msg_content) => {
+                            builder.body(MsgContent::from(msg_content));
+                        }
+                    }
+                    return Ok(builder
+                        .target_url("/updates".to_owned())
+                        // FIXME: link to each specific update directly.
+                        // .target_url(format!("/updates/{:}", e.event_id))
+                        .push_style("news".to_owned())
+                        .build()?);
+                }
+            }
+        };
 
-    pub fn is_room_encrypted(&self) -> Option<bool> {
-        self.inner.is_room_encrypted
-    }
+        if let NotificationEvent::Timeline(AnySyncTimelineEvent::MessageLike(
+            AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(event)),
+        )) = inner.event
+        {
+            if match event.content.msgtype {
+                MessageType::Audio(content) => {
+                    builder.body(MsgContent::from(&content));
+                    true
+                }
+                MessageType::Emote(content) => {
+                    builder.body(MsgContent::from(&content));
+                    true
+                }
+                MessageType::File(content) => {
+                    builder.body(MsgContent::from(&content));
+                    true
+                }
+                MessageType::Image(content) => {
+                    builder.image(content.source);
+                    true
+                }
+                MessageType::Location(content) => {
+                    // attach the actual content?!?
+                    builder.body(MsgContent::from(&content));
+                    true
+                }
+                MessageType::Text(content) => {
+                    builder.body(MsgContent::from(content));
+                    true
+                }
+                MessageType::Video(content) => {
+                    // attach the actual content?!?
+                    builder.body(MsgContent::from(&content));
+                    true
+                }
+                _ => false,
+            } {
+                // a compatible message
+                if inner.is_direct_message_room {
+                    builder.push_style("dm".to_owned());
+                } else {
+                    builder.push_style("chat".to_owned());
+                }
+                builder.target_url(format!("/chat/{:}", room_id));
+            }
+        }
 
-    pub fn is_direct_message_room(&self) -> bool {
-        self.inner.is_direct_message_room
-    }
-
-    pub fn joined_members_count(&self) -> u64 {
-        self.inner.joined_members_count
-    }
-
-    pub fn is_noisy(&self) -> Option<bool> {
-        self.inner.is_noisy
+        Ok(builder.build()?)
     }
 }
 
@@ -135,13 +414,13 @@ impl Client {
         room_id: String,
         event_id: String,
     ) -> Result<NotificationItem> {
-        let client = self.core.client().clone();
+        let client = self.clone();
         let room_id = RoomId::parse(room_id)?;
         let event_id = EventId::parse(event_id)?;
         RUNTIME
             .spawn(async move {
                 let notif_client = NotificationClient::builder(
-                    client,
+                    client.core.client().clone(),
                     NotificationProcessSetup::MultipleProcesses,
                 )
                 .await?
@@ -151,27 +430,15 @@ impl Client {
                     .get_notification(&room_id, &event_id)
                     .await?
                     .context("(hidden notification)")?;
-                Ok(NotificationItem::new(notif, room_id))
+                NotificationItem::from(client, notif, room_id)
             })
             .await?
     }
-
-    pub async fn pushers(&self) -> Result<Vec<Pusher>> {
-        let client = self.clone();
-        RUNTIME
-            .spawn(async move {
-                let resp = client
-                    .core
-                    .client()
-                    .send(get_pushers::v3::Request::new(), None)
-                    .await?;
-                Ok(resp
-                    .pushers
-                    .into_iter()
-                    .map(|inner| Pusher::new(inner, client.clone()))
-                    .collect())
-            })
-            .await?
+    pub async fn notification_settings(&self) -> Result<NotificationSettings> {
+        let client = self.core.client().clone();
+        Ok(RUNTIME
+            .spawn(async move { NotificationSettings::new(client.notification_settings().await) })
+            .await?)
     }
 
     pub async fn add_email_pusher(
@@ -244,6 +511,143 @@ impl Client {
                 let request = set_pusher::v3::Request::post(pusher_data.into());
                 client.send(request, None).await?;
                 Ok(false)
+            })
+            .await?
+    }
+
+    pub async fn pushers(&self) -> Result<Vec<Pusher>> {
+        let client = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let resp = client
+                    .core
+                    .client()
+                    .send(get_pushers::v3::Request::new(), None)
+                    .await?;
+                Ok(resp
+                    .pushers
+                    .into_iter()
+                    .map(|inner| Pusher::new(inner, client.clone()))
+                    .collect())
+            })
+            .await?
+    }
+
+    pub async fn install_default_acter_push_rules(&self) -> Result<bool> {
+        let client = self.clone();
+        RUNTIME
+            .spawn(async move {
+                for rule in default_rules() {
+                    let resp = client
+                        .core
+                        .client()
+                        .send(
+                            set_pushrule::v3::Request::new(RuleScope::Global, rule),
+                            None,
+                        )
+                        .await?;
+                }
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn push_rules(&self) -> Result<ruma::push::Ruleset> {
+        let client = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let resp = client
+                    .core
+                    .client()
+                    .send(get_pushrules_all::v3::Request::new(), None)
+                    .await?;
+                Ok(resp.global)
+            })
+            .await?
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct NotificationSettings {
+    inner: Arc<SdkNotificationSettings>,
+}
+impl NotificationSettings {
+    pub fn new(inner: SdkNotificationSettings) -> Self {
+        NotificationSettings {
+            inner: Arc::new(inner),
+        }
+    }
+    pub fn changes_stream(&self) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.inner.subscribe_to_changes()).map(|_| true)
+    }
+
+    pub async fn default_notification_mode(
+        &self,
+        is_encrypted: bool,
+        is_one_to_one: bool,
+    ) -> Result<String> {
+        let inner = self.inner.clone();
+        RUNTIME
+            .spawn(async move {
+                let mode = inner
+                    .get_default_room_notification_mode(
+                        IsEncrypted::from(is_encrypted),
+                        IsOneToOne::from(is_one_to_one),
+                    )
+                    .await;
+                Ok(room_notification_mode_name(&mode))
+            })
+            .await?
+    }
+
+    pub async fn set_default_notification_mode(
+        &self,
+        is_encrypted: bool,
+        is_one_to_one: bool,
+        mode: String,
+    ) -> Result<bool> {
+        let new_level =
+            notification_mode_from_input(&mode).context("Unknown Notification Level")?;
+        let inner = self.inner.clone();
+        RUNTIME
+            .spawn(async move {
+                inner
+                    .set_default_room_notification_mode(
+                        IsEncrypted::from(is_encrypted),
+                        IsOneToOne::from(is_one_to_one),
+                        new_level,
+                    )
+                    .await?;
+                Ok(true)
+            })
+            .await?
+    }
+    pub async fn global_content_setting(&self, content_key: String) -> Result<bool> {
+        let inner = self.inner.clone();
+        Ok(RUNTIME
+            .spawn(async move {
+                inner
+                    .is_push_rule_enabled(ruma_common::push::RuleKind::Underride, content_key)
+                    .await
+            })
+            .await??)
+    }
+    pub async fn set_global_content_setting(
+        &self,
+        content_key: String,
+        enabled: bool,
+    ) -> Result<bool> {
+        let inner = self.inner.clone();
+        RUNTIME
+            .spawn(async move {
+                inner
+                    .set_push_rule_enabled(
+                        ruma_common::push::RuleKind::Underride,
+                        content_key,
+                        enabled,
+                    )
+                    .await?;
+                Ok(enabled)
             })
             .await?
     }

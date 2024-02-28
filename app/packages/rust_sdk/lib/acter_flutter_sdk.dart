@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:core';
 import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:ffi';
@@ -13,8 +12,11 @@ import 'package:package_info/package_info.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:logging/logging.dart';
 
 export './acter_flutter_sdk_ffi.dart' show Client;
+
+final _log = Logger('a3::sdk');
 
 const rustLogKey = 'RUST_LOG';
 const proxyKey = 'HTTP_PROXY';
@@ -31,7 +33,7 @@ const defaultServerName = String.fromEnvironment(
 
 const defaultLogSetting = String.fromEnvironment(
   rustLogKey,
-  defaultValue: 'warn,acter=debug',
+  defaultValue: 'acter=debug,a3::sdk=info,a3=warn,warn',
 );
 
 const defaultSessionKey = String.fromEnvironment(
@@ -65,19 +67,11 @@ const versionName = String.fromEnvironment(
 const isDevBuild = versionName == 'DEV';
 
 String userAgent = '$appName/$versionName';
+RegExp logFileRegExp = RegExp('app_.*log');
+RegExp screenshotFileRegExp = RegExp('screenshot_.*png');
 
-Color convertColor(ffi.EfkColor? primary, Color fallback) {
-  if (primary == null) {
-    return fallback;
-  }
-  final data = primary.rgbaU8();
-  return Color.fromARGB(
-    data[3],
-    data[0],
-    data[1],
-    data[2],
-  );
-}
+Color convertColor(int? primary, Color fallback) =>
+    Color(primary ?? fallback.value);
 
 Completer<SharedPreferences>? _sharedPrefCompl;
 Completer<String>? _appDirCompl;
@@ -196,6 +190,7 @@ const mOptions = MacOsOptions(
 
 class ActerSdk {
   late final ffi.Api _api;
+  late final String _previousLogPath;
   static String _sessionKey = defaultSessionKey;
   int _index = 0;
   static final List<ffi.Client> _clients = [];
@@ -220,7 +215,7 @@ class ActerSdk {
     await storage.write(key: _sessionKey, value: json.encode(sessions));
     final key = '$_sessionKey::currentClientIdx';
     await storage.write(key: key, value: '$_index');
-    debugPrint('session stored: $sessions');
+    _log.info('${sessions.length} sessions stored');
   }
 
   static Future<void> resetSessionsAndClients(String sessionKey) async {
@@ -230,16 +225,28 @@ class ActerSdk {
     await storage.write(key: _sessionKey, value: json.encode([]));
   }
 
-  Future<ffi.Client> getClientWithDeviceId(String deviceId) async {
+  String? get previousLogPath => _previousLogPath;
+
+  ffi.Api get api => _api;
+
+  Future<ffi.Client> getClientWithDeviceId(
+    String deviceId,
+    bool setAsCurrent,
+  ) async {
     ffi.Client? client;
+    int foundIdx = 0;
     for (final c in _clients) {
       if (c.deviceId().toString() == deviceId) {
         client = c;
         break;
       }
+      foundIdx += 1;
     }
     if (client == null) {
       throw 'Unknown client $deviceId';
+    }
+    if (setAsCurrent) {
+      _index = foundIdx;
     }
 
     return client;
@@ -250,7 +257,7 @@ class ActerSdk {
     String roomId,
     String eventId,
   ) async {
-    final client = await getClientWithDeviceId(deviceId);
+    final client = await getClientWithDeviceId(deviceId, false);
     return await client.getNotificationItem(roomId, eventId);
   }
 
@@ -262,7 +269,7 @@ class ActerSdk {
       _clients.add(client);
     }
     _index = prefs.getInt('$_sessionKey::currentClientIdx') ?? 0;
-    debugPrint('Migrated $_clients');
+    _log.warning('Migrated $_clients');
 
     await _persistSessions();
     // then destroy the old records.
@@ -272,21 +279,22 @@ class ActerSdk {
 
   Future<void> _restore() async {
     if (_clients.isNotEmpty) {
-      debugPrint('double restore. ignore');
+      _log.warning('double restore. ignore');
       return;
     }
     String appDocPath = await appDir();
     int delayedCounter = 0;
     while (!await storage.isCupertinoProtectedDataAvailable()) {
       if (delayedCounter > 10) {
+        _log.severe('Secure Store not available after 10 seconds');
         throw 'Secure Store not available';
       }
       delayedCounter += 1;
-      debugPrint("Secure Storage isn't available yet. Delaying");
+      _log.info("Secure Storage isn't available yet. Delaying");
       await Future.delayed(const Duration(milliseconds: 50));
     }
 
-    debugPrint('Secure Storage is available. Attempting to read.');
+    _log.info('Secure Storage is available. Attempting to read.');
     if (Platform.isAndroid) {
       // fake read for https://github.com/mogol/flutter_secure_storage/issues/566
       await storage.read(key: _sessionKey);
@@ -306,14 +314,14 @@ class ActerSdk {
           ffi.Client client = await _api.loginWithToken(appDocPath, token);
           _clients.add(client);
         } else {
-          debugPrint('$deviceId not found. despite in session list');
+          _log.severe('$deviceId not found. despite in session list');
         }
       }
       final key = await storage.read(key: '$_sessionKey::currentClientIdx');
       _index = int.tryParse(key ?? '0') ?? 0;
     }
-    debugPrint('loading configuration from $appDocPath');
-    debugPrint('restored $_clients');
+    _log.info('loading configuration from $appDocPath');
+    _log.info('restored ${_clients.length} clients');
   }
 
   ffi.Client? get currentClient {
@@ -402,8 +410,8 @@ class ActerSdk {
           userId,
           defaultServerName,
         );
-      } catch (e) {
-        debugPrint('Error logging out: $e');
+      } catch (e, s) {
+        _log.severe('Error nuking', e, s);
       }
     }
 
@@ -418,6 +426,30 @@ class ActerSdk {
         ? ffi.Api(await _getAndroidDynLib('libacter.so'))
         : ffi.Api.load();
     String logPath = await appCacheDir();
+    FileSystemEntity? latestLogPath;
+
+    // clear screenshots, and logs (but keep the latest one)
+    final entities = Directory(logPath).list(
+      recursive: false,
+      followLinks: false,
+    );
+    await for (final entity in entities) {
+      if (screenshotFileRegExp.hasMatch(entity.path)) {
+        await entity.delete(); // remove old screenshots
+      }
+      if (logFileRegExp.hasMatch(entity.path)) {
+        if (latestLogPath == null) {
+          latestLogPath = entity;
+        } else {
+          if (latestLogPath.path.compareTo(entity.path) < 0) {
+            await latestLogPath.delete();
+            latestLogPath = entity;
+          } else {
+            await entity.delete();
+          }
+        }
+      }
+    }
 
     final logSettings = (await sharedPrefs()).getString(rustLogKey);
     try {
@@ -451,6 +483,10 @@ class ActerSdk {
       );
     }
     final instance = ActerSdk._(api);
+    if (latestLogPath != null) {
+      instance._previousLogPath = latestLogPath.absolute.path;
+      _log.info('Prior log file: ${instance._previousLogPath}');
+    }
     return instance;
   }
 
@@ -506,11 +542,7 @@ class ActerSdk {
       final client = _clients.removeAt(0);
       unawaited(
         client.logout().catchError((e) {
-          developer.log(
-            'Logout of Guest failed',
-            level: 900, // warning
-            error: e,
-          );
+          _log.warning('Logout of Guest failed', e);
           return e is int;
         }),
       ); // Explicitly-ignored fire-and-forget.
@@ -524,15 +556,11 @@ class ActerSdk {
     // remove current client from list
     final client = _clients.removeAt(_index);
     _index = _index > 0 ? _index - 1 : 0;
-    debugPrint('Remaining clients $_clients');
+    _log.info('Remaining clients: ${_clients.length}');
     await _persistSessions();
     unawaited(
       client.logout().catchError((e) {
-        developer.log(
-          'Logout failed',
-          level: 900, // warning
-          error: e,
-        );
+        _log.warning('Logout failed', e);
         return e is int;
       }),
     ); // Explicitly-ignored fire-and-forget.
@@ -612,33 +640,5 @@ class ActerSdk {
       userId,
       defaultServerName,
     );
-  }
-
-  ffi.CreateConvoSettingsBuilder newConvoSettingsBuilder() {
-    return _api.newConvoSettingsBuilder();
-  }
-
-  ffi.CreateSpaceSettingsBuilder newSpaceSettingsBuilder() {
-    return _api.newSpaceSettingsBuilder();
-  }
-
-  ffi.JoinRuleBuilder newJoinRuleBuilder() {
-    return _api.newJoinRuleBuilder();
-  }
-
-  String rotateLogFile() {
-    return _api.rotateLogFile();
-  }
-
-  String? parseMarkdown(String text) {
-    return _api.parseMarkdown(text);
-  }
-
-  void writeLog(String text, String level) {
-    _api.writeLog(text, level);
-  }
-
-  ffi.ThumbnailSize newThumbSize(int width, int height) {
-    return _api.newThumbSize(width, height);
   }
 }

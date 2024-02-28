@@ -6,6 +6,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/widgets/skeletons/event_list_skeleton_widget.dart';
 import 'package:acter/features/events/widgets/events_item.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:flutter/material.dart';
@@ -95,7 +96,7 @@ class SpaceEventsPage extends ConsumerWidget {
               ),
             ),
             loading: () => const SliverToBoxAdapter(
-              child: Center(child: CircularProgressIndicator()),
+              child: Center(child: EventListSkeleton()),
             ),
           ),
         ],

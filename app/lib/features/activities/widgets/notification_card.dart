@@ -10,6 +10,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::activities::notifications');
 
 final notificationSpaceDataProvider = FutureProvider.autoDispose
     .family<ProfileData, ffi.Notification>((ref, notification) async {
@@ -58,7 +61,7 @@ class NotificationCard extends ConsumerWidget {
                   size: 48,
                 ),
                 error: (err, stackTrace) {
-                  debugPrint('Failed to load space due to $err');
+                  _log.severe('Failed to load space', err, stackTrace);
                   return ActerAvatar(
                     mode: DisplayMode.Space,
                     avatarInfo:
@@ -113,7 +116,7 @@ class NotificationCard extends ConsumerWidget {
                   size: 48,
                 ),
                 error: (err, stackTrace) {
-                  debugPrint('Failed to load room due to $err');
+                  _log.severe('Failed to load room', err, stackTrace);
                   return ActerAvatar(
                     mode: DisplayMode.GroupChat,
                     avatarInfo: AvatarInfo(

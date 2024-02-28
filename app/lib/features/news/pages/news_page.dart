@@ -1,6 +1,7 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/widgets/news_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +27,7 @@ class NewsPage extends ConsumerWidget {
           Visibility(
             visible: canPostNews,
             child: IconButton(
-              /// [GoRouter] use context.push() for preserving states
-              /// of previous route and context.go() for vice versa.
+              key: NewsUpdateKeys.addNewsUpdate,
               onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
               icon: Icon(
                 Atlas.plus_circle_thin,

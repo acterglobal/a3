@@ -2,40 +2,38 @@ import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::chat');
 
 // ignore_for_file: unused_field
 
 class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, Convo> {
   late Stream<bool> _listener;
-  late StreamSubscription<bool> _sub;
+  late StreamSubscription<bool> _poller;
 
   @override
-  Future<Convo> build(Convo arg) async {
+  FutureOr<Convo> build(Convo arg) async {
     final convo = arg;
-    final convoId = convo.getRoomId().toString();
+    final convoId = convo.getRoomIdStr();
     final client = ref.watch(alwaysClientProvider);
-    ref.onDispose(onDispose);
-    _listener = client.subscribeStream(convoId);
-    _sub = _listener.listen(
+    _listener = client.subscribeStream(convoId); // keep it resident in memory
+    _poller = _listener.listen(
       (e) async {
-        state = await AsyncValue.guard(() => client.convo(convoId));
+        state = await AsyncValue.guard(() async => await client.convo(convoId));
       },
       onError: (e, stack) {
-        debugPrint('stream errored: $e : $stack');
+        _log.severe('stream errored.', e, stack);
       },
       onDone: () {
-        debugPrint('stream ended');
+        _log.info('stream ended');
       },
     );
+    ref.onDispose(() => _poller.cancel());
     return convo;
-  }
-
-  void onDispose() {
-    debugPrint('disposing profile not for $arg');
-    _sub.cancel();
   }
 }
 
@@ -43,40 +41,36 @@ class LatestMsgNotifier extends StateNotifier<RoomMessage?> {
   final Ref ref;
   final Convo convo;
   late Stream<bool> _listener;
-  late StreamSubscription<bool> _sub;
+  late StreamSubscription<bool> _poller;
 
   LatestMsgNotifier(this.ref, this.convo) : super(null) {
-    final convoId = convo.getRoomId().toString();
+    final convoId = convo.getRoomIdStr();
     state = convo.latestMessage();
     final client = ref.watch(alwaysClientProvider);
-    _listener = client.subscribeStream('$convoId::latest_message');
-    _sub = _listener.listen(
+    _listener = client.subscribeStream(
+      '$convoId::latest_message',
+    ); // keep it resident in memory
+    _poller = _listener.listen(
       (e) {
-        debugPrint(
-          'received new latest message call for ${convo.getRoomIdStr()}',
-        );
+        _log.info('received new latest message call for $convoId');
         state = convo.latestMessage();
       },
       onError: (e, stack) {
-        debugPrint('stream errored: $e : $stack');
+        _log.severe('stream errored', e, stack);
       },
       onDone: () {
-        debugPrint('stream ended');
+        _log.info('stream ended');
       },
     );
-    ref.onDispose(onDispose);
-  }
-
-  void onDispose() {
-    debugPrint('disposing latest msg listener for ${convo.getRoomIdStr()}');
-    _sub.cancel();
+    ref.onDispose(() => _poller.cancel());
   }
 }
 
 class ChatRoomsListNotifier extends StateNotifier<List<Convo>> {
   final Ref ref;
   final Client client;
-  StreamSubscription<ConvoDiff>? subscription;
+  late Stream<ConvoDiff> _listener;
+  late StreamSubscription<ConvoDiff> _poller;
 
   ChatRoomsListNotifier({
     required this.ref,
@@ -85,19 +79,15 @@ class ChatRoomsListNotifier extends StateNotifier<List<Convo>> {
     _init();
   }
 
-  void _init() async {
-    subscription = client.convosStream().listen((diff) async {
-      await _handleDiff(diff);
-    });
-    ref.onDispose(() async {
-      debugPrint('disposing message stream');
-      await subscription?.cancel();
-    });
+  void _init() {
+    _listener = client.convosStream(); // keep it resident in memory
+    _poller = _listener.listen(_handleDiff);
+    ref.onDispose(() => _poller.cancel());
   }
 
   List<Convo> listCopy() => List.from(state, growable: true);
 
-  Future<void> _handleDiff(ConvoDiff diff) async {
+  void _handleDiff(ConvoDiff diff) {
     switch (diff.action()) {
       case 'Append':
         final newList = listCopy();

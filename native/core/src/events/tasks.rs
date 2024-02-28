@@ -181,7 +181,7 @@ impl TaskListUpdateEventContent {
             updated = true;
         }
         if let Some(color) = &self.color {
-            task_list.color = color.clone();
+            task_list.color = *color;
             updated = true;
         }
         if let Some(sort_order) = &self.sort_order {
@@ -439,7 +439,7 @@ impl TaskUpdateEventContent {
             updated = true;
         }
         if let Some(color) = &self.color {
-            task.color = color.clone();
+            task.color = *color;
             updated = true;
         }
         if let Some(keywords) = &self.keywords {

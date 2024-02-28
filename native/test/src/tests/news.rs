@@ -1,4 +1,5 @@
 use crate::utils::{random_user_with_random_space, random_user_with_template};
+use acter::new_colorize_builder;
 use anyhow::{bail, Result};
 use std::io::Write;
 use tempfile::NamedTempFile;
@@ -90,7 +91,9 @@ async fn news_smoketest() -> Result<()> {
 
     let mut draft = main_space.news_draft()?;
     let text_draft = user.text_plain_draft("This is text slide".to_string());
-    draft.add_slide(Box::new(text_draft)).await?;
+    draft
+        .add_slide(Box::new(text_draft.into_news_slide_draft()))
+        .await?;
     let event_id = draft.send().await?;
     print!("draft sent event id: {}", event_id);
 
@@ -118,7 +121,74 @@ async fn news_plain_text_test() -> Result<()> {
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
     let text_draft = user.text_plain_draft("This is a simple text".to_owned());
-    draft.add_slide(Box::new(text_draft)).await?;
+    draft
+        .add_slide(Box::new(text_draft.into_news_slide_draft()))
+        .await?;
+    draft.send().await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let space_cl = space.clone();
+    Retry::spawn(retry_strategy, move || {
+        let inner_space = space_cl.clone();
+        async move {
+            if inner_space.latest_news_entries(1).await?.len() != 1 {
+                bail!("news not found");
+            } else {
+                Ok(())
+            }
+        }
+    })
+    .await?;
+
+    let slides = space.latest_news_entries(1).await?;
+    let final_entry = slides.first().expect("Item is there");
+    let event_id = final_entry.event_id();
+    let text_slide = final_entry.get_slide(0).expect("we have a slide");
+    assert_eq!(text_slide.type_str(), "text");
+    let msg_content = text_slide.msg_content();
+    assert!(msg_content.formatted_body().is_none());
+    assert_eq!(msg_content.body(), "This is a simple text".to_owned());
+
+    // also check what the notification will be like
+    let notif = user
+        .get_notification_item(space.room_id().to_string(), event_id.to_string())
+        .await?;
+
+    assert_eq!(notif.title(), space.name().unwrap());
+    assert_eq!(notif.push_style().as_str(), "news");
+    assert_eq!(
+        notif.body().map(|e| e.body()),
+        Some("This is a simple text".to_owned())
+    );
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn news_slide_color_test() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (mut user, space_id) = random_user_with_random_space("news_plain").await?;
+    let state_sync = user.start_sync();
+    state_sync.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    let space_id_str = space_id.to_string();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        let space_id = space_id_str.clone();
+        async move { client.space(space_id).await }
+    })
+    .await?;
+
+    let space = user.space(space_id.to_string()).await?;
+    let mut draft = space.news_draft()?;
+    let mut slide_draft = user
+        .text_plain_draft("This is a simple text".to_owned())
+        .into_news_slide_draft();
+    slide_draft.color(Box::new(new_colorize_builder(None, Some(0xFF112233))?));
+    draft.add_slide(Box::new(slide_draft)).await?;
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -138,9 +208,16 @@ async fn news_plain_text_test() -> Result<()> {
     let slides = space.latest_news_entries(1).await?;
     let final_entry = slides.first().expect("Item is there");
     let text_slide = final_entry.get_slide(0).expect("we have a slide");
-    assert_eq!(text_slide.type_str(), "text");
-    assert!(!text_slide.has_formatted_text());
-    assert_eq!(text_slide.text(), "This is a simple text".to_owned());
+    // no foreground color
+    assert_eq!(
+        text_slide.colors().map(|e| e.color().is_some()),
+        Some(false)
+    );
+    // the correct background color
+    assert_eq!(
+        text_slide.colors().and_then(|e| e.background()),
+        Some(0xFF112233)
+    );
 
     Ok(())
 }
@@ -166,7 +243,9 @@ async fn news_markdown_text_test() -> Result<()> {
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
     let text_draft = user.text_markdown_draft("## This is a simple text".to_owned());
-    draft.add_slide(Box::new(text_draft)).await?;
+    draft
+        .add_slide(Box::new(text_draft.into_news_slide_draft()))
+        .await?;
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -187,12 +266,26 @@ async fn news_markdown_text_test() -> Result<()> {
     let final_entry = slides.first().expect("Item is there");
     let text_slide = final_entry.get_slide(0).expect("we have a slide");
     assert_eq!(text_slide.type_str(), "text");
-    assert!(text_slide.has_formatted_text());
+    let msg_content = text_slide.msg_content();
     assert_eq!(
-        text_slide.text(),
-        "<h2>This is a simple text</h2>\n".to_owned()
+        msg_content.formatted_body(),
+        Some("<h2>This is a simple text</h2>\n".to_owned())
     );
 
+    // also check what the notification will be like
+    let notif = user
+        .get_notification_item(
+            space.room_id().to_string(),
+            final_entry.event_id().to_string(),
+        )
+        .await?;
+
+    assert_eq!(notif.title(), space.name().unwrap());
+    assert_eq!(notif.push_style().as_str(), "news");
+    assert_eq!(
+        notif.body().and_then(|e| e.formatted_body()),
+        Some("<h2>This is a simple text</h2>\n".to_owned())
+    );
     Ok(())
 }
 
@@ -225,7 +318,9 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
         tmp_file.path().to_string_lossy().to_string(),
         "image/jpg".to_string(),
     );
-    draft.add_slide(Box::new(image_draft)).await?;
+    draft
+        .add_slide(Box::new(image_draft.into_news_slide_draft()))
+        .await?;
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -246,6 +341,20 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
     let final_entry = slides.first().expect("Item is there");
     let image_slide = final_entry.get_slide(0).expect("we have a slide");
     assert_eq!(image_slide.type_str(), "image");
+
+    // also check what the notification will be like
+    let notif = user
+        .get_notification_item(
+            space.room_id().to_string(),
+            final_entry.event_id().to_string(),
+        )
+        .await?;
+
+    assert_eq!(notif.title(), space.name().unwrap());
+    assert!(notif.body().is_none());
+    assert_eq!(notif.push_style().as_str(), "news");
+    assert!(notif.has_image());
+    let _image_data = notif.image().await?;
 
     Ok(())
 }
@@ -279,7 +388,9 @@ async fn news_png_image_with_text_test() -> Result<()> {
         tmp_file.path().to_string_lossy().to_string(),
         "image/png".to_string(),
     );
-    draft.add_slide(Box::new(image_draft)).await?;
+    draft
+        .add_slide(Box::new(image_draft.into_news_slide_draft()))
+        .await?;
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -349,10 +460,18 @@ async fn news_multiple_slide_test() -> Result<()> {
     );
 
     // we add three slides
-    draft.add_slide(Box::new(image_draft)).await?;
-    draft.add_slide(Box::new(markdown_draft)).await?;
-    draft.add_slide(Box::new(plain_draft)).await?;
-    draft.add_slide(Box::new(video_draft)).await?;
+    draft
+        .add_slide(Box::new(image_draft.into_news_slide_draft()))
+        .await?;
+    draft
+        .add_slide(Box::new(markdown_draft.into_news_slide_draft()))
+        .await?;
+    draft
+        .add_slide(Box::new(plain_draft.into_news_slide_draft()))
+        .await?;
+    draft
+        .add_slide(Box::new(video_draft.into_news_slide_draft()))
+        .await?;
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -379,15 +498,16 @@ async fn news_multiple_slide_test() -> Result<()> {
         .get_slide(1)
         .expect("We have markdown text slide");
     assert_eq!(second_slide.type_str(), "text");
-    assert!(second_slide.has_formatted_text());
+    let msg_content = second_slide.msg_content();
     assert_eq!(
-        second_slide.text(),
-        "<p>This update is <em><strong>reallly important</strong></em></p>\n".to_owned()
+        msg_content.formatted_body(),
+        Some("<p>This update is <em><strong>reallly important</strong></em></p>\n".to_owned())
     );
     let third_slide = final_entry.get_slide(2).expect("We have plain text slide");
     assert_eq!(third_slide.type_str(), "text");
-    assert!(!third_slide.has_formatted_text());
-    assert_eq!(third_slide.text(), "Hello Updates!".to_owned());
+    let msg_content = third_slide.msg_content();
+    assert!(msg_content.formatted_body().is_none());
+    assert_eq!(msg_content.body(), "Hello Updates!".to_owned());
 
     let fourth_slide = final_entry.get_slide(3).expect("We have video slide");
     assert_eq!(fourth_slide.type_str(), "video");

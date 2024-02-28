@@ -1,16 +1,15 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/user_chip.dart';
 import 'package:acter/features/tasks/widgets/due_chip.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'dart:core';
 
 class TaskInfo extends ConsumerWidget {
   static const statusBtnNotDone = Key('task-info-status-not-done');
@@ -21,6 +20,7 @@ class TaskInfo extends ConsumerWidget {
   static const selfAssignKey = Key('task-self-assign');
   static const selfUnassignKey = Key('task-self-unassign');
   final Task task;
+
   const TaskInfo({super.key, required this.task});
 
   @override
@@ -41,7 +41,7 @@ class TaskInfo extends ConsumerWidget {
                       isDone
                           ? Atlas.check_circle_thin
                           : Icons.radio_button_off_outlined,
-                      size: 48,
+                      size: 28,
                     ),
                   ),
                   onTap: () async {
@@ -101,31 +101,31 @@ class TaskInfo extends ConsumerWidget {
       leading: const Icon(Atlas.business_man_thin),
       title: Wrap(
         children: [
-          ...assignees
-              .map(
-                (userId) => UserChip(
-                  visualDensity: VisualDensity.compact,
-                  roomId: roomId,
-                  memberId: userId,
-                  deleteIcon:
-                      const Icon(Atlas.xmark_circle_thin, key: selfUnassignKey),
-                  onDeleted: account.hasValue &&
-                          account.value!.userId().toString() == userId
-                      ? () async {
-                          await task.unassignSelf();
-                          EasyLoading.showToast(
-                            'assignment withdrawn',
-                            toastPosition: EasyLoadingToastPosition.bottom,
-                          );
-                        }
-                      : null,
-                ),
-              )
-              ,
+          ...assignees.map(
+            (userId) => UserChip(
+              visualDensity: VisualDensity.compact,
+              roomId: roomId,
+              memberId: userId,
+              deleteIcon: const Icon(
+                Atlas.xmark_circle_thin,
+                key: selfUnassignKey,
+                size: 20,
+              ),
+              onDeleted: account.userId().toString() == userId
+                  ? () async {
+                      await task.unassignSelf();
+                      EasyLoading.showToast(
+                        'Assignment withdrawn',
+                        toastPosition: EasyLoadingToastPosition.bottom,
+                      );
+                    }
+                  : null,
+            ),
+          ),
           !task.isAssignedToMe()
               ? ActionChip(
                   key: selfAssignKey,
-                  label: const Text('volunteer'),
+                  label: const Text('Volunteer'),
                   onPressed: () async {
                     await task.assignSelf();
                     EasyLoading.showToast(
@@ -143,6 +143,7 @@ class TaskInfo extends ConsumerWidget {
 
 class TaskTitle extends StatefulWidget {
   final Task task;
+
   const TaskTitle({super.key, required this.task});
 
   @override
@@ -229,7 +230,9 @@ class TaskBody extends StatefulWidget {
   static const editorKey = Key('task-body-editor');
   static const saveEditKey = Key('task-body-save');
   static const cancelEditKey = Key('task-body-cancel');
+
   final Task task;
+
   const TaskBody({super.key, required this.task});
 
   @override
@@ -267,7 +270,10 @@ class _TaskBodyState extends State<TaskBody> {
                 OutlinedButton(
                   key: TaskBody.cancelEditKey,
                   onPressed: () => setState(() => editMode = false),
-                  child: const Text('cancel'),
+                  child: const Text('Cancel'),
+                ),
+                const SizedBox(
+                  width: 10,
                 ),
                 OutlinedButton(
                   key: TaskBody.saveEditKey,
@@ -297,7 +303,7 @@ class _TaskBodyState extends State<TaskBody> {
                       EasyLoading.showError('Failed to update notes: $e');
                     }
                   },
-                  child: const Text('save'),
+                  child: const Text('Save'),
                 ),
               ],
             ),
@@ -390,7 +396,7 @@ class TaskInfoSkeleton extends StatelessWidget {
               dense: true,
               leading: Icon(Atlas.calendar_date_thin),
               title: Chip(
-                label: Text('due date'),
+                label: Text('Due date'),
               ),
             ),
             const ListTile(

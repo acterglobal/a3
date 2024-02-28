@@ -1,9 +1,9 @@
 use acter_core::{
     events::{
         pins::{self, PinBuilder},
-        Icon,
+        Color, Icon,
     },
-    models::{self, ActerModel, AnyActerModel, Color},
+    models::{self, ActerModel, AnyActerModel},
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
@@ -18,6 +18,8 @@ use std::{
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::warn;
+
+use crate::MsgContent;
 
 use super::{client::Client, spaces::Space, RUNTIME};
 
@@ -224,16 +226,16 @@ impl Pin {
             .and_then(|t| t.formatted.clone().map(|f| f.body))
     }
 
-    pub fn content_text(&self) -> Option<String> {
-        self.content.content.clone().map(|t| t.body)
+    pub fn content(&self) -> Option<MsgContent> {
+        self.content.content.as_ref().map(MsgContent::from)
     }
 
     pub fn url(&self) -> Option<String> {
         self.content.url.clone()
     }
 
-    pub fn color(&self) -> Option<Color> {
-        self.content.display.as_ref().and_then(|t| t.color.clone())
+    pub fn color(&self) -> Option<u32> {
+        self.content.display.as_ref().and_then(|t| t.color)
     }
 
     pub fn icon(&self) -> Option<Icon> {
@@ -361,6 +363,12 @@ impl PinDraft {
         self
     }
 
+    pub fn content_html(&mut self, body: String, html_body: String) -> &mut Self {
+        self.content
+            .content(Some(TextMessageEventContent::html(body, html_body)));
+        self
+    }
+
     pub fn unset_content(&mut self) -> &mut Self {
         self.content.content(None);
         self
@@ -415,6 +423,12 @@ impl PinUpdateBuilder {
     pub fn content_markdown(&mut self, body: String) -> &mut Self {
         self.content
             .content(Some(Some(TextMessageEventContent::markdown(body))));
+        self
+    }
+
+    pub fn content_html(&mut self, body: String, html_body: String) -> &mut Self {
+        self.content
+            .content(Some(Some(TextMessageEventContent::html(body, html_body))));
         self
     }
 

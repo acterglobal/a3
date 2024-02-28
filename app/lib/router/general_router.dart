@@ -9,14 +9,13 @@ import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/widgets/create_chat.dart';
 import 'package:acter/features/events/sheets/create_event_sheet.dart';
 import 'package:acter/features/events/sheets/edit_event_sheet.dart';
-import 'package:acter/features/news/pages/simple_post.dart';
+import 'package:acter/features/news/pages/add_news_page.dart';
 import 'package:acter/features/onboarding/pages/intro_page.dart';
 import 'package:acter/features/onboarding/pages/intro_profile.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/start_page.dart';
 import 'package:acter/features/pins/sheets/create_pin_sheet.dart';
-import 'package:acter/features/pins/sheets/edit_pin_sheet.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/settings/super_invites/pages/create.dart';
 import 'package:acter/features/space/sheets/edit_space_sheet.dart';
@@ -115,28 +114,6 @@ List<RouteBase> makeGeneralRoutes() {
           child: CreatePinSheet(
             initialSelectedSpace: state.uri.queryParameters['spaceId'],
           ),
-        );
-      },
-    ),
-    GoRoute(
-      parentNavigatorKey: rootNavKey,
-      name: Routes.editPin.name,
-      path: Routes.editPin.route,
-      pageBuilder: (context, state) {
-        return SideSheetPage(
-          key: state.pageKey,
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween(
-                begin: const Offset(1, 0),
-                end: const Offset(0, 0),
-              ).animate(
-                animation,
-              ),
-              child: child,
-            );
-          },
-          child: EditPinSheet(pinId: state.pathParameters['pinId']!),
         );
       },
     ),
@@ -340,21 +317,11 @@ List<RouteBase> makeGeneralRoutes() {
       parentNavigatorKey: rootNavKey,
       name: Routes.actionAddUpdate.name,
       path: Routes.actionAddUpdate.route,
+      redirect: authGuardRedirect,
       pageBuilder: (context, state) {
-        return SideSheetPage(
+        return NoTransitionPage(
           key: state.pageKey,
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween(
-                begin: const Offset(1, 0),
-                end: const Offset(0, 0),
-              ).animate(
-                animation,
-              ),
-              child: child,
-            );
-          },
-          child: const SimpleNewsPost(),
+          child: const AddNewsPage(),
         );
       },
     ),

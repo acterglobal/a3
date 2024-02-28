@@ -25,14 +25,14 @@ class VideoMessageBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ChatMessageInfo messageInfo =
-        (messageId: message.id, roomId: convo.getRoomIdStr());
+    final roomId = convo.getRoomIdStr();
+    final ChatMessageInfo messageInfo = (messageId: message.id, roomId: roomId);
     final mediaState = ref.watch(mediaChatStateProvider(messageInfo));
     if (mediaState.mediaChatLoadingState.isLoading ||
         mediaState.isDownloading) {
       return loadingIndication(context);
     } else if (mediaState.mediaFile == null) {
-      return videoPlaceholder(context, convo.getRoomIdStr(), mediaState, ref);
+      return videoPlaceholder(context, roomId, mediaState, ref);
     } else {
       return videoUI(context, mediaState);
     }

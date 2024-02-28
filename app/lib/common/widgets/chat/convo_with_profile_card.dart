@@ -9,6 +9,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
   final ProfileData profile;
   final Widget? subtitle;
   final Widget? trailing;
+  final Widget? avatar;
 
   /// Called when the user long-presses on this list tile.
   ///
@@ -31,6 +32,7 @@ class ConvoWithProfileCard extends ConsumerWidget {
     super.key,
     required this.roomId,
     required this.profile,
+    this.avatar,
     this.onTap,
     this.onLongPress,
     this.onFocusChange,
@@ -55,7 +57,8 @@ class ConvoWithProfileCard extends ConsumerWidget {
                     Theme.of(context).colorScheme.secondaryContainer,
                 onFocusChange: onFocusChange,
                 onLongPress: onLongPress,
-                leading: RoomAvatar(roomId: roomId, showParent: showParent),
+                leading: avatar ??
+                    RoomAvatar(roomId: roomId, showParent: showParent),
                 title: Text(
                   profile.displayName ?? roomId,
                   style: Theme.of(context)

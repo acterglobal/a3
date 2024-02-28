@@ -81,7 +81,7 @@ void authTests() {
       QuickJumpKeys.profile,
     ]);
 
-    final displayName = find.byKey(MyProfile.displayNameKey);
+    final displayName = find.byKey(MyProfilePage.displayNameKey);
     await displayName.should(findsOneWidget);
     await find.text(testName).should(findsOneWidget);
   });

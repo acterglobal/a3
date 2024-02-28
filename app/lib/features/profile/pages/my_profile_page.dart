@@ -77,11 +77,12 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
   }
 }
 
-class MyProfile extends ConsumerWidget {
+class MyProfilePage extends ConsumerWidget {
   static const logoutKey = Key('my-profile-logout');
   static const displayNameKey = Key('my-profile-display-name');
+  static const settingsKey = Key('my-profile-settings');
 
-  const MyProfile({super.key});
+  const MyProfilePage({super.key});
 
   Future<void> updateDisplayName(
     AccountProfile profile,
@@ -272,6 +273,7 @@ class MyProfile extends ConsumerWidget {
                               endIndent: 10,
                             ),
                             ProfileItemTile(
+                              key: MyProfilePage.settingsKey,
                               icon: Atlas.gear,
                               title: 'Settings',
                               onPressed: () =>
@@ -282,14 +284,13 @@ class MyProfile extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 5),
-
                       //Not implemented yet
                       Visibility(
                         visible: false,
                         child: Container(
                           margin: const EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.onPrimary,
+                            color: Theme.of(context).colorScheme.primary,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Column(

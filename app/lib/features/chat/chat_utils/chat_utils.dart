@@ -93,7 +93,7 @@ Future<void> navigateToRoomOrAskToJoin(
   String roomId,
 ) async {
   ///Get room from roomId
-  final room = await ref.watch(maybeRoomProvider(roomId).future);
+  final room = await ref.read(maybeRoomProvider(roomId).future);
   if (!context.mounted) return;
 
   /// Navigate to Room is already joined

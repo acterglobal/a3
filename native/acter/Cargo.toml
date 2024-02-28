@@ -21,13 +21,15 @@ proxyman = ["dep:reqwest", "dep:openssl"]
 [build-dependencies]
 ffi-gen = { git = "https://github.com/acterglobal/ffi-gen" }
 cbindgen = "0.26.0"
-uniffi = { git = "https://github.com/mozilla/uniffi-rs/", features = [ "build" ] }
+uniffi = { version = "0.26.1", features = [ "build" ] }
 
 [dependencies]
 anyhow = "1.0.79"
 async-stream = "0.3.5"
+base64ct = { workspace = true, features = ["alloc"] }
 chrono = "0.4"
-derive_builder = "0.13.0"
+derive-getters = { workspace = true }
+derive_builder = { workspace = true }
 eyeball-im = "0.4.2"
 fern = { git = "https://github.com/acterglobal/fern", branch = "rotate", features = ["manual"] }
 ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen" }
@@ -54,17 +56,18 @@ tokio-stream = "0.1.14"
 tokio-retry = "0.3.0"
 tracing = { version = "0.1.40", default-features = false, features = ["log"] }
 uuid = { version = "1.6.1", features = ["v4"] }
+urlencoding = "2.1.3"
 
 # for markdown support.
 pulldown-cmark = { version = "0.9.3", default-features = false }
 
 # for uniffi support
-uniffi = { git = "https://github.com/mozilla/uniffi-rs/", features = ["cli"], optional = true }
+uniffi = { version = "0.26.1", features = ["cli"], optional = true }
 thiserror = { version = "1.0.56", optional = true }
 
 # for proxyman support
 # enable support for system native TLS certificates
-reqwest = { optional = true, version = "*", default-features = false, features = ["rustls-tls-native-roots"]}
+reqwest = { optional = true, version = "*", default-features = false, features = ["rustls-tls-native-roots"] }
 
 # for tracing support
 tracing-subscriber = { version = "0.3.1", optional = true, default-features = false, features = ["fmt", "std", "env-filter"] }
@@ -112,11 +115,11 @@ matrix-sdk-ui = { workspace = true }
 android_logger = "0.12"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 tracing-android = "0.2"
-openssl = { version = "*", optional = true, features = ["vendored"]}
+openssl = { version = "*", optional = true, features = ["vendored"] }
 
 #   ----   IOS/MACOS
 [target.'cfg(target_os = "ios")'.dependencies]
-oslog = { version = "0.2", features = ["logger"]}
+oslog = { version = "0.2", features = ["logger"] }
 
 [lib]
 name = "acter"

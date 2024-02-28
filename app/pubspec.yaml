@@ -48,6 +48,7 @@ dependencies:
   flutter_keyboard_visibility: ^6.0.0
   expandable_text: ^2.3.0
   cached_network_image: ^3.2.1
+  fc_native_video_thumbnail: ^0.7.0
   flutter_mentions:
     git:
       url: https://github.com/gtalha07/flutter_mentions.git
@@ -63,6 +64,7 @@ dependencies:
   table_calendar: ^3.0.9
   omni_datetime_picker: ^1.0.9
   flutter_easyloading: ^3.0.5
+  appflowy_editor: ^2.3.2
 
   # Code Generation
   flutter_localizations:
@@ -121,6 +123,7 @@ dependencies:
   media_kit_libs_linux: any
   video_player: ^2.8.1
   share_plus: ^7.2.1
+  carousel_indicator: ^1.0.6
 
 # FIXME keep until a new version has been published
 dependency_overrides:
@@ -215,6 +218,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - assets/videos/
     - assets/icon/
 
   #   - images/a_dot_ham.jpeg

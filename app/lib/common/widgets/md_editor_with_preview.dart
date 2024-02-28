@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final markdownProvider =
     FutureProvider.family<String, String>((ref, input) async {
   final sdk = await ref.watch(sdkProvider.future);
-  return (sdk.parseMarkdown(input) ?? '');
+  return sdk.api.parseMarkdown(input) ?? '';
 });
 
 class MdEditorWithPreview extends ConsumerStatefulWidget {

@@ -1,171 +1,117 @@
-import 'dart:typed_data';
-
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/features/news/model/keys.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/widgets/events_item.dart';
+import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
+import 'package:acter/features/news/model/news_references_model.dart';
+import 'package:acter/features/news/widgets/news_item_slide/video_slide.dart';
 import 'package:acter/features/news/widgets/news_side_bar.dart';
+import 'package:acter/features/news/widgets/news_item_slide/image_slide.dart';
+import 'package:acter/features/news/widgets/news_item_slide/text_slide.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:carousel_indicator/carousel_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class NewsItem extends ConsumerWidget {
+class NewsItem extends ConsumerStatefulWidget {
   final Client client;
   final NewsEntry news;
   final int index;
+  final PageController pageController;
 
   const NewsItem({
     super.key,
     required this.client,
     required this.news,
     required this.index,
+    required this.pageController,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final slides = news.slides().toList();
+  ConsumerState<NewsItem> createState() => _NewsItemState();
+}
+
+class _NewsItemState extends ConsumerState<NewsItem> {
+  int currentSlideIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final roomId = widget.news.roomId().toString();
+    final space = ref.watch(briefSpaceItemProvider(roomId));
+    final slides = widget.news.slides().toList();
+    final color = slides[currentSlideIndex].colors();
     final bgColor = convertColor(
-      news.colors()?.background(),
+      color?.background(),
       Theme.of(context).colorScheme.background,
     );
     final fgColor = convertColor(
-      news.colors()?.color(),
+      color?.color(),
       Theme.of(context).colorScheme.onPrimary,
     );
 
-    return PageView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: slides.length,
-      itemBuilder: (context, idx) {
-        final slideType = slides[idx].typeStr();
-        switch (slideType) {
-          case 'image':
-            return RegularSlide(
-              news: news,
-              index: index,
-              bgColor: bgColor,
-              fgColor: fgColor,
-              child: ImageSlide(slide: slides[idx]),
-            );
-
-          case 'video':
-            return RegularSlide(
-              news: news,
-              index: index,
-              bgColor: bgColor,
-              fgColor: fgColor,
-              child: const Expanded(
-                child: Center(
-                  child: Text('video slides not yet supported'),
-                ),
-              ),
-            );
-
-          case 'text':
-            return Stack(
-              children: <Widget>[
-                Center(
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.only(left: 8, right: 80, bottom: 8),
-                    child: Card(
-                      color: bgColor,
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: slides[idx].hasFormattedText()
-                            ? RenderHtml(
-                                key: NewsUpdateKeys.textUpdateContent,
-                                text: slides[idx].text(),
-                                defaultTextStyle: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                      color: fgColor,
-                                    ),
-                              )
-                            : Text(
-                                key: NewsUpdateKeys.textUpdateContent,
-                                slides[idx].text(),
-                                softWrap: true,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                      color: fgColor,
-                                    ),
-                              ),
-                      ),
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: NewsSideBar(
-                    news: news,
-                    index: index,
-                  ),
-                ),
-              ],
-            );
-
-          default:
-            return RegularSlide(
-              news: news,
-              index: index,
-              bgColor: bgColor,
-              fgColor: fgColor,
-              child: Expanded(
-                child: Center(
-                  child: Text('$slideType slides not yet supported'),
-                ),
-              ),
-            );
-        }
-      },
-    );
-  }
-}
-
-class RegularSlide extends ConsumerWidget {
-  final NewsEntry news;
-  final int index;
-  final Color bgColor;
-  final Color fgColor;
-  final Widget child;
-
-  const RegularSlide({
-    super.key,
-    required this.news,
-    required this.index,
-    required this.bgColor,
-    required this.fgColor,
-    required this.child,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final slide = news.getSlide(0)!;
-    final roomId = news.roomId().toString();
-    final space = ref.watch(briefSpaceItemProvider(roomId));
     return Stack(
       children: [
-        child,
-        Padding(
-          padding: const EdgeInsets.only(left: 8, right: 80, bottom: 8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              InkWell(
-                onTap: () {
-                  context.pushNamed(
-                    Routes.space.name,
-                    pathParameters: {'spaceId': roomId},
-                  );
-                },
+        PageView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: slides.length,
+          onPageChanged: (page) {
+            currentSlideIndex = page;
+            setState(() {});
+          },
+          itemBuilder: (context, idx) {
+            final slideType = slides[idx].typeStr();
+            switch (slideType) {
+              case 'image':
+                return ImageSlide(
+                  slide: slides[idx],
+                  bgColor: bgColor,
+                  fgColor: fgColor,
+                );
+
+              case 'video':
+                return VideoSlide(
+                  slide: slides[idx],
+                  bgColor: bgColor,
+                  fgColor: fgColor,
+                );
+
+              case 'text':
+                return TextSlide(
+                  slide: slides[idx],
+                  bgColor: bgColor,
+                  fgColor: fgColor,
+                  pageController: widget.pageController,
+                );
+
+              default:
+                return Expanded(
+                  child: Center(
+                    child: Text('$slideType slides not yet supported'),
+                  ),
+                );
+            }
+          },
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 60, bottom: 20),
+              child: newsActionButtons(newsSlide: slides[currentSlideIndex]),
+            ),
+            InkWell(
+              onTap: () {
+                context.pushNamed(
+                  Routes.space.name,
+                  pathParameters: {'spaceId': roomId},
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(16),
                 child: space.when(
                   data: (space) =>
                       Text(space!.spaceProfileData.displayName ?? roomId),
@@ -175,85 +121,64 @@ class RegularSlide extends ConsumerWidget {
                   ),
                 ),
               ),
-              Text(
-                slide.text(),
-                softWrap: true,
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  color: fgColor,
-                  shadows: [
-                    Shadow(
-                      color: bgColor,
-                      offset: const Offset(1, 1),
-                      blurRadius: 0,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
         Align(
           alignment: Alignment.bottomRight,
           child: NewsSideBar(
-            news: news,
-            index: index,
+            news: widget.news,
+            index: widget.index,
+          ),
+        ),
+        Positioned.fill(
+          child: Visibility(
+            visible: slides.length > 1,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 50),
+                child: CarouselIndicator(
+                  count: slides.length,
+                  index: currentSlideIndex,
+                  width: 10,
+                  height: 10,
+                ),
+              ),
+            ),
           ),
         ),
       ],
     );
   }
-}
 
-class ImageSlide extends StatefulWidget {
-  final NewsSlide slide;
+  Widget newsActionButtons({
+    required NewsSlide newsSlide,
+  }) {
+    final newsReferencesList = newsSlide.references().toList();
+    if (newsReferencesList.isEmpty) return const SizedBox();
 
-  const ImageSlide({
-    super.key,
-    required this.slide,
-  });
+    final referenceDetails = newsReferencesList.first.refDetails();
+    final uriId = referenceDetails.uri() ?? '';
+    final title = referenceDetails.title() ?? '';
 
-  @override
-  State<ImageSlide> createState() => _ImageSlideState();
-}
-
-class _ImageSlideState extends State<ImageSlide> {
-  late Future<FfiBufferUint8> newsImage;
-  late MsgContent? msgContent;
-
-  @override
-  void initState() {
-    super.initState();
-    getNewsImage();
-  }
-
-  Future<void> getNewsImage() async {
-    newsImage = widget.slide.sourceBinary(null);
-    msgContent = widget.slide.msgContent();
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<Uint8List>(
-      future: newsImage.then((value) => value.asTypedList()),
-      builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
-        if (snapshot.hasData) {
-          return Container(
-            foregroundDecoration: BoxDecoration(
-              image: DecorationImage(
-                fit: BoxFit.cover,
-                image: MemoryImage(
-                  Uint8List.fromList(snapshot.data!),
-                ),
-              ),
-            ),
+    if (title == NewsReferencesType.shareEvent.name) {
+      return ref.watch(calendarEventProvider(uriId)).when(
+            data: (calendarEvent) {
+              return EventItem(
+                event: calendarEvent,
+              );
+            },
+            loading: () => const EventItemSkeleton(),
+            error: (e, s) => Center(child: Text('Event failed: $e')),
           );
-        } else {
-          return const Center(child: Text('Loading image'));
-        }
-      },
-    );
+    } else {
+      return const Card(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Text('Unsupported - Please upgrade!'),
+        ),
+      );
+    }
   }
 }

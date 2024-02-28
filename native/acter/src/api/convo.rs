@@ -110,7 +110,13 @@ async fn set_latest_msg(
 
 impl Convo {
     pub(crate) async fn new(client: Client, inner: Room) -> Self {
-        let timeline = Arc::new(inner.room.timeline().await);
+        let timeline = Arc::new(
+            inner
+                .room
+                .timeline()
+                .await
+                .expect("Creating a timeline builder doesn't fail"),
+        );
         let latest_message_content: Option<RoomMessage> = client
             .store()
             .get_raw(&latest_message_storage_key(inner.room_id()))
@@ -143,7 +149,7 @@ impl Convo {
                 }
             }
             if (!event_found && !has_latest_msg) {
-                // let's trigger a backpagination in hope that helps us...
+                // let's trigger a back pagination in hope that helps us...
                 let options = PaginationOptions::until_num_items(20, 10);
                 if let Err(error) = last_msg_tl.paginate_backwards(options).await {
                     error!(?error, room_id=?latest_msg_room.room_id(), "backpagination failed");

@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/notifiers/network_notifier.dart';
+import 'package:acter/common/providers/notifiers/notification_settings_notifier.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Network/Connectivity Providers
@@ -32,20 +32,33 @@ Future<ProfileData> getProfileData(Account account) async {
   return ProfileData(displayName.text(), avatar.data());
 }
 
-final myUserIdStrProvider = StateProvider((ref) {
-  final client = ref.watch(alwaysClientProvider);
-  return client.userId().toString();
-});
+final myUserIdStrProvider = StateProvider(
+  (ref) => ref.watch(
+    alwaysClientProvider.select((client) => client.userId().toString()),
+  ),
+);
 
-final accountProvider = FutureProvider((ref) async {
-  final client = ref.watch(alwaysClientProvider);
-  return client.account();
-});
+final accountProvider = StateProvider(
+  (ref) => ref.watch(
+    alwaysClientProvider.select((client) => client.account()),
+  ),
+);
 
 final accountProfileProvider = FutureProvider((ref) async {
-  final account = await ref.watch(accountProvider.future);
+  final account = ref.watch(accountProvider);
   final profile = await getProfileData(account);
   return AccountProfile(account, profile);
+});
+
+final notificationSettingsProvider = AsyncNotifierProvider<
+    AsyncNotificationSettingsNotifier,
+    NotificationSettings>(() => AsyncNotificationSettingsNotifier());
+
+final appContentNotificationSetting =
+    FutureProvider.family<bool, String>((ref, appKey) async {
+  final notificationsSettings =
+      await ref.watch(notificationSettingsProvider.future);
+  return await notificationsSettings.globalContentSetting(appKey);
 });
 
 // Email addresses that registered by user
@@ -57,10 +70,7 @@ class EmailAddresses {
 }
 
 final emailAddressesProvider = FutureProvider((ref) async {
-  final client = ref.watch(clientProvider);
-  if (client == null) {
-    throw NoClientException();
-  }
+  final client = ref.watch(alwaysClientProvider);
   final threePidManager = client.threePidManager();
   final confirmed =
       asDartStringList(await threePidManager.confirmedEmailAddresses());
@@ -72,7 +82,5 @@ final emailAddressesProvider = FutureProvider((ref) async {
       unconfirmed.add(requested[i]);
     }
   }
-  debugPrint('confirmed email addresses: $confirmed');
-  debugPrint('unconfirmed email addresses: $unconfirmed');
   return EmailAddresses(confirmed, unconfirmed);
 });

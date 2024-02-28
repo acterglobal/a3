@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
@@ -8,13 +7,15 @@ import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::news::sidebar');
 
 class NewsSideBar extends ConsumerWidget {
   final ffi.NewsEntry news;
@@ -31,21 +32,10 @@ class NewsSideBar extends ConsumerWidget {
     final roomId = news.roomId().toString();
     final userId = ref.watch(alwaysClientProvider).userId().toString();
     final space = ref.watch(briefSpaceItemWithMembershipProvider(roomId));
-    final bgColor = convertColor(
-      news.colors()?.background(),
-      Theme.of(context).colorScheme.neutral6,
-    );
-    final fgColor = convertColor(
-      news.colors()?.color(),
-      Theme.of(context).colorScheme.neutral6,
-    );
+
     final TextStyle style = Theme.of(context).textTheme.bodyLarge!.copyWith(
-      fontSize: 13,
-      color: fgColor,
-      shadows: [
-        Shadow(color: bgColor, offset: const Offset(2, 2), blurRadius: 5),
-      ],
-    );
+          fontSize: 13,
+        );
 
     return Column(
       children: <Widget>[
@@ -53,7 +43,7 @@ class NewsSideBar extends ConsumerWidget {
         LikeButton(
           likeCount: news.likesCount().toString(),
           style: style,
-          color: fgColor,
+          color: Colors.white,
           index: index,
         ),
         const SizedBox(height: 10),
@@ -100,7 +90,7 @@ class NewsSideBar extends ConsumerWidget {
             },
           ),
           error: (e, st) {
-            debugPrint('Error loading space: $e');
+            _log.severe('Error loading space', e, st);
             return ActerAvatar(
               mode: DisplayMode.Space,
               avatarInfo: AvatarInfo(

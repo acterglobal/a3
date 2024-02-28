@@ -1,19 +1,22 @@
 // ignore_for_file: unnecessary_null_comparison
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-import 'dart:async';
 
 import 'package:acter/common/models/profile_data.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jiffy/jiffy.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::util');
 
 /// Get provider right from the context no matter where we are
 extension Context on BuildContext {
@@ -63,7 +66,7 @@ List<DateTime> daysInRange(DateTime first, DateTime last) {
   );
 }
 
-String formatDt(CalendarEvent e) {
+String formatDate(CalendarEvent e) {
   final start = toDartDatetime(e.utcStart()).toLocal();
   final end = toDartDatetime(e.utcEnd()).toLocal();
   final startFmt = DateFormat.yMMMd().format(start);
@@ -75,11 +78,23 @@ String formatDt(CalendarEvent e) {
   }
 }
 
-String formatTime(CalendarEvent e) => '${Jiffy.parseFromDateTime(
-      toDartDatetime(e.utcStart()).toLocal(),
-    ).jm} - ${Jiffy.parseFromDateTime(
-      toDartDatetime(e.utcEnd()).toLocal(),
-    ).jm}';
+String formatTime(CalendarEvent e) {
+  final start = toDartDatetime(e.utcStart()).toLocal();
+  final end = toDartDatetime(e.utcEnd()).toLocal();
+  return '${Jiffy.parseFromDateTime(start).jm} - ${Jiffy.parseFromDateTime(end).jm}';
+}
+
+String getMonthFromDate(UtcDateTime utcDateTime) {
+  final localDateTime = toDartDatetime(utcDateTime).toLocal();
+  final month = DateFormat('MMM').format(localDateTime);
+  return month;
+}
+
+String getDayFromDate(UtcDateTime utcDateTime) {
+  final localDateTime = toDartDatetime(utcDateTime).toLocal();
+  final day = DateFormat('dd').format(localDateTime);
+  return day;
+}
 
 String jiffyTime(int timeInterval) {
   final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
@@ -103,12 +118,12 @@ String jiffyTime(int timeInterval) {
 Future<bool> openLink(String target, BuildContext context) async {
   final Uri? url = Uri.tryParse(target);
   if (url == null || !url.hasAuthority) {
-    debugPrint('Opening internally: $url');
+    _log.info('Opening internally: $url');
     // not a valid URL, try local routing
     await context.push(target);
     return true;
   } else {
-    debugPrint('Opening external URL: $url');
+    _log.info('Opening external URL: $url');
     return await launchUrl(url);
   }
 }
@@ -117,6 +132,11 @@ String randomString() {
   final random = Random.secure();
   final values = List<int>.generate(16, (i) => random.nextInt(255));
   return base64UrlEncode(values);
+}
+
+T getRandomElement<T>(List<T> list) {
+  final i = Random().nextInt(list.length);
+  return list[i];
 }
 
 int hexOfRGBA(int r, int g, int b, {double opacity = 1}) {
@@ -251,6 +271,7 @@ enum LabsFeature {
   cobudget,
   polls,
   discussions,
+  pinsEditor,
 
   // searchOptions
   showNotifications, // FIXME: old name for desktop notifications
@@ -262,15 +283,6 @@ enum LabsFeature {
         LabsFeature.mobilePushNotifications,
       ];
 }
-
-// ignore: constant_identifier_names
-enum RSVP { Yes, Maybe, No, Pending }
-
-const List<(RSVP, String)> rsvpOptions = <(RSVP, String)>[
-  (RSVP.No, 'No'),
-  (RSVP.Maybe, 'Maybe'),
-  (RSVP.Yes, 'Yes'),
-];
 
 typedef ChatWithProfileData = ({Convo chat, ProfileData profile});
 typedef SpaceWithProfileData = ({Space space, ProfileData profile});

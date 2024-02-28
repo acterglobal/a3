@@ -1,7 +1,10 @@
 import 'package:acter/common/notifications/notifications.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/settings/widgets/app_notifications_settings_tile.dart';
 import 'package:acter/features/settings/widgets/labs_notifications_settings_tile.dart';
+import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
+import 'package:acter/features/settings/providers/notifications_mode_provider.dart';
 import 'package:acter/features/settings/widgets/settings_section_with_title_actions.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
@@ -16,7 +19,8 @@ import 'package:settings_ui/settings_ui.dart';
 class _AddEmail extends StatefulWidget {
   final List<String> emails;
   const _AddEmail(
-    this.emails,);
+    this.emails,
+  );
 
   @override
   State<_AddEmail> createState() => __AddEmailState();
@@ -77,22 +81,126 @@ class NotificationsSettingsPage extends ConsumerWidget {
           elevation: 0.0,
           title: const Text('Notifications'),
         ),
-        body: Column(
-          children: [
-            SettingsList(
-              shrinkWrap: true,
-              sections: [
-                const SettingsSection(
-                  title: Text('Notifications'),
-                  tiles: [
-                    LabsNotificationsSettingsTile(title: 'Push to this device'),
-                  ],
+        body: SettingsList(
+          shrinkWrap: true,
+          sections: [
+            const SettingsSection(
+              title: Text('Notifications'),
+              tiles: [
+                LabsNotificationsSettingsTile(title: 'Push to this device'),
+                AppsNotificationsSettingsTile(
+                  title: 'Updates',
+                  description: 'Notify about Space Updates immediately',
+                  appKey: 'global.acter.dev.news',
                 ),
-                _pushTargets(context, ref),
               ],
             ),
+            SettingsSection(
+              title: const Text('Default Modes'),
+              tiles: [
+                _notifSection(
+                  context,
+                  ref,
+                  'Regular Space or Chat',
+                  false,
+                  false,
+                ),
+                _notifSection(
+                  context,
+                  ref,
+                  'Encrypted Space or Chat',
+                  true,
+                  false,
+                ),
+                _notifSection(
+                  context,
+                  ref,
+                  'DM Chat',
+                  false,
+                  true,
+                ),
+                _notifSection(
+                  context,
+                  ref,
+                  'Encrypted DM Chat',
+                  true,
+                  true,
+                ),
+              ],
+            ),
+            _pushTargets(context, ref),
           ],
         ),
+      ),
+    );
+  }
+
+  SettingsTile _notifSection(
+    BuildContext context,
+    WidgetRef ref,
+    String title,
+    bool isEncrypted,
+    bool isOneToOne,
+  ) {
+    final curNotifStatus = ref
+            .watch(
+              currentNotificationModeProvider(
+                (encrypted: isEncrypted, oneToOne: isOneToOne),
+              ),
+            )
+            .valueOrNull ??
+        '';
+    return SettingsTile(
+      title: Text(
+        title,
+      ),
+      description: Text(
+        notifToText(curNotifStatus) ?? '(unset)',
+      ),
+      trailing: PopupMenuButton<String>(
+        initialValue: curNotifStatus,
+        // Callback that sets the selected popup menu item.
+        onSelected: (String newMode) async {
+          final client = ref.read(clientProvider);
+          if (client == null) {
+            // ignore: use_build_context_synchronously
+            EasyLoading.showError('client not found');
+            return;
+          }
+          EasyLoading.show();
+          try {
+            await ref
+                .read(notificationSettingsProvider)
+                .valueOrNull!
+                .setDefaultNotificationMode(
+                  isEncrypted,
+                  isOneToOne,
+                  newMode,
+                );
+            EasyLoading.showSuccess(
+              'Notification status submitted',
+            );
+          } catch (e) {
+            EasyLoading.showError(
+              'Notification status update failed: $e',
+              duration: const Duration(seconds: 3),
+            );
+          }
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+          const PopupMenuItem<String>(
+            value: 'all',
+            child: Text('All Messages'),
+          ),
+          const PopupMenuItem<String>(
+            value: 'mentions',
+            child: Text('Mentions and Keywords only'),
+          ),
+          const PopupMenuItem<String>(
+            value: 'muted',
+            child: Text('Muted'),
+          ),
+        ],
       ),
     );
   }

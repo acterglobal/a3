@@ -6,6 +6,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::onboarding::auth');
 
 class AuthStateNotifier extends StateNotifier<bool> {
   final Ref ref;
@@ -31,9 +34,9 @@ class AuthStateNotifier extends StateNotifier<bool> {
       ref.read(clientProvider.notifier).state = client;
       state = false;
       return null;
-    } catch (e) {
+    } catch (e, s) {
       state = false;
-      debugPrint('$e');
+      _log.severe('Login failed', e, s);
       return e.toString();
     }
   }
@@ -82,7 +85,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
     final sdk = await ref.read(sdkProvider.future);
     final stillHasClient = await sdk.logout();
     if (stillHasClient) {
-      debugPrint('Still has clients, dropping back to other');
+      _log.info('Still has clients, dropping back to other');
       ref.read(clientProvider.notifier).state = sdk.currentClient;
       ref.invalidate(spacesProvider);
       // We are doing as expected, but the lints triggers.
@@ -91,7 +94,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
         context.goNamed(Routes.main.name);
       }
     } else {
-      debugPrint('No clients left, redir to onboarding');
+      _log.warning('No clients left, redir to onboarding');
       // We are doing as expected, but the lints triggers.
       // ignore: use_build_context_synchronously
       if (context.mounted) {

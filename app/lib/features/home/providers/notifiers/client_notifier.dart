@@ -3,6 +3,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::home::client_notifier');
 
 // ignore_for_file: avoid_print
 class ClientNotifier extends StateNotifier<Client?> {
@@ -13,8 +16,7 @@ class ClientNotifier extends StateNotifier<Client?> {
   Future<void> _loadUp(Ref ref) async {
     final asyncSdk = await ref.watch(sdkProvider.future);
     PlatformDispatcher.instance.onError = (exception, stackTrace) {
-      asyncSdk.writeLog(exception.toString(), 'error');
-      asyncSdk.writeLog(stackTrace.toString(), 'error');
+      _log.severe('platform dispatch error', exception, stackTrace);
       return true; // make this error handled
     };
     state = asyncSdk.currentClient;

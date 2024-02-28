@@ -56,8 +56,11 @@ pub use uniffi_api::*;
 
 pub use account::Account;
 pub use acter_core::{
-    events::{news::NewsContent, Colorize, ObjRef, RefDetails, UtcDateTime},
-    models::{ActerModel, Color as EfkColor, Tag, TextMessageContent},
+    events::{
+        news::NewsContent, Colorize, ColorizeBuilder, ObjRef, ObjRefBuilder, RefDetails,
+        RefDetailsBuilder, UtcDateTime,
+    },
+    models::{ActerModel, Tag, TextMessageContent},
 };
 pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use auth::{
@@ -73,8 +76,10 @@ pub use calendar_events::{CalendarEvent, CalendarEventDraft, CalendarEventUpdate
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
-    duration_from_secs, new_thumb_size, DeviceRecord, MediaSource, MsgContent, OptionBuffer,
-    OptionString, ReactionRecord, ThumbnailInfo, ThumbnailSize,
+    duration_from_secs, new_calendar_event_ref_builder, new_colorize_builder, new_link_ref_builder,
+    new_obj_ref_builder, new_task_list_ref_builder, new_task_ref_builder, new_thumb_size,
+    DeviceRecord, MediaSource, MsgContent, OptionBuffer, OptionRsvpStatus, OptionString,
+    ReactionRecord, ThumbnailInfo, ThumbnailSize,
 };
 pub use convo::{
     new_convo_settings_builder, Convo, ConvoDiff, CreateConvoSettings, CreateConvoSettingsBuilder,
@@ -87,13 +92,15 @@ pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide, New
 pub use notifications::{Notification, NotificationListResult};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
-pub use push::{NotificationItem, Pusher};
+pub use push::{
+    NotificationItem, NotificationRoom, NotificationSender, NotificationSettings, Pusher,
+};
 pub use receipt::{ReceiptEvent, ReceiptRecord, ReceiptThread};
 pub use room::{
     new_join_rule_builder, JoinRuleBuilder, Member, MemberPermission, MembershipStatus, Room,
     SpaceHierarchyListResult, SpaceHierarchyRoomInfo, SpaceRelation, SpaceRelations,
 };
-pub use rsvp::{Rsvp, RsvpDraft, RsvpManager};
+pub use rsvp::{Rsvp, RsvpDraft, RsvpManager, RsvpStatus};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
 pub use settings::{
     ActerAppSettings, ActerAppSettingsBuilder, EventsSettings, NewsSettings, PinsSettings,
@@ -134,15 +141,5 @@ mod api {
         }
     }
 }
-
-fn init_logging(log_dir: String, filter: String) -> Result<()> {
-    platform::init_logging(log_dir, filter)
-}
-
-fn rotate_log_file() -> Result<String> {
-    platform::rotate_log_file()
-}
-
-fn write_log(text: String, level: String) -> Result<()> {
-    platform::write_log(text, level)
-}
+// reexport
+pub use platform::{init_logging, rotate_log_file, would_log, write_log};

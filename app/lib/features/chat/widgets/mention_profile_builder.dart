@@ -3,6 +3,9 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::chat::mention_profile_builder');
 
 class MentionProfileBuilder extends ConsumerWidget {
   final String roomId;
@@ -31,7 +34,7 @@ class MentionProfileBuilder extends ConsumerWidget {
         size: 18,
       ),
       error: (e, st) {
-        debugPrint('ERROR loading avatar due to $e');
+        _log.severe('ERROR loading avatar', e, st);
         return ActerAvatar(
           mode: DisplayMode.DM,
           avatarInfo: AvatarInfo(uniqueId: authorId, displayName: title),

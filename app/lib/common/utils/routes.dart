@@ -4,7 +4,6 @@ enum Routes {
   actionAddTaskList('/actions/addTaskList'),
   actionAddPin('/actions/addPin'),
   actionAddEvent('/actions/addEvent'),
-  actionAddUpdate('/actions/addUpdate'),
   actionCreateSuperInvite('/actions/createSuperInvite'),
 
   // --- Auth
@@ -20,9 +19,12 @@ enum Routes {
   // --- generic nav
   main('/'),
   dashboard('/dashboard'),
-  updates('/updates'),
   search('/search'),
   activities('/activities'),
+
+  // --- Updates
+  updates('/updates'),
+  actionAddUpdate('/actions/addUpdate'),
 
   // --- chat
   chat('/chat'),
@@ -56,11 +58,11 @@ enum Routes {
   // -- space Settings
   spaceSettings('/:spaceId([!#][^/]+)/settings'),
   spaceSettingsApps('/:spaceId([!#][^/]+)/settings/app'),
+  spaceSettingsNotifications('/:spaceId([!#][^/]+)/settings/notifications'),
 
   // -- pins
   pins('/pins'),
   pin('/pins/:pinId'),
-  editPin('/pins/:pinId/edit'),
 
   // -- events
   calendarEvents('/events'),

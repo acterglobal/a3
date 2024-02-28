@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,27 +23,20 @@ class BriefRoomEntry extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomData =
-        ref.watch(briefRoomItemWithMembershipProvider(roomId)).valueOrNull;
-    final canLink =
-        roomData != null && roomData.membership!.canString(canCheck);
+    final roomData = ref.watch(briefRoomItemWithMembershipProvider(roomId));
+    final canLink = roomData.maybeWhen(
+      data: (roomData) => roomData.membership!.canString(canCheck),
+      orElse: () => false,
+    );
     return ListTile(
       key: Key('$keyPrefix-$roomId'),
       enabled: canLink,
-      leading: ActerAvatar(
-        mode: avatarDisplayMode,
-        avatarInfo: roomData == null
-            ? AvatarInfo(uniqueId: roomId)
-            : AvatarInfo(
-                uniqueId: roomId,
-                displayName: roomData.roomProfileData.displayName,
-                avatar: roomData.roomProfileData.getAvatarImage(),
-              ),
-        size: 24,
+      leading: RoomAvatarBuilder(roomId: roomId, avatarSize: 24),
+      title: roomData.maybeWhen(
+        data: (roomData) =>
+            Text(roomData.roomProfileData.displayName ?? roomId),
+        orElse: () => Text(roomId),
       ),
-      title: roomData != null
-          ? Text(roomData.roomProfileData.displayName ?? roomId)
-          : Text(roomId),
       trailing: selectedValue == roomId
           ? const Icon(Icons.check_circle_outline)
           : null,
