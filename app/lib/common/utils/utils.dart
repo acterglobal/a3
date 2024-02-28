@@ -262,6 +262,8 @@ enum NetworkStatus { NotDetermined, On, Off }
 // ignore: constant_identifier_names
 enum RoomVisibility { Public, Private, SpaceVisible }
 
+enum AttachmentType { camera, image, audio, video, file }
+
 enum LabsFeature {
   // apps in general
   tasks,

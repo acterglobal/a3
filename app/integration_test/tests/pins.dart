@@ -2,7 +2,7 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/pins/pages/pin_page.dart';
-import 'package:acter/features/pins/sheets/create_pin_sheet.dart';
+import 'package:acter/features/pins/pages/create_pin_page.dart';
 import 'package:acter/features/pins/widgets/pin_item.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
 import 'package:acter/features/search/model/keys.dart';
@@ -57,21 +57,21 @@ extension ActerNews on ConvenientTest {
     await pinActionKey.should(findsOneWidget);
     await pinActionKey.tap();
 
-    final titleField = find.byKey(CreatePinSheet.titleFieldKey);
+    final titleField = find.byKey(CreatePinPage.titleFieldKey);
     await titleField.should(findsOneWidget);
     await titleField.enterTextWithoutReplace(title);
 
-    final urlField = find.byKey(CreatePinSheet.urlFieldKey);
+    final urlField = find.byKey(CreatePinPage.urlFieldKey);
     await urlField.should(findsOneWidget);
     await urlField.enterTextWithoutReplace(url);
 
-    final contentField = find.byKey(CreatePinSheet.contentFieldKey);
+    final contentField = find.byKey(CreatePinPage.contentFieldKey);
     await contentField.should(findsOneWidget);
     await contentField.enterTextWithoutReplace(content);
 
     await selectSpace(spaceId, SelectSpaceFormField.openKey);
 
-    final submit = find.byKey(CreatePinSheet.submitBtn);
+    final submit = find.byKey(CreatePinPage.submitBtn);
     await tester.ensureVisible(submit);
     await submit.tap();
   }
