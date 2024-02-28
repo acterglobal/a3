@@ -325,7 +325,7 @@ impl AnyActerModel {
             AnyActerModel::Attachment(_) => AttachmentEventContent::TYPE,
             AnyActerModel::AttachmentUpdate(_) => AttachmentUpdateEventContent::TYPE,
             AnyActerModel::Rsvp(_) => RsvpEventContent::TYPE,
-            AnyActerModel::RedactedActerModel(_) => "unknown_redacted_model",
+            AnyActerModel::RedactedActerModel(..) => "unknown_redacted_model",
             #[cfg(test)]
             AnyActerModel::TestModel(_) => "test_model",
         }
