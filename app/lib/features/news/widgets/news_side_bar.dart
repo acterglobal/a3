@@ -33,7 +33,7 @@ class NewsSideBar extends ConsumerWidget {
     final roomId = news.roomId().toString();
     final userId = ref.watch(myUserIdStrProvider);
     final reactions = ref.watch(reactionEntriesProvider(news));
-    final isLikedByMe = ref.watch(myNewsReactionStatusProvider(news));
+    final isLikedByMe = ref.watch(likedByMeProvider(news));
     final space = ref.watch(briefSpaceItemWithMembershipProvider(roomId));
     final style = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 13);
 
@@ -49,9 +49,9 @@ class NewsSideBar extends ConsumerWidget {
           index: index,
           onTap: () async {
             final client = ref.read(alwaysClientProvider);
-            final status = await news.likedByMe();
-            debugPrint('my like status: $status');
             final manager = await news.reactions();
+            final status = await manager.likedByMe();
+            debugPrint('my like status: $status');
             if (!status) {
               final eventId = await manager.sendLike();
               await client.waitForReaction(eventId.toString(), null);
