@@ -279,13 +279,7 @@ impl ReactionManager {
         let manager = self.inner.clone();
         RUNTIME
             .spawn(async move {
-                let mut count = 0;
-                let entries = manager.reaction_entries().await?;
-                for (user_id, reaction) in entries.into_iter() {
-                    if reaction.relates_to.key.as_str() == "\\u{2764}" {
-                        count += 1;
-                    }
-                }
+                let count = manager.likes_count().await?;
                 Ok(count)
             })
             .await?
@@ -295,13 +289,7 @@ impl ReactionManager {
         let manager = self.inner.clone();
         RUNTIME
             .spawn(async move {
-                let mut count = 0;
-                let entries = manager.reaction_entries().await?;
-                for (user_id, reaction) in entries.into_iter() {
-                    if reaction.relates_to.key.as_str() == "\\u{FE0F}" {
-                        count += 1;
-                    }
-                }
+                let count = manager.unlikes_count().await?;
                 Ok(count)
             })
             .await?

@@ -47,6 +47,22 @@ impl ReactionManager {
         self.event_id.clone()
     }
 
+    pub async fn likes_count(&self) -> Result<u32> {
+        let mut count = 0;
+        for mdl in self
+            .store
+            .get_list(&Reaction::index_for(&self.event_id))
+            .await?
+        {
+            if let AnyActerModel::Reaction(c) = mdl {
+                if c.relates_to.key.as_str() == "\\u{2764}" {
+                    count += 1;
+                }
+            }
+        }
+        Ok(count)
+    }
+
     pub async fn liked_by_me(&self, my_id: &UserId) -> Result<bool> {
         for mdl in self
             .store
@@ -75,6 +91,22 @@ impl ReactionManager {
             }
         }
         Ok(None)
+    }
+
+    pub async fn unlikes_count(&self) -> Result<u32> {
+        let mut count = 0;
+        for mdl in self
+            .store
+            .get_list(&Reaction::index_for(&self.event_id))
+            .await?
+        {
+            if let AnyActerModel::Reaction(c) = mdl {
+                if c.relates_to.key.as_str() == "\\u{FE0F}" {
+                    count += 1;
+                }
+            }
+        }
+        Ok(count)
     }
 
     pub async fn unliked_by_me(&self, my_id: &UserId) -> Result<bool> {
