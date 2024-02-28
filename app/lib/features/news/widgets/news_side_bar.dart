@@ -53,14 +53,10 @@ class NewsSideBar extends ConsumerWidget {
             debugPrint('my like status: $status');
             final manager = await news.reactions();
             if (!status) {
-              final eventId = await manager.sendReaction('\u{2764}');
+              final eventId = await manager.sendLike();
               await client.waitForReaction(eventId.toString(), null);
             } else {
-              final eventId = await manager.redactReaction(
-                '\u{2764}',
-                null,
-                null,
-              );
+              final eventId = await manager.redactLike(null, null);
               await client.waitForReaction(eventId.toString(), null);
             }
           },
