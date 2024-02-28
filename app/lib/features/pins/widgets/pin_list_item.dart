@@ -97,7 +97,7 @@ class _PinListItemState extends State<PinListItem> {
         key: Key(widget.pin.eventIdStr()),
         onTap: () => onTap(context),
         onLongPress: () => openItem(context),
-        contentPadding: const EdgeInsets.all(12),
+        // contentPadding: const EdgeInsets.all(12),
         title: Row(
           children: <Widget>[
             Icon(
@@ -105,10 +105,12 @@ class _PinListItemState extends State<PinListItem> {
               size: 18,
             ),
             const SizedBox(width: 10),
-            Text(
-              widget.pin.title(),
-              softWrap: false,
-              overflow: TextOverflow.ellipsis,
+            Expanded(
+              child: Text(
+                widget.pin.title(),
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
@@ -117,20 +119,20 @@ class _PinListItemState extends State<PinListItem> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            if (widget.showSpace)
-              Wrap(
-                children: <Widget>[SpaceChip(spaceId: spaceId)],
-              ),
-            const SizedBox(height: 5),
+            const SizedBox(height: 10),
+            if (widget.showSpace) Flexible(child: SpaceChip(spaceId: spaceId)),
+            const SizedBox(height: 10),
             if (pinContent.isNotEmpty)
-              Html(
-                padding: const EdgeInsets.all(0),
-                data: pinContent,
-                maxLines: 2,
-                defaultTextStyle: Theme.of(context)
-                    .textTheme
-                    .bodySmall!
-                    .copyWith(overflow: TextOverflow.ellipsis),
+              Flexible(
+                child: Html(
+                  padding: const EdgeInsets.all(0),
+                  data: pinContent,
+                  maxLines: 2,
+                  defaultTextStyle: Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .copyWith(overflow: TextOverflow.ellipsis),
+                ),
               ),
           ],
         ),

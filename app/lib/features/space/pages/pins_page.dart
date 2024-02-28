@@ -11,6 +11,7 @@ import 'package:acter/features/pins/widgets/pin_list_item.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 
 class SpacePinsPage extends ConsumerWidget {
@@ -86,16 +87,14 @@ class SpacePinsPage extends ConsumerWidget {
                   ),
                 );
               }
-              return SliverGrid.builder(
-                itemCount: pins.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              return SliverToBoxAdapter(
+                child: StaggeredGrid.count(
                   crossAxisCount: max(1, min(widthCount, minCount)),
-                  mainAxisExtent: 120,
+                  children: <Widget>[
+                    for (var pin in pins)
+                      PinListItemById(pinId: pin.eventIdStr()),
+                  ],
                 ),
-                itemBuilder: (context, index) {
-                  final pin = pins[index];
-                  return PinListItemById(pinId: pin.eventIdStr());
-                },
               );
             },
             error: (error, stack) => SliverToBoxAdapter(

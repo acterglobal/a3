@@ -8,6 +8,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/themes/app_theme.dart';
@@ -76,19 +77,17 @@ class PinsPage extends ConsumerWidget {
           );
         }
 
-        return SliverGrid.builder(
-          itemCount: pins.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        return SliverToBoxAdapter(
+          child: StaggeredGrid.count(
             crossAxisCount: max(1, min(widthCount, minCount)),
-            mainAxisExtent: 170,
+            children: <Widget>[
+              for (var pin in pins)
+                PinListItemById(
+                  pinId: pin.eventIdStr(),
+                  showSpace: true,
+                ),
+            ],
           ),
-          itemBuilder: (context, index) {
-            final pin = pins[index];
-            return PinListItemById(
-              pinId: pin.eventIdStr(),
-              showSpace: true,
-            );
-          },
         );
       },
       error: (error, stack) => SliverToBoxAdapter(
