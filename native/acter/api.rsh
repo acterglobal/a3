@@ -399,24 +399,6 @@ object NewsEntry {
     /// get all slides of this news item
     fn slides() -> Vec<NewsSlide>;
 
-    /// how many comments on this news entry
-    fn comments_count() -> Future<Result<u32>>;
-
-    /// how many likes on this news entry
-    fn likes_count() -> Future<Result<u32>>;
-
-    /// how many likes on this news entry
-    fn unlikes_count() -> Future<Result<u32>>;
-
-    /// get my like status on this news entry
-    fn liked_by_me() -> Future<Result<bool>>;
-
-    /// get my like status on this news entry
-    fn unliked_by_me() -> Future<Result<bool>>;
-
-    /// get my like status on this news entry
-    fn reacted_by_me() -> Future<Result<bool>>;
-
     /// get room id
     fn room_id() -> RoomId;
 
@@ -428,6 +410,9 @@ object NewsEntry {
 
     /// get the reaction manager
     fn reactions() -> Future<Result<ReactionManager>>;
+
+    /// get the comment manager
+    fn comments() -> Future<Result<CommentsManager>>;
 }
 
 object NewsEntryDraft {
