@@ -112,7 +112,7 @@ class _$MediaChatLoadingStateLoadingImpl
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$MediaChatLoadingStateLoadingImpl);
@@ -226,7 +226,7 @@ class _$MediaChatLoadingStateLoadedImpl
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$MediaChatLoadingStateLoadedImpl);
@@ -357,7 +357,7 @@ class _$MediaChatLoadingStateErrorImpl implements _MediaChatLoadingStateError {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$MediaChatLoadingStateErrorImpl &&
@@ -594,7 +594,7 @@ class _$MediaChatStateImpl implements _MediaChatState {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$MediaChatStateImpl &&

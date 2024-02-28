@@ -113,7 +113,7 @@ class _$ChatListStateInitialImpl implements _ChatListStateInitial {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ChatListStateInitialImpl);
@@ -228,7 +228,7 @@ class _$ChatListStateLoadingImpl implements _ChatListStateLoading {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ChatListStateLoadingImpl);
@@ -367,7 +367,7 @@ class _$ChatListStateDataImpl implements _ChatListStateData {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ChatListStateDataImpl &&
@@ -515,7 +515,7 @@ class _$ChatListStateErrorImpl implements _ChatListStateError {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ChatListStateErrorImpl &&

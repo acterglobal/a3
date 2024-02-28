@@ -19,6 +19,7 @@ mixin _$CrossSigningState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() init,
+    required TResult Function() launch,
     required TResult Function(VerificationEvent event) request,
     required TResult Function(VerificationEvent event) ready,
     required TResult Function(VerificationEvent event) start,
@@ -32,6 +33,7 @@ mixin _$CrossSigningState {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? init,
+    TResult? Function()? launch,
     TResult? Function(VerificationEvent event)? request,
     TResult? Function(VerificationEvent event)? ready,
     TResult? Function(VerificationEvent event)? start,
@@ -45,6 +47,7 @@ mixin _$CrossSigningState {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? init,
+    TResult Function()? launch,
     TResult Function(VerificationEvent event)? request,
     TResult Function(VerificationEvent event)? ready,
     TResult Function(VerificationEvent event)? start,
@@ -59,6 +62,7 @@ mixin _$CrossSigningState {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_CrossSigningStateInit value) init,
+    required TResult Function(_CrossSigningStateLaunch value) launch,
     required TResult Function(_CrossSigningStateRequest value) request,
     required TResult Function(_CrossSigningStateReady value) ready,
     required TResult Function(_CrossSigningStateStart value) start,
@@ -72,6 +76,7 @@ mixin _$CrossSigningState {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_CrossSigningStateInit value)? init,
+    TResult? Function(_CrossSigningStateLaunch value)? launch,
     TResult? Function(_CrossSigningStateRequest value)? request,
     TResult? Function(_CrossSigningStateReady value)? ready,
     TResult? Function(_CrossSigningStateStart value)? start,
@@ -85,6 +90,7 @@ mixin _$CrossSigningState {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_CrossSigningStateInit value)? init,
+    TResult Function(_CrossSigningStateLaunch value)? launch,
     TResult Function(_CrossSigningStateRequest value)? request,
     TResult Function(_CrossSigningStateReady value)? ready,
     TResult Function(_CrossSigningStateStart value)? start,
@@ -144,7 +150,7 @@ class _$CrossSigningStateInitImpl implements _CrossSigningStateInit {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CrossSigningStateInitImpl);
@@ -157,6 +163,7 @@ class _$CrossSigningStateInitImpl implements _CrossSigningStateInit {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() init,
+    required TResult Function() launch,
     required TResult Function(VerificationEvent event) request,
     required TResult Function(VerificationEvent event) ready,
     required TResult Function(VerificationEvent event) start,
@@ -173,6 +180,7 @@ class _$CrossSigningStateInitImpl implements _CrossSigningStateInit {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? init,
+    TResult? Function()? launch,
     TResult? Function(VerificationEvent event)? request,
     TResult? Function(VerificationEvent event)? ready,
     TResult? Function(VerificationEvent event)? start,
@@ -189,6 +197,7 @@ class _$CrossSigningStateInitImpl implements _CrossSigningStateInit {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? init,
+    TResult Function()? launch,
     TResult Function(VerificationEvent event)? request,
     TResult Function(VerificationEvent event)? ready,
     TResult Function(VerificationEvent event)? start,
@@ -209,6 +218,7 @@ class _$CrossSigningStateInitImpl implements _CrossSigningStateInit {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_CrossSigningStateInit value) init,
+    required TResult Function(_CrossSigningStateLaunch value) launch,
     required TResult Function(_CrossSigningStateRequest value) request,
     required TResult Function(_CrossSigningStateReady value) ready,
     required TResult Function(_CrossSigningStateStart value) start,
@@ -225,6 +235,7 @@ class _$CrossSigningStateInitImpl implements _CrossSigningStateInit {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_CrossSigningStateInit value)? init,
+    TResult? Function(_CrossSigningStateLaunch value)? launch,
     TResult? Function(_CrossSigningStateRequest value)? request,
     TResult? Function(_CrossSigningStateReady value)? ready,
     TResult? Function(_CrossSigningStateStart value)? start,
@@ -241,6 +252,7 @@ class _$CrossSigningStateInitImpl implements _CrossSigningStateInit {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_CrossSigningStateInit value)? init,
+    TResult Function(_CrossSigningStateLaunch value)? launch,
     TResult Function(_CrossSigningStateRequest value)? request,
     TResult Function(_CrossSigningStateReady value)? ready,
     TResult Function(_CrossSigningStateStart value)? start,
@@ -260,6 +272,159 @@ class _$CrossSigningStateInitImpl implements _CrossSigningStateInit {
 
 abstract class _CrossSigningStateInit implements CrossSigningState {
   const factory _CrossSigningStateInit() = _$CrossSigningStateInitImpl;
+}
+
+/// @nodoc
+abstract class _$$CrossSigningStateLaunchImplCopyWith<$Res> {
+  factory _$$CrossSigningStateLaunchImplCopyWith(
+          _$CrossSigningStateLaunchImpl value,
+          $Res Function(_$CrossSigningStateLaunchImpl) then) =
+      __$$CrossSigningStateLaunchImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$CrossSigningStateLaunchImplCopyWithImpl<$Res>
+    extends _$CrossSigningStateCopyWithImpl<$Res, _$CrossSigningStateLaunchImpl>
+    implements _$$CrossSigningStateLaunchImplCopyWith<$Res> {
+  __$$CrossSigningStateLaunchImplCopyWithImpl(
+      _$CrossSigningStateLaunchImpl _value,
+      $Res Function(_$CrossSigningStateLaunchImpl) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$CrossSigningStateLaunchImpl implements _CrossSigningStateLaunch {
+  const _$CrossSigningStateLaunchImpl();
+
+  @override
+  String toString() {
+    return 'CrossSigningState.launch()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CrossSigningStateLaunchImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() init,
+    required TResult Function() launch,
+    required TResult Function(VerificationEvent event) request,
+    required TResult Function(VerificationEvent event) ready,
+    required TResult Function(VerificationEvent event) start,
+    required TResult Function(VerificationEvent event) cancel,
+    required TResult Function(VerificationEvent event) accept,
+    required TResult Function(VerificationEvent event) key,
+    required TResult Function(VerificationEvent event) mac,
+    required TResult Function(VerificationEvent event) done,
+  }) {
+    return launch();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? init,
+    TResult? Function()? launch,
+    TResult? Function(VerificationEvent event)? request,
+    TResult? Function(VerificationEvent event)? ready,
+    TResult? Function(VerificationEvent event)? start,
+    TResult? Function(VerificationEvent event)? cancel,
+    TResult? Function(VerificationEvent event)? accept,
+    TResult? Function(VerificationEvent event)? key,
+    TResult? Function(VerificationEvent event)? mac,
+    TResult? Function(VerificationEvent event)? done,
+  }) {
+    return launch?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? init,
+    TResult Function()? launch,
+    TResult Function(VerificationEvent event)? request,
+    TResult Function(VerificationEvent event)? ready,
+    TResult Function(VerificationEvent event)? start,
+    TResult Function(VerificationEvent event)? cancel,
+    TResult Function(VerificationEvent event)? accept,
+    TResult Function(VerificationEvent event)? key,
+    TResult Function(VerificationEvent event)? mac,
+    TResult Function(VerificationEvent event)? done,
+    required TResult orElse(),
+  }) {
+    if (launch != null) {
+      return launch();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_CrossSigningStateInit value) init,
+    required TResult Function(_CrossSigningStateLaunch value) launch,
+    required TResult Function(_CrossSigningStateRequest value) request,
+    required TResult Function(_CrossSigningStateReady value) ready,
+    required TResult Function(_CrossSigningStateStart value) start,
+    required TResult Function(_CrossSigningStateCancel value) cancel,
+    required TResult Function(_CrossSigningStateAccept value) accept,
+    required TResult Function(_CrossSigningStateKey value) key,
+    required TResult Function(_CrossSigningStateMac value) mac,
+    required TResult Function(_CrossSigningStateDone value) done,
+  }) {
+    return launch(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_CrossSigningStateInit value)? init,
+    TResult? Function(_CrossSigningStateLaunch value)? launch,
+    TResult? Function(_CrossSigningStateRequest value)? request,
+    TResult? Function(_CrossSigningStateReady value)? ready,
+    TResult? Function(_CrossSigningStateStart value)? start,
+    TResult? Function(_CrossSigningStateCancel value)? cancel,
+    TResult? Function(_CrossSigningStateAccept value)? accept,
+    TResult? Function(_CrossSigningStateKey value)? key,
+    TResult? Function(_CrossSigningStateMac value)? mac,
+    TResult? Function(_CrossSigningStateDone value)? done,
+  }) {
+    return launch?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_CrossSigningStateInit value)? init,
+    TResult Function(_CrossSigningStateLaunch value)? launch,
+    TResult Function(_CrossSigningStateRequest value)? request,
+    TResult Function(_CrossSigningStateReady value)? ready,
+    TResult Function(_CrossSigningStateStart value)? start,
+    TResult Function(_CrossSigningStateCancel value)? cancel,
+    TResult Function(_CrossSigningStateAccept value)? accept,
+    TResult Function(_CrossSigningStateKey value)? key,
+    TResult Function(_CrossSigningStateMac value)? mac,
+    TResult Function(_CrossSigningStateDone value)? done,
+    required TResult orElse(),
+  }) {
+    if (launch != null) {
+      return launch(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _CrossSigningStateLaunch implements CrossSigningState {
+  const factory _CrossSigningStateLaunch() = _$CrossSigningStateLaunchImpl;
 }
 
 /// @nodoc
@@ -310,7 +475,7 @@ class _$CrossSigningStateRequestImpl implements _CrossSigningStateRequest {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CrossSigningStateRequestImpl &&
@@ -331,6 +496,7 @@ class _$CrossSigningStateRequestImpl implements _CrossSigningStateRequest {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() init,
+    required TResult Function() launch,
     required TResult Function(VerificationEvent event) request,
     required TResult Function(VerificationEvent event) ready,
     required TResult Function(VerificationEvent event) start,
@@ -347,6 +513,7 @@ class _$CrossSigningStateRequestImpl implements _CrossSigningStateRequest {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? init,
+    TResult? Function()? launch,
     TResult? Function(VerificationEvent event)? request,
     TResult? Function(VerificationEvent event)? ready,
     TResult? Function(VerificationEvent event)? start,
@@ -363,6 +530,7 @@ class _$CrossSigningStateRequestImpl implements _CrossSigningStateRequest {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? init,
+    TResult Function()? launch,
     TResult Function(VerificationEvent event)? request,
     TResult Function(VerificationEvent event)? ready,
     TResult Function(VerificationEvent event)? start,
@@ -383,6 +551,7 @@ class _$CrossSigningStateRequestImpl implements _CrossSigningStateRequest {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_CrossSigningStateInit value) init,
+    required TResult Function(_CrossSigningStateLaunch value) launch,
     required TResult Function(_CrossSigningStateRequest value) request,
     required TResult Function(_CrossSigningStateReady value) ready,
     required TResult Function(_CrossSigningStateStart value) start,
@@ -399,6 +568,7 @@ class _$CrossSigningStateRequestImpl implements _CrossSigningStateRequest {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_CrossSigningStateInit value)? init,
+    TResult? Function(_CrossSigningStateLaunch value)? launch,
     TResult? Function(_CrossSigningStateRequest value)? request,
     TResult? Function(_CrossSigningStateReady value)? ready,
     TResult? Function(_CrossSigningStateStart value)? start,
@@ -415,6 +585,7 @@ class _$CrossSigningStateRequestImpl implements _CrossSigningStateRequest {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_CrossSigningStateInit value)? init,
+    TResult Function(_CrossSigningStateLaunch value)? launch,
     TResult Function(_CrossSigningStateRequest value)? request,
     TResult Function(_CrossSigningStateReady value)? ready,
     TResult Function(_CrossSigningStateStart value)? start,
@@ -490,7 +661,7 @@ class _$CrossSigningStateReadyImpl implements _CrossSigningStateReady {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CrossSigningStateReadyImpl &&
@@ -511,6 +682,7 @@ class _$CrossSigningStateReadyImpl implements _CrossSigningStateReady {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() init,
+    required TResult Function() launch,
     required TResult Function(VerificationEvent event) request,
     required TResult Function(VerificationEvent event) ready,
     required TResult Function(VerificationEvent event) start,
@@ -527,6 +699,7 @@ class _$CrossSigningStateReadyImpl implements _CrossSigningStateReady {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? init,
+    TResult? Function()? launch,
     TResult? Function(VerificationEvent event)? request,
     TResult? Function(VerificationEvent event)? ready,
     TResult? Function(VerificationEvent event)? start,
@@ -543,6 +716,7 @@ class _$CrossSigningStateReadyImpl implements _CrossSigningStateReady {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? init,
+    TResult Function()? launch,
     TResult Function(VerificationEvent event)? request,
     TResult Function(VerificationEvent event)? ready,
     TResult Function(VerificationEvent event)? start,
@@ -563,6 +737,7 @@ class _$CrossSigningStateReadyImpl implements _CrossSigningStateReady {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_CrossSigningStateInit value) init,
+    required TResult Function(_CrossSigningStateLaunch value) launch,
     required TResult Function(_CrossSigningStateRequest value) request,
     required TResult Function(_CrossSigningStateReady value) ready,
     required TResult Function(_CrossSigningStateStart value) start,
@@ -579,6 +754,7 @@ class _$CrossSigningStateReadyImpl implements _CrossSigningStateReady {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_CrossSigningStateInit value)? init,
+    TResult? Function(_CrossSigningStateLaunch value)? launch,
     TResult? Function(_CrossSigningStateRequest value)? request,
     TResult? Function(_CrossSigningStateReady value)? ready,
     TResult? Function(_CrossSigningStateStart value)? start,
@@ -595,6 +771,7 @@ class _$CrossSigningStateReadyImpl implements _CrossSigningStateReady {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_CrossSigningStateInit value)? init,
+    TResult Function(_CrossSigningStateLaunch value)? launch,
     TResult Function(_CrossSigningStateRequest value)? request,
     TResult Function(_CrossSigningStateReady value)? ready,
     TResult Function(_CrossSigningStateStart value)? start,
@@ -669,7 +846,7 @@ class _$CrossSigningStateStartImpl implements _CrossSigningStateStart {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CrossSigningStateStartImpl &&
@@ -690,6 +867,7 @@ class _$CrossSigningStateStartImpl implements _CrossSigningStateStart {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() init,
+    required TResult Function() launch,
     required TResult Function(VerificationEvent event) request,
     required TResult Function(VerificationEvent event) ready,
     required TResult Function(VerificationEvent event) start,
@@ -706,6 +884,7 @@ class _$CrossSigningStateStartImpl implements _CrossSigningStateStart {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? init,
+    TResult? Function()? launch,
     TResult? Function(VerificationEvent event)? request,
     TResult? Function(VerificationEvent event)? ready,
     TResult? Function(VerificationEvent event)? start,
@@ -722,6 +901,7 @@ class _$CrossSigningStateStartImpl implements _CrossSigningStateStart {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? init,
+    TResult Function()? launch,
     TResult Function(VerificationEvent event)? request,
     TResult Function(VerificationEvent event)? ready,
     TResult Function(VerificationEvent event)? start,
@@ -742,6 +922,7 @@ class _$CrossSigningStateStartImpl implements _CrossSigningStateStart {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_CrossSigningStateInit value) init,
+    required TResult Function(_CrossSigningStateLaunch value) launch,
     required TResult Function(_CrossSigningStateRequest value) request,
     required TResult Function(_CrossSigningStateReady value) ready,
     required TResult Function(_CrossSigningStateStart value) start,
@@ -758,6 +939,7 @@ class _$CrossSigningStateStartImpl implements _CrossSigningStateStart {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_CrossSigningStateInit value)? init,
+    TResult? Function(_CrossSigningStateLaunch value)? launch,
     TResult? Function(_CrossSigningStateRequest value)? request,
     TResult? Function(_CrossSigningStateReady value)? ready,
     TResult? Function(_CrossSigningStateStart value)? start,
@@ -774,6 +956,7 @@ class _$CrossSigningStateStartImpl implements _CrossSigningStateStart {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_CrossSigningStateInit value)? init,
+    TResult Function(_CrossSigningStateLaunch value)? launch,
     TResult Function(_CrossSigningStateRequest value)? request,
     TResult Function(_CrossSigningStateReady value)? ready,
     TResult Function(_CrossSigningStateStart value)? start,
@@ -848,7 +1031,7 @@ class _$CrossSigningStateCancelImpl implements _CrossSigningStateCancel {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CrossSigningStateCancelImpl &&
@@ -869,6 +1052,7 @@ class _$CrossSigningStateCancelImpl implements _CrossSigningStateCancel {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() init,
+    required TResult Function() launch,
     required TResult Function(VerificationEvent event) request,
     required TResult Function(VerificationEvent event) ready,
     required TResult Function(VerificationEvent event) start,
@@ -885,6 +1069,7 @@ class _$CrossSigningStateCancelImpl implements _CrossSigningStateCancel {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? init,
+    TResult? Function()? launch,
     TResult? Function(VerificationEvent event)? request,
     TResult? Function(VerificationEvent event)? ready,
     TResult? Function(VerificationEvent event)? start,
@@ -901,6 +1086,7 @@ class _$CrossSigningStateCancelImpl implements _CrossSigningStateCancel {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? init,
+    TResult Function()? launch,
     TResult Function(VerificationEvent event)? request,
     TResult Function(VerificationEvent event)? ready,
     TResult Function(VerificationEvent event)? start,
@@ -921,6 +1107,7 @@ class _$CrossSigningStateCancelImpl implements _CrossSigningStateCancel {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_CrossSigningStateInit value) init,
+    required TResult Function(_CrossSigningStateLaunch value) launch,
     required TResult Function(_CrossSigningStateRequest value) request,
     required TResult Function(_CrossSigningStateReady value) ready,
     required TResult Function(_CrossSigningStateStart value) start,
@@ -937,6 +1124,7 @@ class _$CrossSigningStateCancelImpl implements _CrossSigningStateCancel {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_CrossSigningStateInit value)? init,
+    TResult? Function(_CrossSigningStateLaunch value)? launch,
     TResult? Function(_CrossSigningStateRequest value)? request,
     TResult? Function(_CrossSigningStateReady value)? ready,
     TResult? Function(_CrossSigningStateStart value)? start,
@@ -953,6 +1141,7 @@ class _$CrossSigningStateCancelImpl implements _CrossSigningStateCancel {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_CrossSigningStateInit value)? init,
+    TResult Function(_CrossSigningStateLaunch value)? launch,
     TResult Function(_CrossSigningStateRequest value)? request,
     TResult Function(_CrossSigningStateReady value)? ready,
     TResult Function(_CrossSigningStateStart value)? start,
@@ -1027,7 +1216,7 @@ class _$CrossSigningStateAcceptImpl implements _CrossSigningStateAccept {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CrossSigningStateAcceptImpl &&
@@ -1048,6 +1237,7 @@ class _$CrossSigningStateAcceptImpl implements _CrossSigningStateAccept {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() init,
+    required TResult Function() launch,
     required TResult Function(VerificationEvent event) request,
     required TResult Function(VerificationEvent event) ready,
     required TResult Function(VerificationEvent event) start,
@@ -1064,6 +1254,7 @@ class _$CrossSigningStateAcceptImpl implements _CrossSigningStateAccept {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? init,
+    TResult? Function()? launch,
     TResult? Function(VerificationEvent event)? request,
     TResult? Function(VerificationEvent event)? ready,
     TResult? Function(VerificationEvent event)? start,
@@ -1080,6 +1271,7 @@ class _$CrossSigningStateAcceptImpl implements _CrossSigningStateAccept {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? init,
+    TResult Function()? launch,
     TResult Function(VerificationEvent event)? request,
     TResult Function(VerificationEvent event)? ready,
     TResult Function(VerificationEvent event)? start,
@@ -1100,6 +1292,7 @@ class _$CrossSigningStateAcceptImpl implements _CrossSigningStateAccept {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_CrossSigningStateInit value) init,
+    required TResult Function(_CrossSigningStateLaunch value) launch,
     required TResult Function(_CrossSigningStateRequest value) request,
     required TResult Function(_CrossSigningStateReady value) ready,
     required TResult Function(_CrossSigningStateStart value) start,
@@ -1116,6 +1309,7 @@ class _$CrossSigningStateAcceptImpl implements _CrossSigningStateAccept {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_CrossSigningStateInit value)? init,
+    TResult? Function(_CrossSigningStateLaunch value)? launch,
     TResult? Function(_CrossSigningStateRequest value)? request,
     TResult? Function(_CrossSigningStateReady value)? ready,
     TResult? Function(_CrossSigningStateStart value)? start,
@@ -1132,6 +1326,7 @@ class _$CrossSigningStateAcceptImpl implements _CrossSigningStateAccept {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_CrossSigningStateInit value)? init,
+    TResult Function(_CrossSigningStateLaunch value)? launch,
     TResult Function(_CrossSigningStateRequest value)? request,
     TResult Function(_CrossSigningStateReady value)? ready,
     TResult Function(_CrossSigningStateStart value)? start,
@@ -1204,7 +1399,7 @@ class _$CrossSigningStateKeyImpl implements _CrossSigningStateKey {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CrossSigningStateKeyImpl &&
@@ -1226,6 +1421,7 @@ class _$CrossSigningStateKeyImpl implements _CrossSigningStateKey {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() init,
+    required TResult Function() launch,
     required TResult Function(VerificationEvent event) request,
     required TResult Function(VerificationEvent event) ready,
     required TResult Function(VerificationEvent event) start,
@@ -1242,6 +1438,7 @@ class _$CrossSigningStateKeyImpl implements _CrossSigningStateKey {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? init,
+    TResult? Function()? launch,
     TResult? Function(VerificationEvent event)? request,
     TResult? Function(VerificationEvent event)? ready,
     TResult? Function(VerificationEvent event)? start,
@@ -1258,6 +1455,7 @@ class _$CrossSigningStateKeyImpl implements _CrossSigningStateKey {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? init,
+    TResult Function()? launch,
     TResult Function(VerificationEvent event)? request,
     TResult Function(VerificationEvent event)? ready,
     TResult Function(VerificationEvent event)? start,
@@ -1278,6 +1476,7 @@ class _$CrossSigningStateKeyImpl implements _CrossSigningStateKey {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_CrossSigningStateInit value) init,
+    required TResult Function(_CrossSigningStateLaunch value) launch,
     required TResult Function(_CrossSigningStateRequest value) request,
     required TResult Function(_CrossSigningStateReady value) ready,
     required TResult Function(_CrossSigningStateStart value) start,
@@ -1294,6 +1493,7 @@ class _$CrossSigningStateKeyImpl implements _CrossSigningStateKey {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_CrossSigningStateInit value)? init,
+    TResult? Function(_CrossSigningStateLaunch value)? launch,
     TResult? Function(_CrossSigningStateRequest value)? request,
     TResult? Function(_CrossSigningStateReady value)? ready,
     TResult? Function(_CrossSigningStateStart value)? start,
@@ -1310,6 +1510,7 @@ class _$CrossSigningStateKeyImpl implements _CrossSigningStateKey {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_CrossSigningStateInit value)? init,
+    TResult Function(_CrossSigningStateLaunch value)? launch,
     TResult Function(_CrossSigningStateRequest value)? request,
     TResult Function(_CrossSigningStateReady value)? ready,
     TResult Function(_CrossSigningStateStart value)? start,
@@ -1382,7 +1583,7 @@ class _$CrossSigningStateMacImpl implements _CrossSigningStateMac {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CrossSigningStateMacImpl &&
@@ -1404,6 +1605,7 @@ class _$CrossSigningStateMacImpl implements _CrossSigningStateMac {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() init,
+    required TResult Function() launch,
     required TResult Function(VerificationEvent event) request,
     required TResult Function(VerificationEvent event) ready,
     required TResult Function(VerificationEvent event) start,
@@ -1420,6 +1622,7 @@ class _$CrossSigningStateMacImpl implements _CrossSigningStateMac {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? init,
+    TResult? Function()? launch,
     TResult? Function(VerificationEvent event)? request,
     TResult? Function(VerificationEvent event)? ready,
     TResult? Function(VerificationEvent event)? start,
@@ -1436,6 +1639,7 @@ class _$CrossSigningStateMacImpl implements _CrossSigningStateMac {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? init,
+    TResult Function()? launch,
     TResult Function(VerificationEvent event)? request,
     TResult Function(VerificationEvent event)? ready,
     TResult Function(VerificationEvent event)? start,
@@ -1456,6 +1660,7 @@ class _$CrossSigningStateMacImpl implements _CrossSigningStateMac {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_CrossSigningStateInit value) init,
+    required TResult Function(_CrossSigningStateLaunch value) launch,
     required TResult Function(_CrossSigningStateRequest value) request,
     required TResult Function(_CrossSigningStateReady value) ready,
     required TResult Function(_CrossSigningStateStart value) start,
@@ -1472,6 +1677,7 @@ class _$CrossSigningStateMacImpl implements _CrossSigningStateMac {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_CrossSigningStateInit value)? init,
+    TResult? Function(_CrossSigningStateLaunch value)? launch,
     TResult? Function(_CrossSigningStateRequest value)? request,
     TResult? Function(_CrossSigningStateReady value)? ready,
     TResult? Function(_CrossSigningStateStart value)? start,
@@ -1488,6 +1694,7 @@ class _$CrossSigningStateMacImpl implements _CrossSigningStateMac {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_CrossSigningStateInit value)? init,
+    TResult Function(_CrossSigningStateLaunch value)? launch,
     TResult Function(_CrossSigningStateRequest value)? request,
     TResult Function(_CrossSigningStateReady value)? ready,
     TResult Function(_CrossSigningStateStart value)? start,
@@ -1561,7 +1768,7 @@ class _$CrossSigningStateDoneImpl implements _CrossSigningStateDone {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CrossSigningStateDoneImpl &&
@@ -1582,6 +1789,7 @@ class _$CrossSigningStateDoneImpl implements _CrossSigningStateDone {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() init,
+    required TResult Function() launch,
     required TResult Function(VerificationEvent event) request,
     required TResult Function(VerificationEvent event) ready,
     required TResult Function(VerificationEvent event) start,
@@ -1598,6 +1806,7 @@ class _$CrossSigningStateDoneImpl implements _CrossSigningStateDone {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? init,
+    TResult? Function()? launch,
     TResult? Function(VerificationEvent event)? request,
     TResult? Function(VerificationEvent event)? ready,
     TResult? Function(VerificationEvent event)? start,
@@ -1614,6 +1823,7 @@ class _$CrossSigningStateDoneImpl implements _CrossSigningStateDone {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? init,
+    TResult Function()? launch,
     TResult Function(VerificationEvent event)? request,
     TResult Function(VerificationEvent event)? ready,
     TResult Function(VerificationEvent event)? start,
@@ -1634,6 +1844,7 @@ class _$CrossSigningStateDoneImpl implements _CrossSigningStateDone {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_CrossSigningStateInit value) init,
+    required TResult Function(_CrossSigningStateLaunch value) launch,
     required TResult Function(_CrossSigningStateRequest value) request,
     required TResult Function(_CrossSigningStateReady value) ready,
     required TResult Function(_CrossSigningStateStart value) start,
@@ -1650,6 +1861,7 @@ class _$CrossSigningStateDoneImpl implements _CrossSigningStateDone {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_CrossSigningStateInit value)? init,
+    TResult? Function(_CrossSigningStateLaunch value)? launch,
     TResult? Function(_CrossSigningStateRequest value)? request,
     TResult? Function(_CrossSigningStateReady value)? ready,
     TResult? Function(_CrossSigningStateStart value)? start,
@@ -1666,6 +1878,7 @@ class _$CrossSigningStateDoneImpl implements _CrossSigningStateDone {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_CrossSigningStateInit value)? init,
+    TResult Function(_CrossSigningStateLaunch value)? launch,
     TResult Function(_CrossSigningStateRequest value)? request,
     TResult Function(_CrossSigningStateReady value)? ready,
     TResult Function(_CrossSigningStateStart value)? start,

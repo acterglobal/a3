@@ -112,7 +112,7 @@ class _$ChatRoomLoadingStateLoadingImpl
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ChatRoomLoadingStateLoadingImpl);
@@ -225,7 +225,7 @@ class _$ChatRoomLoadingStateLoadedImpl implements _ChatRoomLoadingStateLoaded {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ChatRoomLoadingStateLoadedImpl);
@@ -356,7 +356,7 @@ class _$ChatRoomLoadingStateErrorImpl implements _ChatRoomLoadingStateError {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ChatRoomLoadingStateErrorImpl &&
@@ -595,7 +595,7 @@ class _$ChatRoomStateImpl implements _ChatRoomState {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ChatRoomStateImpl &&
