@@ -197,7 +197,10 @@ class ActionBox extends ConsumerWidget {
             builder: (context) => RedactContentWidget(
               title: 'Remove this post',
               eventId: news.eventId().toString(),
-              onSuccess: () => ref.invalidate(newsListProvider),
+              onSuccess: () {
+                context.pop();
+                ref.invalidate(newsListProvider);
+              },
               senderId: senderId,
               roomId: roomId,
               isSpace: true,
