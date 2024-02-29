@@ -47,7 +47,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
 
   @override
   Widget build(BuildContext context) {
-    final attachments = ref.watch(selectedAttachmentsProvider);
+    final attachments = ref.watch(selectedPinAttachmentsProvider);
     return SideSheet(
       header: 'Create new Pin',
       addActions: true,
@@ -278,7 +278,8 @@ class _AttachmentFileWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final attachmentNotifier = ref.watch(selectedAttachmentsProvider.notifier);
+    final attachmentNotifier =
+        ref.watch(selectedPinAttachmentsProvider.notifier);
     final file = attachment.file;
     String fileName = file.path.split('/').last;
 
@@ -306,7 +307,7 @@ class _AttachmentFileWidget extends ConsumerWidget {
           const SizedBox(width: 5),
           InkWell(
             onTap: () {
-              var files = ref.read(selectedAttachmentsProvider);
+              var files = ref.read(selectedPinAttachmentsProvider);
               files.remove(attachment);
               attachmentNotifier.update((state) => [...files]);
             },

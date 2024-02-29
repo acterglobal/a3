@@ -32,7 +32,7 @@ class PinUtils {
               (type: AttachmentType.camera, file: file),
             ];
             ref
-                .read(selectedAttachmentsProvider.notifier)
+                .read(selectedPinAttachmentsProvider.notifier)
                 .update((state) => [...attachmentList]);
           }
         },
@@ -47,9 +47,9 @@ class PinUtils {
           }
 
           List<PinAttachment> attachments =
-              ref.read(selectedAttachmentsProvider);
+              ref.read(selectedPinAttachmentsProvider);
           var attachmentNotifier =
-              ref.read(selectedAttachmentsProvider.notifier);
+              ref.read(selectedPinAttachmentsProvider.notifier);
           if (attachments.isNotEmpty) {
             attachments.addAll(newAttachments);
             attachmentNotifier.update((state) => attachments);
@@ -66,9 +66,9 @@ class PinUtils {
             newAttachments.add((type: AttachmentType.video, file: file));
           }
           List<PinAttachment> attachments =
-              ref.read(selectedAttachmentsProvider);
+              ref.read(selectedPinAttachmentsProvider);
           var attachmentNotifier =
-              ref.read(selectedAttachmentsProvider.notifier);
+              ref.read(selectedPinAttachmentsProvider.notifier);
           if (attachments.isNotEmpty) {
             attachments.addAll(newAttachments);
             attachmentNotifier.update((state) => attachments);
@@ -90,9 +90,9 @@ class PinUtils {
             }).toList();
 
             List<PinAttachment> attachments =
-                ref.read(selectedAttachmentsProvider);
+                ref.read(selectedPinAttachmentsProvider);
             var attachmentNotifier =
-                ref.read(selectedAttachmentsProvider.notifier);
+                ref.read(selectedPinAttachmentsProvider.notifier);
             if (attachments.isNotEmpty) {
               attachments.addAll(newAttachments);
               attachmentNotifier.update((state) => attachments);
@@ -112,7 +112,7 @@ class PinUtils {
   ) async {
     final client = ref.read(alwaysClientProvider);
     List<AttachmentDraft> drafts = [];
-    final attachments = ref.read(selectedAttachmentsProvider);
+    final attachments = ref.read(selectedPinAttachmentsProvider);
     for (final attachment in attachments) {
       if (attachment.type == AttachmentType.camera ||
           attachment.type == AttachmentType.image) {

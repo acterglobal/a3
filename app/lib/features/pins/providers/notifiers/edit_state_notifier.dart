@@ -71,7 +71,7 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
       }
 
       EasyLoading.show(status: 'Sending attachments');
-      final selectedAttachments = ref.read(selectedAttachmentsProvider);
+      final selectedAttachments = ref.read(selectedPinAttachmentsProvider);
       if (selectedAttachments.isNotEmpty) {
         final manager = await pin.attachments();
         final drafts = await PinUtils.makeAttachmentDrafts(manager, ref);

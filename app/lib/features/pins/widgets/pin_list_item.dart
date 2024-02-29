@@ -1,6 +1,7 @@
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:acter/features/pins/widgets/attachment_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,7 +35,7 @@ class PinListItemById extends ConsumerWidget {
   }
 }
 
-class PinListItem extends StatefulWidget {
+class PinListItem extends ConsumerStatefulWidget {
   final ActerPin pin;
   final bool showSpace;
   const PinListItem({
@@ -44,10 +45,10 @@ class PinListItem extends StatefulWidget {
   });
 
   @override
-  State<PinListItem> createState() => _PinListItemState();
+  ConsumerState<PinListItem> createState() => _PinListItemConsumerState();
 }
 
-class _PinListItemState extends State<PinListItem> {
+class _PinListItemConsumerState extends ConsumerState<PinListItem> {
   String pinContent = '';
 
   @override
@@ -91,49 +92,72 @@ class _PinListItemState extends State<PinListItem> {
   Widget build(BuildContext context) {
     final isLink = widget.pin.isLink();
     final spaceId = widget.pin.roomIdStr();
+    final attachments = ref.watch(pinAttachmentsProvider(widget.pin));
 
-    return Card(
-      child: ListTile(
-        key: Key(widget.pin.eventIdStr()),
-        onTap: () => onTap(context),
-        onLongPress: () => openItem(context),
-        title: Row(
-          children: <Widget>[
-            Icon(
-              isLink ? Atlas.link_chain_thin : Atlas.document_thin,
-              size: 18,
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                widget.pin.title(),
-                softWrap: false,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-        titleTextStyle: Theme.of(context).textTheme.titleSmall,
-        subtitle: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            const SizedBox(height: 10),
-            if (widget.showSpace) Flexible(child: SpaceChip(spaceId: spaceId)),
-            const SizedBox(height: 10),
-            if (pinContent.isNotEmpty)
-              Flexible(
-                child: Html(
-                  padding: const EdgeInsets.all(0),
-                  data: pinContent,
-                  maxLines: 2,
-                  defaultTextStyle: Theme.of(context)
-                      .textTheme
-                      .bodySmall!
-                      .copyWith(overflow: TextOverflow.ellipsis),
+    return InkWell(
+      key: Key(widget.pin.eventIdStr()),
+      onTap: () => onTap(context),
+      onLongPress: () => openItem(context),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Icon(
+                          isLink ? Atlas.link_chain_thin : Atlas.document_thin,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            widget.pin.title(),
+                            softWrap: false,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    if (widget.showSpace) SpaceChip(spaceId: spaceId),
+                    const SizedBox(height: 10),
+                    if (pinContent.isNotEmpty)
+                      Html(
+                        padding: const EdgeInsets.all(5),
+                        data: pinContent,
+                        maxLines: 2,
+                        defaultTextStyle: Theme.of(context)
+                            .textTheme
+                            .bodySmall!
+                            .copyWith(overflow: TextOverflow.ellipsis),
+                      ),
+                  ],
                 ),
               ),
-          ],
+              attachments.when(
+                data: (list) {
+                  if (list.isNotEmpty) {
+                    return AttachmentTypeHandler(
+                      attachment: list[0],
+                      pin: widget.pin,
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                },
+                error: (err, st) => Text('Error loading attachment $err'),
+                loading: () => const Skeletonizer(
+                  child: SizedBox(),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

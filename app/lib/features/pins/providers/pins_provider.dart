@@ -46,10 +46,12 @@ final pinAttachmentManagerProvider =
 
 final pinAttachmentsProvider = FutureProvider.family
     .autoDispose<List<Attachment>, ActerPin>((ref, acterPin) async {
-  final manager =
-      await ref.watch(pinAttachmentManagerProvider(acterPin).future);
-  return (await manager.attachments().then((ffiList) => ffiList.toList()));
+  final manager = await acterPin.attachments();
+  if (manager.hasAttachments()) {
+    return (await manager.attachments().then((ffiList) => ffiList.toList()));
+  }
+  return [];
 });
 
-final selectedAttachmentsProvider =
+final selectedPinAttachmentsProvider =
     StateProvider.autoDispose<List<PinAttachment>>((ref) => []);
