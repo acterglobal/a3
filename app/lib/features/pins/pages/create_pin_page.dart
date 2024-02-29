@@ -9,22 +9,16 @@ import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
-import 'package:acter/features/chat/widgets/attachment_options.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/pins/pin_utils/pin_utils.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
-
-typedef PinAttachment = ({AttachmentType type, File file});
-final _selectedAttachmentsProvider =
-    StateProvider.autoDispose<List<PinAttachment>>((ref) => []);
 
 class CreatePinPage extends ConsumerStatefulWidget {
   final String? initialSelectedSpace;
@@ -56,7 +50,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
 
   @override
   Widget build(BuildContext context) {
-    final attachments = ref.watch(_selectedAttachmentsProvider);
+    final attachments = ref.watch(selectedAttachmentsProvider);
     return SideSheet(
       header: 'Create new Pin',
       addActions: true,
@@ -128,7 +122,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
 
   Widget _buildAttachmentField() {
     return InkWell(
-      onTap: showAttachmentSelection,
+      onTap: () => PinUtils.showAttachmentSelection(context, ref),
       child: Container(
         height: 100,
         width: double.infinity,
@@ -218,101 +212,13 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
         _textController.text.trim().isNotEmpty;
   }
 
-// attachment selection sheet
-  void showAttachmentSelection() async {
-    await showModalBottomSheet<void>(
-      isDismissible: true,
-      context: context,
-      builder: (context) => AttachmentOptions(
-        onTapCamera: () async {
-          XFile? imageFile =
-              await ImagePicker().pickImage(source: ImageSource.camera);
-          if (imageFile != null) {
-            File file = File(imageFile.path);
-            List<PinAttachment> attachmentList = [
-              (type: AttachmentType.camera, file: file),
-            ];
-            ref
-                .read(_selectedAttachmentsProvider.notifier)
-                .update((state) => [...attachmentList]);
-          }
-        },
-        onTapImage: () async {
-          List<XFile> imageFiles = await ImagePicker().pickMultiImage();
-          List<PinAttachment> newAttachments = [];
-
-          for (var imageFile in imageFiles) {
-            File file = File(imageFile.path);
-            PinAttachment attachment = (type: AttachmentType.image, file: file);
-            newAttachments.add(attachment);
-          }
-
-          List<PinAttachment> attachments =
-              ref.read(_selectedAttachmentsProvider);
-          var attachmentNotifier =
-              ref.read(_selectedAttachmentsProvider.notifier);
-          if (attachments.isNotEmpty) {
-            attachments.addAll(newAttachments);
-            attachmentNotifier.update((state) => attachments);
-          } else {
-            attachmentNotifier.update((state) => newAttachments);
-          }
-        },
-        onTapVideo: () async {
-          XFile? videoFile =
-              await ImagePicker().pickVideo(source: ImageSource.gallery);
-          List<PinAttachment> newAttachments = [];
-          if (videoFile != null) {
-            File file = File(videoFile.path);
-            newAttachments.add((type: AttachmentType.video, file: file));
-          }
-          List<PinAttachment> attachments =
-              ref.read(_selectedAttachmentsProvider);
-          var attachmentNotifier =
-              ref.read(_selectedAttachmentsProvider.notifier);
-          if (attachments.isNotEmpty) {
-            attachments.addAll(newAttachments);
-            attachmentNotifier.update((state) => attachments);
-          } else {
-            attachmentNotifier.update((state) => newAttachments);
-          }
-        },
-        onTapFile: () async {
-          FilePickerResult? result = await FilePicker.platform.pickFiles(
-            type: FileType.any,
-            allowMultiple: true,
-          );
-          if (result != null) {
-            List<PinAttachment> newAttachments =
-                result.paths.map<PinAttachment>((path) {
-              var file = File(path!);
-              var pinAttachment = (type: AttachmentType.file, file: file);
-              return pinAttachment;
-            }).toList();
-
-            List<PinAttachment> attachments =
-                ref.read(_selectedAttachmentsProvider);
-            var attachmentNotifier =
-                ref.read(_selectedAttachmentsProvider.notifier);
-            if (attachments.isNotEmpty) {
-              attachments.addAll(newAttachments);
-              attachmentNotifier.update((state) => attachments);
-            } else {
-              attachmentNotifier.update((state) => newAttachments);
-            }
-          }
-        },
-      ),
-    );
-  }
-
 // construct message content draft and make attachment draft
   Future<List<AttachmentDraft>?> _makeAttachmentDrafts(
     AttachmentsManager manager,
   ) async {
     final client = ref.read(alwaysClientProvider);
     List<AttachmentDraft> drafts = [];
-    final attachments = ref.read(_selectedAttachmentsProvider);
+    final attachments = ref.read(selectedAttachmentsProvider);
     for (final attachment in attachments) {
       if (attachment.type == AttachmentType.camera ||
           attachment.type == AttachmentType.image) {
@@ -404,7 +310,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
       final List<AttachmentDraft>? drafts =
           await _makeAttachmentDrafts(manager);
       if (drafts == null) {
-        EasyLoading.showError('Error occured uploading attachments');
+        EasyLoading.showError('Error occured sending attachments');
         return;
       }
       for (var draft in drafts) {
@@ -419,9 +325,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
       if (!context.mounted) {
         return;
       }
-      // ignore: use_build_context_synchronously
-      Navigator.of(context, rootNavigator: true)
-          .pop(); // pop the loading screen
       // ignore: use_build_context_synchronously
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
       // ignore: use_build_context_synchronously
@@ -440,7 +343,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
   }
 }
 
-// Attachment File UI
+// Attachment File UI widget
 class _AttachmentFileWidget extends ConsumerWidget {
   const _AttachmentFileWidget(this.attachment);
 
@@ -448,7 +351,7 @@ class _AttachmentFileWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final attachmentNotifier = ref.watch(_selectedAttachmentsProvider.notifier);
+    final attachmentNotifier = ref.watch(selectedAttachmentsProvider.notifier);
     final file = attachment.file;
     String fileName = file.path.split('/').last;
 
@@ -476,7 +379,7 @@ class _AttachmentFileWidget extends ConsumerWidget {
           const SizedBox(width: 5),
           InkWell(
             onTap: () {
-              var files = ref.read(_selectedAttachmentsProvider);
+              var files = ref.read(selectedAttachmentsProvider);
               files.remove(attachment);
               attachmentNotifier.update((state) => [...files]);
             },
