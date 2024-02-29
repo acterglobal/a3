@@ -5,13 +5,13 @@ import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/pin_utils/pin_utils.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/image_attachment_preview.dart';
-import 'package:acter/features/pins/widgets/video_attachment_preview.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show ActerPin, Attachment;
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -89,7 +89,13 @@ class _PinItemState extends ConsumerState<PinItem> {
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text('Attachments', style: attachmentTextStyle),
+              child: Row(
+                children: [
+                  Text('Attachments', style: attachmentTextStyle),
+                  const SizedBox(width: 5),
+                  const Icon(Atlas.paperclip_attachment_thin, size: 14),
+                ],
+              ),
             ),
             const SizedBox(height: 10),
             attachmentManager.when(
@@ -141,6 +147,7 @@ class _PinItemState extends ConsumerState<PinItem> {
     final pinEdit = ref.watch(pinEditProvider(widget.pin));
     final attachments = ref.watch(pinAttachmentsProvider(widget.pin));
     final selectedAttachments = ref.watch(selectedAttachmentsProvider);
+    final attachmentNotifier = ref.watch(selectedAttachmentsProvider.notifier);
     return attachments.when(
       data: (list) {
         return Wrap(
@@ -148,11 +155,31 @@ class _PinItemState extends ConsumerState<PinItem> {
           spacing: 5.0,
           runSpacing: 10.0,
           children: [
-            for (var item in list) _AttachmentTypeHandler(item),
+            for (var item in list) _attachmentTypeHandler(item),
             for (var item in selectedAttachments)
-              _AttachmentContainer(
-                filename: item.file.path.split('/').last,
-                child: const Icon(Atlas.file_thin),
+              Stack(
+                children: <Widget>[
+                  _AttachmentContainer(
+                    pin: widget.pin,
+                    filename: item.file.path.split('/').last,
+                    child: const Icon(Atlas.file_thin),
+                  ),
+                  Visibility(
+                    visible: pinEdit.editMode,
+                    child: Positioned(
+                      top: -15,
+                      right: -15,
+                      child: IconButton(
+                        onPressed: () {
+                          var files = ref.read(selectedAttachmentsProvider);
+                          files.remove(item);
+                          attachmentNotifier.update((state) => [...files]);
+                        },
+                        icon: const Icon(Atlas.xmark_circle_thin, size: 12),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             if (pinEdit.editMode) _buildAddAttachment(),
           ],
@@ -194,14 +221,8 @@ class _PinItemState extends ConsumerState<PinItem> {
       ),
     );
   }
-}
 
-/// attachment file handler
-class _AttachmentTypeHandler extends StatelessWidget {
-  final Attachment attachment;
-  const _AttachmentTypeHandler(this.attachment);
-  @override
-  Widget build(BuildContext context) {
+  Widget _attachmentTypeHandler(Attachment attachment) {
     var msgContent = attachment.msgContent();
     String? mimeType = msgContent.mimetype();
     if (mimeType == null) {
@@ -209,16 +230,13 @@ class _AttachmentTypeHandler extends StatelessWidget {
     }
     if (mimeType.startsWith('image/')) {
       return _AttachmentContainer(
+        pin: widget.pin,
         filename: msgContent.body(),
         child: ImageAttachmentPreview(attachment: attachment),
       );
-    } else if (mimeType.startsWith('video/')) {
-      return _AttachmentContainer(
-        filename: msgContent.body(),
-        child: VideoAttachmentPreview(attachment: attachment),
-      );
     } else {
       return _AttachmentContainer(
+        pin: widget.pin,
         filename: msgContent.body(),
         child: const Center(child: Icon(Atlas.file_thin)),
       );
@@ -227,16 +245,18 @@ class _AttachmentTypeHandler extends StatelessWidget {
 }
 
 // outer attachment container UI
-class _AttachmentContainer extends StatelessWidget {
+class _AttachmentContainer extends ConsumerWidget {
   const _AttachmentContainer({
+    required this.pin,
     required this.child,
     required this.filename,
   });
+  final ActerPin pin;
   final Widget child;
   final String filename;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final containerColor = Theme.of(context).colorScheme.background;
     final borderColor = Theme.of(context).colorScheme.primary;
     final containerTextStyle = Theme.of(context).textTheme.bodySmall;

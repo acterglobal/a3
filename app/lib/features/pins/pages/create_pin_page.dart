@@ -1,15 +1,12 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/pins/pin_utils/pin_utils.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -212,76 +209,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
         _textController.text.trim().isNotEmpty;
   }
 
-// construct message content draft and make attachment draft
-  Future<List<AttachmentDraft>?> _makeAttachmentDrafts(
-    AttachmentsManager manager,
-  ) async {
-    final client = ref.read(alwaysClientProvider);
-    List<AttachmentDraft> drafts = [];
-    final attachments = ref.read(selectedAttachmentsProvider);
-    for (final attachment in attachments) {
-      if (attachment.type == AttachmentType.camera ||
-          attachment.type == AttachmentType.image) {
-        final file = attachment.file;
-        final String? mimeType = lookupMimeType(file.path);
-        if (mimeType == null) {
-          EasyLoading.showError('Invalid media format');
-          return null;
-        }
-        if (!mimeType.startsWith('image/')) {
-          EasyLoading.showError(
-            'Posting of $mimeType not yet supported',
-          );
-          return null;
-        }
-        Uint8List bytes = await file.readAsBytes();
-        final decodedImage = await decodeImageFromList(bytes);
-        final imageDraft = client
-            .imageDraft(file.path, mimeType)
-            .size(bytes.length)
-            .width(decodedImage.width)
-            .height(decodedImage.height);
-        final attachmentDraft = await manager.contentDraft(imageDraft);
-        drafts.add(attachmentDraft);
-      } else if (attachment.type == AttachmentType.video) {
-        final file = attachment.file;
-        final String? mimeType = lookupMimeType(file.path);
-        if (mimeType == null) {
-          EasyLoading.showError('Invalid media format');
-          return null;
-        }
-        if (!mimeType.startsWith('video/')) {
-          EasyLoading.showError(
-            'Posting of $mimeType not yet supported',
-          );
-          return null;
-        }
-        Uint8List bytes = await file.readAsBytes();
-        final videoDraft =
-            client.videoDraft(file.path, mimeType).size(bytes.length);
-        final attachmentDraft = await manager.contentDraft(videoDraft);
-        drafts.add(attachmentDraft);
-      } else if (attachment.type == AttachmentType.audio) {
-        return null;
-      } else {
-        final file = attachment.file;
-        String fileName = file.path.split('/').last;
-        final String? mimeType = lookupMimeType(file.path);
-        if (mimeType == null) {
-          EasyLoading.showError('Invalid media format');
-          return null;
-        }
-        final fileDraft = client
-            .fileDraft(file.path, mimeType)
-            .filename(fileName)
-            .size(file.lengthSync());
-        final attachmentDraft = await manager.contentDraft(fileDraft);
-        drafts.add(attachmentDraft);
-      }
-    }
-    return drafts;
-  }
-
   void _handleCreatePin() async {
     EasyLoading.show(status: 'Creating pin...');
     try {
@@ -308,7 +235,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
       final pin = await ref.read(pinProvider(pinId.toString()).future);
       final manager = await pin.attachments();
       final List<AttachmentDraft>? drafts =
-          await _makeAttachmentDrafts(manager);
+          await PinUtils.makeAttachmentDrafts(manager, ref as Ref<Object?>);
       if (drafts == null) {
         EasyLoading.showError('Error occured sending attachments');
         return;

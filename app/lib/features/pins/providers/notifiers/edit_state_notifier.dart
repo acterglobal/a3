@@ -1,4 +1,6 @@
 import 'package:acter/features/pins/models/pin_edit_state/pin_edit_state.dart';
+import 'package:acter/features/pins/pin_utils/pin_utils.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -66,6 +68,20 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
       if (state.html != null && content.formattedBody() != state.html) {
         updateBuilder.contentHtml(state.markdown, state.html!);
         hasChanges = true;
+      }
+
+      EasyLoading.show(status: 'Sending attachments');
+      final selectedAttachments = ref.read(selectedAttachmentsProvider);
+      if (selectedAttachments.isNotEmpty) {
+        final manager = await pin.attachments();
+        final drafts = await PinUtils.makeAttachmentDrafts(manager, ref);
+        if (drafts == null) {
+          EasyLoading.showError('Error sending attachments');
+          return;
+        }
+        for (final draft in drafts) {
+          await draft.send();
+        }
       }
 
       if (hasChanges) {

@@ -1,11 +1,15 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/widgets/attachment_options.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
 
 typedef PinAttachment = ({AttachmentType type, File file});
 
@@ -99,5 +103,67 @@ class PinUtils {
         },
       ),
     );
+  }
+
+  // construct message content draft and make attachment draft
+  static Future<List<AttachmentDraft>?> makeAttachmentDrafts(
+    AttachmentsManager manager,
+    Ref ref,
+  ) async {
+    final client = ref.read(alwaysClientProvider);
+    List<AttachmentDraft> drafts = [];
+    final attachments = ref.read(selectedAttachmentsProvider);
+    for (final attachment in attachments) {
+      if (attachment.type == AttachmentType.camera ||
+          attachment.type == AttachmentType.image) {
+        final file = attachment.file;
+        final String? mimeType = lookupMimeType(file.path);
+        if (mimeType == null) {
+          return null;
+        }
+        if (!mimeType.startsWith('image/')) {
+          return null;
+        }
+        Uint8List bytes = await file.readAsBytes();
+        final decodedImage = await decodeImageFromList(bytes);
+        final imageDraft = client
+            .imageDraft(file.path, mimeType)
+            .size(bytes.length)
+            .width(decodedImage.width)
+            .height(decodedImage.height);
+        final attachmentDraft = await manager.contentDraft(imageDraft);
+        drafts.add(attachmentDraft);
+      } else if (attachment.type == AttachmentType.video) {
+        final file = attachment.file;
+        final String? mimeType = lookupMimeType(file.path);
+        if (mimeType == null) {
+          return null;
+        }
+        if (!mimeType.startsWith('video/')) {
+          return null;
+        }
+        Uint8List bytes = await file.readAsBytes();
+        final videoDraft =
+            client.videoDraft(file.path, mimeType).size(bytes.length);
+        final attachmentDraft = await manager.contentDraft(videoDraft);
+        drafts.add(attachmentDraft);
+      } else if (attachment.type == AttachmentType.audio) {
+        return null;
+      } else {
+        final file = attachment.file;
+        String fileName = file.path.split('/').last;
+        final String? mimeType = lookupMimeType(file.path);
+        if (mimeType == null) {
+          return null;
+        }
+        final fileDraft = client
+            .fileDraft(file.path, mimeType)
+            .filename(fileName)
+            .size(file.lengthSync());
+        final attachmentDraft = await manager.contentDraft(fileDraft);
+        drafts.add(attachmentDraft);
+      }
+    }
+    return drafts;
   }
 }
