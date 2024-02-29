@@ -47,7 +47,7 @@ class NewsSideBar extends ConsumerWidget {
           color: Colors.white,
           index: index,
           onTap: () async {
-            final manager = await ref.watch(newsReactionsProvider(news).future);
+            final manager = await ref.read(newsReactionsProvider(news).future);
             final status = manager.likedByMe();
             debugPrint('my like status: $status');
             if (!status) {
