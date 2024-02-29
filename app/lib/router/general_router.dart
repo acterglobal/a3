@@ -7,7 +7,6 @@ import 'package:acter/common/widgets/dialog_page.dart';
 import 'package:acter/common/widgets/side_sheet_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/widgets/create_chat.dart';
-import 'package:acter/features/events/pages/create_edit_event_page.dart';
 import 'package:acter/features/news/pages/add_news_page.dart';
 import 'package:acter/features/onboarding/pages/intro_page.dart';
 import 'package:acter/features/onboarding/pages/intro_profile.dart';
@@ -112,32 +111,6 @@ List<RouteBase> makeGeneralRoutes() {
           },
           child: CreatePinSheet(
             initialSelectedSpace: state.uri.queryParameters['spaceId'],
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      parentNavigatorKey: rootNavKey,
-      name: Routes.createEvent.name,
-      path: Routes.createEvent.route,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: CreateEditEventPage(
-            initialSelectedSpace: state.uri.queryParameters['spaceId'],
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      parentNavigatorKey: rootNavKey,
-      name: Routes.editCalendarEvent.name,
-      path: Routes.editCalendarEvent.route,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: CreateEditEventPage(
-            calendarId: state.pathParameters['calendarId'],
           ),
         );
       },

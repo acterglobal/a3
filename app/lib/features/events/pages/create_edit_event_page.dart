@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/base_body_widget.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
@@ -100,7 +101,7 @@ class _CreateEditEventPageConsumerState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppbar(),
-      body: _buildBody(),
+      body: BaseBody(child: _buildBody()),
     );
   }
 
@@ -117,26 +118,24 @@ class _CreateEditEventPageConsumerState
   // Body
   Widget _buildBody() {
     return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Form(
-          key: _eventFromKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              _eventNameField(),
-              const SizedBox(height: 10),
-              _eventDateAndTime(),
-              const SizedBox(height: 10),
-              _eventDescriptionField(),
-              const SizedBox(height: 10),
+      child: Form(
+        key: _eventFromKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 20),
+            _eventNameField(),
+            const SizedBox(height: 10),
+            _eventDateAndTime(),
+            const SizedBox(height: 10),
+            _eventDescriptionField(),
+            const SizedBox(height: 10),
+            if (widget.calendarId == null)
               const SelectSpaceFormField(canCheck: 'CanPostEvent'),
-              const SizedBox(height: 20),
-              _eventActionButtons(),
-              const SizedBox(height: 30),
-            ],
-          ),
+            const SizedBox(height: 20),
+            _eventActionButtons(),
+            const SizedBox(height: 30),
+          ],
         ),
       ),
     );
