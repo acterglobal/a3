@@ -7,8 +7,7 @@ import 'package:acter/common/widgets/dialog_page.dart';
 import 'package:acter/common/widgets/side_sheet_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/widgets/create_chat.dart';
-import 'package:acter/features/events/sheets/create_event_sheet.dart';
-import 'package:acter/features/events/sheets/edit_event_sheet.dart';
+import 'package:acter/features/events/pages/create_edit_event_page.dart';
 import 'package:acter/features/news/pages/add_news_page.dart';
 import 'package:acter/features/onboarding/pages/intro_page.dart';
 import 'package:acter/features/onboarding/pages/intro_profile.dart';
@@ -122,20 +121,9 @@ List<RouteBase> makeGeneralRoutes() {
       name: Routes.createEvent.name,
       path: Routes.createEvent.route,
       pageBuilder: (context, state) {
-        return SideSheetPage(
+        return NoTransitionPage(
           key: state.pageKey,
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween(
-                begin: const Offset(1, 0),
-                end: const Offset(0, 0),
-              ).animate(
-                animation,
-              ),
-              child: child,
-            );
-          },
-          child: CreateEventSheet(
+          child: CreateEditEventPage(
             initialSelectedSpace: state.uri.queryParameters['spaceId'],
           ),
         );
@@ -146,20 +134,11 @@ List<RouteBase> makeGeneralRoutes() {
       name: Routes.editCalendarEvent.name,
       path: Routes.editCalendarEvent.route,
       pageBuilder: (context, state) {
-        return SideSheetPage(
+        return NoTransitionPage(
           key: state.pageKey,
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween(
-                begin: const Offset(1, 0),
-                end: const Offset(0, 0),
-              ).animate(
-                animation,
-              ),
-              child: child,
-            );
-          },
-          child: EditEventSheet(calendarId: state.pathParameters['calendarId']),
+          child: CreateEditEventPage(
+            calendarId: state.pathParameters['calendarId'],
+          ),
         );
       },
     ),
