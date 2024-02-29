@@ -21,8 +21,8 @@ extension ActerChat on ConvenientTest {
       await select.should(findsNWidgets(counter));
     }
 
-    if (ids != null && ids.isNotEmpty) {
-      for (final id in ids) {
+    if (ids?.isNotEmpty == true) {
+      for (final id in ids!) {
         final select = find.byKey(Key('convo-card-$id'));
         await tester.ensureVisible(select);
       }

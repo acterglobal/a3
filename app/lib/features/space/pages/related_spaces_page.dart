@@ -45,10 +45,7 @@ class RelatedSpacesPage extends ConsumerWidget {
               // we have more than just the spaces screen, put them into a grid.
               final List<Widget> items = [];
               bool checkPermission(String permission) {
-                if (spaces.membership != null) {
-                  return spaces.membership!.canString(permission);
-                }
-                return false;
+                return spaces.membership?.canString(permission) ?? false;
               }
 
               final canLinkSpace = checkPermission('CanLinkSpaces');

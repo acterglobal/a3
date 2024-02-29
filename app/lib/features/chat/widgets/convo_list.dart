@@ -22,7 +22,7 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
   Widget build(BuildContext context) {
     final chats = ref.watch(chatsProvider);
     final searchValue = ref.watch(chatSearchValueProvider);
-    if (searchValue != null && searchValue.isNotEmpty) {
+    if (searchValue?.isNotEmpty == true) {
       return ref.watch(searchedChatsProvider).when(
             data: (chats) {
               if (chats.isEmpty) {

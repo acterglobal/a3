@@ -85,13 +85,13 @@ class ConvoHierarchyCard extends ConsumerWidget {
     this.shape,
     this.withBorder = true,
   });
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = space.roomIdStr();
     final profile = ref.watch(spaceHierarchyProfileProvider(space));
     final topic = space.topic();
-    final Widget? subtitle =
-        topic != null && topic.isNotEmpty ? Text(topic) : null;
+    final subtitle = topic?.isNotEmpty == true ? Text(topic!) : null;
 
     return profile.when(
       data: (profile) => ConvoWithProfileCard(

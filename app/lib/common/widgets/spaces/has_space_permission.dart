@@ -7,6 +7,7 @@ class HasSpacePermission extends ConsumerWidget {
   final String permission;
   final Widget child;
   final Widget? fallback;
+
   const HasSpacePermission({
     super.key,
     required this.spaceId,
@@ -20,9 +21,7 @@ class HasSpacePermission extends ConsumerWidget {
     final otherwise = fallback ?? const SizedBox.shrink();
     return ref.watch(roomMembershipProvider(spaceId)).when(
           data: (membership) =>
-              (membership != null && membership.canString(permission))
-                  ? child
-                  : otherwise,
+              membership?.canString(permission) == true ? child : otherwise,
           error: (e, s) => otherwise,
           loading: () => otherwise,
         );

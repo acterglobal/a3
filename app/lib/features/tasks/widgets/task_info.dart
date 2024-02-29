@@ -280,11 +280,10 @@ class _TaskBodyState extends State<TaskBody> {
                   onPressed: () async {
                     final newBody = _textEditingController.text;
                     final description = widget.task.description();
-                    if ((description == null &&
-                            newBody.isEmpty) || // was nothing & stays nothing
-                        (description != null &&
-                            // was something and is the same;
-                            description.body() == newBody)) {
+
+                    final isNothing = description == null && newBody.isEmpty;
+                    final isSame = description?.body() == newBody;
+                    if (isNothing || isSame) {
                       // close and ignore, nothing actually changed
                       setState(() => editMode = false);
                     }
@@ -314,8 +313,8 @@ class _TaskBodyState extends State<TaskBody> {
     final description = widget.task.description();
     if (description != null) {
       final formattedBody = description.formattedBody();
-      if (formattedBody != null && formattedBody.isNotEmpty) {
-        return _contentWrap(context, RenderHtml(text: formattedBody));
+      if (formattedBody?.isNotEmpty == true) {
+        return _contentWrap(context, RenderHtml(text: formattedBody!));
       } else {
         final str = description.body();
         if (str.isNotEmpty) {

@@ -115,10 +115,9 @@ class _CreateTaskListSheetConsumerState
                           ),
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: _titleController,
-                          validator: (value) =>
-                              (value != null && value.isNotEmpty)
-                                  ? null
-                                  : 'Please enter a name',
+                          validator: (value) => (value?.isNotEmpty == true)
+                              ? null
+                              : 'Please enter a name',
                         ),
                       ),
                     ),

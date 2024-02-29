@@ -87,7 +87,7 @@ class _CreateSuperInviteTokenPageConsumerState
                       textInputType: TextInputType.text,
                       controller: _tokenController,
                       validator: (String? val) =>
-                          (val != null && val.isNotEmpty && val.length < 6)
+                          (val?.isNotEmpty == true && val!.length < 6)
                               ? 'Code must be at least 6 characters long'
                               : null,
                     ),

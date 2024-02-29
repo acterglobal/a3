@@ -67,10 +67,9 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinSheet> {
                     key: CreatePinSheet.titleFieldKey,
                     textInputType: TextInputType.text,
                     controller: _titleController,
-                    validator: (value) =>
-                        (value != null && value.trim().isNotEmpty)
-                            ? null
-                            : 'Please enter a title',
+                    validator: (value) => (value?.trim().isNotEmpty == true)
+                        ? null
+                        : 'Please enter a title',
                   ),
                 ],
               ),

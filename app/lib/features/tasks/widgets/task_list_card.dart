@@ -75,8 +75,8 @@ class _TaskListCardState extends ConsumerState<TaskListCard> {
       final desc = taskList.description();
       if (desc != null) {
         final formattedBody = desc.formattedBody();
-        if (formattedBody != null && formattedBody.isNotEmpty) {
-          body.add(RenderHtml(text: formattedBody));
+        if (formattedBody?.isNotEmpty == true) {
+          body.add(RenderHtml(text: formattedBody!));
         } else {
           final str = desc.body();
           if (str.isNotEmpty) {
