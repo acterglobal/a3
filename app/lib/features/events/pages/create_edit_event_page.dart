@@ -12,6 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::event::createOrEdit');
 
 class CreateEditEventPage extends ConsumerStatefulWidget {
   final String? initialSelectedSpace;
@@ -464,11 +467,11 @@ class _CreateEditEventPageConsumerState
           await client.waitForCalendarEvent(eventId.toString(), null);
 
       /// Event is created, set RSVP status to `Yes` by default for host.
-      final rsvpManager = await calendarEvent.rsvpManager();
+      final rsvpManager = await calendarEvent.rsvps();
       final rsvpDraft = rsvpManager.rsvpDraft();
       rsvpDraft.status('yes');
       await rsvpDraft.send();
-      debugPrint('Created Calendar Event: ${eventId.toString()}');
+      _log.info('Created Calendar Event: ${eventId.toString()}');
       EasyLoading.dismiss();
       if (context.mounted) {
         ref.invalidate(calendarEventProvider);
@@ -515,7 +518,7 @@ class _CreateEditEventPageConsumerState
       updateBuilder.utcEndFromRfc3339(utcEndDateTime);
       updateBuilder.descriptionHtml(plainDescription, htmlBodyDescription);
       final eventId = await updateBuilder.send();
-      debugPrint('Calendar Event updated $eventId');
+      _log.info('Calendar Event updated $eventId');
 
       EasyLoading.dismiss();
       if (context.mounted) {
