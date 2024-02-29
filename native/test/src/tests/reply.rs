@@ -20,7 +20,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
         .await
         .expect("sisko should belong to convo");
     let sisko_timeline = sisko_convo.timeline_stream();
-    let sisko_stream = sisko_timeline.diff_stream();
+    let sisko_stream = sisko_timeline.messages_stream();
     pin_mut!(sisko_stream);
 
     let kyra_sync = kyra.start_sync();
@@ -31,7 +31,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
         .await
         .expect("kyra should belong to convo");
     let kyra_timeline = kyra_convo.timeline_stream();
-    let kyra_stream = kyra_timeline.diff_stream();
+    let kyra_stream = kyra_timeline.messages_stream();
     pin_mut!(kyra_stream);
 
     kyra_stream.next().await;

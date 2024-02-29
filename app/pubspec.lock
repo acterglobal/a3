@@ -318,10 +318,10 @@ packages:
     description:
       path: "packages/convenient_test_manager_dart"
       ref: HEAD
-      resolved-ref: "74720b4309f44033cc56835ce556754193a853c8"
+      resolved-ref: "2dfee8760b820e3951de7dceb4edc96c14cc6980"
       url: "https://github.com/fzyzcjy/flutter_convenient_test/"
     source: git
-    version: "1.3.2"
+    version: "1.3.3"
   convert:
     dependency: "direct main"
     description:

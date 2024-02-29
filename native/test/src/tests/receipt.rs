@@ -20,7 +20,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
         .await
         .expect("sisko should belong to convo");
     let sisko_timeline = sisko_convo.timeline_stream();
-    let sisko_stream = sisko_timeline.diff_stream();
+    let sisko_stream = sisko_timeline.messages_stream();
     pin_mut!(sisko_stream);
 
     info!("1");

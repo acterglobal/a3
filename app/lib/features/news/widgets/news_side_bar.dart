@@ -1,10 +1,10 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
@@ -30,21 +30,32 @@ class NewsSideBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = news.roomId().toString();
-    final userId = ref.watch(alwaysClientProvider).userId().toString();
+    final userId = ref.watch(myUserIdStrProvider);
+    final isLikedByMe = ref.watch(likedByMeProvider(news));
+    final likesCount = ref.watch(totalLikesForNewsProvider(news));
     final space = ref.watch(briefSpaceItemWithMembershipProvider(roomId));
-
-    final TextStyle style = Theme.of(context).textTheme.bodyLarge!.copyWith(
-          fontSize: 13,
-        );
+    final style = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 13);
 
     return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
         const Spacer(),
         LikeButton(
-          likeCount: news.likesCount().toString(),
+          isLiked: isLikedByMe.valueOrNull ?? false,
+          likeCount: likesCount.valueOrNull ?? 0,
           style: style,
           color: Colors.white,
           index: index,
+          onTap: () async {
+            final manager = await ref.watch(newsReactionsProvider(news).future);
+            final status = manager.likedByMe();
+            debugPrint('my like status: $status');
+            if (!status) {
+              await manager.sendLike();
+            } else {
+              await manager.redactLike(null, null);
+            }
+          },
         ),
         const SizedBox(height: 10),
         space.maybeWhen(
@@ -154,10 +165,9 @@ class ActionBox extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final senderId = news.sender().toString();
-
     final isAuthor = senderId == userId;
-
     List<Widget> actions = [const Text('Actions'), const Divider()];
+
     if (!isAuthor) {
       actions.add(
         TextButton.icon(
@@ -187,9 +197,7 @@ class ActionBox extends ConsumerWidget {
             builder: (context) => RedactContentWidget(
               title: 'Remove this post',
               eventId: news.eventId().toString(),
-              onSuccess: () {
-                ref.invalidate(newsListProvider);
-              },
+              onSuccess: () => ref.invalidate(newsListProvider),
               senderId: senderId,
               roomId: roomId,
               isSpace: true,

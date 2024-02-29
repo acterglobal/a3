@@ -4,6 +4,7 @@ mod comments;
 mod common;
 mod news;
 mod pins;
+mod reactions;
 mod rsvp;
 mod tag;
 mod tasks;
@@ -19,11 +20,13 @@ pub use core::fmt::Debug;
 use enum_dispatch::enum_dispatch;
 pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
+pub use reactions::{Reaction, ReactionManager, ReactionStats};
 pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
 use ruma_common::{
     serde::Raw, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, UserId,
 };
 use ruma_events::{
+    reaction::ReactionEventContent,
     room::redaction::{OriginalRoomRedactionEvent, RoomRedactionEventContent},
     AnySyncTimelineEvent, AnyTimelineEvent, MessageLikeEvent, StaticEventContent,
     UnsignedRoomRedactionEvent,
@@ -58,10 +61,12 @@ use crate::{
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum Capability {
-    // someone can comment on this
+    // someone can add reaction on this
+    Reactable,
+    // someone can add comment on this
     Commentable,
-    // someone can add attchments on this
-    HasAttachments,
+    // someone can add attachment on this
+    Attachmentable,
     // another custom capability
     Custom(&'static str),
 }
@@ -300,6 +305,7 @@ pub enum AnyActerModel {
     AttachmentUpdate(AttachmentUpdate),
 
     Rsvp(Rsvp),
+    Reaction(Reaction),
 
     #[cfg(test)]
     TestModel(TestModel),
@@ -325,7 +331,8 @@ impl AnyActerModel {
             AnyActerModel::Attachment(_) => AttachmentEventContent::TYPE,
             AnyActerModel::AttachmentUpdate(_) => AttachmentUpdateEventContent::TYPE,
             AnyActerModel::Rsvp(_) => RsvpEventContent::TYPE,
-            AnyActerModel::RedactedActerModel(_) => "unknown_redacted_model",
+            AnyActerModel::Reaction(_) => ReactionEventContent::TYPE,
+            AnyActerModel::RedactedActerModel(..) => "unknown_redacted_model",
             #[cfg(test)]
             AnyActerModel::TestModel(_) => "test_model",
         }
@@ -549,6 +556,20 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::Rsvp(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
                     model_type: RsvpEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+
+            AnyActerEvent::Reaction(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::Reaction(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: ReactionEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
                         event_id: r.event_id,

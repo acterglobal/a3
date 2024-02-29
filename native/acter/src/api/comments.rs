@@ -129,16 +129,23 @@ impl CommentDraft {
 }
 
 impl CommentsManager {
-    pub(crate) fn new(
+    pub(crate) async fn new(
         client: Client,
         room: Room,
-        inner: models::CommentsManager,
-    ) -> CommentsManager {
-        CommentsManager {
-            client,
-            room,
-            inner,
-        }
+        event_id: OwnedEventId,
+    ) -> Result<CommentsManager> {
+        RUNTIME
+            .spawn(async move {
+                let inner =
+                    models::CommentsManager::from_store_and_event_id(client.store(), &event_id)
+                        .await;
+                Ok(CommentsManager {
+                    client,
+                    room,
+                    inner,
+                })
+            })
+            .await?
     }
 
     pub fn stats(&self) -> models::CommentsStats {

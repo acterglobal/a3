@@ -101,8 +101,8 @@ impl Client {
                         let room = client.get_room(inner.room_id()).context("Room not found")?;
                         let cal_event = CalendarEvent::new(client.clone(), room, inner);
                         // fliter only events that i sent rsvp
-                        let rsvp_manager = cal_event.rsvp_manager().await?;
-                        let status = rsvp_manager.my_status().await?;
+                        let rsvp_manager = cal_event.rsvps().await?;
+                        let status = rsvp_manager.responded_by_me().await?;
                         match status.status() {
                             Some(RsvpStatus::Yes) | Some(RsvpStatus::Maybe) => {
                                 cal_events.push(cal_event);
@@ -143,8 +143,8 @@ impl Client {
                         let room = client.get_room(inner.room_id()).context("Room not found")?;
                         let cal_event = CalendarEvent::new(client.clone(), room, inner);
                         // fliter only events that i sent rsvp
-                        let rsvp_manager = cal_event.rsvp_manager().await?;
-                        let status = rsvp_manager.my_status().await?;
+                        let rsvp_manager = cal_event.rsvps().await?;
+                        let status = rsvp_manager.responded_by_me().await?;
                         match status.status() {
                             Some(RsvpStatus::Yes) | Some(RsvpStatus::Maybe) => {
                                 cal_events.push(cal_event);
@@ -253,12 +253,22 @@ impl Deref for RsvpManager {
 }
 
 impl RsvpManager {
-    pub(crate) fn new(client: Client, room: Room, inner: models::RsvpManager) -> RsvpManager {
-        RsvpManager {
-            client,
-            room,
-            inner,
-        }
+    pub(crate) async fn new(
+        client: Client,
+        room: Room,
+        event_id: OwnedEventId,
+    ) -> Result<RsvpManager> {
+        RUNTIME
+            .spawn(async move {
+                let inner =
+                    models::RsvpManager::from_store_and_event_id(client.store(), &event_id).await;
+                Ok(RsvpManager {
+                    client,
+                    room,
+                    inner,
+                })
+            })
+            .await?
     }
 
     pub fn stats(&self) -> models::RsvpStats {
@@ -295,7 +305,7 @@ impl RsvpManager {
             .await?
     }
 
-    pub async fn my_status(&self) -> Result<OptionRsvpStatus> {
+    pub async fn responded_by_me(&self) -> Result<OptionRsvpStatus> {
         let manager = self.inner.clone();
         let my_id = self.client.user_id()?;
         RUNTIME
@@ -354,8 +364,8 @@ impl RsvpManager {
         })
     }
 
-    pub fn subscribe_stream(&self) -> impl Stream<Item = ()> {
-        BroadcastStream::new(self.subscribe()).map(|f| f.unwrap_or_default())
+    pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
+        BroadcastStream::new(self.subscribe()).map(|f| true)
     }
 
     pub fn subscribe(&self) -> Receiver<()> {

@@ -1,12 +1,16 @@
-use crate::utils::{random_user_with_random_space, random_user_with_template};
 use acter::new_colorize_builder;
 use anyhow::{bail, Result};
+use core::time::Duration;
 use std::io::Write;
 use tempfile::NamedTempFile;
+use tokio::time::sleep;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
 };
+use tracing::info;
+
+use crate::utils::{random_user_with_random_space, random_user_with_template};
 
 const TMPL: &str = r#"
 version = "0.1"
@@ -307,10 +311,9 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
     })
     .await?;
 
+    let bytes = include_bytes!("./fixtures/kingfisher.jpg");
     let mut tmp_file = NamedTempFile::new()?;
-    tmp_file
-        .as_file_mut()
-        .write_all(include_bytes!("./fixtures/kingfisher.jpg"))?;
+    tmp_file.as_file_mut().write_all(bytes)?;
 
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
@@ -377,10 +380,9 @@ async fn news_png_image_with_text_test() -> Result<()> {
     })
     .await?;
 
+    let bytes = include_bytes!("./fixtures/PNG_transparency_demonstration_1.png");
     let mut tmp_file = NamedTempFile::new()?;
-    tmp_file.as_file_mut().write_all(include_bytes!(
-        "./fixtures/PNG_transparency_demonstration_1.png"
-    ))?;
+    tmp_file.as_file_mut().write_all(bytes)?;
 
     let space = user.space(space_id.to_string()).await?;
     let mut draft = space.news_draft()?;
@@ -511,5 +513,106 @@ async fn news_multiple_slide_test() -> Result<()> {
 
     let fourth_slide = final_entry.get_slide(3).expect("We have video slide");
     assert_eq!(fourth_slide.type_str(), "video");
+    Ok(())
+}
+
+#[tokio::test]
+async fn news_like_reaction_test() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (mut user, space_id) = random_user_with_random_space("news_like").await?;
+    let state_sync = user.start_sync();
+    state_sync.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    let space_id_str = space_id.to_string();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        let space_id = space_id_str.clone();
+        async move { client.space(space_id).await }
+    })
+    .await?;
+
+    let bytes = include_bytes!("./fixtures/PNG_transparency_demonstration_1.png");
+    let mut tmp_file = NamedTempFile::new()?;
+    tmp_file.as_file_mut().write_all(bytes)?;
+
+    let space = user.space(space_id.to_string()).await?;
+    let mut draft = space.news_draft()?;
+    let image_draft = user.image_draft(
+        tmp_file.path().to_string_lossy().to_string(),
+        "image/png".to_string(),
+    );
+    draft
+        .add_slide(Box::new(image_draft.into_news_slide_draft()))
+        .await?;
+    draft.send().await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let space_cl = space.clone();
+    Retry::spawn(retry_strategy, move || {
+        let inner_space = space_cl.clone();
+        async move {
+            if inner_space.latest_news_entries(1).await?.len() != 1 {
+                bail!("news not found");
+            } else {
+                Ok(())
+            }
+        }
+    })
+    .await?;
+
+    let slides = space.latest_news_entries(1).await?;
+    let final_entry = slides.first().expect("Item is there");
+    let reaction_manager = final_entry.reactions().await?;
+    let mut reaction_updates = reaction_manager.subscribe();
+    assert!(!reaction_manager.liked_by_me());
+    info!("send like reaction ------------------------------------");
+    reaction_manager.send_like().await?;
+
+    // text msg may reach via reset action or set action
+    let mut i = 10;
+    while i > 0 {
+        info!("stream loop - {i}");
+        if reaction_updates.try_recv().is_ok() {
+            break;
+        }
+        info!("continue loop");
+        i -= 1;
+        sleep(Duration::from_secs(1)).await;
+    }
+    info!("loop finished");
+
+    let reaction_manager = reaction_manager.reload().await?;
+    info!("stats: {:#?}", reaction_manager.stats());
+
+    // assert!(reaction_manager.reacted_by_me());
+    assert!(reaction_manager.liked_by_me());
+    assert_eq!(reaction_manager.likes_count(), 1);
+
+    // redacting the like
+
+    reaction_manager.redact_like(None, None).await?;
+
+    // text msg may reach via reset action or set action
+    let mut i = 10;
+    while i > 0 {
+        info!("stream loop - {i}");
+        if reaction_updates.try_recv().is_ok() {
+            break;
+        }
+        info!("continue loop");
+        i -= 1;
+        sleep(Duration::from_secs(1)).await;
+    }
+    info!("loop finished");
+
+    let reaction_manager = reaction_manager.reload().await?;
+
+    assert!(!reaction_manager.reacted_by_me());
+    assert!(!reaction_manager.liked_by_me());
+    assert_eq!(reaction_manager.likes_count(), 0);
+
     Ok(())
 }

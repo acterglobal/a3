@@ -29,7 +29,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
         .await
         .expect("kyra should belong to convo");
     let kyra_timeline = kyra_convo.timeline_stream();
-    let kyra_stream = kyra_timeline.diff_stream();
+    let kyra_stream = kyra_timeline.messages_stream();
     pin_mut!(kyra_stream);
 
     kyra_stream.next().await;

@@ -23,7 +23,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
         .await
         .expect("sisko should belong to convo");
     let sisko_timeline = sisko_convo.timeline_stream();
-    let sisko_stream = sisko_timeline.diff_stream();
+    let sisko_stream = sisko_timeline.messages_stream();
     pin_mut!(sisko_stream);
 
     info!("2");
@@ -36,7 +36,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
         .await
         .expect("kyra should belong to convo");
     let kyra_timeline = kyra_convo.timeline_stream();
-    let kyra_stream = kyra_timeline.diff_stream();
+    let kyra_stream = kyra_timeline.messages_stream();
     pin_mut!(kyra_stream);
 
     kyra_stream.next().await;
@@ -55,7 +55,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
         .await
         .expect("worf should belong to convo");
     let worf_timeline = worf_convo.timeline_stream();
-    let worf_stream = worf_timeline.diff_stream();
+    let worf_stream = worf_timeline.messages_stream();
     pin_mut!(worf_stream);
 
     worf_stream.next().await;
