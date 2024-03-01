@@ -19,19 +19,17 @@ class SpaceToolbar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
     final List<PopupMenuEntry> submenu = [];
-    if (membership != null) {
-      if (membership.canString('CanSetName')) {
-        submenu.add(
-          PopupMenuItem(
-            onTap: () => context.pushNamed(
-              Routes.editSpace.name,
-              pathParameters: {'spaceId': spaceId},
-              queryParameters: {'spaceId': spaceId},
-            ),
-            child: const Text('Edit Details'),
+    if (membership?.canString('CanSetName') == true) {
+      submenu.add(
+        PopupMenuItem(
+          onTap: () => context.pushNamed(
+            Routes.editSpace.name,
+            pathParameters: {'spaceId': spaceId},
+            queryParameters: {'spaceId': spaceId},
           ),
-        );
-      }
+          child: const Text('Edit Details'),
+        ),
+      );
     }
 
     submenu.addAll([

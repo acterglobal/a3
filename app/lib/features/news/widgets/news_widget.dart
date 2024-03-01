@@ -59,7 +59,7 @@ class _NewsWidgetState extends ConsumerState<NewsWidget> {
               LikeAnimation.run(index);
               final news = data[index];
               final manager =
-                  await ref.watch(newsReactionsProvider(news).future);
+                  await ref.read(newsReactionsProvider(news).future);
               final status = manager.likedByMe();
               if (!status) {
                 await manager.sendLike();

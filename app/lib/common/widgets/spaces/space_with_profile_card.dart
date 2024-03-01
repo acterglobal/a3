@@ -98,8 +98,7 @@ class SpaceWithProfileCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final displayName = profile.displayName;
-    final title =
-        displayName != null && displayName.isNotEmpty ? displayName : roomId;
+    final title = displayName?.isNotEmpty == true ? displayName! : roomId;
 
     final avatar = ActerAvatar(
       mode: DisplayMode.Space,

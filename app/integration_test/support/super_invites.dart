@@ -41,8 +41,8 @@ extension SuperInvites on ConvenientTest {
       await select.tap();
     }
 
-    if (chats != null && chats.isNotEmpty) {
-      for (final chatId in chats) {
+    if (chats?.isNotEmpty == true) {
+      for (final chatId in chats!) {
         final addSpaceBtn = find.byKey(CreateSuperInviteTokenPage.addChatKey);
         await addSpaceBtn.should(findsOneWidget);
         await addSpaceBtn.tap();

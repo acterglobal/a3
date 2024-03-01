@@ -153,7 +153,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 //List of chats excluding DMs that can be linked according to the selected parent space
   Widget chatsList() {
     final searchValue = ref.watch(chatSearchValueProvider);
-    if (searchValue != null && searchValue.isNotEmpty) {
+    if (searchValue?.isNotEmpty == true) {
       return searchedChatsList();
     }
 
@@ -202,7 +202,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 //List of spaces that can be linked according to the selected parent space
   Widget spacesList() {
     final searchValue = ref.watch(spaceSearchValueProvider);
-    if (searchValue != null && searchValue.isNotEmpty) {
+    if (searchValue?.isNotEmpty == true) {
       return searchedSpaceList();
     }
 

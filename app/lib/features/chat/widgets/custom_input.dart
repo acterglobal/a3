@@ -191,16 +191,15 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    editMessage != null
-                        ? Consumer(builder: editMessageBuilder)
-                        : const SizedBox.shrink(),
-                    if (editMessage != null)
-                      _EditMessageContentWidget(
-                        convo: widget.convo,
-                        msg: editMessage,
-                      ),
-                  ],
+                  children: editMessage != null
+                      ? [
+                          Consumer(builder: editMessageBuilder),
+                          _EditMessageContentWidget(
+                            convo: widget.convo,
+                            msg: editMessage,
+                          ),
+                        ]
+                      : [],
                 ),
               ),
             ),
@@ -520,8 +519,8 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
     ChatAttachmentType chatAttachmentType,
   ) async {
     if (context.mounted) {
-      if (selectedFiles != null && selectedFiles.isNotEmpty) {
-        String fileName = selectedFiles.first.path.split('/').last;
+      if (selectedFiles?.isNotEmpty == true) {
+        String fileName = selectedFiles!.first.path.split('/').last;
         final mimeType = lookupMimeType(selectedFiles.first.path);
         showAdaptiveDialog(
           context: context,

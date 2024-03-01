@@ -49,12 +49,9 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
     super.initState();
     ref.listenManual(newsStateProvider, fireImmediately: true,
         (prevState, nextState) async {
-      if (nextState.currentNewsSlide != null && // we have a new one
-              nextState.currentNewsSlide?.type ==
-                  NewsSlideType.text && // and it is a text type
-              prevState?.currentNewsSlide !=
-                  nextState.currentNewsSlide // and the slides have changed
-          ) {
+      final isText = nextState.currentNewsSlide?.type == NewsSlideType.text;
+      final changed = prevState?.currentNewsSlide != nextState.currentNewsSlide;
+      if (isText && changed) {
         final next = nextState.currentNewsSlide!;
         final document = next.html != null
             ? ActerDocumentHelpers.fromHtml(next.html!)

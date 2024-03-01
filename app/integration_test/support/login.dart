@@ -30,7 +30,7 @@ extension ActerLogin on ConvenientTest {
   }
 
   String passwordFor(String username, {String? registrationToken}) {
-    if (registrationToken != null && registrationToken.isNotEmpty) {
+    if (registrationToken?.isNotEmpty == true) {
       return '$registrationToken:$username';
     } else if (defaultRegistrationToken.isNotEmpty) {
       return '$defaultRegistrationToken:$username';
