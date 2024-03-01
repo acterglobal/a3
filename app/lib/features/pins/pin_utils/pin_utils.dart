@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/widgets/attachment_options.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:file_picker/file_picker.dart';
@@ -107,12 +106,11 @@ class PinUtils {
 
   // construct message content draft and make attachment draft
   static Future<List<AttachmentDraft>?> makeAttachmentDrafts(
+    Client client,
     AttachmentsManager manager,
-    Ref ref,
+    List<PinAttachment> attachments,
   ) async {
-    final client = ref.read(alwaysClientProvider);
     List<AttachmentDraft> drafts = [];
-    final attachments = ref.read(selectedPinAttachmentsProvider);
     for (final attachment in attachments) {
       if (attachment.type == AttachmentType.camera ||
           attachment.type == AttachmentType.image) {

@@ -7,6 +7,7 @@ import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/pins/pin_utils/pin_utils.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -212,6 +213,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
   void _handleCreatePin() async {
     EasyLoading.show(status: 'Creating pin...');
     try {
+      final client = ref.read(alwaysClientProvider);
       final spaceId = ref.read(selectedSpaceIdProvider);
       final space = await ref.read(spaceProvider(spaceId!).future);
       final pinDraft = space.pinDraft();
@@ -234,8 +236,12 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
       EasyLoading.show(status: 'Sending attachments...');
       final pin = await ref.read(pinProvider(pinId.toString()).future);
       final manager = await pin.attachments();
-      final List<AttachmentDraft>? drafts =
-          await PinUtils.makeAttachmentDrafts(manager, ref as Ref<Object?>);
+      final selectedAttachments = ref.read(selectedPinAttachmentsProvider);
+      final List<AttachmentDraft>? drafts = await PinUtils.makeAttachmentDrafts(
+        client,
+        manager,
+        selectedAttachments,
+      );
       if (drafts == null) {
         EasyLoading.showError('Error occured sending attachments');
         return;

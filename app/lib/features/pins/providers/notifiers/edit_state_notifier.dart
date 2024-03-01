@@ -1,3 +1,4 @@
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/pins/models/pin_edit_state/pin_edit_state.dart';
 import 'package:acter/features/pins/pin_utils/pin_utils.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
@@ -70,11 +71,16 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
         hasChanges = true;
       }
 
-      EasyLoading.show(status: 'Sending attachments');
+      final client = ref.read(alwaysClientProvider);
       final selectedAttachments = ref.read(selectedPinAttachmentsProvider);
       if (selectedAttachments.isNotEmpty) {
+        EasyLoading.show(status: 'Sending attachments');
         final manager = await pin.attachments();
-        final drafts = await PinUtils.makeAttachmentDrafts(manager, ref);
+        final drafts = await PinUtils.makeAttachmentDrafts(
+          client,
+          manager,
+          selectedAttachments,
+        );
         if (drafts == null) {
           EasyLoading.showError('Error sending attachments');
           return;
@@ -82,11 +88,16 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
         for (final draft in drafts) {
           await draft.send();
         }
+        hasChanges = true;
       }
 
       if (hasChanges) {
         await updateBuilder.send();
         await pin.refresh();
+        // reset the selected attachment UI
+        ref.invalidate(selectedPinAttachmentsProvider);
+        // refresh attachments
+        ref.invalidate(pinAttachmentsProvider(pin));
         EasyLoading.showSuccess('Pin Updated Successfully');
       }
       EasyLoading.dismiss();
