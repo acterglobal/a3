@@ -51,6 +51,7 @@ extension RefDebounceExtension on Ref {
 }
 
 const largeScreenBreakPoint = 770;
+
 bool isLargeScreen(BuildContext context) {
   return MediaQuery.of(context).size.width >= largeScreenBreakPoint;
 }
@@ -113,6 +114,15 @@ String jiffyTime(int timeInterval) {
       return jiffyTime.yMd;
     }
   }
+}
+
+extension TimeOfDayExtension on TimeOfDay {
+  /// note: 'hour' is in 24-hour format
+  double toDouble() => hour + (minute / 60.0);
+}
+
+String eventDateFormat(DateTime dateTime) {
+  return DateFormat('MMM dd, yyyy').format(dateTime);
 }
 
 Future<bool> openLink(String target, BuildContext context) async {

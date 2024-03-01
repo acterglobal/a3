@@ -590,6 +590,9 @@ object CalendarEventUpdateBuilder {
     /// set description text
     fn description_text(body: string);
 
+    /// set description html text
+    fn description_html(body: string, html_body: string);
+
     /// set utc start in rfc3339 string
     fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
     /// set utc start in rfc2822 string
@@ -614,6 +617,10 @@ object CalendarEventDraft {
 
     /// set the description for this calendar event
     fn description_text(text: string);
+
+    /// set the description html for this calendar event
+    fn description_html(text: string, html: string);
+    
     fn unset_description();
 
     /// set the utc_start for this calendar event in rfc3339 format

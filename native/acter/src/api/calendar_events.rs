@@ -253,6 +253,12 @@ impl CalendarEventDraft {
         self
     }
 
+    pub fn description_html(&mut self, body: String, html_body: String) -> &mut Self {
+        let desc = TextMessageEventContent::html(body, html_body);
+        self.inner.description(Some(desc));
+        self
+    }
+
     pub fn unset_description(&mut self) -> &mut Self {
         self.inner.description(None);
         self
@@ -326,6 +332,12 @@ impl CalendarEventUpdateBuilder {
 
     pub fn description_text(&mut self, body: String) -> &mut Self {
         let desc = TextMessageEventContent::plain(body);
+        self.inner.description(Some(Some(desc)));
+        self
+    }
+
+    pub fn description_html(&mut self, body: String, html_body: String) -> &mut Self {
+        let desc = TextMessageEventContent::html(body, html_body);
         self.inner.description(Some(Some(desc)));
         self
     }

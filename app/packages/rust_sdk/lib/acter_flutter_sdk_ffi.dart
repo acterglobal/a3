@@ -15588,6 +15588,29 @@ class Api {
             int,
             int,
           )>();
+  late final _calendarEventUpdateBuilderDescriptionHtmlPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__CalendarEventUpdateBuilder_description_html");
+
+  late final _calendarEventUpdateBuilderDescriptionHtml =
+      _calendarEventUpdateBuilderDescriptionHtmlPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _calendarEventUpdateBuilderUtcStartFromRfc3339Ptr = _lookup<
       ffi.NativeFunction<
           _CalendarEventUpdateBuilderUtcStartFromRfc3339Return Function(
@@ -15741,6 +15764,29 @@ class Api {
   late final _calendarEventDraftDescriptionText =
       _calendarEventDraftDescriptionTextPtr.asFunction<
           void Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _calendarEventDraftDescriptionHtmlPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+            ffi.Int64,
+            ffi.Uint64,
+            ffi.Uint64,
+          )>>("__CalendarEventDraft_description_html");
+
+  late final _calendarEventDraftDescriptionHtml =
+      _calendarEventDraftDescriptionHtmlPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
             int,
             int,
             int,
@@ -32484,6 +32530,49 @@ class CalendarEventUpdateBuilder {
     return;
   }
 
+  /// set description html text
+  void descriptionHtml(
+    String body,
+    String htmlBody,
+  ) {
+    final tmp1 = body;
+    final tmp5 = htmlBody;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    _api._calendarEventUpdateBuilderDescriptionHtml(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    return;
+  }
+
   /// set utc start in rfc3339 string
   void utcStartFromRfc3339(
     String utcStart,
@@ -32853,6 +32942,49 @@ class CalendarEventDraft {
       tmp2,
       tmp3,
       tmp4,
+    );
+    return;
+  }
+
+  /// set the description html for this calendar event
+  void descriptionHtml(
+    String text,
+    String html,
+  ) {
+    final tmp1 = text;
+    final tmp5 = html;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    _api._calendarEventDraftDescriptionHtml(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
     );
     return;
   }

@@ -70,8 +70,10 @@ class SpaceEventsPage extends ConsumerWidget {
                       image: 'assets/images/empty_event.svg',
                       primaryButton: canCreateEvent
                           ? ElevatedButton(
-                              onPressed: () =>
-                                  context.pushNamed(Routes.createEvent.name),
+                              onPressed: () => context.pushNamed(
+                                Routes.createEvent.name,
+                                queryParameters: {'spaceId': spaceIdOrAlias},
+                              ),
                               child: const Text('Create Event'),
                             )
                           : null,
