@@ -23,6 +23,8 @@ class RedactContentWidget extends ConsumerWidget {
   final void Function()? onRemove;
   final Function()? onSuccess;
   final TextEditingController reasonController = TextEditingController();
+  final Key? cancelBtnKey;
+  final Key? removeBtnKey;
 
   RedactContentWidget({
     super.key,
@@ -34,6 +36,8 @@ class RedactContentWidget extends ConsumerWidget {
     this.isSpace = false,
     this.onSuccess,
     this.onRemove,
+    this.cancelBtnKey,
+    this.removeBtnKey,
   });
 
   @override
@@ -70,10 +74,12 @@ class RedactContentWidget extends ConsumerWidget {
       ),
       actions: <Widget>[
         OutlinedButton(
+          key: cancelBtnKey,
           onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
           child: const Text('Close'),
         ),
         ElevatedButton(
+          key: removeBtnKey,
           onPressed: onRemove ??
               () => redactContent(context, ref, reasonController.text),
           child: const Text('Remove'),
