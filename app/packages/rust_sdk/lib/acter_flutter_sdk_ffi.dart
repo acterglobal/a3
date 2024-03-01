@@ -5990,6 +5990,53 @@ class Api {
     return tmp7;
   }
 
+  AttachmentsManager? __attachmentsManagerReloadFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentsManagerReloadFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_AttachmentsManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = AttachmentsManager._(this, tmp13_1);
+    return tmp7;
+  }
+
   EventId? __taskAssignSelfFuturePoll(
     int boxed,
     int postCobject,
@@ -12794,6 +12841,39 @@ class Api {
     return tmp9;
   }
 
+  bool? __attachmentsManagerSubscribeStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _attachmentsManagerSubscribeStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
   bool? __taskSubscribeStreamStreamPoll(
     int boxed,
     int postCobject,
@@ -17948,6 +18028,28 @@ class Api {
       _attachmentsManagerContentDraftPtr.asFunction<
           int Function(
             int,
+            int,
+          )>();
+  late final _attachmentsManagerReloadPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__AttachmentsManager_reload");
+
+  late final _attachmentsManagerReload =
+      _attachmentsManagerReloadPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _attachmentsManagerSubscribeStreamPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__AttachmentsManager_subscribe_stream");
+
+  late final _attachmentsManagerSubscribeStream =
+      _attachmentsManagerSubscribeStreamPtr.asFunction<
+          int Function(
             int,
           )>();
   late final _taskTitlePtr = _lookup<
@@ -24926,6 +25028,21 @@ class Api {
             int,
             int,
           )>();
+  late final _attachmentsManagerReloadFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentsManagerReloadFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__AttachmentsManager_reload_future_poll");
+
+  late final _attachmentsManagerReloadFuturePoll =
+      _attachmentsManagerReloadFuturePollPtr.asFunction<
+          _AttachmentsManagerReloadFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _taskAssignSelfFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _TaskAssignSelfFuturePollReturn Function(
@@ -27137,6 +27254,23 @@ class Api {
   late final _timelineStreamMessagesStreamStreamPoll =
       _timelineStreamMessagesStreamStreamPollPtr.asFunction<
           _TimelineStreamMessagesStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _attachmentsManagerSubscribeStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentsManagerSubscribeStreamStreamPollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__AttachmentsManager_subscribe_stream_stream_poll");
+
+  late final _attachmentsManagerSubscribeStreamStreamPoll =
+      _attachmentsManagerSubscribeStreamStreamPollPtr.asFunction<
+          _AttachmentsManagerSubscribeStreamStreamPollReturn Function(
             int,
             int,
             int,
@@ -37568,6 +37702,39 @@ class AttachmentsManager {
     final tmp4 =
         _nativeFuture(tmp5_1, _api.__attachmentsManagerContentDraftFuturePoll);
     return tmp4;
+  }
+
+  Future<AttachmentsManager> reload() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentsManagerReload(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__AttachmentsManager_reload_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__attachmentsManagerReloadFuturePoll);
+    return tmp2;
+  }
+
+  /// subscribe to the changes of this model key
+  Stream<bool> subscribeStream() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentsManagerSubscribeStream(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__AttachmentsManager_subscribe_stream_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(
+        tmp3_1, _api.__attachmentsManagerSubscribeStreamStreamPoll);
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -52520,6 +52687,21 @@ class _AttachmentsManagerContentDraftFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _AttachmentsManagerReloadFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _TaskAssignSelfFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -54717,6 +54899,13 @@ class _TimelineStreamMessagesStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
+  external int arg1;
+}
+
+class _AttachmentsManagerSubscribeStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
   external int arg1;
 }
 

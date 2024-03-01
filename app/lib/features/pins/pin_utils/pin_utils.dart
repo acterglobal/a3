@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/chat/widgets/attachment_options.dart';
+import 'package:acter/common/widgets/attachment_options.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:file_picker/file_picker.dart';
@@ -51,7 +51,7 @@ class PinUtils {
               ref.read(selectedPinAttachmentsProvider.notifier);
           if (attachments.isNotEmpty) {
             attachments.addAll(newAttachments);
-            attachmentNotifier.update((state) => attachments);
+            attachmentNotifier.update((state) => [...attachments]);
           } else {
             attachmentNotifier.update((state) => newAttachments);
           }
@@ -70,7 +70,7 @@ class PinUtils {
               ref.read(selectedPinAttachmentsProvider.notifier);
           if (attachments.isNotEmpty) {
             attachments.addAll(newAttachments);
-            attachmentNotifier.update((state) => attachments);
+            attachmentNotifier.update((state) => [...attachments]);
           } else {
             attachmentNotifier.update((state) => newAttachments);
           }
@@ -94,7 +94,7 @@ class PinUtils {
                 ref.read(selectedPinAttachmentsProvider.notifier);
             if (attachments.isNotEmpty) {
               attachments.addAll(newAttachments);
-              attachmentNotifier.update((state) => attachments);
+              attachmentNotifier.update((state) => [...attachments]);
             } else {
               attachmentNotifier.update((state) => newAttachments);
             }

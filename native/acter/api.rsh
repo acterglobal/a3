@@ -1312,6 +1312,12 @@ object AttachmentsManager {
 
     /// create news slide for image msg
     fn content_draft(base_draft: MsgContentDraft) -> Future<Result<AttachmentDraft>>;
+
+    // inform about the changes to this manager
+    fn reload() -> Future<Result<AttachmentsManager>>;
+
+    /// subscribe to the changes of this model key
+    fn subscribe_stream() -> Stream<bool>;
 }
 
 

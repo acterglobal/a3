@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/attachment_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/pins/models/pin_edit_state/pin_edit_state.dart';
 import 'package:acter/features/pins/pin_utils/pin_utils.dart';
@@ -41,16 +42,18 @@ final pinEditProvider = StateNotifierProvider.family
 
 final pinAttachmentManagerProvider =
     FutureProvider.family.autoDispose<AttachmentsManager, ActerPin>(
-  (ref, acterPin) async => await acterPin.attachments(),
+  (ref, acterPin) async {
+    final manager = await acterPin.attachments();
+    final liveManager = ref.watch(attachmentsManagerProvider(manager));
+    return liveManager;
+  },
 );
 
 final pinAttachmentsProvider = FutureProvider.family
     .autoDispose<List<Attachment>, ActerPin>((ref, acterPin) async {
   final manager = await acterPin.attachments();
-  if (manager.hasAttachments()) {
-    return (await manager.attachments().then((ffiList) => ffiList.toList()));
-  }
-  return [];
+  final liveManager = ref.watch(attachmentsManagerProvider(manager));
+  return (await liveManager.attachments()).toList();
 });
 
 final selectedPinAttachmentsProvider =

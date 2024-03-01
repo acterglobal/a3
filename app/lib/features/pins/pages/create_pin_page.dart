@@ -62,7 +62,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
               const SizedBox(height: 15),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
                 children: [
                   _buildTitleField(),
                   const SizedBox(height: 15),
@@ -71,7 +70,14 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
                   _buildAttachmentField(),
                   const SizedBox(height: 15),
                   if (attachments.isNotEmpty)
-                    Flexible(child: _buildAttachments(attachments)),
+                    Wrap(
+                      spacing: 5.0,
+                      runSpacing: 10.0,
+                      children: <Widget>[
+                        for (var pinAttachment in attachments)
+                          _AttachmentFileWidget(pinAttachment),
+                      ],
+                    ),
                   const SizedBox(height: 15),
                   _buildDescriptionField(),
                 ],
@@ -150,17 +156,6 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildAttachments(List<PinAttachment> attachments) {
-    return Wrap(
-      direction: Axis.horizontal,
-      spacing: 5.0,
-      children: <Widget>[
-        for (var pinAttachment in attachments)
-          _AttachmentFileWidget(pinAttachment),
-      ],
     );
   }
 
@@ -258,6 +253,8 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
       if (!context.mounted) {
         return;
       }
+      // reset the selected attachment UI
+      ref.invalidate(selectedPinAttachmentsProvider);
       // ignore: use_build_context_synchronously
       Navigator.of(context, rootNavigator: true).pop(); // pop the create sheet
       // ignore: use_build_context_synchronously

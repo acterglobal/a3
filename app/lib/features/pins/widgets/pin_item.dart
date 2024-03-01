@@ -11,7 +11,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -66,12 +65,6 @@ class _PinItemState extends ConsumerState<PinItem> {
     final pin = widget.pin;
     final spaceId = pin.roomIdStr();
     final isLink = pin.isLink();
-    final attachmentTitleTextStyle = Theme.of(context).textTheme.labelLarge;
-    final manager = ref.watch(pinAttachmentManagerProvider(pin));
-
-    if (manager.valueOrNull != null) {
-      attachmentCount = manager.valueOrNull!.attachmentsCount();
-    }
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -94,19 +87,6 @@ class _PinItemState extends ConsumerState<PinItem> {
               formkey: _formkey,
             ),
             const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Row(
-                children: [
-                  Text('Attachments', style: attachmentTitleTextStyle),
-                  const SizedBox(width: 5),
-                  const Icon(Atlas.paperclip_attachment_thin, size: 14),
-                  const SizedBox(width: 5),
-                  Text('$attachmentCount'),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
             _buildAttachmentList(),
           ],
         ),
@@ -147,6 +127,7 @@ class _PinItemState extends ConsumerState<PinItem> {
         .textTheme
         .labelMedium!
         .copyWith(color: Theme.of(context).colorScheme.neutral5);
+    final attachmentTitleTextStyle = Theme.of(context).textTheme.labelLarge;
     final pinEdit = ref.watch(pinEditProvider(widget.pin));
     final attachments = ref.watch(pinAttachmentsProvider(widget.pin));
     final selectedAttachments = ref.watch(selectedPinAttachmentsProvider);
@@ -154,48 +135,66 @@ class _PinItemState extends ConsumerState<PinItem> {
         ref.watch(selectedPinAttachmentsProvider.notifier);
     return attachments.when(
       data: (list) {
-        return Wrap(
-          spacing: 5.0,
-          runSpacing: 10.0,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            if (list.isNotEmpty)
-              for (var item in list)
-                AttachmentTypeHandler(
-                  attachment: item,
-                  pin: widget.pin,
-                ),
-            for (var item in selectedAttachments)
-              Stack(
-                children: <Widget>[
-                  AttachmentContainer(
-                    pin: widget.pin,
-                    filename: item.file.path.split('/').last,
-                    child: const Icon(Atlas.file_thin),
-                  ),
-                  Visibility(
-                    visible: pinEdit.editMode,
-                    child: Positioned(
-                      top: -15,
-                      right: -15,
-                      child: IconButton(
-                        onPressed: () {
-                          var files = ref.read(selectedPinAttachmentsProvider);
-                          files.remove(item);
-                          attachmentNotifier.update((state) => [...files]);
-                        },
-                        icon: const Icon(Atlas.xmark_circle_thin, size: 12),
-                      ),
-                    ),
-                  ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Row(
+                children: [
+                  Text('Attachments', style: attachmentTitleTextStyle),
+                  const SizedBox(width: 5),
+                  const Icon(Atlas.paperclip_attachment_thin, size: 14),
+                  const SizedBox(width: 5),
+                  Text('${list.length}'),
                 ],
               ),
-            if (pinEdit.editMode) _buildAddAttachment(),
-            Visibility(
-              visible: list.isEmpty && !pinEdit.editMode,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text('No attachments', style: noAttachmentTextStyle),
-              ),
+            ),
+            Wrap(
+              spacing: 5.0,
+              runSpacing: 10.0,
+              children: <Widget>[
+                if (list.isNotEmpty)
+                  for (var item in list)
+                    AttachmentTypeHandler(
+                      attachment: item,
+                      pin: widget.pin,
+                    ),
+                for (var item in selectedAttachments)
+                  Stack(
+                    children: <Widget>[
+                      AttachmentContainer(
+                        pin: widget.pin,
+                        filename: item.file.path.split('/').last,
+                        child: const Icon(Atlas.file_thin),
+                      ),
+                      Visibility(
+                        visible: pinEdit.editMode,
+                        child: Positioned(
+                          top: -15,
+                          right: -15,
+                          child: IconButton(
+                            onPressed: () {
+                              var files =
+                                  ref.read(selectedPinAttachmentsProvider);
+                              files.remove(item);
+                              attachmentNotifier.update((state) => [...files]);
+                            },
+                            icon: const Icon(Atlas.xmark_circle_thin, size: 12),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                if (pinEdit.editMode) _buildAddAttachment(),
+                Visibility(
+                  visible: list.isEmpty && !pinEdit.editMode,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('No attachments', style: noAttachmentTextStyle),
+                  ),
+                ),
+              ],
             ),
           ],
         );

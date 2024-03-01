@@ -60,22 +60,24 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
           hasChanges = true;
         }
       }
-      final content = pin.content()!;
-      if (content.body() != state.markdown) {
-        updateBuilder.contentMarkdown(state.markdown);
-        hasChanges = true;
-      }
+      final content = pin.content();
+      if (content != null) {
+        if (content.body() != state.markdown) {
+          updateBuilder.contentMarkdown(state.markdown);
+          hasChanges = true;
+        }
 
-      if (state.html != null && content.formattedBody() != state.html) {
-        updateBuilder.contentHtml(state.markdown, state.html!);
-        hasChanges = true;
+        if (state.html != null && content.formattedBody() != state.html) {
+          updateBuilder.contentHtml(state.markdown, state.html!);
+          hasChanges = true;
+        }
       }
 
       final client = ref.read(alwaysClientProvider);
       final selectedAttachments = ref.read(selectedPinAttachmentsProvider);
+      final manager = await pin.attachments();
       if (selectedAttachments.isNotEmpty) {
         EasyLoading.show(status: 'Sending attachments');
-        final manager = await pin.attachments();
         final drafts = await PinUtils.makeAttachmentDrafts(
           client,
           manager,
@@ -96,8 +98,6 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
         await pin.refresh();
         // reset the selected attachment UI
         ref.invalidate(selectedPinAttachmentsProvider);
-        // refresh attachments
-        ref.invalidate(pinAttachmentsProvider(pin));
         EasyLoading.showSuccess('Pin Updated Successfully');
       }
       EasyLoading.dismiss();
