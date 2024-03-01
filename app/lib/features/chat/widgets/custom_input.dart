@@ -199,9 +199,7 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                             msg: editMessage,
                           ),
                         ]
-                      : [
-                          const SizedBox.shrink(),
-                        ],
+                      : [],
                 ),
               ),
             ),
