@@ -91,7 +91,7 @@ class HomeShellState extends ConsumerState<HomeShell> {
       );
     }
     final syncState = ref.watch(syncStateProvider);
-    final hasFirstSynced = !syncState.syncing;
+    final hasFirstSynced = !syncState.initialSync;
     final errorMsg = syncState.errorMsg;
 
     // we also need to globally hook the notifications list so it can issue
@@ -163,11 +163,6 @@ class HomeShellState extends ConsumerState<HomeShell> {
           ),
         );
       }
-      return Scaffold(
-        body: Center(
-          child: Text(errorMsg),
-        ),
-      );
     }
 
     final bottomBarNav = ref.watch(bottomBarNavProvider(context));

@@ -30,5 +30,5 @@ final syncStateProvider =
 });
 
 final isSyncingStateProvider = StateProvider<bool>((ref) {
-  return ref.watch(syncStateProvider).syncing;
+  return ref.watch(syncStateProvider).initialSync;
 });
