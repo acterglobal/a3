@@ -3,6 +3,7 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/redact_content.dart';
+import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/report_content.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
@@ -382,11 +383,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget _buildEventDescription(CalendarEvent ev) {
-    String description = '';
     TextMessageContent? content = ev.description();
-    if (content?.body().isNotEmpty == true) {
-      description = content!.body();
-    }
+    final formattedText = content?.formatted();
+    final bodyText = content?.body() ?? '';
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
@@ -398,10 +398,16 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             style: Theme.of(context).textTheme.titleSmall,
           ),
           const SizedBox(height: 10),
-          Text(
-            description,
-            style: Theme.of(context).textTheme.labelMedium,
-          ),
+          if (formattedText != null)
+            RenderHtml(
+              text: formattedText,
+              defaultTextStyle: Theme.of(context).textTheme.labelMedium,
+            )
+          else
+            Text(
+              bodyText,
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
         ],
       ),
     );
