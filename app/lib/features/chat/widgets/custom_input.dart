@@ -345,6 +345,9 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                 List<File> files = [File(imageFile.path)];
                                 final mimeType =
                                     lookupMimeType(files.first.path);
+                                if (!context.mounted) {
+                                  return;
+                                }
                                 attachmentConfirmationDialog(
                                   context,
                                   files,
@@ -361,6 +364,9 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                 List<File> files = [File(imageFile.path)];
                                 final mimeType =
                                     lookupMimeType(files.first.path);
+                                if (!context.mounted) {
+                                  return;
+                                }
                                 attachmentConfirmationDialog(
                                   context,
                                   files,
@@ -377,6 +383,9 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                                 List<File> files = [File(imageFile.path)];
                                 final mimeType =
                                     lookupMimeType(files.first.path);
+                                if (!context.mounted) {
+                                  return;
+                                }
                                 attachmentConfirmationDialog(
                                   context,
                                   files,
@@ -392,6 +401,9 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                               );
                               final mimeType =
                                   lookupMimeType(selectedFiles!.first.path);
+                              if (!context.mounted) {
+                                return;
+                              }
                               attachmentConfirmationDialog(
                                 context,
                                 selectedFiles,
