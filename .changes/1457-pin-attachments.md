@@ -1,0 +1,3 @@
+- Pins:
+  - Feature: Users can now add attachments to their pins, enhancing the ability to share additional content and resources. The main attachment can also be visibile from just pin list item.
+  - Create Pin (For mobile platforms): fixed bug where page opens as sidesheet rather than from bottom.
