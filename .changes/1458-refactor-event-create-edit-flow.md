@@ -1,0 +1,3 @@
+- [enhancement] : Improvement in the user experience of the Event Create and Event Edit Flow
+- [enhancement] : Improvement in the user experience of the Event Date and Time selection process
+- [new] : Event description now have html editor support
