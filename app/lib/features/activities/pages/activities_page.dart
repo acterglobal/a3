@@ -25,6 +25,9 @@ class ActivitiesPage extends ConsumerWidget {
     final syncState = ref.watch(syncStateProvider);
     final hasFirstSynced = !syncState.initialSync;
     final errorMsg = syncState.errorMsg;
+    final retryDuration = syncState.countDown != null
+        ? Duration(seconds: syncState.countDown!)
+        : null;
     if (!hasFirstSynced) {
       return const SliverToBoxAdapter(
         child: Card(
@@ -41,8 +44,12 @@ class ActivitiesPage extends ConsumerWidget {
         child: Card(
           child: ListTile(
             leading: const Icon(Atlas.warning),
-            title: const Text('Error syncing'),
-            subtitle: Text(errorMsg),
+            title: Text('Error syncing: $errorMsg'),
+            subtitle: Text(
+              retryDuration == null
+                  ? 'retrying ...'
+                  : 'Will retry in ${retryDuration.inMinutes.remainder(60).toString().padLeft(2, '0')}:${retryDuration.inSeconds.remainder(60).toString().padLeft(2, '0')}',
+            ),
           ),
         ),
       );
