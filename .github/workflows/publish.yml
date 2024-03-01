@@ -57,13 +57,18 @@ jobs:
     outputs:
       tag: ${{ inputs.new_tag || steps.version.outputs.version }}
       build_num: ${{ steps.build_num.outputs.build_num }}
-      prev_tag: ${{ inputs.prev_tag || 'release-latest' }}
+      prev_tag: ${{ inputs.prev_tag || steps.prev_version.outputs.prev_version || 'release-latest' }}
     steps:
       - id: version
         # FIXME: the `2` here is a stupidity-counter: by running it once manually with the wrong tag 1.24.1178
         #        by accident and apple enforcing an increasing number scheme, we now have to add prefix them with `2`
         #        until 2025 ...
         run: echo "version=`date +1.%y.2%-m%d`" >> $GITHUB_OUTPUT
+      - id: prev_version
+        # FIXME: the `2` here is a stupidity-counter: by running it once manually with the wrong tag 1.24.1178
+        #        by accident and apple enforcing an increasing number scheme, we now have to add prefix them with `2`
+        #        until 2025 ...
+        run: echo "prev_version=`date -d "last week" +1.%y.2%-m%d`" >> $GITHUB_OUTPUT
       - id: build_num
         run: echo "build_num=`date +%s`" >> $GITHUB_OUTPUT
 
@@ -94,8 +99,8 @@ jobs:
             artifact_path:  app/build/app/outputs/apk/release/
             specific_upload_artifacts: app/build/app/outputs/apk/release/*.apk
           - name: Linux x64
-            target: linux
             os: ubuntu-latest
+            target: linux
             apt_install: ninja-build libgtk-3-dev libmpv-dev mpv
             cargo_make_args: desktop
             flutter_config: "--enable-linux-desktop"
@@ -226,8 +231,6 @@ jobs:
           brew install git-crypt
           echo "${{ secrets.GIT_CRYPT_KEY }}" | base64 --decode > .github/assets/git-crypt-key
           git-crypt unlock .github/assets/git-crypt-key
-          echo "Files found:"
-          git-crypt status -e
 
       # Install the Apple certificate and provisioning profile
       - name: Install the Apple certificates
@@ -309,7 +312,6 @@ jobs:
           ##    ##  ##  ##    ##  ##   ### 
            ######  ####  ######   ##    ## 
 
-      # ignore codesign
       - name: Package Acter.app to Acter.pkg
         if: matrix.target == 'macos'
         working-directory: ${{ matrix.artifact_path }}
@@ -334,13 +336,6 @@ jobs:
         ##        ##  ##   ##    ##  
         ##        ##   ##  ##    ##  
         ##        ##    ##  ######   
-
-      - name: Generate manifest
-        if: matrix.target == 'ios'
-        env:
-          VERSION: ${{needs.tags.outputs.tag}}
-        run: |
-          sed "s/__TAG__/$TAG/g ; s/__VERSION__/$VERSION/g" .github/templates/ios-manifest.plist.tmpl > ios-manifest.plist
 
       - name: Build MSIX
         if: matrix.target == 'windows'
@@ -413,7 +408,7 @@ jobs:
         if: ${{ github.event.schedule && failure() }}
         uses: JasonEtco/create-an-issue@v2
         env:
-          GITHUB_TOKEN: ${{ github.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
           TAG: ${{ needs.tags.outputs.tag }}
           NAME: ${{matrix.name}}
           FAILED_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
@@ -452,20 +447,10 @@ jobs:
           cat CHANGELOG-generated.md >> CHANGELOG.md
 
       - uses: actions/upload-artifact@v3
-        name: "Upload Changelog"
+        name: "Upload debug artifacts"
         with:
           name: Changelog
           path: CHANGELOG.md
-
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          draft: true
-          name: Release ${{ needs.tags.outputs.tag }}
-          tag_name: v${{ needs.tags.outputs.tag }}
-          generate_release_notes: false
-          body_path: CHANGELOG.md
-          files: CHANGELOG.md
 
 ######## ##          ###    ######## ########     ###    ##    ## 
 ##       ##         ## ##      ##    ##     ##   ## ##   ##   ##  
@@ -768,7 +753,6 @@ jobs:
     environment: nightly
     runs-on: ubuntu-latest
     name: Publish
-    # if: ${{ github.event.schedule }}
     needs:
       - tags
       - build
