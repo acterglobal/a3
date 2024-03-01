@@ -571,6 +571,13 @@ dependencies = [
     "copy-desktop-lib-release",
 ]
 
+[tasks.desktop-proxyman]
+# Build rust SDK for desktop
+dependencies = [
+    "desktop-proxyman-inner",
+    "copy-desktop-lib",
+]
+
 [tasks.desktop-tracing]
 # Build rust SDK for desktop
 dependencies = [
@@ -584,6 +591,13 @@ condition = { env_true = ["DEV"] }
 env = { RUSTFLAGS="--cfg tokio_unstable", MACOSX_DEPLOYMENT_TARGET = 12 }
 command = "cargo"
 args = ["build", "--lib", "--features", "tracing"]
+
+[tasks.desktop-proxyman-inner]
+private = true
+condition = { env_true = ["DEV"] }
+env = { RUSTFLAGS="--cfg tokio_unstable", MACOSX_DEPLOYMENT_TARGET = 12 }
+command = "cargo"
+args = ["build", "--lib", "--features", "proxyman"]
 
 [tasks.desktop-build]
 private = true
