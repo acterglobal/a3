@@ -25,10 +25,10 @@ class MessageMetadataBuilder extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final receipts = message.metadata?['receipts'];
     EventSendState? sendState = message.metadata?['eventState'];
-    if (receipts != null && receipts.isNotEmpty) {
+    if (receipts?.isNotEmpty == true) {
       return _UserReceiptsWidget(
         roomId: convo.getRoomIdStr(),
-        seenList: (receipts as Map<String, int>).keys.toList(),
+        seenList: (receipts! as Map<String, int>).keys.toList(),
       );
     } else {
       if (sendState != null) {

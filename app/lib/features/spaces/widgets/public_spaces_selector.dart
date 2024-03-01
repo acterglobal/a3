@@ -371,12 +371,10 @@ class PublicSpaceSelector extends ConsumerWidget {
             child: Consumer(
               builder: (context, ref, child) {
                 final searchVal = ref.watch(searchValueProvider);
-                if (onSelectedMatch != null &&
-                    searchVal != null &&
-                    searchVal.isNotEmpty) {
+                if (onSelectedMatch != null && searchVal?.isNotEmpty == true) {
                   final aliased =
                       RegExp(r'https://matrix.to/#/(?<alias>#.+):(?<server>.+)')
-                          .firstMatch(searchVal);
+                          .firstMatch(searchVal!);
                   if (canMatchAlias && aliased != null) {
                     final alias = aliased.namedGroup('alias')!;
                     final server = aliased.namedGroup('server')!;
@@ -464,11 +462,11 @@ class PublicSpaceSelector extends ConsumerWidget {
         ),
       ),
     ];
-    if (val != null && val.isNotEmpty) {
+    if (val?.isNotEmpty == true) {
       menuItems.add(
         DropdownMenuEntry(
           leadingIcon: const Icon(Atlas.plus_circle_thin),
-          label: val,
+          label: val!,
           value: val,
         ),
       );

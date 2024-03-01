@@ -5,6 +5,7 @@ import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
 import 'package:acter/common/widgets/redact_content.dart';
 import 'package:acter/common/widgets/report_content.dart';
+import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
@@ -47,7 +48,7 @@ class NewsSideBar extends ConsumerWidget {
           color: Colors.white,
           index: index,
           onTap: () async {
-            final manager = await ref.watch(newsReactionsProvider(news).future);
+            final manager = await ref.read(newsReactionsProvider(news).future);
             final status = manager.likedByMe();
             debugPrint('my like status: $status');
             if (!status) {
@@ -60,6 +61,7 @@ class NewsSideBar extends ConsumerWidget {
         const SizedBox(height: 10),
         space.maybeWhen(
           data: (space) => InkWell(
+            key: NewsUpdateKeys.newsSidebarActionBottomSheet,
             onTap: () => showModalBottomSheet(
               context: context,
               builder: (context) => DefaultBottomSheet(
@@ -171,6 +173,7 @@ class ActionBox extends ConsumerWidget {
     if (!isAuthor) {
       actions.add(
         TextButton.icon(
+          key: NewsUpdateKeys.newsSidebarActionReportBtn,
           onPressed: () => showAdaptiveDialog(
             context: context,
             builder: (context) => ReportContentWidget(
@@ -192,15 +195,20 @@ class ActionBox extends ConsumerWidget {
     if (isAuthor && membership.canString('CanRedactOwn')) {
       actions.add(
         TextButton.icon(
+          key: NewsUpdateKeys.newsSidebarActionRemoveBtn,
           onPressed: () => showAdaptiveDialog(
             context: context,
             builder: (context) => RedactContentWidget(
               title: 'Remove this post',
               eventId: news.eventId().toString(),
-              onSuccess: () => ref.invalidate(newsListProvider),
+              onSuccess: () {
+                context.pop();
+                ref.invalidate(newsListProvider);
+              },
               senderId: senderId,
               roomId: roomId,
               isSpace: true,
+              removeBtnKey: NewsUpdateKeys.removeButton,
             ),
           ),
           icon: const Icon(Atlas.trash_thin),

@@ -191,7 +191,7 @@ class HomeShellState extends ConsumerState<HomeShell> {
                   ? SlotLayout(
                       config: <Breakpoint, SlotLayoutConfig?>{
                         Breakpoints.smallAndUp: SlotLayout.from(
-                          key: const Key('LoadingIndictor'),
+                          key: const Key('LoadingIndicator'),
                           builder: (BuildContext ctx) =>
                               const LinearProgressIndicator(
                             semanticsLabel: 'Loading first sync',

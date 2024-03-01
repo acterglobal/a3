@@ -191,16 +191,15 @@ class _CustomChatInputState extends ConsumerState<CustomChatInput> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    editMessage != null
-                        ? Consumer(builder: editMessageBuilder)
-                        : const SizedBox.shrink(),
-                    if (editMessage != null)
-                      _EditMessageContentWidget(
-                        convo: widget.convo,
-                        msg: editMessage,
-                      ),
-                  ],
+                  children: editMessage != null
+                      ? [
+                          Consumer(builder: editMessageBuilder),
+                          _EditMessageContentWidget(
+                            convo: widget.convo,
+                            msg: editMessage,
+                          ),
+                        ]
+                      : [],
                 ),
               ),
             ),

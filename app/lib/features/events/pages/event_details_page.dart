@@ -384,8 +384,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   Widget _buildEventDescription(CalendarEvent ev) {
     String description = '';
     TextMessageContent? content = ev.description();
-    if (content != null && content.body().isNotEmpty) {
-      description = content.body();
+    if (content?.body().isNotEmpty == true) {
+      description = content!.body();
     }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),

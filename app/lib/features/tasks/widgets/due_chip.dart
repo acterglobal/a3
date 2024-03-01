@@ -58,11 +58,7 @@ class _DueChipState extends State<DueChip> {
     final textStyle =
         widget.baseTextStyle ?? Theme.of(context).textTheme.bodySmall!;
     if (dueDate == null) {
-      if (widget.noneChild != null) {
-        return widget.noneChild!;
-      } else {
-        return const SizedBox.shrink();
-      }
+      return widget.noneChild ?? const SizedBox.shrink();
     }
 
     String? label;
