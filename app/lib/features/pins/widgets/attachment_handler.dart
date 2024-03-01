@@ -69,18 +69,10 @@ class AttachmentContainer extends ConsumerWidget {
           Expanded(child: child),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 6),
-            child: Row(
-              children: <Widget>[
-                const Icon(Atlas.file_image_thin, size: 14),
-                const SizedBox(width: 5),
-                Expanded(
-                  child: Text(
-                    filename,
-                    style: containerTextStyle!
-                        .copyWith(overflow: TextOverflow.ellipsis),
-                  ),
-                ),
-              ],
+            child: Text(
+              filename,
+              style:
+                  containerTextStyle!.copyWith(overflow: TextOverflow.ellipsis),
             ),
           ),
         ],

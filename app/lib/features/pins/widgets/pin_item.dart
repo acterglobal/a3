@@ -1,3 +1,4 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
@@ -61,9 +62,7 @@ class _PinItemState extends ConsumerState<PinItem> {
     final pin = widget.pin;
     final spaceId = pin.roomIdStr();
     final isLink = pin.isLink();
-    final attachmentManager = ref.watch(pinAttachmentManagerProvider(pin));
-    final attachmentTextStyle = Theme.of(context).textTheme.labelLarge;
-
+    final attachmentTitleTextStyle = Theme.of(context).textTheme.labelLarge;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Form(
@@ -89,24 +88,14 @@ class _PinItemState extends ConsumerState<PinItem> {
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Row(
                 children: [
-                  Text('Attachments', style: attachmentTextStyle),
+                  Text('Attachments', style: attachmentTitleTextStyle),
                   const SizedBox(width: 5),
                   const Icon(Atlas.paperclip_attachment_thin, size: 14),
                 ],
               ),
             ),
             const SizedBox(height: 10),
-            attachmentManager.when(
-              data: (manager) {
-                if (manager.hasAttachments()) {
-                  return _buildAttachmentList();
-                } else {
-                  return _buildAddAttachment();
-                }
-              },
-              loading: () => const Skeletonizer(child: SizedBox()),
-              error: (err, st) => Text('failed to load attachments $err'),
-            ),
+            _buildAttachmentList(),
           ],
         ),
       ),
@@ -142,6 +131,10 @@ class _PinItemState extends ConsumerState<PinItem> {
 
 // attachment list UI
   Widget _buildAttachmentList() {
+    final noAttachmentTextStyle = Theme.of(context)
+        .textTheme
+        .labelMedium!
+        .copyWith(color: Theme.of(context).colorScheme.neutral5);
     final pinEdit = ref.watch(pinEditProvider(widget.pin));
     final attachments = ref.watch(pinAttachmentsProvider(widget.pin));
     final selectedAttachments = ref.watch(selectedPinAttachmentsProvider);
@@ -150,15 +143,13 @@ class _PinItemState extends ConsumerState<PinItem> {
     return attachments.when(
       data: (list) {
         return Wrap(
-          direction: Axis.horizontal,
-          spacing: 5.0,
-          runSpacing: 10.0,
-          children: [
-            for (var item in list)
-              AttachmentTypeHandler(
-                attachment: item,
-                pin: widget.pin,
-              ),
+          children: <Widget>[
+            if (list.isNotEmpty)
+              for (var item in list)
+                AttachmentTypeHandler(
+                  attachment: item,
+                  pin: widget.pin,
+                ),
             for (var item in selectedAttachments)
               Stack(
                 children: <Widget>[
@@ -184,11 +175,16 @@ class _PinItemState extends ConsumerState<PinItem> {
                   ),
                 ],
               ),
-            if (pinEdit.editMode) _buildAddAttachment(),
+            (pinEdit.editMode)
+                ? _buildAddAttachment()
+                : Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('No attachments', style: noAttachmentTextStyle),
+                  ),
           ],
         );
       },
-      error: (err, st) => Text('Failed to load attachments $err'),
+      error: (err, st) => Text('Error loading attachments $err'),
       loading: () => const Skeletonizer(
         child: Wrap(
           spacing: 5.0,
