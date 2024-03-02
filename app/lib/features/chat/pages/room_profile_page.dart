@@ -167,17 +167,17 @@ class RoomProfilePage extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5),
             child: IconButton.filled(
-              onPressed: () {
-                //FIXME : ?via=$serverName data should be handle from rust helper function
-                final serverName = roomId.split(':').last;
+              onPressed: () async {
+                final permaLink =
+                    await (await ref.read(chatProvider(roomId).future))
+                        .permalink();
                 Clipboard.setData(
                   ClipboardData(
-                    text: 'https://matrix.to/#/$roomId?via=$serverName',
+                    text: permaLink,
                   ),
                 );
-                customMsgSnackbar(
-                  context,
-                  'Room ID: $roomId copied to clipboard',
+                EasyLoading.showToast(
+                  'Link to Room copied to clipboard',
                 );
               },
               tooltip: 'Copy RoomLink',

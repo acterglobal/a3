@@ -246,6 +246,13 @@ impl Convo {
         self.inner.room.is_low_priority()
     }
 
+    pub async fn permalink(&self) -> Result<String> {
+        let room = self.inner.room.clone();
+        Ok(RUNTIME
+            .spawn(async move { room.matrix_permalink(false).await.map(|u| u.to_string()) })
+            .await??)
+    }
+
     pub fn dm_users(&self) -> Vec<String> {
         self.inner
             .room

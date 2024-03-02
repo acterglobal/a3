@@ -1190,6 +1190,8 @@ object Convo {
     /// invite the new user to this room
     fn invite_user(user_id: string) -> Future<Result<bool>>;
 
+    /// generate the room permalink
+    fn permalink() -> Future<Result<string>>;
     /// join this room
     fn join() -> Future<Result<bool>>;
 
