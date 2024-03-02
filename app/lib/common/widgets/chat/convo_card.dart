@@ -92,47 +92,49 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
             userId: userId,
           ),
         if (mutedStatus.valueOrNull == true)
-          MenuAnchor(
-            builder: (
-              BuildContext context,
-              MenuController controller,
-              Widget? child,
-            ) {
-              return IconButton(
-                padding: EdgeInsets.zero,
-                iconSize: 14,
-                onPressed: () {
-                  if (controller.isOpen) {
-                    controller.close();
-                  } else {
-                    controller.open();
-                  }
-                },
-                icon: const Icon(Atlas.bell_dash_bold),
-              );
-            },
-            menuChildren: [
-              MenuItemButton(
-                child: const Text('Unmute'),
-                onPressed: () async {
-                  final room = await ref.read(maybeRoomProvider(roomId).future);
-                  if (room == null) {
-                    EasyLoading.showError('Room not found');
-                    return;
-                  }
-                  await room.unmute();
-                  EasyLoading.showSuccess(
-                    'Notifications unmuted',
-                  );
-                  await Future.delayed(const Duration(seconds: 1), () {
-                    // FIXME: we want to refresh the view but don't know
-                    //        when the event was confirmed form sync :(
-                    // let's hope that a second delay is reasonable enough
-                    ref.invalidate(maybeRoomProvider(roomId));
-                  });
-                },
-              ),
-            ],
+          Expanded(
+            child: MenuAnchor(
+              builder: (
+                BuildContext context,
+                MenuController controller,
+                Widget? child,
+              ) {
+                return IconButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    if (controller.isOpen) {
+                      controller.close();
+                    } else {
+                      controller.open();
+                    }
+                  },
+                  icon: const Icon(Atlas.bell_dash_bold, size: 14),
+                );
+              },
+              menuChildren: [
+                MenuItemButton(
+                  child: const Text('Unmute'),
+                  onPressed: () async {
+                    final room =
+                        await ref.read(maybeRoomProvider(roomId).future);
+                    if (room == null) {
+                      EasyLoading.showError('Room not found');
+                      return;
+                    }
+                    await room.unmute();
+                    EasyLoading.showSuccess(
+                      'Notifications unmuted',
+                    );
+                    await Future.delayed(const Duration(seconds: 1), () {
+                      // FIXME: we want to refresh the view but don't know
+                      //        when the event was confirmed form sync :(
+                      // let's hope that a second delay is reasonable enough
+                      ref.invalidate(maybeRoomProvider(roomId));
+                    });
+                  },
+                ),
+              ],
+            ),
           ),
       ],
     );
