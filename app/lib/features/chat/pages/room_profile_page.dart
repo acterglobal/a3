@@ -38,6 +38,7 @@ class RoomProfilePage extends ConsumerWidget {
         child: Column(
           children: [
             header(context, ref),
+            actions(context, ref),
             description(context, ref),
             optionsBody(context, ref),
           ],
@@ -122,6 +123,71 @@ class RoomProfilePage extends ConsumerWidget {
     );
   }
 
+  Widget actions(BuildContext context, WidgetRef ref) {
+    final convoLoader = ref.watch(chatProvider(roomId));
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          convoLoader.maybeWhen(
+            data: (conv) {
+              if (conv.isFavorite()) {
+                return IconButton.filled(
+                  icon: const Icon(
+                    Icons.bookmark_remove_rounded,
+                    size: 20,
+                  ),
+                  onPressed: () {},
+                );
+              } else {
+                return IconButton.filled(
+                  icon: const Icon(
+                    Icons.bookmark_add_outlined,
+                    size: 20,
+                  ),
+                  onPressed: () {},
+                );
+              }
+            },
+            orElse: () => Skeletonizer(
+              child: IconButton.filled(
+                icon: const Icon(
+                  Icons.bookmark_add_outlined,
+                  size: 20,
+                ),
+                onPressed: () {},
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: IconButton.filled(
+              onPressed: () {
+                //FIXME : ?via=$serverName data should be handle from rust helper function
+                final serverName = roomId.split(':').last;
+                Clipboard.setData(
+                  ClipboardData(
+                    text: 'https://matrix.to/#/$roomId?via=$serverName',
+                  ),
+                );
+                customMsgSnackbar(
+                  context,
+                  'Room ID: $roomId copied to clipboard',
+                );
+              },
+              tooltip: 'Copy RoomLink',
+              icon: const Icon(
+                Icons.copy_outlined,
+                size: 20,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget optionsBody(BuildContext context, WidgetRef ref) {
     final convo = ref.watch(chatProvider(roomId));
     final members = ref.watch(chatMembersProvider(roomId));
@@ -157,31 +223,6 @@ class RoomProfilePage extends ConsumerWidget {
       sections: [
         SettingsSection(
           tiles: [
-            SettingsTile(
-              onPressed: (ctx) {
-                //FIXME : ?via=$serverName data should be handle from rust helper function
-                final serverName = roomId.split(':').last;
-                Clipboard.setData(
-                  ClipboardData(
-                    text: 'https://matrix.to/#/$roomId?via=$serverName',
-                  ),
-                );
-                customMsgSnackbar(
-                  context,
-                  'Room ID: $roomId copied to clipboard',
-                );
-              },
-              title: Text(
-                'Copy room link',
-                style: tileTextTheme,
-              ),
-              leading: const Icon(Atlas.chain_link_thin, size: 18),
-              trailing: Icon(
-                Atlas.pages_thin,
-                size: 18,
-                color: Theme.of(context).colorScheme.success,
-              ),
-            ),
             NotificationsSettingsTile(roomId: roomId),
             myMembership.when(
               data: (membership) => SettingsTile.navigation(
