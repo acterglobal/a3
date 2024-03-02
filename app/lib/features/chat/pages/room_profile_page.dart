@@ -126,7 +126,7 @@ class RoomProfilePage extends ConsumerWidget {
   Widget actions(BuildContext context, WidgetRef ref) {
     final convoLoader = ref.watch(chatProvider(roomId));
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -138,7 +138,9 @@ class RoomProfilePage extends ConsumerWidget {
                     Icons.bookmark_remove_rounded,
                     size: 20,
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    await conv.setFavorite(false);
+                  },
                 );
               } else {
                 return IconButton.filled(
@@ -146,7 +148,9 @@ class RoomProfilePage extends ConsumerWidget {
                     Icons.bookmark_add_outlined,
                     size: 20,
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    await conv.setFavorite(true);
+                  },
                 );
               }
             },

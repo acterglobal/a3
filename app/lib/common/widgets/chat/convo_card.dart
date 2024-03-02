@@ -133,7 +133,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
                 },
               ),
             ],
-          )
+          ),
       ],
     );
   }

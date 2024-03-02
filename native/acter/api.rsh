@@ -1178,6 +1178,9 @@ object Convo {
     /// is this a favorite chat
     fn is_favorite() -> bool;
 
+    /// set this a favorite chat
+    fn set_favorite(is_favorite: bool) -> Future<Result<bool>>;
+
     /// is this a low priority chat
     fn is_low_priority() -> bool;
 
