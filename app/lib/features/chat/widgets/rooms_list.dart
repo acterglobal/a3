@@ -132,8 +132,8 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
               label: Text("only DM's"),
             ),
           ],
-          onSelectionChanged: (Set<FilterSelection> newSelection) {
-            ref
+          onSelectionChanged: (Set<FilterSelection> newSelection) async {
+            await ref
                 .read(roomListFilterProvider.notifier)
                 .setSelection(newSelection.first);
           },
