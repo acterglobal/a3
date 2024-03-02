@@ -17499,6 +17499,26 @@ class Api {
       int Function(
         int,
       )>();
+  late final _convoIsFavoritePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__Convo_is_favorite");
+
+  late final _convoIsFavorite = _convoIsFavoritePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _convoIsLowPriorityPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__Convo_is_low_priority");
+
+  late final _convoIsLowPriority = _convoIsLowPriorityPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _convoDmUsersPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -36694,6 +36714,30 @@ class Convo {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._convoIsDm(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// is this a favorite chat
+  bool isFavorite() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoIsFavorite(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// is this a low priority chat
+  bool isLowPriority() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoIsLowPriority(
       tmp0,
     );
     final tmp3 = tmp1;

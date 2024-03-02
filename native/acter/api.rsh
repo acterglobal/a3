@@ -1175,6 +1175,12 @@ object Convo {
     /// is this a direct message
     fn is_dm() -> bool;
 
+    /// is this a favorite chat
+    fn is_favorite() -> bool;
+
+    /// is this a low priority chat
+    fn is_low_priority() -> bool;
+
     /// the list of users ids if this is a direct message
     fn dm_users() -> Vec<string>;
 

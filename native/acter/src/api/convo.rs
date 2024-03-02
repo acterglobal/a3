@@ -224,7 +224,15 @@ impl Convo {
     }
 
     pub fn is_dm(&self) -> bool {
-        !self.inner.room.direct_targets().is_empty()
+        self.inner.room.direct_targets_length() > 0
+    }
+
+    pub fn is_favorite(&self) -> bool {
+        self.inner.room.is_favourite()
+    }
+
+    pub fn is_low_priority(&self) -> bool {
+        self.inner.room.is_low_priority()
     }
 
     pub fn dm_users(&self) -> Vec<String> {
