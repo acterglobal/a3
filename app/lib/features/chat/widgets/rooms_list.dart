@@ -97,16 +97,17 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
         const SizedBox(height: 5),
         SearchBar(
           focusNode: searchFocus,
+          controller: searchTextController,
           leading: const Icon(Atlas.magnifying_glass),
           hintText: 'Search chats',
           trailing: hasSearchTerm
               ? [
                   InkWell(
                     onTap: () {
+                      searchTextController.clear();
                       ref
                           .read(roomListFilterProvider.notifier)
                           .updateSearchTerm(null);
-                      searchTextController.clear();
                     },
                     child: const Icon(Icons.clear),
                   ),
@@ -146,6 +147,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
             if (hasFilters)
               OutlinedButton(
                 onPressed: () {
+                  searchTextController.clear();
                   ref.read(roomListFilterProvider.notifier).clear();
                   setState(() {
                     _isSearchVisible = false;
@@ -239,13 +241,13 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
               opacity: !_isSearchVisible ? 0 : 1,
               curve: Curves.easeInOut,
               duration: const Duration(milliseconds: 400),
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                child: _isSearchVisible
-                    ? filterBox(context)
-                    : const SizedBox.shrink(),
-              ),
+              child: _isSearchVisible
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                      child: filterBox(context),
+                    )
+                  : const SizedBox.shrink(),
             ),
           ),
           SliverToBoxAdapter(
