@@ -48,10 +48,8 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
 
   @override
   Widget build(BuildContext context) {
-    final userId = ref.watch(myUserIdStrProvider);
     String roomId = widget.room.getRoomIdStr();
     final convoProfile = ref.watch(chatProfileDataProvider(widget.room));
-    final mutedStatus = ref.watch(roomIsMutedProvider(roomId));
     final latestMsg = ref.watch(latestMessageProvider(widget.room));
     // ToDo: UnreadCounter
     return convoProfile.when(
@@ -66,68 +64,7 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
                 latestMessage: latestMsg,
               )
             : const SizedBox.shrink(),
-        trailing: widget.trailing ??
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                latestMsg != null
-                    ? _TrailingWidget(
-                        room: widget.room,
-                        latestMessage: latestMsg,
-                        activeMembers: activeMembers,
-                        userId: userId,
-                      )
-                    : const SizedBox.shrink(),
-                mutedStatus.valueOrNull == true
-                    ? Expanded(
-                        child: MenuAnchor(
-                          builder: (
-                            BuildContext context,
-                            MenuController controller,
-                            Widget? child,
-                          ) {
-                            return IconButton(
-                              padding: EdgeInsets.zero,
-                              iconSize: 14,
-                              onPressed: () {
-                                if (controller.isOpen) {
-                                  controller.close();
-                                } else {
-                                  controller.open();
-                                }
-                              },
-                              icon: const Icon(Atlas.bell_dash_bold),
-                            );
-                          },
-                          menuChildren: [
-                            MenuItemButton(
-                              child: const Text('Unmute'),
-                              onPressed: () async {
-                                final room = await ref
-                                    .read(maybeRoomProvider(roomId).future);
-                                if (room == null) {
-                                  EasyLoading.showError('Room not found');
-                                  return;
-                                }
-                                await room.unmute();
-                                EasyLoading.showSuccess(
-                                  'Notifications unmuted',
-                                );
-                                await Future.delayed(const Duration(seconds: 1),
-                                    () {
-                                  // FIXME: we want to refresh the view but don't know
-                                  //        when the event was confirmed form sync :(
-                                  // let's hope that a second delay is reasonable enough
-                                  ref.invalidate(maybeRoomProvider(roomId));
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      )
-                    : const SizedBox.shrink(),
-              ],
-            ),
+        trailing: widget.trailing ?? renderTrailing(context),
       ),
       error: (error, stackTrace) => LoadingConvoCard(
         roomId: roomId,
@@ -136,6 +73,68 @@ class _ConvoCardState extends ConsumerState<ConvoCard> {
       loading: () => LoadingConvoCard(
         roomId: roomId,
       ),
+    );
+  }
+
+  Widget renderTrailing(BuildContext context) {
+    String roomId = widget.room.getRoomIdStr();
+    final userId = ref.watch(myUserIdStrProvider);
+    final mutedStatus = ref.watch(roomIsMutedProvider(roomId));
+    final latestMsg = ref.watch(latestMessageProvider(widget.room));
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        if (latestMsg != null)
+          _TrailingWidget(
+            room: widget.room,
+            latestMessage: latestMsg,
+            activeMembers: activeMembers,
+            userId: userId,
+          ),
+        if (mutedStatus.valueOrNull == true)
+          MenuAnchor(
+            builder: (
+              BuildContext context,
+              MenuController controller,
+              Widget? child,
+            ) {
+              return IconButton(
+                padding: EdgeInsets.zero,
+                iconSize: 14,
+                onPressed: () {
+                  if (controller.isOpen) {
+                    controller.close();
+                  } else {
+                    controller.open();
+                  }
+                },
+                icon: const Icon(Atlas.bell_dash_bold),
+              );
+            },
+            menuChildren: [
+              MenuItemButton(
+                child: const Text('Unmute'),
+                onPressed: () async {
+                  final room = await ref.read(maybeRoomProvider(roomId).future);
+                  if (room == null) {
+                    EasyLoading.showError('Room not found');
+                    return;
+                  }
+                  await room.unmute();
+                  EasyLoading.showSuccess(
+                    'Notifications unmuted',
+                  );
+                  await Future.delayed(const Duration(seconds: 1), () {
+                    // FIXME: we want to refresh the view but don't know
+                    //        when the event was confirmed form sync :(
+                    // let's hope that a second delay is reasonable enough
+                    ref.invalidate(maybeRoomProvider(roomId));
+                  });
+                },
+              ),
+            ],
+          )
+      ],
     );
   }
 

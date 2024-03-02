@@ -31,10 +31,99 @@ class RoomProfilePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
+      appBar: topBar(context, ref),
+      extendBodyBehindAppBar: true,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            header(context, ref),
+            description(context, ref),
+            optionsBody(context, ref),
+          ],
+        ),
+      ),
+    );
+  }
+
+  AppBar topBar(BuildContext context, WidgetRef ref) {
     final inSideBar = ref.watch(inSideBarProvider);
     final isExpanded = ref.watch(hasExpandedPanel);
-    final convo = ref.watch(chatProvider(roomId));
+
+    return AppBar(
+      automaticallyImplyLeading: false,
+      leading: Visibility(
+        visible: inSideBar && isExpanded,
+        replacement: IconButton(
+          onPressed: () => context.pop(),
+          icon: const Icon(Icons.chevron_left_outlined),
+        ),
+        child: IconButton(
+          onPressed: () =>
+              ref.read(hasExpandedPanel.notifier).update((state) => false),
+          icon: const Icon(Atlas.xmark_circle_thin),
+        ),
+      ),
+      backgroundColor: Colors.transparent,
+      elevation: 0.0,
+    );
+  }
+
+  Widget header(BuildContext context, WidgetRef ref) {
     final convoProfile = ref.watch(chatProfileDataProviderById(roomId));
+    return Column(
+      children: [
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.only(
+              top: 38,
+              bottom: 12,
+            ),
+            child: RoomAvatar(
+              roomId: roomId,
+              avatarSize: 75,
+              showParent: true,
+            ),
+          ),
+        ),
+        convoProfile.when(
+          data: (profile) => Text(
+            profile.displayName ?? roomId,
+            softWrap: true,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          error: (err, stackTrace) {
+            _log.severe('Error loading convo profile', err, stackTrace);
+            return Text(
+              roomId,
+              overflow: TextOverflow.clip,
+              style: Theme.of(context).textTheme.titleSmall,
+            );
+          },
+          loading: () => Skeletonizer(child: Text(roomId)),
+        ),
+      ],
+    );
+  }
+
+  Widget description(BuildContext context, WidgetRef ref) {
+    final convo = ref.watch(chatProvider(roomId));
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: convo.when(
+        data: (data) => RenderHtml(
+          text: data.topic() ?? '',
+          defaultTextStyle: Theme.of(context).textTheme.bodySmall,
+        ),
+        loading: () => const Skeletonizer(child: Text('loading...')),
+        error: (e, s) => Text('Error: $e'),
+      ),
+    );
+  }
+
+  Widget optionsBody(BuildContext context, WidgetRef ref) {
+    final convo = ref.watch(chatProvider(roomId));
     final members = ref.watch(chatMembersProvider(roomId));
     final myMembership = ref.watch(roomMembershipProvider(roomId));
     final tileTextTheme = Theme.of(context).textTheme.bodySmall;
@@ -56,254 +145,173 @@ class RoomProfilePage extends ConsumerWidget {
       ),
     );
 
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      body: CustomScrollView(
-        shrinkWrap: true,
-        slivers: [
-          SliverAppBar(
-            pinned: true,
-            automaticallyImplyLeading: false,
-            leading: Visibility(
-              visible: inSideBar && isExpanded,
-              replacement: IconButton(
-                onPressed: () => context.pop(),
-                icon: const Icon(Icons.chevron_left_outlined),
-              ),
-              child: IconButton(
-                onPressed: () => ref
-                    .read(hasExpandedPanel.notifier)
-                    .update((state) => false),
-                icon: const Icon(Atlas.xmark_circle_thin),
-              ),
-            ),
-            backgroundColor: Colors.transparent,
-            elevation: 0.0,
-          ),
-          SliverToBoxAdapter(
-            child: Column(
-              children: [
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      top: 38,
-                      bottom: 12,
-                    ),
-                    child: RoomAvatar(
-                      roomId: roomId,
-                      avatarSize: 75,
-                      showParent: true,
-                    ),
-                  ),
-                ),
-                convoProfile.when(
-                  data: (profile) => Text(
-                    profile.displayName ?? roomId,
-                    softWrap: true,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  error: (err, stackTrace) {
-                    _log.severe('Error loading convo profile', err, stackTrace);
-                    return Text(
-                      roomId,
-                      overflow: TextOverflow.clip,
-                      style: Theme.of(context).textTheme.titleSmall,
-                    );
-                  },
-                  loading: () => Skeletonizer(child: Text(roomId)),
-                ),
-              ],
-            ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            sliver: convo.when(
-              data: (data) => SliverToBoxAdapter(
-                child: RenderHtml(
-                  text: data.topic() ?? '',
-                  defaultTextStyle: Theme.of(context).textTheme.bodySmall,
-                ),
-              ),
-              loading: () => const Skeletonizer(child: Text('loading...')),
-              error: (e, s) => Text('Error: $e'),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: SettingsList(
-              physics: const NeverScrollableScrollPhysics(),
-              darkTheme: SettingsThemeData(
-                settingsListBackground: Colors.transparent,
-                dividerColor: Colors.transparent,
-                settingsSectionBackground: Colors.transparent,
-                leadingIconsColor: Theme.of(context).colorScheme.neutral6,
-              ),
-              shrinkWrap: true,
-              sections: [
-                SettingsSection(
-                  tiles: [
-                    SettingsTile(
-                      onPressed: (ctx) {
-                        //FIXME : ?via=$serverName data should be handle from rust helper function
-                        final serverName = roomId.split(':').last;
-                        Clipboard.setData(
-                          ClipboardData(
-                            text: 'https://matrix.to/#/$roomId?via=$serverName',
-                          ),
-                        );
-                        customMsgSnackbar(
-                          context,
-                          'Room ID: $roomId copied to clipboard',
-                        );
-                      },
-                      title: Text(
-                        'Copy room link',
-                        style: tileTextTheme,
-                      ),
-                      leading: const Icon(Atlas.chain_link_thin, size: 18),
-                      trailing: Icon(
-                        Atlas.pages_thin,
-                        size: 18,
-                        color: Theme.of(context).colorScheme.success,
-                      ),
-                    ),
-                    NotificationsSettingsTile(roomId: roomId),
-                    myMembership.when(
-                      data: (membership) => SettingsTile.navigation(
-                        onPressed: (ctx) {
-                          membership!.canString('CanInvite')
-                              ? ctx.pushNamed(
-                                  Routes.spaceInvite.name,
-                                  pathParameters: {'spaceId': roomId},
-                                )
-                              : customMsgSnackbar(
-                                  ctx,
-                                  'Not enough power level for invites, ask room administrator to change it',
-                                );
-                        },
-                        title: Text(
-                          'Request and Invites',
-                          style: tileTextTheme,
-                        ),
-                        leading: const Icon(Atlas.user_plus_thin, size: 18),
-                        trailing: Icon(
-                          Icons.chevron_right_outlined,
-                          size: 18,
-                          color: Theme.of(context).colorScheme.onBackground,
-                        ),
-                      ),
-                      error: (e, st) => SettingsTile(
-                        title: Text('Error loading tile due to $e'),
-                      ),
-                      loading: () => SettingsTile(
-                        title: const Skeletonizer(child: Text('Loading')),
-                      ),
-                    ),
-                    SettingsTile(
-                      onPressed: (ctx) async {
-                        await showAdaptiveDialog(
-                          barrierDismissible: true,
-                          context: context,
-                          useRootNavigator: false,
-                          builder: (dialogContext) => DefaultDialog(
-                            height:
-                                MediaQuery.of(dialogContext).size.height * 0.5,
-                            title: topMenu,
-                            description: convo.when(
-                              data: (data) => MemberList(convo: data),
-                              loading: () => const Skeletonizer(
-                                child: Text('loading...'),
-                              ),
-                              error: (e, s) => Text('Error: $e'),
-                            ),
-                          ),
-                        );
-                      },
-                      title: Text(
-                        'Members',
-                        style: tileTextTheme,
-                      ),
-                      leading: const Icon(
-                        Atlas.accounts_group_people_thin,
-                        size: 18,
-                      ),
-                      trailing: Icon(
-                        Icons.chevron_right_outlined,
-                        size: 18,
-                        color: Theme.of(context).colorScheme.onBackground,
-                      ),
-                    ),
-                  ],
-                ),
-                SettingsSection(
-                  title: Text(
-                    'Danger Zone',
-                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                          color: Theme.of(context).colorScheme.badgeUrgent,
-                        ),
-                  ),
-                  tiles: [
-                    SettingsTile(
-                      onPressed: (ctx) => showAdaptiveDialog(
-                        context: ctx,
-                        builder: (ctx) => DefaultDialog(
-                          title: Text(
-                            'Leave Room',
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                          subtitle: Text(
-                            'Are you sure you want to leave room? This action cannot be undone',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          actions: [
-                            OutlinedButton(
-                              onPressed: () =>
-                                  Navigator.of(context, rootNavigator: true)
-                                      .pop(),
-                              child: const Text('No'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () async {
-                                Navigator.of(context, rootNavigator: true)
-                                    .pop();
-                                EasyLoading.show(status: 'Leaving Room');
-                                var res = await _handleLeaveRoom(ref, roomId);
-                                if (res) {
-                                  if (context.mounted) {
-                                    EasyLoading.dismiss();
-                                    context.goNamed(Routes.chat.name);
-                                  }
-                                } else {
-                                  EasyLoading.dismiss();
-                                  EasyLoading.showError(
-                                    'Some error occured leaving room',
-                                  );
-                                }
-                              },
-                              child: const Text('Yes'),
-                            ),
-                          ],
-                        ),
-                      ),
-                      title: Text(
-                        'Leave Room',
-                        style: tileTextTheme!.copyWith(
-                          color: Theme.of(context).colorScheme.badgeUrgent,
-                        ),
-                      ),
-                      leading: Icon(
-                        Atlas.trash_thin,
-                        size: 18,
-                        color: Theme.of(context).colorScheme.badgeUrgent,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
+    return SettingsList(
+      physics: const NeverScrollableScrollPhysics(),
+      darkTheme: SettingsThemeData(
+        settingsListBackground: Colors.transparent,
+        dividerColor: Colors.transparent,
+        settingsSectionBackground: Colors.transparent,
+        leadingIconsColor: Theme.of(context).colorScheme.neutral6,
       ),
+      shrinkWrap: true,
+      sections: [
+        SettingsSection(
+          tiles: [
+            SettingsTile(
+              onPressed: (ctx) {
+                //FIXME : ?via=$serverName data should be handle from rust helper function
+                final serverName = roomId.split(':').last;
+                Clipboard.setData(
+                  ClipboardData(
+                    text: 'https://matrix.to/#/$roomId?via=$serverName',
+                  ),
+                );
+                customMsgSnackbar(
+                  context,
+                  'Room ID: $roomId copied to clipboard',
+                );
+              },
+              title: Text(
+                'Copy room link',
+                style: tileTextTheme,
+              ),
+              leading: const Icon(Atlas.chain_link_thin, size: 18),
+              trailing: Icon(
+                Atlas.pages_thin,
+                size: 18,
+                color: Theme.of(context).colorScheme.success,
+              ),
+            ),
+            NotificationsSettingsTile(roomId: roomId),
+            myMembership.when(
+              data: (membership) => SettingsTile.navigation(
+                onPressed: (ctx) {
+                  membership!.canString('CanInvite')
+                      ? ctx.pushNamed(
+                          Routes.spaceInvite.name,
+                          pathParameters: {'spaceId': roomId},
+                        )
+                      : customMsgSnackbar(
+                          ctx,
+                          'Not enough power level for invites, ask room administrator to change it',
+                        );
+                },
+                title: Text(
+                  'Request and Invites',
+                  style: tileTextTheme,
+                ),
+                leading: const Icon(Atlas.user_plus_thin, size: 18),
+                trailing: Icon(
+                  Icons.chevron_right_outlined,
+                  size: 18,
+                  color: Theme.of(context).colorScheme.onBackground,
+                ),
+              ),
+              error: (e, st) => SettingsTile(
+                title: Text('Error loading tile due to $e'),
+              ),
+              loading: () => SettingsTile(
+                title: const Skeletonizer(child: Text('Loading')),
+              ),
+            ),
+            SettingsTile(
+              onPressed: (ctx) async {
+                await showAdaptiveDialog(
+                  barrierDismissible: true,
+                  context: context,
+                  useRootNavigator: false,
+                  builder: (dialogContext) => DefaultDialog(
+                    height: MediaQuery.of(dialogContext).size.height * 0.5,
+                    title: topMenu,
+                    description: convo.when(
+                      data: (data) => MemberList(convo: data),
+                      loading: () => const Skeletonizer(
+                        child: Text('loading...'),
+                      ),
+                      error: (e, s) => Text('Error: $e'),
+                    ),
+                  ),
+                );
+              },
+              title: Text(
+                'Members',
+                style: tileTextTheme,
+              ),
+              leading: const Icon(
+                Atlas.accounts_group_people_thin,
+                size: 18,
+              ),
+              trailing: Icon(
+                Icons.chevron_right_outlined,
+                size: 18,
+                color: Theme.of(context).colorScheme.onBackground,
+              ),
+            ),
+          ],
+        ),
+        SettingsSection(
+          title: Text(
+            'Danger Zone',
+            style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                  color: Theme.of(context).colorScheme.badgeUrgent,
+                ),
+          ),
+          tiles: [
+            SettingsTile(
+              onPressed: (ctx) => showAdaptiveDialog(
+                context: ctx,
+                builder: (ctx) => DefaultDialog(
+                  title: Text(
+                    'Leave Room',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  subtitle: Text(
+                    'Are you sure you want to leave room? This action cannot be undone',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  actions: [
+                    OutlinedButton(
+                      onPressed: () =>
+                          Navigator.of(context, rootNavigator: true).pop(),
+                      child: const Text('No'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        Navigator.of(context, rootNavigator: true).pop();
+                        EasyLoading.show(status: 'Leaving Room');
+                        var res = await _handleLeaveRoom(ref, roomId);
+                        if (res) {
+                          if (context.mounted) {
+                            EasyLoading.dismiss();
+                            context.goNamed(Routes.chat.name);
+                          }
+                        } else {
+                          EasyLoading.dismiss();
+                          EasyLoading.showError(
+                            'Some error occurred leaving room',
+                          );
+                        }
+                      },
+                      child: const Text('Yes'),
+                    ),
+                  ],
+                ),
+              ),
+              title: Text(
+                'Leave Room',
+                style: tileTextTheme!.copyWith(
+                  color: Theme.of(context).colorScheme.badgeUrgent,
+                ),
+              ),
+              leading: Icon(
+                Atlas.trash_thin,
+                size: 18,
+                color: Theme.of(context).colorScheme.badgeUrgent,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
