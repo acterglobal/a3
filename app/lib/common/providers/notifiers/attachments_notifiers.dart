@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:logging/logging.dart';
@@ -20,9 +19,9 @@ class AttachmentsManagerNotifier
     _listener = arg.subscribeStream(); // keep it resident in memory
     _poller = _listener.listen(
       (e) async {
-        debugPrint('attempting to reload');
+        _log.info('attempting to reload');
         final newManager = await arg.reload();
-        debugPrint(
+        _log.info(
           'manager updated. attachments: ${newManager.attachmentsCount()}',
         );
         state = newManager;
