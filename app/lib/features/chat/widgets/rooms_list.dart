@@ -62,22 +62,33 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   }
 
   Widget roomListTitle(BuildContext context) {
-    if (_isSearchVisible) {
-      return Text(
-        'Filter chats',
-        style: Theme.of(context).textTheme.headlineSmall,
-      );
-    }
+    String title = AppLocalizations.of(context)!.chat;
 
-    if (!ref.watch(hasRoomFilters)) {
-      return Text(
-        AppLocalizations.of(context)!.chat,
-        style: Theme.of(context).textTheme.headlineSmall,
-      );
+    if (ref.watch(hasRoomFilters)) {
+      String subFiltered = 'chats';
+      switch (ref
+          .watch(roomListFilterProvider.select((value) => value.selection))) {
+        case FilterSelection.dmsOnly:
+          subFiltered = 'DMs';
+          break;
+        case FilterSelection.favorites:
+          subFiltered = 'Bookmarked chats';
+        default:
+          break;
+      }
+      ;
+
+      final searchTerm =
+          ref.watch(roomListFilterProvider.select((value) => value.searchTerm));
+      if (searchTerm != null && searchTerm.isNotEmpty) {
+        title = "Show $subFiltered with '$searchTerm'";
+      } else {
+        title = subFiltered;
+      }
     }
 
     return Text(
-      'Filtered chats',
+      title,
       style: Theme.of(context).textTheme.headlineSmall,
     );
   }

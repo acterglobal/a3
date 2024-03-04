@@ -132,27 +132,16 @@ class RoomProfilePage extends ConsumerWidget {
         children: [
           convoLoader.maybeWhen(
             data: (conv) {
-              if (conv.isFavorite()) {
-                return IconButton.filled(
-                  icon: const Icon(
-                    Icons.bookmark_remove_rounded,
-                    size: 20,
-                  ),
-                  onPressed: () async {
-                    await conv.setFavorite(false);
-                  },
-                );
-              } else {
-                return IconButton.filled(
-                  icon: const Icon(
-                    Icons.bookmark_add_outlined,
-                    size: 20,
-                  ),
-                  onPressed: () async {
-                    await conv.setFavorite(true);
-                  },
-                );
-              }
+              final isFav = conv.isFavorite();
+              return IconButton(
+                icon: Icon(
+                  isFav ? Icons.bookmark : Icons.bookmark_border,
+                  size: 20,
+                ),
+                onPressed: () async {
+                  await conv.setFavorite(!isFav);
+                },
+              );
             },
             orElse: () => Skeletonizer(
               child: IconButton.filled(

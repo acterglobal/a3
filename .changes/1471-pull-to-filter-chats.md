@@ -1,2 +1,2 @@
 - You can now bookmark chat rooms (via the chat room details page)
-- An easier way to search & filter chats: just pull down in the chat rooms list and the filter bar appears. Next to a cleaned up SearchField it also features quick-toggles for bookmarked chats and DMs only. The selection made here will be persisted between app restart for convenience;
+- An easier way to search & filter chats: just pull down in the chat rooms list and the filter bar appears. Next to a cleaned up chat search it also features quick-toggles for bookmarked chats and DMs only. The selection made here will be persisted between app restart for convenience;

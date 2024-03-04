@@ -1,6 +1,11 @@
 /// Based on https://github.com/gamako/shared_preferences_riverpod/blob/master/lib/shared_preferences_riverpod.dart
 /// but bound to the specific client deviceIDs;
-library;
+///
+/// In essence this provides a SharedPreferences provider which, whenever set,
+/// will store the current value under `$currentDeviceId-$prefKey` in the system
+/// preference allowing the app to save and restore local app settings.
+///
+
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:riverpod/riverpod.dart';
@@ -52,8 +57,10 @@ class PrefNotifier<T> extends StateNotifier<T> {
   /// Instead, use `await update(value).`
   @override
   set state(T value) {
-    assert(false,
-        "Don't use the setter for state. Instead use `await update(value)`.",);
+    assert(
+      false,
+      "Don't use the setter for state. Instead use `await update(value)`.",
+    );
     Future(() async {
       await update(value);
     });
