@@ -4,7 +4,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
-import 'package:acter/common/widgets/side_sheet.dart';
+import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -88,7 +88,7 @@ class _CreateTaskListSheetConsumerState
   Widget build(BuildContext context) {
     final textNotifier = ref.watch(textProvider.notifier);
 
-    return SideSheet(
+    return SliverScaffold(
       header: 'Create new task list',
       addActions: true,
       body: Padding(

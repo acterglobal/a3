@@ -3,7 +3,7 @@ import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/widgets/search.dart';
-import 'package:acter/common/widgets/side_sheet.dart';
+import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -86,7 +86,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return SideSheet(
+    return SliverScaffold(
       header: widget.pageTitle,
       body: SizedBox(
         height: size.height - 120,

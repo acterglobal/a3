@@ -153,7 +153,10 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
                 },
                 error: (err, st) => Text('Error loading attachment $err'),
                 loading: () => const Skeletonizer(
-                  child: SizedBox(),
+                  child: SizedBox(
+                    height: 100,
+                    width: 100,
+                  ),
                 ),
               ),
             ],

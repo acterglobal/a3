@@ -4,7 +4,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
-import 'package:acter/common/widgets/side_sheet.dart';
+import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/spaces/model/keys.dart';
@@ -47,7 +47,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     final titleInput = ref.watch(titleProvider);
     final currentParentSpace = ref.watch(selectedSpaceIdProvider);
     final parentSelected = currentParentSpace != null;
-    return SideSheet(
+    return SliverScaffold(
       header: parentSelected ? 'Create Subspace' : 'Create Space',
       addActions: true,
       body: Padding(

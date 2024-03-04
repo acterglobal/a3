@@ -1,4 +1,4 @@
-import 'package:acter/common/widgets/side_sheet.dart';
+import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter/features/space/pages/related_spaces_page.dart';
 import 'package:acter/features/space/sheets/link_room_sheet.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
@@ -52,7 +52,7 @@ void subSpaceTests() {
     await find.byKey(LinkRoomPage.confirmJoinRuleUpdateKey).tap();
 
     // close the box
-    final closeKey = find.byKey(SideSheet.closeKey);
+    final closeKey = find.byKey(SliverScaffold.closeKey);
     await t.tester.ensureVisible(closeKey);
     await closeKey.tap();
 
@@ -97,7 +97,7 @@ void subSpaceTests() {
     await find.byKey(LinkRoomPage.denyJoinRuleUpdateKey).tap();
 
     // close the box
-    final closeKey = find.byKey(SideSheet.closeKey);
+    final closeKey = find.byKey(SliverScaffold.closeKey);
     await t.tester.ensureVisible(closeKey);
     await closeKey.tap();
 

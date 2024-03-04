@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
 import 'package:acter/common/widgets/side_sheet.dart';
@@ -10,7 +12,9 @@ import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/pins/pin_utils/pin_utils.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -49,7 +53,9 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
   @override
   Widget build(BuildContext context) {
     final attachments = ref.watch(selectedPinAttachmentsProvider);
-    return SideSheet(
+
+    return SliverScaffold(
+      confirmActionKey: CreatePinPage.submitBtn,
       header: 'Create new Pin',
       addActions: true,
       body: Padding(
@@ -88,18 +94,13 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
           ),
         ),
       ),
-      actions: <Widget>[
-        ElevatedButton(
-          key: CreatePinPage.submitBtn,
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              _handleCreatePin();
-            }
-          },
-          child: const Text('Create Pin'),
-        ),
-      ],
-      confirmActionOnPressed: () async {},
+      confirmActionTitle: 'Create Pin',
+      cancelActionTitle: null,
+      confirmActionOnPressed: () async {
+        if (_formKey.currentState!.validate()) {
+          _handleCreatePin();
+        }
+      },
     );
   }
 
@@ -180,6 +181,8 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
   }
 
   Widget _buildDescriptionField() {
+    final labFeature = ref.watch(featuresProvider);
+    bool isActive(f) => labFeature.isActive(f);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -187,13 +190,37 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
           padding: EdgeInsets.only(bottom: 5),
           child: Text('Description'),
         ),
-        SizedBox(
+        if (!isActive(LabsFeature.pinsEditor))
+          SizedBox(
+            height: 200,
+            child: MdEditorWithPreview(
+              key: CreatePinPage.contentFieldKey,
+              validator: (value) =>
+                  hasLinkOrText() ? null : 'Text or URL must be given',
+              controller: _textController,
+            ),
+          ),
+        Container(
           height: 200,
-          child: MdEditorWithPreview(
-            key: CreatePinPage.contentFieldKey,
-            validator: (value) =>
-                hasLinkOrText() ? null : 'Text or URL must be given',
-            controller: _textController,
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          constraints:
+              BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
+          child: HtmlEditor(
+            editable: true,
+            autoFocus: false,
+            shrinkWrap: true,
+            editorState: EditorState.blank(),
+            footer: const SizedBox(),
+            onChanged: (body, html) {
+              if (html != null) {
+                _textController.text = html;
+              }
+              _textController.text = body;
+            },
           ),
         ),
       ],
