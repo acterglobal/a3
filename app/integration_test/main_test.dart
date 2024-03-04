@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'support/appstart.dart';
 import 'tests/auth.dart';
+import 'tests/events.dart';
 import 'tests/pins.dart';
 import 'tests/bug_reporter.dart';
 import 'tests/sub_spaces.dart';
@@ -15,6 +16,7 @@ void main() {
   convenientTestMain(ActerConvenientTestSlot(), () {
     group('Auth', authTests);
     group('Updates', updateTests);
+    group('Events', eventsTests);
     group('Subspace', subSpaceTests);
     group('SuperInvites', superInvitesTests);
     group('Tasks', tasksTests);

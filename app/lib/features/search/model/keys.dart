@@ -9,4 +9,5 @@ class QuickJumpKeys {
   static const createUpdateAction = Key('quick-jump-create-update');
   static const createTaskListAction = Key('quick-jump-create-tasklist');
   static const createPinAction = Key('quick-jump-create-pin');
+  static const createEventAction = Key('quick-jump-create-event');
 }
