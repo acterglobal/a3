@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';

@@ -1175,12 +1175,23 @@ object Convo {
     /// is this a direct message
     fn is_dm() -> bool;
 
+    /// is this a favorite chat
+    fn is_favorite() -> bool;
+
+    /// set this a favorite chat
+    fn set_favorite(is_favorite: bool) -> Future<Result<bool>>;
+
+    /// is this a low priority chat
+    fn is_low_priority() -> bool;
+
     /// the list of users ids if this is a direct message
     fn dm_users() -> Vec<string>;
 
     /// invite the new user to this room
     fn invite_user(user_id: string) -> Future<Result<bool>>;
 
+    /// generate the room permalink
+    fn permalink() -> Future<Result<string>>;
     /// join this room
     fn join() -> Future<Result<bool>>;
 

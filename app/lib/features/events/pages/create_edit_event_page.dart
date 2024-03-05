@@ -4,6 +4,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/base_body_widget.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -17,22 +18,24 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::event::createOrEdit');
 
+const createEditEventKey = Key('create-edit-event');
+
 class CreateEditEventPage extends ConsumerStatefulWidget {
   final String? initialSelectedSpace;
   final String? calendarId;
 
   const CreateEditEventPage({
-    super.key,
+    super.key = createEditEventKey,
     this.initialSelectedSpace,
     this.calendarId,
   });
 
   @override
   ConsumerState<CreateEditEventPage> createState() =>
-      _CreateEditEventPageConsumerState();
+      CreateEditEventPageConsumerState();
 }
 
-class _CreateEditEventPageConsumerState
+class CreateEditEventPageConsumerState
     extends ConsumerState<CreateEditEventPage> {
   final _eventFromKey = GlobalKey<FormState>();
   final _eventNameController = TextEditingController();
@@ -149,6 +152,7 @@ class _CreateEditEventPageConsumerState
         const Text('Event Name'),
         const SizedBox(height: 10),
         TextFormField(
+          key: EventsKeys.eventNameTextField,
           keyboardType: TextInputType.text,
           textInputAction: TextInputAction.next,
           controller: _eventNameController,
@@ -179,6 +183,7 @@ class _CreateEditEventPageConsumerState
                   const Text('Start Date'),
                   const SizedBox(height: 10),
                   TextFormField(
+                    key: EventsKeys.eventStartDate,
                     readOnly: true,
                     keyboardType: TextInputType.text,
                     controller: _startDateController,
@@ -205,6 +210,7 @@ class _CreateEditEventPageConsumerState
                   const Text('Start Time'),
                   const SizedBox(height: 10),
                   TextFormField(
+                    key: EventsKeys.eventStartTime,
                     readOnly: true,
                     keyboardType: TextInputType.text,
                     controller: _startTimeController,
@@ -235,6 +241,7 @@ class _CreateEditEventPageConsumerState
                   const Text('End Date'),
                   const SizedBox(height: 10),
                   TextFormField(
+                    key: EventsKeys.eventEndDate,
                     readOnly: true,
                     keyboardType: TextInputType.text,
                     controller: _endDateController,
@@ -261,6 +268,7 @@ class _CreateEditEventPageConsumerState
                   const Text('End Time'),
                   const SizedBox(height: 10),
                   TextFormField(
+                    key: EventsKeys.eventEndTime,
                     readOnly: true,
                     keyboardType: TextInputType.text,
                     controller: _endTimeController,
@@ -370,11 +378,10 @@ class _CreateEditEventPageConsumerState
             borderRadius: BorderRadius.circular(10.0),
           ),
           child: HtmlEditor(
+            key: EventsKeys.eventDescriptionTextField,
             editorState: textEditorState,
             editable: true,
             autoFocus: false,
-            // we manage the auto focus manually
-            shrinkWrap: true,
             onChanged: (body, html) {
               final document = html != null
                   ? ActerDocumentHelpers.fromHtml(html)
@@ -398,6 +405,7 @@ class _CreateEditEventPageConsumerState
         ),
         const SizedBox(width: 10),
         ElevatedButton(
+          key: EventsKeys.eventCreateEditBtn,
           onPressed: widget.calendarId != null
               ? _handleUpdateEvent
               : _handleCreateEvent,

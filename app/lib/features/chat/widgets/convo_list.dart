@@ -3,6 +3,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,14 +22,14 @@ class _ConvosListConsumerState extends ConsumerState<ConvosList> {
   @override
   Widget build(BuildContext context) {
     final chats = ref.watch(chatsProvider);
-    final searchValue = ref.watch(chatSearchValueProvider);
-    if (searchValue?.isNotEmpty == true) {
-      return ref.watch(searchedChatsProvider).when(
+    final hasSearchFilter = ref.watch(hasRoomFilters);
+    if (hasSearchFilter) {
+      return ref.watch(filteredChatsProvider).when(
             data: (chats) {
               if (chats.isEmpty) {
                 return const Center(
                   heightFactor: 10,
-                  child: Text('No chats found matching your search term'),
+                  child: Text('No chats found matching your filters & search'),
                 );
               }
               return renderList(context, chats);
