@@ -97,6 +97,12 @@ extension ActerUtil on ConvenientTest {
     await homeKey.should(findsOneWidget);
     await homeKey.tap();
   }
+
+  Future<void> trigger(Key key) async {
+    final simple = find.byKey(key);
+    await simple.should(findsOneWidget);
+    await simple.tap();
+  }
 }
 
 Future<XFile> convertAssetImageToXFile(String assetPath) async {

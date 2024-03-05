@@ -105,12 +105,6 @@ extension ActerNews on ConvenientTest {
     await cancelKey.should(findsOneWidget);
     await cancelKey.tap();
   }
-
-  Future<void> trigger(Key key) async {
-    final simple = find.byKey(key);
-    await simple.should(findsOneWidget);
-    await simple.tap();
-  }
 }
 
 void updateTests() {

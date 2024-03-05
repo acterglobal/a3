@@ -84,6 +84,7 @@ class QuickActionsBuilder extends ConsumerWidget {
               : null,
           canPostEvent
               ? OutlinedButton.icon(
+                  key: QuickJumpKeys.createEventAction,
                   onPressed: () => navigateTo(Routes.createEvent, push: true),
                   icon: const Icon(Atlas.plus_circle_thin, size: 18),
                   label: Text(
