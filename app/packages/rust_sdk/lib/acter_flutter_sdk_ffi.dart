@@ -5107,6 +5107,50 @@ class Api {
     return tmp7;
   }
 
+  bool? __convoSetFavoriteFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoSetFavoriteFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   bool? __convoInviteUserFuturePoll(
     int boxed,
     int postCobject,
@@ -5148,6 +5192,68 @@ class Api {
       throw tmp9_0;
     }
     final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  String? __convoPermalinkFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoPermalinkFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
     return tmp7;
   }
 
@@ -17499,6 +17605,38 @@ class Api {
       int Function(
         int,
       )>();
+  late final _convoIsFavoritePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__Convo_is_favorite");
+
+  late final _convoIsFavorite = _convoIsFavoritePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _convoSetFavoritePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+            ffi.Uint8,
+          )>>("__Convo_set_favorite");
+
+  late final _convoSetFavorite = _convoSetFavoritePtr.asFunction<
+      int Function(
+        int,
+        int,
+      )>();
+  late final _convoIsLowPriorityPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.Int64,
+          )>>("__Convo_is_low_priority");
+
+  late final _convoIsLowPriority = _convoIsLowPriorityPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _convoDmUsersPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -17523,6 +17661,16 @@ class Api {
         int,
         int,
         int,
+        int,
+      )>();
+  late final _convoPermalinkPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Int64,
+          )>>("__Convo_permalink");
+
+  late final _convoPermalink = _convoPermalinkPtr.asFunction<
+      int Function(
         int,
       )>();
   late final _convoJoinPtr = _lookup<
@@ -24689,6 +24837,21 @@ class Api {
             int,
             int,
           )>();
+  late final _convoSetFavoriteFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConvoSetFavoriteFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Convo_set_favorite_future_poll");
+
+  late final _convoSetFavoriteFuturePoll =
+      _convoSetFavoriteFuturePollPtr.asFunction<
+          _ConvoSetFavoriteFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _convoInviteUserFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ConvoInviteUserFuturePollReturn Function(
@@ -24700,6 +24863,21 @@ class Api {
   late final _convoInviteUserFuturePoll =
       _convoInviteUserFuturePollPtr.asFunction<
           _ConvoInviteUserFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _convoPermalinkFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConvoPermalinkFuturePollReturn Function(
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Convo_permalink_future_poll");
+
+  late final _convoPermalinkFuturePoll =
+      _convoPermalinkFuturePollPtr.asFunction<
+          _ConvoPermalinkFuturePollReturn Function(
             int,
             int,
             int,
@@ -36701,6 +36879,51 @@ class Convo {
     return tmp2;
   }
 
+  /// is this a favorite chat
+  bool isFavorite() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoIsFavorite(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// set this a favorite chat
+  Future<bool> setFavorite(
+    bool isFavorite,
+  ) {
+    final tmp1 = isFavorite;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    final tmp3 = _api._convoSetFavorite(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "__Convo_set_favorite_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(tmp5_1, _api.__convoSetFavoriteFuturePoll);
+    return tmp4;
+  }
+
+  /// is this a low priority chat
+  bool isLowPriority() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoIsLowPriority(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
   /// the list of users ids if this is a direct message
   FfiListFfiString dmUsers() {
     var tmp0 = 0;
@@ -36747,6 +36970,21 @@ class Convo {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__convoInviteUserFuturePoll);
     return tmp6;
+  }
+
+  /// generate the room permalink
+  Future<String> permalink() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._convoPermalink(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Convo_permalink_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__convoPermalinkFuturePoll);
+    return tmp2;
   }
 
   /// join this room
@@ -52367,6 +52605,21 @@ class _ConvoMediaBinaryFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ConvoSetFavoriteFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _ConvoInviteUserFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -52380,6 +52633,25 @@ class _ConvoInviteUserFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Uint8()
   external int arg5;
+}
+
+class _ConvoPermalinkFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
 }
 
 class _ConvoJoinFuturePollReturn extends ffi.Struct {
