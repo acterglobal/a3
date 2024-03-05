@@ -2,6 +2,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
+import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/pin_utils/pin_utils.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
@@ -11,7 +12,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -32,6 +32,7 @@ class _PinItemState extends ConsumerState<PinItem> {
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   late TextEditingController _linkController;
   late TextEditingController _descriptionController;
+  String? htmlText;
   int? attachmentCount;
 
   @override
@@ -87,7 +88,12 @@ class _PinItemState extends ConsumerState<PinItem> {
               formkey: _formkey,
             ),
             const SizedBox(height: 20),
-            _buildAttachmentList(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                _buildAttachmentList(),
+              ],
+            ),
           ],
         ),
       ),
@@ -166,7 +172,7 @@ class _PinItemState extends ConsumerState<PinItem> {
                       AttachmentContainer(
                         pin: widget.pin,
                         filename: item.file.path.split('/').last,
-                        child: const Icon(Atlas.file_thin),
+                        child: attachmentIconHandler(item.file, 20),
                       ),
                       Visibility(
                         visible: pinEdit.editMode,
@@ -261,11 +267,9 @@ class _PinDescriptionWidget extends ConsumerWidget {
     if (!isActive(LabsFeature.pinsEditor)) {
       return Visibility(
         visible: pinEdit.editMode,
-        replacement: Html(
+        replacement: RenderHtml(
           key: PinItem.descriptionFieldKey,
-          data: descriptionController.text,
-          renderNewlines: true,
-          padding: const EdgeInsets.all(8),
+          text: descriptionController.text,
         ),
         child: Column(
           children: <Widget>[
@@ -273,30 +277,16 @@ class _PinDescriptionWidget extends ConsumerWidget {
               key: PinItem.markdownEditorKey,
               controller: descriptionController,
             ),
-            Visibility(
-              visible: pinEdit.editMode,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  OutlinedButton(
-                    onPressed: () => pinEditNotifier.setEditMode(false),
-                    child: const Text('Cancel'),
-                  ),
-                  const SizedBox(width: 5),
-                  ElevatedButton(
-                    key: PinItem.saveBtnKey,
-                    onPressed: () async {
-                      if (formkey.currentState!.validate()) {
-                        pinEditNotifier.setEditMode(false);
-                        pinEditNotifier.setMarkdown(descriptionController.text);
-                        pinEditNotifier.setLink(linkController.text);
-                        await pinEditNotifier.onSave();
-                      }
-                    },
-                    child: const Text('Save'),
-                  ),
-                ],
-              ),
+            _ActionButtonsWidget(
+              pin: pin,
+              onSave: () async {
+                if (formkey.currentState!.validate()) {
+                  pinEditNotifier.setEditMode(false);
+                  pinEditNotifier.setMarkdown(descriptionController.text);
+                  pinEditNotifier.setLink(linkController.text);
+                  await pinEditNotifier.onSave();
+                }
+              },
             ),
           ],
         ),
@@ -305,47 +295,88 @@ class _PinDescriptionWidget extends ConsumerWidget {
       final content = pin.content();
       return Visibility(
         visible: pinEdit.editMode,
-        replacement: Html(
+        replacement: RenderHtml(
           key: PinItem.descriptionFieldKey,
-          data: descriptionController.text,
-          renderNewlines: true,
-          padding: const EdgeInsets.all(8),
+          text: descriptionController.text,
         ),
-        child: Container(
-          height: MediaQuery.of(context).size.height * 0.6,
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            color: pinEdit.editMode
-                ? Theme.of(context).colorScheme.primaryContainer
-                : null,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          constraints:
-              BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
-          child: HtmlEditor(
-            key: PinItem.richTextEditorKey,
-            editable: pinEdit.editMode,
-            editorState: content != null
-                ? EditorState(
-                    document: ActerDocumentHelpers.fromMsgContent(content),
-                  )
-                : null,
-            footer: pinEdit.editMode ? null : const SizedBox(),
-            onCancel: () => pinEditNotifier.setEditMode(false),
-            onSave: (plain, htmlBody) async {
-              if (formkey.currentState!.validate()) {
-                pinEditNotifier.setEditMode(false);
-                pinEditNotifier.setLink(linkController.text);
-                pinEditNotifier.setMarkdown(plain);
-                if (htmlBody != null) {
-                  pinEditNotifier.setHtml(htmlBody);
+        child: Column(
+          children: <Widget>[
+            Container(
+              height: MediaQuery.of(context).size.height * 0.6,
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              decoration: BoxDecoration(
+                color: pinEdit.editMode
+                    ? Theme.of(context).colorScheme.primaryContainer
+                    : null,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              constraints:
+                  BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
+              child: HtmlEditor(
+                key: PinItem.richTextEditorKey,
+                editable: true,
+                editorState: content != null
+                    ? EditorState(
+                        document: ActerDocumentHelpers.fromMsgContent(content),
+                      )
+                    : null,
+                onChanged: (body, html) {
+                  if (html != null) {
+                    descriptionController.text = html;
+                  }
+                  descriptionController.text = body;
+                },
+              ),
+            ),
+            _ActionButtonsWidget(
+              pin: pin,
+              onSave: () async {
+                if (formkey.currentState!.validate()) {
+                  pinEditNotifier.setEditMode(false);
+                  pinEditNotifier.setHtml(descriptionController.text);
+                  pinEditNotifier.setMarkdown(descriptionController.text);
+                  pinEditNotifier.setLink(linkController.text);
+                  await pinEditNotifier.onSave();
                 }
-                await pinEditNotifier.onSave();
-              }
-            },
-          ),
+              },
+            ),
+          ],
         ),
       );
     }
+  }
+}
+
+// cancel submit buttons for create pin
+class _ActionButtonsWidget extends ConsumerWidget {
+  const _ActionButtonsWidget({
+    required this.pin,
+    required this.onSave,
+  });
+  final ActerPin pin;
+  final void Function()? onSave;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pinEdit = ref.watch(pinEditProvider(pin));
+    final pinEditNotifier = ref.watch(pinEditProvider(pin).notifier);
+    return Visibility(
+      visible: pinEdit.editMode,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          OutlinedButton(
+            onPressed: () => pinEditNotifier.setEditMode(false),
+            child: const Text('Cancel'),
+          ),
+          const SizedBox(width: 5),
+          ElevatedButton(
+            key: PinItem.saveBtnKey,
+            onPressed: onSave,
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
   }
 }

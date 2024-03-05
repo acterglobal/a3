@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -7,7 +5,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/md_editor_with_preview.dart';
-import 'package:acter/common/widgets/side_sheet.dart';
+import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/pins/pin_utils/pin_utils.dart';
@@ -20,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mime/mime.dart';
 
 class CreatePinPage extends ConsumerStatefulWidget {
   final String? initialSelectedSpace;
@@ -81,7 +78,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
                       runSpacing: 10.0,
                       children: <Widget>[
                         for (var pinAttachment in attachments)
-                          _AttachmentFileWidget(pinAttachment),
+                          _AttachmentItemWidget(pinAttachment),
                       ],
                     ),
                   const SizedBox(height: 15),
@@ -301,8 +298,8 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
 }
 
 // Attachment File UI widget
-class _AttachmentFileWidget extends ConsumerWidget {
-  const _AttachmentFileWidget(this.attachment);
+class _AttachmentItemWidget extends ConsumerWidget {
+  const _AttachmentItemWidget(this.attachment);
 
   final PinAttachment attachment;
 
@@ -323,7 +320,7 @@ class _AttachmentFileWidget extends ConsumerWidget {
       ),
       child: Row(
         children: <Widget>[
-          _attachmentFile(file),
+          attachmentIconHandler(file, null),
           const SizedBox(width: 5),
           Flexible(
             child: Text(
@@ -346,27 +343,5 @@ class _AttachmentFileWidget extends ConsumerWidget {
         ],
       ),
     );
-  }
-}
-
-// handler for mimetype icon
-Widget _attachmentFile(File file) {
-  final mimeType = lookupMimeType(file.path);
-  if (mimeType!.startsWith('image/')) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(6),
-      child: Image.file(
-        file,
-        fit: BoxFit.cover,
-        height: 20,
-        width: 20,
-      ),
-    );
-  } else if (mimeType.startsWith('audio/')) {
-    return const Icon(Atlas.file_sound_thin, size: 12);
-  } else if (mimeType.startsWith('video/')) {
-    return const Icon(Atlas.file_video_thin, size: 12);
-  } else {
-    return const Icon(Atlas.file_thin, size: 12);
   }
 }

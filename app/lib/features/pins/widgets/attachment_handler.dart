@@ -8,10 +8,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AttachmentTypeHandler extends StatelessWidget {
   final ActerPin pin;
   final Attachment attachment;
+  final double? size;
   const AttachmentTypeHandler({
     super.key,
     required this.attachment,
     required this.pin,
+    this.size = 20,
   });
 
   @override
@@ -27,11 +29,27 @@ class AttachmentTypeHandler extends StatelessWidget {
         filename: msgContent.body(),
         child: ImageAttachmentPreview(attachment: attachment),
       );
+    } else if (mimeType.startsWith('video/')) {
+      return AttachmentContainer(
+        pin: pin,
+        filename: msgContent.body(),
+        child: Center(
+          child: Icon(Atlas.file_video_thin, size: size),
+        ),
+      );
+    } else if (mimeType.startsWith('audio/')) {
+      return AttachmentContainer(
+        pin: pin,
+        filename: msgContent.body(),
+        child: Center(
+          child: Icon(Atlas.file_audio_thin, size: size),
+        ),
+      );
     } else {
       return AttachmentContainer(
         pin: pin,
         filename: msgContent.body(),
-        child: const Center(child: Icon(Atlas.file_thin)),
+        child: Center(child: Icon(Atlas.file_thin, size: size)),
       );
     }
   }

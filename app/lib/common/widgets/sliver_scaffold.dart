@@ -61,7 +61,7 @@ class SliverScaffold extends StatelessWidget {
               SliverList(
                 delegate: SliverChildListDelegate(
                   [
-                    _SheetHeader(
+                    _SliverHeader(
                       header: header,
                       addBackIconButton: addBackIconButton,
                       addCloseIconButton: addCloseIconButton,
@@ -77,7 +77,7 @@ class SliverScaffold extends StatelessWidget {
                 hasScrollBody: false,
                 child: Visibility(
                   visible: addActions,
-                  child: _SheetFooter(
+                  child: _SliverFooter(
                     addDivider: addDivider,
                     confirmActionTitle: confirmActionTitle,
                     confirmActionKey: confirmActionKey,
@@ -96,14 +96,14 @@ class SliverScaffold extends StatelessWidget {
   }
 }
 
-class _SheetHeader extends StatelessWidget {
+class _SliverHeader extends StatelessWidget {
   final String header;
   final bool addBackIconButton;
   final bool addCloseIconButton;
   final String? backButtonTooltip;
   final String? closeButtonTooltip;
 
-  const _SheetHeader({
+  const _SliverHeader({
     required this.header,
     required this.addBackIconButton,
     required this.addCloseIconButton,
@@ -158,7 +158,7 @@ class _SheetHeader extends StatelessWidget {
   }
 }
 
-class _SheetFooter extends StatelessWidget {
+class _SliverFooter extends StatelessWidget {
   final bool addDivider;
   final Key? confirmActionKey;
   final String? confirmActionTitle;
@@ -168,7 +168,7 @@ class _SheetFooter extends StatelessWidget {
   final void Function()? confirmActionOnPressed;
   final void Function()? cancelActionOnPressed;
 
-  const _SheetFooter({
+  const _SliverFooter({
     required this.addDivider,
     required this.confirmActionTitle,
     required this.cancelActionTitle,
