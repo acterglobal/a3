@@ -187,8 +187,9 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
           padding: EdgeInsets.only(bottom: 5),
           child: Text('Description'),
         ),
-        if (!isActive(LabsFeature.pinsEditor))
-          SizedBox(
+        Visibility(
+          visible: isActive(LabsFeature.pinsEditor),
+          replacement: SizedBox(
             height: 200,
             child: MdEditorWithPreview(
               key: CreatePinPage.contentFieldKey,
@@ -197,27 +198,28 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
               controller: _textController,
             ),
           ),
-        Container(
-          height: 200,
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          constraints:
-              BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
-          child: HtmlEditor(
-            editable: true,
-            autoFocus: false,
-            shrinkWrap: true,
-            editorState: EditorState.blank(),
-            footer: const SizedBox(),
-            onChanged: (body, html) {
-              if (html != null) {
-                _textController.text = html;
-              }
-              _textController.text = body;
-            },
+          child: Container(
+            height: 200,
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            constraints:
+                BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
+            child: HtmlEditor(
+              editable: true,
+              autoFocus: false,
+              shrinkWrap: true,
+              editorState: EditorState.blank(),
+              footer: const SizedBox(),
+              onChanged: (body, html) {
+                if (html != null) {
+                  _textController.text = html;
+                }
+                _textController.text = body;
+              },
+            ),
           ),
         ),
       ],

@@ -62,7 +62,7 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
     _buildPinContent();
   }
 
-  // keeps list item up-to-date with pin changes
+  // keeps list item up-to-date with pin content changes
   @override
   void didUpdateWidget(PinListItem oldWidget) {
     super.didUpdateWidget(oldWidget);
