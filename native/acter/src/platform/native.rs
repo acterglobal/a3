@@ -138,7 +138,7 @@ pub fn init_logging(
     let mut builder = fern::Dispatch::new().format(|out, message, record| {
         out.finish(format_args!(
             "{}[{}][{}] {}",
-            Local::now().format("[%Y-%m-%d][%H:%M:%S]"),
+            Local::now().format("[%Y-%m-%d][%H:%M:%S%.6f]"),
             record.target(),
             record.level(),
             message
