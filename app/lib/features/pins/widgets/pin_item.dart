@@ -242,7 +242,7 @@ class _PinItemState extends ConsumerState<PinItem> {
 }
 
 // pin content UI widget
-class _PinDescriptionWidget extends ConsumerWidget {
+class _PinDescriptionWidget extends ConsumerStatefulWidget {
   const _PinDescriptionWidget({
     required this.pin,
     required this.descriptionController,
@@ -256,12 +256,32 @@ class _PinDescriptionWidget extends ConsumerWidget {
   final GlobalKey<FormState> formkey;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final pinEdit = ref.watch(pinEditProvider(pin));
-    final pinEditNotifier = ref.watch(pinEditProvider(pin).notifier);
+  ConsumerState<_PinDescriptionWidget> createState() =>
+      _PinDescriptionWidgetConsumerState();
+}
+
+class _PinDescriptionWidgetConsumerState
+    extends ConsumerState<_PinDescriptionWidget> {
+  late EditorState textEditorState;
+
+  @override
+  void initState() {
+    super.initState();
+    final content = widget.pin.content();
+    if (content != null) {
+      textEditorState =
+          EditorState(document: ActerDocumentHelpers.fromMsgContent(content));
+    } else {
+      textEditorState = EditorState.blank();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final pinEdit = ref.watch(pinEditProvider(widget.pin));
+    final pinEditNotifier = ref.watch(pinEditProvider(widget.pin).notifier);
     final labFeature = ref.watch(featuresProvider);
     bool isActive(f) => labFeature.isActive(f);
-    String? htmlText;
 
     if (!isActive(LabsFeature.pinsEditor)) {
       return Visibility(
@@ -270,22 +290,23 @@ class _PinDescriptionWidget extends ConsumerWidget {
           padding: const EdgeInsets.all(8.0),
           child: RenderHtml(
             key: PinItem.descriptionFieldKey,
-            text: descriptionController.text,
+            text: widget.descriptionController.text,
           ),
         ),
         child: Column(
           children: <Widget>[
             MdEditorWithPreview(
               key: PinItem.markdownEditorKey,
-              controller: descriptionController,
+              controller: widget.descriptionController,
             ),
             _ActionButtonsWidget(
-              pin: pin,
+              pin: widget.pin,
               onSave: () async {
-                if (formkey.currentState!.validate()) {
+                if (widget.formkey.currentState!.validate()) {
                   pinEditNotifier.setEditMode(false);
-                  pinEditNotifier.setMarkdown(descriptionController.text);
-                  pinEditNotifier.setLink(linkController.text);
+                  pinEditNotifier
+                      .setMarkdown(widget.descriptionController.text);
+                  pinEditNotifier.setLink(widget.linkController.text);
                   await pinEditNotifier.onSave();
                 }
               },
@@ -294,7 +315,6 @@ class _PinDescriptionWidget extends ConsumerWidget {
         ),
       );
     } else {
-      final content = pin.content();
       return Column(
         children: <Widget>[
           Container(
@@ -313,30 +333,25 @@ class _PinDescriptionWidget extends ConsumerWidget {
               key: PinItem.richTextEditorKey,
               shrinkWrap: true,
               editable: pinEdit.editMode,
-              editorState: content != null
-                  ? EditorState(
-                      document: ActerDocumentHelpers.fromMsgContent(content),
-                    )
-                  : null,
+              editorState: textEditorState,
               onChanged: (body, html) {
-                if (html != null) {
-                  htmlText = html;
-                }
-                descriptionController.text = body;
+                final document = html != null
+                    ? ActerDocumentHelpers.fromHtml(html)
+                    : ActerDocumentHelpers.fromMarkdown(body);
+                textEditorState = EditorState(document: document);
               },
             ),
           ),
           _ActionButtonsWidget(
-            pin: pin,
+            pin: widget.pin,
             onSave: () async {
-              if (formkey.currentState!.validate()) {
+              if (widget.formkey.currentState!.validate()) {
                 pinEditNotifier.setEditMode(false);
-                if (htmlText != null) {
-                  pinEditNotifier.setHtml(htmlText);
-                } else {
-                  pinEditNotifier.setMarkdown(descriptionController.text);
-                }
-                pinEditNotifier.setLink(linkController.text);
+                final htmlText = textEditorState.intoHtml();
+                final plainText = textEditorState.intoMarkdown();
+                pinEditNotifier.setHtml(htmlText);
+                pinEditNotifier.setMarkdown(plainText);
+                pinEditNotifier.setLink(widget.linkController.text);
                 await pinEditNotifier.onSave();
               }
             },

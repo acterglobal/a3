@@ -37,7 +37,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
   final TextEditingController _linkController = TextEditingController();
   final TextEditingController _textController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String? htmlText;
+  EditorState textEditorState = EditorState.blank();
 
   @override
   void initState() {
@@ -206,19 +206,16 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
               color: Theme.of(context).colorScheme.primaryContainer,
               borderRadius: BorderRadius.circular(12),
             ),
-            constraints:
-                BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
             child: HtmlEditor(
               editable: true,
               autoFocus: false,
-              shrinkWrap: true,
-              editorState: EditorState.blank(),
+              editorState: textEditorState,
               footer: const SizedBox(),
               onChanged: (body, html) {
-                if (html != null) {
-                  htmlText = html;
-                }
-                _textController.text = body;
+                final document = html != null
+                    ? ActerDocumentHelpers.fromHtml(html)
+                    : ActerDocumentHelpers.fromMarkdown(body);
+                textEditorState = EditorState(document: document);
               },
             ),
           ),
@@ -228,13 +225,19 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
   }
 
   bool hasLinkOrText() {
+    final htmlText = textEditorState.intoHtml();
+    final plainText = textEditorState.intoMarkdown();
+    final hasEditorText = htmlText.isNotEmpty || plainText.isNotEmpty;
     return _linkController.text.trim().isNotEmpty ||
-        _textController.text.trim().isNotEmpty;
+        _textController.text.trim().isNotEmpty ||
+        hasEditorText == true;
   }
 
   void _handleCreatePin() async {
     EasyLoading.show(status: 'Creating pin...');
     try {
+      final labFeature = ref.watch(featuresProvider);
+      bool isActive(f) => labFeature.isActive(f);
       final client = ref.read(alwaysClientProvider);
       final spaceId = ref.read(selectedSpaceIdProvider);
       final space = await ref.read(spaceProvider(spaceId!).future);
@@ -247,10 +250,13 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
         pinDraft.title(title);
       }
 
-      if (htmlText != null) {
-        pinDraft.contentHtml(text, htmlText!);
+      if (isActive(LabsFeature.pinsEditor)) {
+        final htmlText = textEditorState.intoHtml();
+        final plainText = textEditorState.intoMarkdown();
+        pinDraft.contentHtml(plainText, htmlText);
+      } else {
+        pinDraft.contentMarkdown(text);
       }
-      pinDraft.contentMarkdown(text);
 
       if (url.isNotEmpty) {
         pinDraft.url(url);
