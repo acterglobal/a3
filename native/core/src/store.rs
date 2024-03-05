@@ -221,9 +221,9 @@ impl Store {
                 }
 
                 for idz in remove_idzs {
-                    self.indizes
-                        .get(&idz)
-                        .map(|mut v| v.get_mut().retain(|k| k != &key));
+                    if let Some(mut v) = self.indizes.get(&idz) {
+                        v.get_mut().retain(|k| k != &key);
+                    }
                     keys_changed.push(idz);
                 }
             }
