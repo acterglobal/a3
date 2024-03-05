@@ -325,3 +325,51 @@ impl Store {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{models::TestModelBuilder, Result};
+    use anyhow::bail;
+    use env_logger;
+    use matrix_sdk::Client;
+    use matrix_sdk_base::store::{MemoryStore, StoreConfig};
+    use ruma_common::{api::MatrixVersion, event_id, user_id};
+    use ruma_events::room::message::TextMessageEventContent;
+
+    async fn fresh_store() -> Result<Store> {
+        let config = StoreConfig::default().state_store(MemoryStore::new());
+        let client = Client::builder()
+            .homeserver_url("http://localhost")
+            .server_versions([MatrixVersion::V1_5])
+            .store_config(config)
+            .build()
+            .await
+            .unwrap();
+
+        Ok(Store::new_with_auth(client, user_id!("@test:example.org").to_owned()).await?)
+    }
+
+    #[tokio::test]
+    async fn smoke_test() -> Result<()> {
+        let _ = env_logger::try_init();
+        let _ = fresh_store().await?;
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn save_and_get_one() -> anyhow::Result<()> {
+        let _ = env_logger::try_init();
+        let store = fresh_store().await?;
+        let model = TestModelBuilder::default().simple().build().unwrap();
+        let key = model.event_id().to_string();
+        let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
+        assert_eq!(vec![key.clone()], res_keys);
+        let mdl = store.get(&key).await?;
+        let AnyActerModel::TestModel(other) = mdl else {
+            bail!("Returned model isn't test model: {mdl:?}");
+        };
+        assert_eq!(model, other);
+        Ok(())
+    }
+}
