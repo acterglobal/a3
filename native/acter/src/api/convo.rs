@@ -224,7 +224,33 @@ impl Convo {
     }
 
     pub fn is_dm(&self) -> bool {
-        !self.inner.room.direct_targets().is_empty()
+        self.inner.room.direct_targets_length() > 0
+    }
+
+    pub fn is_favorite(&self) -> bool {
+        self.inner.room.is_favourite()
+    }
+
+    pub async fn set_favorite(&self, is_favorite: bool) -> Result<bool> {
+        let room = self.inner.room.clone();
+        Ok(RUNTIME
+            .spawn(async move {
+                room.set_is_favourite(is_favorite, None)
+                    .await
+                    .map(|()| true)
+            })
+            .await??)
+    }
+
+    pub fn is_low_priority(&self) -> bool {
+        self.inner.room.is_low_priority()
+    }
+
+    pub async fn permalink(&self) -> Result<String> {
+        let room = self.inner.room.clone();
+        Ok(RUNTIME
+            .spawn(async move { room.matrix_permalink(false).await.map(|u| u.to_string()) })
+            .await??)
     }
 
     pub fn dm_users(&self) -> Vec<String> {
