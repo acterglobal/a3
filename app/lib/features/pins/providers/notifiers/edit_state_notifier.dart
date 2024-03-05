@@ -93,13 +93,13 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
           await draft.send();
         }
         hasChanges = true;
+        // reset the selected attachment UI
+        ref.invalidate(selectedPinAttachmentsProvider);
       }
 
       if (hasChanges) {
         await updateBuilder.send();
         await pin.refresh();
-        // reset the selected attachment UI
-        ref.invalidate(selectedPinAttachmentsProvider);
         EasyLoading.showSuccess('Pin Updated Successfully');
       }
       EasyLoading.dismiss();

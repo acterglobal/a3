@@ -37,6 +37,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
   final TextEditingController _linkController = TextEditingController();
   final TextEditingController _textController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String? htmlText;
 
   @override
   void initState() {
@@ -145,7 +146,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
               color: Theme.of(context).colorScheme.neutral5,
             ),
             Text(
-              'Upload File',
+              'Upload Attachment',
               style: Theme.of(context)
                   .textTheme
                   .labelLarge!
@@ -215,7 +216,7 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
               footer: const SizedBox(),
               onChanged: (body, html) {
                 if (html != null) {
-                  _textController.text = html;
+                  htmlText = html;
                 }
                 _textController.text = body;
               },
@@ -246,13 +247,11 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
         pinDraft.title(title);
       }
 
-      if (text.isNotEmpty) {
-        if (isHTML(text)) {
-          pinDraft.contentHtml(text, text);
-        } else {
-          pinDraft.contentMarkdown(text);
-        }
+      if (htmlText != null) {
+        pinDraft.contentHtml(text, htmlText!);
       }
+      pinDraft.contentMarkdown(text);
+
       if (url.isNotEmpty) {
         pinDraft.url(url);
       }
@@ -303,11 +302,11 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
   }
 }
 
-// Attachment File UI widget
+// Attachment Item UI widget
 class _AttachmentItemWidget extends ConsumerWidget {
   const _AttachmentItemWidget(this.attachment);
 
-  final PinAttachment attachment;
+  final SelectedAttachment attachment;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

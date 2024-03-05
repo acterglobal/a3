@@ -57,4 +57,4 @@ final pinAttachmentsProvider = FutureProvider.family
 });
 
 final selectedPinAttachmentsProvider =
-    StateProvider.autoDispose<List<PinAttachment>>((ref) => []);
+    StateProvider.autoDispose<List<SelectedAttachment>>((ref) => []);

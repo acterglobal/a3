@@ -10,7 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 
-typedef PinAttachment = ({AttachmentType type, File file});
+typedef SelectedAttachment = ({AttachmentType type, File file});
 
 class PinUtils {
   // belongs separately, useful for showing file picker directly (desktop)
@@ -20,14 +20,14 @@ class PinUtils {
       allowMultiple: true,
     );
     if (result != null) {
-      List<PinAttachment> newAttachments =
-          result.paths.map<PinAttachment>((path) {
+      List<SelectedAttachment> newAttachments =
+          result.paths.map<SelectedAttachment>((path) {
         var file = File(path!);
         var pinAttachment = (type: AttachmentType.file, file: file);
         return pinAttachment;
       }).toList();
 
-      List<PinAttachment> attachments =
+      List<SelectedAttachment> attachments =
           ref.read(selectedPinAttachmentsProvider);
       var attachmentNotifier =
           ref.read(selectedPinAttachmentsProvider.notifier);
@@ -56,7 +56,7 @@ class PinUtils {
                     await ImagePicker().pickImage(source: ImageSource.camera);
                 if (imageFile != null) {
                   File file = File(imageFile.path);
-                  PinAttachment attachment =
+                  SelectedAttachment attachment =
                       (type: AttachmentType.camera, file: file);
                   ref
                       .read(selectedPinAttachmentsProvider.notifier)
@@ -65,16 +65,16 @@ class PinUtils {
               },
               onTapImage: () async {
                 List<XFile> imageFiles = await ImagePicker().pickMultiImage();
-                List<PinAttachment> newAttachments = [];
+                List<SelectedAttachment> newAttachments = [];
 
                 for (var imageFile in imageFiles) {
                   File file = File(imageFile.path);
-                  PinAttachment attachment =
+                  SelectedAttachment attachment =
                       (type: AttachmentType.image, file: file);
                   newAttachments.add(attachment);
                 }
 
-                List<PinAttachment> attachments =
+                List<SelectedAttachment> attachments =
                     ref.read(selectedPinAttachmentsProvider);
                 var attachmentNotifier =
                     ref.read(selectedPinAttachmentsProvider.notifier);
@@ -88,12 +88,12 @@ class PinUtils {
               onTapVideo: () async {
                 XFile? videoFile =
                     await ImagePicker().pickVideo(source: ImageSource.gallery);
-                List<PinAttachment> newAttachments = [];
+                List<SelectedAttachment> newAttachments = [];
                 if (videoFile != null) {
                   File file = File(videoFile.path);
                   newAttachments.add((type: AttachmentType.video, file: file));
                 }
-                List<PinAttachment> attachments =
+                List<SelectedAttachment> attachments =
                     ref.read(selectedPinAttachmentsProvider);
                 var attachmentNotifier =
                     ref.read(selectedPinAttachmentsProvider.notifier);
@@ -115,7 +115,7 @@ class PinUtils {
   static Future<List<AttachmentDraft>?> makeAttachmentDrafts(
     Client client,
     AttachmentsManager manager,
-    List<PinAttachment> attachments,
+    List<SelectedAttachment> attachments,
   ) async {
     List<AttachmentDraft> drafts = [];
     for (final attachment in attachments) {
