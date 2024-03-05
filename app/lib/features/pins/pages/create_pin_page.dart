@@ -247,7 +247,11 @@ class _CreatePinSheetConsumerState extends ConsumerState<CreatePinPage> {
       }
 
       if (text.isNotEmpty) {
-        pinDraft.contentMarkdown(text);
+        if (isHTML(text)) {
+          pinDraft.contentHtml(text, text);
+        } else {
+          pinDraft.contentMarkdown(text);
+        }
       }
       if (url.isNotEmpty) {
         pinDraft.url(url);

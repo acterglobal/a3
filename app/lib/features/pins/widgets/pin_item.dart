@@ -45,7 +45,7 @@ class _PinItemState extends ConsumerState<PinItem> {
   void _buildPinContent() {
     final content = widget.pin.content();
     String? formattedBody;
-    String markdown = 'No description';
+    String markdown = '';
     if (content != null) {
       if (content.formattedBody() != null) {
         formattedBody = content.formattedBody();
@@ -140,7 +140,7 @@ class _PinItemState extends ConsumerState<PinItem> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.all(8),
               child: Row(
                 children: [
                   Text('Attachments', style: attachmentTitleTextStyle),
@@ -262,9 +262,12 @@ class _PinDescriptionWidget extends ConsumerWidget {
     if (!isActive(LabsFeature.pinsEditor)) {
       return Visibility(
         visible: pinEdit.editMode,
-        replacement: RenderHtml(
-          key: PinItem.descriptionFieldKey,
-          text: descriptionController.text,
+        replacement: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: RenderHtml(
+            key: PinItem.descriptionFieldKey,
+            text: descriptionController.text,
+          ),
         ),
         child: Column(
           children: <Widget>[
@@ -288,48 +291,65 @@ class _PinDescriptionWidget extends ConsumerWidget {
       );
     } else {
       final content = pin.content();
-      return Column(
-        children: <Widget>[
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            decoration: BoxDecoration(
-              color: pinEdit.editMode
-                  ? Theme.of(context).colorScheme.primaryContainer
-                  : null,
-              borderRadius: BorderRadius.circular(12),
+      return Visibility(
+        visible: pinEdit.editMode,
+        replacement: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: RenderHtml(
+            key: PinItem.descriptionFieldKey,
+            text: descriptionController.text,
+          ),
+        ),
+        child: Column(
+          children: <Widget>[
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: pinEdit.editMode
+                    ? Theme.of(context).colorScheme.primaryContainer
+                    : null,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.4,
+              ),
+              child: HtmlEditor(
+                key: PinItem.richTextEditorKey,
+                shrinkWrap: true,
+                editable: true,
+                editorState: content != null
+                    ? EditorState(
+                        document: ActerDocumentHelpers.fromMsgContent(content),
+                      )
+                    : null,
+                onChanged: (body, html) {
+                  if (html != null) {
+                    debugPrint('$html');
+                    descriptionController.text = html;
+                  }
+                  descriptionController.text = body;
+                },
+              ),
             ),
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.4,
-            ),
-            child: HtmlEditor(
-              key: PinItem.richTextEditorKey,
-              editable: pinEdit.editMode,
-              editorState: content != null
-                  ? EditorState(
-                      document: ActerDocumentHelpers.fromMsgContent(content),
-                    )
-                  : null,
-              onChanged: (body, html) {
-                if (html != null) {
-                  descriptionController.text = html;
+            _ActionButtonsWidget(
+              pin: pin,
+              onSave: () async {
+                if (formkey.currentState!.validate()) {
+                  pinEditNotifier.setEditMode(false);
+                  if (isHTML(descriptionController.text)) {
+                    pinEditNotifier.setHtml(descriptionController.text);
+                  } else {
+                    pinEditNotifier.setMarkdown(descriptionController.text);
+                  }
+
+                  pinEditNotifier.setLink(linkController.text);
+                  await pinEditNotifier.onSave();
                 }
-                descriptionController.text = body;
               },
             ),
-          ),
-          _ActionButtonsWidget(
-            pin: pin,
-            onSave: () async {
-              if (formkey.currentState!.validate()) {
-                pinEditNotifier.setEditMode(false);
-                // pinEditNotifier.setHtml(descriptionController.text);
-                pinEditNotifier.setMarkdown(descriptionController.text);
-                pinEditNotifier.setLink(linkController.text);
-                await pinEditNotifier.onSave();
-              }
-            },
-          ),
-        ],
+          ],
+        ),
       );
     }
   }

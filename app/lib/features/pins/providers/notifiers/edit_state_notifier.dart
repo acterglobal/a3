@@ -67,9 +67,11 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
           hasChanges = true;
         }
 
-        if (state.html != null && content.formattedBody() != state.html) {
-          updateBuilder.contentHtml(state.markdown, state.html!);
-          hasChanges = true;
+        if (state.html != null) {
+          if (content.formattedBody() != state.html) {
+            updateBuilder.contentHtml(state.markdown, state.html!);
+            hasChanges = true;
+          }
         }
       }
 

@@ -269,6 +269,13 @@ List<String> asDartStringList(FfiListFfiString data) {
   return data.toList().map((e) => e.toDartString()).toList();
 }
 
+// check if string contains html tags
+bool isHTML(String str) {
+  final RegExp htmlRegExp =
+      RegExp('<[^>]*>', multiLine: true, caseSensitive: false);
+  return htmlRegExp.hasMatch(str);
+}
+
 // handler for mimetype icon for attached file
 Widget attachmentIconHandler(File file, double? size) {
   final mimeType = lookupMimeType(file.path);
