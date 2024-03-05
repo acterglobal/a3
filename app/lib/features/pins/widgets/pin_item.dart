@@ -325,7 +325,6 @@ class _PinDescriptionWidget extends ConsumerWidget {
                     : null,
                 onChanged: (body, html) {
                   if (html != null) {
-                    debugPrint('$html');
                     descriptionController.text = html;
                   }
                   descriptionController.text = body;
