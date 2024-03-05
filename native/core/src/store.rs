@@ -1,8 +1,9 @@
-use dashmap::{mapref::one::RefMut, DashMap, DashSet};
 use matrix_sdk::Client;
 use ruma_common::{OwnedUserId, UserId};
-use std::sync::Arc;
-use tracing::{debug, instrument, trace, warn};
+use scc::hash_map::{Entry, HashMap};
+use std::collections::HashSet as StdHashSet;
+use std::sync::{Arc, Mutex as StdMutex};
+use tracing::{debug, error, instrument, trace, warn};
 
 use crate::{
     models::{ActerModel, AnyActerModel},
@@ -13,9 +14,9 @@ use crate::{
 pub struct Store {
     pub(crate) client: Client,
     user_id: OwnedUserId,
-    models: Arc<DashMap<String, AnyActerModel>>,
-    indizes: Arc<DashMap<String, Vec<String>>>,
-    dirty: Arc<DashSet<String>>,
+    models: Arc<HashMap<String, AnyActerModel>>,
+    indizes: Arc<HashMap<String, Vec<String>>>,
+    dirty: Arc<StdMutex<StdHashSet<String>>>, // our key mutex;
 }
 
 static ALL_MODELS_KEY: &str = "ACTER::ALL";
@@ -129,8 +130,8 @@ impl Store {
             vec![]
         };
 
-        let indizes = DashMap::new();
-        let mut models_sources = Vec::new();
+        let indizes: HashMap<String, Vec<String>> = HashMap::new();
+        let models: HashMap<String, AnyActerModel> = HashMap::new();
         for m in models_vec {
             let Some(m) = m else {
                 // skip None's
@@ -138,13 +139,18 @@ impl Store {
             };
             let key = m.event_id().to_string();
             for idx in m.indizes(&user_id) {
-                let mut r: RefMut<String, Vec<String>> = indizes.entry(idx).or_default();
-                r.value_mut().push(key.clone())
+                match indizes.entry(idx) {
+                    Entry::Occupied(mut o) => {
+                        o.get_mut().push(key.clone());
+                    }
+                    Entry::Vacant(v) => {
+                        v.insert_entry(vec![key.clone()]);
+                    }
+                };
             }
-            models_sources.push((key, m));
+            // ignore duplicates
+            let _ = models.insert(key, m);
         }
-
-        let models = DashMap::from_iter(models_sources);
 
         Ok(Store {
             client,
@@ -158,7 +164,7 @@ impl Store {
     #[instrument(skip(self))]
     pub async fn get_list(&self, key: &str) -> Result<impl Iterator<Item = AnyActerModel>> {
         let listing = if let Some(r) = self.indizes.get(key) {
-            r.value().clone()
+            r.get().clone()
         } else {
             debug!(user=?self.user_id, key, "No list found");
             vec![]
@@ -166,18 +172,16 @@ impl Store {
         let models = self.models.clone();
         let res = listing
             .into_iter()
-            .filter_map(move |name| models.get(&name).map(|v| v.value().clone()));
+            .filter_map(move |name| models.get(&name).map(|v| v.get().clone()));
         Ok(res)
     }
 
     pub async fn get(&self, model_key: &str) -> Result<AnyActerModel> {
-        let m = self
-            .models
-            .get(model_key)
-            .ok_or_else(|| Error::ModelNotFound(model_key.to_owned()))?
-            .value()
-            .clone();
-        Ok(m)
+        let Some(o) = self.models.get_async(model_key).await else {
+            return Err(Error::ModelNotFound(model_key.to_owned()));
+        };
+
+        Ok(o.get().clone())
     }
 
     pub async fn get_many(&self, model_keys: Vec<String>) -> Vec<Option<AnyActerModel>> {
@@ -187,48 +191,69 @@ impl Store {
 
     #[instrument(skip(self))]
     async fn save_model_inner(&self, mdl: AnyActerModel) -> Result<Vec<String>> {
+        let mut dirty = self.dirty.lock()?; // hold the lock
+        let keys = self.model_inner_under_lock(mdl)?;
+        dirty.extend(keys.clone());
+        Ok(keys)
+    }
+
+    fn model_inner_under_lock(&self, mdl: AnyActerModel) -> Result<Vec<String>> {
         let key = mdl.event_id().to_string();
         let user_id = self.user_id();
         let mut keys_changed = vec![key.clone()];
         trace!(user = ?user_id, key, "saving");
         let mut indizes = mdl.indizes(user_id);
-        if let Some(prev) = self.models.insert(key.clone(), mdl) {
-            trace!(user=?self.user_id, key, "previous model found");
-            let mut remove_idzs = Vec::new();
-            for idz in prev.indizes(user_id) {
-                if let Some(idx) = indizes.iter().position(|i| i == &idz) {
-                    indizes.remove(idx);
-                } else {
-                    remove_idzs.push(idz)
-                }
+        match self.models.entry(key.clone()) {
+            Entry::Vacant(v) => {
+                v.insert_entry(mdl);
             }
+            Entry::Occupied(mut o) => {
+                trace!(user=?self.user_id, key, "previous model found");
+                let prev = o.insert(mdl);
 
-            for idz in remove_idzs {
-                if let Some(mut v) = self.indizes.get_mut(&idz) {
-                    v.value_mut().retain(|k| k != &key)
+                let mut remove_idzs = Vec::new();
+                for idz in prev.indizes(user_id) {
+                    if let Some(idx) = indizes.iter().position(|i| i == &idz) {
+                        indizes.remove(idx);
+                    } else {
+                        remove_idzs.push(idz)
+                    }
                 }
-                keys_changed.push(idz);
+
+                for idz in remove_idzs {
+                    self.indizes
+                        .get(&idz)
+                        .map(|mut v| v.get_mut().retain(|k| k != &key));
+                    keys_changed.push(idz);
+                }
             }
         }
+
         for idx in indizes.into_iter() {
-            trace!(user = ?self.user_id, idx, key, exists=self.indizes.contains_key(&idx), "adding to index");
-            self.indizes
-                .entry(idx.clone())
-                .or_default()
-                .value_mut()
-                .push(key.clone());
+            trace!(user = ?self.user_id, idx, key, exists=self.indizes.contains(&idx), "adding to index");
+            match self.indizes.entry(idx.clone()) {
+                Entry::Vacant(v) => {
+                    v.insert_entry(vec![key.clone()]);
+                }
+                Entry::Occupied(mut o) => {
+                    o.get_mut().push(key.clone());
+                }
+            }
             trace!(user = ?self.user_id, idx, key, "added to index");
             keys_changed.push(idx);
         }
         trace!(user=?self.user_id, key, ?keys_changed, "saved");
-        self.dirty.insert(key);
         Ok(keys_changed)
     }
 
     pub async fn save_many(&self, models: Vec<AnyActerModel>) -> Result<Vec<String>> {
         let mut total_list = Vec::new();
-        for mdl in models.into_iter() {
-            total_list.extend(self.save_model_inner(mdl).await?);
+        {
+            let mut dirty = self.dirty.lock()?; // hold the lock
+            for mdl in models.into_iter() {
+                total_list.extend(self.model_inner_under_lock(mdl)?);
+            }
+            dirty.extend(total_list.clone());
         }
         self.sync().await?; // FIXME: should we really run this every time?
         Ok(total_list)
@@ -241,39 +266,58 @@ impl Store {
     }
 
     async fn sync(&self) -> Result<()> {
-        trace!("sync");
-        let client_store = self.client.store();
-        let dirty = {
-            let keys = self
-                .dirty
+        trace!("sync start");
+        let (models_to_write, all_models) = {
+            trace!("preparing models");
+            // preparing for sync
+            let mut dirty = self.dirty.lock()?;
+            let models_to_write: Vec<(String, Vec<u8>)> = dirty
                 .iter()
-                .map(|k| k.key().to_owned())
-                .collect::<Vec<String>>();
-            self.dirty.clear(); // no lock, not good!
-            keys
+                .filter_map(|key| {
+                    if let Some(r) = self.models.get(key) {
+                        let raw = match serde_json::to_vec(r.get()) {
+                            Ok(r) => r,
+                            Err(error) => {
+                                error!(?key, ?error, "failed to serialize. skipping");
+                                return None;
+                            }
+                        };
+                        Some((format!("acter:{key}"), raw))
+                    } else {
+                        warn!(
+                            ?key,
+                            "Inconsistency error: key is missing from models. skipping"
+                        );
+                        None
+                    }
+                })
+                .collect();
+
+            let model_keys: Vec<String> = {
+                let mut model_keys: StdHashSet<String> = StdHashSet::new();
+                // deduplicate the model_keys;
+                self.models.scan(|k, _v| {
+                    model_keys.insert(k.clone());
+                });
+                model_keys.into_iter().collect()
+            };
+
+            dirty.clear(); // we clear the current set
+            trace!("preparation done");
+            (models_to_write, serde_json::to_vec(&model_keys)?)
         };
-        for key in dirty {
-            if let Some(r) = self.models.get(&key) {
-                trace!(?key, "syncing");
-                client_store
-                    .set_custom_value(
-                        format!("acter:{key}").as_bytes(),
-                        serde_json::to_vec(r.value())?,
-                    )
-                    .await?;
-            } else {
-                warn!(key, "Inconsistency error: key is missing");
+        trace!("store sync");
+        let client_store = self.client.store();
+        for (key, value) in models_to_write.into_iter() {
+            if let Err(error) = client_store.set_custom_value(key.as_bytes(), value).await {
+                error!(?key, ?error, "syncing model failed");
             }
         }
+        trace!("done store syncing");
 
         trace!("syncing all models");
-        let model_keys = self
-            .models
-            .iter()
-            .map(|v| v.key().clone())
-            .collect::<Vec<String>>();
         client_store
-            .set_custom_value(ALL_MODELS_KEY.as_bytes(), serde_json::to_vec(&model_keys)?)
+            .set_custom_value(ALL_MODELS_KEY.as_bytes(), all_models)
             .await?;
 
         trace!("sync done");
