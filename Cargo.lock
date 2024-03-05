@@ -132,6 +132,7 @@ dependencies = [
  "toml 0.8.8",
  "tracing",
  "url",
+ "uuid 1.6.1",
 ]
 
 [[package]]

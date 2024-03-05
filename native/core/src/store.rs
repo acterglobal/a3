@@ -221,9 +221,9 @@ impl Store {
                 }
 
                 for idz in remove_idzs {
-                    self.indizes
-                        .get(&idz)
-                        .map(|mut v| v.get_mut().retain(|k| k != &key));
+                    if let Some(mut v) = self.indizes.get(&idz) {
+                        v.get_mut().retain(|k| k != &key);
+                    }
                     keys_changed.push(idz);
                 }
             }
@@ -329,15 +329,18 @@ impl Store {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{models::TestModelBuilder, Result};
+    use crate::{
+        models::{TestModel, TestModelBuilder},
+        Result,
+    };
     use anyhow::bail;
     use env_logger;
     use matrix_sdk::Client;
     use matrix_sdk_base::store::{MemoryStore, StoreConfig};
-    use ruma_common::{api::MatrixVersion, event_id, user_id};
-    use ruma_events::room::message::TextMessageEventContent;
+    use ruma::{event_id, OwnedEventId};
+    use ruma_common::{api::MatrixVersion, user_id};
 
-    async fn fresh_store() -> Result<Store> {
+    async fn fresh_store_and_client() -> Result<(Store, Client)> {
         let config = StoreConfig::default().state_store(MemoryStore::new());
         let client = Client::builder()
             .homeserver_url("http://localhost")
@@ -347,7 +350,13 @@ mod tests {
             .await
             .unwrap();
 
-        Ok(Store::new_with_auth(client, user_id!("@test:example.org").to_owned()).await?)
+        Ok((
+            Store::new_with_auth(client.clone(), user_id!("@test:example.org").to_owned()).await?,
+            client,
+        ))
+    }
+    async fn fresh_store() -> Result<Store> {
+        Ok(fresh_store_and_client().await?.0)
     }
 
     #[tokio::test]
@@ -358,7 +367,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn save_and_get_one() -> anyhow::Result<()> {
+    async fn save_and_get_one_simple() -> anyhow::Result<()> {
         let _ = env_logger::try_init();
         let store = fresh_store().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
@@ -369,6 +378,292 @@ mod tests {
         let AnyActerModel::TestModel(other) = mdl else {
             bail!("Returned model isn't test model: {mdl:?}");
         };
+        assert_eq!(model, other);
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn save_and_get_many_simple() -> anyhow::Result<()> {
+        let _ = env_logger::try_init();
+        let store = fresh_store().await?;
+        let models: Vec<TestModel> = (0..5)
+            .map(|idx| {
+                TestModelBuilder::default()
+                    .simple()
+                    .event_id(OwnedEventId::try_from(format!("$ASDF{idx}")).unwrap())
+                    .build()
+                    .unwrap()
+            })
+            .collect();
+        let res_keys = store
+            .save_many(
+                models
+                    .iter()
+                    .map(|m| AnyActerModel::TestModel(m.clone()))
+                    .collect(),
+            )
+            .await?;
+        assert_eq!(
+            models
+                .iter()
+                .map(|m| m.event_id().to_string())
+                .collect::<Vec<String>>(),
+            res_keys
+        );
+
+        let loaded_models = store
+            .get_many(
+                models
+                    .iter()
+                    .map(|m| m.event_id().to_string())
+                    .collect::<Vec<String>>(),
+            )
+            .await
+            .into_iter()
+            .filter_map(|m| match m {
+                Some(AnyActerModel::TestModel(inner)) => Some(inner),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(models, loaded_models);
+
+        for model in models.into_iter() {
+            let key = model.event_id().to_string();
+            let mdl = store.get(&key).await?;
+            let AnyActerModel::TestModel(other) = mdl else {
+                bail!("Returned model isn't test model: {mdl:?}");
+            };
+            assert_eq!(model, other);
+        }
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn save_and_get_one_from_index() -> anyhow::Result<()> {
+        let _ = env_logger::try_init();
+        let store = fresh_store().await?;
+        let model = TestModelBuilder::default()
+            .simple()
+            .indizes(vec!["indexA".to_owned(), "index::b".to_owned()])
+            .build()
+            .unwrap();
+        let key = model.event_id().to_string();
+        let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
+        assert_eq!(
+            vec![key.clone(), "indexA".to_owned(), "index::b".to_owned()],
+            res_keys
+        );
+        let mdl = store.get(&key).await?;
+        let AnyActerModel::TestModel(other) = mdl else {
+            bail!("Returned model isn't test model: {mdl:?}");
+        };
+        assert_eq!(model, other);
+
+        let mut index = store.get_list("indexA").await?;
+        let Some(AnyActerModel::TestModel(other)) = index.next() else {
+            bail!("Returned model isn't test model.");
+        };
+        assert!(index.next().is_none()); // and nothing else
+        assert_eq!(model, other);
+
+        let mut index = store.get_list("index::b").await?;
+        let Some(AnyActerModel::TestModel(other)) = index.next() else {
+            bail!("Returned model isn't test model.");
+        };
+        assert!(index.next().is_none()); // and nothing else
+        assert_eq!(model, other);
+
+        let mut index = store.get_list("empty_index").await?;
+        assert!(index.next().is_none()); // and nothing here
+        assert_eq!(model, other);
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn add_get_one_to_index() -> anyhow::Result<()> {
+        let _ = env_logger::try_init();
+        let store = fresh_store().await?;
+        let model = TestModelBuilder::default()
+            .simple()
+            .indizes(vec!["indexA".to_owned()])
+            .build()
+            .unwrap();
+        let key = model.event_id().to_string();
+        let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
+        assert_eq!(vec![key.clone(), "indexA".to_owned()], res_keys);
+
+        let mut index = store.get_list("indexA").await?;
+        let Some(AnyActerModel::TestModel(other)) = index.next() else {
+            bail!("Returned model isn't test model.");
+        };
+        assert!(index.next().is_none()); // and nothing else
+        assert_eq!(model, other);
+
+        let second_model = TestModelBuilder::default()
+            .simple()
+            .event_id(OwnedEventId::try_from("$secondModel").unwrap())
+            .indizes(vec!["indexA".to_owned()])
+            .build()
+            .unwrap();
+        let key = second_model.event_id().to_string();
+        let res_keys = store
+            .save(AnyActerModel::TestModel(second_model.clone()))
+            .await?;
+        assert_eq!(vec![key.clone(), "indexA".to_owned()], res_keys);
+
+        let mut index = store.get_list("indexA").await?;
+        let Some(AnyActerModel::TestModel(other)) = index.next() else {
+            bail!("Returned model isn't test model.");
+        };
+        assert_eq!(model, other);
+
+        let Some(AnyActerModel::TestModel(other)) = index.next() else {
+            bail!("Returned model isn't test model.");
+        };
+        assert_eq!(second_model, other);
+
+        assert!(index.next().is_none()); // and nothing else
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn model_changed_index() -> anyhow::Result<()> {
+        let _ = env_logger::try_init();
+        let e_id = event_id!("$asdfAsdf");
+        let store = fresh_store().await?;
+        {
+            let model = TestModelBuilder::default()
+                .simple()
+                .event_id(e_id.to_owned())
+                .indizes(vec!["indexA".to_owned(), "index::b".to_owned()])
+                .build()
+                .unwrap();
+            let key = model.event_id().to_string();
+            let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
+            assert_eq!(
+                vec![key.clone(), "indexA".to_owned(), "index::b".to_owned()],
+                res_keys
+            );
+            let mdl = store.get(&key).await?;
+            let AnyActerModel::TestModel(other) = mdl else {
+                bail!("Returned model isn't test model: {mdl:?}");
+            };
+            assert_eq!(model, other);
+
+            let mut index = store.get_list("indexA").await?;
+            let Some(AnyActerModel::TestModel(other)) = index.next() else {
+                bail!("Returned model isn't test model.");
+            };
+            assert!(index.next().is_none()); // and nothing else
+            assert_eq!(model, other);
+
+            let mut index = store.get_list("index::b").await?;
+            let Some(AnyActerModel::TestModel(other)) = index.next() else {
+                bail!("Returned model isn't test model.");
+            };
+            assert!(index.next().is_none()); // and nothing else
+            assert_eq!(model, other);
+
+            let mut index = store.get_list("new_index").await?;
+            assert!(index.next().is_none()); // and nothing here
+            assert_eq!(model, other);
+        }
+        {
+            // overwriting the indexes with a new set
+            let model = TestModelBuilder::default()
+                .simple()
+                .event_id(e_id.to_owned())
+                .indizes(vec!["new_index".to_owned()])
+                .build()
+                .unwrap();
+            let key = model.event_id().to_string();
+            // we overwrite this
+            let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
+            assert_eq!(
+                vec![
+                    key.clone(),
+                    "indexA".to_owned(),
+                    "index::b".to_owned(),
+                    "new_index".to_owned()
+                ],
+                res_keys
+            );
+            let mut index = store.get_list("indexA").await?;
+            assert!(index.next().is_none()); // empty now
+
+            let mut index = store.get_list("index::b").await?;
+            assert!(index.next().is_none()); // empty now
+
+            // only via our new index
+            let mut index = store.get_list("new_index").await?;
+            let Some(AnyActerModel::TestModel(other)) = index.next() else {
+                bail!("Returned model isn't test model.");
+            };
+            assert!(index.next().is_none()); // and nothing else
+            assert_eq!(model, other);
+        }
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn recover() -> anyhow::Result<()> {
+        let _ = env_logger::try_init();
+        let (client, model) = {
+            let (store, client) = fresh_store_and_client().await?;
+            let model = TestModelBuilder::default()
+                .simple()
+                .indizes(vec!["test_index".to_owned()])
+                .build()
+                .unwrap();
+            let key = model.event_id().to_string();
+            let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
+            assert_eq!(vec![key.clone(), "test_index".to_owned()], res_keys);
+            let mdl = store.get(&key).await?;
+            let AnyActerModel::TestModel(other) = mdl else {
+                bail!("Returned model isn't test model: {mdl:?}");
+            };
+            assert_eq!(model, other);
+            (client, model)
+        };
+
+        // let's attempt to recover
+        let store =
+            Store::new_with_auth(client.clone(), user_id!("@test:example.org").to_owned()).await?;
+
+        // and we should be able to get it again.
+        let mdl = store.get(model.event_id().as_ref()).await?;
+        let AnyActerModel::TestModel(other) = mdl else {
+            bail!("Returned model isn't test model: {mdl:?}");
+        };
+        assert_eq!(model, other);
+
+        // now recover from the the index!
+
+        let mut index = store.get_list("test_index").await?;
+        let Some(AnyActerModel::TestModel(other)) = index.next() else {
+            bail!("Returned model isn't test model.");
+        };
+        assert!(index.next().is_none()); // and nothing else
+        assert_eq!(model, other);
+
+        let mut index = store.get_list("empty_index").await?;
+        assert!(index.next().is_none()); // and nothing here
+        assert_eq!(model, other);
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn save_and_get_raw_simple() -> anyhow::Result<()> {
+        let _ = env_logger::try_init();
+        let store = fresh_store().await?;
+        let model = vec!["Just a simple string".to_owned()];
+        let key = "random key we use";
+        store.set_raw(key, &model).await?;
+        let other: Vec<String> = store.get_raw(key).await?;
         assert_eq!(model, other);
         Ok(())
     }

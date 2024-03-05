@@ -65,6 +65,7 @@ default-features = false
 anyhow = "1.0.79"
 env_logger = "0.10.0"
 tracing = { version = "0.1.40", default-features = false, features = ["log"] }
+uuid = { version = "1.6.1", features = ["v4"] }
 
 [dev-dependencies.matrix-sdk]
 workspace = true
