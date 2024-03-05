@@ -30,7 +30,12 @@ class PinListItemById extends ConsumerWidget {
         showSpace: showSpace,
       ),
       error: (err, st) => Text('Error loading pin ${err.toString()}'),
-      loading: () => const Skeletonizer(child: SizedBox()),
+      loading: () => const Skeletonizer(
+        child: SizedBox(
+          height: 100,
+          width: 100,
+        ),
+      ),
     );
   }
 }
@@ -55,6 +60,20 @@ class _PinListItemConsumerState extends ConsumerState<PinListItem> {
   void initState() {
     super.initState();
     _buildPinContent();
+  }
+
+  // keeps list item up-to-date with pin changes
+  @override
+  void didUpdateWidget(PinListItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final oldContent = oldWidget.pin.content();
+    final newContent = widget.pin.content();
+    if (oldContent != null && newContent != null) {
+      if (oldContent.body() != newContent.body()) {
+        _buildPinContent();
+        setState(() {});
+      }
+    }
   }
 
   void _buildPinContent() async {

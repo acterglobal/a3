@@ -88,12 +88,7 @@ class _PinItemState extends ConsumerState<PinItem> {
               formkey: _formkey,
             ),
             const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                _buildAttachmentList(),
-              ],
-            ),
+            _buildAttachmentList(),
           ],
         ),
       ),
@@ -293,55 +288,48 @@ class _PinDescriptionWidget extends ConsumerWidget {
       );
     } else {
       final content = pin.content();
-      return Visibility(
-        visible: pinEdit.editMode,
-        replacement: RenderHtml(
-          key: PinItem.descriptionFieldKey,
-          text: descriptionController.text,
-        ),
-        child: Column(
-          children: <Widget>[
-            Container(
-              height: MediaQuery.of(context).size.height * 0.6,
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              decoration: BoxDecoration(
-                color: pinEdit.editMode
-                    ? Theme.of(context).colorScheme.primaryContainer
-                    : null,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              constraints:
-                  BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
-              child: HtmlEditor(
-                key: PinItem.richTextEditorKey,
-                editable: true,
-                editorState: content != null
-                    ? EditorState(
-                        document: ActerDocumentHelpers.fromMsgContent(content),
-                      )
-                    : null,
-                onChanged: (body, html) {
-                  if (html != null) {
-                    descriptionController.text = html;
-                  }
-                  descriptionController.text = body;
-                },
-              ),
+      return Column(
+        children: <Widget>[
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            decoration: BoxDecoration(
+              color: pinEdit.editMode
+                  ? Theme.of(context).colorScheme.primaryContainer
+                  : null,
+              borderRadius: BorderRadius.circular(12),
             ),
-            _ActionButtonsWidget(
-              pin: pin,
-              onSave: () async {
-                if (formkey.currentState!.validate()) {
-                  pinEditNotifier.setEditMode(false);
-                  pinEditNotifier.setHtml(descriptionController.text);
-                  pinEditNotifier.setMarkdown(descriptionController.text);
-                  pinEditNotifier.setLink(linkController.text);
-                  await pinEditNotifier.onSave();
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.4,
+            ),
+            child: HtmlEditor(
+              key: PinItem.richTextEditorKey,
+              editable: pinEdit.editMode,
+              editorState: content != null
+                  ? EditorState(
+                      document: ActerDocumentHelpers.fromMsgContent(content),
+                    )
+                  : null,
+              onChanged: (body, html) {
+                if (html != null) {
+                  descriptionController.text = html;
                 }
+                descriptionController.text = body;
               },
             ),
-          ],
-        ),
+          ),
+          _ActionButtonsWidget(
+            pin: pin,
+            onSave: () async {
+              if (formkey.currentState!.validate()) {
+                pinEditNotifier.setEditMode(false);
+                // pinEditNotifier.setHtml(descriptionController.text);
+                pinEditNotifier.setMarkdown(descriptionController.text);
+                pinEditNotifier.setLink(linkController.text);
+                await pinEditNotifier.onSave();
+              }
+            },
+          ),
+        ],
       );
     }
   }
