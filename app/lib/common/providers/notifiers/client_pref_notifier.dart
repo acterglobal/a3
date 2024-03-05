@@ -5,6 +5,7 @@
 /// will store the current value under `$currentDeviceId-$prefKey` in the system
 /// preference allowing the app to save and restore local app settings.
 ///
+library;
 
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';

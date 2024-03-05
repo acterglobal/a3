@@ -66,8 +66,9 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
 
     if (ref.watch(hasRoomFilters)) {
       String subFiltered = 'chats';
-      switch (ref
-          .watch(roomListFilterProvider.select((value) => value.selection))) {
+      final selection =
+          ref.watch(roomListFilterProvider.select((value) => value.selection));
+      switch (selection) {
         case FilterSelection.dmsOnly:
           subFiltered = 'DMs';
           break;
@@ -76,7 +77,6 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
         default:
           break;
       }
-      ;
 
       final searchTerm =
           ref.watch(roomListFilterProvider.select((value) => value.searchTerm));
@@ -255,7 +255,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
               child: _isSearchVisible
                   ? Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
+                          horizontal: 16, vertical: 10,),
                       child: filterBox(context),
                     )
                   : const SizedBox.shrink(),
