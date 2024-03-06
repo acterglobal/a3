@@ -1,0 +1,1 @@
+-[feature]: Pins Editing now supports Appflowy in-line editing as default, and have been migrated from Acter labs.
