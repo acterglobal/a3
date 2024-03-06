@@ -2688,6 +2688,9 @@ object SessionManager {
     /// Trigger verification of another device
     /// returns flow id of verification
     fn request_verification(dev_id: string) -> Future<Result<string>>;
+
+    /// Terminate verification of another device
+    fn terminate_verification(flow_id: string) -> Future<Result<bool>>;
 }
 
 //  ########  ######## ##     ## ####  ######  ########  ######  

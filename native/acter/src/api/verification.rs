@@ -1079,6 +1079,27 @@ impl SessionManager {
             })
             .await?
     }
+
+    pub async fn terminate_verification(&self, flow_id: String) -> Result<bool> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let user_id = client
+                    .user_id()
+                    .context("You must be logged in to do that")?;
+                let Some(request) = client
+                    .encryption()
+                    .get_verification_request(user_id, flow_id)
+                    .await
+                else {
+                    // request may be timed out
+                    bail!("Could not get verification request")
+                };
+                request.cancel().await?;
+                Ok(true)
+            })
+            .await?
+    }
 }
 
 impl Client {
