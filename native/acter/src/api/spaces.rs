@@ -814,7 +814,7 @@ impl Client {
     }
 
     pub async fn space(&self, room_id_or_alias: String) -> Result<Space> {
-        let either = RoomOrAliasId::parse(room_id_or_alias.as_str())?;
+        let either = RoomOrAliasId::parse(&room_id_or_alias)?;
         if either.is_room_id() {
             let room_id = RoomId::parse(either.as_str())?;
             self.space_typed(&room_id)

@@ -131,7 +131,8 @@ impl Client {
 
                 let room_network = RoomNetwork::Matrix;
                 let server = if let Some(name) = server {
-                    Some(ServerName::parse(name.as_str())?)
+                    let server_name = ServerName::parse(&name)?;
+                    Some(server_name)
                 } else {
                     None
                 };
