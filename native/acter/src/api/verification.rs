@@ -1068,8 +1068,8 @@ impl SessionManager {
                 else {
                     bail!("Could not get device from encryption")
                 };
-                let is_verified = device.is_cross_signed_by_owner()
-                    || device.is_verified_with_cross_signing();
+                let is_verified =
+                    device.is_cross_signed_by_owner() || device.is_verified_with_cross_signing();
                 if !is_verified {
                     let request = device.request_verification().await?;
                     info!("requested verification - flow_id: {}", request.flow_id());
