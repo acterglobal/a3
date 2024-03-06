@@ -1,8 +1,8 @@
 use derive_builder::Builder;
-use ruma_common::{
-    event_id, room_id, user_id, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, UserId,
-};
+use ruma::OwnedRoomId;
+use ruma_common::{user_id, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, UserId};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta};
 use crate::{store::Store, Result};
@@ -27,11 +27,14 @@ impl TestModelBuilder {
     }
 
     pub fn fake_meta() -> EventMeta {
+        let ev = Uuid::new_v4().hyphenated().to_string();
+        let room_id = Uuid::new_v4().hyphenated().to_string();
+
         EventMeta {
-            event_id: event_id!("$ASDas29ak").to_owned(),
+            event_id: OwnedEventId::try_from(format!("${ev}")).unwrap(),
             sender: user_id!("@test:example.org").to_owned(),
             origin_server_ts: MilliSecondsSinceUnixEpoch(123567890u32.into()),
-            room_id: room_id!("!5678ijhgasdf093:Asdfa").to_owned(),
+            room_id: OwnedRoomId::try_from(format!("!{room_id}:example.org")).unwrap(),
         }
     }
 }
