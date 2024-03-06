@@ -72,7 +72,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
           title = 'DMs';
           break;
         case FilterSelection.favorites:
-          title = 'Favorites';
+          title = 'Bookmarked';
         default:
           break;
       }
@@ -91,9 +91,13 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
         ref.watch(roomListFilterProvider.select((value) => value.searchTerm));
     if (searchTerm != null && searchTerm.isNotEmpty) {
       searchFilterText = "Search result for '$searchTerm'..";
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Text(searchFilterText),
+      );
+    } else {
+      return const SizedBox.shrink();
     }
-
-    return Text(searchFilterText);
   }
 
   Widget filterBox(BuildContext context) {
@@ -144,7 +148,6 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Expanded(child: searchTerms(context)),
             if (hasFilters)
               TextButton(
                 onPressed: () {
@@ -197,7 +200,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
           const SizedBox(width: 10),
           FilterChip(
             selected: selected == FilterSelection.favorites,
-            label: const Text('Favorites'),
+            label: const Text('Bookmarked'),
             onSelected: (value) async {
               await ref
                   .read(roomListFilterProvider.notifier)
@@ -296,6 +299,9 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
                     )
                   : const SizedBox.shrink(),
             ),
+          ),
+          SliverToBoxAdapter(
+            child: searchTerms(context),
           ),
           SliverToBoxAdapter(
             child: client.isGuest()
