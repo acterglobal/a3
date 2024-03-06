@@ -50,6 +50,10 @@ impl AttachmentsManager {
         }
     }
 
+    pub fn event_id(&self) -> OwnedEventId {
+        self.event_id.clone()
+    }
+
     pub async fn attachments(&self) -> Result<Vec<Attachment>> {
         let attachments = self
             .store

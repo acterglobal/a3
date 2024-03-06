@@ -2,7 +2,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
 import 'package:acter/common/widgets/checkbox_form_field.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
-import 'package:acter/common/widgets/side_sheet.dart';
+import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter/features/settings/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/features/settings/super_invites/widgets/to_join_room.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
@@ -60,7 +60,7 @@ class _CreateSuperInviteTokenPageConsumerState
 
   @override
   Widget build(BuildContext context) {
-    return SideSheet(
+    return SliverScaffold(
       header: isEdit ? 'Edit Invite Code' : 'Create Invite Code',
       addActions: true,
       body: Form(

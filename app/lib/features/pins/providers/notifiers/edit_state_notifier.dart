@@ -1,4 +1,7 @@
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/pins/models/pin_edit_state/pin_edit_state.dart';
+import 'package:acter/features/pins/pin_utils/pin_utils.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -57,23 +60,49 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
           hasChanges = true;
         }
       }
-      final content = pin.content()!;
-      if (content.body() != state.markdown) {
-        updateBuilder.contentMarkdown(state.markdown);
-        hasChanges = true;
-      }
+      final content = pin.content();
+      if (content != null) {
+        if (content.body() != state.markdown) {
+          updateBuilder.contentMarkdown(state.markdown);
+          hasChanges = true;
+        }
 
-      if (state.html != null && content.formattedBody() != state.html) {
-        updateBuilder.contentHtml(state.markdown, state.html!);
-        hasChanges = true;
+        if (state.html != null) {
+          if (content.formattedBody() != state.html) {
+            updateBuilder.contentHtml(state.markdown, state.html!);
+            hasChanges = true;
+          }
+        }
       }
 
       if (hasChanges) {
         await updateBuilder.send();
-        await pin.refresh();
-        EasyLoading.showSuccess('Pin Updated Successfully');
       }
-      EasyLoading.dismiss();
+
+      // have it after pin sent over the wire, don't have attachments dependent
+      // on above api success
+      final client = ref.read(alwaysClientProvider);
+      final selectedAttachments = ref.read(selectedPinAttachmentsProvider);
+      final manager = await pin.attachments();
+      if (selectedAttachments.isNotEmpty) {
+        EasyLoading.show(status: 'Sending attachments');
+        final drafts = await PinUtils.makeAttachmentDrafts(
+          client,
+          manager,
+          selectedAttachments,
+        );
+        if (drafts == null) {
+          EasyLoading.showError('Error sending attachments');
+          return;
+        }
+        for (final draft in drafts) {
+          await draft.send();
+        }
+        // reset the selected attachment UI
+        ref.invalidate(selectedPinAttachmentsProvider);
+      }
+      await pin.refresh();
+      EasyLoading.showSuccess('Pin Updated Successfully');
     } catch (e) {
       EasyLoading.showError('Error saving changes: ${e.toString()}');
     }

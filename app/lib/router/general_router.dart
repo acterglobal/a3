@@ -13,7 +13,7 @@ import 'package:acter/features/onboarding/pages/intro_profile.dart';
 import 'package:acter/features/onboarding/pages/login_page.dart';
 import 'package:acter/features/onboarding/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/start_page.dart';
-import 'package:acter/features/pins/sheets/create_pin_sheet.dart';
+import 'package:acter/features/pins/pages/create_pin_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/settings/super_invites/pages/create.dart';
 import 'package:acter/features/space/sheets/edit_space_sheet.dart';
@@ -96,23 +96,43 @@ List<RouteBase> makeGeneralRoutes() {
       name: Routes.actionAddPin.name,
       path: Routes.actionAddPin.route,
       pageBuilder: (context, state) {
-        return SideSheetPage(
-          key: state.pageKey,
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween(
-                begin: const Offset(1, 0),
-                end: const Offset(0, 0),
-              ).animate(
-                animation,
-              ),
-              child: child,
-            );
-          },
-          child: CreatePinSheet(
-            initialSelectedSpace: state.uri.queryParameters['spaceId'],
-          ),
-        );
+        return isLargeScreen(context)
+            ? SideSheetPage(
+                key: state.pageKey,
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return SlideTransition(
+                    position: Tween(
+                      begin: const Offset(1, 0),
+                      end: const Offset(0, 0),
+                    ).animate(
+                      animation,
+                    ),
+                    child: child,
+                  );
+                },
+                child: CreatePinPage(
+                  initialSelectedSpace: state.uri.queryParameters['spaceId'],
+                ),
+              )
+            : CustomTransitionPage(
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  var begin = const Offset(0.0, 1.0);
+                  var end = Offset.zero;
+                  var curve = Curves.easeInOut;
+                  var tween = Tween(begin: begin, end: end)
+                      .chain(CurveTween(curve: curve));
+                  var offsetAnimation = animation.drive(tween);
+                  return SlideTransition(
+                    position: offsetAnimation,
+                    child: child,
+                  );
+                },
+                child: CreatePinPage(
+                  initialSelectedSpace: state.uri.queryParameters['spaceId'],
+                ),
+              );
       },
     ),
     GoRoute(

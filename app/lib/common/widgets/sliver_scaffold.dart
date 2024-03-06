@@ -1,7 +1,7 @@
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
-class SideSheet extends StatelessWidget {
+class SliverScaffold extends StatelessWidget {
   final String header;
   final Widget? body;
   final List<Widget>? delegates;
@@ -10,8 +10,8 @@ class SideSheet extends StatelessWidget {
   final bool addActions;
   final bool addDivider;
   final Key? confirmActionKey;
-  final String confirmActionTitle;
-  final String cancelActionTitle;
+  final String? confirmActionTitle;
+  final String? cancelActionTitle;
   final String? closeButtonTooltip;
   final String? backButtonTooltip;
   final List<Widget>? actions;
@@ -19,9 +19,9 @@ class SideSheet extends StatelessWidget {
   final void Function()? confirmActionOnPressed;
   final void Function()? cancelActionOnPressed;
 
-  static const closeKey = Key('sidesheet-close');
+  static const closeKey = Key('sliver-scaffold-close');
 
-  const SideSheet({
+  const SliverScaffold({
     super.key,
     required this.header,
     this.body,
@@ -42,7 +42,6 @@ class SideSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -54,12 +53,6 @@ class SideSheet extends StatelessWidget {
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         body: Container(
-          constraints: BoxConstraints(
-            minWidth: 256,
-            maxWidth: size.width <= 600 ? size.width : 400,
-            minHeight: size.height,
-            maxHeight: size.height,
-          ),
           // keep space shell top bar to prevent us being covered by front-camera etc.
           padding: const EdgeInsets.only(top: 12),
           child: CustomScrollView(
@@ -68,7 +61,7 @@ class SideSheet extends StatelessWidget {
               SliverList(
                 delegate: SliverChildListDelegate(
                   [
-                    _SheetHeader(
+                    _SliverHeader(
                       header: header,
                       addBackIconButton: addBackIconButton,
                       addCloseIconButton: addCloseIconButton,
@@ -84,7 +77,7 @@ class SideSheet extends StatelessWidget {
                 hasScrollBody: false,
                 child: Visibility(
                   visible: addActions,
-                  child: _SheetFooter(
+                  child: _SliverFooter(
                     addDivider: addDivider,
                     confirmActionTitle: confirmActionTitle,
                     confirmActionKey: confirmActionKey,
@@ -103,14 +96,14 @@ class SideSheet extends StatelessWidget {
   }
 }
 
-class _SheetHeader extends StatelessWidget {
+class _SliverHeader extends StatelessWidget {
   final String header;
   final bool addBackIconButton;
   final bool addCloseIconButton;
   final String? backButtonTooltip;
   final String? closeButtonTooltip;
 
-  const _SheetHeader({
+  const _SliverHeader({
     required this.header,
     required this.addBackIconButton,
     required this.addCloseIconButton,
@@ -156,7 +149,7 @@ class _SheetHeader extends StatelessWidget {
                 Navigator.pop(context);
               },
               tooltip: closeButtonTooltip,
-              icon: const Icon(Icons.close, key: SideSheet.closeKey),
+              icon: const Icon(Icons.close, key: SliverScaffold.closeKey),
             ),
           ),
         ],
@@ -165,17 +158,17 @@ class _SheetHeader extends StatelessWidget {
   }
 }
 
-class _SheetFooter extends StatelessWidget {
+class _SliverFooter extends StatelessWidget {
   final bool addDivider;
   final Key? confirmActionKey;
-  final String confirmActionTitle;
-  final String cancelActionTitle;
+  final String? confirmActionTitle;
+  final String? cancelActionTitle;
   final List<Widget>? actions;
 
   final void Function()? confirmActionOnPressed;
   final void Function()? cancelActionOnPressed;
 
-  const _SheetFooter({
+  const _SliverFooter({
     required this.addDivider,
     required this.confirmActionTitle,
     required this.cancelActionTitle,
@@ -200,22 +193,24 @@ class _SheetFooter extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: actions ??
                 [
-                  OutlinedButton(
-                    onPressed: () {
-                      if (cancelActionOnPressed == null) {
-                        Navigator.pop(context);
-                      } else {
-                        cancelActionOnPressed!();
-                      }
-                    },
-                    child: Text(cancelActionTitle),
-                  ),
+                  if (cancelActionTitle != null)
+                    OutlinedButton(
+                      onPressed: () {
+                        if (cancelActionOnPressed == null) {
+                          Navigator.pop(context);
+                        } else {
+                          cancelActionOnPressed!();
+                        }
+                      },
+                      child: Text(cancelActionTitle!),
+                    ),
                   const SizedBox(width: 12),
-                  ElevatedButton(
-                    key: confirmActionKey,
-                    onPressed: confirmActionOnPressed,
-                    child: Text(confirmActionTitle),
-                  ),
+                  if (confirmActionTitle != null)
+                    ElevatedButton(
+                      key: confirmActionKey,
+                      onPressed: confirmActionOnPressed,
+                      child: Text(confirmActionTitle!),
+                    ),
                 ],
           ),
         ),

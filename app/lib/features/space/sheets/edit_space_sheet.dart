@@ -6,7 +6,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
-import 'package:acter/common/widgets/side_sheet.dart';
+import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
@@ -75,7 +75,7 @@ class _EditSpacePageConsumerState extends ConsumerState<EditSpacePage> {
     final avatarUpload = ref.watch(editAvatarProvider);
     final avatarNotifier = ref.watch(editAvatarProvider.notifier);
     ref.watch(editTopicProvider);
-    return SideSheet(
+    return SliverScaffold(
       header: 'Edit Space',
       addActions: true,
       body: Padding(
