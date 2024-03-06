@@ -99,20 +99,20 @@ impl VerificationEvent {
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(Verification::SasV1(sas)) = client
+                let Some(Verification::SasV1(sas)) = client
                     .encryption()
                     .get_verification(&sender, &flow_id)
                     .await
-                {
-                    let items = sas.emoji().context("No emojis found. Aborted.")?;
-                    let sequence = items
-                        .iter()
-                        .filter_map(VerificationEmoji::new)
-                        .collect::<Vec<VerificationEmoji>>();
-                    return Ok(sequence);
-                }
-                // request may be timed out
-                bail!("Could not get verification object");
+                else {
+                    // request may be timed out
+                    bail!("Could not get verification object")
+                };
+                let items = sas.emoji().context("No emojis found. Aborted.")?;
+                let sequence = items
+                    .iter()
+                    .filter_map(VerificationEmoji::new)
+                    .collect::<Vec<VerificationEmoji>>();
+                Ok(sequence)
             })
             .await?
     }
@@ -124,18 +124,18 @@ impl VerificationEvent {
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(request) = client
+                let Some(request) = client
                     .encryption()
                     .get_verification_request(&sender, &flow_id)
                     .await
-                {
-                    tokio::spawn(request_verification_handler(
-                        client, controller, request, flow_id, sender, None,
-                    ));
-                    return Ok(true);
-                }
-                // request may be timed out
-                bail!("Could not get verification request");
+                else {
+                    // request may be timed out
+                    bail!("Could not get verification request")
+                };
+                tokio::spawn(request_verification_handler(
+                    client, controller, request, flow_id, sender, None,
+                ));
+                Ok(true)
             })
             .await?
     }
@@ -146,16 +146,16 @@ impl VerificationEvent {
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(request) = client
+                let Some(request) = client
                     .encryption()
                     .get_verification_request(&sender, &flow_id)
                     .await
-                {
-                    request.cancel().await?;
-                    return Ok(true);
-                }
-                // request may be timed out
-                bail!("Could not get verification request");
+                else {
+                    // request may be timed out
+                    bail!("Could not get verification request")
+                };
+                request.cancel().await?;
+                Ok(true)
             })
             .await?
     }
@@ -171,23 +171,23 @@ impl VerificationEvent {
         let values = (*methods).iter().map(|e| e.as_str().into()).collect();
         RUNTIME
             .spawn(async move {
-                if let Some(request) = client
+                let Some(request) = client
                     .encryption()
                     .get_verification_request(&sender, &flow_id)
                     .await
-                {
-                    tokio::spawn(request_verification_handler(
-                        client,
-                        controller,
-                        request,
-                        flow_id,
-                        sender,
-                        Some(values),
-                    ));
-                    return Ok(true);
-                }
-                // request may be timed out
-                bail!("Could not get verification request");
+                else {
+                    // request may be timed out
+                    bail!("Could not get verification request")
+                };
+                tokio::spawn(request_verification_handler(
+                    client,
+                    controller,
+                    request,
+                    flow_id,
+                    sender,
+                    Some(values),
+                ));
+                Ok(true)
             })
             .await?
     }
@@ -198,16 +198,16 @@ impl VerificationEvent {
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(request) = client
+                let Some(request) = client
                     .encryption()
                     .get_verification_request(&sender, &flow_id)
                     .await
-                {
-                    let sas = request.start_sas().await?;
-                    return Ok(sas.is_some());
-                }
-                // request may be timed out
-                bail!("Could not get verification request");
+                else {
+                    // request may be timed out
+                    bail!("Could not get verification request")
+                };
+                let sas = request.start_sas().await?;
+                Ok(sas.is_some())
             })
             .await?
     }
@@ -219,18 +219,18 @@ impl VerificationEvent {
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(Verification::SasV1(sas)) = client
+                let Some(Verification::SasV1(sas)) = client
                     .encryption()
                     .get_verification(&sender, &flow_id)
                     .await
-                {
-                    tokio::spawn(sas_verification_handler(
-                        client, controller, sas, flow_id, sender,
-                    ));
-                    return Ok(true);
-                }
-                // request may be timed out
-                bail!("Could not get verification object");
+                else {
+                    // request may be timed out
+                    bail!("Could not get verification object")
+                };
+                tokio::spawn(sas_verification_handler(
+                    client, controller, sas, flow_id, sender,
+                ));
+                Ok(true)
             })
             .await?
     }
@@ -241,16 +241,16 @@ impl VerificationEvent {
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(Verification::SasV1(sas)) = client
+                let Some(Verification::SasV1(sas)) = client
                     .encryption()
                     .get_verification(&sender, &flow_id)
                     .await
-                {
-                    sas.cancel().await?;
-                    return Ok(true);
-                }
-                // request may be timed out
-                bail!("Could not get verification object");
+                else {
+                    // request may be timed out
+                    bail!("Could not get verification object")
+                };
+                sas.cancel().await?;
+                Ok(true)
             })
             .await?
     }
@@ -272,16 +272,16 @@ impl VerificationEvent {
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(Verification::SasV1(sas)) = client
+                let Some(Verification::SasV1(sas)) = client
                     .encryption()
                     .get_verification(&sender, &flow_id)
                     .await
-                {
-                    sas.confirm().await?;
-                    return Ok(true);
-                }
-                // request may be timed out
-                bail!("Could not get verification object");
+                else {
+                    // request may be timed out
+                    bail!("Could not get verification object")
+                };
+                sas.confirm().await?;
+                Ok(true)
             })
             .await?
     }
@@ -292,16 +292,16 @@ impl VerificationEvent {
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(Verification::SasV1(sas)) = client
+                let Some(Verification::SasV1(sas)) = client
                     .encryption()
                     .get_verification(&sender, &flow_id)
                     .await
-                {
-                    sas.mismatch().await?;
-                    return Ok(true);
-                }
-                // request may be timed out
-                bail!("Could not get verification object");
+                else {
+                    // request may be timed out
+                    bail!("Could not get verification object")
+                };
+                sas.mismatch().await?;
+                Ok(true)
             })
             .await?
     }
@@ -312,15 +312,15 @@ impl VerificationEvent {
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(Verification::SasV1(sas)) = client
+                let Some(Verification::SasV1(sas)) = client
                     .encryption()
                     .get_verification(&sender, &flow_id)
                     .await
-                {
-                    return Ok(sas.is_done());
-                }
-                // request may be timed out
-                bail!("Could not get verification object");
+                else {
+                    // request may be timed out
+                    bail!("Could not get verification object")
+                };
+                Ok(sas.is_done())
             })
             .await?
     }
@@ -1061,17 +1061,18 @@ impl SessionManager {
                 let user_id = client
                     .user_id()
                     .context("You must be logged in to do that")?;
-                if let Some(device) = client
+                let Some(device) = client
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
                     .await?
-                {
-                    let is_verified = device.is_cross_signed_by_owner()
-                        || device.is_verified_with_cross_signing();
-                    if !is_verified {
-                        let request = device.request_verification().await?;
-                        info!("requested verification - flow_id: {}", request.flow_id());
-                    }
+                else {
+                    bail!("Could not get device from encryption")
+                };
+                let is_verified = device.is_cross_signed_by_owner()
+                    || device.is_verified_with_cross_signing();
+                if !is_verified {
+                    let request = device.request_verification().await?;
+                    info!("requested verification - flow_id: {}", request.flow_id());
                 }
                 Ok(true)
             })
